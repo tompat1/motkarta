@@ -240,37 +240,39 @@ export function freshnessScore(place: PlaceInput) {
 }
 
 export function popularityScore(place: PlaceInput) {
-  const bayesianUserRating = ((bayesianRating(
-    place.ratingAverage,
-    place.reliableRatingCount,
-    place.categoryMeanRating,
-  ) - 1) / 4) * 100;
+  const eng = place.engagement ?? {
+    searchImpressions: 0,
+    profileViews: 0,
+    mapMarkerClicks: 0,
+    saves: 0,
+    directionRequests: 0,
+    confirmedVisits: 0,
+    repeatVisits: 0,
+    recommendations: 0,
+    recentSaves: 0,
+  };
+
+  const bayesianUserRating =
+    ((bayesianRating(
+      place.ratingAverage,
+      place.reliableRatingCount,
+      place.categoryMeanRating,
+    ) - 1) /
+      4) *
+    100;
 
   const exposureAdjustedEngagement =
     bayesianRate(
-      place.engagement.saves +
-        place.engagement.confirmedVisits +
-        place.engagement.directionRequests,
-      Math.max(1, place.engagement.searchImpressions),
+      eng.saves + eng.confirmedVisits + eng.directionRequests,
+      Math.max(1, eng.searchImpressions),
       0.08,
       120,
     ) * 100;
 
   const repeatVisitRate =
-    bayesianRate(
-      place.engagement.repeatVisits,
-      Math.max(1, place.engagement.confirmedVisits),
-      0.18,
-      30,
-    ) * 100;
-
+    bayesianRate(eng.repeatVisits, Math.max(1, eng.confirmedVisits), 0.18, 30) * 100;
   const recentSaveRate =
-    bayesianRate(
-      place.engagement.recentSaves,
-      Math.max(1, place.engagement.saves),
-      0.38,
-      25,
-    ) * 100;
+    bayesianRate(eng.recentSaves, Math.max(1, eng.saves), 0.38, 25) * 100;
 
   const crossSourceConsensus = sourceConsensus(place.evidence);
 
@@ -325,11 +327,23 @@ export function relevanceScore(place: PlaceInput, preferences: UserPreferences =
 }
 
 export function discoveryScore(place: PlaceInput, quality: number) {
-  const specialistConfidence = place.evidence.specialistGuide * 70 + specialtyConfidence(place) * 0.3;
+  const eng = place.engagement ?? {
+    searchImpressions: 0,
+    profileViews: 0,
+    mapMarkerClicks: 0,
+    saves: 0,
+    directionRequests: 0,
+    confirmedVisits: 0,
+    repeatVisits: 0,
+    recommendations: 0,
+    recentSaves: 0,
+  };
+
+  const specialistConfidence = (place.evidence?.specialistGuide ?? 0) * 70 + specialtyConfidence(place) * 0.3;
   const localEngagement =
     bayesianRate(
-      place.engagement.mapMarkerClicks + place.engagement.saves,
-      Math.max(1, place.engagement.searchImpressions),
+      eng.mapMarkerClicks + eng.saves,
+      Math.max(1, eng.searchImpressions),
       0.1,
       80,
     ) * 100;

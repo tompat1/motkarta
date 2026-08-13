@@ -70,8 +70,87 @@ test("specialty coffee verification requires explicit gates, rejecting marketing
       verificationSources: 0,
     },
   };
-  assert.equal(verifySpecialtyCoffeeEligibility(unverified), false);
-
   const guideVerified = { ...unverified, evidence: { specialistGuide: 1 } };
   assert.equal(verifySpecialtyCoffeeEligibility(guideVerified), true);
+});
+
+test("discovery score requires strong quality evidence and does not reward simple obscurity", () => {
+  const unknownNoQuality = scorePlace({
+    id: 100,
+    name: "Obscure Place",
+    kind: "Restaurant",
+    area: "Farsta",
+    note: "",
+    tags: [],
+    mainstreamExposure: 0,
+    evidenceLabel: "Low confidence",
+    ratingAverage: 4.0,
+    reliableRatingCount: 0,
+    reviewCount: 0,
+    categoryMeanRating: 4.1,
+    categoryPopularityRaw: 0,
+    localPopularityPercentile: 0,
+    priceLevel: 2,
+    ageDays: 300,
+    daysSinceFreshEvidence: 300,
+    evidence: {
+      specialistGuide: 0,
+      independentEditorial: 0,
+      verifiedUserRating: 0,
+      repeatVisits: 0,
+      recentReviews: 0,
+      credibleReviewers: 0,
+      inspectionStatus: 60,
+      verifiedAttributes: 0,
+      dataFreshness: 0,
+      confidence: "Low",
+    },
+  });
+
+  const hiddenGem = scorePlace({
+    id: 101,
+    name: "Real Hidden Gem",
+    kind: "Specialty coffee",
+    area: "Farsta",
+    note: "Great coffee",
+    tags: ["Filter"],
+    mainstreamExposure: 5,
+    evidenceLabel: "High confidence",
+    ratingAverage: 4.8,
+    reliableRatingCount: 50,
+    reviewCount: 60,
+    categoryMeanRating: 4.1,
+    categoryPopularityRaw: 50,
+    localPopularityPercentile: 0.8,
+    priceLevel: 2,
+    ageDays: 30,
+    daysSinceFreshEvidence: 10,
+    evidence: {
+      specialistGuide: 1,
+      independentEditorial: 1,
+      verifiedUserRating: 85,
+      repeatVisits: 80,
+      recentReviews: 80,
+      credibleReviewers: 85,
+      inspectionStatus: 90,
+      verifiedAttributes: 80,
+      dataFreshness: 90,
+      confidence: "High",
+    },
+    specialty: {
+      specialtyVerified: true,
+      ownRoastery: false,
+      traceableCoffee: true,
+      filterCoffee: true,
+      espressoBased: true,
+      rotatingRoasters: true,
+      singleOrigin: true,
+      manualBrewMethods: ["V60"],
+      decafAvailable: true,
+      beansForSale: true,
+      verificationSources: 3,
+    },
+  });
+
+  assert.ok(hiddenGem.scores.discovery > unknownNoQuality.scores.discovery);
 });

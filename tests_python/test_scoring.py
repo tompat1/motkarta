@@ -132,3 +132,32 @@ def test_popularity_score_components_and_logarithmic_transform():
     assert "recent_save_rate" in res
     assert "source_consensus" in res
     assert res["score"] > 0
+
+
+def test_discovery_score_requires_quality_not_just_obscurity():
+    unknown_no_quality = PlaceInput(
+        id=20,
+        name="Obscure Place Without Quality",
+        kind="Restaurant",
+        area="Farsta",
+        tags=[],
+        mainstream_exposure=0,
+        days_since_fresh_evidence=365,
+        evidence=EvidenceSignals(specialist_guide=0, independent_editorial=0, verified_user_rating=0),
+    )
+    high_quality_low_exposure = PlaceInput(
+        id=21,
+        name="Hidden Gem",
+        kind="Specialty coffee",
+        area="Farsta",
+        tags=["Coffee"],
+        mainstream_exposure=5,
+        days_since_fresh_evidence=10,
+        evidence=EvidenceSignals(specialist_guide=1, independent_editorial=1, verified_user_rating=85, verified_attributes=80, data_freshness=90),
+        specialty=SpecialtyAttributes(specialty_verified=True, traceable_coffee=True, single_origin=True, verification_sources=3),
+    )
+
+    s_unknown = score_place(unknown_no_quality)["discovery"]
+    s_gem = score_place(high_quality_low_exposure)["discovery"]
+
+    assert s_gem > s_unknown
