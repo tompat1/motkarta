@@ -55,6 +55,9 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     ["german", "german"],
     ["austria", "austrian"],
     ["austrian", "austrian"],
+    ["hungary", "hungarian"],
+    ["hungarian", "hungarian"],
+    ["goulash", "hungarian"],
     ["schnitzel", "schnitzel"],
     ["thai", "thai"],
     ["thailand", "thai"],
@@ -187,6 +190,9 @@ const CUISINE_ALIASES: Record<string, string[]> = {
   french: ["french", "france", "franskt", "bistro", "brasserie"],
   france: ["french", "france", "franskt", "bistro", "brasserie"],
   bistro: ["bistro", "french", "brasserie"],
+  hungary: ["hungarian", "hungary", "goulash", "austrian"],
+  hungarian: ["hungarian", "hungary", "goulash", "austrian"],
+  goulash: ["goulash", "hungarian", "austrian"],
 };
 
 function matchTokenWithAliases(token: string, target: string): boolean {

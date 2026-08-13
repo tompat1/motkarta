@@ -431,6 +431,25 @@ function ExternalMapLinks({ place }: { place: PlaceInput }) {
   );
 }
 
+const FEATURED_CUISINES = [
+  "spanish",
+  "french",
+  "mexican",
+  "german",
+  "polish",
+  "hungarian",
+  "austrian",
+  "italian",
+  "pizza",
+  "sushi",
+  "burger",
+  "thai",
+  "asian",
+  "indian",
+  "japanese",
+  "chinese",
+];
+
 function cuisineOptionsFromPlaces(places: PlaceInput[]) {
   const counts = new Map<string, number>();
 
@@ -440,10 +459,15 @@ function cuisineOptionsFromPlaces(places: PlaceInput[]) {
     });
   });
 
-  return [...counts.entries()]
+  const available = new Set([...counts.keys()]);
+  const featured = FEATURED_CUISINES.filter((c) => available.has(c));
+
+  const sortedOthers = [...counts.entries()]
+    .filter(([item]) => !FEATURED_CUISINES.includes(item))
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, 12)
     .map(([item]) => item);
+
+  return [...new Set([...featured, ...sortedOthers])].slice(0, 24);
 }
 
 function preferencesFromQuery(query: string, kind: EstablishmentFilter): UserPreferences {
