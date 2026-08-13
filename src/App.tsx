@@ -27,6 +27,7 @@ import {
   Shuffle,
   Sliders,
   Sparkle,
+  Star,
   ThumbsUp,
   ThumbsDown,
 } from "@phosphor-icons/react";
@@ -42,6 +43,7 @@ import {
 
 const establishmentTypes = [
   "All places",
+  "Saved",
   "Restaurant",
   "Bakery",
   "Café",
@@ -385,6 +387,7 @@ function sortModeLabel(sortMode: SortMode, lang: Language): string {
 
 function kindFilterLabel(kind: EstablishmentFilter, lang: Language): string {
   if (kind === "All places") return translations[lang].allPlaces;
+  if (kind === "Saved") return lang === "sv" ? "Sparade ★" : "Saved ★";
   if (kind === "Restaurant") return translations[lang].legendRestaurant;
   if (kind === "Bakery") return translations[lang].legendBakery;
   if (kind === "Café") return "Café";
@@ -1114,6 +1117,44 @@ export default function App() {
     }
   };
 
+  const [userRatings, setUserRatings] = useState<Record<number, number>>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("motkarta_ratings");
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+    return {};
+  });
+
+  const [savedPlaceIds, setSavedPlaceIds] = useState<number[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("motkarta_saved_places");
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+    return [];
+  });
+
+  const handleRatePlace = (id: number, rating: number) => {
+    const updated = { ...userRatings, [id]: rating };
+    setUserRatings(updated);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("motkarta_ratings", JSON.stringify(updated));
+    }
+  };
+
+  const handleToggleSavePlace = (id: number) => {
+    const updated = savedPlaceIds.includes(id)
+      ? savedPlaceIds.filter((pId) => pId !== id)
+      : [...savedPlaceIds, id];
+    setSavedPlaceIds(updated);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("motkarta_saved_places", JSON.stringify(updated));
+    }
+  };
+
   const [concierge, setConcierge] = useState(
     lang === "sv"
       ? "specialty coffee och kardemummabulle, bortom de mest turistiga gatorna"
@@ -1164,7 +1205,13 @@ export default function App() {
   const ranked = useMemo(
     () =>
       scoredPlaces
-        .filter((place) => kind === "All places" || place.kind === kind)
+        .filter((place) =>
+          kind === "All places"
+            ? true
+            : kind === "Saved"
+              ? savedPlaceIds.includes(place.id)
+              : place.kind === kind,
+        )
         .filter((place) => cuisine === allCuisines || cuisineParts(place).includes(cuisine))
         .filter((place) =>
           `${place.name} ${place.area} ${place.cuisine ?? ""} ${place.tags.join(" ")}`
@@ -1172,7 +1219,7 @@ export default function App() {
             .includes(query.toLowerCase()),
         )
         .sort((a, b) => comparePlaces(a, b, mode, sortMode, randomSeed)),
-    [cuisine, kind, mode, query, randomSeed, scoredPlaces, sortMode],
+    [cuisine, kind, mode, query, randomSeed, savedPlaceIds, scoredPlaces, sortMode],
   );
   const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
 
@@ -1369,6 +1416,94 @@ export default function App() {
                 <span>{t.relevance}</span>
               </div>
             </div>
+            <div
+              className="user-rating-bar"
+              style={{
+                marginTop: "12px",
+                paddingTop: "12px",
+                borderTop: "1px solid var(--color-mist)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: "10px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                    color: "var(--color-ink)",
+                  }}
+                >
+                  {lang === "sv" ? "Ditt betyg:" : "Your rating:"}
+                </span>
+                <div style={{ display: "flex", gap: "3px" }}>
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    const currentRating = userRatings[active.id] ?? 0;
+                    const isFilled = currentRating >= star;
+                    return (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => handleRatePlace(active.id, star)}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          padding: "2px",
+                          cursor: "pointer",
+                          display: "inline-flex",
+                        }}
+                        title={lang === "sv" ? `Ge ${star} av 5 stjärnor` : `Rate ${star} out of 5 stars`}
+                      >
+                        <Star
+                          size={18}
+                          weight={isFilled ? "fill" : "regular"}
+                          style={{ color: isFilled ? "#F59E0B" : "var(--color-mist)" }}
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleToggleSavePlace(active.id)}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "6px 12px",
+                  background: savedPlaceIds.includes(active.id) ? "var(--color-ink)" : "var(--color-white)",
+                  color: savedPlaceIds.includes(active.id) ? "var(--color-paper)" : "var(--color-ink)",
+                  border: "1px solid var(--color-mist)",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  transition: "all var(--motion-fast)",
+                }}
+              >
+                <Star
+                  size={14}
+                  weight={savedPlaceIds.includes(active.id) ? "fill" : "bold"}
+                  style={{ color: savedPlaceIds.includes(active.id) ? "#F59E0B" : "currentColor" }}
+                />
+                {savedPlaceIds.includes(active.id)
+                  ? lang === "sv"
+                    ? "Sparad"
+                    : "Saved"
+                  : lang === "sv"
+                    ? "Spara ställe"
+                    : "Save place"}
+              </button>
+            </div>
+
             <VerificationBar place={active} lang={lang} />
             <ExternalMapLinks place={active} lang={lang} />
             {active.discoveryReasons?.length ? (
@@ -1456,7 +1591,24 @@ export default function App() {
                   <span>{place.tags.slice(0, 2).join(" · ")}</span>
                 </span>
                 <span className="total">
-                  <b>{rounded(modeScore(place, mode))}</b>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleSavePlace(place.id);
+                      }}
+                      style={{ background: "none", border: "none", cursor: "pointer", padding: "2px", display: "inline-flex" }}
+                      title={savedPlaceIds.includes(place.id) ? (lang === "sv" ? "Ta bort från sparade" : "Remove from saved") : (lang === "sv" ? "Spara ställe" : "Save place")}
+                    >
+                      <Star
+                        size={15}
+                        weight={savedPlaceIds.includes(place.id) ? "fill" : "regular"}
+                        style={{ color: savedPlaceIds.includes(place.id) ? "#F59E0B" : "var(--color-mist)" }}
+                      />
+                    </button>
+                    <b>{rounded(modeScore(place, mode))}</b>
+                  </div>
                   <small>{mode === "For you" ? t.matchScoreLabel : t.totalScoreLabel}</small>
                 </span>
               </button>
