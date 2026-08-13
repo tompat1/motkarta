@@ -104,8 +104,26 @@ export type ScoreBreakdown = {
   localEngagement: number;
 };
 
+export type VerificationSourceStatus = {
+  verified: boolean;
+  label: string;
+  detail: string;
+};
+
+export type VerificationBreakdown = {
+  specialistGuide: VerificationSourceStatus;
+  editorialTeam: VerificationSourceStatus;
+  communitySubmissions: VerificationSourceStatus;
+  structuredEvidence: VerificationSourceStatus;
+  verifiedSourcesCount: number;
+  confidenceLevel: Confidence;
+  confidenceScore: number;
+  summary: string;
+};
+
 export type ScoredPlace = PlaceInput & {
   scores: ScoreBreakdown;
+  verification: VerificationBreakdown;
 };
 
 const confidenceWeight: Record<Confidence, number> = {
@@ -364,12 +382,97 @@ export function discoveryScore(place: PlaceInput, quality: number) {
   };
 }
 
+export function computeVerificationBreakdown(place: PlaceInput): VerificationBreakdown {
+  const guideVerified =
+    (place.evidence?.specialistGuide ?? 0) >= 0.5 ||
+    (place.evidenceLabel?.toLowerCase().includes("guide") ?? false) ||
+    (place.evidenceLabel?.toLowerCase().includes("specialist") ?? false) ||
+    place.tags.some((t) => ["white guide", "michelin", "star wine list", "specialist guide", "sca"].includes(t.toLowerCase()));
+
+  const editorialVerified =
+    (place.evidence?.independentEditorial ?? 0) >= 0.5 ||
+    (place.evidenceLabel?.toLowerCase().includes("editorial") ?? false) ||
+    (place.evidenceLabel?.toLowerCase().includes("official site") ?? false) ||
+    (place.specialty?.specialtyVerified === true);
+
+  const communityCount =
+    (place.specialty?.verificationSources ?? 0) +
+    Math.floor((place.evidence?.repeatVisits ?? 0) / 20) +
+    Math.floor((place.engagement?.confirmedVisits ?? 0) / 30);
+
+  const communityVerified = communityCount >= 2 || (place.reliableRatingCount ?? 0) >= 50;
+
+  const structuredSignals = [
+    Boolean(place.website),
+    Boolean(place.address),
+    Boolean(place.tags?.length),
+    place.specialty?.traceableCoffee ?? false,
+    place.specialty?.filterCoffee ?? false,
+    place.specialty?.singleOrigin ?? false,
+    place.specialty?.ownRoastery ?? false,
+    (place.specialty?.manualBrewMethods?.length ?? 0) > 0,
+  ].filter(Boolean).length;
+
+  const structuredVerified = structuredSignals >= 3 || (place.evidence?.verifiedAttributes ?? 0) >= 50;
+
+  const verifiedSourcesCount = [guideVerified, editorialVerified, communityVerified, structuredVerified].filter(Boolean).length;
+
+  const confidenceScore = clamp(
+    verifiedSourcesCount * 25 +
+      (place.evidence?.confidence === "High" ? 15 : place.evidence?.confidence === "Medium" ? 5 : 0),
+  );
+
+  const confidenceLevel: Confidence =
+    verifiedSourcesCount >= 3 ? "High" : verifiedSourcesCount >= 2 ? "Medium" : "Low";
+
+  const verifiedNames = [
+    guideVerified && "Specialty Guide",
+    editorialVerified && "Editorial Team",
+    communityVerified && "Community Submissions",
+    structuredVerified && "Structured Menu & Web",
+  ].filter(Boolean) as string[];
+
+  const summary = verifiedSourcesCount >= 3
+    ? `Verified by ${verifiedSourcesCount} independent sources (${verifiedNames.join(", ")})`
+    : verifiedSourcesCount === 2
+    ? `Verified by 2 independent sources (${verifiedNames.join(", ")})`
+    : `Verified by 1 source (${verifiedNames[0] ?? "Open Data"})`;
+
+  return {
+    specialistGuide: {
+      verified: guideVerified,
+      label: "Recognised Specialty Guide",
+      detail: guideVerified ? "Verified by White Guide / Specialist Guide" : "Unverified by specialty guide",
+    },
+    editorialTeam: {
+      verified: editorialVerified,
+      label: "Editorial Team & Admin Audit",
+      detail: editorialVerified ? "Audited & verified by editorial team" : "Pending editorial audit",
+    },
+    communitySubmissions: {
+      verified: communityVerified,
+      label: "Consistent Community Submissions",
+      detail: communityVerified ? `Verified by ${communityCount || 3}+ consistent community submissions` : "Awaiting community submissions",
+    },
+    structuredEvidence: {
+      verified: structuredVerified,
+      label: "Structured Menu & Web Evidence",
+      detail: structuredVerified ? "Menu, website & operational signals verified" : "Requires live menu verification",
+    },
+    verifiedSourcesCount,
+    confidenceLevel,
+    confidenceScore,
+    summary,
+  };
+}
+
 export function scorePlace(place: PlaceInput, preferences: UserPreferences = {}): ScoredPlace {
   const quality = qualityScore(place);
   const popularity = popularityScore(place);
   const relevance = relevanceScore(place, preferences);
   const discovery = discoveryScore(place, quality);
   const freshness = freshnessScore(place);
+  const verification = computeVerificationBreakdown(place);
   const recommendation = clamp(
     0.35 * relevance +
       0.25 * quality +
@@ -395,6 +498,7 @@ export function scorePlace(place: PlaceInput, preferences: UserPreferences = {})
       specialistConfidence: discovery.specialistConfidence,
       localEngagement: discovery.localEngagement,
     },
+    verification,
   };
 }
 

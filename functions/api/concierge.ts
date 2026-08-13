@@ -315,6 +315,7 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
       `### **${pick.name}**`,
       `• **Why it matches**: ${reasonText} [Quality: ${Math.round(pick.scores.quality)}/100, Rec score: ${Math.round(pick.scores.recommendation)}/100]`,
       `• **Area / Location**: ${pick.area}`,
+      `• **Verification breakdown**: ${pick.verification.summary}`,
       `• **Price confidence**: ${priceConf}`,
       `• **Opening-hours confidence**: ${hoursConf}`,
       `• **Data sources & License**: OpenStreetMap (ODbL), Stockholm Stad Open Data (CC0)`,

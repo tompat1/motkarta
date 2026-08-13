@@ -198,6 +198,98 @@ function cuisineLabel(value: string) {
   return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+function VerificationBar({ place }: { place: ScoredPlace }) {
+  const v = place.verification;
+  if (!v) return null;
+
+  return (
+    <div
+      className="verification-bar"
+      style={{
+        marginTop: "12px",
+        marginBottom: "12px",
+        padding: "10px 12px",
+        background: "rgba(246, 243, 237, 0.8)",
+        borderRadius: "8px",
+        border: "1px solid var(--line, #e2dcd2)",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+        <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--ink-muted)" }}>
+          Verification Breakdown
+        </span>
+        <span
+          style={{
+            fontSize: "11px",
+            fontWeight: 700,
+            padding: "2px 8px",
+            borderRadius: "12px",
+            background: v.confidenceLevel === "High" ? "#e6f4ea" : v.confidenceLevel === "Medium" ? "#feefc3" : "#f1f3f4",
+            color: v.confidenceLevel === "High" ? "#137333" : v.confidenceLevel === "Medium" ? "#b06000" : "#5f6368",
+          }}
+        >
+          🛡️ {v.confidenceLevel} Confidence ({v.verifiedSourcesCount}/4 Sources)
+        </span>
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+        <span
+          style={{
+            fontSize: "11px",
+            padding: "3px 8px",
+            borderRadius: "4px",
+            background: v.specialistGuide.verified ? "#e6f4ea" : "#f1f3f4",
+            color: v.specialistGuide.verified ? "#137333" : "#70757a",
+            fontWeight: 600,
+          }}
+        >
+          {v.specialistGuide.verified ? "🏆 Specialty Guide" : "⚪ Guide Unverified"}
+        </span>
+        <span
+          style={{
+            fontSize: "11px",
+            padding: "3px 8px",
+            borderRadius: "4px",
+            background: v.editorialTeam.verified ? "#e8f0fe" : "#f1f3f4",
+            color: v.editorialTeam.verified ? "#1a73e8" : "#70757a",
+            fontWeight: 600,
+          }}
+        >
+          {v.editorialTeam.verified ? "✍️ Editorial Audit" : "⚪ Editorial Pending"}
+        </span>
+        <span
+          style={{
+            fontSize: "11px",
+            padding: "3px 8px",
+            borderRadius: "4px",
+            background: v.communitySubmissions.verified ? "#fce8e6" : "#f1f3f4",
+            color: v.communitySubmissions.verified ? "#c5221f" : "#70757a",
+            fontWeight: 600,
+          }}
+        >
+          {v.communitySubmissions.verified ? "👥 Community Submissions" : "⚪ Community Pending"}
+        </span>
+        <span
+          style={{
+            fontSize: "11px",
+            padding: "3px 8px",
+            borderRadius: "4px",
+            background: v.structuredEvidence.verified ? "#feefc3" : "#f1f3f4",
+            color: v.structuredEvidence.verified ? "#b06000" : "#70757a",
+            fontWeight: 600,
+          }}
+        >
+          {v.structuredEvidence.verified ? "📄 Structured Menu & Web" : "⚪ Menu Pending"}
+        </span>
+      </div>
+
+      <p style={{ fontSize: "11px", color: "var(--ink-muted)", marginTop: "6px", marginBottom: 0 }}>
+        {v.summary}
+      </p>
+    </div>
+  );
+}
+
 function cuisineOptionsFromPlaces(places: PlaceInput[]) {
   const counts = new Map<string, number>();
 
@@ -641,6 +733,7 @@ export default function App() {
                 <span>Relevance</span>
               </div>
             </div>
+            <VerificationBar place={active} />
             {active.discoveryReasons?.length ? (
               <ul className="reason-list" aria-label="Discovery score reasons">
                 {active.discoveryReasons.slice(0, 3).map((reason) => (
