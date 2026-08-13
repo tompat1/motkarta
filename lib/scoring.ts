@@ -60,6 +60,7 @@ export type PlaceInput = {
   kind: EstablishmentType;
   cuisine?: string;
   area: string;
+  address?: string;
   note: string;
   tags: string[];
   discoveryReasons?: string[];

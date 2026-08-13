@@ -544,7 +544,7 @@ def normalize_establishment_type_row(row: pd.Series) -> str:
         return "Restaurant"
     if existing in ESTABLISHMENT_TYPES:
         return existing
-    return normalize_osm_establishment_type(row["category"], row["cuisine"]) or "Restaurant"
+    return normalize_osm_establishment_type(row["category"], row["cuisine"], name=clean_text(row.get("name", ""))) or "Restaurant"
 
 
 def normalize_address(row: pd.Series) -> str:
@@ -638,6 +638,8 @@ def known_chain_brand(name: object) -> str:
         return "Pizza Hut"
     if tokens[0] == "starbucks":
         return "Starbucks"
+    if tokens[0] == "nespresso":
+        return "Nespresso"
     if tokens[:2] == ["holy", "greens"]:
         return "Holy Greens"
     if tokens[:2] == ["texas", "longhorn"]:

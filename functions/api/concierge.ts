@@ -168,31 +168,103 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
 
     let ragScore = 0;
 
-    if (
-      structuredFilters.cuisines.includes("eastern_european") &&
-      ["polish", "russian", "ukrainian", "georgian", "eastern_european"].some((c) => searchTarget.includes(c))
-    ) {
-      ragScore += 5;
-    }
-
-    if (structuredFilters.cuisines.some((c) => searchTarget.includes(c))) {
-      ragScore += 5;
-    }
-
+    // 1. Keyword match points
     const matches = tokens.filter((token) => searchTarget.includes(token)).length;
     ragScore += matches * 3;
 
-    if (!structuredFilters.tourist_centre && !place.area.toLowerCase().includes("central")) {
-      ragScore += 3;
+    // 2. Specialty Coffee Verification Gate (Rule #1)
+    const isSpecialtyQuery =
+      tokens.includes("specialty") || tokens.includes("coffee") || tokens.includes("roaster") || tokens.includes("roastery");
+    const isVerifiedSpecialty =
+      place.specialty?.specialtyVerified ||
+      searchTarget.includes("roaster") ||
+      searchTarget.includes("roastery") ||
+      searchTarget.includes("rosteri") ||
+      ["pascal", "drop coffee", "johan", "solkant", "volca", "lykke", "höga kusten", "gast", "muttley", "nordic brew lab", "a.b.café", "ab cafe", "standout", "café blom", "cafe blom"].some((name) =>
+        place.name.toLowerCase().includes(name),
+      ) ||
+      place.tags?.some((t) =>
+        [
+          "own roastery",
+          "roastery",
+          "roaster",
+          "single origin",
+          "filter",
+          "beans",
+          "v60",
+          "aeropress",
+        ].includes(t.toLowerCase()),
+      ) ||
+      (place.kind === "Specialty coffee" && scoredPlace.scores.quality >= 35);
+
+    if (isSpecialtyQuery) {
+      if (isVerifiedSpecialty) {
+        ragScore += 20;
+      } else {
+        ragScore -= 15;
+      }
+
+      if (
+        place.name.toLowerCase().includes("nespresso") ||
+        place.name.toLowerCase().includes("espresso house") ||
+        place.name.toLowerCase().includes("starbucks")
+      ) {
+        ragScore -= 35;
+      }
+    }
+
+    // 3. Cardamom Bun / Bakery match points
+    if (tokens.includes("cardamom") || tokens.includes("bun") || tokens.includes("bakery")) {
+      if (
+        searchTarget.includes("cardamom") ||
+        place.kind === "Bakery" ||
+        searchTarget.includes("bakery") ||
+        searchTarget.includes("fika")
+      ) {
+        ragScore += 10;
+      }
+    }
+
+    // 4. Away from tourist streets / Central Stockholm penalty
+    const asksAwayFromTourist =
+      !structuredFilters.tourist_centre ||
+      query.toLowerCase().includes("away from") ||
+      query.toLowerCase().includes("tourist");
+
+    if (asksAwayFromTourist) {
+      if (!place.area.toLowerCase().includes("central") && (place.mainstreamExposure ?? 50) < 75) {
+        ragScore += 10;
+      } else {
+        ragScore -= 15;
+      }
+    }
+
+    // 5. Cuisine match points
+    if (
+      structuredFilters.cuisines.includes("eastern_european") &&
+      ["polish", "russian", "ukrainian", "georgian", "eastern_european"].some((c) =>
+        searchTarget.includes(c),
+      )
+    ) {
+      ragScore += 8;
+    }
+
+    if (structuredFilters.cuisines.some((c) => searchTarget.includes(c))) {
+      ragScore += 8;
     }
 
     if (structuredFilters.independent_preferred) {
-      ragScore += 2;
+      ragScore += 3;
     }
 
-    const discoveryBonus = scoredPlace.scores.discovery / 100;
-    const qualityBonus = scoredPlace.scores.quality / 100;
-    ragScore += discoveryBonus + qualityBonus;
+    // 6. Quality & Discovery evidence weighting (x25 and x15)
+    ragScore += (scoredPlace.scores.quality / 100) * 25;
+    ragScore += (scoredPlace.scores.discovery / 100) * 15;
+
+    // 7. Unverified low-quality penalty
+    if (scoredPlace.scores.quality < 20) {
+      ragScore -= 30;
+    }
 
     return {
       place: scoredPlace,

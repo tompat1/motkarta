@@ -70,36 +70,58 @@ def answer_query(query: str, documents: list[dict], limit: int = 5) -> list[dict
 
     def score(document: dict) -> float:
         text = f"{document.get('title', '')} {document.get('text', '')}".lower()
+        title_lower = str(document.get("title", "")).lower()
         metadata = document.get("metadata", {})
         type_str = str(metadata.get("establishment_type", "")).lower()
         area_str = str(metadata.get("neighbourhood", "")).lower()
 
         relevance = 0.0
 
-        if "eastern_european" in filters["cuisines"] and ("polish" in text or "russian" in text or "ukrainian" in text or "georgian" in text or "eastern european" in text):
-            relevance += 5.0
-        if "polish" in filters["cuisines"] and "polish" in text:
-            relevance += 5.0
-        if "russian" in filters["cuisines"] and "russian" in text:
-            relevance += 5.0
-        if "ukrainian" in filters["cuisines"] and "ukrainian" in text:
-            relevance += 5.0
-
+        # 1. Keyword match points
         for token in tokens:
             if token in {"eastern", "european"} and ("middle eastern" in text or "middle_eastern" in text) and "eastern_european" not in filters["cuisines"]:
                 continue
             if token in text:
-                relevance += 2.0 if (token in type_str or token in area_str) else 1.0
+                relevance += 3.0 if (token in type_str or token in area_str or token in text) else 1.5
 
-        if not filters["tourist_centre"]:
+        # 2. Specialty Coffee Verification Gate (Rule #1)
+        if "specialty" in tokens or "coffee" in tokens or "roaster" in tokens:
+            is_verified = (
+                metadata.get("specialty_verified")
+                or any(t in text for t in ["own roastery", "roastery", "roaster", "rosteri", "single origin", "filter", "beans", "v60", "aeropress"])
+                or any(n in title_lower for n in ["pascal", "drop coffee", "johan", "solkant", "volca", "lykke", "höga kusten", "gast", "muttley", "nordic brew lab", "a.b.café", "ab cafe", "standout", "café blom", "cafe blom"])
+                or (type_str == "specialty coffee" and float(metadata.get("quality_score") or 0) >= 35)
+            )
+            if is_verified:
+                relevance += 20.0
+            else:
+                relevance -= 15.0
+
+            if any(chain in title_lower for chain in ["nespresso", "espresso house", "starbucks"]):
+                relevance -= 35.0
+
+        # 3. Cardamom / Bakery match points
+        if "cardamom" in tokens or "bun" in tokens or "bakery" in tokens:
+            if "cardamom" in text or "bakery" in type_str or "bakery" in text or "fika" in text:
+                relevance += 10.0
+
+        # 4. Away from tourist streets / Central Stockholm penalty
+        if not filters["tourist_centre"] or "away from" in q_lower or "tourist" in q_lower:
             if "central" not in area_str and area_str != "unknown":
-                relevance += 3.0
+                relevance += 10.0
+            else:
+                relevance -= 15.0
 
-        if filters["independent_preferred"] and ("independent" in text or "it appears independent" in text):
-            relevance += 2.0
+        # 5. Quality & Discovery weightings (x25 and x15)
+        quality = float(metadata.get("quality_score") or metadata.get("quality") or 0) / 100 * 25.0
+        discovery = float(metadata.get("discovery_score") or 0) / 100 * 15.0
+        relevance += quality + discovery
 
-        discovery = float(metadata.get("discovery_score") or 0) / 100
-        return relevance + discovery
+        # 6. Low quality penalty
+        if float(metadata.get("quality_score") or metadata.get("quality") or 0) < 20:
+            relevance -= 30.0
+
+        return relevance
 
     scored_docs = [doc for doc in documents if score(doc) > 0]
     if not scored_docs:

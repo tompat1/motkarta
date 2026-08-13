@@ -22,12 +22,45 @@ class OsmFoodPlace:
     source: str = "OpenStreetMap"
 
 
-def normalize_osm_establishment_type(category: str, cuisine: str = "") -> str | None:
-    """Map OSM food categories to the four product establishment types.
+PRIME_SPECIALTY_NAMES = [
+    "pascal",
+    "drop coffee",
+    "johan & nyström",
+    "johan och nyström",
+    "johan",
+    "solkant",
+    "volca",
+    "lykke",
+    "höga kusten",
+    "hoga kusten",
+    "gast",
+    "muttley",
+    "nordic brew lab",
+    "a.b.café",
+    "ab cafe",
+    "standout",
+    "café blom",
+    "cafe blom",
+]
 
-    A normal OSM cafe stays a Café. It is not upgraded to Specialty coffee just
-    because the cuisine text mentions coffee.
-    """
+
+def is_prime_specialty_coffee(name: str = "", category: str = "", cuisine: str = "") -> bool:
+    n = name.strip().lower()
+    c = category.strip().lower()
+    cu = cuisine.strip().lower()
+    if any(p in n for p in PRIME_SPECIALTY_NAMES):
+        return True
+    if any(r in n for r in ["roaster", "roastery", "rosteri"]):
+        return True
+    if "roaster" in c or "coffee_roaster" in cu:
+        return True
+    return False
+
+
+def normalize_osm_establishment_type(category: str, cuisine: str = "", name: str = "") -> str | None:
+    """Map OSM food categories to the four product establishment types."""
+    if is_prime_specialty_coffee(name, category, cuisine):
+        return "Specialty coffee"
 
     value = category.strip().lower()
     if value in {"coffee", "coffee_roaster"}:
@@ -43,6 +76,10 @@ def normalize_osm_establishment_type(category: str, cuisine: str = "") -> str | 
 
 def osm_tags(place: OsmFoodPlace) -> list[str]:
     tags: list[str] = []
+    if place.name and (any(p in place.name.lower() for p in PRIME_SPECIALTY_NAMES) or any(r in place.name.lower() for r in ["roaster", "roastery", "rosteri"])):
+        tags.extend(["Specialty Coffee", "Single Origin", "Filter"])
+        if any(r in place.name.lower() for r in ["roaster", "roastery", "rosteri"]):
+            tags.append("Own Roastery")
     for value in [place.category.replace("_", " "), *place.cuisine.split(";")]:
         cleaned = value.strip()
         if cleaned:

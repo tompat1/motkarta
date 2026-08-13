@@ -29,6 +29,7 @@ import {
   Sparkle,
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
+import { retrieveAndSynthesize } from "../functions/api/concierge";
 import {
   type EstablishmentType,
   type PlaceInput,
@@ -501,57 +502,8 @@ export default function App() {
       // Fallback to local RAG when endpoint is unreachable in standalone dev
     }
 
-    const request = concierge.toLowerCase();
-    const requestedKind: EstablishmentType | undefined = request.includes("coffee")
-      ? "Specialty coffee"
-      : request.includes("bun") || request.includes("bager") || request.includes("pastr")
-        ? "Bakery"
-        : undefined;
-
-    const requestedPreferences: UserPreferences = {
-      kind: requestedKind,
-      tags: request.includes("cardamom") ? ["cardamom"] : undefined,
-      independentOnly: request.includes("tourist") || request.includes("independent"),
-    };
-    const picks = places
-      .map((place) => scorePlace(place, requestedPreferences))
-      .sort((a, b) => b.scores.recommendation - a.scores.recommendation)
-      .slice(0, 3);
-
-    const listText = picks
-      .map((pick) => {
-        const reasons = (pick.discoveryReasons ?? [])
-          .map((r) => r.trim().replace(/\.$/, ""))
-          .filter(Boolean)
-          .slice(0, 2);
-        const reasonText = reasons.length ? reasons.join("; ") : "Matches discovery criteria";
-        const hoursConf = pick.evidence?.confidence
-          ? `${pick.evidence.confidence} confidence`
-          : "High confidence";
-        const priceConf = pick.priceLevel ? "Medium" : "Medium";
-        const lastVerified = pick.lastUpdated ? pick.lastUpdated : "Recently verified";
-        const missingInfo = pick.priceLevel
-          ? undefined
-          : "Price level and exact hours require live verification";
-
-        return [
-          `### **${pick.name}**`,
-          `• **Why it matches**: ${reasonText} [Quality: ${Math.round(pick.scores.quality)}/100, Rec score: ${Math.round(pick.scores.recommendation)}/100]`,
-          `• **Area / Location**: ${pick.area}`,
-          `• **Price confidence**: ${priceConf}`,
-          `• **Opening-hours confidence**: ${hoursConf}`,
-          `• **Data sources & License**: OpenStreetMap (ODbL), Stockholm Stad Open Data (CC0)`,
-          `• **Last verified date**: ${lastVerified}`,
-          missingInfo ? `• **Missing/Uncertain info**: ${missingInfo}` : null,
-        ]
-          .filter(Boolean)
-          .join("\n");
-      })
-      .join("\n\n");
-
-    setAnswer(
-      `Based on our auditable open dataset of independent Stockholm establishments, here are the top grounded recommendations for "${concierge}":\n\n${listText}\n\n--- ETHICAL & TECHNICAL CHARTER ---\n• Recommendations prioritize transparent quality and discovery signals over raw review volume.\n• Zero paid placements; all recommendations derived from open auditable evidence.`,
-    );
+    const ragResult = retrieveAndSynthesize(concierge, places);
+    setAnswer(ragResult.answer);
     setAsking(false);
   }
 
