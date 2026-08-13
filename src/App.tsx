@@ -207,10 +207,10 @@ export const translations = {
     navMethod: "METOD",
     navConcierge: "CONCIERGE",
     navAbout: "OM",
-    dataSourceLiveOsm: "Live OSM Data",
-    dataSourceLiveD1: "Live D1 Data",
-    dataSourceLoading: "Laddar data",
-    dataSourceDemo: "Demo Data",
+    dataSourceLiveOsm: "Datafeed: Live OSM",
+    dataSourceLiveD1: "Datafeed: Live D1",
+    dataSourceLoading: "Datafeed: Laddar",
+    dataSourceDemo: "Datafeed: Demo",
     eyebrow: "Stockholms fria matkarta · Ingen betald ranking",
     titleMain: "Stockholm,",
     titleSub: "bord för bord.",
@@ -286,10 +286,10 @@ export const translations = {
     navMethod: "METHOD",
     navConcierge: "CONCIERGE",
     navAbout: "ABOUT",
-    dataSourceLiveOsm: "Live OSM Data",
-    dataSourceLiveD1: "Live D1 Data",
-    dataSourceLoading: "Loading data",
-    dataSourceDemo: "Demo Data",
+    dataSourceLiveOsm: "Datafeed: Live OSM",
+    dataSourceLiveD1: "Datafeed: Live D1",
+    dataSourceLoading: "Datafeed: Loading",
+    dataSourceDemo: "Datafeed: Demo",
     eyebrow: "Stockholm's independent food map · No paid ranking",
     titleMain: "Stockholm,",
     titleSub: "table by table.",
@@ -1035,6 +1035,7 @@ export default function App() {
             </button>
           </div>
           <a className="about" href="#sources">
+            <span className="status-dot" />
             {dataSource === "osm"
               ? t.dataSourceLiveOsm
               : dataSource === "d1"
