@@ -16,6 +16,14 @@ CREATE TABLE `engagement_snapshots` (
 );
 --> statement-breakpoint
 CREATE INDEX `engagement_establishment_idx` ON `engagement_snapshots` (`establishment_id`);--> statement-breakpoint
+CREATE TABLE `establishment_tags` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`establishment_id` integer NOT NULL,
+	`tag` text NOT NULL,
+	FOREIGN KEY (`establishment_id`) REFERENCES `establishments`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE INDEX `tags_establishment_idx` ON `establishment_tags` (`establishment_id`);--> statement-breakpoint
 CREATE TABLE `establishments` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,

@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { demoPlaces } from "../lib/demo-places";
 import {
   type EstablishmentType,
+  type PlaceInput,
   type ScoredPlace,
   type UserPreferences,
   scorePlace,
@@ -76,6 +77,8 @@ function preferencesFromQuery(query: string, kind: EstablishmentFilter): UserPre
 }
 
 export default function App() {
+  const [places, setPlaces] = useState<PlaceInput[]>(demoPlaces);
+  const [dataSource, setDataSource] = useState<"loading" | "demo" | "d1">("loading");
   const [mode, setMode] = useState<Mode>("For you");
   const [kind, setKind] = useState<EstablishmentFilter>("All places");
   const [query, setQuery] = useState("");
@@ -85,10 +88,44 @@ export default function App() {
   );
   const [answer, setAnswer] = useState<string | null>(null);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadPlaces() {
+      try {
+        const response = await fetch("/api/places");
+        if (!response.ok) {
+          throw new Error(`Places API responded ${response.status}`);
+        }
+
+        const payload = (await response.json()) as {
+          source?: "demo" | "d1";
+          places?: PlaceInput[];
+        };
+
+        if (!cancelled && payload.places?.length) {
+          setPlaces(payload.places);
+          setDataSource(payload.source ?? "d1");
+        }
+      } catch {
+        if (!cancelled) {
+          setPlaces(demoPlaces);
+          setDataSource("demo");
+        }
+      }
+    }
+
+    void loadPlaces();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const preferences = useMemo(() => preferencesFromQuery(query, kind), [kind, query]);
   const scoredPlaces = useMemo(
-    () => demoPlaces.map((place) => scorePlace(place, preferences)),
-    [preferences],
+    () => places.map((place) => scorePlace(place, preferences)),
+    [places, preferences],
   );
 
   const ranked = useMemo(
@@ -117,7 +154,7 @@ export default function App() {
       tags: request.includes("cardamom") ? ["cardamom"] : undefined,
       independentOnly: request.includes("tourist") || request.includes("independent"),
     };
-    const picks = demoPlaces
+    const picks = places
       .map((place) => scorePlace(place, requestedPreferences))
       .sort((a, b) => b.scores.recommendation - a.scores.recommendation)
       .slice(0, 2);
@@ -140,7 +177,7 @@ export default function App() {
           <a href="#concierge">Concierge</a>
         </nav>
         <a className="about" href="#sources">
-          About the data
+          {dataSource === "d1" ? "Live D1 data" : dataSource === "loading" ? "Loading data" : "Demo data"}
         </a>
       </header>
 

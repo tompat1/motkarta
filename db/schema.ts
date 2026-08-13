@@ -54,6 +54,18 @@ export const evidenceSources = sqliteTable(
   (table) => [index("evidence_establishment_idx").on(table.establishmentId)],
 );
 
+export const establishmentTags = sqliteTable(
+  "establishment_tags",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    establishmentId: integer("establishment_id")
+      .notNull()
+      .references(() => establishments.id, { onDelete: "cascade" }),
+    tag: text("tag").notNull(),
+  },
+  (table) => [index("tags_establishment_idx").on(table.establishmentId)],
+);
+
 export const specialtyCoffeeAttributes = sqliteTable("specialty_coffee_attributes", {
   establishmentId: integer("establishment_id")
     .primaryKey()

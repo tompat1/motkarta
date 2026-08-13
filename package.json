@@ -15,6 +15,7 @@
     "validate:artifact": "bash scripts/validate-artifact.sh",
     "lint": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
+    "db:seed:demo": "node scripts/generate_seed_sql.mjs",
     "deploy:cloudflare": "npm run build && wrangler pages deploy dist --project-name stockholm-independent-food-map"
   },
   "dependencies": {

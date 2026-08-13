@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "4f3b7c3f-3a8c-4e17-9e1a-1fae9f7bf80f",
+  "id": "b10e3f86-af9d-4741-a745-1328ff861a82",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "engagement_snapshots": {
@@ -112,6 +112,59 @@
         "engagement_snapshots_establishment_id_establishments_id_fk": {
           "name": "engagement_snapshots_establishment_id_establishments_id_fk",
           "tableFrom": "engagement_snapshots",
+          "tableTo": "establishments",
+          "columnsFrom": [
+            "establishment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "establishment_tags": {
+      "name": "establishment_tags",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "establishment_id": {
+          "name": "establishment_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tag": {
+          "name": "tag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "tags_establishment_idx": {
+          "name": "tags_establishment_idx",
+          "columns": [
+            "establishment_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "establishment_tags_establishment_id_establishments_id_fk": {
+          "name": "establishment_tags_establishment_id_establishments_id_fk",
+          "tableFrom": "establishment_tags",
           "tableTo": "establishments",
           "columnsFrom": [
             "establishment_id"

@@ -17,6 +17,7 @@ npm run dev
 - Bayesian rating, recency weighting and exposure-adjusted engagement helpers
 - Structured specialty-coffee attributes rather than keyword-only labels
 - Drizzle schema for establishments, evidence sources, ratings, engagement, specialty attributes and score snapshots
+- Cloudflare Pages Function at `/api/places`, with D1 when `DB` is bound and demo fallback otherwise
 - Explainable demo concierge
 - Explicit confidence and evidence labels
 - OpenStreetMap/Overpass Python collector
@@ -42,6 +43,22 @@ npm run deploy:cloudflare
 ```
 
 That command builds the Vite app and deploys `dist/` with Wrangler Pages. Connect the Cloudflare project/account before running it.
+
+For the GitHub-connected Cloudflare Pages project:
+
+- Build command: `npm run build`
+- Output directory: `dist`
+- Node version: `22.13.0` or newer
+- D1 binding name: `DB`
+
+Until D1 is connected, `/api/places` returns the demo data. After creating and binding D1, run the migration and optional demo seed:
+
+```bash
+npm run db:generate
+npm run db:seed:demo
+wrangler d1 migrations apply <database-name> --remote
+wrangler d1 execute <database-name> --remote --file drizzle/seed-demo.sql
+```
 
 ## Python data pipeline
 
