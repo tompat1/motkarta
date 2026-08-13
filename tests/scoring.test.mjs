@@ -17,6 +17,15 @@ test("bayesian rating tempers tiny sample sizes", () => {
   assert.ok(tinyPerfectSample < strongLargeSample);
 });
 
+test("bayesian rating prevents winner-take-all bias for central high-volume cafes", () => {
+  const centralCafe = bayesianRating(4.2, 8000, 4.1, 30); // ~4.199
+  const localBakery = bayesianRating(4.8, 45, 4.1, 30);   // ~4.520
+  const newSpecialty = bayesianRating(4.9, 12, 4.1, 30);  // ~4.328
+
+  assert.ok(localBakery > newSpecialty);
+  assert.ok(newSpecialty > centralCafe);
+});
+
 test("recency half-life halves signal after the configured period", () => {
   assert.equal(Math.round(recencyWeight(180, 180) * 100), 50);
 });

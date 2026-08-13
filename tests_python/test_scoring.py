@@ -15,6 +15,14 @@ def test_bayesian_rating_tempers_tiny_samples():
     assert bayesian_rating(5, 3, 4.1, 30) < bayesian_rating(4.6, 300, 4.1, 30)
 
 
+def test_bayesian_rating_prevents_winner_take_all():
+    central_cafe = bayesian_rating(4.2, 8000, 4.1, 30)  # ~4.199
+    local_bakery = bayesian_rating(4.8, 45, 4.1, 30)    # ~4.520
+    new_specialty = bayesian_rating(4.9, 12, 4.1, 30)   # ~4.328
+
+    assert local_bakery > new_specialty > central_cafe
+
+
 def test_recency_weight_half_life():
     assert round(recency_weight(180, 180), 2) == 0.5
 
