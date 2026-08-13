@@ -2,7 +2,15 @@ from pathlib import Path
 import json
 
 from motkarta.concierge import answer_query, load_rag_corpus
-from motkarta.pipeline import clean_places, dedupe_places, filter_excluded_chains, load_raw_csv, score_places, write_place_inputs_json
+from motkarta.pipeline import (
+    build_coverage_report,
+    clean_places,
+    dedupe_places,
+    filter_excluded_chains,
+    load_raw_csv,
+    score_places,
+    write_place_inputs_json,
+)
 from scripts.run_mvp_pipeline import run_pipeline
 
 
@@ -126,3 +134,20 @@ def test_place_inputs_json_matches_frontend_shape(tmp_path):
     assert {"id", "name", "kind", "area", "tags", "evidence", "engagement", "x", "y"} <= set(place)
     assert {"discoveryReasons", "discoverySignals"} <= set(place)
     assert place["evidence"]["confidence"] == "Low"
+
+
+def test_representation_measurements():
+    raw = load_raw_csv(FIXTURE)
+    clean = clean_places(raw)
+    report = build_coverage_report(clean)
+
+    assert "coffee" in report.coverage_by_cuisine
+    assert report.coverage_by_cuisine["coffee"] >= 1
+    assert 0.0 <= report.missing_hours_ratio <= 1.0
+    assert 0.0 <= report.missing_cuisine_ratio <= 1.0
+
+    markdown = report.markdown()
+    assert "## Coverage by Cuisine" in markdown
+    assert "## Data Gaps & Representation" in markdown
+    assert "Missing cuisine:" in markdown
+

@@ -51,6 +51,10 @@ class CoverageReport:
     missing_website: int
     duplicate_candidates_removed: int
     excluded_chains_removed: int = 0
+    coverage_by_cuisine: dict[str, int] | None = None
+    missing_cuisine: int = 0
+    missing_hours_ratio: float = 0.0
+    missing_cuisine_ratio: float = 0.0
 
     def markdown(self) -> str:
         lines = [
@@ -61,15 +65,27 @@ class CoverageReport:
             "## By Type",
             "",
             *[f"- {name}: {count}" for name, count in sorted(self.by_type.items())],
+        ]
+
+        if self.coverage_by_cuisine:
+            lines.extend([
+                "",
+                "## Coverage by Cuisine",
+                "",
+                *[f"- {cuisine}: {count}" for cuisine, count in self.coverage_by_cuisine.items()],
+            ])
+
+        lines.extend([
             "",
-            "## Data Gaps",
+            "## Data Gaps & Representation",
             "",
             f"- Missing address: {self.missing_address}",
-            f"- Missing opening hours: {self.missing_opening_hours}",
+            f"- Missing opening hours: {self.missing_opening_hours} ({self.missing_hours_ratio:.1%})",
+            f"- Missing cuisine: {self.missing_cuisine} ({self.missing_cuisine_ratio:.1%})",
             f"- Missing website: {self.missing_website}",
             f"- Duplicate candidates removed: {self.duplicate_candidates_removed}",
             f"- Excluded chains removed: {self.excluded_chains_removed}",
-        ]
+        ])
         return "\n".join(lines) + "\n"
 
 
@@ -182,12 +198,48 @@ def score_places(frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_coverage_report(frame: pd.DataFrame, duplicate_count: int = 0, excluded_chain_count: int = 0) -> CoverageReport:
+    total = len(frame)
+
+    if "cuisine" in frame:
+        cuisine_series = frame["cuisine"].replace("", pd.NA)
+        coverage_by_cuisine = (
+            frame[frame["cuisine"].replace("", pd.NA).notna()]
+            .groupby("cuisine")
+            .size()
+            .sort_values(ascending=False)
+            .to_dict()
+        )
+        missing_cuisine_count = int(cuisine_series.isna().sum())
+        missing_cuisine_ratio = float(cuisine_series.isna().mean()) if total > 0 else 0.0
+    else:
+        coverage_by_cuisine = {}
+        missing_cuisine_count = total
+        missing_cuisine_ratio = 1.0 if total > 0 else 0.0
+
+    if "opening_hours" in frame:
+        hours_series = frame["opening_hours"].replace("", pd.NA)
+        missing_hours_count = int(hours_series.isna().sum())
+        missing_hours_ratio = float(hours_series.isna().mean()) if total > 0 else 0.0
+    elif "missing_opening_hours" in frame:
+        missing_hours_count = int(frame["missing_opening_hours"].sum())
+        missing_hours_ratio = float(missing_hours_count / total) if total > 0 else 0.0
+    else:
+        missing_hours_count = 0
+        missing_hours_ratio = 0.0
+
+    missing_address_count = int(frame["missing_address"].sum()) if "missing_address" in frame else 0
+    missing_website_count = int(frame["missing_website"].sum()) if "missing_website" in frame else 0
+
     return CoverageReport(
-        total_places=len(frame),
-        by_type={key: int(value) for key, value in frame["establishment_type"].value_counts().to_dict().items()},
-        missing_address=int(frame["missing_address"].sum()),
-        missing_opening_hours=int(frame["missing_opening_hours"].sum()),
-        missing_website=int(frame["missing_website"].sum()),
+        total_places=total,
+        by_type={str(key): int(value) for key, value in frame["establishment_type"].value_counts().to_dict().items()} if "establishment_type" in frame else {},
+        coverage_by_cuisine={str(k): int(v) for k, v in coverage_by_cuisine.items()},
+        missing_address=missing_address_count,
+        missing_opening_hours=missing_hours_count,
+        missing_website=missing_website_count,
+        missing_cuisine=missing_cuisine_count,
+        missing_hours_ratio=missing_hours_ratio,
+        missing_cuisine_ratio=missing_cuisine_ratio,
         duplicate_candidates_removed=duplicate_count,
         excluded_chains_removed=excluded_chain_count,
     )
