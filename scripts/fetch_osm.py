@@ -117,7 +117,7 @@ def rows_from_payload(payload: dict) -> list[dict]:
         if not tags.get("name") or center.get("lat") is None:
             continue
         category = tags.get("amenity") or tags.get("shop") or tags.get("craft")
-        establishment_type = normalize_osm_establishment_type(category or "", tags.get("cuisine", ""))
+        establishment_type = normalize_osm_establishment_type(category or "", tags.get("cuisine", ""), name=tags["name"])
         if not establishment_type:
             continue
         rows.append({

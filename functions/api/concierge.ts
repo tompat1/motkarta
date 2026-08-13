@@ -172,44 +172,50 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
     const matches = tokens.filter((token) => searchTarget.includes(token)).length;
     ragScore += matches * 3;
 
-    // 2. Specialty Coffee Verification Gate (Rule #1)
+    const isChain = [
+      "nespresso",
+      "kahls",
+      "kahl's",
+      "espresso house",
+      "starbucks",
+      "waynes coffee",
+      "wayne's coffee",
+      "bönor & blad",
+      "bönor och blad",
+    ].some((chain) => place.name.toLowerCase().includes(chain));
+
     const isSpecialtyQuery =
       tokens.includes("specialty") || tokens.includes("coffee") || tokens.includes("roaster") || tokens.includes("roastery");
     const isVerifiedSpecialty =
-      place.specialty?.specialtyVerified ||
-      searchTarget.includes("roaster") ||
-      searchTarget.includes("roastery") ||
-      searchTarget.includes("rosteri") ||
-      ["pascal", "drop coffee", "johan", "solkant", "volca", "lykke", "höga kusten", "gast", "muttley", "nordic brew lab", "a.b.café", "ab cafe", "standout", "café blom", "cafe blom"].some((name) =>
-        place.name.toLowerCase().includes(name),
-      ) ||
-      place.tags?.some((t) =>
-        [
-          "own roastery",
-          "roastery",
-          "roaster",
-          "single origin",
-          "filter",
-          "beans",
-          "v60",
-          "aeropress",
-        ].includes(t.toLowerCase()),
-      ) ||
-      (place.kind === "Specialty coffee" && scoredPlace.scores.quality >= 35);
+      !isChain &&
+      (place.specialty?.specialtyVerified ||
+        searchTarget.includes("roaster") ||
+        searchTarget.includes("roastery") ||
+        searchTarget.includes("rosteri") ||
+        ["pascal", "drop coffee", "johan", "solkant", "volca", "lykke", "höga kusten", "gast", "muttley", "nordic brew lab", "a.b.café", "ab cafe", "standout", "café blom", "cafe blom"].some((name) =>
+          place.name.toLowerCase().includes(name),
+        ) ||
+        place.tags?.some((t) =>
+          [
+            "own roastery",
+            "roastery",
+            "roaster",
+            "single origin",
+            "filter",
+            "beans",
+            "v60",
+            "aeropress",
+          ].includes(t.toLowerCase()),
+        ) ||
+        (place.kind === "Specialty coffee" && scoredPlace.scores.quality >= 35));
 
-    if (isSpecialtyQuery) {
+    if (isChain) {
+      ragScore = -9999;
+    } else if (isSpecialtyQuery) {
       if (isVerifiedSpecialty) {
         ragScore += 20;
       } else {
         ragScore -= 15;
-      }
-
-      if (
-        place.name.toLowerCase().includes("nespresso") ||
-        place.name.toLowerCase().includes("espresso house") ||
-        place.name.toLowerCase().includes("starbucks")
-      ) {
-        ragScore -= 35;
       }
     }
 
@@ -272,8 +278,9 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
     };
   });
 
-  scored.sort((a, b) => b.ragScore - a.ragScore);
-  const topPicks = scored.slice(0, 3).map((item) => item.place);
+  const validScored = scored.filter((item) => item.ragScore > -100);
+  validScored.sort((a, b) => b.ragScore - a.ragScore);
+  const topPicks = (validScored.length ? validScored : scored).slice(0, 3).map((item) => item.place);
 
   const listItems = topPicks.map((pick) => {
     const reasons = (pick.discoveryReasons ?? [])

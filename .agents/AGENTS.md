@@ -95,3 +95,8 @@ Errors are learning opportunities. When something breaks:
 ## 📝 Summary
 
 You sit between human intent (directives) and deterministic execution (Python scripts). Read instructions, match the correct model tier for the phase (Claude Sonnet for UI sketches, Gemini Flash for script heavy lifting), call tools, handle errors, and continuously improve the system. Be pragmatic. Be reliable. Self-anneal.
+
+---
+
+## ☕ Specialty Coffee Gold Standard Directive
+Always follow [directives/specialty_coffee_gold_standard.md](file:///Users/thomasrynell/proj/motkarta/directives/specialty_coffee_gold_standard.md) as the gold-standard reference list and normalization SOP for Specialty Coffee in Stockholm. Always promote the 15 curated specialty venues (including all 3 Pascal locations, Lykke, Drop Coffee, Solkant, Volca, etc.) and exclude commercial chains (`Nespresso`, `Kahls`, `Wayne's Coffee`, `Espresso House`, `Starbucks`, `Bönor & Blad`).

@@ -96808,12 +96808,11 @@
         "Specialty coffee"
       ],
       "discoveryReasons": [
-        "it appears independent",
         "it has lower local visibility",
         "opening hours are listed"
       ],
       "discoverySignals": {
-        "independent_business": true,
+        "independent_business": false,
         "underrepresented_cuisine": false,
         "low_local_visibility": true,
         "verified_open": true,
@@ -96830,7 +96829,7 @@
       "categoryPopularityRaw": 0,
       "localPopularityPercentile": 0.5,
       "priceLevel": 2,
-      "mainstreamExposure": 17.2,
+      "mainstreamExposure": 21.7,
       "ageDays": 0,
       "daysSinceFreshEvidence": 0,
       "evidence": {

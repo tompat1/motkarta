@@ -26,6 +26,21 @@ test("RAG retrieveAndSynthesize ranks relevant places and synthesizes grounded a
   assert.ok(result.recommendedPlaces[0].name);
 });
 
+test("RAG retrieveAndSynthesize excludes commercial chains Nespresso and Kahls and prioritizes Pascal and Lykke", () => {
+  const mockPlaces = [
+    { id: 99, name: "Nespresso", kind: "Specialty coffee", area: "Central Stockholm", note: "Chain", tags: [], evidenceLabel: "OSM", ratingAverage: 4.0, reliableRatingCount: 100, reviewCount: 100, categoryMeanRating: 4.0, categoryPopularityRaw: 0.5, localPopularityPercentile: 0, ageDays: 100, daysSinceFreshEvidence: 10, evidence: { specialistGuide: 0, independentEditorial: 0, verifiedUserRating: 0.5, repeatVisits: 10, recentReviews: 10, credibleReviewers: 10, inspectionStatus: 50, verifiedAttributes: 0, dataFreshness: 50, confidence: "Low" } },
+    { id: 98, name: "Kahls Kaffe", kind: "Specialty coffee", area: "Central Stockholm", note: "Chain", tags: [], evidenceLabel: "OSM", ratingAverage: 4.0, reliableRatingCount: 100, reviewCount: 100, categoryMeanRating: 4.0, categoryPopularityRaw: 0.5, localPopularityPercentile: 0, ageDays: 100, daysSinceFreshEvidence: 10, evidence: { specialistGuide: 0, independentEditorial: 0, verifiedUserRating: 0.5, repeatVisits: 10, recentReviews: 10, credibleReviewers: 10, inspectionStatus: 50, verifiedAttributes: 0, dataFreshness: 50, confidence: "Low" } },
+    ...demoPlaces,
+  ];
+
+  const result = retrieveAndSynthesize("specialty coffee", mockPlaces);
+  const recommendedNames = result.recommendedPlaces.map((p) => p.name);
+
+  assert.equal(recommendedNames.includes("Nespresso"), false);
+  assert.equal(recommendedNames.includes("Kahls Kaffe"), false);
+  assert.ok(recommendedNames.some((n) => ["Pascal", "Lykke", "Drop Coffee", "Solkant", "Volca", "Muttley"].some(s => n.includes(s))));
+});
+
 test("parseConciergeAnswer parses markdown output into structured cards and charter", () => {
   const markdown = `Based on our database:
 
