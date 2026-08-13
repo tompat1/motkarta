@@ -1,7 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from math import exp, log
+from math import exp, log, log1p
+
+
+def logarithmic_count_score(count: float, high_watermark: float = 10000) -> float:
+    """Use logarithmic transformation log1p(count) to reduce unfair advantage of places with thousands of reviews."""
+    if high_watermark <= 0:
+        return 0
+    return clamp((log1p(max(0, count)) / log1p(high_watermark)) * 100)
 
 
 Confidence = str

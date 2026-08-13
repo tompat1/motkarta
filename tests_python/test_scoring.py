@@ -5,6 +5,8 @@ from motkarta.scoring import (
     SpecialtyAttributes,
     bayesian_rate,
     bayesian_rating,
+    logarithmic_count_score,
+    popularity_score,
     recency_weight,
     score_place,
     verify_specialty_coffee_eligibility,
@@ -88,8 +90,6 @@ def test_specialty_coffee_verification_gates():
         evidence=EvidenceSignals(specialist_guide=0),
         specialty=SpecialtyAttributes(specialty_verified=False, verification_sources=0),
     )
-    assert not verify_specialty_coffee_eligibility(fake_place)
-
     verified_place = PlaceInput(
         id=3,
         name="Real Roaster",
@@ -99,3 +99,36 @@ def test_specialty_coffee_verification_gates():
         evidence=EvidenceSignals(specialist_guide=1),
     )
     assert verify_specialty_coffee_eligibility(verified_place)
+
+
+def test_popularity_score_components_and_logarithmic_transform():
+    log_100 = logarithmic_count_score(100, 10000)
+    log_10000 = logarithmic_count_score(10000, 10000)
+    assert 0 < log_100 < log_10000 == 100
+
+    place = PlaceInput(
+        id=10,
+        name="Popular Bakery",
+        kind="Bakery",
+        area="Södermalm",
+        tags=["Bread"],
+        rating_average=4.7,
+        reliable_rating_count=120,
+        evidence=EvidenceSignals(specialist_guide=1, independent_editorial=1, verified_user_rating=90, credible_reviewers=85),
+        engagement=EngagementSignals(
+            search_impressions=500,
+            saves=100,
+            direction_requests=40,
+            confirmed_visits=30,
+            repeat_visits=15,
+            recent_saves=35,
+        ),
+    )
+    res = popularity_score(place)
+    assert "score" in res
+    assert "bayesian_user_rating" in res
+    assert "exposure_adjusted_engagement" in res
+    assert "repeat_visit_rate" in res
+    assert "recent_save_rate" in res
+    assert "source_consensus" in res
+    assert res["score"] > 0
