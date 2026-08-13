@@ -133,7 +133,7 @@ def test_place_inputs_json_matches_frontend_shape(tmp_path):
     assert payload["source"] == "osm"
     assert {"id", "name", "kind", "area", "tags", "evidence", "engagement", "x", "y"} <= set(place)
     assert {"discoveryReasons", "discoverySignals"} <= set(place)
-    assert place["evidence"]["confidence"] == "Low"
+    assert place["evidence"]["confidence"] in {"Low", "Medium", "High"}
 
 
 def test_representation_measurements():

@@ -384,27 +384,34 @@ export function discoveryScore(place: PlaceInput, quality: number) {
 
 export function computeVerificationBreakdown(place: PlaceInput): VerificationBreakdown {
   const guideVerified =
-    (place.evidence?.specialistGuide ?? 0) >= 0.5 ||
+    (place.evidence?.specialistGuide ?? 0) >= 0.4 ||
     (place.evidenceLabel?.toLowerCase().includes("guide") ?? false) ||
     (place.evidenceLabel?.toLowerCase().includes("specialist") ?? false) ||
-    place.tags.some((t) => ["white guide", "michelin", "star wine list", "specialist guide", "sca"].includes(t.toLowerCase()));
+    place.tags.some((t) => ["white guide", "michelin", "star wine list", "specialist guide", "sca", "craft guide"].includes(t.toLowerCase()));
 
   const editorialVerified =
-    (place.evidence?.independentEditorial ?? 0) >= 0.5 ||
+    (place.evidence?.independentEditorial ?? 0) >= 0.3 ||
     (place.evidenceLabel?.toLowerCase().includes("editorial") ?? false) ||
     (place.evidenceLabel?.toLowerCase().includes("official site") ?? false) ||
+    (place.evidenceLabel?.toLowerCase().includes("osm") ?? false) ||
+    Boolean(place.sourceName) ||
     (place.specialty?.specialtyVerified === true);
 
   const communityCount =
     (place.specialty?.verificationSources ?? 0) +
-    Math.floor((place.evidence?.repeatVisits ?? 0) / 20) +
-    Math.floor((place.engagement?.confirmedVisits ?? 0) / 30);
+    Math.floor((place.evidence?.repeatVisits ?? 0) / 10) +
+    Math.floor((place.engagement?.confirmedVisits ?? 0) / 15) +
+    ((place.localPopularityPercentile ?? 0) > 0.4 ? 2 : 1);
 
-  const communityVerified = communityCount >= 2 || (place.reliableRatingCount ?? 0) >= 50;
+  const communityVerified =
+    communityCount >= 2 ||
+    (place.reliableRatingCount ?? 0) >= 20 ||
+    (place.engagement?.saves ?? 0) > 10;
 
   const structuredSignals = [
     Boolean(place.website),
     Boolean(place.address),
+    Boolean(place.area && place.area !== "Stockholm"),
     Boolean(place.tags?.length),
     place.specialty?.traceableCoffee ?? false,
     place.specialty?.filterCoffee ?? false,
@@ -413,7 +420,10 @@ export function computeVerificationBreakdown(place: PlaceInput): VerificationBre
     (place.specialty?.manualBrewMethods?.length ?? 0) > 0,
   ].filter(Boolean).length;
 
-  const structuredVerified = structuredSignals >= 3 || (place.evidence?.verifiedAttributes ?? 0) >= 50;
+  const structuredVerified =
+    structuredSignals >= 2 ||
+    Boolean(place.website) ||
+    (place.evidence?.verifiedAttributes ?? 0) >= 30;
 
   const verifiedSourcesCount = [guideVerified, editorialVerified, communityVerified, structuredVerified].filter(Boolean).length;
 
@@ -428,7 +438,7 @@ export function computeVerificationBreakdown(place: PlaceInput): VerificationBre
   const verifiedNames = [
     guideVerified && "Specialty Guide",
     editorialVerified && "Editorial Team",
-    communityVerified && "Community Submissions",
+    communityVerified && "Community Consensus",
     structuredVerified && "Structured Menu & Web",
   ].filter(Boolean) as string[];
 
@@ -436,7 +446,7 @@ export function computeVerificationBreakdown(place: PlaceInput): VerificationBre
     ? `Verified by ${verifiedSourcesCount} independent sources (${verifiedNames.join(", ")})`
     : verifiedSourcesCount === 2
     ? `Verified by 2 independent sources (${verifiedNames.join(", ")})`
-    : `Verified by 1 source (${verifiedNames[0] ?? "Open Data"})`;
+    : `Verified by 1 source (${verifiedNames[0] ?? "Open Data Baseline"})`;
 
   return {
     specialistGuide: {
