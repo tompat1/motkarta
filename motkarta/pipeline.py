@@ -54,7 +54,17 @@ class CoverageReport:
     coverage_by_cuisine: dict[str, int] | None = None
     missing_cuisine: int = 0
     missing_hours_ratio: float = 0.0
+    missing_website_ratio: float = 0.0
     missing_cuisine_ratio: float = 0.0
+    district_density: dict[str, dict[str, float | int]] | None = None
+    district_cuisine_diversity: dict[str, int] | None = None
+    stale_osm_count: int = 0
+    stale_osm_ratio: float = 0.0
+    inner_vs_outer: dict[str, dict[str, float | int]] | None = None
+    municipal_records_count: int | None = None
+    matched_records_count: int | None = None
+    municipal_only_count: int | None = None
+    source_overlap_ratio: float | None = None
 
     def markdown(self) -> str:
         lines = [
@@ -66,6 +76,58 @@ class CoverageReport:
             "",
             *[f"- {name}: {count}" for name, count in sorted(self.by_type.items())],
         ]
+
+        if self.district_density:
+            lines.extend([
+                "",
+                "## Restaurant Density by District",
+                "",
+                *[
+                    f"- **{dist}**: {stats['count']} establishments ({stats['percentage']:.1%})"
+                    for dist, stats in sorted(self.district_density.items(), key=lambda x: x[1]['count'], reverse=True)
+                ],
+            ])
+
+        if self.district_cuisine_diversity:
+            lines.extend([
+                "",
+                "## Cuisine Diversity by District",
+                "",
+                *[
+                    f"- **{dist}**: {count} unique cuisines"
+                    for dist, count in sorted(self.district_cuisine_diversity.items(), key=lambda x: x[1], reverse=True)
+                ],
+            ])
+
+        if self.inner_vs_outer:
+            inner = self.inner_vs_outer.get("inner_city", {})
+            outer = self.inner_vs_outer.get("outer_city", {})
+            lines.extend([
+                "",
+                "## Inner-City vs. Outer-City Coverage",
+                "",
+                f"- **Inner City (Central Stockholm)**: {inner.get('count', 0)} establishments | Missing website: {inner.get('missing_website_ratio', 0.0):.1%} | Missing hours: {inner.get('missing_hours_ratio', 0.0):.1%} | Missing cuisine: {inner.get('missing_cuisine_ratio', 0.0):.1%} | Unique cuisines: {inner.get('cuisine_diversity', 0)}",
+                f"- **Outer City (North/East/South)**: {outer.get('count', 0)} establishments | Missing website: {outer.get('missing_website_ratio', 0.0):.1%} | Missing hours: {outer.get('missing_hours_ratio', 0.0):.1%} | Missing cuisine: {outer.get('missing_cuisine_ratio', 0.0):.1%} | Unique cuisines: {outer.get('cuisine_diversity', 0)}",
+            ])
+
+        if self.municipal_records_count is not None and self.matched_records_count is not None:
+            municipal_only_pct = (self.municipal_only_count or 0) / (self.municipal_records_count or 1)
+            lines.extend([
+                "",
+                "## Data-Source Overlap & Municipal Register",
+                "",
+                f"- Municipal food-control records: {self.municipal_records_count}",
+                f"- Matched records in OSM: {self.matched_records_count}",
+                f"- Municipal records missing from OSM: {self.municipal_only_count or 0} ({municipal_only_pct:.1%})",
+                f"- Municipal register overlap rate: {self.source_overlap_ratio or 0.0:.1%}",
+            ])
+
+        lines.extend([
+            "",
+            "## Data Freshness",
+            "",
+            f"- Not updated recently (>180 days or missing timestamp): {self.stale_osm_count} ({self.stale_osm_ratio:.1%})",
+        ])
 
         if self.coverage_by_cuisine:
             lines.extend([
@@ -82,7 +144,7 @@ class CoverageReport:
             f"- Missing address: {self.missing_address}",
             f"- Missing opening hours: {self.missing_opening_hours} ({self.missing_hours_ratio:.1%})",
             f"- Missing cuisine: {self.missing_cuisine} ({self.missing_cuisine_ratio:.1%})",
-            f"- Missing website: {self.missing_website}",
+            f"- Missing website: {self.missing_website} ({self.missing_website_ratio:.1%})",
             f"- Duplicate candidates removed: {self.duplicate_candidates_removed}",
             f"- Excluded chains removed: {self.excluded_chains_removed}",
         ])
@@ -197,7 +259,13 @@ def score_places(frame: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
-def build_coverage_report(frame: pd.DataFrame, duplicate_count: int = 0, excluded_chain_count: int = 0) -> CoverageReport:
+def build_coverage_report(
+    frame: pd.DataFrame,
+    duplicate_count: int = 0,
+    excluded_chain_count: int = 0,
+    municipal_records_count: int | None = None,
+    matched_records_count: int | None = None,
+) -> CoverageReport:
     total = len(frame)
 
     if "cuisine" in frame:
@@ -228,7 +296,70 @@ def build_coverage_report(frame: pd.DataFrame, duplicate_count: int = 0, exclude
         missing_hours_ratio = 0.0
 
     missing_address_count = int(frame["missing_address"].sum()) if "missing_address" in frame else 0
-    missing_website_count = int(frame["missing_website"].sum()) if "missing_website" in frame else 0
+    missing_website_count = int(frame["missing_website"].sum()) if "missing_website" in frame else (int(frame["website"].replace("", pd.NA).isna().sum()) if "website" in frame else 0)
+    missing_website_ratio = float(missing_website_count / total) if total > 0 else 0.0
+
+    district_density = None
+    district_cuisine_diversity = None
+    if "neighbourhood" in frame:
+        district_counts = frame["neighbourhood"].value_counts().to_dict()
+        district_density = {
+            str(dist): {
+                "count": int(count),
+                "percentage": float(count / total) if total > 0 else 0.0,
+            }
+            for dist, count in district_counts.items()
+        }
+        if "cuisine" in frame:
+            valid_cuisine_frame = frame[frame["cuisine"].replace("", pd.NA).notna()]
+            district_cuisine_diversity = {
+                str(dist): int(count)
+                for dist, count in valid_cuisine_frame.groupby("neighbourhood")["cuisine"].nunique().to_dict().items()
+            }
+
+    inner_vs_outer = None
+    if "neighbourhood" in frame:
+        is_inner = frame["neighbourhood"].eq("Central Stockholm")
+        inner_frame = frame[is_inner]
+        outer_frame = frame[~is_inner]
+
+        def get_sub_stats(sub: pd.DataFrame) -> dict[str, float | int]:
+            sub_total = len(sub)
+            if sub_total == 0:
+                return {"count": 0, "missing_website_ratio": 0.0, "missing_hours_ratio": 0.0, "missing_cuisine_ratio": 0.0, "cuisine_diversity": 0}
+            sub_web = sub["missing_website"].sum() if "missing_website" in sub else (sub["website"].replace("", pd.NA).isna().sum() if "website" in sub else 0)
+            sub_hrs = sub["missing_opening_hours"].sum() if "missing_opening_hours" in sub else (sub["opening_hours"].replace("", pd.NA).isna().sum() if "opening_hours" in sub else 0)
+            sub_cui = sub["cuisine"].replace("", pd.NA).isna().sum() if "cuisine" in sub else 0
+            sub_div = sub[sub["cuisine"].replace("", pd.NA).notna()]["cuisine"].nunique() if "cuisine" in sub else 0
+            return {
+                "count": int(sub_total),
+                "missing_website_ratio": float(sub_web / sub_total),
+                "missing_hours_ratio": float(sub_hrs / sub_total),
+                "missing_cuisine_ratio": float(sub_cui / sub_total),
+                "cuisine_diversity": int(sub_div),
+            }
+
+        inner_vs_outer = {
+            "inner_city": get_sub_stats(inner_frame),
+            "outer_city": get_sub_stats(outer_frame),
+        }
+
+    if "recently_updated" in frame:
+        stale_count = int((~frame["recently_updated"]).sum())
+        stale_ratio = float(stale_count / total) if total > 0 else 0.0
+    elif "osm_timestamp" in frame:
+        recently_flags = frame["osm_timestamp"].map(recently_updated)
+        stale_count = int((~recently_flags).sum())
+        stale_ratio = float(stale_count / total) if total > 0 else 0.0
+    else:
+        stale_count = 0
+        stale_ratio = 0.0
+
+    municipal_only_count = None
+    source_overlap_ratio = None
+    if municipal_records_count is not None and matched_records_count is not None:
+        municipal_only_count = max(0, municipal_records_count - matched_records_count)
+        source_overlap_ratio = float(matched_records_count / municipal_records_count) if municipal_records_count > 0 else 0.0
 
     return CoverageReport(
         total_places=total,
@@ -239,7 +370,17 @@ def build_coverage_report(frame: pd.DataFrame, duplicate_count: int = 0, exclude
         missing_website=missing_website_count,
         missing_cuisine=missing_cuisine_count,
         missing_hours_ratio=missing_hours_ratio,
+        missing_website_ratio=missing_website_ratio,
         missing_cuisine_ratio=missing_cuisine_ratio,
+        district_density=district_density,
+        district_cuisine_diversity=district_cuisine_diversity,
+        stale_osm_count=stale_count,
+        stale_osm_ratio=stale_ratio,
+        inner_vs_outer=inner_vs_outer,
+        municipal_records_count=municipal_records_count,
+        matched_records_count=matched_records_count,
+        municipal_only_count=municipal_only_count,
+        source_overlap_ratio=source_overlap_ratio,
         duplicate_candidates_removed=duplicate_count,
         excluded_chains_removed=excluded_chain_count,
     )

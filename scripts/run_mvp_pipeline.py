@@ -5,6 +5,8 @@ import json
 import sys
 from pathlib import Path
 
+import pandas as pd
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from motkarta.map import build_folium_map
@@ -58,7 +60,18 @@ def run_pipeline(
     if public_data_dir is not None:
         write_place_inputs_json(scored, public_data_dir / "places.json")
 
-    report = build_coverage_report(scored, duplicate_count=len(duplicates), excluded_chain_count=len(excluded_chains))
+    food_control_path = data_dir / "stockholm_food_control.csv"
+    matches_path = data_dir / "stockholm_food_control_matches.csv"
+    municipal_count = len(pd.read_csv(food_control_path)) if food_control_path.exists() else None
+    matched_count = len(pd.read_csv(matches_path)) if matches_path.exists() else None
+
+    report = build_coverage_report(
+        scored,
+        duplicate_count=len(duplicates),
+        excluded_chain_count=len(excluded_chains),
+        municipal_records_count=municipal_count,
+        matched_records_count=matched_count,
+    )
     report_text = report.markdown()
     if source_metadata_path is not None and source_metadata_path.exists():
         report_text += source_metadata_markdown(source_metadata_path)

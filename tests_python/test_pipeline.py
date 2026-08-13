@@ -139,15 +139,36 @@ def test_place_inputs_json_matches_frontend_shape(tmp_path):
 def test_representation_measurements():
     raw = load_raw_csv(FIXTURE)
     clean = clean_places(raw)
-    report = build_coverage_report(clean)
+    report = build_coverage_report(
+        clean,
+        municipal_records_count=100,
+        matched_records_count=40,
+    )
 
     assert "coffee" in report.coverage_by_cuisine
     assert report.coverage_by_cuisine["coffee"] >= 1
     assert 0.0 <= report.missing_hours_ratio <= 1.0
+    assert 0.0 <= report.missing_website_ratio <= 1.0
     assert 0.0 <= report.missing_cuisine_ratio <= 1.0
+    assert report.district_density is not None
+    assert "Central Stockholm" in report.district_density
+    assert report.district_cuisine_diversity is not None
+    assert report.inner_vs_outer is not None
+    assert "inner_city" in report.inner_vs_outer
+    assert "outer_city" in report.inner_vs_outer
+    assert report.municipal_records_count == 100
+    assert report.matched_records_count == 40
+    assert report.municipal_only_count == 60
+    assert report.source_overlap_ratio == 0.4
 
     markdown = report.markdown()
     assert "## Coverage by Cuisine" in markdown
+    assert "## Restaurant Density by District" in markdown
+    assert "## Cuisine Diversity by District" in markdown
+    assert "## Inner-City vs. Outer-City Coverage" in markdown
+    assert "## Data-Source Overlap & Municipal Register" in markdown
+    assert "## Data Freshness" in markdown
     assert "## Data Gaps & Representation" in markdown
     assert "Missing cuisine:" in markdown
+    assert "Missing website:" in markdown
 
