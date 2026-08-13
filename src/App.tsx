@@ -27,6 +27,8 @@ import {
   Shuffle,
   Sliders,
   Sparkle,
+  ThumbsUp,
+  ThumbsDown,
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../functions/api/concierge";
@@ -723,13 +725,16 @@ function ConciergeAnswerView({
   places,
   onSelectPlace,
   onRefineQuery,
+  lang = "sv",
 }: {
   answer: string;
   places: PlaceInput[];
   onSelectPlace: (id: number) => void;
   onRefineQuery?: (extra: string) => void;
+  lang?: Language;
 }) {
   const parsed = useMemo(() => parseConciergeAnswer(answer), [answer]);
+  const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
 
   const handleSelect = (placeName: string) => {
     const match = places.find(
@@ -982,6 +987,102 @@ function ConciergeAnswerView({
           </div>
         </div>
       ) : null}
+
+      <div
+        className="concierge-feedback-bar"
+        style={{
+          marginTop: "16px",
+          padding: "12px 16px",
+          background: "var(--color-paper)",
+          border: "1px solid var(--color-mist)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "12px",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "11px",
+            fontWeight: 600,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            color: "var(--color-ink)",
+          }}
+        >
+          {lang === "sv" ? "Var svaret hjälpsamt?" : "Was this recommendation helpful?"}
+        </span>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <button
+            type="button"
+            className={`feedback-btn ${feedback === "up" ? "active-up" : ""}`}
+            onClick={() => setFeedback("up")}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 12px",
+              background: feedback === "up" ? "var(--color-water)" : "var(--color-white)",
+              color: feedback === "up" ? "var(--color-white)" : "var(--color-ink)",
+              border: "1px solid var(--color-mist)",
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "all var(--motion-fast)",
+            }}
+            title={lang === "sv" ? "Hjälpsamt (Tummen upp)" : "Helpful (Thumbs up)"}
+          >
+            <ThumbsUp size={14} weight={feedback === "up" ? "fill" : "bold"} />
+            {lang === "sv" ? "Ja" : "Yes"}
+          </button>
+          <button
+            type="button"
+            className={`feedback-btn ${feedback === "down" ? "active-down" : ""}`}
+            onClick={() => setFeedback("down")}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 12px",
+              background: feedback === "down" ? "var(--color-signal)" : "var(--color-white)",
+              color: feedback === "down" ? "var(--color-white)" : "var(--color-ink)",
+              border: "1px solid var(--color-mist)",
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "all var(--motion-fast)",
+            }}
+            title={lang === "sv" ? "Inte hjälpsamt (Tummen ner)" : "Not helpful (Thumbs down)"}
+          >
+            <ThumbsDown size={14} weight={feedback === "down" ? "fill" : "bold"} />
+            {lang === "sv" ? "Nej" : "No"}
+          </button>
+        </div>
+
+        {feedback ? (
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
+              color: feedback === "up" ? "var(--color-water)" : "var(--color-signal)",
+              fontWeight: 600,
+            }}
+          >
+            {feedback === "up"
+              ? lang === "sv"
+                ? "Tack för din feedback! 👍"
+                : "Thanks for your feedback! 👍"
+              : lang === "sv"
+                ? "Tack! Vi förbättrar källorna. 👎"
+                : "Thanks! We'll improve our sources. 👎"}
+          </span>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -1394,6 +1495,7 @@ export default function App() {
               places={places}
               onSelectPlace={setSelected}
               onRefineQuery={handleRefineQuery}
+              lang={lang}
             />
           ) : null}
         </div>
