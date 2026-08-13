@@ -198,8 +198,201 @@ function cuisineLabel(value: string) {
   return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function VerificationBar({ place }: { place: ScoredPlace }) {
+export type Language = "sv" | "en";
+
+export const translations = {
+  sv: {
+    brandDescriptor: "Stockholms fria matkarta",
+    navMap: "KARTA",
+    navMethod: "METOD",
+    navConcierge: "CONCIERGE",
+    navAbout: "OM",
+    dataSourceLiveOsm: "Live OSM Data",
+    dataSourceLiveD1: "Live D1 Data",
+    dataSourceLoading: "Laddar data",
+    dataSourceDemo: "Demo Data",
+    eyebrow: "Stockholms fria matkarta · Ingen betald ranking",
+    titleMain: "Stockholm,",
+    titleSub: "bord för bord.",
+    subLede: "Ät utan algoritmen · Oberoende upptäckt",
+    lede: "En oberoende matkarta för restauranger, bagerier, caféer och specialty coffee. Ingen betald ranking. Tydlig logik. Bevis framför hype.",
+    searchPlaceholder: "Sök plats, kök eller område...",
+    typeFilterLabel: "Typ",
+    allPlaces: "Alla ställen",
+    cuisineFilterLabel: "Kök",
+    allCuisines: "Alla kök",
+    legendSpecialty: "Specialty coffee",
+    legendBakery: "Bageri",
+    legendRestaurant: "Restaurang",
+    whyItAppears: "Varför den syns här",
+    confidenceHigh: "Hög Konfidens",
+    confidenceMed: "Medel Konfidens",
+    confidenceLow: "Låg Konfidens",
+    independentBusiness: "Oberoende ställe",
+    specialistGuide: "Specialistguide",
+    municipalInspection: "Kommunal granskning",
+    specialtyProof: "Specialty proof",
+    transparencyFooter: "Ingen betald placering · Flera oberoende källor",
+    openMapIn: "Öppna i kartapp:",
+    placesInView: "ställen i vyn",
+    showingTop: "Visar topp",
+    quality: "Kvalitet",
+    popularity: "Popularitet",
+    discovery: "Upptäckt",
+    relevance: "Relevans",
+    matchScoreLabel: "match",
+    totalScoreLabel: "poäng",
+    principle1: "Ingen betald ranking eller sponsrad placering.",
+    principle2: "Ingen automatisk fördel från enbart hög recensionsvolym.",
+    principle3: "Ingen ranking baserad på klickpopularitet eller algoritmer.",
+    conciergeEyebrow: "Oberoende AI-Concierge",
+    conciergeHeadingMain: "Vad är",
+    conciergeHeadingItalic: "bra",
+    conciergeHeadingSub: "mat för dig i dag?",
+    conciergeDesc: "Söker först i bevis och verifierade fakta, sedan förklaras rekommendationen. Inga påhittade öppettider. Ingen betald placering.",
+    askLabel: "Jag söker efter...",
+    askPlaceholder: "t.ex. specialty coffee och kardemummabulle på Södermalm...",
+    askButton: "Hitta mina ställen",
+    askingButton: "Söker bevis...",
+    methodEyebrow: "Öppen metod · Tydliga bevis",
+    methodHeadingMain: "Popularitet är en signal.",
+    methodHeadingSub: "Inte domen.",
+    method01Title: "Mångsidig kvalitet",
+    method01Desc: "Guider, redaktionell granskning, användaromdömen, tillsyn och egenskaper vägs separat.",
+    method02Title: "Korrigerad popularitet",
+    method02Desc: "Bayesiansk rätvisning, exponeringsjusterat engagemang och färskhet minskar winner-take-all skevhet.",
+    method03Title: "Specialty proof",
+    method03Desc: "Specialty coffee kräver strukturerade attribut och källverifiering, inte marknadsföringstext.",
+    method04Title: "Upptäcktsvärde",
+    method04Desc: "Belönar hög kvalitet i kombination med lägre huvudsaklig synlighet.",
+    dataNoteLabel: "KÄLLNOTERING",
+    dataNoteText: "MOTKARTA kombinerar öppen grunddata från OpenStreetMap med verifierade tillsynsregister från Stockholms stad och kurerad redaktionell granskning.",
+    footerLeft: "MOTKARTA / STOCKHOLMS FRIA MATKARTA",
+    footerRight: "ÖPPEN DATA · ÖPPEN METOD · ÖPPEN STAD",
+    formulaHiddenGems: "Discovery = quality + specialist confidence + local engagement + freshness - mainstream exposure",
+    formulaPopularNow: "Popularity = Bayesian rating + exposure-adjusted engagement + repeat visits + recent saves + source consensus",
+    formulaQualityFirst: "Quality = guide, editorial, user, inspection, attribute and freshness evidence",
+    formulaDefault: "Recommendation = 35% relevance + 25% quality + 15% popularity + 15% discovery + 10% freshness",
+    centerMap: "Centrera",
+    fullscreen: "Helskärm",
+    exitFullscreen: "Avsluta",
+    sourceLabel: "Källa",
+    lastUpdatedLabel: "Senast uppdaterad",
+    shuffle: "Blanda",
+  },
+  en: {
+    brandDescriptor: "Stockholm's independent food map",
+    navMap: "MAP",
+    navMethod: "METHOD",
+    navConcierge: "CONCIERGE",
+    navAbout: "ABOUT",
+    dataSourceLiveOsm: "Live OSM Data",
+    dataSourceLiveD1: "Live D1 Data",
+    dataSourceLoading: "Loading data",
+    dataSourceDemo: "Demo Data",
+    eyebrow: "Stockholm's independent food map · No paid ranking",
+    titleMain: "Stockholm,",
+    titleSub: "table by table.",
+    subLede: "Eat beyond the algorithm · Independent discovery",
+    lede: "A transparent Stockholm map for restaurants, bakeries, cafes and specialty coffee. Popularity matters, but it never gets the final word.",
+    searchPlaceholder: "Search place, area or feature...",
+    typeFilterLabel: "Type",
+    allPlaces: "All places",
+    cuisineFilterLabel: "Cuisine",
+    allCuisines: "All cuisines",
+    legendSpecialty: "Specialty coffee",
+    legendBakery: "Bakery",
+    legendRestaurant: "Restaurant",
+    whyItAppears: "Why this place appears",
+    confidenceHigh: "High Confidence",
+    confidenceMed: "Medium Confidence",
+    confidenceLow: "Low Confidence",
+    independentBusiness: "Independent business",
+    specialistGuide: "Specialist guide",
+    municipalInspection: "Inspection status",
+    specialtyProof: "Specialty proof",
+    transparencyFooter: "No paid placement · Multiple independent sources",
+    openMapIn: "Open location in:",
+    placesInView: "places in view",
+    showingTop: "Showing top",
+    quality: "Quality",
+    popularity: "Popularity",
+    discovery: "Discovery",
+    relevance: "Relevance",
+    matchScoreLabel: "match",
+    totalScoreLabel: "score",
+    principle1: "No payment for ranking or sponsored placement.",
+    principle2: "No automatic advantage from having many reviews.",
+    principle3: "No ranking based solely on click popularity or algorithms.",
+    conciergeEyebrow: "The independent concierge",
+    conciergeHeadingMain: "Tell us what",
+    conciergeHeadingItalic: "good",
+    conciergeHeadingSub: "means today.",
+    conciergeDesc: "It searches the evidence first, then explains the recommendation. No invented opening hours. No paid placement.",
+    askLabel: "I am looking for...",
+    askPlaceholder: "e.g. specialty coffee and a cardamom bun in Södermalm...",
+    askButton: "Find my places",
+    askingButton: "Searching evidence...",
+    methodEyebrow: "Open method · Visible trade-offs",
+    methodHeadingMain: "Popularity is evidence.",
+    methodHeadingSub: "Not authority.",
+    method01Title: "Plural quality",
+    method01Desc: "Guide, editorial, user, inspection, attribute and freshness evidence stay separate.",
+    method02Title: "Corrected popularity",
+    method02Desc: "Bayesian rating, exposure-adjusted engagement and recency reduce winner-take-all bias.",
+    method03Title: "Specialty proof",
+    method03Desc: "Specialty coffee requires structured attributes or source verification, not marketing copy.",
+    method04Title: "Discovery value",
+    method04Desc: "Discovery rewards quality with limited exposure, not obscurity by itself.",
+    dataNoteLabel: "DATA NOTE",
+    dataNoteText: "The deployed app can load the Python-generated OpenStreetMap baseline, while D1 remains available for later curated evidence and score snapshots.",
+    footerLeft: "MOTKARTA / STOCKHOLM INDEPENDENT FOOD MAP",
+    footerRight: "OPEN DATA · OPEN METHOD · OPEN CITY",
+    formulaHiddenGems: "Discovery = quality + specialist confidence + local engagement + freshness - mainstream exposure",
+    formulaPopularNow: "Popularity = Bayesian rating + exposure-adjusted engagement + repeat visits + recent saves + source consensus",
+    formulaQualityFirst: "Quality = guide, editorial, user, inspection, attribute and freshness evidence",
+    formulaDefault: "Recommendation = 35% relevance + 25% quality + 15% popularity + 15% discovery + 10% freshness",
+    centerMap: "Center",
+    fullscreen: "Fullscreen",
+    exitFullscreen: "Exit",
+    sourceLabel: "Source",
+    lastUpdatedLabel: "Last updated",
+    shuffle: "Shuffle",
+  },
+};
+
+function modeLabel(mode: Mode, lang: Language): string {
+  if (mode === "For you") return lang === "sv" ? "För dig" : "For you";
+  if (mode === "Hidden gems") return lang === "sv" ? "Dolda pärlor" : "Hidden gems";
+  if (mode === "Popular now") return lang === "sv" ? "Populära nu" : "Popular now";
+  if (mode === "Local favourites") return lang === "sv" ? "Lokala favoriter" : "Local favourites";
+  if (mode === "Quality first") return lang === "sv" ? "Kvalitet först" : "Quality first";
+  if (mode === "Recently opened") return lang === "sv" ? "Nyligen öppnat" : "Recently opened";
+  if (mode === "Expert selected") return lang === "sv" ? "Expertvalda" : "Expert selected";
+  if (mode === "Most verified") return lang === "sv" ? "Mest verifierade" : "Most verified";
+  return mode;
+}
+
+function sortModeLabel(sortMode: SortMode, lang: Language): string {
+  if (sortMode === "Best match") return lang === "sv" ? "Bästa matchning" : "Best match";
+  if (sortMode === "Distance") return lang === "sv" ? "Avstånd" : "Distance";
+  if (sortMode === "Alphabetical") return lang === "sv" ? "Alfabetiskt" : "Alphabetical";
+  if (sortMode === "Surprise me") return lang === "sv" ? "Överraska mig" : "Surprise me";
+  return sortMode;
+}
+
+function kindFilterLabel(kind: EstablishmentFilter, lang: Language): string {
+  if (kind === "All places") return translations[lang].allPlaces;
+  if (kind === "Restaurant") return translations[lang].legendRestaurant;
+  if (kind === "Bakery") return translations[lang].legendBakery;
+  if (kind === "Café") return "Café";
+  if (kind === "Specialty coffee") return "Specialty coffee";
+  return kind;
+}
+
+function VerificationBar({ place, lang = "sv" }: { place: ScoredPlace; lang?: Language }) {
   const v = place.verification;
+  const t = translations[lang];
 
   return (
     <div
@@ -215,7 +408,7 @@ function VerificationBar({ place }: { place: ScoredPlace }) {
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--color-signal)" }}>
-          Varför den syns här
+          {t.whyItAppears}
         </span>
         <span
           style={{
@@ -229,7 +422,7 @@ function VerificationBar({ place }: { place: ScoredPlace }) {
             textTransform: "uppercase",
           }}
         >
-          {place.evidence?.confidence ?? "Medel"} Konfidens
+          {place.evidence?.confidence === "High" ? t.confidenceHigh : place.evidence?.confidence === "Medium" ? t.confidenceMed : t.confidenceLow}
         </span>
       </div>
 
@@ -248,7 +441,7 @@ function VerificationBar({ place }: { place: ScoredPlace }) {
           }}
         >
           <ShieldCheck size={14} weight="bold" style={{ color: "var(--color-water)" }} />
-          Oberoende ställe
+          {t.independentBusiness}
         </span>
         {v?.specialistGuide.verified ? (
           <span
@@ -265,7 +458,7 @@ function VerificationBar({ place }: { place: ScoredPlace }) {
             }}
           >
             <Certificate size={14} weight="bold" style={{ color: "var(--color-water)" }} />
-            Specialistguide
+            {t.specialistGuide}
           </span>
         ) : null}
         {v?.structuredEvidence.verified ? (
@@ -283,7 +476,7 @@ function VerificationBar({ place }: { place: ScoredPlace }) {
             }}
           >
             <CheckCircle size={14} weight="bold" style={{ color: "var(--color-water)" }} />
-            Kommunal granskning
+            {t.municipalInspection}
           </span>
         ) : null}
         {place.specialty?.specialtyVerified ? (
@@ -302,19 +495,20 @@ function VerificationBar({ place }: { place: ScoredPlace }) {
             }}
           >
             <Coffee size={14} weight="bold" style={{ color: "var(--color-water)" }} />
-            Specialty proof
+            {t.specialtyProof}
           </span>
         ) : null}
       </div>
 
       <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--color-stone)", margin: "4px 0 0", lineHeight: "1.4" }}>
-        Ingen betald placering · Flera oberoende källor
+        {t.transparencyFooter}
       </p>
     </div>
   );
 }
 
-function ExternalMapLinks({ place }: { place: PlaceInput }) {
+function ExternalMapLinks({ place, lang = "sv" }: { place: PlaceInput; lang?: Language }) {
+  const t = translations[lang];
   const queryText = encodeURIComponent(`${place.name} ${place.address || place.area || ""} Stockholm`);
 
   const googleMapsUrl =
@@ -354,7 +548,7 @@ function ExternalMapLinks({ place }: { place: PlaceInput }) {
           color: "var(--color-stone)",
         }}
       >
-        Öppna i kartapp:
+        {t.openMapIn}
       </span>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
         <a
@@ -443,7 +637,7 @@ function ExternalMapLinks({ place }: { place: PlaceInput }) {
             }}
           >
             <Globe size={13} weight="bold" />
-            Hemsida
+            {lang === "sv" ? "Hemsida" : "Website"}
             <ArrowSquareOut size={12} weight="bold" />
           </a>
         ) : null}
@@ -694,8 +888,27 @@ export default function App() {
   const [cuisine, setCuisine] = useState<CuisineFilter>(allCuisines);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(1);
+  const [lang, setLang] = useState<Language>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("motkarta_lang");
+      if (saved === "sv" || saved === "en") return saved;
+    }
+    return "sv";
+  });
+
+  const t = translations[lang];
+
+  const handleSetLang = (newLang: Language) => {
+    setLang(newLang);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("motkarta_lang", newLang);
+    }
+  };
+
   const [concierge, setConcierge] = useState(
-    "specialty coffee and a cardamom bun, away from the busiest tourist streets",
+    lang === "sv"
+      ? "specialty coffee och kardemummabulle, bortom de mest turistiga gatorna"
+      : "specialty coffee and a cardamom bun, away from the busiest tourist streets",
   );
   const [answer, setAnswer] = useState<string | null>(null);
   const [asking, setAsking] = useState(false);
@@ -791,58 +1004,73 @@ export default function App() {
         <a className="brand" href="#">
           <span className="brand-counter-pin" />
           <b>MOTKARTA</b>
-          <span>Stockholms fria matkarta</span>
+          <span>{t.brandDescriptor}</span>
         </a>
         <nav>
           <a href="#map" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <Compass size={14} weight="bold" /> KARTA
+            <Compass size={14} weight="bold" /> {t.navMap}
           </a>
           <a href="#method" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <ShieldCheck size={14} weight="bold" /> METOD
+            <ShieldCheck size={14} weight="bold" /> {t.navMethod}
           </a>
           <a href="#concierge" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <MagnifyingGlass size={14} weight="bold" /> OM
+            <MagnifyingGlass size={14} weight="bold" /> {t.navConcierge}
           </a>
         </nav>
-        <a className="about" href="#sources">
-          {dataSource === "osm"
-            ? "Live OSM Data"
-            : dataSource === "d1"
-              ? "Live D1 Data"
-              : dataSource === "loading"
-                ? "Laddar data"
-                : "Demo Data"}
-        </a>
+        <div className="topbar-actions">
+          <div className="lang-switcher" aria-label="Language selector">
+            <button
+              type="button"
+              className={`lang-btn ${lang === "sv" ? "active" : ""}`}
+              onClick={() => handleSetLang("sv")}
+            >
+              SV
+            </button>
+            <button
+              type="button"
+              className={`lang-btn ${lang === "en" ? "active" : ""}`}
+              onClick={() => handleSetLang("en")}
+            >
+              EN
+            </button>
+          </div>
+          <a className="about" href="#sources">
+            {dataSource === "osm"
+              ? t.dataSourceLiveOsm
+              : dataSource === "d1"
+                ? t.dataSourceLiveD1
+                : dataSource === "loading"
+                  ? t.dataSourceLoading
+                  : t.dataSourceDemo}
+          </a>
+        </div>
       </header>
 
       <section className="intro">
         <div>
-          <p className="eyebrow">Stockholms fria matkarta · Ingen betald ranking</p>
+          <p className="eyebrow">{t.eyebrow}</p>
           <h1>
-            Stockholm,
+            {t.titleMain}
             <br />
-            <i>bord för bord.</i>
+            <i>{t.titleSub}</i>
           </h1>
-          <p className="sub-lede">Ät utan algoritmen · Oberoende upptäckt</p>
+          <p className="sub-lede">{t.subLede}</p>
         </div>
-        <p className="lede">
-          En oberoende matkarta för restauranger, bagerier, caféer och specialty coffee.
-          Ingen betald ranking. Tydlig logik. Bevis framför hype.
-        </p>
+        <p className="lede">{t.lede}</p>
       </section>
 
       <section className="controls" id="map">
         <label className="search" style={{ display: "flex", alignItems: "center" }}>
           <MagnifyingGlass size={16} weight="bold" style={{ color: "var(--color-ink)", marginRight: "8px" }} />
           <input
-            aria-label="Sök ställen"
+            aria-label={t.typeFilterLabel}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Sök plats, kök eller område..."
+            placeholder={t.searchPlaceholder}
           />
         </label>
         <div className="chips" aria-label="Filter typ">
-          <span className="filter-label">Typ</span>
+          <span className="filter-label">{t.typeFilterLabel}</span>
           <div className="chip-row">
             {establishmentTypes.map((item) => (
               <button
@@ -851,13 +1079,13 @@ export default function App() {
                 onClick={() => setKind(item)}
                 type="button"
               >
-                {item === "All places" ? "Alla ställen" : item}
+                {kindFilterLabel(item, lang)}
               </button>
             ))}
           </div>
         </div>
         <div className="chips cuisine-chips" aria-label="Filter kök">
-          <span className="filter-label">Kök</span>
+          <span className="filter-label">{t.cuisineFilterLabel}</span>
           <div className="chip-row">
             {[allCuisines, ...cuisineOptions].map((item) => (
               <button
@@ -866,7 +1094,7 @@ export default function App() {
                 onClick={() => setCuisine(item)}
                 type="button"
               >
-                {item === allCuisines ? "Alla kök" : cuisineLabel(item)}
+                {item === allCuisines ? t.allCuisines : cuisineLabel(item)}
               </button>
             ))}
           </div>
@@ -875,22 +1103,22 @@ export default function App() {
 
       <section className="workspace">
         <div className="map-panel">
-          <FoodMap places={visibleRanked} activePlace={active} onSelect={setSelected} />
+          <FoodMap places={visibleRanked} activePlace={active} onSelect={setSelected} lang={lang} />
           <div className="legend map-legend">
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <Coffee size={14} weight="bold" style={{ color: "var(--color-water)" }} /> Specialty coffee
+              <Coffee size={14} weight="bold" style={{ color: "var(--color-water)" }} /> {t.legendSpecialty}
             </span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <Bread size={14} weight="bold" style={{ color: "var(--color-water)" }} /> Bageri
+              <Bread size={14} weight="bold" style={{ color: "var(--color-water)" }} /> {t.legendBakery}
             </span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <ForkKnife size={14} weight="bold" style={{ color: "var(--color-water)" }} /> Restaurang
+              <ForkKnife size={14} weight="bold" style={{ color: "var(--color-water)" }} /> {t.legendRestaurant}
             </span>
           </div>
 
           <article className="map-card">
             <p>
-              {active.kind} · {active.area}
+              {kindFilterLabel(active.kind, lang)} · {active.area}
             </p>
             <h2>{active.name}</h2>
             {cuisineParts(active).length ? (
@@ -906,23 +1134,23 @@ export default function App() {
             <div className="score-row">
               <div>
                 <b>{rounded(active.scores.quality)}</b>
-                <span>Quality</span>
+                <span>{t.quality}</span>
               </div>
               <div>
                 <b>{rounded(active.scores.popularity)}</b>
-                <span>Popularity</span>
+                <span>{t.popularity}</span>
               </div>
               <div>
                 <b>{rounded(active.scores.discovery)}</b>
-                <span>Discovery</span>
+                <span>{t.discovery}</span>
               </div>
               <div>
                 <b>{rounded(active.scores.relevance)}</b>
-                <span>Relevance</span>
+                <span>{t.relevance}</span>
               </div>
             </div>
-            <VerificationBar place={active} />
-            <ExternalMapLinks place={active} />
+            <VerificationBar place={active} lang={lang} />
+            <ExternalMapLinks place={active} lang={lang} />
             {active.discoveryReasons?.length ? (
               <ul className="reason-list" aria-label="Discovery score reasons">
                 {active.discoveryReasons.slice(0, 3).map((reason) => (
@@ -934,10 +1162,10 @@ export default function App() {
               </ul>
             ) : null}
             <small>
-              {active.evidence.confidence} confidence · {active.evidenceLabel}
+              {active.evidence.confidence === "High" ? t.confidenceHigh : active.evidence.confidence === "Medium" ? t.confidenceMed : t.confidenceLow} · {active.evidenceLabel}
             </small>
             <p className="source-line">
-              Source: {active.sourceName ?? "OpenStreetMap"} · Last updated: {formatUpdatedDate(active.lastUpdated)}
+              {t.sourceLabel}: {active.sourceName ?? "OpenStreetMap"} · {t.lastUpdatedLabel}: {formatUpdatedDate(active.lastUpdated)}
             </p>
           </article>
         </div>
@@ -945,19 +1173,19 @@ export default function App() {
         <aside className="results">
           <div className="results-head">
             <div>
-              <p className="eyebrow">Transparent ranking</p>
-              <h2>{ranked.length} places in view</h2>
-              {ranked.length > renderLimit ? <small>Showing top {renderLimit}</small> : null}
+              <p className="eyebrow">{t.eyebrow}</p>
+              <h2>{ranked.length} {t.placesInView}</h2>
+              {ranked.length > renderLimit ? <small>{t.showingTop} {renderLimit}</small> : null}
             </div>
             <div className="rank-controls">
               <select value={mode} onChange={(event) => setMode(event.target.value as Mode)}>
                 {modes.map((item) => (
-                  <option key={item}>{item}</option>
+                  <option key={item} value={item}>{modeLabel(item, lang)}</option>
                 ))}
               </select>
               <select value={sortMode} onChange={(event) => setSortMode(event.target.value as SortMode)}>
                 {sortModes.map((item) => (
-                  <option key={item}>{item}</option>
+                  <option key={item} value={item}>{sortModeLabel(item, lang)}</option>
                 ))}
               </select>
               {sortMode === "Surprise me" ? (
@@ -966,29 +1194,29 @@ export default function App() {
                   onClick={() => setRandomSeed((value) => value + 1)}
                   style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}
                 >
-                  <Shuffle size={13} weight="bold" /> Shuffle
+                  <Shuffle size={13} weight="bold" /> {t.shuffle}
                 </button>
               ) : null}
             </div>
           </div>
           <p className="formula">
             {mode === "Hidden gems"
-              ? "Discovery = quality + specialist confidence + local engagement + freshness - mainstream exposure"
+              ? t.formulaHiddenGems
               : mode === "Popular now"
-                ? "Popularity = Bayesian rating + exposure-adjusted engagement + repeat visits + recent saves + source consensus"
+                ? t.formulaPopularNow
                 : mode === "Quality first"
-                  ? "Quality = guide, editorial, user, inspection, attribute and freshness evidence"
-                  : "Recommendation = 35% relevance + 25% quality + 15% popularity + 15% discovery + 10% freshness"}
+                  ? t.formulaQualityFirst
+                  : t.formulaDefault}
           </p>
           <div className="principles" aria-label="Ranking principles">
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <Check size={13} weight="bold" style={{ color: "var(--color-water)" }} /> Ingen betald ranking eller sponsrad placering.
+              <Check size={13} weight="bold" style={{ color: "var(--color-water)" }} /> {t.principle1}
             </span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <Check size={13} weight="bold" style={{ color: "var(--color-water)" }} /> Ingen automatisk fördel från enbart hög recensionsvolym.
+              <Check size={13} weight="bold" style={{ color: "var(--color-water)" }} /> {t.principle2}
             </span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <Check size={13} weight="bold" style={{ color: "var(--color-water)" }} /> Ingen ranking baserad på klickpopularitet eller algoritmer.
+              <Check size={13} weight="bold" style={{ color: "var(--color-water)" }} /> {t.principle3}
             </span>
           </div>
           <div className="list">
@@ -1002,14 +1230,14 @@ export default function App() {
                 <span className="rank">{String(index + 1).padStart(2, "0")}</span>
                 <span className="place-main">
                   <small>
-                    {place.kind} · {place.area}
+                    {kindFilterLabel(place.kind, lang)} · {place.area}
                   </small>
                   <strong>{place.name}</strong>
                   <span>{place.tags.slice(0, 2).join(" · ")}</span>
                 </span>
                 <span className="total">
                   <b>{rounded(modeScore(place, mode))}</b>
-                  <small>{mode === "For you" ? "match" : "poäng"}</small>
+                  <small>{mode === "For you" ? t.matchScoreLabel : t.totalScoreLabel}</small>
                 </span>
               </button>
             ))}
@@ -1019,28 +1247,25 @@ export default function App() {
 
       <section className="concierge" id="concierge">
         <div>
-          <p className="eyebrow">Oberoende AI-Concierge</p>
+          <p className="eyebrow">{t.conciergeEyebrow}</p>
           <h2>
-            Vad är <i>bra</i>
+            {t.conciergeHeadingMain} <i>{t.conciergeHeadingItalic}</i>
             <br />
-            mat för dig i dag?
+            {t.conciergeHeadingSub}
           </h2>
-          <p>
-            Söker först i bevis och verifierade fakta, sedan förklaras rekommendationen.
-            Inga påhittade öppettider. Ingen betald placering.
-          </p>
+          <p>{t.conciergeDesc}</p>
         </div>
         <div className="ask-box">
-          <label htmlFor="ask">Jag söker efter...</label>
-          <textarea id="ask" value={concierge} onChange={(event) => setConcierge(event.target.value)} placeholder="t.ex. specialty coffee och kardemummabulle på Södermalm..." />
+          <label htmlFor="ask">{t.askLabel}</label>
+          <textarea id="ask" value={concierge} onChange={(event) => setConcierge(event.target.value)} placeholder={t.askPlaceholder} />
           <button onClick={ask} disabled={asking} type="button">
             {asking ? (
               <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <CircleNotch size={16} className="animate-spin" /> Söker bevis...
+                <CircleNotch size={16} className="animate-spin" /> {t.askingButton}
               </span>
             ) : (
               <>
-                Hitta mina ställen <ArrowRight size={16} weight="bold" />
+                {t.askButton} <ArrowRight size={16} weight="bold" />
               </>
             )}
           </button>
@@ -1052,11 +1277,11 @@ export default function App() {
 
       <section className="method" id="method">
         <div>
-          <p className="eyebrow">Öppen metod · Tydliga bevis</p>
+          <p className="eyebrow">{t.methodEyebrow}</p>
           <h2>
-            Popularitet är en signal.
+            {t.methodHeadingMain}
             <br />
-            Inte domen.
+            {t.methodHeadingSub}
           </h2>
         </div>
         <div className="method-grid">
@@ -1065,45 +1290,43 @@ export default function App() {
               <b>01</b>
               <Sliders size={20} weight="bold" style={{ color: "var(--color-water)" }} />
             </div>
-            <h3>Mångsidig kvalitet</h3>
-            <p>Guider, redaktionell granskning, användaromdömen, tillsyn och egenskaper vägs separat.</p>
+            <h3>{t.method01Title}</h3>
+            <p>{t.method01Desc}</p>
           </article>
           <article>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
               <b>02</b>
               <Scales size={20} weight="bold" style={{ color: "var(--color-water)" }} />
             </div>
-            <h3>Korrigerad popularitet</h3>
-            <p>Bayesiansk rätvisning, exponeringsjusterat engagemang och färskhet minskar winner-take-all skevhet.</p>
+            <h3>{t.method02Title}</h3>
+            <p>{t.method02Desc}</p>
           </article>
           <article>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
               <b>03</b>
               <Certificate size={20} weight="bold" style={{ color: "var(--color-water)" }} />
             </div>
-            <h3>Specialty proof</h3>
-            <p>Specialty coffee kräver strukturerade attribut och källverifiering, inte marknadsföringstext.</p>
+            <h3>{t.method03Title}</h3>
+            <p>{t.method03Desc}</p>
           </article>
           <article>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
               <b>04</b>
               <Sparkle size={20} weight="bold" style={{ color: "var(--color-water)" }} />
             </div>
-            <h3>Upptäcktsvärde</h3>
-            <p>Belönar hög kvalitet i kombination med lägre huvudsaklig synlighet.</p>
+            <h3>{t.method04Title}</h3>
+            <p>{t.method04Desc}</p>
           </article>
         </div>
         <div className="disclaimer" id="sources">
-          KÄLLNOTERING
-          <span>
-            MOTKARTA kombinerar öppen grunddata från OpenStreetMap med verifierade tillsynsregister från Stockholms stad och kurerad redaktionell granskning.
-          </span>
+          {t.dataNoteLabel}
+          <span>{t.dataNoteText}</span>
         </div>
       </section>
 
       <footer>
-        <span>MOTKARTA / STOCKHOLMS FRIA MATKARTA</span>
-        <span>ÖPPEN DATA · ÖPPEN METOD · ÖPPEN STAD</span>
+        <span>{t.footerLeft}</span>
+        <span>{t.footerRight}</span>
       </footer>
     </main>
   );
@@ -1113,11 +1336,14 @@ function FoodMap({
   places,
   activePlace,
   onSelect,
+  lang,
 }: {
   places: ScoredPlace[];
   activePlace: ScoredPlace;
   onSelect: (id: number) => void;
+  lang: Language;
 }) {
+  const t = translations[lang];
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Map<number, L.Marker>>(new Map());
@@ -1244,23 +1470,23 @@ function FoodMap({
           type="button"
           className="map-control-btn"
           onClick={handleRecenter}
-          title="Center map to all recommendations"
+          title={t.centerMap}
         >
-          <Crosshair size={14} weight="bold" /> Center
+          <Crosshair size={14} weight="bold" /> {t.centerMap}
         </button>
         <button
           type="button"
           className="map-control-btn"
           onClick={handleToggleFullscreen}
-          title="Toggle Fullscreen Map View"
+          title={t.fullscreen}
         >
           {isFullscreen ? (
             <>
-              <ArrowsIn size={14} weight="bold" /> Exit
+              <ArrowsIn size={14} weight="bold" /> {t.exitFullscreen}
             </>
           ) : (
             <>
-              <ArrowsOut size={14} weight="bold" /> Fullscreen
+              <ArrowsOut size={14} weight="bold" /> {t.fullscreen}
             </>
           )}
         </button>

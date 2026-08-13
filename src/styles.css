@@ -198,6 +198,43 @@ a {
   color: var(--color-white);
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  padding: 2px;
+}
+
+.lang-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-stone);
+  cursor: pointer;
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: all var(--motion-fast);
+}
+
+.lang-btn:hover {
+  color: var(--color-ink);
+}
+
+.lang-btn.active {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
 /* -------------------------------------------------------------------------- */
 /* Hero / Intro                                                              */
 /* -------------------------------------------------------------------------- */
@@ -883,7 +920,7 @@ h2 i {
   font-size: clamp(42px, 5.5vw, 80px);
   font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 0.92;
+  line-height: 1.1;
   margin: 16px 0 24px;
   text-transform: uppercase;
   color: var(--color-paper);
