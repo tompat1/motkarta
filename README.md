@@ -68,6 +68,12 @@ wrangler d1 execute <database-name> --remote --file drizzle/seed-demo.sql
 
 ## Python data pipeline
 
+The project scope is now split deliberately:
+
+- Python owns data collection, normalization, scoring experiments, ML discovery
+  models and RAG document preparation.
+- TypeScript/React owns the deployed UI and Cloudflare Pages integration.
+
 Install `requirements-python.txt`, then run:
 
 ```bash
@@ -144,6 +150,18 @@ python scripts/model_discovery.py enriched_stockholm_places.csv
 ```
 
 The output includes an expected platform rating, rating residual and discovery percentile. A positive residual is interpreted as *algorithmic surprise*, not intrinsic food quality.
+
+Run Python tests with:
+
+```bash
+python3 -m pytest tests_python
+```
+
+The Python package lives in `motkarta/`:
+
+- `motkarta.normalize`: OSM/category normalization
+- `motkarta.scoring`: score formulas for ML/data workflows
+- `motkarta.rag`: retrieval document preparation
 
 ## Research lineage
 

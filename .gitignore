@@ -2,6 +2,7 @@
 
 # Dependencies
 /node_modules
+/.venv/
 /.pnp
 .pnp.*
 .yarn/*
@@ -31,6 +32,8 @@ dist-ssr/
 # Temporary / intermediate files
 .tmp/
 *.local
+__pycache__/
+*.py[cod]
 
 # Editor directories and files
 .vscode/*
