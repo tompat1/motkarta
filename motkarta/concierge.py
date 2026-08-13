@@ -68,6 +68,10 @@ def answer_query(query: str, documents: list[dict], limit: int = 5) -> list[dict
     filters = extract_structured_filters(query)
     tokens = {token.strip() for token in q_lower.replace(",", " ").replace(".", " ").split() if len(token) > 2}
 
+    stop_words = {"and", "the", "for", "with", "from", "some", "best", "good", "great", "find", "where", "what", "want", "like", "near", "place", "places", "food", "eat", "get", "have"}
+    food_specific_tokens = [t for t in tokens if t not in stop_words and t not in {"tourist", "streets", "center", "centre", "busiest", "quiet", "cheap", "expensive", "independent", "local"}]
+    asks_away_from_tourist = any(kw in q_lower for kw in ["away from", "outside", "tourist", "hidden", "quiet", "off the beaten path", "suburb"])
+
     def score(document: dict) -> float:
         text = f"{document.get('title', '')} {document.get('text', '')}".lower()
         title_lower = str(document.get("title", "")).lower()
@@ -77,14 +81,22 @@ def answer_query(query: str, documents: list[dict], limit: int = 5) -> list[dict
 
         relevance = 0.0
 
-        # 1. Keyword match points
-        for token in tokens:
-            if token in {"eastern", "european"} and ("middle eastern" in text or "middle_eastern" in text) and "eastern_european" not in filters["cuisines"]:
-                continue
-            if token in text:
-                relevance += 3.0 if (token in type_str or token in area_str or token in text) else 1.5
+        if any(chain in title_lower for chain in ["nespresso", "kahls", "espresso house", "starbucks"]):
+            return -9999.0
 
-        # 2. Specialty Coffee Verification Gate (Rule #1)
+        # 1. Food/Query Keyword Match
+        matching_food_tokens = [t for t in food_specific_tokens if t in text]
+        if food_specific_tokens:
+            if matching_food_tokens:
+                relevance += len(matching_food_tokens) * 40.0
+            else:
+                relevance -= 100.0
+
+        # 2. Direct Cuisine Match
+        if any(c in text for c in filters.get("cuisines", [])):
+            relevance += 50.0
+
+        # 3. Specialty Coffee Verification Gate (Rule #1)
         is_grill_or_restaurant = any(kw in text for kw in ["grill", "grillen", "gastropub", "pub", "bar", "restaurang", "restaurant", "burger", "pizza"])
 
         if "specialty" in tokens or "coffee" in tokens or "roaster" in tokens:
@@ -98,28 +110,25 @@ def answer_query(query: str, documents: list[dict], limit: int = 5) -> list[dict
                 )
             )
             if is_verified:
-                relevance += 20.0
+                relevance += 30.0
             else:
-                relevance -= 15.0
+                relevance -= 30.0
 
-            if any(chain in title_lower for chain in ["nespresso", "kahls", "espresso house", "starbucks"]):
-                relevance -= 100.0
-
-        # 3. Cardamom / Bakery match points
+        # 4. Cardamom / Bakery match points
         if "cardamom" in tokens or "bun" in tokens or "bakery" in tokens:
             if "cardamom" in text or "bakery" in type_str or "bakery" in text or "fika" in text:
-                relevance += 10.0
+                relevance += 25.0
 
-        # 4. Away from tourist streets / Central Stockholm penalty
-        if not filters["tourist_centre"] or "away from" in q_lower or "tourist" in q_lower:
+        # 5. Away from tourist streets bonus (ONLY if explicitly requested)
+        if asks_away_from_tourist:
             if "central" not in area_str and area_str != "unknown":
-                relevance += 10.0
+                relevance += 15.0
             else:
                 relevance -= 15.0
 
-        # 5. Quality & Discovery weightings (x25 and x15)
-        quality = float(metadata.get("quality_score") or metadata.get("quality") or 0) / 100 * 25.0
-        discovery = float(metadata.get("discovery_score") or 0) / 100 * 15.0
+        # 6. Quality & Discovery weightings (scaled to 15 max)
+        quality = float(metadata.get("quality_score") or metadata.get("quality") or 0) / 100 * 15.0
+        discovery = float(metadata.get("discovery_score") or 0) / 100 * 10.0
         relevance += quality + discovery
 
         # 6. Low quality penalty

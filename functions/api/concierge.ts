@@ -146,11 +146,18 @@ export async function processConciergeQuery(query: string, db?: unknown) {
 
 export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
   const structuredFilters = extractStructuredFilters(query);
-  const tokens = query
+  const stopWords = new Set(["and", "the", "for", "with", "from", "some", "best", "good", "great", "find", "where", "what", "want", "like", "near", "place", "places", "food", "eat", "get", "have"]);
+  const queryTokens = query
     .toLowerCase()
-    .replace(/[,.]/g, " ")
+    .replace(/[,.!?()]/g, " ")
     .split(/\s+/)
-    .filter((token) => token.length > 2);
+    .filter((token) => token.length > 2 && !stopWords.has(token));
+
+  const foodSpecificTokens = queryTokens.filter(
+    (t) => !["tourist", "streets", "center", "centre", "busiest", "quiet", "cheap", "expensive", "independent", "local"].includes(t),
+  );
+
+  const asksAwayFromTourist = ["away from", "outside", "tourist", "hidden", "quiet", "off the beaten path", "suburb"].some((kw) => query.toLowerCase().includes(kw));
 
   const scored: Array<{ place: ScoredPlace; ragScore: number }> = places.map((place) => {
     const scoredPlace = scorePlace(place);
@@ -168,10 +175,6 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
 
     let ragScore = 0;
 
-    // 1. Keyword match points
-    const matches = tokens.filter((token) => searchTarget.includes(token)).length;
-    ragScore += matches * 3;
-
     const isChain = [
       "nespresso",
       "kahls",
@@ -184,8 +187,29 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
       "bönor och blad",
     ].some((chain) => place.name.toLowerCase().includes(chain));
 
+    if (isChain) {
+      return { place: scoredPlace, ragScore: -9999 };
+    }
+
+    // 1. Food/Query Keyword Match
+    const matchingFoodTokens = foodSpecificTokens.filter((token) => searchTarget.includes(token));
+    if (foodSpecificTokens.length > 0) {
+      if (matchingFoodTokens.length > 0) {
+        ragScore += matchingFoodTokens.length * 40;
+      } else {
+        // Heavy penalty if query specified food tokens but this place matches NONE
+        ragScore -= 100;
+      }
+    }
+
+    // 2. Direct Cuisine Match
+    if (structuredFilters.cuisines.some((c) => searchTarget.includes(c))) {
+      ragScore += 50;
+    }
+
+    // 3. Specialty Coffee Verification Gate (Rule #1)
     const isSpecialtyQuery =
-      tokens.includes("specialty") || tokens.includes("coffee") || tokens.includes("roaster") || tokens.includes("roastery");
+      queryTokens.includes("specialty") || queryTokens.includes("coffee") || queryTokens.includes("roaster") || queryTokens.includes("roastery");
     const isGrillOrRestaurant = [
       "grill",
       "grillen",
@@ -206,7 +230,6 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
     ].some((kw) => searchTarget.includes(kw));
 
     const isVerifiedSpecialty =
-      !isChain &&
       !isGrillOrRestaurant &&
       (place.specialty?.specialtyVerified ||
         searchTarget.includes("roaster") ||
@@ -229,68 +252,42 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
         ) ||
         (place.kind === "Specialty coffee" && scoredPlace.scores.quality >= 35));
 
-    if (isChain) {
-      ragScore = -9999;
-    } else if (isSpecialtyQuery) {
+    if (isSpecialtyQuery) {
       if (isVerifiedSpecialty) {
-        ragScore += 20;
+        ragScore += 30;
       } else {
-        ragScore -= 15;
+        ragScore -= 30;
       }
     }
 
-    // 3. Cardamom Bun / Bakery match points
-    if (tokens.includes("cardamom") || tokens.includes("bun") || tokens.includes("bakery")) {
+    // 4. Cardamom Bun / Bakery match points
+    if (queryTokens.includes("cardamom") || queryTokens.includes("bun") || queryTokens.includes("bakery")) {
       if (
         searchTarget.includes("cardamom") ||
         place.kind === "Bakery" ||
         searchTarget.includes("bakery") ||
         searchTarget.includes("fika")
       ) {
-        ragScore += 10;
+        ragScore += 25;
       }
     }
 
-    // 4. Away from tourist streets / Central Stockholm penalty
-    const asksAwayFromTourist =
-      !structuredFilters.tourist_centre ||
-      query.toLowerCase().includes("away from") ||
-      query.toLowerCase().includes("tourist");
-
+    // 5. Away from tourist streets bonus (ONLY if explicitly requested)
     if (asksAwayFromTourist) {
       if (!place.area.toLowerCase().includes("central") && (place.mainstreamExposure ?? 50) < 75) {
-        ragScore += 10;
+        ragScore += 15;
       } else {
         ragScore -= 15;
       }
     }
 
-    // 5. Cuisine match points
-    if (
-      structuredFilters.cuisines.includes("eastern_european") &&
-      ["polish", "russian", "ukrainian", "georgian", "eastern_european"].some((c) =>
-        searchTarget.includes(c),
-      )
-    ) {
-      ragScore += 8;
-    }
-
-    if (structuredFilters.cuisines.some((c) => searchTarget.includes(c))) {
-      ragScore += 8;
-    }
-
     if (structuredFilters.independent_preferred) {
-      ragScore += 3;
+      ragScore += 5;
     }
 
-    // 6. Quality & Discovery evidence weighting (x25 and x15)
-    ragScore += (scoredPlace.scores.quality / 100) * 25;
-    ragScore += (scoredPlace.scores.discovery / 100) * 15;
-
-    // 7. Unverified low-quality penalty
-    if (scoredPlace.scores.quality < 20) {
-      ragScore -= 30;
-    }
+    // 6. Quality & Discovery base score (scaled to 15 max)
+    ragScore += (scoredPlace.scores.quality / 100) * 15;
+    ragScore += (scoredPlace.scores.discovery / 100) * 10;
 
     return {
       place: scoredPlace,
@@ -298,9 +295,11 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
     };
   });
 
-  const validScored = scored.filter((item) => item.ragScore > -100);
+  const validScored = scored.filter((item) => item.ragScore > 0);
   validScored.sort((a, b) => b.ragScore - a.ragScore);
-  const topPicks = (validScored.length ? validScored : scored).slice(0, 3).map((item) => item.place);
+  const topPicks = (validScored.length ? validScored : scored)
+    .slice(0, validScored.length ? Math.min(3, validScored.length) : 3)
+    .map((item) => item.place);
 
   const listItems = topPicks.map((pick) => {
     const reasons = (pick.discoveryReasons ?? [])
@@ -324,8 +323,12 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
     ].join("\n");
   });
 
+  const introText = validScored.length
+    ? `Based on our auditable open dataset of independent Stockholm establishments, here are the top grounded recommendations for "${query}":`
+    : `No direct matches found for "${query}" in our verified open dataset. Showing top-rated independent establishments in Stockholm:`;
+
   const answer = [
-    `Based on our auditable open dataset of independent Stockholm establishments, here are the top grounded recommendations for "${query}":`,
+    introText,
     "",
     listItems.join("\n\n"),
     "",
