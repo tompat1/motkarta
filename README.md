@@ -163,6 +163,35 @@ The Python package lives in `motkarta/`:
 - `motkarta.scoring`: score formulas for ML/data workflows
 - `motkarta.rag`: retrieval document preparation
 
+## Python MVP pipeline
+
+The agreed MVP covers restaurants, bistros, bakeries, cafés and specialty
+coffee. The Python pipeline produces the core artifacts:
+
+```bash
+python scripts/fetch_osm.py
+.venv/bin/python scripts/run_mvp_pipeline.py
+```
+
+Outputs:
+
+```text
+data/stockholm_food_places_clean.csv
+data/stockholm_food_places_deduped.csv
+data/stockholm_food_duplicates.csv
+data/stockholm_food_places_scored.csv
+outputs/stockholm_food_map.html
+outputs/coverage_report.md
+outputs/rag_corpus.jsonl
+```
+
+The Folium map includes establishment-type layers and a missing-information
+layer. The RAG corpus powers a simple local concierge:
+
+```bash
+.venv/bin/python scripts/query_concierge.py "filter coffee roaster"
+```
+
 ## Research lineage
 
 The residual approach is inspired by Lauren Leek's Open Food Map and London research. This Stockholm version changes the scope in two important ways: it starts with an open OSM baseline rather than treating a commercial API as a census, and it explicitly includes bakeries, cafés, roasters and specialty-coffee attributes.

@@ -3,3 +3,4 @@ pandas>=2.2
 requests>=2.32
 scikit-learn>=1.5
 pytest>=8.0
+folium>=0.17
