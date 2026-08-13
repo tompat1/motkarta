@@ -21,11 +21,14 @@ const establishmentTypes = [
 
 const allCuisines = "All cuisines";
 const modes = ["For you", "Hidden gems", "Popular now", "Quality first"] as const;
+const sortModes = ["Best match", "Alphabetical", "Distance", "Random discovery"] as const;
 const renderLimit = 350;
+const stockholmCenter = { latitude: 59.3293, longitude: 18.0686 };
 
 type EstablishmentFilter = (typeof establishmentTypes)[number];
 type CuisineFilter = typeof allCuisines | string;
 type Mode = (typeof modes)[number];
+type SortMode = (typeof sortModes)[number];
 type DataSource = "loading" | "demo" | "d1" | "osm";
 
 function modeScore(place: ScoredPlace, mode: Mode) {
@@ -46,6 +49,86 @@ function modeScore(place: ScoredPlace, mode: Mode) {
 
 function rounded(value: number) {
   return Math.round(value);
+}
+
+function comparePlaces(a: ScoredPlace, b: ScoredPlace, mode: Mode, sortMode: SortMode, randomSeed: number) {
+  if (sortMode === "Alphabetical") {
+    return a.name.localeCompare(b.name);
+  }
+
+  if (sortMode === "Distance") {
+    return distanceFromStockholmCenter(a) - distanceFromStockholmCenter(b);
+  }
+
+  if (sortMode === "Random discovery") {
+    return seededRandom(a.id, randomSeed) - seededRandom(b.id, randomSeed);
+  }
+
+  return modeScore(b, mode) - modeScore(a, mode);
+}
+
+function distanceFromStockholmCenter(place: Pick<PlaceInput, "latitude" | "longitude">) {
+  if (typeof place.latitude !== "number" || typeof place.longitude !== "number") {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  const earthRadius = 6371;
+  const latDelta = degreesToRadians(place.latitude - stockholmCenter.latitude);
+  const lonDelta = degreesToRadians(place.longitude - stockholmCenter.longitude);
+  const startLat = degreesToRadians(stockholmCenter.latitude);
+  const endLat = degreesToRadians(place.latitude);
+  const haversine =
+    Math.sin(latDelta / 2) ** 2 +
+    Math.cos(startLat) * Math.cos(endLat) * Math.sin(lonDelta / 2) ** 2;
+
+  return 2 * earthRadius * Math.asin(Math.sqrt(haversine));
+}
+
+function degreesToRadians(value: number) {
+  return (value * Math.PI) / 180;
+}
+
+function seededRandom(id: number, seed: number) {
+  const value = Math.sin((id + seed) * 12.9898) * 43758.5453;
+  return value - Math.floor(value);
+}
+
+function formatUpdatedDate(value: string | undefined) {
+  if (!value) {
+    return "Not available";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "Not available";
+  }
+
+  return new Intl.DateTimeFormat("en-SE", { dateStyle: "medium" }).format(date);
+}
+
+function sentenceList(parts: string[]) {
+  if (parts.length <= 1) {
+    return parts[0] ?? "";
+  }
+
+  if (parts.length === 2) {
+    return `${parts[0]} and ${parts[1]}`;
+  }
+
+  return `${parts.slice(0, -1).join(", ")}, and ${parts.at(-1)}`;
+}
+
+function recommendationExplanation(place: PlaceInput) {
+  const reasons = (place.discoveryReasons ?? [])
+    .map((reason) => reason.trim().replace(/\.$/, ""))
+    .filter(Boolean)
+    .slice(0, 3);
+
+  if (!reasons.length) {
+    return "Recommended from available open data; more source evidence will improve this explanation.";
+  }
+
+  return `Recommended because ${sentenceList(reasons)}.`;
 }
 
 function cuisineParts(place: Pick<PlaceInput, "cuisine" | "tags">) {
@@ -111,6 +194,8 @@ export default function App() {
   const [places, setPlaces] = useState<PlaceInput[]>(demoPlaces);
   const [dataSource, setDataSource] = useState<DataSource>("loading");
   const [mode, setMode] = useState<Mode>("For you");
+  const [sortMode, setSortMode] = useState<SortMode>("Best match");
+  const [randomSeed, setRandomSeed] = useState(1);
   const [kind, setKind] = useState<EstablishmentFilter>("All places");
   const [cuisine, setCuisine] = useState<CuisineFilter>(allCuisines);
   const [query, setQuery] = useState("");
@@ -169,8 +254,8 @@ export default function App() {
             .toLowerCase()
             .includes(query.toLowerCase()),
         )
-        .sort((a, b) => modeScore(b, mode) - modeScore(a, mode)),
-    [cuisine, kind, mode, query, scoredPlaces],
+        .sort((a, b) => comparePlaces(a, b, mode, sortMode, randomSeed)),
+    [cuisine, kind, mode, query, randomSeed, scoredPlaces, sortMode],
   );
   const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
 
@@ -302,6 +387,7 @@ export default function App() {
             {cuisineParts(active).length ? (
               <p className="cuisine-line">{cuisineParts(active).map(cuisineLabel).join(" · ")}</p>
             ) : null}
+            <p className="recommendation">{recommendationExplanation(active)}</p>
             <p className="note">{active.note}</p>
             <div className="tag-row">
               {active.tags.map((tag) => (
@@ -326,9 +412,19 @@ export default function App() {
                 <span>Relevance</span>
               </div>
             </div>
+            {active.discoveryReasons?.length ? (
+              <ul className="reason-list" aria-label="Discovery score reasons">
+                {active.discoveryReasons.slice(0, 3).map((reason) => (
+                  <li key={reason}>{reason}</li>
+                ))}
+              </ul>
+            ) : null}
             <small>
               {active.evidence.confidence} confidence · {active.evidenceLabel}
             </small>
+            <p className="source-line">
+              Source: {active.sourceName ?? "OpenStreetMap"} · Last updated: {formatUpdatedDate(active.lastUpdated)}
+            </p>
           </article>
         </div>
 
@@ -339,11 +435,23 @@ export default function App() {
               <h2>{ranked.length} places in view</h2>
               {ranked.length > renderLimit ? <small>Showing top {renderLimit}</small> : null}
             </div>
-            <select value={mode} onChange={(event) => setMode(event.target.value as Mode)}>
-              {modes.map((item) => (
-                <option key={item}>{item}</option>
-              ))}
-            </select>
+            <div className="rank-controls">
+              <select value={mode} onChange={(event) => setMode(event.target.value as Mode)}>
+                {modes.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+              <select value={sortMode} onChange={(event) => setSortMode(event.target.value as SortMode)}>
+                {sortModes.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+              {sortMode === "Random discovery" ? (
+                <button type="button" onClick={() => setRandomSeed((value) => value + 1)}>
+                  Shuffle
+                </button>
+              ) : null}
+            </div>
           </div>
           <p className="formula">
             {mode === "Hidden gems"
@@ -354,6 +462,11 @@ export default function App() {
                   ? "Quality = guide, editorial, user, inspection, attribute and freshness evidence"
                   : "Recommendation = 35% relevance + 25% quality + 15% popularity + 15% discovery + 10% freshness"}
           </p>
+          <div className="principles" aria-label="Ranking principles">
+            <span>No payment for ranking.</span>
+            <span>No automatic advantage from having many reviews.</span>
+            <span>No ranking based solely on click popularity.</span>
+          </div>
           <div className="list">
             {visibleRanked.map((place, index) => (
               <button

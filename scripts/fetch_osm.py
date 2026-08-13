@@ -28,13 +28,28 @@ area["boundary"="administrative"]["name"="Stockholms kommun"]->.searchArea;
  nwr["amenity"~"restaurant|cafe|fast_food|food_court"](area.searchArea);
  nwr["shop"~"bakery|pastry|confectionery|coffee"](area.searchArea);
  nwr["craft"="coffee_roaster"](area.searchArea);
-);out center;'''
+);out center meta;'''
 BBOX_QUERY = f'''[out:json][timeout:180];(
  nwr["amenity"~"restaurant|cafe|fast_food|food_court"]({BBOX});
  nwr["shop"~"bakery|pastry|confectionery|coffee"]({BBOX});
  nwr["craft"="coffee_roaster"]({BBOX});
-);out center;'''
-FIELDS = ["osm_type", "osm_id", "name", "category", "establishment_type", "cuisine", "opening_hours", "street", "house_number", "website", "latitude", "longitude", "source"]
+);out center meta;'''
+FIELDS = [
+    "osm_type",
+    "osm_id",
+    "name",
+    "category",
+    "establishment_type",
+    "cuisine",
+    "opening_hours",
+    "street",
+    "house_number",
+    "website",
+    "latitude",
+    "longitude",
+    "osm_timestamp",
+    "source",
+]
 
 
 def fetch_overpass(query: str, urls: list[str]) -> tuple[dict, str]:
@@ -113,6 +128,7 @@ def rows_from_payload(payload: dict) -> list[dict]:
             "cuisine": tags.get("cuisine", ""), "opening_hours": tags.get("opening_hours", ""),
             "street": tags.get("addr:street", ""), "house_number": tags.get("addr:housenumber", ""),
             "website": tags.get("website", ""), "latitude": center["lat"], "longitude": center["lon"],
+            "osm_timestamp": element.get("timestamp", ""),
             "source": "OpenStreetMap",
         })
     return rows

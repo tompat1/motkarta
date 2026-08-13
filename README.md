@@ -267,6 +267,23 @@ The pipeline excludes obvious large fast-food chains from the scored/map/public
 artifacts by default. Current explicit exclusions are McDonald's, Burger King,
 Sibylla and MAX. Removed rows are still written to
 `data/stockholm_food_excluded_chains.csv` for auditability.
+Other known chains can remain visible, but they do not receive the
+`independent_business` discovery bonus.
+
+The discovery score is a transparent 100-point additive model:
+
+```text
+independent_business      +25
+underrepresented_cuisine  +20
+low_local_visibility      +20
+verified_open             +15
+complete_profile          +10
+recently_updated          +10
+```
+
+Each scored row includes the boolean signal columns plus `discovery_reasons`.
+`recently_updated` uses per-place OSM timestamps when available; cached rows
+without timestamps do not receive those 10 points.
 
 The Folium map includes filter layers for establishment type, cuisine,
 neighbourhood and missing information. The GeoJSON export is the migration path

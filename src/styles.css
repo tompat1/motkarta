@@ -353,6 +353,15 @@ h2 i {
   line-height: 1.45;
 }
 
+.recommendation {
+  border-left: 3px solid var(--orange);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.45;
+  margin: 0 0 12px;
+  padding-left: 10px;
+}
+
 .tag-row {
   display: flex;
   flex-wrap: wrap;
@@ -393,6 +402,33 @@ h2 i {
   text-transform: uppercase;
 }
 
+.reason-list {
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 5px;
+  list-style: none;
+  margin: -2px 0 13px;
+  padding: 0 0 13px;
+}
+
+.reason-list li {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.reason-list li::before {
+  color: var(--orange);
+  content: "+ ";
+  font-weight: 700;
+}
+
+.source-line {
+  color: #68665e;
+  font-size: 11px;
+  line-height: 1.4;
+  margin: 10px 0 0;
+}
+
 .results {
   overflow: auto;
   padding: 30px 28px;
@@ -423,12 +459,42 @@ h2 i {
   padding: 9px;
 }
 
+.rank-controls {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  justify-content: flex-end;
+}
+
+.rank-controls button {
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 9px 11px;
+}
+
 .formula {
   background: #e3ded2;
   font: 10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   line-height: 1.45;
   margin: 20px 0;
   padding: 10px;
+}
+
+.principles {
+  border: 1px solid var(--line);
+  display: grid;
+  gap: 7px;
+  margin: -10px 0 20px;
+  padding: 11px;
+}
+
+.principles span {
+  font-size: 11px;
+  font-weight: 650;
 }
 
 .list {
@@ -648,6 +714,11 @@ footer {
 
   .results {
     max-height: 650px;
+  }
+
+  .results-head {
+    align-items: flex-start;
+    gap: 18px;
   }
 
   .concierge {

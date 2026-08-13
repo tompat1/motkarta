@@ -62,6 +62,10 @@ export type PlaceInput = {
   area: string;
   note: string;
   tags: string[];
+  discoveryReasons?: string[];
+  discoverySignals?: Record<string, boolean>;
+  sourceName?: string;
+  lastUpdated?: string;
   evidenceLabel: string;
   ratingAverage: number;
   reliableRatingCount: number;

@@ -104,7 +104,8 @@ def place_popup(row: pd.Series) -> folium.Popup:
         Address: {escape(str(row['address'] or 'Missing'))}<br>
         Opening hours: {escape(str(row['opening_hours'] or 'Missing'))}<br>
         Website: {escape(str(row['website'] or 'Missing'))}<br>
-        Discovery score: {escape(str(row['discovery_score']))}
+        Discovery score: {escape(str(row['discovery_score']))}<br>
+        Reasons: {escape(str(row.get('discovery_reasons') or 'No discovery signals yet'))}
         """,
         max_width=340,
     )

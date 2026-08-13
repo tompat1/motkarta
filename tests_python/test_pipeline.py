@@ -27,6 +27,21 @@ def test_clean_dedupe_and_score_pipeline():
     scored = score_places(filtered)
     assert "discovery_score" in scored
     assert scored["discovery_score"].between(0, 100).all()
+    assert {
+        "independent_business",
+        "underrepresented_cuisine",
+        "low_local_visibility",
+        "verified_open",
+        "complete_profile",
+        "recently_updated",
+        "discovery_reasons",
+    } <= set(scored.columns)
+    plain_cafe = scored[scored["name"].eq("Plain Cafe")].iloc[0]
+    assert plain_cafe["discovery_score"] == 70
+    assert plain_cafe["independent_business"]
+    assert plain_cafe["underrepresented_cuisine"]
+    assert plain_cafe["verified_open"]
+    assert plain_cafe["complete_profile"]
 
 
 def test_full_mvp_pipeline_writes_artifacts(tmp_path):
@@ -49,6 +64,8 @@ def test_full_mvp_pipeline_writes_artifacts(tmp_path):
     assert 'Neighbourhood \\u00b7 Central Stockholm' in map_html
     assert 'Cuisine \\u00b7 Coffee' in map_html
     assert 'Missing info \\u00b7 Missing opening hours' in map_html
+    assert 'Discovery score:' in map_html
+    assert 'Reasons:' in map_html
 
     geojson = json.loads((output_dir / "stockholm_food_places.geojson").read_text(encoding="utf-8"))
     assert geojson["type"] == "FeatureCollection"
@@ -62,6 +79,8 @@ def test_full_mvp_pipeline_writes_artifacts(tmp_path):
     assert places_payload["source"] == "osm"
     assert places_payload["places"][0]["kind"] in {"Café", "Specialty coffee", "Bakery", "Restaurant"}
     assert "cuisine" in places_payload["places"][0]
+    assert "discoveryReasons" in places_payload["places"][0]
+    assert "discoverySignals" in places_payload["places"][0]
 
     documents = load_rag_corpus(output_dir / "rag_corpus.jsonl")
     results = answer_query("filter coffee roaster", documents, limit=1)
@@ -105,4 +124,5 @@ def test_place_inputs_json_matches_frontend_shape(tmp_path):
     place = payload["places"][0]
     assert payload["source"] == "osm"
     assert {"id", "name", "kind", "area", "tags", "evidence", "engagement", "x", "y"} <= set(place)
+    assert {"discoveryReasons", "discoverySignals"} <= set(place)
     assert place["evidence"]["confidence"] == "Low"

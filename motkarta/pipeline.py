@@ -4,6 +4,7 @@ import json
 import re
 import zlib
 from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -26,8 +27,19 @@ RAW_COLUMNS = [
     "website",
     "latitude",
     "longitude",
+    "osm_timestamp",
     "source",
 ]
+
+DISCOVERY_WEIGHTS = {
+    "independent_business": 25,
+    "underrepresented_cuisine": 20,
+    "low_local_visibility": 20,
+    "verified_open": 15,
+    "complete_profile": 10,
+    "recently_updated": 10,
+}
+EXCLUDED_CHAIN_BRANDS = {"McDonald's", "Burger King", "Sibylla", "MAX"}
 
 
 @dataclass(frozen=True)
@@ -85,8 +97,8 @@ def clean_places(frame: pd.DataFrame) -> pd.DataFrame:
     data["missing_address"] = data["address"].eq("")
     data["missing_opening_hours"] = data["opening_hours"].eq("")
     data["missing_website"] = data["website"].eq("")
-    data["chain_brand"] = data["name"].map(excluded_chain_brand)
-    data["excluded_chain"] = data["chain_brand"].ne("")
+    data["chain_brand"] = data["name"].map(known_chain_brand)
+    data["excluded_chain"] = data["chain_brand"].isin(EXCLUDED_CHAIN_BRANDS)
     return data
 
 
@@ -136,8 +148,8 @@ def dedupe_places(frame: pd.DataFrame, threshold: float = 0.92) -> tuple[pd.Data
 def filter_excluded_chains(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     data = frame.copy()
     if "excluded_chain" not in data:
-        data["chain_brand"] = data["name"].map(excluded_chain_brand)
-        data["excluded_chain"] = data["chain_brand"].ne("")
+        data["chain_brand"] = data["name"].map(known_chain_brand)
+        data["excluded_chain"] = data["chain_brand"].isin(EXCLUDED_CHAIN_BRANDS)
 
     excluded = data[data["excluded_chain"]].copy().reset_index(drop=True)
     included = data[~data["excluded_chain"]].copy().reset_index(drop=True)
@@ -146,30 +158,26 @@ def filter_excluded_chains(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFr
 
 def score_places(frame: pd.DataFrame) -> pd.DataFrame:
     data = frame.copy()
-    completeness = (
-        (~data["missing_address"]).astype(int)
-        + (~data["missing_opening_hours"]).astype(int)
-        + (~data["missing_website"]).astype(int)
-    ) / 3
-    coordinate_score = data[["latitude", "longitude"]].notna().all(axis=1).astype(int)
-    type_specific_bonus = data["establishment_type"].map(
-        {
-            "Specialty coffee": 8,
-            "Bakery": 5,
-            "Café": 3,
-            "Restaurant": 2,
-        }
-    ).fillna(0)
-    cuisine_detail = data["cuisine"].map(lambda value: min(10, len([part for part in value.split(";") if part]) * 2))
-    data["discovery_score"] = (
-        45
-        + completeness * 20
-        + coordinate_score * 10
-        + type_specific_bonus
-        + cuisine_detail
-        - data["missing_website"].astype(int) * 4
-    ).round(2)
-    data["discovery_score"] = data["discovery_score"].clip(0, 100)
+    data["primary_cuisine"] = data["cuisine"].map(primary_cuisine)
+    cuisine_district_counts = data.groupby(["neighbourhood", "primary_cuisine"]).size().to_dict()
+    district_counts = data["neighbourhood"].value_counts().to_dict()
+
+    data["independent_business"] = data["chain_brand"].eq("") if "chain_brand" in data else True
+    data["underrepresented_cuisine"] = data.apply(
+        lambda row: is_underrepresented_cuisine(row, cuisine_district_counts, district_counts),
+        axis=1,
+    )
+    data["low_local_visibility"] = data["missing_website"]
+    data["verified_open"] = ~data["missing_opening_hours"]
+    data["complete_profile"] = (
+        ~data["missing_address"]
+        & ~data["missing_opening_hours"]
+        & ~data["missing_website"]
+        & data[["latitude", "longitude"]].notna().all(axis=1)
+    )
+    data["recently_updated"] = data["osm_timestamp"].map(recently_updated)
+    data["discovery_score"] = data.apply(discovery_score, axis=1)
+    data["discovery_reasons"] = data.apply(discovery_reasons, axis=1)
     return data
 
 
@@ -203,6 +211,7 @@ def write_rag_corpus(frame: pd.DataFrame, path: str | Path) -> None:
                         f"Opening hours: {row['opening_hours'] or 'Missing'}",
                         f"Website: {row['website'] or 'Missing'}",
                         f"Discovery score: {row['discovery_score']}",
+                        f"Discovery reasons: {row['discovery_reasons'] or 'No discovery signals yet'}",
                     ]
                 ),
                 "metadata": {
@@ -211,6 +220,7 @@ def write_rag_corpus(frame: pd.DataFrame, path: str | Path) -> None:
                     "establishment_type": row["establishment_type"],
                     "neighbourhood": row["neighbourhood"],
                     "discovery_score": float(row["discovery_score"]),
+                    "discovery_reasons": row["discovery_reasons"],
                 },
             }
             handle.write(json.dumps(document, ensure_ascii=False) + "\n")
@@ -260,6 +270,58 @@ def normalize_cuisine(value: object) -> str:
         if clean_text(part)
     ]
     return ";".join(dict.fromkeys(parts))
+
+
+def primary_cuisine(value: object) -> str:
+    parts = [part.strip() for part in clean_text(value).split(";") if part.strip()]
+    return parts[0] if parts else ""
+
+
+def recently_updated(value: object, max_age_days: int = 180) -> bool:
+    text = clean_text(value)
+    if not text:
+        return False
+    try:
+        timestamp = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if timestamp.tzinfo is None:
+        timestamp = timestamp.replace(tzinfo=UTC)
+    age = datetime.now(UTC) - timestamp.astimezone(UTC)
+    return 0 <= age.days <= max_age_days
+
+
+def discovery_score(row: pd.Series) -> int:
+    return sum(weight for signal, weight in DISCOVERY_WEIGHTS.items() if bool(row.get(signal)))
+
+
+def discovery_reasons(row: pd.Series) -> str:
+    labels = {
+        "independent_business": "it appears independent",
+        "underrepresented_cuisine": (
+            f"it represents an underrepresented cuisine in {clean_text(row.get('neighbourhood'))}: "
+            f"{clean_text(row.get('primary_cuisine'))}"
+        ),
+        "low_local_visibility": "it has lower local visibility",
+        "verified_open": "opening hours are listed",
+        "complete_profile": "address, opening hours, website and coordinates are present",
+        "recently_updated": "it was verified recently",
+    }
+    return "; ".join(label for signal, label in labels.items() if bool(row.get(signal)))
+
+
+def is_underrepresented_cuisine(
+    row: pd.Series,
+    cuisine_district_counts: dict[tuple[str, str], int],
+    district_counts: dict[str, int],
+) -> bool:
+    cuisine = clean_text(row.get("primary_cuisine"))
+    district = clean_text(row.get("neighbourhood"))
+    if not cuisine or not district:
+        return False
+    district_total = district_counts.get(district, 0)
+    threshold = max(3, round(district_total * 0.03))
+    return cuisine_district_counts.get((district, cuisine), 0) <= threshold
 
 
 def normalize_establishment_type_row(row: pd.Series) -> str:
@@ -342,7 +404,7 @@ def name_tokens(value: object) -> list[str]:
     return [token for token in re.sub(r"[^a-z0-9]+", " ", clean_text(value).lower()).split() if token]
 
 
-def excluded_chain_brand(name: object) -> str:
+def known_chain_brand(name: object) -> str:
     tokens = name_tokens(name)
     if not tokens:
         return ""
@@ -354,6 +416,24 @@ def excluded_chain_brand(name: object) -> str:
         return "Sibylla"
     if tokens[0] == "max":
         return "MAX"
+    if tokens[:2] == ["espresso", "house"]:
+        return "Espresso House"
+    if tokens[0] == "subway":
+        return "Subway"
+    if tokens[:2] == ["pizza", "hut"]:
+        return "Pizza Hut"
+    if tokens[0] == "starbucks":
+        return "Starbucks"
+    if tokens[:2] == ["holy", "greens"]:
+        return "Holy Greens"
+    if tokens[:2] == ["texas", "longhorn"]:
+        return "Texas Longhorn"
+    if tokens[:2] == ["bastard", "burgers"]:
+        return "Bastard Burgers"
+    if tokens[:2] == ["joe", "juice"] or tokens[:4] == ["joe", "and", "the", "juice"]:
+        return "Joe & The Juice"
+    if tokens[:2] == ["waynes", "coffee"]:
+        return "Wayne's Coffee"
     return ""
 
 
@@ -379,6 +459,13 @@ def place_input_from_row(row: pd.Series) -> dict:
         "area": clean_text(row["neighbourhood"]) or "Stockholm",
         "note": place_note(row),
         "tags": place_tags(row),
+        "discoveryReasons": discovery_reason_list(row),
+        "discoverySignals": {
+            signal: bool(row.get(signal))
+            for signal in DISCOVERY_WEIGHTS
+        },
+        "sourceName": clean_text(row.get("source")) or "OpenStreetMap",
+        "lastUpdated": clean_text(row.get("osm_timestamp")),
         "evidenceLabel": "OpenStreetMap baseline · needs enrichment",
         "ratingAverage": 4.1,
         "reliableRatingCount": 0,
@@ -451,6 +538,10 @@ def place_tags(row: pd.Series) -> list[str]:
     if row["missing_address"]:
         tags.add("Missing address")
     return sorted(tag for tag in tags if tag)
+
+
+def discovery_reason_list(row: pd.Series) -> list[str]:
+    return [reason.strip() for reason in clean_text(row.get("discovery_reasons")).split(";") if reason.strip()]
 
 
 def specialty_attributes(row: pd.Series) -> dict:
