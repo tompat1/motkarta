@@ -290,6 +290,147 @@ function VerificationBar({ place }: { place: ScoredPlace }) {
   );
 }
 
+function ExternalMapLinks({ place }: { place: PlaceInput }) {
+  const queryText = encodeURIComponent(`${place.name} ${place.address || place.area || ""} Stockholm`);
+
+  const googleMapsUrl =
+    place.latitude && place.longitude
+      ? `https://www.google.com/maps/search/?api=1&query=${queryText}&query_place_id=${place.latitude},${place.longitude}`
+      : `https://www.google.com/maps/search/?api=1&query=${queryText}`;
+
+  const appleMapsUrl =
+    place.latitude && place.longitude
+      ? `https://maps.apple.com/?q=${encodeURIComponent(place.name)}&ll=${place.latitude},${place.longitude}`
+      : `https://maps.apple.com/?q=${queryText}`;
+
+  const osmUrl =
+    place.latitude && place.longitude
+      ? `https://www.openstreetmap.org/?mlat=${place.latitude}&mlon=${place.longitude}#map=17/${place.latitude}/${place.longitude}`
+      : `https://www.openstreetmap.org/search?query=${queryText}`;
+
+  return (
+    <div
+      className="external-map-actions"
+      style={{
+        marginTop: "12px",
+        paddingTop: "12px",
+        borderTop: "1px solid var(--line, #e2dcd2)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "6px",
+      }}
+    >
+      <span
+        style={{
+          fontSize: "11px",
+          fontWeight: 700,
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          color: "var(--ink-muted)",
+        }}
+      >
+        Open location in:
+      </span>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+        <a
+          href={googleMapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "5px",
+            padding: "5px 10px",
+            borderRadius: "6px",
+            background: "#ffffff",
+            border: "1px solid #dadce0",
+            color: "#3c4043",
+            fontSize: "12px",
+            fontWeight: 600,
+            textDecoration: "none",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+          }}
+        >
+          <MapPin size={14} weight="fill" style={{ color: "#ea4335" }} />
+          Google Maps
+          <ArrowSquareOut size={12} weight="bold" style={{ color: "#70757a" }} />
+        </a>
+        <a
+          href={appleMapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "5px",
+            padding: "5px 10px",
+            borderRadius: "6px",
+            background: "#ffffff",
+            border: "1px solid #dadce0",
+            color: "#1d1d1f",
+            fontSize: "12px",
+            fontWeight: 600,
+            textDecoration: "none",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+          }}
+        >
+          <Compass size={14} weight="fill" style={{ color: "#0071e3" }} />
+          Apple Maps
+          <ArrowSquareOut size={12} weight="bold" style={{ color: "#70757a" }} />
+        </a>
+        <a
+          href={osmUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "5px",
+            padding: "5px 10px",
+            borderRadius: "6px",
+            background: "#ffffff",
+            border: "1px solid #dadce0",
+            color: "#2c3e50",
+            fontSize: "12px",
+            fontWeight: 600,
+            textDecoration: "none",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+          }}
+        >
+          <MapTrifold size={14} weight="fill" style={{ color: "#7ebc6f" }} />
+          OpenStreetMap
+          <ArrowSquareOut size={12} weight="bold" style={{ color: "#70757a" }} />
+        </a>
+        {place.website ? (
+          <a
+            href={place.website.startsWith("http") ? place.website : `https://${place.website}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "5px",
+              padding: "5px 10px",
+              borderRadius: "6px",
+              background: "#ffffff",
+              border: "1px solid #dadce0",
+              color: "#1a73e8",
+              fontSize: "12px",
+              fontWeight: 600,
+              textDecoration: "none",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+            }}
+          >
+            <Globe size={14} weight="bold" />
+            Website
+            <ArrowSquareOut size={12} weight="bold" style={{ color: "#70757a" }} />
+          </a>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 function cuisineOptionsFromPlaces(places: PlaceInput[]) {
   const counts = new Map<string, number>();
 
@@ -734,6 +875,7 @@ export default function App() {
               </div>
             </div>
             <VerificationBar place={active} />
+            <ExternalMapLinks place={active} />
             {active.discoveryReasons?.length ? (
               <ul className="reason-list" aria-label="Discovery score reasons">
                 {active.discoveryReasons.slice(0, 3).map((reason) => (
@@ -1097,12 +1239,27 @@ function placeIcon(place: ScoredPlace, active: boolean) {
 
 function placePopupHtml(place: ScoredPlace, rank: number) {
   const cuisines = cuisineParts(place).map(cuisineLabel).join(" · ");
+  const queryText = encodeURIComponent(`${place.name} ${place.address || place.area || ""} Stockholm`);
+  const gmapsUrl = place.latitude && place.longitude
+    ? `https://www.google.com/maps/search/?api=1&query=${queryText}&query_place_id=${place.latitude},${place.longitude}`
+    : `https://www.google.com/maps/search/?api=1&query=${queryText}`;
+  const appleMapsUrl = place.latitude && place.longitude
+    ? `https://maps.apple.com/?q=${encodeURIComponent(place.name)}&ll=${place.latitude},${place.longitude}`
+    : `https://maps.apple.com/?q=${queryText}`;
+  const osmUrl = place.latitude && place.longitude
+    ? `https://www.openstreetmap.org/?mlat=${place.latitude}&mlon=${place.longitude}#map=17/${place.latitude}/${place.longitude}`
+    : `https://www.openstreetmap.org/search?query=${queryText}`;
 
   return `
     <strong>${rank}. ${escapeHtml(place.name)}</strong>
     <span>${escapeHtml(place.kind)} · ${escapeHtml(place.area)}</span>
     ${cuisines ? `<span>${escapeHtml(cuisines)}</span>` : ""}
     <em>${Math.round(place.scores.recommendation)} match · ${escapeHtml(place.evidence.confidence)} confidence</em>
+    <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid #eee; display: flex; gap: 8px; font-size: 11px;">
+      <a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" style="color: #ea4335; font-weight: 600; text-decoration: none;">📍 Google Maps ↗</a>
+      <a href="${appleMapsUrl}" target="_blank" rel="noopener noreferrer" style="color: #0071e3; font-weight: 600; text-decoration: none;">🧭 Apple Maps ↗</a>
+      <a href="${osmUrl}" target="_blank" rel="noopener noreferrer" style="color: #7ebc6f; font-weight: 600; text-decoration: none;">🗺️ OSM ↗</a>
+    </div>
   `;
 }
 
