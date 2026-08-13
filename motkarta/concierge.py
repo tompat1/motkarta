@@ -168,6 +168,13 @@ def answer_query(query: str, documents: list[dict], limit: int = 5) -> list[dict
             else:
                 relevance -= 30.0
 
+        is_specialty_query = any(t in tokens for t in ["specialty", "coffee", "roaster", "roastery"])
+        is_explicit_non_coffee = bool(food_specific_tokens) and not is_specialty_query and not any(t in tokens for t in ["fika", "coffee", "bun", "bakery", "pastry", "breakfast"])
+        is_coffee_or_cafe = type_str in ["specialty coffee", "café", "cafe"] or any(n in title_lower for n in ["pascal", "lykke", "drop coffee", "solkant", "volca", "johan & nyström"])
+
+        if is_explicit_non_coffee and is_coffee_or_cafe:
+            relevance -= 500.0
+
         # 4. Cardamom / Bakery match points
         if "cardamom" in tokens or "bun" in tokens or "bakery" in tokens:
             if "cardamom" in text or "bakery" in type_str or "bakery" in text or "fika" in text:
@@ -191,9 +198,15 @@ def answer_query(query: str, documents: list[dict], limit: int = 5) -> list[dict
 
         return relevance
 
+    is_specialty_query = any(t in tokens for t in ["specialty", "coffee", "roaster", "roastery"])
+    is_explicit_non_coffee = bool(food_specific_tokens) and not is_specialty_query and not any(t in tokens for t in ["fika", "coffee", "bun", "bakery", "pastry", "breakfast"])
+
     scored_docs = [doc for doc in documents if score(doc) > 0]
     if not scored_docs:
-        scored_docs = documents
+        if is_explicit_non_coffee:
+            scored_docs = [doc for doc in documents if str(doc.get("metadata", {}).get("establishment_type", "")).lower() not in ["specialty coffee", "café", "cafe"]]
+        else:
+            scored_docs = documents
 
     return sorted(scored_docs, key=score, reverse=True)[:limit]
 

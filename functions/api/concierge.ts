@@ -109,14 +109,18 @@ export function extractStructuredFilters(query: string): StructuredFilters {
 
 export async function onRequestPost(context: EventContext<Env>) {
   let query = "";
+  let customPlaces: PlaceInput[] | undefined;
   try {
-    const body = (await context.request.json()) as { query?: string };
+    const body = (await context.request.json()) as { query?: string; places?: PlaceInput[] };
     query = body.query || "";
+    if (Array.isArray(body.places) && body.places.length > 0) {
+      customPlaces = body.places;
+    }
   } catch {
     query = "";
   }
 
-  return processConciergeQuery(query, context.env.DB);
+  return processConciergeQuery(query, context.env.DB, customPlaces);
 }
 
 export async function onRequestGet(context: EventContext<Env>) {
@@ -125,7 +129,7 @@ export async function onRequestGet(context: EventContext<Env>) {
   return processConciergeQuery(query, context.env.DB);
 }
 
-export async function processConciergeQuery(query: string, db?: unknown) {
+export async function processConciergeQuery(query: string, db?: unknown, initialPlaces?: PlaceInput[]) {
   const cleanQuery = query.trim();
   if (!cleanQuery) {
     return Response.json(
@@ -140,10 +144,10 @@ export async function processConciergeQuery(query: string, db?: unknown) {
     );
   }
 
-  let places: PlaceInput[] = demoPlaces;
-  let dataSource = "demo";
+  let places: PlaceInput[] = initialPlaces ?? [];
+  let dataSource = initialPlaces?.length ? "full_dataset" : "demo";
 
-  if (db) {
+  if (!places.length && db) {
     try {
       const d1Places = await loadPlacesFromD1(db as Parameters<typeof loadPlacesFromD1>[0]);
       if (d1Places && d1Places.length > 0) {
@@ -155,15 +159,21 @@ export async function processConciergeQuery(query: string, db?: unknown) {
     }
   }
 
+  if (!places.length) {
+    places = demoPlaces;
+    dataSource = "demo";
+  }
+
   const RAGResult = retrieveAndSynthesize(cleanQuery, places);
 
   return Response.json(
     {
       query: cleanQuery,
-      structuredFilters: RAGResult.structuredFilters,
+      structuredFilters: extractStructuredFilters(cleanQuery),
       answer: RAGResult.answer,
       recommendedPlaces: RAGResult.recommendedPlaces,
       source: dataSource,
+      totalSearchSpace: places.length,
     },
     { headers: jsonHeaders },
   );
@@ -320,6 +330,17 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
       }
     }
 
+    // Heavy penalty for coffee places / cafes on explicit non-coffee food queries
+    const isCoffeeOrBakeryPlace = place.kind === "Specialty coffee" || place.kind === "Café" || isVerifiedSpecialty;
+    const isExplicitNonCoffeeQuery =
+      foodSpecificTokens.length > 0 &&
+      !isSpecialtyQuery &&
+      !queryTokens.some((t) => ["fika", "coffee", "bun", "bakery", "pastry", "breakfast"].includes(t));
+
+    if (isExplicitNonCoffeeQuery && isCoffeeOrBakeryPlace) {
+      ragScore -= 500;
+    }
+
     // 4. Cardamom Bun / Bakery match points
     if (queryTokens.includes("cardamom") || queryTokens.includes("bun") || queryTokens.includes("bakery")) {
       if (
@@ -355,11 +376,27 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
     };
   });
 
+  const isSpecialtyQuery =
+    queryTokens.includes("specialty") || queryTokens.includes("coffee") || queryTokens.includes("roaster") || queryTokens.includes("roastery");
+  const isExplicitNonCoffeeQuery =
+    foodSpecificTokens.length > 0 &&
+    !isSpecialtyQuery &&
+    !queryTokens.some((t) => ["fika", "coffee", "bun", "bakery", "pastry", "breakfast"].includes(t));
+
   const validScored = scored.filter((item) => item.ragScore > 0);
   validScored.sort((a, b) => b.ragScore - a.ragScore);
-  const topPicks = (validScored.length ? validScored : scored)
-    .slice(0, validScored.length ? Math.min(3, validScored.length) : 3)
-    .map((item) => item.place);
+
+  let candidatePool = validScored;
+  if (!candidatePool.length) {
+    const nonCoffeeScored = scored.filter((item) => {
+      const isCoffee = item.place.kind === "Specialty coffee" || item.place.kind === "Café";
+      return isExplicitNonCoffeeQuery ? !isCoffee : true;
+    });
+    nonCoffeeScored.sort((a, b) => b.ragScore - a.ragScore);
+    candidatePool = nonCoffeeScored;
+  }
+
+  const topPicks = candidatePool.slice(0, 3).map((item) => item.place);
 
   const listItems = topPicks.map((pick) => {
     const reasons = (pick.discoveryReasons ?? [])

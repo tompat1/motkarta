@@ -70,6 +70,14 @@ test("RAG retrieveAndSynthesize ranks French bistros for 'French bistro' query",
   assert.ok(recommendedNames.some((n) => n.includes("Pastis") || n.includes("Sud")));
 });
 
+test("RAG retrieveAndSynthesize ranks Thai places for 'Best thai place in Stockholm' query and never returns coffee places", () => {
+  const result = retrieveAndSynthesize("Best thai place in Stockholm", demoPlaces);
+  const recommendedNames = result.recommendedPlaces.map((p) => p.name);
+
+  assert.ok(recommendedNames.some((n) => n.includes("Thai") || n.includes("Koh Phangan")));
+  assert.equal(recommendedNames.some((n) => n.includes("Pascal") || n.includes("Lykke") || n.includes("Coffee")), false);
+});
+
 test("parseConciergeAnswer parses markdown output into structured cards and charter", () => {
   const markdown = `Based on our database:
 

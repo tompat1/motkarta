@@ -744,7 +744,7 @@ export default function App() {
       const resp = await fetch("/api/concierge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: concierge }),
+        body: JSON.stringify({ query: concierge, places }),
       });
 
       if (resp.ok) {
