@@ -810,3 +810,215 @@ footer {
     gap: 15px;
   }
 }
+
+/* Styled Concierge Result Cards */
+.concierge-results {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.concierge-intro {
+  font: 14px/1.5 Inter, system-ui, sans-serif;
+  color: #3b3a36;
+  font-weight: 500;
+  margin-bottom: 6px;
+  border-bottom: 1px dashed #dcd7cd;
+  padding-bottom: 10px;
+}
+
+.concierge-card {
+  background: #ffffff;
+  border: 1px solid #e5e0d5;
+  border-left: 5px solid var(--orange);
+  box-shadow: 0 4px 12px rgba(13, 57, 42, 0.08);
+  padding: 18px 20px;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.concierge-card:hover {
+  border-left-color: var(--green);
+  box-shadow: 0 6px 20px rgba(13, 57, 42, 0.14);
+  transform: translateY(-2px);
+}
+
+.concierge-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.concierge-card-title {
+  font-size: 18px;
+  font-weight: 750;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.concierge-card-title button {
+  background: none;
+  border: none;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  text-decoration: underline;
+  text-decoration-color: rgba(13, 57, 42, 0.25);
+  transition: color 0.15s ease;
+}
+
+.concierge-card-title button:hover {
+  color: var(--green);
+  text-decoration-color: var(--green);
+}
+
+.concierge-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.concierge-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.concierge-badge.area {
+  background: #eef5f2;
+  color: #0d392a;
+  border: 1px solid #c2e2d4;
+}
+
+.concierge-badge.high {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.concierge-badge.medium {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.concierge-badge.low {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.concierge-match-box {
+  background: #f7f3ec;
+  border-left: 3px solid var(--green);
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1c382b;
+  line-height: 1.45;
+}
+
+.concierge-details {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #4a4843;
+}
+
+.concierge-detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.concierge-label {
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.concierge-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px solid #efebe4;
+}
+
+.concierge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 650;
+  padding: 6px 12px;
+  border-radius: 3px;
+  border: 1px solid #dcd7cd;
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.concierge-btn:hover {
+  background: var(--green);
+  color: #ffffff;
+  border-color: var(--green);
+}
+
+.concierge-btn.primary {
+  background: var(--green);
+  color: #ffffff;
+  border-color: var(--green);
+}
+
+.concierge-btn.primary:hover {
+  background: var(--orange);
+  border-color: var(--orange);
+}
+
+.concierge-charter-box {
+  background: #0d392a;
+  color: #f7f1e5;
+  padding: 18px 22px;
+  border-radius: 4px;
+  margin-top: 12px;
+}
+
+.concierge-charter-title {
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8ed6b5;
+  margin-bottom: 10px;
+}
+
+.concierge-charter-list {
+  display: grid;
+  gap: 6px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.concierge-charter-list span::before {
+  content: "✓ ";
+  color: #8ed6b5;
+  font-weight: 700;
+}

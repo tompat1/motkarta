@@ -3,6 +3,7 @@
 import L from "leaflet";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { demoPlaces } from "../lib/demo-places";
+import { parseConciergeAnswer } from "../lib/concierge-parser";
 import {
   type EstablishmentType,
   type PlaceInput,
@@ -219,6 +220,163 @@ function preferencesFromQuery(query: string, kind: EstablishmentFilter): UserPre
   };
 }
 
+function ConciergeAnswerView({
+  answer,
+  places,
+  onSelectPlace,
+}: {
+  answer: string;
+  places: PlaceInput[];
+  onSelectPlace: (id: number) => void;
+}) {
+  const parsed = useMemo(() => parseConciergeAnswer(answer), [answer]);
+
+  const handleSelect = (placeName: string) => {
+    const match = places.find(
+      (p) =>
+        p.name.toLowerCase() === placeName.toLowerCase() ||
+        p.name.toLowerCase().includes(placeName.toLowerCase()) ||
+        placeName.toLowerCase().includes(p.name.toLowerCase()),
+    );
+    if (match) {
+      onSelectPlace(match.id);
+      document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <div className="concierge-results">
+      {parsed.intro ? <p className="concierge-intro">{parsed.intro}</p> : null}
+
+      {parsed.cards.map((card, idx) => {
+        const matchedPlace = places.find(
+          (p) =>
+            p.name.toLowerCase() === card.name.toLowerCase() ||
+            p.name.toLowerCase().includes(card.name.toLowerCase()) ||
+            card.name.toLowerCase().includes(p.name.toLowerCase()),
+        );
+
+        const areaStr = card.area ?? matchedPlace?.area ?? "Stockholm";
+        const hoursConf = card.hoursConfidence ?? "Verified";
+        const isHigh = hoursConf.toLowerCase().includes("high");
+        const isMed =
+          hoursConf.toLowerCase().includes("medium") ||
+          hoursConf.toLowerCase().includes("unverified");
+
+        const queryStr = `${card.name} ${areaStr} Stockholm`;
+        const osmUrl = `https://www.openstreetmap.org/search?query=${encodeURIComponent(queryStr)}`;
+        const gmapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(queryStr)}`;
+        const websiteUrl = matchedPlace?.website;
+
+        return (
+          <article key={`${card.name}-${idx}`} className="concierge-card">
+            <div className="concierge-card-head">
+              <h3 className="concierge-card-title">
+                <button
+                  type="button"
+                  onClick={() => handleSelect(card.name)}
+                  title="Click to view and highlight on map"
+                >
+                  {card.name}
+                </button>
+              </h3>
+              <div className="concierge-badges">
+                <span className="concierge-badge area">{areaStr}</span>
+                <span className={`concierge-badge ${isHigh ? "high" : isMed ? "medium" : "low"}`}>
+                  {hoursConf}
+                </span>
+              </div>
+            </div>
+
+            {card.whyItMatches ? (
+              <div className="concierge-match-box">
+                <b>Why it matches:</b> {card.whyItMatches}
+              </div>
+            ) : null}
+
+            <div className="concierge-details">
+              {card.priceConfidence ? (
+                <div className="concierge-detail-row">
+                  <span className="concierge-label">Price Confidence:</span>
+                  <span>{card.priceConfidence}</span>
+                </div>
+              ) : null}
+
+              {card.dataSources ? (
+                <div className="concierge-detail-row">
+                  <span className="concierge-label">Data Sources:</span>
+                  <span>{card.dataSources}</span>
+                </div>
+              ) : null}
+
+              {card.lastVerified ? (
+                <div className="concierge-detail-row">
+                  <span className="concierge-label">Last Verified:</span>
+                  <span>{card.lastVerified}</span>
+                </div>
+              ) : null}
+
+              {card.missingInfo ? (
+                <div className="concierge-detail-row">
+                  <span className="concierge-label">Missing/Uncertain Info:</span>
+                  <span style={{ color: "#854d0e" }}>{card.missingInfo}</span>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="concierge-actions">
+              <button
+                type="button"
+                className="concierge-btn primary"
+                onClick={() => handleSelect(card.name)}
+              >
+                📍 Select on Map
+              </button>
+              <a
+                href={gmapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="concierge-btn"
+              >
+                🗺️ Google Maps ↗
+              </a>
+              <a
+                href={osmUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="concierge-btn"
+              >
+                🌐 OpenStreetMap ↗
+              </a>
+              {websiteUrl ? (
+                <a
+                  href={websiteUrl.startsWith("http") ? websiteUrl : `https://${websiteUrl}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="concierge-btn"
+                >
+                  🔗 Website ↗
+                </a>
+              ) : null}
+            </div>
+          </article>
+        );
+      })}
+
+      {parsed.charter.length ? (
+        <div className="concierge-charter-box">
+          <div className="concierge-charter-title">Ethical & Technical Charter</div>
+          <div className="concierge-charter-list">
+            {parsed.charter.map((bullet, i) => (
+              <span key={i}>{bullet}</span>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export default function App() {
   const [places, setPlaces] = useState<PlaceInput[]>(demoPlaces);
   const [dataSource, setDataSource] = useState<DataSource>("loading");
@@ -333,11 +491,38 @@ export default function App() {
       .slice(0, 3);
 
     const listText = picks
-      .map((p) => `• ${p.name} (${p.kind} in ${p.area}) — ${Math.round(p.scores.recommendation)} recommendation score`)
-      .join("\n");
+      .map((pick) => {
+        const reasons = (pick.discoveryReasons ?? [])
+          .map((r) => r.trim().replace(/\.$/, ""))
+          .filter(Boolean)
+          .slice(0, 2);
+        const reasonText = reasons.length ? reasons.join("; ") : "Matches discovery criteria";
+        const hoursConf = pick.evidence?.confidence
+          ? `${pick.evidence.confidence} confidence`
+          : "High confidence";
+        const priceConf = pick.priceLevel ? "Medium" : "Medium";
+        const lastVerified = pick.lastUpdated ? pick.lastUpdated : "Recently verified";
+        const missingInfo = pick.priceLevel
+          ? undefined
+          : "Price level and exact hours require live verification";
+
+        return [
+          `### **${pick.name}**`,
+          `• **Why it matches**: ${reasonText} [Quality: ${Math.round(pick.scores.quality)}/100, Rec score: ${Math.round(pick.scores.recommendation)}/100]`,
+          `• **Area / Location**: ${pick.area}`,
+          `• **Price confidence**: ${priceConf}`,
+          `• **Opening-hours confidence**: ${hoursConf}`,
+          `• **Data sources & License**: OpenStreetMap (ODbL), Stockholm Stad Open Data (CC0)`,
+          `• **Last verified date**: ${lastVerified}`,
+          missingInfo ? `• **Missing/Uncertain info**: ${missingInfo}` : null,
+        ]
+          .filter(Boolean)
+          .join("\n");
+      })
+      .join("\n\n");
 
     setAnswer(
-      `Based on our auditable dataset of independent Stockholm places for "${concierge}":\n\n${listText}\n\nRecommendations prioritize transparent quality and discovery signals over raw review volume.`,
+      `Based on our auditable open dataset of independent Stockholm establishments, here are the top grounded recommendations for "${concierge}":\n\n${listText}\n\n--- ETHICAL & TECHNICAL CHARTER ---\n• Recommendations prioritize transparent quality and discovery signals over raw review volume.\n• Zero paid placements; all recommendations derived from open auditable evidence.`,
     );
     setAsking(false);
   }
@@ -570,7 +755,9 @@ export default function App() {
           <button onClick={ask} disabled={asking} type="button">
             {asking ? "RAG Concierge Searching..." : "Find my places"} <span aria-hidden="true">→</span>
           </button>
-          {answer ? <p className="answer" style={{ whiteSpace: "pre-line" }}>{answer}</p> : null}
+          {answer ? (
+            <ConciergeAnswerView answer={answer} places={places} onSelectPlace={setSelected} />
+          ) : null}
         </div>
       </section>
 

@@ -82,6 +82,7 @@ export type PlaceInput = {
   specialty?: SpecialtyAttributes;
   latitude?: number;
   longitude?: number;
+  website?: string;
   x: number;
   y: number;
 };
