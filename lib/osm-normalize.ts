@@ -15,7 +15,7 @@ export type OsmFoodPlaceRow = {
   source?: string;
 };
 
-const restaurantCategories = new Set(["restaurant", "fast_food", "food_court", "bistro"]);
+const restaurantCategories = new Set(["restaurant", "fast_food", "food_court", "bistro", "bar", "pub"]);
 const bakeryCategories = new Set(["bakery", "pastry", "confectionery"]);
 const specialtyCoffeeCategories = new Set(["coffee_roaster", "coffee"]);
 

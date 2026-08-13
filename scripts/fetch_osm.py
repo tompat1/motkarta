@@ -25,12 +25,12 @@ BBOX = "59.20,17.75,59.47,18.25"
 MUNICIPALITY_QUERY = '''[out:json][timeout:180];
 area["boundary"="administrative"]["name"="Stockholms kommun"]->.searchArea;
 (
- nwr["amenity"~"restaurant|cafe|fast_food|food_court"](area.searchArea);
+ nwr["amenity"~"restaurant|cafe|fast_food|food_court|bar|pub"](area.searchArea);
  nwr["shop"~"bakery|pastry|confectionery|coffee"](area.searchArea);
  nwr["craft"="coffee_roaster"](area.searchArea);
 );out center meta;'''
 BBOX_QUERY = f'''[out:json][timeout:180];(
- nwr["amenity"~"restaurant|cafe|fast_food|food_court"]({BBOX});
+ nwr["amenity"~"restaurant|cafe|fast_food|food_court|bar|pub"]({BBOX});
  nwr["shop"~"bakery|pastry|confectionery|coffee"]({BBOX});
  nwr["craft"="coffee_roaster"]({BBOX});
 );out center meta;'''

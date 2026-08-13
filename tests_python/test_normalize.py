@@ -6,6 +6,8 @@ def test_osm_category_normalization_keeps_plain_cafe_as_cafe():
     assert normalize_osm_establishment_type("coffee_roaster") == "Specialty coffee"
     assert normalize_osm_establishment_type("bakery") == "Bakery"
     assert normalize_osm_establishment_type("restaurant") == "Restaurant"
+    assert normalize_osm_establishment_type("bar") == "Restaurant"
+    assert normalize_osm_establishment_type("pub") == "Restaurant"
 
 
 def test_osm_tags_and_description():

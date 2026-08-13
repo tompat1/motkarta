@@ -34,7 +34,7 @@ def normalize_osm_establishment_type(category: str, cuisine: str = "") -> str | 
         return "Specialty coffee"
     if value in {"bakery", "pastry", "confectionery"}:
         return "Bakery"
-    if value in {"restaurant", "fast_food", "food_court", "bistro"}:
+    if value in {"restaurant", "fast_food", "food_court", "bistro", "bar", "pub"}:
         return "Restaurant"
     if value == "cafe":
         return "Café"
