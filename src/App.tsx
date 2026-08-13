@@ -821,6 +821,7 @@ function FoodMap({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Map<number, L.Marker>>(new Map());
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {
@@ -830,9 +831,11 @@ function FoodMap({
     const map = L.map(containerRef.current, {
       center: [59.3293, 18.0686],
       zoom: 12,
-      zoomControl: true,
+      zoomControl: false,
       scrollWheelZoom: true,
     });
+
+    L.control.zoom({ position: "topright" }).addTo(map);
 
     L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -842,12 +845,56 @@ function FoodMap({
     mapRef.current = map;
     window.setTimeout(() => map.invalidateSize(), 0);
 
+    const handleFsChange = () => {
+      const isFs = Boolean(document.fullscreenElement);
+      setIsFullscreen(isFs);
+      window.setTimeout(() => map.invalidateSize(), 100);
+    };
+
+    document.addEventListener("fullscreenchange", handleFsChange);
+
     return () => {
+      document.removeEventListener("fullscreenchange", handleFsChange);
       markersRef.current.clear();
       map.remove();
       mapRef.current = null;
     };
   }, []);
+
+  const handleRecenter = () => {
+    const map = mapRef.current;
+    if (!map) return;
+    const bounds = L.latLngBounds([]);
+    places.filter(hasCoordinates).forEach((place) => {
+      bounds.extend([place.latitude, place.longitude]);
+    });
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [42, 42], maxZoom: 13 });
+    } else {
+      map.setView([59.3293, 18.0686], 12);
+    }
+  };
+
+  const handleToggleFullscreen = () => {
+    const panel = containerRef.current?.closest(".map-panel");
+    if (!panel) return;
+
+    if (!document.fullscreenElement) {
+      if (panel.requestFullscreen) {
+        void panel.requestFullscreen();
+      } else {
+        panel.classList.toggle("is-fullscreen");
+        setIsFullscreen(panel.classList.contains("is-fullscreen"));
+      }
+    } else {
+      if (document.exitFullscreen) {
+        void document.exitFullscreen();
+      } else {
+        panel.classList.remove("is-fullscreen");
+        setIsFullscreen(false);
+      }
+    }
+  };
 
   useEffect(() => {
     const map = mapRef.current;
@@ -892,6 +939,24 @@ function FoodMap({
 
   return (
     <div className="leaflet-shell">
+      <div className="map-toolbar">
+        <button
+          type="button"
+          className="map-control-btn"
+          onClick={handleRecenter}
+          title="Center map to all recommendations"
+        >
+          🎯 Center
+        </button>
+        <button
+          type="button"
+          className="map-control-btn"
+          onClick={handleToggleFullscreen}
+          title="Toggle Fullscreen Map View"
+        >
+          {isFullscreen ? "↙ Exit" : "⛶ Fullscreen"}
+        </button>
+      </div>
       <div ref={containerRef} className="leaflet-map" aria-label="Interactive Stockholm food map" />
     </div>
   );
