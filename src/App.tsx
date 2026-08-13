@@ -204,6 +204,7 @@ export default function App() {
     "specialty coffee and a cardamom bun, away from the busiest tourist streets",
   );
   const [answer, setAnswer] = useState<string | null>(null);
+  const [asking, setAsking] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -261,7 +262,30 @@ export default function App() {
 
   const active = ranked.find((place) => place.id === selected) ?? ranked[0] ?? scoredPlaces[0];
 
-  function ask() {
+  async function ask() {
+    if (!concierge.trim()) return;
+    setAsking(true);
+    setAnswer(null);
+
+    try {
+      const resp = await fetch("/api/concierge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: concierge }),
+      });
+
+      if (resp.ok) {
+        const payload = (await resp.json()) as { answer?: string };
+        if (payload.answer) {
+          setAnswer(payload.answer);
+          setAsking(false);
+          return;
+        }
+      }
+    } catch {
+      // Fallback to local RAG when endpoint is unreachable in standalone dev
+    }
+
     const request = concierge.toLowerCase();
     const requestedKind: EstablishmentType | undefined = request.includes("coffee")
       ? "Specialty coffee"
@@ -277,11 +301,16 @@ export default function App() {
     const picks = places
       .map((place) => scorePlace(place, requestedPreferences))
       .sort((a, b) => b.scores.recommendation - a.scores.recommendation)
-      .slice(0, 2);
+      .slice(0, 3);
+
+    const listText = picks
+      .map((p) => `• ${p.name} (${p.kind} in ${p.area}) — ${Math.round(p.scores.recommendation)} recommendation score`)
+      .join("\n");
 
     setAnswer(
-      `${picks.map((place) => place.name).join(" + ")} best matches this demo query. The score combines relevance, quality, popularity, discovery and freshness instead of letting raw review volume decide.`,
+      `Based on our auditable dataset of independent Stockholm places for "${concierge}":\n\n${listText}\n\nRecommendations prioritize transparent quality and discovery signals over raw review volume.`,
     );
+    setAsking(false);
   }
 
   return (
@@ -509,10 +538,10 @@ export default function App() {
         <div className="ask-box">
           <label htmlFor="ask">I am looking for...</label>
           <textarea id="ask" value={concierge} onChange={(event) => setConcierge(event.target.value)} />
-          <button onClick={ask} type="button">
-            Find my places <span aria-hidden="true">→</span>
+          <button onClick={ask} disabled={asking} type="button">
+            {asking ? "RAG Concierge Searching..." : "Find my places"} <span aria-hidden="true">→</span>
           </button>
-          {answer ? <p className="answer">{answer}</p> : null}
+          {answer ? <p className="answer" style={{ whiteSpace: "pre-line" }}>{answer}</p> : null}
         </div>
       </section>
 

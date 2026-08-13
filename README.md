@@ -263,6 +263,37 @@ outputs/rag_corpus.jsonl
 public/data/places.json
 ```
 
+## AI Concierge Architecture with RAG
+
+The AI Concierge retrieves verified establishments from the database before passing context to the language model to synthesize an answer:
+
+```mermaid
+flowchart TD
+    A["User request"] --> B["Extract filters"]
+    B --> C["Search restaurant database"]
+    C --> D["Rank with transparent rules"]
+    D --> E["AI writes recommendation"]
+    E --> F["Answer with sources and reasons"]
+```
+
+1. **User request**: The user submits a natural discovery query (e.g. *"specialty coffee and a cardamom bun in Södermalm"*).
+2. **Extract filters**: Parses intent for establishment type, tags, location, and independence criteria.
+3. **Search restaurant database**: RAG retrieval searches candidate documents from `outputs/rag_corpus.jsonl` (Python) or Cloudflare D1/places (`/api/concierge`).
+4. **Rank with transparent rules**: Ranks candidate places using explicit quality, recency, and discovery rules rather than platform review counts.
+5. **AI writes recommendation**: Prompt engineering enforces strict grounding so the LLM synthesizes recommendations exclusively from retrieved database facts.
+6. **Answer with sources and reasons**: Delivers explainable recommendations backed by discovery scores, evidence labels, and source citations.
+
+### Ethical & Technical Charter
+
+1. **Meaning of "Unbiased"**: "Unbiased" means **transparent, plural-source, and auditable**—not perfectly objective. All ranking inputs and formulas are published and reproducible.
+2. **No Negative Inference**: The system **never infers that a business is bad** simply because it lacks online reviews or has missing metadata attributes.
+3. **No Copyrighted Content**: Does not republish copyrighted blog text, paywalled articles, or commercial review copy.
+4. **Source Attribution & Open Licensing**: Preserves OpenStreetMap ODbL and Stockholm Stad CC0 source attribution and license headers across all exports and API responses.
+5. **Separation of Facts & Scoring**: Strictly separates verifiable physical facts (address, coordinates, opening hours) from algorithmic discovery scores.
+6. **Explicit Confidence & Uncertainty**: Displays confidence levels (`High`, `Medium`, `Low`) for uncertain attributes and explicitly flags missing data (e.g. unverified opening hours or price tiers).
+7. **Auditable Correction History**: Maintains a change log history rather than silently overwriting records, and supports owner/community corrections via OpenStreetMap.
+8. **Terms Compliance**: Uses open public APIs and datasets (OpenStreetMap Overpass API, Stockholm Stad Portal); **does not scrape Google Maps** in violation of terms.
+
 The pipeline excludes obvious large fast-food chains from the scored/map/public
 artifacts by default. Current explicit exclusions are McDonald's, Burger King,
 Sibylla and MAX. Removed rows are still written to
