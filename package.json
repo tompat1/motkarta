@@ -18,6 +18,8 @@
     "db:seed:demo": "node scripts/generate_seed_sql.mjs",
     "db:seed:osm": "node scripts/generate_osm_seed_sql.mjs",
     "db:seed:evidence": "node scripts/generate_evidence_seed_sql.mjs",
+    "db:scores:combine": "node scripts/combine_score_export.mjs",
+    "db:scores": "node scripts/generate_score_snapshot_sql.mjs",
     "deploy:cloudflare": "npm run build && wrangler pages deploy dist --project-name stockholm-independent-food-map"
   },
   "dependencies": {

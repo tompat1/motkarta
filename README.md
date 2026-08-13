@@ -116,6 +116,23 @@ Specialty-coffee attributes can be updated in the same record, but should only
 be set from recognized guides, editorial review, your own verification, or
 consistent community submissions.
 
+## Score snapshots
+
+Scores can be recomputed into `score_snapshots` after importing OSM and evidence.
+Export current D1 rows, combine them, generate score SQL, then apply it:
+
+```bash
+wrangler d1 execute <database-name> --remote --json --file scripts/export_places.sql > data/place-export.json
+wrangler d1 execute <database-name> --remote --json --file scripts/export_evidence.sql > data/evidence-export.json
+wrangler d1 execute <database-name> --remote --json --file scripts/export_tags.sql > data/tag-export.json
+npm run db:scores:combine -- data/place-export.json data/evidence-export.json data/tag-export.json data/score-input.json
+npm run db:scores -- data/score-input.json drizzle/score-snapshots.sql
+wrangler d1 execute <database-name> --remote --file drizzle/score-snapshots.sql
+```
+
+This preserves raw evidence separately from computed score snapshots, so score
+changes can be audited and rerun as the model improves.
+
 For the residual model, enrich/merge source data into a CSV containing:
 
 `name`, `platform_rating`, `review_count`, `price_level`, `latitude`, `longitude`, `category`, `cuisine`, `district`, `chain_status`.

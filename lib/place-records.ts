@@ -10,7 +10,7 @@ type D1Database = {
   };
 };
 
-type PlaceRow = {
+export type PlaceRow = {
   id: number;
   name: string;
   type: EstablishmentType;
@@ -48,7 +48,7 @@ type PlaceRow = {
   verification_sources: number | null;
 };
 
-type EvidenceRow = {
+export type EvidenceRow = {
   establishment_id: number;
   source_type: string;
   source_name: string;
@@ -56,12 +56,12 @@ type EvidenceRow = {
   captured_at: string;
 };
 
-type TagRow = {
+export type TagRow = {
   establishment_id: number;
   tag: string;
 };
 
-const placeQuery = `
+export const placeQuery = `
   SELECT
     e.id,
     e.name,
@@ -118,13 +118,13 @@ const placeQuery = `
   ORDER BY e.name ASC
 `;
 
-const evidenceQuery = `
+export const evidenceQuery = `
   SELECT establishment_id, source_type, source_name, confidence, captured_at
   FROM evidence_sources
   ORDER BY captured_at DESC, id DESC
 `;
 
-const tagQuery = `
+export const tagQuery = `
   SELECT establishment_id, tag
   FROM establishment_tags
   ORDER BY tag ASC
@@ -142,15 +142,27 @@ export async function loadPlacesFromD1(db: D1Database): Promise<PlaceInput[]> {
     return demoPlaces;
   }
 
-  const evidenceByPlace = groupBy(evidenceResult.results ?? [], "establishment_id");
-  const tagsByPlace = groupBy(tagResult.results ?? [], "establishment_id");
+  return rowsToPlaceInputs(
+    rows,
+    evidenceResult.results ?? [],
+    tagResult.results ?? [],
+  );
+}
+
+export function rowsToPlaceInputs(
+  rows: PlaceRow[],
+  evidenceRows: EvidenceRow[] = [],
+  tagRows: TagRow[] = [],
+) {
+  const evidenceByPlace = groupBy(evidenceRows, "establishment_id");
+  const tagsByPlace = groupBy(tagRows, "establishment_id");
 
   return rows.map((row) =>
     rowToPlaceInput(row, evidenceByPlace.get(row.id) ?? [], tagsByPlace.get(row.id) ?? []),
   );
 }
 
-function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagRows: TagRow[]): PlaceInput {
+export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagRows: TagRow[]): PlaceInput {
   const sourceTypes = new Set(evidenceRows.map((row) => row.source_type));
   const latestEvidenceDate = latestDate([
     row.latest_rating_at,
