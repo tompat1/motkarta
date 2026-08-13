@@ -13,6 +13,7 @@ from motkarta.pipeline import (
     dedupe_places,
     load_raw_csv,
     score_places,
+    write_geojson,
     write_rag_corpus,
 )
 
@@ -37,6 +38,7 @@ def run_pipeline(raw_csv: Path, data_dir: Path, output_dir: Path) -> None:
     scored.to_csv(scored_path, index=False)
 
     build_folium_map(scored, output_dir / "stockholm_food_map.html")
+    write_geojson(scored, output_dir / "stockholm_food_places.geojson")
     write_rag_corpus(scored, output_dir / "rag_corpus.jsonl")
 
     report = build_coverage_report(scored, duplicate_count=len(duplicates))
@@ -46,6 +48,7 @@ def run_pipeline(raw_csv: Path, data_dir: Path, output_dir: Path) -> None:
     print(f"Wrote {deduped_path}")
     print(f"Wrote {scored_path}")
     print(f"Wrote {output_dir / 'stockholm_food_map.html'}")
+    print(f"Wrote {output_dir / 'stockholm_food_places.geojson'}")
     print(f"Wrote {output_dir / 'coverage_report.md'}")
     print(f"Wrote {output_dir / 'rag_corpus.jsonl'}")
 

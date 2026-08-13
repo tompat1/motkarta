@@ -94,23 +94,39 @@ def dedupe_places(frame: pd.DataFrame, threshold: float = 0.92) -> tuple[pd.Data
     data = frame.copy().reset_index(drop=True)
     kept: list[int] = []
     duplicate_rows: list[dict] = []
+    kept_by_osm_id: dict[tuple[str, str], int] = {}
+    kept_by_candidate_key: dict[tuple, list[int]] = {}
 
     for index, row in data.iterrows():
-        duplicate_of = None
-        for kept_index in kept:
-            candidate = data.loc[kept_index]
-            if is_duplicate(row, candidate, threshold):
-                duplicate_of = kept_index
-                break
+        osm_key = (str(row["osm_type"]), str(row["osm_id"]))
+        duplicate_of = kept_by_osm_id.get(osm_key) if all(osm_key) else None
+
+        candidate_indexes: set[int] = set()
+        if duplicate_of is None:
+            for key in dedupe_candidate_keys(row):
+                candidate_indexes.update(kept_by_candidate_key.get(key, []))
+
+        if duplicate_of is None:
+            for kept_index in candidate_indexes:
+                candidate = data.loc[kept_index]
+                if is_duplicate(row, candidate, threshold):
+                    duplicate_of = kept_index
+                    break
+
         if duplicate_of is None:
             kept.append(index)
+            if all(osm_key):
+                kept_by_osm_id[osm_key] = index
+            for key in dedupe_candidate_keys(row):
+                kept_by_candidate_key.setdefault(key, []).append(index)
         else:
+            candidate = data.loc[duplicate_of]
             duplicate_rows.append(
                 {
                     "duplicate_index": index,
                     "duplicate_name": row["name"],
                     "kept_index": duplicate_of,
-                    "kept_name": data.loc[duplicate_of, "name"],
+                    "kept_name": candidate["name"],
                 }
             )
 
@@ -189,6 +205,32 @@ def write_rag_corpus(frame: pd.DataFrame, path: str | Path) -> None:
             handle.write(json.dumps(document, ensure_ascii=False) + "\n")
 
 
+def write_geojson(frame: pd.DataFrame, path: str | Path) -> None:
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    features = []
+    for _, row in frame.dropna(subset=["latitude", "longitude"]).iterrows():
+        properties = {
+            key: normalize_json_value(value)
+            for key, value in row.to_dict().items()
+            if key not in {"latitude", "longitude"}
+        }
+        features.append(
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [float(row["longitude"]), float(row["latitude"])],
+                },
+                "properties": properties,
+            }
+        )
+    target.write_text(
+        json.dumps({"type": "FeatureCollection", "features": features}, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
 def clean_text(value: object) -> str:
     return re.sub(r"\s+", " ", str(value or "")).strip()
 
@@ -244,5 +286,42 @@ def is_duplicate(row: pd.Series, candidate: pd.Series, threshold: float) -> bool
     return similar_name and (near or same_address)
 
 
+def dedupe_candidate_keys(row: pd.Series) -> list[tuple]:
+    keys: list[tuple] = []
+    name = name_key(row["name"])
+    address = clean_text(row.get("address", "")).lower()
+    if address:
+        keys.append(("address", address))
+
+    lat = row.get("latitude")
+    lon = row.get("longitude")
+    if pd.notna(lat) and pd.notna(lon) and name:
+        lat_cell, lon_cell = coordinate_cell(float(lat), float(lon))
+        prefix = name[:10]
+        for lat_delta in (-1, 0, 1):
+            for lon_delta in (-1, 0, 1):
+                keys.append(("geo", prefix, lat_cell + lat_delta, lon_cell + lon_delta))
+
+    if not keys and name:
+        keys.append(("name", name[:12]))
+    return keys
+
+
+def name_key(value: object) -> str:
+    return re.sub(r"[^a-z0-9]+", "", clean_text(value).lower())
+
+
+def coordinate_cell(lat: float, lon: float) -> tuple[int, int]:
+    return int(lat * 1000), int(lon * 1000)
+
+
 def dataframe_records(frame: pd.DataFrame) -> list[dict]:
     return [asdict(row) if hasattr(row, "__dataclass_fields__") else dict(row) for row in frame.to_dict(orient="records")]
+
+
+def normalize_json_value(value: object) -> object:
+    if pd.isna(value):
+        return None
+    if hasattr(value, "item"):
+        return value.item()
+    return value

@@ -88,9 +88,10 @@ npm run db:seed:osm
 
 The generated file is `drizzle/seed-osm.sql`. It upserts OSM places by
 `osm_type` + `osm_id`, stores OSM as source evidence, and normalizes categories
-into the four establishment types:
+into the five establishment types:
 
 - `restaurant`, `fast_food`, `food_court` -> `Restaurant`
+- cuisine/category values containing `bistro` -> `Bistro`
 - `bakery`, `pastry`, `confectionery` -> `Bakery`
 - `cafe` -> `Café`
 - `coffee`, `coffee_roaster` -> `Specialty coffee`
@@ -181,12 +182,15 @@ data/stockholm_food_places_deduped.csv
 data/stockholm_food_duplicates.csv
 data/stockholm_food_places_scored.csv
 outputs/stockholm_food_map.html
+outputs/stockholm_food_places.geojson
 outputs/coverage_report.md
 outputs/rag_corpus.jsonl
 ```
 
-The Folium map includes establishment-type layers and a missing-information
-layer. The RAG corpus powers a simple local concierge:
+The Folium map includes filter layers for establishment type, cuisine,
+neighbourhood and missing information. The GeoJSON export is the migration path
+for a later Leaflet, MapLibre, Mapbox or CARTO app. The RAG corpus powers a
+simple local concierge:
 
 ```bash
 .venv/bin/python scripts/query_concierge.py "filter coffee roaster"
