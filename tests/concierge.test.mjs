@@ -63,6 +63,13 @@ test("RAG retrieveAndSynthesize ranks Spanish places for 'Spanish tapas' query",
   assert.ok(recommendedNames.some((n) => n.includes("Ramblas") || n.includes("Boqueria")));
 });
 
+test("RAG retrieveAndSynthesize ranks French bistros for 'French bistro' query", () => {
+  const result = retrieveAndSynthesize("French bistro", demoPlaces);
+  const recommendedNames = result.recommendedPlaces.map((p) => p.name);
+
+  assert.ok(recommendedNames.some((n) => n.includes("Pastis") || n.includes("Sud")));
+});
+
 test("parseConciergeAnswer parses markdown output into structured cards and charter", () => {
   const markdown = `Based on our database:
 

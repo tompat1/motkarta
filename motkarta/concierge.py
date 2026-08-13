@@ -24,6 +24,11 @@ def extract_structured_filters(query: str) -> dict:
         ("russian", "russian"),
         ("ukrainian", "ukrainian"),
         ("georgian", "georgian"),
+        ("france", "french"),
+        ("french", "french"),
+        ("franskt", "french"),
+        ("bistro", "bistro"),
+        ("brasserie", "bistro"),
         ("sweden", "swedish"),
         ("swedish", "swedish"),
         ("husmanskost", "swedish"),
@@ -104,6 +109,9 @@ def answer_query(query: str, documents: list[dict], limit: int = 5) -> list[dict
         "austria": ["austrian", "austria", "schnitzel", "german"],
         "austrian": ["austrian", "austria", "schnitzel", "german"],
         "schnitzel": ["schnitzel", "german", "austrian", "czech"],
+        "french": ["french", "france", "franskt", "bistro", "brasserie"],
+        "france": ["french", "france", "franskt", "bistro", "brasserie"],
+        "bistro": ["bistro", "french", "brasserie"],
     }
 
     def match_token_with_aliases(tok: str, target: str) -> bool:
