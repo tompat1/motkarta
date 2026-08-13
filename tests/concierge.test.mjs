@@ -41,6 +41,28 @@ test("RAG retrieveAndSynthesize excludes commercial chains Nespresso and Kahls a
   assert.ok(recommendedNames.some((n) => ["Pascal", "Lykke", "Drop Coffee", "Solkant", "Volca", "Muttley"].some(s => n.includes(s))));
 });
 
+test("RAG retrieveAndSynthesize ranks Polish restaurants for 'food from Poland' query", () => {
+  const result = retrieveAndSynthesize("I want to eat food from Poland", demoPlaces);
+  const recommendedNames = result.recommendedPlaces.map((p) => p.name);
+
+  assert.ok(recommendedNames.some((n) => n.includes("Pyza") || n.includes("Babcia")));
+  assert.equal(recommendedNames.some((n) => n.includes("Bakery") || n.includes("Café")), false);
+});
+
+test("RAG retrieveAndSynthesize ranks Mexican places for 'Mexican food' query", () => {
+  const result = retrieveAndSynthesize("Mexican food", demoPlaces);
+  const recommendedNames = result.recommendedPlaces.map((p) => p.name);
+
+  assert.ok(recommendedNames.some((n) => n.includes("La Neta") || n.includes("Cheibo")));
+});
+
+test("RAG retrieveAndSynthesize ranks Spanish places for 'Spanish tapas' query", () => {
+  const result = retrieveAndSynthesize("Spanish tapas", demoPlaces);
+  const recommendedNames = result.recommendedPlaces.map((p) => p.name);
+
+  assert.ok(recommendedNames.some((n) => n.includes("Ramblas") || n.includes("Boqueria")));
+});
+
 test("parseConciergeAnswer parses markdown output into structured cards and charter", () => {
   const markdown = `Based on our database:
 

@@ -16,14 +16,28 @@ def extract_structured_filters(query: str) -> dict:
 
     cuisines: list[str] = []
     known_cuisines = [
+        ("poland", "polish"),
         ("polish", "polish"),
+        ("polska", "polish"),
+        ("pierogi", "polish"),
         ("eastern european", "eastern_european"),
         ("russian", "russian"),
         ("ukrainian", "ukrainian"),
         ("georgian", "georgian"),
+        ("sweden", "swedish"),
+        ("swedish", "swedish"),
+        ("husmanskost", "swedish"),
+        ("italy", "italian"),
         ("italian", "italian"),
         ("pizza", "pizza"),
         ("sushi", "sushi"),
+        ("japan", "japanese"),
+        ("japanese", "japanese"),
+        ("germany", "german"),
+        ("german", "german"),
+        ("austria", "austrian"),
+        ("austrian", "austrian"),
+        ("schnitzel", "schnitzel"),
         ("thai", "thai"),
         ("indian", "indian"),
         ("coffee", "coffee"),
@@ -55,7 +69,7 @@ def extract_structured_filters(query: str) -> dict:
     )
 
     return {
-        "cuisines": cuisines,
+        "cuisines": list(dict.fromkeys(cuisines)),
         "price_max": price_max,
         "independent_preferred": independent_preferred,
         "tourist_centre": tourist_centre,
@@ -72,6 +86,32 @@ def answer_query(query: str, documents: list[dict], limit: int = 5) -> list[dict
     food_specific_tokens = [t for t in tokens if t not in stop_words and t not in {"tourist", "streets", "center", "centre", "busiest", "quiet", "cheap", "expensive", "independent", "local"}]
     asks_away_from_tourist = any(kw in q_lower for kw in ["away from", "outside", "tourist", "hidden", "quiet", "off the beaten path", "suburb"])
 
+    cuisine_aliases = {
+        "poland": ["polish", "poland", "polska", "pierogi", "eastern_european", "eastern european"],
+        "polish": ["polish", "poland", "polska", "pierogi", "eastern_european", "eastern european"],
+        "polska": ["polish", "poland", "polska", "pierogi", "eastern_european"],
+        "pierogi": ["polish", "poland", "polska", "pierogi", "eastern_european"],
+        "sweden": ["swedish", "sweden", "svensk", "husmanskost"],
+        "swedish": ["swedish", "sweden", "svensk", "husmanskost"],
+        "italy": ["italian", "italy", "pasta", "pizza"],
+        "italian": ["italian", "italy", "pasta", "pizza"],
+        "japan": ["japanese", "japan", "sushi", "ramen"],
+        "japanese": ["japanese", "japan", "sushi", "ramen"],
+        "mexico": ["mexican", "mexico", "tacos"],
+        "mexican": ["mexican", "mexico", "tacos"],
+        "germany": ["german", "germany", "schnitzel", "austrian"],
+        "german": ["german", "germany", "schnitzel", "austrian"],
+        "austria": ["austrian", "austria", "schnitzel", "german"],
+        "austrian": ["austrian", "austria", "schnitzel", "german"],
+        "schnitzel": ["schnitzel", "german", "austrian", "czech"],
+    }
+
+    def match_token_with_aliases(tok: str, target: str) -> bool:
+        if tok in target:
+            return True
+        aliases = cuisine_aliases.get(tok, [])
+        return any(a in target for a in aliases)
+
     def score(document: dict) -> float:
         text = f"{document.get('title', '')} {document.get('text', '')}".lower()
         title_lower = str(document.get("title", "")).lower()
@@ -84,8 +124,8 @@ def answer_query(query: str, documents: list[dict], limit: int = 5) -> list[dict
         if any(chain in title_lower for chain in ["nespresso", "kahls", "espresso house", "starbucks"]):
             return -9999.0
 
-        # 1. Food/Query Keyword Match
-        matching_food_tokens = [t for t in food_specific_tokens if t in text]
+        # 1. Food/Query Keyword Match with Alias Expansion
+        matching_food_tokens = [t for t in food_specific_tokens if match_token_with_aliases(t, text)]
         if food_specific_tokens:
             if matching_food_tokens:
                 relevance += len(matching_food_tokens) * 40.0

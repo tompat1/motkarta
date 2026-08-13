@@ -29,21 +29,39 @@ export function extractStructuredFilters(query: string): StructuredFilters {
 
   const cuisines: string[] = [];
   const knownCuisines: Array<[string, string]> = [
+    ["poland", "polish"],
     ["polish", "polish"],
+    ["polska", "polish"],
+    ["pierogi", "polish"],
     ["eastern european", "eastern_european"],
+    ["eastern european", "polish"],
     ["russian", "russian"],
     ["ukrainian", "ukrainian"],
     ["georgian", "georgian"],
+    ["sweden", "swedish"],
+    ["swedish", "swedish"],
+    ["husmanskost", "swedish"],
+    ["italy", "italian"],
     ["italian", "italian"],
     ["pizza", "pizza"],
     ["sushi", "sushi"],
+    ["japan", "japanese"],
+    ["japanese", "japanese"],
+    ["germany", "german"],
+    ["german", "german"],
+    ["austria", "austrian"],
+    ["austrian", "austrian"],
+    ["schnitzel", "schnitzel"],
     ["thai", "thai"],
+    ["thailand", "thai"],
     ["indian", "indian"],
+    ["india", "indian"],
     ["coffee", "coffee"],
     ["bakery", "bakery"],
     ["burger", "burger"],
     ["middle eastern", "middle_eastern"],
     ["mexican", "mexican"],
+    ["mexico", "mexican"],
     ["tapas", "tapas"],
     ["ramen", "ramen"],
   ];
@@ -74,7 +92,7 @@ export function extractStructuredFilters(query: string): StructuredFilters {
   );
 
   return {
-    cuisines,
+    cuisines: [...new Set(cuisines)],
     price_max: priceMax,
     independent_preferred: independentPreferred,
     tourist_centre: touristCentre,
@@ -144,6 +162,35 @@ export async function processConciergeQuery(query: string, db?: unknown) {
   );
 }
 
+const CUISINE_ALIASES: Record<string, string[]> = {
+  poland: ["polish", "poland", "polska", "pierogi", "eastern_european", "eastern european"],
+  polish: ["polish", "poland", "polska", "pierogi", "eastern_european", "eastern european"],
+  polska: ["polish", "poland", "polska", "pierogi", "eastern_european", "eastern european"],
+  pierogi: ["polish", "poland", "polska", "pierogi", "eastern_european"],
+  sweden: ["swedish", "sweden", "svensk", "husmanskost"],
+  swedish: ["swedish", "sweden", "svensk", "husmanskost"],
+  italy: ["italian", "italy", "pasta", "pizza"],
+  italian: ["italian", "italy", "pasta", "pizza"],
+  japan: ["japanese", "japan", "sushi", "ramen"],
+  japanese: ["japanese", "japan", "sushi", "ramen"],
+  mexico: ["mexican", "mexico", "tacos"],
+  mexican: ["mexican", "mexico", "tacos"],
+  germany: ["german", "germany", "schnitzel", "austrian"],
+  german: ["german", "germany", "schnitzel", "austrian"],
+  austria: ["austrian", "austria", "schnitzel", "german"],
+  austrian: ["austrian", "austria", "schnitzel", "german"],
+  schnitzel: ["schnitzel", "german", "austrian", "czech"],
+};
+
+function matchTokenWithAliases(token: string, target: string): boolean {
+  if (target.includes(token)) return true;
+  const aliases = CUISINE_ALIASES[token];
+  if (aliases) {
+    return aliases.some((alias) => target.includes(alias));
+  }
+  return false;
+}
+
 export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
   const structuredFilters = extractStructuredFilters(query);
   const stopWords = new Set(["and", "the", "for", "with", "from", "some", "best", "good", "great", "find", "where", "what", "want", "like", "near", "place", "places", "food", "eat", "get", "have"]);
@@ -191,8 +238,8 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
       return { place: scoredPlace, ragScore: -9999 };
     }
 
-    // 1. Food/Query Keyword Match
-    const matchingFoodTokens = foodSpecificTokens.filter((token) => searchTarget.includes(token));
+    // 1. Food/Query Keyword Match with Alias Expansion
+    const matchingFoodTokens = foodSpecificTokens.filter((token) => matchTokenWithAliases(token, searchTarget));
     if (foodSpecificTokens.length > 0) {
       if (matchingFoodTokens.length > 0) {
         ragScore += matchingFoodTokens.length * 40;
