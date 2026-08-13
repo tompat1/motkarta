@@ -85,20 +85,25 @@ def answer_query(query: str, documents: list[dict], limit: int = 5) -> list[dict
                 relevance += 3.0 if (token in type_str or token in area_str or token in text) else 1.5
 
         # 2. Specialty Coffee Verification Gate (Rule #1)
+        is_grill_or_restaurant = any(kw in text for kw in ["grill", "grillen", "gastropub", "pub", "bar", "restaurang", "restaurant", "burger", "pizza"])
+
         if "specialty" in tokens or "coffee" in tokens or "roaster" in tokens:
             is_verified = (
-                metadata.get("specialty_verified")
-                or any(t in text for t in ["own roastery", "roastery", "roaster", "rosteri", "single origin", "filter", "beans", "v60", "aeropress"])
-                or any(n in title_lower for n in ["pascal", "drop coffee", "johan", "solkant", "volca", "lykke", "höga kusten", "gast", "muttley", "nordic brew lab", "a.b.café", "ab cafe", "standout", "café blom", "cafe blom"])
-                or (type_str == "specialty coffee" and float(metadata.get("quality_score") or 0) >= 35)
+                not is_grill_or_restaurant
+                and (
+                    metadata.get("specialty_verified")
+                    or any(t in text for t in ["own roastery", "roastery", "roaster", "rosteri", "single origin", "filter", "beans", "v60", "aeropress"])
+                    or any(n in title_lower for n in ["pascal", "drop coffee", "johan & nyström", "johan & nystrom", "johan och nyström", "solkant", "volca", "lykke", "höga kusten", "gast", "muttley", "nordic brew lab", "a.b.café", "ab cafe", "standout", "café blom", "cafe blom"])
+                    or (type_str == "specialty coffee" and float(metadata.get("quality_score") or 0) >= 35)
+                )
             )
             if is_verified:
                 relevance += 20.0
             else:
                 relevance -= 15.0
 
-            if any(chain in title_lower for chain in ["nespresso", "espresso house", "starbucks"]):
-                relevance -= 35.0
+            if any(chain in title_lower for chain in ["nespresso", "kahls", "espresso house", "starbucks"]):
+                relevance -= 100.0
 
         # 3. Cardamom / Bakery match points
         if "cardamom" in tokens or "bun" in tokens or "bakery" in tokens:

@@ -26,8 +26,8 @@ PRIME_SPECIALTY_NAMES = [
     "pascal",
     "drop coffee",
     "johan & nyström",
+    "johan & nystrom",
     "johan och nyström",
-    "johan",
     "solkant",
     "volca",
     "lykke",
@@ -43,11 +43,35 @@ PRIME_SPECIALTY_NAMES = [
     "cafe blom",
 ]
 
+RESTAURANT_GRILL_KEYWORDS = [
+    "grill",
+    "grillen",
+    "gastropub",
+    "pub",
+    "bar",
+    "restaurang",
+    "restaurant",
+    "burger",
+    "burgers",
+    "pizza",
+    "pizzeria",
+    "kebab",
+    "sushi",
+    "steakhouse",
+    "taverna",
+    "sportsbar",
+]
+
 
 def is_prime_specialty_coffee(name: str = "", category: str = "", cuisine: str = "") -> bool:
     n = name.strip().lower()
     c = category.strip().lower()
     cu = cuisine.strip().lower()
+    full_text = f"{n} {c} {cu}"
+
+    if any(kw in full_text for kw in RESTAURANT_GRILL_KEYWORDS):
+        return False
+
     if any(p in n for p in PRIME_SPECIALTY_NAMES):
         return True
     if any(r in n for r in ["roaster", "roastery", "rosteri"]):
@@ -59,6 +83,14 @@ def is_prime_specialty_coffee(name: str = "", category: str = "", cuisine: str =
 
 def normalize_osm_establishment_type(category: str, cuisine: str = "", name: str = "") -> str | None:
     """Map OSM food categories to the four product establishment types."""
+    n = name.strip().lower()
+    c = category.strip().lower()
+    cu = cuisine.strip().lower()
+    full_text = f"{n} {c} {cu}"
+
+    if any(kw in full_text for kw in RESTAURANT_GRILL_KEYWORDS):
+        return "Restaurant"
+
     if is_prime_specialty_coffee(name, category, cuisine):
         return "Specialty coffee"
 

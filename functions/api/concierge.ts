@@ -186,13 +186,33 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
 
     const isSpecialtyQuery =
       tokens.includes("specialty") || tokens.includes("coffee") || tokens.includes("roaster") || tokens.includes("roastery");
+    const isGrillOrRestaurant = [
+      "grill",
+      "grillen",
+      "gastropub",
+      "pub",
+      "bar",
+      "restaurang",
+      "restaurant",
+      "burger",
+      "burgers",
+      "pizza",
+      "pizzeria",
+      "kebab",
+      "sushi",
+      "steakhouse",
+      "taverna",
+      "sportsbar",
+    ].some((kw) => searchTarget.includes(kw));
+
     const isVerifiedSpecialty =
       !isChain &&
+      !isGrillOrRestaurant &&
       (place.specialty?.specialtyVerified ||
         searchTarget.includes("roaster") ||
         searchTarget.includes("roastery") ||
         searchTarget.includes("rosteri") ||
-        ["pascal", "drop coffee", "johan", "solkant", "volca", "lykke", "höga kusten", "gast", "muttley", "nordic brew lab", "a.b.café", "ab cafe", "standout", "café blom", "cafe blom"].some((name) =>
+        ["pascal", "drop coffee", "johan & nyström", "johan & nystrom", "johan och nyström", "solkant", "volca", "lykke", "höga kusten", "gast", "muttley", "nordic brew lab", "a.b.café", "ab cafe", "standout", "café blom", "cafe blom"].some((name) =>
           place.name.toLowerCase().includes(name),
         ) ||
         place.tags?.some((t) =>

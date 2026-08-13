@@ -1053,8 +1053,8 @@ const PRIME_SPECIALTY_PATTERNS = [
   "pascal",
   "drop coffee",
   "johan & nyström",
+  "johan & nystrom",
   "johan och nyström",
-  "johan",
   "solkant",
   "volca",
   "lykke",
@@ -1070,6 +1070,25 @@ const PRIME_SPECIALTY_PATTERNS = [
   "cafe blom",
 ];
 
+const RESTAURANT_GRILL_KEYWORDS = [
+  "grill",
+  "grillen",
+  "gastropub",
+  "pub",
+  "bar",
+  "restaurang",
+  "restaurant",
+  "burger",
+  "burgers",
+  "pizza",
+  "pizzeria",
+  "kebab",
+  "sushi",
+  "steakhouse",
+  "taverna",
+  "sportsbar",
+];
+
 export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[] {
   // 1. Purge commercial chains
   const filtered = inputPlaces.filter((p) => {
@@ -1077,9 +1096,23 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[
     return !EXCLUDED_COMMERCIAL_CHAINS.some((chain) => n.includes(chain));
   });
 
-  // 2. Promote matched specialty coffee venues
+  // 2. Normalize and promote matched specialty coffee venues / reclassify grills & gastropubs
   const promoted = filtered.map((p) => {
     const n = p.name.toLowerCase();
+    const cu = (p.cuisine ?? "").toLowerCase();
+    const fullText = `${n} ${cu}`;
+
+    const isGrillOrRestaurant = RESTAURANT_GRILL_KEYWORDS.some((kw) => fullText.includes(kw));
+
+    if (isGrillOrRestaurant) {
+      return {
+        ...p,
+        kind: "Restaurant" as const,
+        tags: p.tags.filter((t) => t.toLowerCase() !== "specialty coffee"),
+        specialty: undefined,
+      };
+    }
+
     const isPrime =
       PRIME_SPECIALTY_PATTERNS.some((spec) => n.includes(spec)) ||
       n.includes("roaster") ||

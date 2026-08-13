@@ -22,8 +22,8 @@ const primeSpecialtyNames = [
   "pascal",
   "drop coffee",
   "johan & nyström",
+  "johan & nystrom",
   "johan och nyström",
-  "johan",
   "solkant",
   "volca",
   "lykke",
@@ -39,10 +39,35 @@ const primeSpecialtyNames = [
   "cafe blom",
 ];
 
+const restaurantGrillKeywords = [
+  "grill",
+  "grillen",
+  "gastropub",
+  "pub",
+  "bar",
+  "restaurang",
+  "restaurant",
+  "burger",
+  "burgers",
+  "pizza",
+  "pizzeria",
+  "kebab",
+  "sushi",
+  "steakhouse",
+  "taverna",
+  "sportsbar",
+];
+
 export function isPrimeSpecialtyCoffee(name: string = "", category: string = "", cuisine: string = ""): boolean {
   const n = name.trim().toLowerCase();
   const c = category.trim().toLowerCase();
   const cu = cuisine.trim().toLowerCase();
+  const fullText = `${n} ${c} ${cu}`;
+
+  if (restaurantGrillKeywords.some((kw) => fullText.includes(kw))) {
+    return false;
+  }
+
   if (primeSpecialtyNames.some((p) => n.includes(p))) return true;
   if (n.includes("roaster") || n.includes("roastery") || n.includes("rosteri")) return true;
   if (c.includes("roaster") || cu.includes("coffee_roaster")) return true;
@@ -55,6 +80,11 @@ export function normalizeOsmEstablishmentType(row: Pick<OsmFoodPlaceRow, "catego
   const name = row.name?.trim() ?? "";
   const category = row.category.trim().toLowerCase();
   const cuisine = row.cuisine?.trim().toLowerCase() ?? "";
+  const fullText = `${name} ${category} ${cuisine}`.toLowerCase();
+
+  if (restaurantGrillKeywords.some((kw) => fullText.includes(kw))) {
+    return "Restaurant";
+  }
 
   if (isPrimeSpecialtyCoffee(name, category, cuisine) || specialtyCoffeeCategories.has(category)) {
     return "Specialty coffee";

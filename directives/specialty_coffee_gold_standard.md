@@ -30,12 +30,16 @@ Maintain the definitive, gold-standard reference list for Specialty Coffee estab
 ## 🛡️ Verification & Normalization SOP
 
 ### 1. Mandatory Promotion Rule
-Whenever an establishment matches any pattern in the reference list above (e.g. `pascal`, `drop coffee`, `johan`, `solkant`, `volca`, `lykke`, `gast`, `standout`, `muttley`, `nordic brew lab`, `a.b.café`, `höga kusten`, `café blom`) or contains `roastery`, `roaster`, or `rosteri` in its title:
+Whenever an establishment matches any pattern in the reference list above (e.g. `pascal`, `drop coffee`, `johan & nyström`, `solkant`, `volca`, `lykke`, `gast`, `standout`, `muttley`, `nordic brew lab`, `a.b.café`, `höga kusten`, `café blom`) or contains `roastery`, `roaster`, or `rosteri` in its title:
 - **`kind` / `establishment_type`** MUST be assigned to `"Specialty coffee"`.
 - **`specialtyVerified`** MUST be set to `true`.
 - **Tags** MUST include `"Specialty coffee"`, `"Filter"`, `"Single origin"`, and `"Own roastery"` (if roaster).
+- **CRITICAL**: Never use loose 5-letter substring `johan` for matching, as it causes false positive matches on unrelated places like *Johannesfredsgrillen*. Always match the full brand name `johan & nyström` or `johan och nyström`.
 
-### 2. Commercial Chain Purge & Exclusion Rule
+### 2. Negative Restaurant, Grill & Gastropub Override Rule
+Any venue whose name, category, or cuisine contains keywords like `grill`, `grillen`, `gastropub`, `pub`, `bar`, `restaurang`, `restaurant`, `burger`, `pizza`, `kebab`, `sushi`, `steakhouse`, `taverna`, or `sportsbar` (e.g. *Johannesfredsgrillen*, *Emils Gastropub & Restaurang*) MUST be classified as `"Restaurant"` and is strictly prohibited from being categorized as `"Specialty coffee"` or `"Bakery"`.
+
+### 3. Commercial Chain Purge & Exclusion Rule
 Commercial retail coffee chains and mass-market pod stores are strictly barred from receiving specialty coffee classification or being recommended:
 - **Excluded**: `Nespresso`, `Kahls` / `Kahls The & Kaffehandel`, `Wayne's Coffee`, `Espresso House`, `Starbucks`, `Bönor & Blad`, `Pressbyrån`, `7-Eleven`.
 - Commercial chains receive a `-9999` score penalty in RAG retrieval and are filtered out of map/list views.
