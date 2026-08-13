@@ -4,3 +4,4 @@ node,2,Plain Cafe,cafe,,coffee_shop,Mo-Fr 08:00-16:00,Testgatan,1,,example.com,5
 node,3,Small Roaster,coffee_roaster,,coffee,,Rosterigatan,3,,https://roaster.example,59.33,18.09,OpenStreetMap
 node,4,Neighbourhood Bakery,bakery,,bakery,,Bakgatan,2,,,59.32,18.08,OpenStreetMap
 node,5,Bistro One,restaurant,,bistro,Tu-Sa 17:00-22:00,Bistrogatan,5,,bistro.example,59.34,18.06,OpenStreetMap
+node,6,McDonald's,fast_food,,burger,Mo-Su 10:00-22:00,Chain Street,6,,https://mcdonalds.example,59.35,18.07,OpenStreetMap

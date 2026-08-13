@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 
 from motkarta.concierge import answer_query, load_rag_corpus
-from motkarta.pipeline import clean_places, dedupe_places, load_raw_csv, score_places, write_place_inputs_json
+from motkarta.pipeline import clean_places, dedupe_places, filter_excluded_chains, load_raw_csv, score_places, write_place_inputs_json
 from scripts.run_mvp_pipeline import run_pipeline
 
 
@@ -18,10 +18,13 @@ def test_clean_dedupe_and_score_pipeline():
     assert clean.loc[0, "address"] == "Testgatan 1"
 
     deduped, duplicates = dedupe_places(clean)
-    assert len(deduped) == 4
+    assert len(deduped) == 5
     assert len(duplicates) == 1
+    filtered, excluded = filter_excluded_chains(deduped)
+    assert len(filtered) == 4
+    assert excluded.iloc[0]["chain_brand"] == "McDonald's"
 
-    scored = score_places(deduped)
+    scored = score_places(filtered)
     assert "discovery_score" in scored
     assert scored["discovery_score"].between(0, 100).all()
 
@@ -34,6 +37,7 @@ def test_full_mvp_pipeline_writes_artifacts(tmp_path):
 
     assert (data_dir / "stockholm_food_places_clean.csv").exists()
     assert (data_dir / "stockholm_food_places_deduped.csv").exists()
+    assert (data_dir / "stockholm_food_excluded_chains.csv").exists()
     assert (data_dir / "stockholm_food_places_scored.csv").exists()
     assert (output_dir / "stockholm_food_map.html").exists()
     assert (output_dir / "stockholm_food_places.geojson").exists()
@@ -49,6 +53,8 @@ def test_full_mvp_pipeline_writes_artifacts(tmp_path):
     geojson = json.loads((output_dir / "stockholm_food_places.geojson").read_text(encoding="utf-8"))
     assert geojson["type"] == "FeatureCollection"
     assert len(geojson["features"]) == 4
+    excluded_chains = (data_dir / "stockholm_food_excluded_chains.csv").read_text(encoding="utf-8")
+    assert "McDonald's" in excluded_chains
 
     public_data = tmp_path / "public" / "data"
     run_pipeline(FIXTURE, data_dir, output_dir, public_data)
@@ -89,7 +95,8 @@ def test_full_mvp_pipeline_appends_source_metadata(tmp_path):
 
 
 def test_place_inputs_json_matches_frontend_shape(tmp_path):
-    scored = score_places(dedupe_places(clean_places(load_raw_csv(FIXTURE)))[0])
+    deduped = dedupe_places(clean_places(load_raw_csv(FIXTURE)))[0]
+    scored = score_places(filter_excluded_chains(deduped)[0])
     target = tmp_path / "places.json"
 
     write_place_inputs_json(scored, target)

@@ -38,6 +38,7 @@ class CoverageReport:
     missing_opening_hours: int
     missing_website: int
     duplicate_candidates_removed: int
+    excluded_chains_removed: int = 0
 
     def markdown(self) -> str:
         lines = [
@@ -55,6 +56,7 @@ class CoverageReport:
             f"- Missing opening hours: {self.missing_opening_hours}",
             f"- Missing website: {self.missing_website}",
             f"- Duplicate candidates removed: {self.duplicate_candidates_removed}",
+            f"- Excluded chains removed: {self.excluded_chains_removed}",
         ]
         return "\n".join(lines) + "\n"
 
@@ -83,6 +85,8 @@ def clean_places(frame: pd.DataFrame) -> pd.DataFrame:
     data["missing_address"] = data["address"].eq("")
     data["missing_opening_hours"] = data["opening_hours"].eq("")
     data["missing_website"] = data["website"].eq("")
+    data["chain_brand"] = data["name"].map(excluded_chain_brand)
+    data["excluded_chain"] = data["chain_brand"].ne("")
     return data
 
 
@@ -129,6 +133,17 @@ def dedupe_places(frame: pd.DataFrame, threshold: float = 0.92) -> tuple[pd.Data
     return data.loc[kept].reset_index(drop=True), pd.DataFrame(duplicate_rows)
 
 
+def filter_excluded_chains(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    data = frame.copy()
+    if "excluded_chain" not in data:
+        data["chain_brand"] = data["name"].map(excluded_chain_brand)
+        data["excluded_chain"] = data["chain_brand"].ne("")
+
+    excluded = data[data["excluded_chain"]].copy().reset_index(drop=True)
+    included = data[~data["excluded_chain"]].copy().reset_index(drop=True)
+    return included, excluded
+
+
 def score_places(frame: pd.DataFrame) -> pd.DataFrame:
     data = frame.copy()
     completeness = (
@@ -158,7 +173,7 @@ def score_places(frame: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
-def build_coverage_report(frame: pd.DataFrame, duplicate_count: int = 0) -> CoverageReport:
+def build_coverage_report(frame: pd.DataFrame, duplicate_count: int = 0, excluded_chain_count: int = 0) -> CoverageReport:
     return CoverageReport(
         total_places=len(frame),
         by_type={key: int(value) for key, value in frame["establishment_type"].value_counts().to_dict().items()},
@@ -166,6 +181,7 @@ def build_coverage_report(frame: pd.DataFrame, duplicate_count: int = 0) -> Cove
         missing_opening_hours=int(frame["missing_opening_hours"].sum()),
         missing_website=int(frame["missing_website"].sum()),
         duplicate_candidates_removed=duplicate_count,
+        excluded_chains_removed=excluded_chain_count,
     )
 
 
@@ -320,6 +336,25 @@ def dedupe_candidate_keys(row: pd.Series) -> list[tuple]:
 
 def name_key(value: object) -> str:
     return re.sub(r"[^a-z0-9]+", "", clean_text(value).lower())
+
+
+def name_tokens(value: object) -> list[str]:
+    return [token for token in re.sub(r"[^a-z0-9]+", " ", clean_text(value).lower()).split() if token]
+
+
+def excluded_chain_brand(name: object) -> str:
+    tokens = name_tokens(name)
+    if not tokens:
+        return ""
+    if tokens[0] in {"mcdonalds", "mcdonald"}:
+        return "McDonald's"
+    if tokens[:2] == ["burger", "king"]:
+        return "Burger King"
+    if tokens[0] == "sibylla":
+        return "Sibylla"
+    if tokens[0] == "max":
+        return "MAX"
+    return ""
 
 
 def coordinate_cell(lat: float, lon: float) -> tuple[int, int]:

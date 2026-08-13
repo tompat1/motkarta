@@ -12,6 +12,7 @@ from motkarta.pipeline import (
     build_coverage_report,
     clean_places,
     dedupe_places,
+    filter_excluded_chains,
     load_raw_csv,
     score_places,
     write_geojson,
@@ -43,7 +44,11 @@ def run_pipeline(
     deduped.to_csv(deduped_path, index=False)
     duplicates.to_csv(duplicates_path, index=False)
 
-    scored = score_places(deduped)
+    filtered, excluded_chains = filter_excluded_chains(deduped)
+    excluded_chains_path = data_dir / "stockholm_food_excluded_chains.csv"
+    excluded_chains.to_csv(excluded_chains_path, index=False)
+
+    scored = score_places(filtered)
     scored_path = data_dir / "stockholm_food_places_scored.csv"
     scored.to_csv(scored_path, index=False)
 
@@ -53,7 +58,7 @@ def run_pipeline(
     if public_data_dir is not None:
         write_place_inputs_json(scored, public_data_dir / "places.json")
 
-    report = build_coverage_report(scored, duplicate_count=len(duplicates))
+    report = build_coverage_report(scored, duplicate_count=len(duplicates), excluded_chain_count=len(excluded_chains))
     report_text = report.markdown()
     if source_metadata_path is not None and source_metadata_path.exists():
         report_text += source_metadata_markdown(source_metadata_path)
@@ -61,6 +66,7 @@ def run_pipeline(
 
     print(f"Wrote {clean_path}")
     print(f"Wrote {deduped_path}")
+    print(f"Wrote {excluded_chains_path}")
     print(f"Wrote {scored_path}")
     print(f"Wrote {output_dir / 'stockholm_food_map.html'}")
     print(f"Wrote {output_dir / 'stockholm_food_places.geojson'}")

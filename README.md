@@ -254,6 +254,7 @@ Outputs:
 data/stockholm_food_places_clean.csv
 data/stockholm_food_places_deduped.csv
 data/stockholm_food_duplicates.csv
+data/stockholm_food_excluded_chains.csv
 data/stockholm_food_places_scored.csv
 outputs/stockholm_food_map.html
 outputs/stockholm_food_places.geojson
@@ -261,6 +262,11 @@ outputs/coverage_report.md
 outputs/rag_corpus.jsonl
 public/data/places.json
 ```
+
+The pipeline excludes obvious large fast-food chains from the scored/map/public
+artifacts by default. Current explicit exclusions are McDonald's, Burger King,
+Sibylla and MAX. Removed rows are still written to
+`data/stockholm_food_excluded_chains.csv` for auditability.
 
 The Folium map includes filter layers for establishment type, cuisine,
 neighbourhood and missing information. The GeoJSON export is the migration path
