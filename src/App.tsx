@@ -20,8 +20,17 @@ const establishmentTypes = [
 ] as const;
 
 const allCuisines = "All cuisines";
-const modes = ["For you", "Hidden gems", "Popular now", "Quality first"] as const;
-const sortModes = ["Best match", "Alphabetical", "Distance", "Random discovery"] as const;
+const modes = [
+  "For you",
+  "Hidden gems",
+  "Popular now",
+  "Local favourites",
+  "Quality first",
+  "Recently opened",
+  "Expert selected",
+  "Most verified",
+] as const;
+const sortModes = ["Best match", "Distance", "Alphabetical", "Surprise me"] as const;
 const renderLimit = 350;
 const stockholmCenter = { latitude: 59.3293, longitude: 18.0686 };
 
@@ -40,8 +49,28 @@ function modeScore(place: ScoredPlace, mode: Mode) {
     return place.scores.popularity;
   }
 
+  if (mode === "Local favourites") {
+    return (place.localPopularityPercentile ?? 0) * 100;
+  }
+
   if (mode === "Quality first") {
     return place.scores.quality;
+  }
+
+  if (mode === "Recently opened") {
+    return place.scores.freshness;
+  }
+
+  if (mode === "Expert selected") {
+    return (place.evidence?.specialistGuide ?? 0) * 50 + place.scores.quality * 0.5;
+  }
+
+  if (mode === "Most verified") {
+    return place.evidence?.confidence === "High"
+      ? 100
+      : place.evidence?.confidence === "Medium"
+        ? 60
+        : 20;
   }
 
   return place.scores.recommendation;
@@ -60,7 +89,7 @@ function comparePlaces(a: ScoredPlace, b: ScoredPlace, mode: Mode, sortMode: Sor
     return distanceFromStockholmCenter(a) - distanceFromStockholmCenter(b);
   }
 
-  if (sortMode === "Random discovery") {
+  if (sortMode === "Surprise me") {
     return seededRandom(a.id, randomSeed) - seededRandom(b.id, randomSeed);
   }
 
@@ -475,7 +504,7 @@ export default function App() {
                   <option key={item}>{item}</option>
                 ))}
               </select>
-              {sortMode === "Random discovery" ? (
+              {sortMode === "Surprise me" ? (
                 <button type="button" onClick={() => setRandomSeed((value) => value + 1)}>
                   Shuffle
                 </button>
