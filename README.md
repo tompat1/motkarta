@@ -313,6 +313,37 @@ Rather than producing a single opaque "best" score, the system computes and pres
 | **Relevance** | How well it matches the current user | Explicit intent, kind, cuisine, price level, purpose, and preference tags |
 | **Discovery Value** | Strong quality signals with limited exposure | Quality paired with lower mainstream exposure (prevents winner-take-all bias) |
 
+### Quality Score Signals & Specialty Attributes
+
+Quality cannot be measured reliably from average star ratings alone. The system builds the Quality dimension from 9 independent evidence signals:
+
+1. **Specialist Guide Inclusion** (`specialist_guide`): Inclusion in manually curated guides (e.g. White Guide).
+2. **Independent Editorial** (`independent_editorial`): Recommendations from multiple independent editorial sources.
+3. **Verified User Ratings** (`verified_user_rating`): Bayesian-adjusted user rating baseline.
+4. **Repeat Visits** (`repeat_visits`): High proportion of returning patrons.
+5. **Recent Reviews** (`recent_reviews`): Weighting recency over legacy lifetime volume.
+6. **Credible Reviewers** (`credible_reviewers`): Reviews from users with a verified historical record.
+7. **Inspection Status** (`inspection_status`): Municipal hygiene control status as a safety baseline (not a taste rating).
+8. **Verified Attributes** (`verified_attributes`): Verified physical and operational attributes.
+9. **Data Freshness & Confidence** (`data_freshness`, `confidence`): Source recency and evidence confidence rating.
+
+For **Specialty Coffee** cafés and roasters, the system stores structured attributes rather than marketing labels:
+
+```json
+{
+  "specialty_verified": true,
+  "own_roastery": false,
+  "traceable_coffee": true,
+  "filter_coffee": true,
+  "espresso_based": true,
+  "rotating_roasters": true,
+  "single_origin": true,
+  "manual_brew_methods": ["V60", "Aeropress"],
+  "decaf_available": true,
+  "beans_for_sale": true
+}
+```
+
 The pipeline excludes obvious large fast-food chains from the scored/map/public
 artifacts by default. Current explicit exclusions are McDonald's, Burger King,
 Sibylla and MAX. Removed rows are still written to

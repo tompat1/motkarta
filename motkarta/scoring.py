@@ -88,9 +88,44 @@ def bayesian_rate(positive_signals: int, total_signals: int, prior_rate: float =
     return (positive_signals + prior_rate * prior_weight) / (total_signals + prior_weight)
 
 
+def verify_specialty_coffee_eligibility(place: PlaceInput) -> bool:
+    """A place cannot receive the 'Specialty coffee' label merely from marketing text (e.g. 'premium coffee').
+
+    Requires at least one of four verification gates:
+    1. Verification by a recognised specialty guide (specialist_guide > 0)
+    2. Verification by editorial team (specialty_verified is True)
+    3. Consistent community submissions (verification_sources >= 2)
+    4. Sufficient structured evidence from menu/website (structured_signals >= 3)
+    """
+    guide_verified = place.evidence.specialist_guide > 0
+    if not place.specialty:
+        return guide_verified
+
+    attributes = place.specialty
+    structured_signals = sum(
+        [
+            attributes.specialty_verified,
+            attributes.own_roastery,
+            attributes.traceable_coffee,
+            attributes.single_origin,
+            attributes.rotating_roasters,
+            bool(attributes.manual_brew_methods),
+            attributes.beans_for_sale,
+        ]
+    )
+
+    editorial_verified = attributes.specialty_verified
+    community_verified = attributes.verification_sources >= 2
+    menu_verified = structured_signals >= 3
+
+    return guide_verified or editorial_verified or community_verified or menu_verified
+
+
 def specialty_confidence(place: PlaceInput) -> float:
-    if place.kind != "Specialty coffee" or not place.specialty:
+    if place.kind != "Specialty coffee" or not verify_specialty_coffee_eligibility(place):
         return 0
+    if not place.specialty:
+        return 50 if place.evidence.specialist_guide > 0 else 0
     attributes = place.specialty
     structured_signals = sum(
         [

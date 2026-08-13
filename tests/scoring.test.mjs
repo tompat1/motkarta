@@ -6,6 +6,7 @@ import {
   bayesianRate,
   recencyWeight,
   scorePlace,
+  verifySpecialtyCoffeeEligibility,
 } from "../lib/scoring.ts";
 import { demoPlaces } from "../lib/demo-places.ts";
 
@@ -36,4 +37,30 @@ test("places receive all promised score dimensions", () => {
   assert.ok(scored.scores.discovery > 0);
   assert.ok(scored.scores.freshness > 0);
   assert.ok(scored.scores.recommendation > 0);
+});
+
+test("specialty coffee verification requires explicit gates, rejecting marketing text", () => {
+  const unverified = {
+    id: 1,
+    name: "Marketing Copy Cafe",
+    kind: "Specialty coffee",
+    area: "Vasastan",
+    note: "Serves premium coffee",
+    tags: ["Coffee"],
+    evidence: { specialistGuide: 0 },
+    specialty: {
+      specialtyVerified: false,
+      ownRoastery: false,
+      traceableCoffee: false,
+      singleOrigin: false,
+      rotatingRoasters: false,
+      manualBrewMethods: [],
+      beansForSale: false,
+      verificationSources: 0,
+    },
+  };
+  assert.equal(verifySpecialtyCoffeeEligibility(unverified), false);
+
+  const guideVerified = { ...unverified, evidence: { specialistGuide: 1 } };
+  assert.equal(verifySpecialtyCoffeeEligibility(guideVerified), true);
 });

@@ -7,6 +7,7 @@ from motkarta.scoring import (
     bayesian_rating,
     recency_weight,
     score_place,
+    verify_specialty_coffee_eligibility,
 )
 
 
@@ -65,3 +66,26 @@ def test_score_place_returns_promised_dimensions():
     scores = score_place(place)
     assert set(scores) == {"quality", "popularity", "relevance", "discovery", "freshness", "recommendation"}
     assert scores["quality"] > 0
+
+
+def test_specialty_coffee_verification_gates():
+    fake_place = PlaceInput(
+        id=2,
+        name="Fake Premium Cafe",
+        kind="Specialty coffee",
+        area="Vasastan",
+        tags=["Coffee"],
+        evidence=EvidenceSignals(specialist_guide=0),
+        specialty=SpecialtyAttributes(specialty_verified=False, verification_sources=0),
+    )
+    assert not verify_specialty_coffee_eligibility(fake_place)
+
+    verified_place = PlaceInput(
+        id=3,
+        name="Real Roaster",
+        kind="Specialty coffee",
+        area="Vasastan",
+        tags=["Coffee"],
+        evidence=EvidenceSignals(specialist_guide=1),
+    )
+    assert verify_specialty_coffee_eligibility(verified_place)

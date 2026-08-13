@@ -167,9 +167,37 @@ function sourceConsensus(evidence: EvidenceSignals) {
   return clamp((sourceCount / 4) * 100 * confidenceWeight[evidence.confidence]);
 }
 
+export function verifySpecialtyCoffeeEligibility(place: PlaceInput): boolean {
+  const guideVerified = (place.evidence?.specialistGuide ?? 0) > 0;
+  if (!place.specialty) {
+    return guideVerified;
+  }
+
+  const attributes = place.specialty;
+  const structuredSignals = [
+    attributes.specialtyVerified,
+    attributes.ownRoastery,
+    attributes.traceableCoffee,
+    attributes.singleOrigin,
+    attributes.rotatingRoasters,
+    Boolean(attributes.manualBrewMethods?.length),
+    attributes.beansForSale,
+  ].filter(Boolean).length;
+
+  const editorialVerified = attributes.specialtyVerified;
+  const communityVerified = (attributes.verificationSources ?? 0) >= 2;
+  const menuVerified = structuredSignals >= 3;
+
+  return guideVerified || editorialVerified || communityVerified || menuVerified;
+}
+
 function specialtyConfidence(place: PlaceInput) {
-  if (place.kind !== "Specialty coffee" || !place.specialty) {
+  if (place.kind !== "Specialty coffee" || !verifySpecialtyCoffeeEligibility(place)) {
     return 0;
+  }
+
+  if (!place.specialty) {
+    return (place.evidence?.specialistGuide ?? 0) > 0 ? 50 : 0;
   }
 
   const attributes = place.specialty;
