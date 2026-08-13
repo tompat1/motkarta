@@ -93,6 +93,29 @@ An ordinary OSM café is not promoted to specialty coffee just because its cuisi
 mentions coffee; specialty coffee needs a structured OSM coffee shop/roaster
 category or later editorial/source verification.
 
+## Manual evidence enrichment
+
+OSM is a baseline, not proof of quality. Add curated or licensed evidence with a
+JSON file using the shape in `examples/evidence.sample.json`, then generate SQL:
+
+```bash
+npm run db:seed:evidence -- examples/evidence.sample.json drizzle/seed-evidence.sql
+wrangler d1 execute <database-name> --remote --file drizzle/seed-evidence.sql
+```
+
+Evidence records match an existing place by `osmType` + `osmId`, or by exact
+name as a fallback. Each evidence item must declare:
+
+- `sourceType`: `specialist_guide`, `editorial`, `verified_user_rating`,
+  `inspection`, `official_site`, `community_submission`, or `osm`
+- `sourceName`
+- `confidence` from `0` to `1`
+- optional `url`, `capturedAt`, and `summary`
+
+Specialty-coffee attributes can be updated in the same record, but should only
+be set from recognized guides, editorial review, your own verification, or
+consistent community submissions.
+
 For the residual model, enrich/merge source data into a CSV containing:
 
 `name`, `platform_rating`, `review_count`, `price_level`, `latitude`, `longitude`, `category`, `cuisine`, `district`, `chain_status`.

@@ -5,6 +5,7 @@ import {
   osmDescription,
   osmTags,
 } from "../lib/osm-normalize.ts";
+import { numericOrNull, parseCsv, sql } from "../lib/import-utils.ts";
 
 const input = resolve(process.argv[2] ?? "data/stockholm_food_places.csv");
 const output = resolve(process.argv[3] ?? "drizzle/seed-osm.sql");
@@ -69,66 +70,4 @@ console.log(`Wrote ${output} (${imported} imported, ${skipped} skipped)`);
 function osmUrl(row) {
   const type = row.osm_type === "node" ? "node" : row.osm_type === "way" ? "way" : "relation";
   return `https://www.openstreetmap.org/${type}/${row.osm_id}`;
-}
-
-function numericOrNull(value) {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? String(parsed) : "NULL";
-}
-
-function sql(value) {
-  if (value === null || value === undefined) {
-    return "NULL";
-  }
-
-  if (typeof value === "number") {
-    return Number.isFinite(value) ? String(value) : "NULL";
-  }
-
-  return `'${String(value).replaceAll("'", "''")}'`;
-}
-
-function parseCsv(source) {
-  const [headerLine, ...lines] = source.trim().split(/\r?\n/);
-  const headers = parseCsvLine(headerLine);
-
-  return lines
-    .filter((line) => line.trim())
-    .map((line) => {
-      const cells = parseCsvLine(line);
-      return Object.fromEntries(headers.map((header, index) => [header, cells[index] ?? ""]));
-    });
-}
-
-function parseCsvLine(line) {
-  const cells = [];
-  let cell = "";
-  let quoted = false;
-
-  for (let index = 0; index < line.length; index += 1) {
-    const char = line[index];
-    const next = line[index + 1];
-
-    if (char === '"' && quoted && next === '"') {
-      cell += '"';
-      index += 1;
-      continue;
-    }
-
-    if (char === '"') {
-      quoted = !quoted;
-      continue;
-    }
-
-    if (char === "," && !quoted) {
-      cells.push(cell);
-      cell = "";
-      continue;
-    }
-
-    cell += char;
-  }
-
-  cells.push(cell);
-  return cells;
 }

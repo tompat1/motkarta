@@ -1,0 +1,36 @@
+[
+  {
+    "match": {
+      "osmType": "node",
+      "osmId": "300"
+    },
+    "establishment": {
+      "type": "Specialty coffee",
+      "district": "Södermalm",
+      "chainStatus": "independent"
+    },
+    "evidence": [
+      {
+        "sourceType": "specialist_guide",
+        "sourceName": "Manual specialty coffee review",
+        "url": "https://example.com/review",
+        "confidence": 0.9,
+        "summary": "Verified roastery, traceable coffee and manual brew options."
+      }
+    ],
+    "tags": ["Independent", "Filter", "Beans"],
+    "specialty": {
+      "specialtyVerified": true,
+      "ownRoastery": true,
+      "traceableCoffee": true,
+      "filterCoffee": true,
+      "espressoBased": true,
+      "rotatingRoasters": false,
+      "singleOrigin": true,
+      "manualBrewMethods": ["V60"],
+      "decafAvailable": true,
+      "beansForSale": true,
+      "verificationSources": 1
+    }
+  }
+]
