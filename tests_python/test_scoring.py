@@ -3,6 +3,7 @@ from motkarta.scoring import (
     EvidenceSignals,
     PlaceInput,
     SpecialtyAttributes,
+    UserPreferences,
     bayesian_rate,
     bayesian_rating,
     logarithmic_count_score,
@@ -161,3 +162,28 @@ def test_discovery_score_requires_quality_not_just_obscurity():
     s_gem = score_place(high_quality_low_exposure)["discovery"]
 
     assert s_gem > s_unknown
+
+
+def test_recommendation_score_personal_match_and_weighting():
+    place = PlaceInput(
+        id=30,
+        name="Cozy Fika Cafe",
+        kind="Café",
+        area="Södermalm",
+        tags=["Fika", "Independent", "Outdoor", "Work-friendly"],
+        price_level=2,
+    )
+    pref = UserPreferences(
+        kind="Café",
+        district="Södermalm",
+        purpose="fika",
+        independent_only=True,
+        outdoor_seating=True,
+        work_friendly=True,
+    )
+
+    unmatched = score_place(place)
+    matched = score_place(place, pref)
+
+    assert matched["relevance"] > unmatched["relevance"]
+    assert matched["recommendation"] > unmatched["recommendation"]

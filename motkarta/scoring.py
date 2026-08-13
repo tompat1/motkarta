@@ -217,8 +217,48 @@ def popularity_score(place: PlaceInput) -> dict[str, float]:
     }
 
 
-def relevance_score(place: PlaceInput) -> float:
-    return 50
+@dataclass(frozen=True)
+class UserPreferences:
+    kind: str = ""
+    cuisine: str = ""
+    district: str = ""
+    max_price: int = 4
+    independent_only: bool = False
+    open_now: bool = False
+    work_friendly: bool = False
+    outdoor_seating: bool = False
+    dietary: list[str] = field(default_factory=list)
+    purpose: str = ""  # breakfast, fika, lunch, dinner
+    tags: list[str] = field(default_factory=list)
+
+
+def relevance_score(place: PlaceInput, preferences: UserPreferences | None = None) -> float:
+    if preferences is None:
+        return 50.0
+
+    score = 50.0
+    tags_lower = [t.lower() for t in place.tags]
+    if preferences.kind and place.kind.lower() == preferences.kind.lower():
+        score += 15.0
+    if preferences.cuisine and (preferences.cuisine.lower() in place.area.lower() or any(preferences.cuisine.lower() in t for t in tags_lower)):
+        score += 10.0
+    if preferences.district and preferences.district.lower() in place.area.lower():
+        score += 10.0
+    if preferences.max_price and place.price_level <= preferences.max_price:
+        score += 10.0
+    if preferences.independent_only and any("independent" in t for t in tags_lower):
+        score += 10.0
+    if preferences.purpose and any(preferences.purpose.lower() in t for t in tags_lower):
+        score += 10.0
+    if preferences.work_friendly and any(w in t for t in tags_lower for w in ["work-friendly", "wifi", "laptop"]):
+        score += 8.0
+    if preferences.outdoor_seating and any(o in t for t in tags_lower for o in ["outdoor", "terrace", "patio"]):
+        score += 8.0
+    if preferences.dietary:
+        diet_matches = sum(1 for d in preferences.dietary if any(d.lower() in t for t in tags_lower))
+        score += min(12.0, diet_matches * 6.0)
+
+    return clamp(score)
 
 
 def discovery_score(place: PlaceInput, quality: float) -> dict[str, float]:
@@ -242,10 +282,10 @@ def discovery_score(place: PlaceInput, quality: float) -> dict[str, float]:
     return {"score": score, "specialist_confidence": clamp(specialist_confidence), "local_engagement": local_engagement}
 
 
-def score_place(place: PlaceInput) -> dict[str, float]:
+def score_place(place: PlaceInput, preferences: UserPreferences | None = None) -> dict[str, float]:
     quality = quality_score(place)
     popularity = popularity_score(place)
-    relevance = relevance_score(place)
+    relevance = relevance_score(place, preferences)
     discovery = discovery_score(place, quality)
     freshness = freshness_score(place)
     recommendation = clamp(
