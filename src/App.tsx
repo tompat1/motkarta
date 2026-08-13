@@ -200,91 +200,115 @@ function cuisineLabel(value: string) {
 
 function VerificationBar({ place }: { place: ScoredPlace }) {
   const v = place.verification;
-  if (!v) return null;
 
   return (
     <div
       className="verification-bar"
       style={{
-        marginTop: "12px",
-        marginBottom: "12px",
-        padding: "10px 12px",
-        background: "rgba(246, 243, 237, 0.8)",
-        borderRadius: "8px",
-        border: "1px solid var(--line, #e2dcd2)",
+        marginTop: "14px",
+        marginBottom: "14px",
+        padding: "12px 14px",
+        background: "var(--color-paper)",
+        border: "1px solid var(--color-mist)",
+        borderRadius: "var(--radius-none)",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-        <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--ink-muted)" }}>
-          Verification Breakdown
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--color-signal)" }}>
+          Varför den syns här
         </span>
         <span
           style={{
-            fontSize: "11px",
-            fontWeight: 700,
-            padding: "2px 8px",
-            borderRadius: "12px",
-            background: v.confidenceLevel === "High" ? "#e6f4ea" : v.confidenceLevel === "Medium" ? "#feefc3" : "#f1f3f4",
-            color: v.confidenceLevel === "High" ? "#137333" : v.confidenceLevel === "Medium" ? "#b06000" : "#5f6368",
+            fontFamily: "var(--font-mono)",
+            fontSize: "10px",
+            fontWeight: 600,
+            padding: "3px 8px",
+            background: place.evidence?.confidence === "High" ? "var(--color-water)" : "var(--color-white)",
+            color: place.evidence?.confidence === "High" ? "var(--color-white)" : "var(--color-ink)",
+            border: "1px solid var(--color-mist)",
+            textTransform: "uppercase",
           }}
         >
-          🛡️ {v.confidenceLevel} Confidence ({v.verifiedSourcesCount}/4 Sources)
+          {place.evidence?.confidence ?? "Medel"} Konfidens
         </span>
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px" }}>
         <span
           style={{
+            fontFamily: "var(--font-mono)",
             fontSize: "11px",
-            padding: "3px 8px",
-            borderRadius: "4px",
-            background: v.specialistGuide.verified ? "#e6f4ea" : "#f1f3f4",
-            color: v.specialistGuide.verified ? "#137333" : "#70757a",
-            fontWeight: 600,
+            padding: "4px 8px",
+            background: "var(--color-white)",
+            border: "1px solid var(--color-mist)",
+            color: "var(--color-ink)",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "5px",
           }}
         >
-          {v.specialistGuide.verified ? "🏆 Specialty Guide" : "⚪ Guide Unverified"}
+          <ShieldCheck size={14} weight="bold" style={{ color: "var(--color-water)" }} />
+          Oberoende ställe
         </span>
-        <span
-          style={{
-            fontSize: "11px",
-            padding: "3px 8px",
-            borderRadius: "4px",
-            background: v.editorialTeam.verified ? "#e8f0fe" : "#f1f3f4",
-            color: v.editorialTeam.verified ? "#1a73e8" : "#70757a",
-            fontWeight: 600,
-          }}
-        >
-          {v.editorialTeam.verified ? "✍️ Editorial Audit" : "⚪ Editorial Pending"}
-        </span>
-        <span
-          style={{
-            fontSize: "11px",
-            padding: "3px 8px",
-            borderRadius: "4px",
-            background: v.communitySubmissions.verified ? "#fce8e6" : "#f1f3f4",
-            color: v.communitySubmissions.verified ? "#c5221f" : "#70757a",
-            fontWeight: 600,
-          }}
-        >
-          {v.communitySubmissions.verified ? "👥 Community Submissions" : "⚪ Community Pending"}
-        </span>
-        <span
-          style={{
-            fontSize: "11px",
-            padding: "3px 8px",
-            borderRadius: "4px",
-            background: v.structuredEvidence.verified ? "#feefc3" : "#f1f3f4",
-            color: v.structuredEvidence.verified ? "#b06000" : "#70757a",
-            fontWeight: 600,
-          }}
-        >
-          {v.structuredEvidence.verified ? "📄 Structured Menu & Web" : "⚪ Menu Pending"}
-        </span>
+        {v?.specialistGuide.verified ? (
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
+              padding: "4px 8px",
+              background: "var(--color-white)",
+              border: "1px solid var(--color-mist)",
+              color: "var(--color-ink)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "5px",
+            }}
+          >
+            <Certificate size={14} weight="bold" style={{ color: "var(--color-water)" }} />
+            Specialistguide
+          </span>
+        ) : null}
+        {v?.structuredEvidence.verified ? (
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
+              padding: "4px 8px",
+              background: "var(--color-white)",
+              border: "1px solid var(--color-mist)",
+              color: "var(--color-ink)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "5px",
+            }}
+          >
+            <CheckCircle size={14} weight="bold" style={{ color: "var(--color-water)" }} />
+            Kommunal granskning
+          </span>
+        ) : null}
+        {place.specialty?.specialtyVerified ? (
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
+              padding: "4px 8px",
+              background: "var(--color-white)",
+              border: "1px solid var(--color-water)",
+              color: "var(--color-water)",
+              fontWeight: 600,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "5px",
+            }}
+          >
+            <Coffee size={14} weight="bold" style={{ color: "var(--color-water)" }} />
+            Specialty proof
+          </span>
+        ) : null}
       </div>
 
-      <p style={{ fontSize: "11px", color: "var(--ink-muted)", marginTop: "6px", marginBottom: 0 }}>
-        {v.summary}
+      <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--color-stone)", margin: "4px 0 0", lineHeight: "1.4" }}>
+        Ingen betald placering · Flera oberoende källor
       </p>
     </div>
   );
@@ -314,7 +338,7 @@ function ExternalMapLinks({ place }: { place: PlaceInput }) {
       style={{
         marginTop: "12px",
         paddingTop: "12px",
-        borderTop: "1px solid var(--line, #e2dcd2)",
+        borderTop: "1px solid var(--color-mist)",
         display: "flex",
         flexDirection: "column",
         gap: "6px",
@@ -322,14 +346,15 @@ function ExternalMapLinks({ place }: { place: PlaceInput }) {
     >
       <span
         style={{
+          fontFamily: "var(--font-mono)",
           fontSize: "11px",
-          fontWeight: 700,
+          fontWeight: 600,
           textTransform: "uppercase",
-          letterSpacing: "0.05em",
-          color: "var(--ink-muted)",
+          letterSpacing: "0.06em",
+          color: "var(--color-stone)",
         }}
       >
-        Open location in:
+        Öppna i kartapp:
       </span>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
         <a
@@ -340,20 +365,19 @@ function ExternalMapLinks({ place }: { place: PlaceInput }) {
             display: "inline-flex",
             alignItems: "center",
             gap: "5px",
-            padding: "5px 10px",
-            borderRadius: "6px",
-            background: "#ffffff",
-            border: "1px solid #dadce0",
-            color: "#3c4043",
-            fontSize: "12px",
+            padding: "6px 10px",
+            background: "var(--color-white)",
+            border: "1px solid var(--color-mist)",
+            color: "var(--color-ink)",
+            fontFamily: "var(--font-mono)",
+            fontSize: "11px",
             fontWeight: 600,
             textDecoration: "none",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
           }}
         >
-          <MapPin size={14} weight="fill" style={{ color: "#ea4335" }} />
+          <MapPin size={13} weight="fill" style={{ color: "var(--color-signal)" }} />
           Google Maps
-          <ArrowSquareOut size={12} weight="bold" style={{ color: "#70757a" }} />
+          <ArrowSquareOut size={12} weight="bold" />
         </a>
         <a
           href={appleMapsUrl}
@@ -363,20 +387,19 @@ function ExternalMapLinks({ place }: { place: PlaceInput }) {
             display: "inline-flex",
             alignItems: "center",
             gap: "5px",
-            padding: "5px 10px",
-            borderRadius: "6px",
-            background: "#ffffff",
-            border: "1px solid #dadce0",
-            color: "#1d1d1f",
-            fontSize: "12px",
+            padding: "6px 10px",
+            background: "var(--color-white)",
+            border: "1px solid var(--color-mist)",
+            color: "var(--color-ink)",
+            fontFamily: "var(--font-mono)",
+            fontSize: "11px",
             fontWeight: 600,
             textDecoration: "none",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
           }}
         >
-          <Compass size={14} weight="fill" style={{ color: "#0071e3" }} />
+          <Compass size={13} weight="fill" style={{ color: "var(--color-water)" }} />
           Apple Maps
-          <ArrowSquareOut size={12} weight="bold" style={{ color: "#70757a" }} />
+          <ArrowSquareOut size={12} weight="bold" />
         </a>
         <a
           href={osmUrl}
@@ -386,20 +409,19 @@ function ExternalMapLinks({ place }: { place: PlaceInput }) {
             display: "inline-flex",
             alignItems: "center",
             gap: "5px",
-            padding: "5px 10px",
-            borderRadius: "6px",
-            background: "#ffffff",
-            border: "1px solid #dadce0",
-            color: "#2c3e50",
-            fontSize: "12px",
+            padding: "6px 10px",
+            background: "var(--color-white)",
+            border: "1px solid var(--color-mist)",
+            color: "var(--color-ink)",
+            fontFamily: "var(--font-mono)",
+            fontSize: "11px",
             fontWeight: 600,
             textDecoration: "none",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
           }}
         >
-          <MapTrifold size={14} weight="fill" style={{ color: "#7ebc6f" }} />
+          <MapTrifold size={13} weight="fill" style={{ color: "var(--color-water)" }} />
           OpenStreetMap
-          <ArrowSquareOut size={12} weight="bold" style={{ color: "#70757a" }} />
+          <ArrowSquareOut size={12} weight="bold" />
         </a>
         {place.website ? (
           <a
@@ -410,20 +432,19 @@ function ExternalMapLinks({ place }: { place: PlaceInput }) {
               display: "inline-flex",
               alignItems: "center",
               gap: "5px",
-              padding: "5px 10px",
-              borderRadius: "6px",
-              background: "#ffffff",
-              border: "1px solid #dadce0",
-              color: "#1a73e8",
-              fontSize: "12px",
+              padding: "6px 10px",
+              background: "var(--color-white)",
+              border: "1px solid var(--color-mist)",
+              color: "var(--color-water)",
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
               fontWeight: 600,
               textDecoration: "none",
-              boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
             }}
           >
-            <Globe size={14} weight="bold" />
-            Website
-            <ArrowSquareOut size={12} weight="bold" style={{ color: "#70757a" }} />
+            <Globe size={13} weight="bold" />
+            Hemsida
+            <ArrowSquareOut size={12} weight="bold" />
           </a>
         ) : null}
       </div>
@@ -768,58 +789,60 @@ export default function App() {
     <main>
       <header className="topbar">
         <a className="brand" href="#">
-          <span>STHLM</span>
-          <b>OPEN TABLE</b>
+          <span className="brand-counter-pin" />
+          <b>MOTKARTA</b>
+          <span>Stockholms fria matkarta</span>
         </a>
         <nav>
-          <a href="#map" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-            <Compass size={14} weight="bold" /> Explore
+          <a href="#map" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <Compass size={14} weight="bold" /> KARTA
           </a>
-          <a href="#method" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-            <ShieldCheck size={14} weight="bold" /> Method
+          <a href="#method" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <ShieldCheck size={14} weight="bold" /> METOD
           </a>
-          <a href="#concierge" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-            <MagnifyingGlass size={14} weight="bold" /> Concierge
+          <a href="#concierge" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <MagnifyingGlass size={14} weight="bold" /> OM
           </a>
         </nav>
         <a className="about" href="#sources">
           {dataSource === "osm"
-            ? "Live OSM data"
+            ? "Live OSM Data"
             : dataSource === "d1"
-              ? "Live D1 data"
+              ? "Live D1 Data"
               : dataSource === "loading"
-                ? "Loading data"
-                : "Demo data"}
+                ? "Laddar data"
+                : "Demo Data"}
         </a>
       </header>
 
       <section className="intro">
         <div>
-          <p className="eyebrow">Independent food discovery · scoring foundation</p>
+          <p className="eyebrow">Stockholms fria matkarta · Ingen betald ranking</p>
           <h1>
-            Good places,
+            Stockholm,
             <br />
-            <i>not paid places.</i>
+            <i>bord för bord.</i>
           </h1>
+          <p className="sub-lede">Ät utan algoritmen · Oberoende upptäckt</p>
         </div>
         <p className="lede">
-          A transparent Stockholm map for restaurants, bakeries, cafes and specialty coffee.
-          Popularity matters, but it never gets the final word.
+          En oberoende matkarta för restauranger, bagerier, caféer och specialty coffee.
+          Ingen betald ranking. Tydlig logik. Bevis framför hype.
         </p>
       </section>
 
       <section className="controls" id="map">
         <label className="search" style={{ display: "flex", alignItems: "center" }}>
-          <MagnifyingGlass size={16} weight="bold" style={{ color: "var(--ink)", marginRight: "8px" }} />
+          <MagnifyingGlass size={16} weight="bold" style={{ color: "var(--color-ink)", marginRight: "8px" }} />
           <input
-            aria-label="Search places"
+            aria-label="Sök ställen"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search place, area or feature"
+            placeholder="Sök plats, kök eller område..."
           />
         </label>
-        <div className="chips" aria-label="Filter establishment type">
-          <span className="filter-label">Type</span>
+        <div className="chips" aria-label="Filter typ">
+          <span className="filter-label">Typ</span>
           <div className="chip-row">
             {establishmentTypes.map((item) => (
               <button
@@ -828,13 +851,13 @@ export default function App() {
                 onClick={() => setKind(item)}
                 type="button"
               >
-                {item}
+                {item === "All places" ? "Alla ställen" : item}
               </button>
             ))}
           </div>
         </div>
-        <div className="chips cuisine-chips" aria-label="Filter cuisine">
-          <span className="filter-label">Cuisine</span>
+        <div className="chips cuisine-chips" aria-label="Filter kök">
+          <span className="filter-label">Kök</span>
           <div className="chip-row">
             {[allCuisines, ...cuisineOptions].map((item) => (
               <button
@@ -843,7 +866,7 @@ export default function App() {
                 onClick={() => setCuisine(item)}
                 type="button"
               >
-                {item === allCuisines ? item : cuisineLabel(item)}
+                {item === allCuisines ? "Alla kök" : cuisineLabel(item)}
               </button>
             ))}
           </div>
@@ -855,13 +878,13 @@ export default function App() {
           <FoodMap places={visibleRanked} activePlace={active} onSelect={setSelected} />
           <div className="legend map-legend">
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <Coffee size={14} weight="fill" style={{ color: "#0d392a" }} /> Specialty
+              <Coffee size={14} weight="bold" style={{ color: "var(--color-water)" }} /> Specialty coffee
             </span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <Bread size={14} weight="fill" style={{ color: "#d97706" }} /> Bakery
+              <Bread size={14} weight="bold" style={{ color: "var(--color-water)" }} /> Bageri
             </span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <ForkKnife size={14} weight="fill" style={{ color: "#dc2626" }} /> Food
+              <ForkKnife size={14} weight="bold" style={{ color: "var(--color-water)" }} /> Restaurang
             </span>
           </div>
 
@@ -958,14 +981,14 @@ export default function App() {
                   : "Recommendation = 35% relevance + 25% quality + 15% popularity + 15% discovery + 10% freshness"}
           </p>
           <div className="principles" aria-label="Ranking principles">
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
-              <Check size={13} weight="bold" style={{ color: "var(--green)" }} /> No payment for ranking.
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <Check size={13} weight="bold" style={{ color: "var(--color-water)" }} /> Ingen betald ranking eller sponsrad placering.
             </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
-              <Check size={13} weight="bold" style={{ color: "var(--green)" }} /> No automatic advantage from having many reviews.
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <Check size={13} weight="bold" style={{ color: "var(--color-water)" }} /> Ingen automatisk fördel från enbart hög recensionsvolym.
             </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
-              <Check size={13} weight="bold" style={{ color: "var(--green)" }} /> No ranking based solely on click popularity.
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <Check size={13} weight="bold" style={{ color: "var(--color-water)" }} /> Ingen ranking baserad på klickpopularitet eller algoritmer.
             </span>
           </div>
           <div className="list">
@@ -986,7 +1009,7 @@ export default function App() {
                 </span>
                 <span className="total">
                   <b>{rounded(modeScore(place, mode))}</b>
-                  <small>{mode === "For you" ? "match" : "score"}</small>
+                  <small>{mode === "For you" ? "match" : "poäng"}</small>
                 </span>
               </button>
             ))}
@@ -996,28 +1019,28 @@ export default function App() {
 
       <section className="concierge" id="concierge">
         <div>
-          <p className="eyebrow">The independent concierge</p>
+          <p className="eyebrow">Oberoende AI-Concierge</p>
           <h2>
-            Tell us what <i>good</i>
+            Vad är <i>bra</i>
             <br />
-            means today.
+            mat för dig i dag?
           </h2>
           <p>
-            It searches the evidence first, then explains the recommendation. No invented
-            opening hours. No paid placement.
+            Söker först i bevis och verifierade fakta, sedan förklaras rekommendationen.
+            Inga påhittade öppettider. Ingen betald placering.
           </p>
         </div>
         <div className="ask-box">
-          <label htmlFor="ask">I am looking for...</label>
-          <textarea id="ask" value={concierge} onChange={(event) => setConcierge(event.target.value)} />
+          <label htmlFor="ask">Jag söker efter...</label>
+          <textarea id="ask" value={concierge} onChange={(event) => setConcierge(event.target.value)} placeholder="t.ex. specialty coffee och kardemummabulle på Södermalm..." />
           <button onClick={ask} disabled={asking} type="button">
             {asking ? (
               <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <CircleNotch size={16} className="animate-spin" /> Searching...
+                <CircleNotch size={16} className="animate-spin" /> Söker bevis...
               </span>
             ) : (
               <>
-                Find my places <ArrowRight size={16} weight="bold" />
+                Hitta mina ställen <ArrowRight size={16} weight="bold" />
               </>
             )}
           </button>
@@ -1029,59 +1052,58 @@ export default function App() {
 
       <section className="method" id="method">
         <div>
-          <p className="eyebrow">Open method · visible trade-offs</p>
+          <p className="eyebrow">Öppen metod · Tydliga bevis</p>
           <h2>
-            Popularity is evidence.
+            Popularitet är en signal.
             <br />
-            Not authority.
+            Inte domen.
           </h2>
         </div>
         <div className="method-grid">
           <article>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
               <b>01</b>
-              <Sliders size={20} weight="bold" style={{ color: "var(--green)" }} />
+              <Sliders size={20} weight="bold" style={{ color: "var(--color-water)" }} />
             </div>
-            <h3>Plural quality</h3>
-            <p>Guide, editorial, user, inspection, attribute and freshness evidence stay separate.</p>
+            <h3>Mångsidig kvalitet</h3>
+            <p>Guider, redaktionell granskning, användaromdömen, tillsyn och egenskaper vägs separat.</p>
           </article>
           <article>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
               <b>02</b>
-              <Scales size={20} weight="bold" style={{ color: "var(--green)" }} />
+              <Scales size={20} weight="bold" style={{ color: "var(--color-water)" }} />
             </div>
-            <h3>Corrected popularity</h3>
-            <p>Bayesian rating, exposure-adjusted engagement and recency reduce winner-take-all bias.</p>
+            <h3>Korrigerad popularitet</h3>
+            <p>Bayesiansk rätvisning, exponeringsjusterat engagemang och färskhet minskar winner-take-all skevhet.</p>
           </article>
           <article>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
               <b>03</b>
-              <Certificate size={20} weight="bold" style={{ color: "var(--green)" }} />
+              <Certificate size={20} weight="bold" style={{ color: "var(--color-water)" }} />
             </div>
             <h3>Specialty proof</h3>
-            <p>Specialty coffee requires structured attributes or source verification, not marketing copy.</p>
+            <p>Specialty coffee kräver strukturerade attribut och källverifiering, inte marknadsföringstext.</p>
           </article>
           <article>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
               <b>04</b>
-              <Sparkle size={20} weight="bold" style={{ color: "var(--green)" }} />
+              <Sparkle size={20} weight="bold" style={{ color: "var(--color-water)" }} />
             </div>
-            <h3>Discovery value</h3>
-            <p>Discovery rewards quality with limited exposure, not obscurity by itself.</p>
+            <h3>Upptäcktsvärde</h3>
+            <p>Belönar hög kvalitet i kombination med lägre huvudsaklig synlighet.</p>
           </article>
         </div>
         <div className="disclaimer" id="sources">
-          DATA NOTE
+          KÄLLNOTERING
           <span>
-            The deployed app can load the Python-generated OpenStreetMap baseline, while D1 remains
-            available for later curated evidence and score snapshots.
+            MOTKARTA kombinerar öppen grunddata från OpenStreetMap med verifierade tillsynsregister från Stockholms stad och kurerad redaktionell granskning.
           </span>
         </div>
       </section>
 
       <footer>
-        <span>STHLM OPEN TABLE / LOCAL POC</span>
-        <span>OPEN DATA · OPEN METHOD · OPEN CITY</span>
+        <span>MOTKARTA / STOCKHOLMS FRIA MATKARTA</span>
+        <span>ÖPPEN DATA · ÖPPEN METOD · ÖPPEN STAD</span>
       </footer>
     </main>
   );
