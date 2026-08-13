@@ -23,6 +23,7 @@ export function normalizeOsmEstablishmentType(row: Pick<OsmFoodPlaceRow, "catego
   | EstablishmentType
   | null {
   const category = row.category.trim().toLowerCase();
+  const cuisine = row.cuisine?.trim().toLowerCase() ?? "";
 
   if (specialtyCoffeeCategories.has(category)) {
     return "Specialty coffee";
@@ -30,6 +31,10 @@ export function normalizeOsmEstablishmentType(row: Pick<OsmFoodPlaceRow, "catego
 
   if (bakeryCategories.has(category)) {
     return "Bakery";
+  }
+
+  if (category === "bistro" || cuisine.includes("bistro")) {
+    return "Bistro";
   }
 
   if (restaurantCategories.has(category)) {

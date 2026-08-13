@@ -12,6 +12,7 @@ const execFileAsync = promisify(execFile);
 
 test("OSM normalization maps known categories to establishment types", () => {
   assert.equal(normalizeOsmEstablishmentType({ category: "restaurant" }), "Restaurant");
+  assert.equal(normalizeOsmEstablishmentType({ category: "restaurant", cuisine: "bistro" }), "Bistro");
   assert.equal(normalizeOsmEstablishmentType({ category: "bakery" }), "Bakery");
   assert.equal(normalizeOsmEstablishmentType({ category: "cafe", cuisine: "coffee_shop" }), "Café");
   assert.equal(normalizeOsmEstablishmentType({ category: "coffee_roaster" }), "Specialty coffee");

@@ -14,13 +14,16 @@ from motkarta.pipeline import (
     load_raw_csv,
     score_places,
     write_geojson,
+    write_place_inputs_json,
     write_rag_corpus,
 )
 
 
-def run_pipeline(raw_csv: Path, data_dir: Path, output_dir: Path) -> None:
+def run_pipeline(raw_csv: Path, data_dir: Path, output_dir: Path, public_data_dir: Path | None = None) -> None:
     data_dir.mkdir(parents=True, exist_ok=True)
     output_dir.mkdir(parents=True, exist_ok=True)
+    if public_data_dir is not None:
+        public_data_dir.mkdir(parents=True, exist_ok=True)
 
     raw = load_raw_csv(raw_csv)
     clean = clean_places(raw)
@@ -40,6 +43,8 @@ def run_pipeline(raw_csv: Path, data_dir: Path, output_dir: Path) -> None:
     build_folium_map(scored, output_dir / "stockholm_food_map.html")
     write_geojson(scored, output_dir / "stockholm_food_places.geojson")
     write_rag_corpus(scored, output_dir / "rag_corpus.jsonl")
+    if public_data_dir is not None:
+        write_place_inputs_json(scored, public_data_dir / "places.json")
 
     report = build_coverage_report(scored, duplicate_count=len(duplicates))
     (output_dir / "coverage_report.md").write_text(report.markdown(), encoding="utf-8")
@@ -51,6 +56,8 @@ def run_pipeline(raw_csv: Path, data_dir: Path, output_dir: Path) -> None:
     print(f"Wrote {output_dir / 'stockholm_food_places.geojson'}")
     print(f"Wrote {output_dir / 'coverage_report.md'}")
     print(f"Wrote {output_dir / 'rag_corpus.jsonl'}")
+    if public_data_dir is not None:
+        print(f"Wrote {public_data_dir / 'places.json'}")
 
 
 def main() -> None:
@@ -58,8 +65,9 @@ def main() -> None:
     parser.add_argument("--raw-csv", default="data/stockholm_food_places.csv")
     parser.add_argument("--data-dir", default="data")
     parser.add_argument("--output-dir", default="outputs")
+    parser.add_argument("--public-data-dir", default="public/data")
     args = parser.parse_args()
-    run_pipeline(Path(args.raw_csv), Path(args.data_dir), Path(args.output_dir))
+    run_pipeline(Path(args.raw_csv), Path(args.data_dir), Path(args.output_dir), Path(args.public_data_dir))
 
 
 if __name__ == "__main__":

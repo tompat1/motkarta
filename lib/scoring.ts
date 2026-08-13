@@ -1,5 +1,6 @@
 export type EstablishmentType =
   | "Restaurant"
+  | "Bistro"
   | "Bakery"
   | "Café"
   | "Specialty coffee";

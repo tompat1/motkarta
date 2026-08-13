@@ -185,15 +185,25 @@ outputs/stockholm_food_map.html
 outputs/stockholm_food_places.geojson
 outputs/coverage_report.md
 outputs/rag_corpus.jsonl
+public/data/places.json
 ```
 
 The Folium map includes filter layers for establishment type, cuisine,
 neighbourhood and missing information. The GeoJSON export is the migration path
-for a later Leaflet, MapLibre, Mapbox or CARTO app. The RAG corpus powers a
-simple local concierge:
+for a later Leaflet, MapLibre, Mapbox or CARTO app. `public/data/places.json`
+is the deployable static dataset used by the Vite app before falling back to
+the Cloudflare API/demo path. The RAG corpus powers a simple local concierge:
 
 ```bash
 .venv/bin/python scripts/query_concierge.py "filter coffee roaster"
+```
+
+The shorthand refresh flow is:
+
+```bash
+npm run mvp:fetch
+npm run mvp
+npm run build
 ```
 
 ## Research lineage

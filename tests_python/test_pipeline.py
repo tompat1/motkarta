@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 
 from motkarta.concierge import answer_query, load_rag_corpus
-from motkarta.pipeline import clean_places, dedupe_places, load_raw_csv, score_places
+from motkarta.pipeline import clean_places, dedupe_places, load_raw_csv, score_places, write_place_inputs_json
 from scripts.run_mvp_pipeline import run_pipeline
 
 
@@ -50,6 +50,25 @@ def test_full_mvp_pipeline_writes_artifacts(tmp_path):
     assert geojson["type"] == "FeatureCollection"
     assert len(geojson["features"]) == 4
 
+    public_data = tmp_path / "public" / "data"
+    run_pipeline(FIXTURE, data_dir, output_dir, public_data)
+    places_payload = json.loads((public_data / "places.json").read_text(encoding="utf-8"))
+    assert places_payload["source"] == "osm"
+    assert places_payload["places"][0]["kind"] in {"Café", "Specialty coffee", "Bakery", "Bistro"}
+
     documents = load_rag_corpus(output_dir / "rag_corpus.jsonl")
     results = answer_query("filter coffee roaster", documents, limit=1)
     assert results[0]["title"] == "Small Roaster"
+
+
+def test_place_inputs_json_matches_frontend_shape(tmp_path):
+    scored = score_places(dedupe_places(clean_places(load_raw_csv(FIXTURE)))[0])
+    target = tmp_path / "places.json"
+
+    write_place_inputs_json(scored, target)
+
+    payload = json.loads(target.read_text(encoding="utf-8"))
+    place = payload["places"][0]
+    assert payload["source"] == "osm"
+    assert {"id", "name", "kind", "area", "tags", "evidence", "engagement", "x", "y"} <= set(place)
+    assert place["evidence"]["confidence"] == "Low"

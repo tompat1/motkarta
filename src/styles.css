@@ -268,6 +268,10 @@ h2 i {
   background: #24251f;
 }
 
+.kind-bistro {
+  background: #6c4aa1;
+}
+
 .kind-café {
   background: #8b6448;
 }
@@ -401,6 +405,13 @@ h2 i {
   font-size: 28px;
   letter-spacing: -0.04em;
   margin: 8px 0 0;
+}
+
+.results-head small {
+  color: #68665e;
+  display: block;
+  font-size: 11px;
+  margin-top: 5px;
 }
 
 .results select {

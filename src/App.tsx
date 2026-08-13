@@ -13,15 +13,18 @@ import {
 const establishmentTypes = [
   "All places",
   "Restaurant",
+  "Bistro",
   "Bakery",
   "Café",
   "Specialty coffee",
 ] as const;
 
 const modes = ["For you", "Hidden gems", "Popular now", "Quality first"] as const;
+const renderLimit = 350;
 
 type EstablishmentFilter = (typeof establishmentTypes)[number];
 type Mode = (typeof modes)[number];
+type DataSource = "loading" | "demo" | "d1" | "osm";
 
 function modeScore(place: ScoredPlace, mode: Mode) {
   if (mode === "Hidden gems") {
@@ -78,7 +81,7 @@ function preferencesFromQuery(query: string, kind: EstablishmentFilter): UserPre
 
 export default function App() {
   const [places, setPlaces] = useState<PlaceInput[]>(demoPlaces);
-  const [dataSource, setDataSource] = useState<"loading" | "demo" | "d1">("loading");
+  const [dataSource, setDataSource] = useState<DataSource>("loading");
   const [mode, setMode] = useState<Mode>("For you");
   const [kind, setKind] = useState<EstablishmentFilter>("All places");
   const [query, setQuery] = useState("");
@@ -93,19 +96,11 @@ export default function App() {
 
     async function loadPlaces() {
       try {
-        const response = await fetch("/api/places");
-        if (!response.ok) {
-          throw new Error(`Places API responded ${response.status}`);
-        }
-
-        const payload = (await response.json()) as {
-          source?: "demo" | "d1";
-          places?: PlaceInput[];
-        };
+        const payload = await fetchPlacesPayload();
 
         if (!cancelled && payload.places?.length) {
           setPlaces(payload.places);
-          setDataSource(payload.source ?? "d1");
+          setDataSource(payload.source);
         }
       } catch {
         if (!cancelled) {
@@ -138,8 +133,9 @@ export default function App() {
         .sort((a, b) => modeScore(b, mode) - modeScore(a, mode)),
     [kind, mode, query, scoredPlaces],
   );
+  const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
 
-  const active = scoredPlaces.find((place) => place.id === selected) ?? ranked[0] ?? scoredPlaces[0];
+  const active = ranked.find((place) => place.id === selected) ?? ranked[0] ?? scoredPlaces[0];
 
   function ask() {
     const request = concierge.toLowerCase();
@@ -177,7 +173,13 @@ export default function App() {
           <a href="#concierge">Concierge</a>
         </nav>
         <a className="about" href="#sources">
-          {dataSource === "d1" ? "Live D1 data" : dataSource === "loading" ? "Loading data" : "Demo data"}
+          {dataSource === "osm"
+            ? "Live OSM data"
+            : dataSource === "d1"
+              ? "Live D1 data"
+              : dataSource === "loading"
+                ? "Loading data"
+                : "Demo data"}
         </a>
       </header>
 
@@ -229,7 +231,7 @@ export default function App() {
             <span className="district d2">NORRMALM</span>
             <span className="district d3">SODERMALM</span>
             <span className="district d4">DJURGARDEN</span>
-            {ranked.map((place, index) => (
+            {visibleRanked.map((place, index) => (
               <button
                 aria-label={`Select ${place.name}`}
                 key={place.id}
@@ -296,6 +298,7 @@ export default function App() {
             <div>
               <p className="eyebrow">Transparent ranking</p>
               <h2>{ranked.length} places in view</h2>
+              {ranked.length > renderLimit ? <small>Showing top {renderLimit}</small> : null}
             </div>
             <select value={mode} onChange={(event) => setMode(event.target.value as Mode)}>
               {modes.map((item) => (
@@ -313,7 +316,7 @@ export default function App() {
                   : "Recommendation = 35% relevance + 25% quality + 15% popularity + 15% discovery + 10% freshness"}
           </p>
           <div className="list">
-            {ranked.map((place, index) => (
+            {visibleRanked.map((place, index) => (
               <button
                 key={place.id}
                 className={place.id === active.id ? "place active-place" : "place"}
@@ -395,8 +398,8 @@ export default function App() {
         <div className="disclaimer" id="sources">
           DATA NOTE
           <span>
-            This first local implementation uses a small demonstration set, but the scores are now
-            computed from source, engagement, recency and specialty-coffee inputs.
+            The deployed app can load the Python-generated OpenStreetMap baseline, while D1 remains
+            available for later curated evidence and score snapshots.
           </span>
         </div>
       </section>
@@ -407,4 +410,29 @@ export default function App() {
       </footer>
     </main>
   );
+}
+
+async function fetchPlacesPayload(): Promise<{ source: DataSource; places: PlaceInput[] }> {
+  try {
+    const staticResponse = await fetch("/data/places.json");
+    if (staticResponse.ok) {
+      const payload = (await staticResponse.json()) as { source?: DataSource; places?: PlaceInput[] };
+      if (payload.places?.length) {
+        return { source: payload.source ?? "osm", places: payload.places };
+      }
+    }
+  } catch {
+    // Fall through to the API path when the generated static dataset is absent.
+  }
+
+  const apiResponse = await fetch("/api/places");
+  if (!apiResponse.ok) {
+    throw new Error(`Places API responded ${apiResponse.status}`);
+  }
+
+  const payload = (await apiResponse.json()) as { source?: DataSource; places?: PlaceInput[] };
+  if (!payload.places?.length) {
+    throw new Error("Places API returned no places");
+  }
+  return { source: payload.source ?? "d1", places: payload.places };
 }

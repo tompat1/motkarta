@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import zlib
 from dataclasses import asdict, dataclass
 from difflib import SequenceMatcher
 from pathlib import Path
@@ -231,6 +232,13 @@ def write_geojson(frame: pd.DataFrame, path: str | Path) -> None:
     )
 
 
+def write_place_inputs_json(frame: pd.DataFrame, path: str | Path) -> None:
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    places = [place_input_from_row(row) for _, row in frame.iterrows()]
+    target.write_text(json.dumps({"source": "osm", "places": places}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def clean_text(value: object) -> str:
     return re.sub(r"\s+", " ", str(value or "")).strip()
 
@@ -313,6 +321,121 @@ def name_key(value: object) -> str:
 
 def coordinate_cell(lat: float, lon: float) -> tuple[int, int]:
     return int(lat * 1000), int(lon * 1000)
+
+
+def place_input_from_row(row: pd.Series) -> dict:
+    completeness = (
+        int(not row["missing_address"])
+        + int(not row["missing_opening_hours"])
+        + int(not row["missing_website"])
+    ) / 3
+    establishment_type = clean_text(row["establishment_type"])
+    cuisine = clean_text(row["cuisine"])
+    discovery_score = float(row["discovery_score"])
+
+    place = {
+        "id": stable_numeric_id(row),
+        "name": clean_text(row["name"]),
+        "kind": establishment_type,
+        "area": clean_text(row["neighbourhood"]) or "Stockholm",
+        "note": place_note(row),
+        "tags": place_tags(row),
+        "evidenceLabel": "OpenStreetMap baseline · needs enrichment",
+        "ratingAverage": 4.1,
+        "reliableRatingCount": 0,
+        "reviewCount": 0,
+        "categoryMeanRating": 4.1,
+        "categoryPopularityRaw": 0,
+        "localPopularityPercentile": 0.5,
+        "priceLevel": 2,
+        "mainstreamExposure": round(max(0, 28 - discovery_score * 0.18), 2),
+        "ageDays": 0,
+        "daysSinceFreshEvidence": 0,
+        "evidence": {
+            "specialistGuide": 0,
+            "independentEditorial": 0,
+            "verifiedUserRating": 0,
+            "repeatVisits": 0,
+            "recentReviews": 0,
+            "credibleReviewers": 0,
+            "inspectionStatus": 45,
+            "verifiedAttributes": round(completeness * 70, 2),
+            "dataFreshness": 75,
+            "confidence": "Low",
+        },
+        "engagement": {
+            "searchImpressions": 0,
+            "profileViews": 0,
+            "mapMarkerClicks": 0,
+            "saves": 0,
+            "directionRequests": 0,
+            "confirmedVisits": 0,
+            "repeatVisits": 0,
+            "recommendations": 0,
+            "recentSaves": 0,
+        },
+        "x": round(coordinate_to_map_position(row["longitude"], 17.75, 18.25), 2),
+        "y": round(100 - coordinate_to_map_position(row["latitude"], 59.2, 59.47), 2),
+    }
+    if establishment_type == "Specialty coffee":
+        place["specialty"] = specialty_attributes(row)
+    return place
+
+
+def stable_numeric_id(row: pd.Series) -> int:
+    key = f"{row['osm_type']}:{row['osm_id']}"
+    return zlib.crc32(key.encode("utf-8"))
+
+
+def place_note(row: pd.Series) -> str:
+    parts = [f"{clean_text(row['establishment_type'])} from OpenStreetMap"]
+    cuisine = clean_text(row["cuisine"])
+    address = clean_text(row["address"])
+    if cuisine:
+        parts.append(f"Cuisine tag: {cuisine}")
+    if address:
+        parts.append(f"Address: {address}")
+    return ". ".join(parts) + "."
+
+
+def place_tags(row: pd.Series) -> list[str]:
+    tags = {clean_text(row["establishment_type"]), clean_text(row["neighbourhood"]), "OpenStreetMap"}
+    for cuisine in clean_text(row["cuisine"]).split(";"):
+        if cuisine:
+            tags.add(cuisine.replace("_", " ").title())
+    if not row["missing_opening_hours"]:
+        tags.add("Opening hours")
+    if not row["missing_website"]:
+        tags.add("Website")
+    if row["missing_address"]:
+        tags.add("Missing address")
+    return sorted(tag for tag in tags if tag)
+
+
+def specialty_attributes(row: pd.Series) -> dict:
+    category = clean_text(row["category"]).lower()
+    cuisine = clean_text(row["cuisine"]).lower()
+    roaster = category == "coffee_roaster" or "roaster" in cuisine
+    coffee_tagged = category in {"coffee", "coffee_roaster"} or "coffee" in cuisine
+    return {
+        "specialtyVerified": False,
+        "ownRoastery": roaster,
+        "traceableCoffee": False,
+        "filterCoffee": coffee_tagged,
+        "espressoBased": coffee_tagged,
+        "rotatingRoasters": False,
+        "singleOrigin": False,
+        "manualBrewMethods": [],
+        "decafAvailable": False,
+        "beansForSale": category in {"coffee", "coffee_roaster"},
+        "verificationSources": 1,
+    }
+
+
+def coordinate_to_map_position(value: object, minimum: float, maximum: float) -> float:
+    if pd.isna(value) or maximum <= minimum:
+        return 50
+    return min(100, max(0, ((float(value) - minimum) / (maximum - minimum)) * 100))
 
 
 def dataframe_records(frame: pd.DataFrame) -> list[dict]:
