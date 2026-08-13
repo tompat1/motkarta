@@ -294,6 +294,25 @@ flowchart TD
 7. **Auditable Correction History**: Maintains a change log history rather than silently overwriting records, and supports owner/community corrections via OpenStreetMap.
 8. **Terms Compliance**: Uses open public APIs and datasets (OpenStreetMap Overpass API, Stockholm Stad Portal); **does not scrape Google Maps** in violation of terms.
 
+### Establishment Scope
+
+The project explicitly covers four establishment types:
+- **Restaurants**
+- **Bakeries and patisseries** (`Bakery`)
+- **General cafés** (`Café`)
+- **Specialty-coffee cafés and roasters** (`Specialty coffee`)
+
+### Multi-Dimensional Scoring Framework
+
+Rather than producing a single opaque "best" score, the system computes and presents four distinct dimensions separately:
+
+| Dimension | Meaning | Implementation Focus |
+| :--- | :--- | :--- |
+| **Quality** | Evidence that the establishment is good | Specialist guides, independent editorial, inspection status, verified attributes, specialty proof |
+| **Popularity** | Evidence that many people choose or return | Bayesian user rating, exposure-adjusted engagement, repeat visit rate, recent saves |
+| **Relevance** | How well it matches the current user | Explicit intent, kind, cuisine, price level, purpose, and preference tags |
+| **Discovery Value** | Strong quality signals with limited exposure | Quality paired with lower mainstream exposure (prevents winner-take-all bias) |
+
 The pipeline excludes obvious large fast-food chains from the scored/map/public
 artifacts by default. Current explicit exclusions are McDonald's, Burger King,
 Sibylla and MAX. Removed rows are still written to
