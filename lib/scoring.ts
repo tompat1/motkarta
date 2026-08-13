@@ -76,6 +76,8 @@ export type PlaceInput = {
   evidence: EvidenceSignals;
   engagement: EngagementSignals;
   specialty?: SpecialtyAttributes;
+  latitude?: number;
+  longitude?: number;
   x: number;
   y: number;
 };

@@ -176,88 +176,69 @@ h2 i {
   border-bottom: 1px solid var(--line);
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(360px, 0.75fr);
-  min-height: 770px;
+  height: min(760px, calc(100vh - 158px));
+  min-height: 560px;
 }
 
 .map-panel {
   border-right: 1px solid var(--line);
-  min-height: 770px;
+  min-height: 0;
   overflow: hidden;
   position: relative;
 }
 
-.map-grid {
-  background-color: #dedbd0;
-  background-image:
-    linear-gradient(32deg, transparent 48%, rgba(23, 23, 20, 0.11) 49%, transparent 50%),
-    linear-gradient(123deg, transparent 47%, rgba(23, 23, 20, 0.08) 48%, transparent 49%);
-  background-size: 115px 75px, 145px 100px;
+.leaflet-shell,
+.leaflet-map {
   inset: 0;
   position: absolute;
 }
 
-.water {
-  background: var(--blue);
-  border: 1px solid #9fbfc4;
-  position: absolute;
-  transform: rotate(-16deg);
+.leaflet-shell {
+  background: #d9d5ca;
 }
 
-.water-one {
-  border-radius: 46%;
-  height: 120%;
-  left: 60%;
-  top: -10%;
-  width: 18%;
+.leaflet-map {
+  z-index: 1;
 }
 
-.water-two {
-  border-radius: 50%;
-  height: 25%;
-  left: 30%;
-  top: 53%;
-  width: 35%;
+.leaflet-control-attribution {
+  font-size: 9px;
 }
 
-.district {
-  font: 10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  letter-spacing: 0.2em;
-  opacity: 0.48;
-  position: absolute;
+.leaflet-popup-content {
+  display: grid;
+  gap: 4px;
+  margin: 12px 14px;
 }
 
-.d1 {
-  left: 29%;
-  top: 20%;
+.leaflet-popup-content strong,
+.leaflet-popup-content span,
+.leaflet-popup-content em {
+  display: block;
 }
 
-.d2 {
-  left: 48%;
-  top: 43%;
+.leaflet-popup-content strong {
+  font-size: 15px;
 }
 
-.d3 {
-  left: 29%;
-  top: 86%;
+.leaflet-popup-content span,
+.leaflet-popup-content em {
+  color: #5e5a52;
+  font-size: 12px;
 }
 
-.d4 {
-  left: 78%;
-  top: 43%;
-}
-
-.pin {
+.leaflet-place-marker {
+  align-items: center;
   background: var(--green);
-  border: 2px solid var(--paper);
+  border: 2px solid white;
   border-radius: 50%;
-  box-shadow: 0 3px 8px #0004;
+  box-shadow: 0 2px 8px #0005;
   color: white;
-  cursor: pointer;
-  height: 36px;
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 36px;
-  z-index: 3;
+  display: flex;
+  font: 700 10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
 }
 
 .kind-bakery {
@@ -276,28 +257,27 @@ h2 i {
   background: #8b6448;
 }
 
-.pin.selected {
-  height: 48px;
+.leaflet-place-marker.active {
+  border-color: var(--ink);
+  height: 32px;
   outline: 2px solid var(--ink);
-  outline-offset: 3px;
-  width: 48px;
-  z-index: 5;
-}
-
-.pin span {
-  font: bold 11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  outline-offset: 2px;
+  width: 32px;
 }
 
 .legend {
   background: var(--paper);
-  bottom: 20px;
   display: flex;
   font-size: 10px;
   gap: 15px;
-  left: 20px;
   padding: 11px 14px;
+  z-index: 12;
+}
+
+.map-legend {
+  bottom: 20px;
+  left: 20px;
   position: absolute;
-  z-index: 4;
 }
 
 .dot {
@@ -314,6 +294,10 @@ h2 i {
 
 .bakery {
   background: #e84d2f;
+}
+
+.bistro {
+  background: #6c4aa1;
 }
 
 .food {
@@ -633,12 +617,14 @@ footer {
 
   .workspace {
     grid-template-columns: 1fr;
+    height: auto;
   }
 
   .map-panel {
     border-bottom: 1px solid var(--line);
     border-right: 0;
-    min-height: 650px;
+    height: 540px;
+    min-height: 0;
   }
 
   .results {
@@ -694,9 +680,8 @@ footer {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .workspace,
   .map-panel {
-    min-height: 760px;
+    height: 520px;
   }
 
   .results {

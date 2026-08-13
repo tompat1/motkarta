@@ -216,6 +216,8 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
       recentSaves: row.recent_saves ?? 0,
     },
     specialty: specialtyFromRow(row),
+    latitude: row.latitude ?? undefined,
+    longitude: row.longitude ?? undefined,
     x: coordinateToMapPosition(row.longitude, 17.75, 18.25),
     y: 100 - coordinateToMapPosition(row.latitude, 59.2, 59.47),
   };

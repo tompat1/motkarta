@@ -374,6 +374,8 @@ def place_input_from_row(row: pd.Series) -> dict:
             "recommendations": 0,
             "recentSaves": 0,
         },
+        "latitude": normalize_json_value(row["latitude"]),
+        "longitude": normalize_json_value(row["longitude"]),
         "x": round(coordinate_to_map_position(row["longitude"], 17.75, 18.25), 2),
         "y": round(100 - coordinate_to_map_position(row["latitude"], 59.2, 59.47), 2),
     }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import L from "leaflet";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { demoPlaces } from "../lib/demo-places";
 import {
   type EstablishmentType,
@@ -224,38 +225,20 @@ export default function App() {
 
       <section className="workspace">
         <div className="map-panel">
-          <div className="map-grid">
-            <div className="water water-one" />
-            <div className="water water-two" />
-            <span className="district d1">VASASTAN</span>
-            <span className="district d2">NORRMALM</span>
-            <span className="district d3">SODERMALM</span>
-            <span className="district d4">DJURGARDEN</span>
-            {visibleRanked.map((place, index) => (
-              <button
-                aria-label={`Select ${place.name}`}
-                key={place.id}
-                onClick={() => setSelected(place.id)}
-                className={`pin ${place.id === active.id ? "selected" : ""} kind-${place.kind
-                  .replaceAll(" ", "-")
-                  .toLowerCase()}`}
-                style={{ left: `${place.x}%`, top: `${place.y}%` }}
-                type="button"
-              >
-                <span>{index + 1}</span>
-              </button>
-            ))}
-            <div className="legend">
-              <span>
-                <i className="dot coffee" /> Specialty
-              </span>
-              <span>
-                <i className="dot bakery" /> Bakery
-              </span>
-              <span>
-                <i className="dot food" /> Food
-              </span>
-            </div>
+          <FoodMap places={visibleRanked} activePlace={active} onSelect={setSelected} />
+          <div className="legend map-legend">
+            <span>
+              <i className="dot coffee" /> Specialty
+            </span>
+            <span>
+              <i className="dot bakery" /> Bakery
+            </span>
+            <span>
+              <i className="dot bistro" /> Bistro
+            </span>
+            <span>
+              <i className="dot food" /> Food
+            </span>
           </div>
 
           <article className="map-card">
@@ -410,6 +393,132 @@ export default function App() {
       </footer>
     </main>
   );
+}
+
+function FoodMap({
+  places,
+  activePlace,
+  onSelect,
+}: {
+  places: ScoredPlace[];
+  activePlace: ScoredPlace;
+  onSelect: (id: number) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<Map<number, L.Marker>>(new Map());
+
+  useEffect(() => {
+    if (!containerRef.current || mapRef.current) {
+      return;
+    }
+
+    const map = L.map(containerRef.current, {
+      center: [59.3293, 18.0686],
+      zoom: 12,
+      zoomControl: true,
+      scrollWheelZoom: true,
+    });
+
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      maxZoom: 19,
+    }).addTo(map);
+
+    mapRef.current = map;
+    window.setTimeout(() => map.invalidateSize(), 0);
+
+    return () => {
+      markersRef.current.clear();
+      map.remove();
+      mapRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) {
+      return;
+    }
+
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current.clear();
+
+    const bounds = L.latLngBounds([]);
+    places.filter(hasCoordinates).forEach((place, index) => {
+      const marker = L.marker([place.latitude, place.longitude], {
+        icon: placeIcon(place, place.id === activePlace.id),
+        title: place.name,
+      })
+        .bindPopup(placePopupHtml(place, index + 1), { maxWidth: 280 })
+        .on("click", () => onSelect(place.id))
+        .addTo(map);
+
+      markersRef.current.set(place.id, marker);
+      bounds.extend(marker.getLatLng());
+    });
+
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [42, 42], maxZoom: 13 });
+    }
+  }, [onSelect, places]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const activeMarker = markersRef.current.get(activePlace.id);
+    if (!map || !activeMarker || !hasCoordinates(activePlace)) {
+      return;
+    }
+
+    places.filter(hasCoordinates).forEach((place) => {
+      markersRef.current.get(place.id)?.setIcon(placeIcon(place, place.id === activePlace.id));
+    });
+    map.panTo([activePlace.latitude, activePlace.longitude], { animate: true, duration: 0.45 });
+  }, [activePlace, places]);
+
+  return (
+    <div className="leaflet-shell">
+      <div ref={containerRef} className="leaflet-map" aria-label="Interactive Stockholm food map" />
+    </div>
+  );
+}
+
+function hasCoordinates(place: ScoredPlace): place is ScoredPlace & { latitude: number; longitude: number } {
+  return typeof place.latitude === "number" && typeof place.longitude === "number";
+}
+
+function placeIcon(place: ScoredPlace, active: boolean) {
+  return L.divIcon({
+    className: "",
+    html: `<span class="leaflet-place-marker ${kindClass(place.kind)} ${active ? "active" : ""}">${escapeHtml(place.name.slice(0, 1))}</span>`,
+    iconSize: active ? [32, 32] : [24, 24],
+    iconAnchor: active ? [16, 16] : [12, 12],
+  });
+}
+
+function placePopupHtml(place: ScoredPlace, rank: number) {
+  return `
+    <strong>${rank}. ${escapeHtml(place.name)}</strong>
+    <span>${escapeHtml(place.kind)} · ${escapeHtml(place.area)}</span>
+    <em>${Math.round(place.scores.recommendation)} match · ${escapeHtml(place.evidence.confidence)} confidence</em>
+  `;
+}
+
+function kindClass(kind: EstablishmentType) {
+  return `kind-${kind.replaceAll(" ", "-").toLowerCase()}`;
+}
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;",
+    };
+    return entities[character];
+  });
 }
 
 async function fetchPlacesPayload(): Promise<{ source: DataSource; places: PlaceInput[] }> {
