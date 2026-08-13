@@ -344,6 +344,28 @@ For **Specialty Coffee** cafés and roasters, the system stores structured attri
 }
 ```
 
+### Exposure-Adjusted Engagement Rate & Tracked Signals
+
+To prevent position bias (where frequently shown places accumulate more clicks and become artificially more popular), engagement is measured relative to exposure:
+
+$$\text{engagement rate} = \frac{\text{saves} + \text{confirmed\_visits} + \text{direction\_requests}}{\text{search\_impressions}}$$
+
+The system tracks 8 granular engagement signals:
+1. `search_impressions` (Search-result impressions)
+2. `profile_views` (Profile views)
+3. `map_marker_clicks` (Map-marker clicks)
+4. `saves` (Saves)
+5. `direction_requests` (Direction requests)
+6. `confirmed_visits` (Confirmed visits)
+7. `repeat_visits` (Repeat visits)
+8. `recommendations` (Recommendations to others)
+
+Using Bayesian rate smoothing ($\text{prior\_rate} = 0.08, \text{prior\_weight} = 50$), conversion efficiency is fairly compared:
+- **Small Café**: 200 impressions, 50 saves $\rightarrow$ **21.6% Bayesian engagement rate**
+- **Famous Café**: 20,000 impressions, 800 saves $\rightarrow$ **4.01% Bayesian engagement rate**
+
+This ensures small, highly loved establishments rank above heavily exposed, low-conversion places.
+
 The pipeline excludes obvious large fast-food chains from the scored/map/public
 artifacts by default. Current explicit exclusions are McDonald's, Burger King,
 Sibylla and MAX. Removed rows are still written to
