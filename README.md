@@ -52,6 +52,11 @@ For the GitHub-connected Cloudflare Pages project:
 - D1 binding name: `DB`
 - Deployment type: Cloudflare Pages static site, not Wrangler/Workers deploy
 
+If the deployment log says `No build command specified. Skipping build step.`,
+set the Pages build command in the Cloudflare dashboard to `npm run build`.
+The repo also includes `wrangler.toml` with `pages_build_output_dir = "dist"`
+so Pages knows where the built assets belong.
+
 Until D1 is connected, `/api/places` returns the demo data. After creating and binding D1, run the migration and optional demo seed:
 
 ```bash
