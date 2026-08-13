@@ -12,6 +12,10 @@ export type ParsedConciergeCard = {
 
 export type ParsedConciergeResponse = {
   intro: string;
+  clarification?: {
+    queryTerm: string;
+    question: string;
+  };
   cards: ParsedConciergeCard[];
   charter: string[];
 };
@@ -21,6 +25,7 @@ export function parseConciergeAnswer(text: string): ParsedConciergeResponse {
 
   const lines = text.split("\n");
   let intro = "";
+  let clarification: { queryTerm: string; question: string } | undefined;
   const cards: ParsedConciergeCard[] = [];
   const charter: string[] = [];
   let currentCard: ParsedConciergeCard | null = null;
@@ -29,6 +34,17 @@ export function parseConciergeAnswer(text: string): ParsedConciergeResponse {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
+
+    if (line.startsWith("CLARIFICATION_NEEDED:")) {
+      const questionText = line.replace(/^CLARIFICATION_NEEDED:\s*/, "");
+      const matchTerm = questionText.match(/["'](.*?)["']/);
+      clarification = {
+        queryTerm: matchTerm ? matchTerm[1] : "",
+        question: questionText,
+      };
+      intro = questionText;
+      continue;
+    }
 
     if (
       line.includes("ETHICAL & TECHNICAL CHARTER") ||
@@ -153,5 +169,5 @@ export function parseConciergeAnswer(text: string): ParsedConciergeResponse {
     cards.push(currentCard);
   }
 
-  return { intro, cards, charter };
+  return { intro, clarification, cards, charter };
 }

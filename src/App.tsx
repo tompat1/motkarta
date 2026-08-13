@@ -722,10 +722,12 @@ function ConciergeAnswerView({
   answer,
   places,
   onSelectPlace,
+  onRefineQuery,
 }: {
   answer: string;
   places: PlaceInput[];
   onSelectPlace: (id: number) => void;
+  onRefineQuery?: (extra: string) => void;
 }) {
   const parsed = useMemo(() => parseConciergeAnswer(answer), [answer]);
 
@@ -744,7 +746,113 @@ function ConciergeAnswerView({
 
   return (
     <div className="concierge-results">
-      {parsed.intro ? <p className="concierge-intro">{parsed.intro}</p> : null}
+      {parsed.clarification ? (
+        <div
+          className="concierge-clarification-box"
+          style={{
+            background: "var(--color-paper)",
+            border: "2px solid var(--color-signal)",
+            padding: "16px 20px",
+            marginBottom: "20px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              color: "var(--color-signal)",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              fontFamily: "var(--font-mono)",
+              fontSize: "12px",
+              marginBottom: "8px",
+            }}
+          >
+            <Sliders size={16} weight="bold" /> Sökförtydligande krävs
+          </div>
+          <p
+            style={{
+              margin: "0 0 12px",
+              fontFamily: "var(--font-body)",
+              fontSize: "15px",
+              fontWeight: 500,
+              lineHeight: 1.4,
+              color: "var(--color-ink)",
+            }}
+          >
+            {parsed.clarification.question}
+          </p>
+
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+            {["Spanien / Spanskt", "Mexiko / Mexikanskt", "Italien / Italienskt", "Frankrike / Franskt", "Asien / Thai"].map(
+              (suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  style={{
+                    background: "var(--color-white)",
+                    border: "1px solid var(--color-ink)",
+                    color: "var(--color-ink)",
+                    fontWeight: 600,
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "11px",
+                    padding: "6px 12px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => onRefineQuery?.(suggestion.split(" / ")[0])}
+                >
+                  + {suggestion}
+                </button>
+              ),
+            )}
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const form = e.currentTarget;
+              const input = form.elements.namedItem("country") as HTMLInputElement;
+              if (input?.value.trim()) {
+                onRefineQuery?.(input.value.trim());
+              }
+            }}
+            style={{ display: "flex", gap: "8px" }}
+          >
+            <input
+              name="country"
+              type="text"
+              placeholder="Skriv land eller kök (t.ex. Spanien)..."
+              style={{
+                flex: 1,
+                padding: "8px 12px",
+                border: "1px solid var(--color-mist)",
+                background: "var(--color-white)",
+                fontFamily: "var(--font-body)",
+                fontSize: "13px",
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                background: "var(--color-ink)",
+                color: "var(--color-paper)",
+                border: "none",
+                padding: "8px 16px",
+                fontFamily: "var(--font-mono)",
+                fontSize: "11px",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                cursor: "pointer",
+              }}
+            >
+              Precisera sökning
+            </button>
+          </form>
+        </div>
+      ) : parsed.intro ? (
+        <p className="concierge-intro">{parsed.intro}</p>
+      ) : null}
 
       {parsed.cards.map((card, idx) => {
         const matchedPlace = places.find(
@@ -969,8 +1077,8 @@ export default function App() {
 
   const active = ranked.find((place) => place.id === selected) ?? ranked[0] ?? scoredPlaces[0];
 
-  async function ask() {
-    if (!concierge.trim()) return;
+  async function askWithQuery(queryText: string) {
+    if (!queryText.trim()) return;
     setAsking(true);
     setAnswer(null);
 
@@ -978,7 +1086,7 @@ export default function App() {
       const resp = await fetch("/api/concierge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: concierge, places }),
+        body: JSON.stringify({ query: queryText, places }),
       });
 
       if (resp.ok) {
@@ -993,10 +1101,20 @@ export default function App() {
       // Fallback to local RAG when endpoint is unreachable in standalone dev
     }
 
-    const ragResult = retrieveAndSynthesize(concierge, places);
+    const ragResult = retrieveAndSynthesize(queryText, places);
     setAnswer(ragResult.answer);
     setAsking(false);
   }
+
+  async function ask() {
+    await askWithQuery(concierge);
+  }
+
+  const handleRefineQuery = (extra: string) => {
+    const updated = `${concierge} (${extra})`;
+    setConcierge(updated);
+    void askWithQuery(updated);
+  };
 
   return (
     <main>
@@ -1271,7 +1389,12 @@ export default function App() {
             )}
           </button>
           {answer ? (
-            <ConciergeAnswerView answer={answer} places={places} onSelectPlace={setSelected} />
+            <ConciergeAnswerView
+              answer={answer}
+              places={places}
+              onSelectPlace={setSelected}
+              onRefineQuery={handleRefineQuery}
+            />
           ) : null}
         </div>
       </section>

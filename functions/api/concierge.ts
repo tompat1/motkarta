@@ -70,6 +70,13 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     ["mexican", "mexican"],
     ["mexico", "mexican"],
     ["tapas", "tapas"],
+    ["tapas", "spanish"],
+    ["spanish", "spanish"],
+    ["spain", "spanish"],
+    ["spansk", "spanish"],
+    ["spanskt", "spanish"],
+    ["paella", "spanish"],
+    ["paella", "paella"],
     ["ramen", "ramen"],
   ];
 
@@ -203,6 +210,12 @@ const CUISINE_ALIASES: Record<string, string[]> = {
   hungary: ["hungarian", "hungary", "goulash", "austrian"],
   hungarian: ["hungarian", "hungary", "goulash", "austrian"],
   goulash: ["goulash", "hungarian", "austrian"],
+  spanish: ["spanish", "spain", "spansk", "spanskt", "paella", "tapas"],
+  spain: ["spanish", "spain", "spansk", "spanskt", "paella", "tapas"],
+  spansk: ["spanish", "spain", "spansk", "spanskt", "paella", "tapas"],
+  spanskt: ["spanish", "spain", "spansk", "spanskt", "paella", "tapas"],
+  paella: ["paella", "spanish", "spansk", "spanskt", "tapas"],
+  tapas: ["tapas", "spanish", "spansk", "spanskt", "paella"],
 };
 
 function matchTokenWithAliases(token: string, target: string): boolean {
@@ -423,7 +436,7 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
 
   const introText = validScored.length
     ? `Based on our auditable open dataset of independent Stockholm establishments, here are the top grounded recommendations for "${query}":`
-    : `No direct matches found for "${query}" in our verified open dataset. Showing top-rated independent establishments in Stockholm:`;
+    : `CLARIFICATION_NEEDED: Vi hittade inga direkt verifierade rätter eller ställen för "${query}" i vårt dataset ännu. Vilket land eller kök är maträtten ifrån?`;
 
   const answer = [
     introText,
