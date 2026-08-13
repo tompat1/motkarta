@@ -24,7 +24,9 @@ def test_bayesian_rating_prevents_winner_take_all():
 
 
 def test_recency_weight_half_life():
+    assert round(recency_weight(0, 180), 2) == 1.0
     assert round(recency_weight(180, 180), 2) == 0.5
+    assert round(recency_weight(360, 180), 2) == 0.25
 
 
 def test_exposure_adjusted_rate_rewards_efficiency():

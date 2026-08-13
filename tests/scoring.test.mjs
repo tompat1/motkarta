@@ -27,7 +27,9 @@ test("bayesian rating prevents winner-take-all bias for central high-volume cafe
 });
 
 test("recency half-life halves signal after the configured period", () => {
+  assert.equal(Math.round(recencyWeight(0, 180) * 100), 100);
   assert.equal(Math.round(recencyWeight(180, 180) * 100), 50);
+  assert.equal(Math.round(recencyWeight(360, 180) * 100), 25);
 });
 
 test("exposure-adjusted rate rewards efficient engagement", () => {
