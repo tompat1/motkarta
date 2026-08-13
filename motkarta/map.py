@@ -9,7 +9,6 @@ import pandas as pd
 
 TYPE_COLORS = {
     "Restaurant": "red",
-    "Bistro": "purple",
     "Bakery": "orange",
     "Café": "blue",
     "Specialty coffee": "green",

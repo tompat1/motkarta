@@ -13,7 +13,7 @@ def test_clean_dedupe_and_score_pipeline():
     raw = load_raw_csv(FIXTURE)
     clean = clean_places(raw)
 
-    assert set(clean["establishment_type"]) == {"Café", "Specialty coffee", "Bakery", "Bistro"}
+    assert set(clean["establishment_type"]) == {"Café", "Specialty coffee", "Bakery", "Restaurant"}
     assert clean.loc[0, "website"] == "https://example.com"
     assert clean.loc[0, "address"] == "Testgatan 1"
 
@@ -54,7 +54,8 @@ def test_full_mvp_pipeline_writes_artifacts(tmp_path):
     run_pipeline(FIXTURE, data_dir, output_dir, public_data)
     places_payload = json.loads((public_data / "places.json").read_text(encoding="utf-8"))
     assert places_payload["source"] == "osm"
-    assert places_payload["places"][0]["kind"] in {"Café", "Specialty coffee", "Bakery", "Bistro"}
+    assert places_payload["places"][0]["kind"] in {"Café", "Specialty coffee", "Bakery", "Restaurant"}
+    assert "cuisine" in places_payload["places"][0]
 
     documents = load_rag_corpus(output_dir / "rag_corpus.jsonl")
     results = answer_query("filter coffee roaster", documents, limit=1)

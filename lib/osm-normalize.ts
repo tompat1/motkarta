@@ -15,7 +15,7 @@ export type OsmFoodPlaceRow = {
   source?: string;
 };
 
-const restaurantCategories = new Set(["restaurant", "fast_food", "food_court"]);
+const restaurantCategories = new Set(["restaurant", "fast_food", "food_court", "bistro"]);
 const bakeryCategories = new Set(["bakery", "pastry", "confectionery"]);
 const specialtyCoffeeCategories = new Set(["coffee_roaster", "coffee"]);
 
@@ -31,10 +31,6 @@ export function normalizeOsmEstablishmentType(row: Pick<OsmFoodPlaceRow, "catego
 
   if (bakeryCategories.has(category)) {
     return "Bakery";
-  }
-
-  if (category === "bistro" || cuisine.includes("bistro")) {
-    return "Bistro";
   }
 
   if (restaurantCategories.has(category)) {

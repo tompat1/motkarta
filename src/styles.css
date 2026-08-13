@@ -126,10 +126,11 @@ h2 i {
 }
 
 .controls {
+  align-items: flex-start;
   border-bottom: 1px solid var(--line);
-  display: flex;
+  display: grid;
   gap: 16px;
-  justify-content: space-between;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.6fr);
   padding: 18px 3vw;
 }
 
@@ -152,9 +153,27 @@ h2 i {
 }
 
 .chips {
+  align-items: center;
+  display: flex;
+  gap: 11px;
+}
+
+.chip-row {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
+}
+
+.cuisine-chips {
+  grid-column: 2;
+}
+
+.filter-label {
+  color: #6d685f;
+  flex: 0 0 52px;
+  font: 10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .chips button {
@@ -176,8 +195,8 @@ h2 i {
   border-bottom: 1px solid var(--line);
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(360px, 0.75fr);
-  height: min(760px, calc(100vh - 158px));
-  min-height: 560px;
+  height: min(700px, calc(100vh - 218px));
+  min-height: 520px;
 }
 
 .map-panel {
@@ -249,10 +268,6 @@ h2 i {
   background: #24251f;
 }
 
-.kind-bistro {
-  background: #6c4aa1;
-}
-
 .kind-café {
   background: #8b6448;
 }
@@ -296,10 +311,6 @@ h2 i {
   background: #e84d2f;
 }
 
-.bistro {
-  background: #6c4aa1;
-}
-
 .food {
   background: #24251f;
 }
@@ -327,6 +338,14 @@ h2 i {
   font-size: 31px;
   letter-spacing: -0.04em;
   margin: 10px 0;
+}
+
+.cuisine-line {
+  color: var(--green);
+  font: 700 11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.08em;
+  margin: 0 0 10px;
+  text-transform: uppercase;
 }
 
 .map-card .note {
@@ -645,11 +664,15 @@ footer {
 
   .controls {
     align-items: flex-start;
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .search {
     width: 100%;
+  }
+
+  .cuisine-chips {
+    grid-column: 1;
   }
 }
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-ESTABLISHMENT_TYPES = {"Restaurant", "Bistro", "Bakery", "Café", "Specialty coffee"}
+ESTABLISHMENT_TYPES = {"Restaurant", "Bakery", "Café", "Specialty coffee"}
 
 
 @dataclass(frozen=True)
@@ -30,14 +30,11 @@ def normalize_osm_establishment_type(category: str, cuisine: str = "") -> str | 
     """
 
     value = category.strip().lower()
-    cuisine_values = {part.strip().lower() for part in cuisine.split(";") if part.strip()}
     if value in {"coffee", "coffee_roaster"}:
         return "Specialty coffee"
     if value in {"bakery", "pastry", "confectionery"}:
         return "Bakery"
-    if "bistro" in cuisine_values or value == "bistro":
-        return "Bistro"
-    if value in {"restaurant", "fast_food", "food_court"}:
+    if value in {"restaurant", "fast_food", "food_court", "bistro"}:
         return "Restaurant"
     if value == "cafe":
         return "Café"

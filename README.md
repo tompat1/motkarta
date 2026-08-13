@@ -104,10 +104,10 @@ npm run db:seed:osm
 
 The generated file is `drizzle/seed-osm.sql`. It upserts OSM places by
 `osm_type` + `osm_id`, stores OSM as source evidence, and normalizes categories
-into the five establishment types:
+into the four establishment types:
 
 - `restaurant`, `fast_food`, `food_court` -> `Restaurant`
-- cuisine/category values containing `bistro` -> `Bistro`
+- `bistro` remains cuisine/style metadata under `Restaurant`
 - `bakery`, `pastry`, `confectionery` -> `Bakery`
 - `cafe` -> `Café`
 - `coffee`, `coffee_roaster` -> `Specialty coffee`
@@ -239,8 +239,9 @@ The Python package lives in `motkarta/`:
 
 ## Python MVP pipeline
 
-The agreed MVP covers restaurants, bistros, bakeries, cafés and specialty
-coffee. The Python pipeline produces the core artifacts:
+The agreed MVP covers restaurants, bakeries, cafés and specialty coffee, with
+bistros treated as restaurant cuisine/style metadata rather than a top-level
+category. The Python pipeline produces the core artifacts:
 
 ```bash
 python scripts/fetch_osm.py

@@ -80,5 +80,5 @@ def test_rows_from_payload_normalizes_establishment_types():
 
     rows = fetch_osm.rows_from_payload(payload)
 
-    assert rows[0]["establishment_type"] == "Bistro"
+    assert rows[0]["establishment_type"] == "Restaurant"
     assert rows[0]["source"] == "OpenStreetMap"

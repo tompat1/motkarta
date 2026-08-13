@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from motkarta.normalize import normalize_osm_establishment_type
+from motkarta.normalize import ESTABLISHMENT_TYPES, normalize_osm_establishment_type
 
 
 RAW_COLUMNS = [
@@ -78,12 +78,7 @@ def clean_places(frame: pd.DataFrame) -> pd.DataFrame:
     data["website"] = data["website"].map(normalize_website)
     data["latitude"] = pd.to_numeric(data["latitude"], errors="coerce")
     data["longitude"] = pd.to_numeric(data["longitude"], errors="coerce")
-    data["establishment_type"] = data.apply(
-        lambda row: row["establishment_type"]
-        or normalize_osm_establishment_type(row["category"], row["cuisine"])
-        or "Restaurant",
-        axis=1,
-    )
+    data["establishment_type"] = data.apply(normalize_establishment_type_row, axis=1)
     data["neighbourhood"] = data.apply(assign_neighbourhood, axis=1)
     data["missing_address"] = data["address"].eq("")
     data["missing_opening_hours"] = data["opening_hours"].eq("")
@@ -146,7 +141,6 @@ def score_places(frame: pd.DataFrame) -> pd.DataFrame:
         {
             "Specialty coffee": 8,
             "Bakery": 5,
-            "Bistro": 4,
             "Café": 3,
             "Restaurant": 2,
         }
@@ -252,6 +246,15 @@ def normalize_cuisine(value: object) -> str:
     return ";".join(dict.fromkeys(parts))
 
 
+def normalize_establishment_type_row(row: pd.Series) -> str:
+    existing = clean_text(row["establishment_type"])
+    if existing == "Bistro":
+        return "Restaurant"
+    if existing in ESTABLISHMENT_TYPES:
+        return existing
+    return normalize_osm_establishment_type(row["category"], row["cuisine"]) or "Restaurant"
+
+
 def normalize_address(row: pd.Series) -> str:
     existing = clean_text(row.get("address", ""))
     if existing:
@@ -337,6 +340,7 @@ def place_input_from_row(row: pd.Series) -> dict:
         "id": stable_numeric_id(row),
         "name": clean_text(row["name"]),
         "kind": establishment_type,
+        "cuisine": cuisine,
         "area": clean_text(row["neighbourhood"]) or "Stockholm",
         "note": place_note(row),
         "tags": place_tags(row),

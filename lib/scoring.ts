@@ -1,6 +1,5 @@
 export type EstablishmentType =
   | "Restaurant"
-  | "Bistro"
   | "Bakery"
   | "Café"
   | "Specialty coffee";
@@ -59,6 +58,7 @@ export type PlaceInput = {
   id: number;
   name: string;
   kind: EstablishmentType;
+  cuisine?: string;
   area: string;
   note: string;
   tags: string[];

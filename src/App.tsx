@@ -14,16 +14,17 @@ import {
 const establishmentTypes = [
   "All places",
   "Restaurant",
-  "Bistro",
   "Bakery",
   "Café",
   "Specialty coffee",
 ] as const;
 
+const allCuisines = "All cuisines";
 const modes = ["For you", "Hidden gems", "Popular now", "Quality first"] as const;
 const renderLimit = 350;
 
 type EstablishmentFilter = (typeof establishmentTypes)[number];
+type CuisineFilter = typeof allCuisines | string;
 type Mode = (typeof modes)[number];
 type DataSource = "loading" | "demo" | "d1" | "osm";
 
@@ -45,6 +46,32 @@ function modeScore(place: ScoredPlace, mode: Mode) {
 
 function rounded(value: number) {
   return Math.round(value);
+}
+
+function cuisineParts(place: Pick<PlaceInput, "cuisine" | "tags">) {
+  return (place.cuisine ?? "")
+    .split(";")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function cuisineLabel(value: string) {
+  return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function cuisineOptionsFromPlaces(places: PlaceInput[]) {
+  const counts = new Map<string, number>();
+
+  places.forEach((place) => {
+    cuisineParts(place).forEach((item) => {
+      counts.set(item, (counts.get(item) ?? 0) + 1);
+    });
+  });
+
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 12)
+    .map(([item]) => item);
 }
 
 function preferencesFromQuery(query: string, kind: EstablishmentFilter): UserPreferences {
@@ -85,6 +112,7 @@ export default function App() {
   const [dataSource, setDataSource] = useState<DataSource>("loading");
   const [mode, setMode] = useState<Mode>("For you");
   const [kind, setKind] = useState<EstablishmentFilter>("All places");
+  const [cuisine, setCuisine] = useState<CuisineFilter>(allCuisines);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(1);
   const [concierge, setConcierge] = useState(
@@ -123,16 +151,26 @@ export default function App() {
     () => places.map((place) => scorePlace(place, preferences)),
     [places, preferences],
   );
+  const cuisineOptions = useMemo(() => cuisineOptionsFromPlaces(places), [places]);
+
+  useEffect(() => {
+    if (cuisine !== allCuisines && !cuisineOptions.includes(cuisine)) {
+      setCuisine(allCuisines);
+    }
+  }, [cuisine, cuisineOptions]);
 
   const ranked = useMemo(
     () =>
       scoredPlaces
         .filter((place) => kind === "All places" || place.kind === kind)
+        .filter((place) => cuisine === allCuisines || cuisineParts(place).includes(cuisine))
         .filter((place) =>
-          `${place.name} ${place.area} ${place.tags.join(" ")}`.toLowerCase().includes(query.toLowerCase()),
+          `${place.name} ${place.area} ${place.cuisine ?? ""} ${place.tags.join(" ")}`
+            .toLowerCase()
+            .includes(query.toLowerCase()),
         )
         .sort((a, b) => modeScore(b, mode) - modeScore(a, mode)),
-    [kind, mode, query, scoredPlaces],
+    [cuisine, kind, mode, query, scoredPlaces],
   );
   const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
 
@@ -210,16 +248,34 @@ export default function App() {
           />
         </label>
         <div className="chips" aria-label="Filter establishment type">
-          {establishmentTypes.map((item) => (
-            <button
-              key={item}
-              className={kind === item ? "active" : ""}
-              onClick={() => setKind(item)}
-              type="button"
-            >
-              {item}
-            </button>
-          ))}
+          <span className="filter-label">Type</span>
+          <div className="chip-row">
+            {establishmentTypes.map((item) => (
+              <button
+                key={item}
+                className={kind === item ? "active" : ""}
+                onClick={() => setKind(item)}
+                type="button"
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="chips cuisine-chips" aria-label="Filter cuisine">
+          <span className="filter-label">Cuisine</span>
+          <div className="chip-row">
+            {[allCuisines, ...cuisineOptions].map((item) => (
+              <button
+                key={item}
+                className={cuisine === item ? "active" : ""}
+                onClick={() => setCuisine(item)}
+                type="button"
+              >
+                {item === allCuisines ? item : cuisineLabel(item)}
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -234,9 +290,6 @@ export default function App() {
               <i className="dot bakery" /> Bakery
             </span>
             <span>
-              <i className="dot bistro" /> Bistro
-            </span>
-            <span>
               <i className="dot food" /> Food
             </span>
           </div>
@@ -246,6 +299,9 @@ export default function App() {
               {active.kind} · {active.area}
             </p>
             <h2>{active.name}</h2>
+            {cuisineParts(active).length ? (
+              <p className="cuisine-line">{cuisineParts(active).map(cuisineLabel).join(" · ")}</p>
+            ) : null}
             <p className="note">{active.note}</p>
             <div className="tag-row">
               {active.tags.map((tag) => (
@@ -497,9 +553,12 @@ function placeIcon(place: ScoredPlace, active: boolean) {
 }
 
 function placePopupHtml(place: ScoredPlace, rank: number) {
+  const cuisines = cuisineParts(place).map(cuisineLabel).join(" · ");
+
   return `
     <strong>${rank}. ${escapeHtml(place.name)}</strong>
     <span>${escapeHtml(place.kind)} · ${escapeHtml(place.area)}</span>
+    ${cuisines ? `<span>${escapeHtml(cuisines)}</span>` : ""}
     <em>${Math.round(place.scores.recommendation)} match · ${escapeHtml(place.evidence.confidence)} confidence</em>
   `;
 }
