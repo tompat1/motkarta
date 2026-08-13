@@ -50,6 +50,7 @@ For the GitHub-connected Cloudflare Pages project:
 - Output directory: `dist`
 - Node version: `22.13.0` or newer
 - D1 binding name: `DB`
+- Deployment type: Cloudflare Pages static site, not Wrangler/Workers deploy
 
 Until D1 is connected, `/api/places` returns the demo data. After creating and binding D1, run the migration and optional demo seed:
 
