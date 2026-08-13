@@ -61,6 +61,32 @@ def test_full_mvp_pipeline_writes_artifacts(tmp_path):
     assert results[0]["title"] == "Small Roaster"
 
 
+def test_full_mvp_pipeline_appends_source_metadata(tmp_path):
+    data_dir = tmp_path / "data"
+    output_dir = tmp_path / "outputs"
+    metadata_path = tmp_path / "raw" / "metadata.json"
+    metadata_path.parent.mkdir(parents=True)
+    metadata_path.write_text(
+        json.dumps(
+            {
+                "source": "OpenStreetMap Overpass API",
+                "boundary_reference": "OSM administrative area named Stockholms kommun",
+                "fetched_at": "2026-08-13T12:00:00+00:00",
+                "query_hash": "abc123",
+                "cache_path": "data/raw/osm.json",
+                "license": "ODbL",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    run_pipeline(FIXTURE, data_dir, output_dir, source_metadata_path=metadata_path)
+
+    report = (output_dir / "coverage_report.md").read_text(encoding="utf-8")
+    assert "## Source Metadata" in report
+    assert "Stockholms kommun" in report
+
+
 def test_place_inputs_json_matches_frontend_shape(tmp_path):
     scored = score_places(dedupe_places(clean_places(load_raw_csv(FIXTURE)))[0])
     target = tmp_path / "places.json"

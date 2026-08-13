@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -19,7 +20,13 @@ from motkarta.pipeline import (
 )
 
 
-def run_pipeline(raw_csv: Path, data_dir: Path, output_dir: Path, public_data_dir: Path | None = None) -> None:
+def run_pipeline(
+    raw_csv: Path,
+    data_dir: Path,
+    output_dir: Path,
+    public_data_dir: Path | None = None,
+    source_metadata_path: Path | None = None,
+) -> None:
     data_dir.mkdir(parents=True, exist_ok=True)
     output_dir.mkdir(parents=True, exist_ok=True)
     if public_data_dir is not None:
@@ -47,7 +54,10 @@ def run_pipeline(raw_csv: Path, data_dir: Path, output_dir: Path, public_data_di
         write_place_inputs_json(scored, public_data_dir / "places.json")
 
     report = build_coverage_report(scored, duplicate_count=len(duplicates))
-    (output_dir / "coverage_report.md").write_text(report.markdown(), encoding="utf-8")
+    report_text = report.markdown()
+    if source_metadata_path is not None and source_metadata_path.exists():
+        report_text += source_metadata_markdown(source_metadata_path)
+    (output_dir / "coverage_report.md").write_text(report_text, encoding="utf-8")
 
     print(f"Wrote {clean_path}")
     print(f"Wrote {deduped_path}")
@@ -66,8 +76,31 @@ def main() -> None:
     parser.add_argument("--data-dir", default="data")
     parser.add_argument("--output-dir", default="outputs")
     parser.add_argument("--public-data-dir", default="public/data")
+    parser.add_argument("--source-metadata", default="data/raw/osm_stockholm_food_places.metadata.json")
     args = parser.parse_args()
-    run_pipeline(Path(args.raw_csv), Path(args.data_dir), Path(args.output_dir), Path(args.public_data_dir))
+    run_pipeline(
+        Path(args.raw_csv),
+        Path(args.data_dir),
+        Path(args.output_dir),
+        Path(args.public_data_dir),
+        Path(args.source_metadata),
+    )
+
+
+def source_metadata_markdown(path: Path) -> str:
+    metadata = json.loads(path.read_text(encoding="utf-8"))
+    lines = [
+        "",
+        "## Source Metadata",
+        "",
+        f"- Source: {metadata.get('source', 'Unknown')}",
+        f"- Boundary: {metadata.get('boundary_reference', metadata.get('boundary', 'Unknown'))}",
+        f"- Fetched at: {metadata.get('fetched_at', 'Unknown')}",
+        f"- Query hash: {metadata.get('query_hash', 'Unknown')}",
+        f"- Cache: {metadata.get('cache_path', path)}",
+        f"- License: {metadata.get('license', 'Unknown')}",
+    ]
+    return "\n".join(lines) + "\n"
 
 
 if __name__ == "__main__":

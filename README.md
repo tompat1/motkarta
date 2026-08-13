@@ -80,7 +80,23 @@ Install `requirements-python.txt`, then run:
 python scripts/fetch_osm.py
 ```
 
-This writes `data/stockholm_food_places.csv`. Convert that CSV into D1 import SQL with:
+This writes `data/stockholm_food_places.csv`. By default it queries the
+OpenStreetMap administrative area named `Stockholms kommun`, caches the raw
+Overpass response in `data/raw/osm_stockholm_food_places.json`, and writes source
+metadata to `data/raw/osm_stockholm_food_places.metadata.json`. Later runs reuse
+the cache unless you explicitly refresh:
+
+```bash
+python scripts/fetch_osm.py --refresh
+```
+
+A rough bounding-box fallback remains available for troubleshooting:
+
+```bash
+python scripts/fetch_osm.py --boundary bbox --refresh
+```
+
+Convert the CSV into D1 import SQL with:
 
 ```bash
 npm run db:seed:osm
@@ -205,6 +221,9 @@ npm run mvp:fetch
 npm run mvp
 npm run build
 ```
+
+`npm run mvp` appends source metadata to `outputs/coverage_report.md` when the
+fetch metadata file is present.
 
 ## Research lineage
 
