@@ -467,9 +467,7 @@ h2 i {
 }
 
 .reason-list li::before {
-  color: var(--orange);
-  content: "+ ";
-  font-weight: 700;
+  display: none;
 }
 
 .source-line {
@@ -1068,7 +1066,5 @@ footer {
 }
 
 .concierge-charter-list span::before {
-  content: "✓ ";
-  color: #8ed6b5;
-  font-weight: 700;
+  display: none;
 }

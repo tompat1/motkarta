@@ -31,6 +31,7 @@
     "deploy:cloudflare": "npm run build && wrangler pages deploy dist --project-name stockholm-independent-food-map"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "drizzle-orm": "0.45.2",
     "leaflet": "^1.9.4",
     "react": "19.2.6",

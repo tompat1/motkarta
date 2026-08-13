@@ -3,6 +3,31 @@
 import L from "leaflet";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { demoPlaces } from "../lib/demo-places";
+import {
+  ArrowRight,
+  ArrowSquareOut,
+  ArrowsIn,
+  ArrowsOut,
+  Bread,
+  Certificate,
+  Check,
+  CheckCircle,
+  CircleNotch,
+  Coffee,
+  Compass,
+  Crosshair,
+  ForkKnife,
+  Globe,
+  MapPin,
+  MapTrifold,
+  MagnifyingGlass,
+  PlusCircle,
+  Scales,
+  ShieldCheck,
+  Shuffle,
+  Sliders,
+  Sparkle,
+} from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import {
   type EstablishmentType,
@@ -330,7 +355,7 @@ function ConciergeAnswerView({
                 className="concierge-btn primary"
                 onClick={() => handleSelect(card.name)}
               >
-                📍 Select on Map
+                <MapPin size={14} weight="fill" /> Select on Map
               </button>
               <a
                 href={gmapsUrl}
@@ -338,7 +363,7 @@ function ConciergeAnswerView({
                 rel="noopener noreferrer"
                 className="concierge-btn"
               >
-                🗺️ Google Maps ↗
+                <MapTrifold size={14} weight="bold" /> Google Maps <ArrowSquareOut size={11} />
               </a>
               <a
                 href={osmUrl}
@@ -346,7 +371,7 @@ function ConciergeAnswerView({
                 rel="noopener noreferrer"
                 className="concierge-btn"
               >
-                🌐 OpenStreetMap ↗
+                <Globe size={14} weight="bold" /> OpenStreetMap <ArrowSquareOut size={11} />
               </a>
               {websiteUrl ? (
                 <a
@@ -355,7 +380,7 @@ function ConciergeAnswerView({
                   rel="noopener noreferrer"
                   className="concierge-btn"
                 >
-                  🔗 Website ↗
+                  <ArrowSquareOut size={14} weight="bold" /> Website
                 </a>
               ) : null}
             </div>
@@ -368,7 +393,10 @@ function ConciergeAnswerView({
           <div className="concierge-charter-title">Ethical & Technical Charter</div>
           <div className="concierge-charter-list">
             {parsed.charter.map((bullet, i) => (
-              <span key={i}>{bullet}</span>
+              <span key={i} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <CheckCircle size={14} weight="fill" style={{ color: "#8ed6b5", flexShrink: 0 }} />
+                {bullet}
+              </span>
             ))}
           </div>
         </div>
@@ -535,9 +563,15 @@ export default function App() {
           <b>OPEN TABLE</b>
         </a>
         <nav>
-          <a href="#map">Explore</a>
-          <a href="#method">Method</a>
-          <a href="#concierge">Concierge</a>
+          <a href="#map" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+            <Compass size={14} weight="bold" /> Explore
+          </a>
+          <a href="#method" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+            <ShieldCheck size={14} weight="bold" /> Method
+          </a>
+          <a href="#concierge" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+            <MagnifyingGlass size={14} weight="bold" /> Concierge
+          </a>
         </nav>
         <a className="about" href="#sources">
           {dataSource === "osm"
@@ -566,8 +600,8 @@ export default function App() {
       </section>
 
       <section className="controls" id="map">
-        <label className="search">
-          <span aria-hidden="true">/</span>
+        <label className="search" style={{ display: "flex", alignItems: "center" }}>
+          <MagnifyingGlass size={16} weight="bold" style={{ color: "var(--ink)", marginRight: "8px" }} />
           <input
             aria-label="Search places"
             value={query}
@@ -611,14 +645,14 @@ export default function App() {
         <div className="map-panel">
           <FoodMap places={visibleRanked} activePlace={active} onSelect={setSelected} />
           <div className="legend map-legend">
-            <span>
-              <i className="dot coffee" /> Specialty
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <Coffee size={14} weight="fill" style={{ color: "#0d392a" }} /> Specialty
             </span>
-            <span>
-              <i className="dot bakery" /> Bakery
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <Bread size={14} weight="fill" style={{ color: "#d97706" }} /> Bakery
             </span>
-            <span>
-              <i className="dot food" /> Food
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <ForkKnife size={14} weight="fill" style={{ color: "#dc2626" }} /> Food
             </span>
           </div>
 
@@ -658,7 +692,10 @@ export default function App() {
             {active.discoveryReasons?.length ? (
               <ul className="reason-list" aria-label="Discovery score reasons">
                 {active.discoveryReasons.slice(0, 3).map((reason) => (
-                  <li key={reason}>{reason}</li>
+                  <li key={reason} style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                    <PlusCircle size={14} weight="fill" style={{ color: "var(--orange)", flexShrink: 0, marginTop: "2px" }} />
+                    <span>{reason}</span>
+                  </li>
                 ))}
               </ul>
             ) : null}
@@ -690,8 +727,12 @@ export default function App() {
                 ))}
               </select>
               {sortMode === "Surprise me" ? (
-                <button type="button" onClick={() => setRandomSeed((value) => value + 1)}>
-                  Shuffle
+                <button
+                  type="button"
+                  onClick={() => setRandomSeed((value) => value + 1)}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}
+                >
+                  <Shuffle size={13} weight="bold" /> Shuffle
                 </button>
               ) : null}
             </div>
@@ -706,9 +747,15 @@ export default function App() {
                   : "Recommendation = 35% relevance + 25% quality + 15% popularity + 15% discovery + 10% freshness"}
           </p>
           <div className="principles" aria-label="Ranking principles">
-            <span>No payment for ranking.</span>
-            <span>No automatic advantage from having many reviews.</span>
-            <span>No ranking based solely on click popularity.</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+              <Check size={13} weight="bold" style={{ color: "var(--green)" }} /> No payment for ranking.
+            </span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+              <Check size={13} weight="bold" style={{ color: "var(--green)" }} /> No automatic advantage from having many reviews.
+            </span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+              <Check size={13} weight="bold" style={{ color: "var(--green)" }} /> No ranking based solely on click popularity.
+            </span>
           </div>
           <div className="list">
             {visibleRanked.map((place, index) => (
@@ -753,7 +800,15 @@ export default function App() {
           <label htmlFor="ask">I am looking for...</label>
           <textarea id="ask" value={concierge} onChange={(event) => setConcierge(event.target.value)} />
           <button onClick={ask} disabled={asking} type="button">
-            {asking ? "RAG Concierge Searching..." : "Find my places"} <span aria-hidden="true">→</span>
+            {asking ? (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <CircleNotch size={16} className="animate-spin" /> Searching...
+              </span>
+            ) : (
+              <>
+                Find my places <ArrowRight size={16} weight="bold" />
+              </>
+            )}
           </button>
           {answer ? (
             <ConciergeAnswerView answer={answer} places={places} onSelectPlace={setSelected} />
@@ -772,22 +827,34 @@ export default function App() {
         </div>
         <div className="method-grid">
           <article>
-            <b>01</b>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+              <b>01</b>
+              <Sliders size={20} weight="bold" style={{ color: "var(--green)" }} />
+            </div>
             <h3>Plural quality</h3>
             <p>Guide, editorial, user, inspection, attribute and freshness evidence stay separate.</p>
           </article>
           <article>
-            <b>02</b>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+              <b>02</b>
+              <Scales size={20} weight="bold" style={{ color: "var(--green)" }} />
+            </div>
             <h3>Corrected popularity</h3>
             <p>Bayesian rating, exposure-adjusted engagement and recency reduce winner-take-all bias.</p>
           </article>
           <article>
-            <b>03</b>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+              <b>03</b>
+              <Certificate size={20} weight="bold" style={{ color: "var(--green)" }} />
+            </div>
             <h3>Specialty proof</h3>
             <p>Specialty coffee requires structured attributes or source verification, not marketing copy.</p>
           </article>
           <article>
-            <b>04</b>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+              <b>04</b>
+              <Sparkle size={20} weight="bold" style={{ color: "var(--green)" }} />
+            </div>
             <h3>Discovery value</h3>
             <p>Discovery rewards quality with limited exposure, not obscurity by itself.</p>
           </article>
@@ -946,7 +1013,7 @@ function FoodMap({
           onClick={handleRecenter}
           title="Center map to all recommendations"
         >
-          🎯 Center
+          <Crosshair size={14} weight="bold" /> Center
         </button>
         <button
           type="button"
@@ -954,7 +1021,15 @@ function FoodMap({
           onClick={handleToggleFullscreen}
           title="Toggle Fullscreen Map View"
         >
-          {isFullscreen ? "↙ Exit" : "⛶ Fullscreen"}
+          {isFullscreen ? (
+            <>
+              <ArrowsIn size={14} weight="bold" /> Exit
+            </>
+          ) : (
+            <>
+              <ArrowsOut size={14} weight="bold" /> Fullscreen
+            </>
+          )}
         </button>
       </div>
       <div ref={containerRef} className="leaflet-map" aria-label="Interactive Stockholm food map" />
