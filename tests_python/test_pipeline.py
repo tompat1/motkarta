@@ -172,3 +172,13 @@ def test_representation_measurements():
     assert "Missing cuisine:" in markdown
     assert "Missing website:" in markdown
 
+
+def test_compute_local_popularity_percentiles():
+    raw = load_raw_csv(FIXTURE)
+    clean = clean_places(raw)
+    scored = score_places(clean)
+
+    assert "local_popularity" in scored
+    assert (scored["local_popularity"] >= 0.0).all()
+    assert (scored["local_popularity"] <= 1.0).all()
+

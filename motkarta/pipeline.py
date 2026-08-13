@@ -234,6 +234,26 @@ def filter_excluded_chains(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFr
     return included, excluded
 
 
+def compute_local_popularity_percentiles(frame: pd.DataFrame) -> pd.Series:
+    """Compare establishments within peer groups (neighbourhood x establishment_type).
+
+    Prevents a local bakery in Farsta / South Stockholm from competing directly
+    with a large restaurant at Stureplan / Central Stockholm.
+    """
+    data = frame.copy()
+    if "popularity_raw" in data:
+        series = data["popularity_raw"]
+    elif "review_count" in data:
+        series = data["review_count"]
+    else:
+        series = pd.Series(0, index=data.index)
+
+    raw_pop = pd.to_numeric(series, errors="coerce").fillna(0)
+    data["__popularity_temp"] = raw_pop
+    grouped = data.groupby(["neighbourhood", "establishment_type"])["__popularity_temp"]
+    return grouped.rank(pct=True, method="dense").round(4)
+
+
 def score_places(frame: pd.DataFrame) -> pd.DataFrame:
     data = frame.copy()
     data["primary_cuisine"] = data["cuisine"].map(primary_cuisine)
@@ -245,6 +265,7 @@ def score_places(frame: pd.DataFrame) -> pd.DataFrame:
         lambda row: is_underrepresented_cuisine(row, cuisine_district_counts, district_counts),
         axis=1,
     )
+    data["local_popularity"] = compute_local_popularity_percentiles(data)
     data["low_local_visibility"] = data["missing_website"]
     data["verified_open"] = ~data["missing_opening_hours"]
     data["complete_profile"] = (
