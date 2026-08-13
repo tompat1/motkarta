@@ -28,6 +28,13 @@ test("evidence import validates source type and confidence", () => {
       }),
     /confidence/,
   );
+
+  assert.doesNotThrow(() =>
+    assertEvidenceImportRecord({
+      match: { name: "Test" },
+      evidence: [{ sourceType: "serving_permit", sourceName: "Permit register", confidence: 0.8 }],
+    }),
+  );
 });
 
 test("place reference prefers OSM identity over name matching", () => {

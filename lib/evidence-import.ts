@@ -5,6 +5,7 @@ export const evidenceSourceTypes = [
   "editorial",
   "verified_user_rating",
   "inspection",
+  "serving_permit",
   "official_site",
   "community_submission",
   "osm",

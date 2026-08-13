@@ -139,6 +139,63 @@ Specialty-coffee attributes can be updated in the same record, but should only
 be set from recognized guides, editorial review, your own verification, or
 consistent community submissions.
 
+## Additional source ingestion
+
+The next source layer starts with municipal food-control records, serving-permit
+imports and curated guide evidence.
+
+Fetch and normalize Stockholm food-control establishments:
+
+```bash
+npm run food-control:fetch -- --refresh
+npm run food-control:match
+```
+
+The default fetch uses recent inspections (`TillsynsDatum >= '2024-01-01'`) and
+caps the ArcGIS paging so local runs stay quick. Use
+`scripts/fetch_food_control.py --help` to widen the date range or page limit for
+a fuller historical refresh.
+
+This writes:
+
+```text
+data/stockholm_food_control.csv
+data/stockholm_food_control_matches.csv
+outputs/food_control_evidence.json
+```
+
+Generate a database-ready seed from the matched evidence with:
+
+```bash
+node scripts/generate_evidence_seed_sql.mjs outputs/food_control_evidence.json drizzle/seed-food-control.sql
+```
+
+The food-control source is used as inspection/registration evidence only. It is
+not a restaurant-quality signal by itself, and it can include schools, stores,
+caterers and institutional kitchens. The matcher only attaches evidence to
+existing OSM food places when name/address/coordinate evidence is strong enough.
+
+Serving permits are supported as a curated CSV import because a clean public
+establishment-level register has not been verified yet:
+
+```bash
+npm run permits:match -- --permits data/serving_permits.csv
+```
+
+Use `examples/serving_permits.sample.csv` as the column template. Matched rows
+produce `outputs/serving_permit_evidence.json` with `sourceType:
+serving_permit`.
+
+Independent local guides should be entered as curated evidence records, not
+scraped/copied reviews. Store source URL, source name, confidence, tags and our
+own short summary. Use:
+
+```bash
+npm run guides:seed
+```
+
+`examples/independent_guides.sample.json` shows the expected format.
+
 ## Score snapshots
 
 Scores can be recomputed into `score_snapshots` after importing OSM and evidence.

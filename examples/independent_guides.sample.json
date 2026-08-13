@@ -1,0 +1,32 @@
+[
+  {
+    "match": {
+      "name": "Example Bakery"
+    },
+    "evidence": [
+      {
+        "sourceType": "editorial",
+        "sourceName": "Independent local guide",
+        "url": "https://example.com/stockholm-bakeries",
+        "confidence": 0.72,
+        "summary": "Curated guide mention. Store our own short summary and tags only; do not copy review text."
+      }
+    ],
+    "tags": ["Guide mention", "Bakery"]
+  },
+  {
+    "match": {
+      "name": "Example Roaster"
+    },
+    "evidence": [
+      {
+        "sourceType": "specialist_guide",
+        "sourceName": "Independent specialty coffee guide",
+        "url": "https://example.com/stockholm-coffee",
+        "confidence": 0.82,
+        "summary": "Specialist guide mention with coffee-focused relevance. Verify attributes separately before marking specialty proof."
+      }
+    ],
+    "tags": ["Guide mention", "Specialty coffee candidate"]
+  }
+]

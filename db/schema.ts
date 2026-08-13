@@ -6,7 +6,7 @@ export const establishments = sqliteTable(
     id: integer("id").primaryKey({ autoIncrement: true }),
     name: text("name").notNull(),
     type: text("type", {
-      enum: ["Restaurant", "Bakery", "Café", "Specialty coffee"],
+      enum: ["Restaurant", "Bistro", "Bakery", "Café", "Specialty coffee"],
     }).notNull(),
     district: text("district").notNull(),
     description: text("description").notNull(),
@@ -40,6 +40,7 @@ export const evidenceSources = sqliteTable(
         "editorial",
         "verified_user_rating",
         "inspection",
+        "serving_permit",
         "official_site",
         "community_submission",
         "osm",

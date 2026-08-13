@@ -1,0 +1,2 @@
+permit_id,name,address,latitude,longitude,permit_type,valid_from,valid_to,source_name,source_url,captured_at
+example-001,Example Bistro,Examplegatan 1,59.3300,18.0600,Stadigvarande serveringstillstånd,2026-01-01,,Stockholm serving permit export,https://example.com/serving-permits,2026-08-13
