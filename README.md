@@ -74,6 +74,25 @@ Install `requirements-python.txt`, then run:
 python scripts/fetch_osm.py
 ```
 
+This writes `data/stockholm_food_places.csv`. Convert that CSV into D1 import SQL with:
+
+```bash
+npm run db:seed:osm
+```
+
+The generated file is `drizzle/seed-osm.sql`. It upserts OSM places by
+`osm_type` + `osm_id`, stores OSM as source evidence, and normalizes categories
+into the four establishment types:
+
+- `restaurant`, `fast_food`, `food_court` -> `Restaurant`
+- `bakery`, `pastry`, `confectionery` -> `Bakery`
+- `cafe` -> `Café`
+- `coffee`, `coffee_roaster` -> `Specialty coffee`
+
+An ordinary OSM café is not promoted to specialty coffee just because its cuisine
+mentions coffee; specialty coffee needs a structured OSM coffee shop/roaster
+category or later editorial/source verification.
+
 For the residual model, enrich/merge source data into a CSV containing:
 
 `name`, `platform_rating`, `review_count`, `price_level`, `latitude`, `longitude`, `category`, `cuisine`, `district`, `chain_status`.

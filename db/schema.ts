@@ -1,4 +1,4 @@
-import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const establishments = sqliteTable(
   "establishments",
@@ -23,7 +23,7 @@ export const establishments = sqliteTable(
   },
   (table) => [
     index("establishments_type_district_idx").on(table.type, table.district),
-    index("establishments_osm_idx").on(table.osmType, table.osmId),
+    uniqueIndex("establishments_osm_unique_idx").on(table.osmType, table.osmId),
   ],
 );
 

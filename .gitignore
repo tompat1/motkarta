@@ -26,6 +26,7 @@ dist-ssr/
 /.vinext/
 /outputs/
 /work/
+/data/
 
 # Temporary / intermediate files
 .tmp/
