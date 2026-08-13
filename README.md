@@ -1,18 +1,47 @@
-# Stockholm Independent Food Map — proof of concept
+# Stockholm Independent Food Map
 
-An interactive concept for discovering Stockholm restaurants, bakeries, cafés and specialty coffee without allowing raw platform popularity to control the result.
+An interactive Vite/React concept for discovering Stockholm restaurants, bakeries, cafes and specialty coffee without allowing raw platform popularity to control the result.
 
-## What works in the POC
+## Local development
 
-- Category and text filtering
-- Four transparent ranking modes
-- Separate quality, popularity and discovery dimensions
+```bash
+npm install
+npm run dev
+```
+
+## What works now
+
+- Standard Vite/React app, independent of the old Sites/vinext wrapper
+- Category and text filtering across restaurants, bakeries, cafes and specialty coffee
+- Separate quality, popularity, relevance, discovery and freshness dimensions
+- Bayesian rating, recency weighting and exposure-adjusted engagement helpers
+- Structured specialty-coffee attributes rather than keyword-only labels
+- Drizzle schema for establishments, evidence sources, ratings, engagement, specialty attributes and score snapshots
 - Explainable demo concierge
 - Explicit confidence and evidence labels
 - OpenStreetMap/Overpass Python collector
 - Lauren Leek-inspired residual discovery model
 
-The visible dataset and scores are illustrative. They are not presented as published ratings.
+The visible dataset is still illustrative. The important change is that the UI scores are now computed from auditable inputs instead of hard-coded final numbers.
+
+## Checks
+
+```bash
+npm run typecheck
+npm test
+npm run build
+npm run validate:artifact
+```
+
+## Cloudflare deployment
+
+Cloudflare is kept as the deployment target without making local development depend on Cloudflare or Sites:
+
+```bash
+npm run deploy:cloudflare
+```
+
+That command builds the Vite app and deploys `dist/` with Wrangler Pages. Connect the Cloudflare project/account before running it.
 
 ## Python data pipeline
 

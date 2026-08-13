@@ -1,4 +1,129 @@
-// Intentionally empty by default.
-// Add Drizzle tables here when the site actually needs a database.
-// See examples/d1/db/schema.ts for an opt-in example.
-export {};
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+
+export const establishments = sqliteTable(
+  "establishments",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    name: text("name").notNull(),
+    type: text("type", {
+      enum: ["Restaurant", "Bakery", "Café", "Specialty coffee"],
+    }).notNull(),
+    district: text("district").notNull(),
+    description: text("description").notNull(),
+    priceLevel: integer("price_level"),
+    latitude: real("latitude"),
+    longitude: real("longitude"),
+    chainStatus: text("chain_status", { enum: ["independent", "chain", "unknown"] })
+      .default("unknown")
+      .notNull(),
+    osmType: text("osm_type"),
+    osmId: text("osm_id"),
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (table) => [
+    index("establishments_type_district_idx").on(table.type, table.district),
+    index("establishments_osm_idx").on(table.osmType, table.osmId),
+  ],
+);
+
+export const evidenceSources = sqliteTable(
+  "evidence_sources",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    establishmentId: integer("establishment_id")
+      .notNull()
+      .references(() => establishments.id, { onDelete: "cascade" }),
+    sourceType: text("source_type", {
+      enum: [
+        "specialist_guide",
+        "editorial",
+        "verified_user_rating",
+        "inspection",
+        "official_site",
+        "community_submission",
+        "osm",
+      ],
+    }).notNull(),
+    sourceName: text("source_name").notNull(),
+    url: text("url"),
+    confidence: real("confidence").notNull(),
+    capturedAt: text("captured_at").notNull(),
+    summary: text("summary"),
+  },
+  (table) => [index("evidence_establishment_idx").on(table.establishmentId)],
+);
+
+export const specialtyCoffeeAttributes = sqliteTable("specialty_coffee_attributes", {
+  establishmentId: integer("establishment_id")
+    .primaryKey()
+    .references(() => establishments.id, { onDelete: "cascade" }),
+  specialtyVerified: integer("specialty_verified", { mode: "boolean" }).notNull(),
+  ownRoastery: integer("own_roastery", { mode: "boolean" }).notNull(),
+  traceableCoffee: integer("traceable_coffee", { mode: "boolean" }).notNull(),
+  filterCoffee: integer("filter_coffee", { mode: "boolean" }).notNull(),
+  espressoBased: integer("espresso_based", { mode: "boolean" }).notNull(),
+  rotatingRoasters: integer("rotating_roasters", { mode: "boolean" }).notNull(),
+  singleOrigin: integer("single_origin", { mode: "boolean" }).notNull(),
+  manualBrewMethodsJson: text("manual_brew_methods_json").notNull(),
+  decafAvailable: integer("decaf_available", { mode: "boolean" }).notNull(),
+  beansForSale: integer("beans_for_sale", { mode: "boolean" }).notNull(),
+  verificationSources: integer("verification_sources").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export const ratingSnapshots = sqliteTable(
+  "rating_snapshots",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    establishmentId: integer("establishment_id")
+      .notNull()
+      .references(() => establishments.id, { onDelete: "cascade" }),
+    ratingAverage: real("rating_average").notNull(),
+    reliableRatingCount: integer("reliable_rating_count").notNull(),
+    reviewCount: integer("review_count").notNull(),
+    categoryMeanRating: real("category_mean_rating").notNull(),
+    capturedAt: text("captured_at").notNull(),
+  },
+  (table) => [index("ratings_establishment_idx").on(table.establishmentId)],
+);
+
+export const engagementSnapshots = sqliteTable(
+  "engagement_snapshots",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    establishmentId: integer("establishment_id")
+      .notNull()
+      .references(() => establishments.id, { onDelete: "cascade" }),
+    searchImpressions: integer("search_impressions").notNull(),
+    profileViews: integer("profile_views").notNull(),
+    mapMarkerClicks: integer("map_marker_clicks").notNull(),
+    saves: integer("saves").notNull(),
+    directionRequests: integer("direction_requests").notNull(),
+    confirmedVisits: integer("confirmed_visits").notNull(),
+    repeatVisits: integer("repeat_visits").notNull(),
+    recommendations: integer("recommendations").notNull(),
+    recentSaves: integer("recent_saves").notNull(),
+    windowStartedAt: text("window_started_at").notNull(),
+    windowEndedAt: text("window_ended_at").notNull(),
+  },
+  (table) => [index("engagement_establishment_idx").on(table.establishmentId)],
+);
+
+export const scoreSnapshots = sqliteTable(
+  "score_snapshots",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    establishmentId: integer("establishment_id")
+      .notNull()
+      .references(() => establishments.id, { onDelete: "cascade" }),
+    qualityScore: real("quality_score").notNull(),
+    popularityScore: real("popularity_score").notNull(),
+    relevanceScore: real("relevance_score").notNull(),
+    discoveryScore: real("discovery_score").notNull(),
+    freshnessScore: real("freshness_score").notNull(),
+    recommendationScore: real("recommendation_score").notNull(),
+    computedAt: text("computed_at").notNull(),
+  },
+  (table) => [index("scores_establishment_idx").on(table.establishmentId)],
+);
