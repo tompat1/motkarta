@@ -410,6 +410,39 @@ function sortModeLabel(sortMode: SortMode, lang: Language): string {
   return sortMode;
 }
 
+export const POPULAR_CONCIERGE_PROMPTS = [
+  "specialty coffee och kardemummabulle på Södermalm",
+  "bästa mexikanska tacos i Vasastan",
+  "familjeägd fransk bistro med bra vin i Gamla Stan",
+  "hantverksbageri med surdegsbröd i Zinkensdamm",
+  "handgjorda polska pierogi i Gamla Stan",
+  "dolda pärlor för middag nära mig",
+  "3-stjärnig fine dining med avsmakningsmeny",
+  "svensk husmanskost till rimligt pris",
+  "bageri med nysandade kanelbullar",
+  "italienska trattorias med färsk pasta",
+  "izakaya och yakitori spett i Vasastan",
+] as const;
+
+function logConciergeQuery(queryText: string, lang: Language) {
+  if (!queryText.trim()) return;
+  const cleanQuery = queryText.trim();
+  const entry = {
+    query: cleanQuery,
+    timestamp: new Date().toISOString(),
+    lang,
+  };
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("motkarta_concierge_history");
+      const list: Array<{ query: string; timestamp: string; lang: string }> = stored ? JSON.parse(stored) : [];
+      const filtered = list.filter((item) => item.query.toLowerCase() !== cleanQuery.toLowerCase());
+      const updated = [entry, ...filtered].slice(0, 100);
+      localStorage.setItem("motkarta_concierge_history", JSON.stringify(updated));
+    } catch {}
+  }
+}
+
 function kindFilterLabel(kind: EstablishmentFilter | string, lang: Language): string {
   if (kind === "All places") return translations[lang].allPlaces;
   if (kind === "Curated") return lang === "sv" ? "★ Handplockat" : "★ Curated";
@@ -1917,10 +1950,41 @@ export default function App() {
 
   const active = ranked.find((place) => place.id === selected) ?? ranked[0] ?? scoredPlaces[0];
 
+  const [isConciergeFocused, setIsConciergeFocused] = useState(false);
+  const [conciergeHistory, setConciergeHistory] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("motkarta_concierge_history");
+        if (stored) {
+          const list: Array<{ query: string }> = JSON.parse(stored);
+          return list.map((item) => item.query);
+        }
+      } catch {}
+    }
+    return [];
+  });
+
+  const matchingSuggestions = useMemo(() => {
+    const inputClean = concierge.trim().toLowerCase();
+    const allCandidates = Array.from(new Set([...conciergeHistory, ...POPULAR_CONCIERGE_PROMPTS]));
+    if (!inputClean) {
+      return allCandidates.slice(0, 5);
+    }
+    return allCandidates
+      .filter((prompt) => prompt.toLowerCase().includes(inputClean))
+      .slice(0, 5);
+  }, [concierge, conciergeHistory]);
+
   async function askWithQuery(queryText: string) {
     if (!queryText.trim()) return;
     setAsking(true);
     setAnswer(null);
+
+    logConciergeQuery(queryText, lang);
+    setConciergeHistory((prev) => {
+      const filtered = prev.filter((q) => q.toLowerCase() !== queryText.trim().toLowerCase());
+      return [queryText.trim(), ...filtered].slice(0, 100);
+    });
 
     let finalAnswer = "";
 
@@ -2400,9 +2464,41 @@ export default function App() {
             </button>
           </div>
         </div>
-        <div className="ask-box">
+        <div className="ask-box" style={{ position: "relative" }}>
           <label htmlFor="ask">{t.askLabel}</label>
-          <textarea id="ask" value={concierge} onChange={(event) => setConcierge(event.target.value)} placeholder={t.askPlaceholder} />
+          <textarea
+            id="ask"
+            value={concierge}
+            onChange={(event) => setConcierge(event.target.value)}
+            onFocus={() => setIsConciergeFocused(true)}
+            onBlur={() => setTimeout(() => setIsConciergeFocused(false), 200)}
+            placeholder={t.askPlaceholder}
+          />
+
+          {isConciergeFocused && matchingSuggestions.length > 0 ? (
+            <div className="concierge-autosuggest-box">
+              <div className="autosuggest-header">
+                <Sparkle size={12} weight="bold" />
+                <span>{lang === "sv" ? "FÖRSLAG & ML-SÖKHISTORIK" : "AUTOSUGGEST & SEARCH HISTORY"}</span>
+              </div>
+              {matchingSuggestions.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className="autosuggest-item"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    setConcierge(item);
+                    setIsConciergeFocused(false);
+                    void askWithQuery(item);
+                  }}
+                >
+                  <MagnifyingGlass size={13} style={{ color: "var(--color-water)" }} />
+                  <span>{item}</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
           <button onClick={ask} disabled={asking} type="button">
             {asking ? (
               <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
