@@ -2085,23 +2085,12 @@ export default function App() {
             </div>
 
             <VerificationBar place={active} lang={lang} />
-            <div
-              className="curated-attribution-box"
-              style={{
-                marginTop: "12px",
-                padding: "10px 14px",
-                background: "var(--color-paper)",
-                border: "1px solid var(--color-ink)",
-                fontSize: "11px",
-                fontFamily: "var(--font-mono)",
-                lineHeight: 1.4,
-              }}
-            >
-              <div style={{ fontWeight: 700, textTransform: "uppercase", marginBottom: "4px", color: "var(--color-ink)", display: "flex", alignItems: "center", gap: "6px" }}>
+            <div className="curated-attribution-box">
+              <div className="curated-attribution-title">
                 <ShieldCheck size={14} style={{ color: "var(--color-water)" }} />
                 {lang === "sv" ? "KÄLLTILLSKRIVNING & UPPHOVSRÄTT" : "SOURCE ATTRIBUTION & COPYRIGHT"}
               </div>
-              <div style={{ color: "var(--color-mist)" }}>
+              <div className="curated-attribution-body">
                 {lang === "sv"
                   ? "Guiderekommendationer & citat återges med källhänvisning till Anders Husa & Kaitlin Orr Guide (andershusa.com). Tillsynsdata från Stockholms stad (CC0). Kartdata från OpenStreetMap (ODbL). Alla upphovsrätter tillhör respektive skapare."
                   : "Guide recommendations & quotes cited with attribution to Anders Husa & Kaitlin Orr Guide (andershusa.com). Inspection data from Stockholm City (CC0). Map data from OpenStreetMap (ODbL). All copyrights belong to their respective owners."}
