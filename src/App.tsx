@@ -123,13 +123,20 @@ function rounded(value: number) {
   return Math.round(value);
 }
 
-function comparePlaces(a: ScoredPlace, b: ScoredPlace, mode: Mode, sortMode: SortMode, randomSeed: number) {
+function comparePlaces(
+  a: ScoredPlace,
+  b: ScoredPlace,
+  mode: Mode,
+  sortMode: SortMode,
+  randomSeed: number,
+  userCenter: { latitude: number; longitude: number } = stockholmCenter
+) {
   if (sortMode === "Alphabetical") {
-    return a.name.localeCompare(b.name);
+    return a.name.localeCompare(b.name, "sv");
   }
 
   if (sortMode === "Distance") {
-    return distanceFromStockholmCenter(a) - distanceFromStockholmCenter(b);
+    return distanceFromPoint(a, userCenter) - distanceFromPoint(b, userCenter);
   }
 
   if (sortMode === "Surprise me") {
@@ -139,15 +146,18 @@ function comparePlaces(a: ScoredPlace, b: ScoredPlace, mode: Mode, sortMode: Sor
   return modeScore(b, mode) - modeScore(a, mode);
 }
 
-function distanceFromStockholmCenter(place: Pick<PlaceInput, "latitude" | "longitude">) {
+function distanceFromPoint(
+  place: Pick<PlaceInput, "latitude" | "longitude">,
+  center: { latitude: number; longitude: number } = stockholmCenter
+) {
   if (typeof place.latitude !== "number" || typeof place.longitude !== "number") {
     return Number.POSITIVE_INFINITY;
   }
 
   const earthRadius = 6371;
-  const latDelta = degreesToRadians(place.latitude - stockholmCenter.latitude);
-  const lonDelta = degreesToRadians(place.longitude - stockholmCenter.longitude);
-  const startLat = degreesToRadians(stockholmCenter.latitude);
+  const latDelta = degreesToRadians(place.latitude - center.latitude);
+  const lonDelta = degreesToRadians(place.longitude - center.longitude);
+  const startLat = degreesToRadians(center.latitude);
   const endLat = degreesToRadians(place.latitude);
   const haversine =
     Math.sin(latDelta / 2) ** 2 +
@@ -1271,9 +1281,15 @@ function ConciergeSuperpowerModal({
   const [photoUrl, setPhotoUrl] = useState("");
   const [caption, setCaption] = useState("");
 
+  const duplicateMatch = useMemo(() => {
+    if (!name.trim() || mode !== "add_place") return null;
+    const targetName = name.trim().toLowerCase();
+    return places.find((p) => p.name.trim().toLowerCase() === targetName) ?? null;
+  }, [name, places, mode]);
+
   const handleSubmitPlace = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || duplicateMatch) return;
 
     const newPlace: PlaceInput = {
       id: Date.now(),
@@ -1377,6 +1393,24 @@ function ConciergeSuperpowerModal({
               <label>Namn på stället *</label>
               <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="t.ex. Oaxen Slip" />
             </div>
+            {duplicateMatch ? (
+              <div
+                style={{
+                  padding: "10px 14px",
+                  background: "#FEF2F2",
+                  border: "1px solid #F87171",
+                  color: "#991B1B",
+                  fontSize: "12px",
+                  fontFamily: "var(--font-mono)",
+                  fontWeight: 600,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                ⚠️ Stället "{duplicateMatch.name}" finns redan i kartan ({duplicateMatch.area}).
+              </div>
+            ) : null}
             <div className="superpower-form-group">
               <label>Typ av ställe</label>
               <select value={kind} onChange={(e) => setKind(e.target.value)}>
@@ -1414,7 +1448,7 @@ function ConciergeSuperpowerModal({
               <label>Taggar (kommaseparerade)</label>
               <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Oberoende, Ekologiskt, Sjöutsikt" />
             </div>
-            <button type="submit" className="superpower-submit-btn">
+            <button type="submit" className="superpower-submit-btn" disabled={Boolean(duplicateMatch)} style={{ opacity: duplicateMatch ? 0.5 : 1, cursor: duplicateMatch ? "not-allowed" : "pointer" }}>
               <PlusCircle size={16} /> Publicera nytt ställe i kartan
             </button>
           </form>
@@ -1627,6 +1661,8 @@ export default function App() {
     }
   }, [cuisine, cuisineOptions]);
 
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+
   const ranked = useMemo(
     () =>
       scoredPlaces
@@ -1643,8 +1679,8 @@ export default function App() {
             .toLowerCase()
             .includes(query.toLowerCase()),
         )
-        .sort((a, b) => comparePlaces(a, b, mode, sortMode, randomSeed)),
-    [cuisine, kind, mode, query, randomSeed, savedPlaceIds, scoredPlaces, sortMode],
+        .sort((a, b) => comparePlaces(a, b, mode, sortMode, randomSeed, userLocation ?? stockholmCenter)),
+    [cuisine, kind, mode, query, randomSeed, savedPlaceIds, scoredPlaces, sortMode, userLocation],
   );
   const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
 
@@ -1838,7 +1874,16 @@ export default function App() {
 
       <section className="workspace">
         <div className="map-panel">
-          <FoodMap places={visibleRanked} activePlace={active} onSelect={setSelected} lang={lang} />
+          <FoodMap
+            places={visibleRanked}
+            activePlace={active}
+            onSelect={setSelected}
+            onUserLocated={(loc) => {
+              setUserLocation(loc);
+              setSortMode("Distance");
+            }}
+            lang={lang}
+          />
           <div className="legend map-legend">
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
               <Coffee size={14} weight="bold" style={{ color: "var(--color-water)" }} /> {t.legendSpecialty}
@@ -2211,18 +2256,62 @@ function FoodMap({
   places,
   activePlace,
   onSelect,
+  onUserLocated,
   lang,
 }: {
   places: ScoredPlace[];
   activePlace: ScoredPlace;
   onSelect: (id: number) => void;
+  onUserLocated?: (loc: { latitude: number; longitude: number }) => void;
   lang: Language;
 }) {
   const t = translations[lang];
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Map<number, L.Marker>>(new Map());
+  const userMarkerRef = useRef<L.Marker | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [locating, setLocating] = useState(false);
+
+  const handleLocateUser = () => {
+    if (typeof window === "undefined" || !navigator.geolocation) {
+      alert(lang === "sv" ? "Geolokaliseringsstöd saknas i din webbläsare." : "Geolocation is not supported by your browser.");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const coords = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+        setLocating(false);
+        const map = mapRef.current;
+        if (map) {
+          map.flyTo([coords.latitude, coords.longitude], 14, { duration: 1.2 });
+
+          if (userMarkerRef.current) {
+            userMarkerRef.current.remove();
+          }
+
+          const pulseIcon = L.divIcon({
+            className: "user-pulse-container",
+            html: '<div class="user-pulse-marker" title="Din position">📍</div>',
+            iconSize: [24, 24],
+            iconAnchor: [12, 12],
+          });
+
+          userMarkerRef.current = L.marker([coords.latitude, coords.longitude], { icon: pulseIcon })
+            .bindPopup(`<b>${lang === "sv" ? "Din position" : "Your location"}</b>`)
+            .addTo(map)
+            .openPopup();
+        }
+        onUserLocated?.(coords);
+      },
+      () => {
+        setLocating(false);
+        alert(lang === "sv" ? "Kunde inte hämta din position. Tillåt platstjänster i webbläsaren." : "Could not retrieve your location. Please allow location access.");
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  };
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {
@@ -2340,6 +2429,17 @@ function FoodMap({
 
   return (
     <div className="leaflet-shell">
+      <button
+        type="button"
+        className="map-locate-btn"
+        onClick={handleLocateUser}
+        title={lang === "sv" ? "Visa min position & ställen nära mig" : "Show my location & places near me"}
+      >
+        <Crosshair size={14} weight="bold" />
+        {locating
+          ? (lang === "sv" ? "Söker..." : "Locating...")
+          : (lang === "sv" ? "Min position" : "Near me")}
+      </button>
       <div className="map-toolbar">
         <button
           type="button"

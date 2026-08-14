@@ -105,3 +105,10 @@ test("addUserReview and addUserPhoto dynamically enrich place media", async () =
   const photos = await fetchPlacePhotos(mockPlaces[0]);
   assert.ok(photos.some((p) => p.caption.includes("Djurgården")));
 });
+
+test("duplicate place check matches existing names case-insensitively", () => {
+  const existingName = "oaxen slip";
+  const match = mockPlaces.find((p) => p.name.toLowerCase() === existingName.trim().toLowerCase());
+  assert.ok(match);
+  assert.equal(match.name, "Oaxen Slip");
+});
