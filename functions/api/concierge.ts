@@ -229,6 +229,48 @@ function matchTokenWithAliases(token: string, target: string): boolean {
 
 export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
   const structuredFilters = extractStructuredFilters(query);
+
+  const qLower = query.toLowerCase();
+  if (qLower.includes("add place") || qLower.includes("lägg till ställe") || qLower.includes("skapa ställe") || qLower.includes("nytt ställe")) {
+    return {
+      structuredFilters,
+      answer: "SUPERPOWER_ACTION: add_place\n\n🎉 Superpower Aktiverad! Öppnar formuläret för att lägga till ett nytt oberoende ställe i kartan.",
+      recommendedPlaces: [],
+      hasDirectMatches: true,
+      missingTerm: null,
+    };
+  }
+
+  if (qLower.includes("add review") || qLower.includes("skriv recension") || qLower.includes("lämna recension") || qLower.includes("recension för")) {
+    return {
+      structuredFilters,
+      answer: "SUPERPOWER_ACTION: add_review\n\n✍️ Superpower Aktiverad! Öppnar formuläret för att skriva en verifierad recension.",
+      recommendedPlaces: [],
+      hasDirectMatches: true,
+      missingTerm: null,
+    };
+  }
+
+  if (qLower.includes("add photo") || qLower.includes("lägg till foto") || qLower.includes("ladda upp bild") || qLower.includes("lägg till bild")) {
+    return {
+      structuredFilters,
+      answer: "SUPERPOWER_ACTION: add_photo\n\n📷 Superpower Aktiverad! Öppnar formuläret för att lägga till ett foto till ett ställe.",
+      recommendedPlaces: [],
+      hasDirectMatches: true,
+      missingTerm: null,
+    };
+  }
+
+  if (qLower.includes("rate place") || qLower.includes("ge betyg") || qLower.includes("betygsätt ställe") || qLower.includes("sätt betyg")) {
+    return {
+      structuredFilters,
+      answer: "SUPERPOWER_ACTION: rate_place\n\n⭐ Superpower Aktiverad! Öppnar betygspanelen för ställen.",
+      recommendedPlaces: [],
+      hasDirectMatches: true,
+      missingTerm: null,
+    };
+  }
+
   const stopWords = new Set(["and", "the", "for", "with", "from", "some", "best", "good", "great", "find", "where", "what", "want", "like", "near", "place", "places", "food", "eat", "get", "have"]);
   const queryTokens = query
     .toLowerCase()

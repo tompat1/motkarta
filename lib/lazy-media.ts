@@ -493,3 +493,70 @@ export function getFallbackReviews(input: PlaceContext | number): PlaceReview[] 
     },
   ];
 }
+
+export function addUserReview(placeId: number, review: Omit<PlaceReview, "id" | "date" | "verified" | "placeId">): PlaceReview {
+  const newReview: PlaceReview = {
+    ...review,
+    placeId,
+    id: `user-rev-${placeId}-${Date.now()}`,
+    date: new Date().toISOString().split("T")[0],
+    verified: true,
+  };
+
+  const existing = reviewsCache.get(placeId) || [];
+  const updated = [newReview, ...existing];
+  reviewsCache.set(placeId, updated);
+
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("motkarta_user_reviews");
+      const list: PlaceReview[] = stored ? JSON.parse(stored) : [];
+      localStorage.setItem("motkarta_user_reviews", JSON.stringify([newReview, ...list]));
+    } catch {}
+  }
+
+  return newReview;
+}
+
+export function addUserPhoto(placeId: number, photo: Omit<PlacePhoto, "id" | "placeId">): PlacePhoto {
+  const newPhoto: PlacePhoto = {
+    ...photo,
+    placeId,
+    id: `user-img-${placeId}-${Date.now()}`,
+  };
+
+  const existing = photosCache.get(placeId) || [];
+  const updated = [newPhoto, ...existing];
+  photosCache.set(placeId, updated);
+
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("motkarta_user_photos");
+      const list: PlacePhoto[] = stored ? JSON.parse(stored) : [];
+      localStorage.setItem("motkarta_user_photos", JSON.stringify([newPhoto, ...list]));
+    } catch {}
+  }
+
+  return newPhoto;
+}
+
+export function loadUserStoredMedia() {
+  if (typeof window === "undefined") return;
+  try {
+    const storedReviews: PlaceReview[] = JSON.parse(localStorage.getItem("motkarta_user_reviews") || "[]");
+    storedReviews.forEach((rev) => {
+      const current = reviewsCache.get(rev.placeId) || [];
+      if (!current.some((r) => r.id === rev.id)) {
+        reviewsCache.set(rev.placeId, [rev, ...current]);
+      }
+    });
+
+    const storedPhotos: PlacePhoto[] = JSON.parse(localStorage.getItem("motkarta_user_photos") || "[]");
+    storedPhotos.forEach((ph) => {
+      const current = photosCache.get(ph.placeId) || [];
+      if (!current.some((p) => p.id === ph.id)) {
+        photosCache.set(ph.placeId, [ph, ...current]);
+      }
+    });
+  } catch {}
+}

@@ -12,6 +12,7 @@ export type ParsedConciergeCard = {
 
 export type ParsedConciergeResponse = {
   intro: string;
+  superpowerAction?: "add_place" | "add_review" | "add_photo" | "rate_place";
   clarification?: {
     queryTerm: string;
     question: string;
@@ -25,6 +26,7 @@ export function parseConciergeAnswer(text: string): ParsedConciergeResponse {
 
   const lines = text.split("\n");
   let intro = "";
+  let superpowerAction: "add_place" | "add_review" | "add_photo" | "rate_place" | undefined;
   let clarification: { queryTerm: string; question: string } | undefined;
   const cards: ParsedConciergeCard[] = [];
   const charter: string[] = [];
@@ -34,6 +36,14 @@ export function parseConciergeAnswer(text: string): ParsedConciergeResponse {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
+
+    if (line.startsWith("SUPERPOWER_ACTION:")) {
+      const actionStr = line.replace(/^SUPERPOWER_ACTION:\s*/, "").trim();
+      if (actionStr === "add_place" || actionStr === "add_review" || actionStr === "add_photo" || actionStr === "rate_place") {
+        superpowerAction = actionStr;
+      }
+      continue;
+    }
 
     if (line.startsWith("CLARIFICATION_NEEDED:")) {
       const questionText = line.replace(/^CLARIFICATION_NEEDED:\s*/, "");
@@ -169,5 +179,5 @@ export function parseConciergeAnswer(text: string): ParsedConciergeResponse {
     cards.push(currentCard);
   }
 
-  return { intro, clarification, cards, charter };
+  return { intro, superpowerAction, clarification, cards, charter };
 }

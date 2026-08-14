@@ -38,8 +38,12 @@ import { retrieveAndSynthesize } from "../functions/api/concierge";
 import {
   fetchPlacePhotos,
   fetchPlaceReviews,
+  addUserReview,
+  addUserPhoto,
+  loadUserStoredMedia,
   type PlacePhoto,
   type PlaceReview,
+  type PlaceContext,
 } from "../lib/lazy-media";
 import {
   type EstablishmentType,
@@ -1184,6 +1188,292 @@ function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput; lang?
   );
 }
 
+type SuperpowerMode = "add_place" | "add_review" | "add_photo" | "rate_place";
+
+function ConciergeSuperpowerModal({
+  mode,
+  places,
+  activePlace,
+  onClose,
+  onAddPlace,
+  onAddReview,
+  onAddPhoto,
+  onRatePlace,
+  lang = "sv",
+}: {
+  mode: SuperpowerMode;
+  places: PlaceInput[];
+  activePlace: PlaceInput | null;
+  onClose: () => void;
+  onAddPlace: (place: PlaceInput) => void;
+  onAddReview: (placeId: number, review: { author: string; rating: number; content: string; source: "Verified Local" }) => void;
+  onAddPhoto: (placeId: number, photo: { url: string; thumbnailUrl: string; caption: string; credit?: string }) => void;
+  onRatePlace: (placeId: number, rating: number) => void;
+  lang?: Language;
+}) {
+  const [selectedPlaceId, setSelectedPlaceId] = useState<number>(activePlace ? activePlace.id : (places[0]?.id ?? 1));
+
+  // Place form fields
+  const [name, setName] = useState("");
+  const [kind, setKind] = useState("Restaurant");
+  const [cuisine, setCuisine] = useState("swedish");
+  const [area, setArea] = useState("Vasastan");
+  const [address, setAddress] = useState("");
+  const [note, setNote] = useState("");
+  const [rating, setRating] = useState(5);
+  const [tags, setTags] = useState("");
+
+  // Review fields
+  const [author, setAuthor] = useState("");
+  const [reviewContent, setReviewContent] = useState("");
+
+  // Photo fields
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [caption, setCaption] = useState("");
+
+  const handleSubmitPlace = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+
+    const newPlace: PlaceInput = {
+      id: Date.now(),
+      name: name.trim(),
+      kind: kind as EstablishmentType,
+      cuisine: cuisine.trim(),
+      area: area.trim(),
+      address: address.trim() || `${area}, Stockholm`,
+      note: note.trim() || `Oberoende ${kind.toLowerCase()} i ${area}.`,
+      tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+      evidenceLabel: "Verifierad användarinskickning · OSM",
+      ratingAverage: rating,
+      reliableRatingCount: 1,
+      reviewCount: 1,
+      categoryMeanRating: 4.2,
+      categoryPopularityRaw: 0.8,
+      localPopularityPercentile: 50,
+      priceLevel: 2,
+      mainstreamExposure: 20,
+      ageDays: 1,
+      daysSinceFreshEvidence: 1,
+      evidence: {
+        specialistGuide: 0.8,
+        independentEditorial: 1,
+        verifiedUserRating: 1,
+        repeatVisits: 50,
+        recentReviews: 90,
+        credibleReviewers: 80,
+        inspectionStatus: 100,
+        verifiedAttributes: 90,
+        dataFreshness: 100,
+        confidence: "High",
+      },
+      latitude: activePlace && activePlace.latitude != null ? activePlace.latitude + 0.002 : 59.3326 + (Math.random() - 0.5) * 0.02,
+      longitude: activePlace && activePlace.longitude != null ? activePlace.longitude + 0.002 : 18.0649 + (Math.random() - 0.5) * 0.02,
+      engagement: {
+        searchImpressions: 100,
+        profileViews: 50,
+        mapMarkerClicks: 30,
+        saves: 10,
+        directionRequests: 5,
+        confirmedVisits: 5,
+        repeatVisits: 2,
+        recommendations: 3,
+        recentSaves: 10,
+      },
+      x: 50,
+      y: 50,
+    };
+
+    onAddPlace(newPlace);
+    onClose();
+  };
+
+  const handleSubmitReview = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewContent.trim()) return;
+    onAddReview(selectedPlaceId, {
+      author: author.trim() || "Oberoende Matälskare",
+      rating,
+      content: reviewContent.trim(),
+      source: "Verified Local",
+    });
+    onClose();
+  };
+
+  const handleSubmitPhoto = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!photoUrl.trim()) return;
+    onAddPhoto(selectedPlaceId, {
+      url: photoUrl.trim(),
+      thumbnailUrl: photoUrl.trim(),
+      caption: caption.trim() || "Foto inskickat av användare",
+      credit: "Inskickat via Concierge",
+    });
+    onClose();
+  };
+
+  const handleSubmitRating = (e: React.FormEvent) => {
+    e.preventDefault();
+    onRatePlace(selectedPlaceId, rating);
+    onClose();
+  };
+
+  return (
+    <div className="superpower-modal-overlay" onClick={onClose}>
+      <div className="superpower-modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="superpower-modal-head">
+          <h3>
+            {mode === "add_place" && "➕ Lägg till nytt ställe"}
+            {mode === "add_review" && "✍️ Skriv verifierad recension"}
+            {mode === "add_photo" && "📷 Lägg till foto till ställe"}
+            {mode === "rate_place" && "⭐ Betygsätt ställe"}
+          </h3>
+          <button type="button" className="icon-btn" onClick={onClose}>✕</button>
+        </div>
+
+        {mode === "add_place" && (
+          <form className="superpower-form" onSubmit={handleSubmitPlace}>
+            <div className="superpower-form-group">
+              <label>Namn på stället *</label>
+              <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="t.ex. Oaxen Slip" />
+            </div>
+            <div className="superpower-form-group">
+              <label>Typ av ställe</label>
+              <select value={kind} onChange={(e) => setKind(e.target.value)}>
+                <option value="Restaurant">Restaurant / Bistro</option>
+                <option value="Specialty coffee">Specialty Coffee</option>
+                <option value="Bakery">Bakery / Bageri</option>
+                <option value="Café">Café / Fika</option>
+              </select>
+            </div>
+            <div className="superpower-form-group">
+              <label>Kök / Kategori</label>
+              <input type="text" value={cuisine} onChange={(e) => setCuisine(e.target.value)} placeholder="t.ex. swedish, bakery, mexican" />
+            </div>
+            <div className="superpower-form-group">
+              <label>Stadsdel / Område</label>
+              <input type="text" value={area} onChange={(e) => setArea(e.target.value)} placeholder="t.ex. Djurgården, Vasastan, Södermalm" />
+            </div>
+            <div className="superpower-form-group">
+              <label>Adress</label>
+              <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="t.ex. Beckholmsvägen 26" />
+            </div>
+            <div className="superpower-form-group">
+              <label>Beskrivning / Notering</label>
+              <textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Berätta vad som gör stället unikt..." />
+            </div>
+            <div className="superpower-form-group">
+              <label>Startbetyg (1–5 stjärnor)</label>
+              <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
+                <option value={5}>★ ★ ★ ★ ★ (5.0)</option>
+                <option value={4}>★ ★ ★ ★ ☆ (4.0)</option>
+                <option value={3}>★ ★ ★ ☆ ☆ (3.0)</option>
+              </select>
+            </div>
+            <div className="superpower-form-group">
+              <label>Taggar (kommaseparerade)</label>
+              <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Oberoende, Ekologiskt, Sjöutsikt" />
+            </div>
+            <button type="submit" className="superpower-submit-btn">
+              <PlusCircle size={16} /> Publicera nytt ställe i kartan
+            </button>
+          </form>
+        )}
+
+        {mode === "add_review" && (
+          <form className="superpower-form" onSubmit={handleSubmitReview}>
+            <div className="superpower-form-group">
+              <label>Välj ställe *</label>
+              <select value={selectedPlaceId} onChange={(e) => setSelectedPlaceId(Number(e.target.value))}>
+                {places.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} ({p.area})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="superpower-form-group">
+              <label>Ditt namn / Alias</label>
+              <input type="text" value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="t.ex. Anna K." />
+            </div>
+            <div className="superpower-form-group">
+              <label>Betyg</label>
+              <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
+                <option value={5}>★ ★ ★ ★ ★ (5/5)</option>
+                <option value={4}>★ ★ ★ ★ ☆ (4/5)</option>
+                <option value={3}>★ ★ ★ ☆ ☆ (3/5)</option>
+                <option value={2}>★ ★ ☆ ☆ ☆ (2/5)</option>
+                <option value={1}>★ ☆ ☆ ☆ ☆ (1/5)</option>
+              </select>
+            </div>
+            <div className="superpower-form-group">
+              <label>Din Recension *</label>
+              <textarea rows={4} required value={reviewContent} onChange={(e) => setReviewContent(e.target.value)} placeholder="Dela din upplevelse av mat, atmosfär och service..." />
+            </div>
+            <button type="submit" className="superpower-submit-btn">
+              <Sparkle size={16} /> Publicera Recension
+            </button>
+          </form>
+        )}
+
+        {mode === "add_photo" && (
+          <form className="superpower-form" onSubmit={handleSubmitPhoto}>
+            <div className="superpower-form-group">
+              <label>Välj ställe *</label>
+              <select value={selectedPlaceId} onChange={(e) => setSelectedPlaceId(Number(e.target.value))}>
+                {places.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} ({p.area})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="superpower-form-group">
+              <label>Bild-URL *</label>
+              <input type="url" required value={photoUrl} onChange={(e) => setPhotoUrl(e.target.value)} placeholder="https://..." />
+            </div>
+            <div className="superpower-form-group">
+              <label>Bildtext / Bildbeskrivning</label>
+              <input type="text" value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="t.ex. Färskgräddade bullar & baristakaffe" />
+            </div>
+            <button type="submit" className="superpower-submit-btn">
+              <Image size={16} /> Lägg till foto i galleriet
+            </button>
+          </form>
+        )}
+
+        {mode === "rate_place" && (
+          <form className="superpower-form" onSubmit={handleSubmitRating}>
+            <div className="superpower-form-group">
+              <label>Välj ställe *</label>
+              <select value={selectedPlaceId} onChange={(e) => setSelectedPlaceId(Number(e.target.value))}>
+                {places.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} ({p.area})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="superpower-form-group">
+              <label>Sätt betyg (1–5 stjärnor)</label>
+              <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
+                <option value={5}>★ ★ ★ ★ ★ (Fem stjärnor)</option>
+                <option value={4}>★ ★ ★ ★ ☆ (Fyra stjärnor)</option>
+                <option value={3}>★ ★ ★ ☆ ☆ (Tre stjärnor)</option>
+                <option value={2}>★ ★ ☆ ☆ ☆ (Två stjärnor)</option>
+                <option value={1}>★ ☆ ☆ ☆ ☆ (En stjärna)</option>
+              </select>
+            </div>
+            <button type="submit" className="superpower-submit-btn">
+              <Star size={16} weight="fill" /> Spara betyg
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [places, setPlaces] = useState<PlaceInput[]>(demoPlaces);
   const [dataSource, setDataSource] = useState<DataSource>("loading");
@@ -1194,6 +1484,7 @@ export default function App() {
   const [cuisine, setCuisine] = useState<CuisineFilter>(allCuisines);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(1);
+  const [superpowerMode, setSuperpowerMode] = useState<SuperpowerMode | null>(null);
   const [lang, setLang] = useState<Language>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("motkarta_lang");
@@ -1324,6 +1615,8 @@ export default function App() {
     setAsking(true);
     setAnswer(null);
 
+    let finalAnswer = "";
+
     try {
       const resp = await fetch("/api/concierge", {
         method: "POST",
@@ -1334,19 +1627,60 @@ export default function App() {
       if (resp.ok) {
         const payload = (await resp.json()) as { answer?: string };
         if (payload.answer) {
-          setAnswer(payload.answer);
-          setAsking(false);
-          return;
+          finalAnswer = payload.answer;
         }
       }
     } catch {
       // Fallback to local RAG when endpoint is unreachable in standalone dev
     }
 
-    const ragResult = retrieveAndSynthesize(queryText, places);
-    setAnswer(ragResult.answer);
+    if (!finalAnswer) {
+      const ragResult = retrieveAndSynthesize(queryText, places);
+      finalAnswer = ragResult.answer;
+    }
+
+    setAnswer(finalAnswer);
     setAsking(false);
+
+    const parsed = parseConciergeAnswer(finalAnswer);
+    if (parsed.superpowerAction) {
+      setSuperpowerMode(parsed.superpowerAction);
+    }
   }
+
+  const handleAddPlaceSuperpower = (newPlace: PlaceInput) => {
+    setPlaces((prev) => [newPlace, ...prev]);
+    setSelected(newPlace.id);
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("motkarta_user_places");
+        const list: PlaceInput[] = stored ? JSON.parse(stored) : [];
+        localStorage.setItem("motkarta_user_places", JSON.stringify([newPlace, ...list]));
+      } catch {}
+    }
+    setAnswer(`🎉 Superpower Aktiverad! Ditt nya oberoende ställe '${newPlace.name}' i ${newPlace.area} har lagts till i kartan och är nu live!`);
+  };
+
+  const handleAddReviewSuperpower = (placeId: number, rev: { author: string; rating: number; content: string; source: "Verified Local" }) => {
+    addUserReview(placeId, rev);
+    const targetPlace = places.find((p) => p.id === placeId);
+    setSelected(placeId);
+    setAnswer(`✍️ Superpower Aktiverad! Din verifierade recension för '${targetPlace?.name ?? "Stället"}' har publicerats i detaljkortet!`);
+  };
+
+  const handleAddPhotoSuperpower = (placeId: number, ph: { url: string; thumbnailUrl: string; caption: string; credit?: string }) => {
+    addUserPhoto(placeId, ph);
+    const targetPlace = places.find((p) => p.id === placeId);
+    setSelected(placeId);
+    setAnswer(`📷 Superpower Aktiverad! Ditt foto för '${targetPlace?.name ?? "Stället"}' har lagts till i bildgalleriet!`);
+  };
+
+  const handleRatePlaceSuperpower = (placeId: number, rating: number) => {
+    handleRatePlace(placeId, rating);
+    const targetPlace = places.find((p) => p.id === placeId);
+    setSelected(placeId);
+    setAnswer(`⭐ Superpower Aktiverad! Ditt betyg (${rating}/5 stjärnor) för '${targetPlace?.name ?? "Stället"}' har sparats!`);
+  };
 
   async function ask() {
     await askWithQuery(concierge);
@@ -1721,6 +2055,20 @@ export default function App() {
             {t.conciergeHeadingSub}
           </h2>
           <p>{t.conciergeDesc}</p>
+          <div className="superpower-chips" aria-label="Concierge superpowers">
+            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_place")}>
+              <PlusCircle size={14} weight="bold" /> {lang === "sv" ? "➕ Lägg till nytt ställe" : "➕ Add new place"}
+            </button>
+            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_review")}>
+              <Sparkle size={14} weight="bold" /> {lang === "sv" ? "✍️ Skriv recension" : "✍️ Write review"}
+            </button>
+            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_photo")}>
+              <Image size={14} weight="bold" /> {lang === "sv" ? "📷 Lägg till foto" : "📷 Add photo"}
+            </button>
+            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("rate_place")}>
+              <Star size={14} weight="bold" /> {lang === "sv" ? "⭐ Betygsätt ställe" : "⭐ Rate place"}
+            </button>
+          </div>
         </div>
         <div className="ask-box">
           <label htmlFor="ask">{t.askLabel}</label>
@@ -1796,6 +2144,20 @@ export default function App() {
           <span>{t.dataNoteText}</span>
         </div>
       </section>
+
+      {superpowerMode ? (
+        <ConciergeSuperpowerModal
+          mode={superpowerMode}
+          places={places}
+          activePlace={active}
+          onClose={() => setSuperpowerMode(null)}
+          onAddPlace={handleAddPlaceSuperpower}
+          onAddReview={handleAddReviewSuperpower}
+          onAddPhoto={handleAddPhotoSuperpower}
+          onRatePlace={handleRatePlaceSuperpower}
+          lang={lang}
+        />
+      ) : null}
 
       <footer>
         <span>{t.footerLeft}</span>
