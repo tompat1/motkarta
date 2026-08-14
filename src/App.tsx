@@ -1829,6 +1829,9 @@ export default function App() {
   const [answer, setAnswer] = useState<string | null>(null);
   const [asking, setAsking] = useState(false);
 
+  const [isSourcesLoading, setIsSourcesLoading] = useState(false);
+  const [isPromptsLoading, setIsPromptsLoading] = useState(false);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -1849,6 +1852,7 @@ export default function App() {
     }
 
     async function loadDbSources() {
+      setIsSourcesLoading(true);
       try {
         const resp = await fetch("/api/sources");
         if (resp.ok) {
@@ -1858,9 +1862,11 @@ export default function App() {
           }
         }
       } catch {}
+      if (!cancelled) setIsSourcesLoading(false);
     }
 
     async function loadDbPrompts() {
+      setIsPromptsLoading(true);
       try {
         const resp = await fetch("/api/prompts");
         if (resp.ok) {
@@ -1870,6 +1876,7 @@ export default function App() {
           }
         }
       } catch {}
+      if (!cancelled) setIsPromptsLoading(false);
     }
 
     void loadPlaces();
@@ -2454,6 +2461,9 @@ export default function App() {
               <div className="autosuggest-header">
                 <Sparkle size={12} weight="bold" />
                 <span>{lang === "sv" ? "FÖRSLAG & ML-SÖKHISTORIK" : "AUTOSUGGEST & SEARCH HISTORY"}</span>
+                {isPromptsLoading ? (
+                  <CircleNotch size={11} className="animate-spin" style={{ marginLeft: "auto" }} />
+                ) : null}
               </div>
               {matchingSuggestions.map((item) => (
                 <button
@@ -2547,8 +2557,13 @@ export default function App() {
         <div className="curated-sources-panel" style={{ marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--color-mist)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "12px" }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase", display: "flex", alignItems: "center", gap: "8px" }}>
                 📜 Kurerade Öppna Källor ({curatedSources.length})
+                {isSourcesLoading ? (
+                  <span style={{ fontSize: "11px", fontWeight: 500, color: "var(--color-water)", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                    <CircleNotch size={12} className="animate-spin" /> D1-sync...
+                  </span>
+                ) : null}
               </h3>
               <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: "var(--color-stone)" }}>
                 Auditerbara datakällor och verifierade guider som driver Motkartas ranking.
