@@ -20125,7 +20125,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -20134,7 +20134,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -27315,7 +27315,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -27324,7 +27324,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -73379,7 +73379,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.4,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -73388,7 +73388,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -77023,7 +77023,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.4,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -77032,7 +77032,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -96629,7 +96629,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.5,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
@@ -116436,7 +116436,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -116445,7 +116445,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -145507,7 +145507,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.0,
         "verifiedUserRating": 0.0,
         "repeatVisits": 0,
@@ -145516,7 +145516,7 @@
         "inspectionStatus": 60.0,
         "verifiedAttributes": 0.0,
         "dataFreshness": 80,
-        "confidence": "Low"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -184601,7 +184601,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -184610,7 +184610,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -201509,7 +201509,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.4,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.5,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
@@ -209531,7 +209531,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -209540,7 +209540,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
