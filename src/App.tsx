@@ -1,7 +1,7 @@
 "use client";
 
 import L from "leaflet";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { demoPlaces } from "../lib/demo-places";
 import {
   ArrowRight,
@@ -12,6 +12,8 @@ import {
   Certificate,
   ChatTeardropText,
   Check,
+  CaretLeft,
+  CaretRight,
   CheckCircle,
   CircleNotch,
   Coffee,
@@ -1115,21 +1117,48 @@ function ConciergeAnswerView({
 }
 
 function ImageLightboxModal({
-  photo,
+  photos,
+  initialIndex = 0,
   onClose,
 }: {
-  photo: { url: string; caption: string; credit?: string } | null;
+  photos: PlacePhoto[] | null;
+  initialIndex?: number;
   onClose: () => void;
 }) {
+  const [index, setIndex] = useState(initialIndex);
+
+  useEffect(() => {
+    setIndex(initialIndex);
+  }, [initialIndex]);
+
+  const total = photos?.length ?? 0;
+  const currentPhoto = photos && total > 0 ? photos[index] : null;
+
+  const handlePrev = useCallback(() => {
+    if (total <= 1) return;
+    setIndex((prev) => (prev - 1 + total) % total);
+  }, [total]);
+
+  const handleNext = useCallback(() => {
+    if (total <= 1) return;
+    setIndex((prev) => (prev + 1) % total);
+  }, [total]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+      } else if (e.key === "ArrowLeft") {
+        handlePrev();
+      } else if (e.key === "ArrowRight") {
+        handleNext();
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+  }, [handleNext, handlePrev, onClose]);
 
-  if (!photo) return null;
+  if (!currentPhoto) return null;
 
   return (
     <div className="lightbox-overlay" onClick={onClose}>
@@ -1137,10 +1166,35 @@ function ImageLightboxModal({
         <button type="button" className="lightbox-close-btn" onClick={onClose} aria-label="Close lightbox">
           ✕
         </button>
-        <img src={photo.url} alt={photo.caption} className="lightbox-img" />
+
+        {total > 1 ? (
+          <>
+            <button
+              type="button"
+              className="lightbox-nav-btn lightbox-prev-btn"
+              onClick={handlePrev}
+              aria-label="Previous photo"
+            >
+              <CaretLeft size={24} weight="bold" />
+            </button>
+            <button
+              type="button"
+              className="lightbox-nav-btn lightbox-next-btn"
+              onClick={handleNext}
+              aria-label="Next photo"
+            >
+              <CaretRight size={24} weight="bold" />
+            </button>
+          </>
+        ) : null}
+
+        <img src={currentPhoto.url} alt={currentPhoto.caption} className="lightbox-img" />
         <div className="lightbox-caption-bar">
-          <span>{photo.caption}</span>
-          {photo.credit ? <small>{photo.credit}</small> : null}
+          <div>
+            <b>{currentPhoto.caption}</b>
+            {total > 1 ? <span className="lightbox-counter">({index + 1} / {total})</span> : null}
+          </div>
+          {currentPhoto.credit ? <small>{currentPhoto.credit}</small> : null}
         </div>
       </div>
     </div>
@@ -1152,7 +1206,7 @@ function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput; lang?
   const [photos, setPhotos] = useState<PlacePhoto[] | null>(null);
   const [reviews, setReviews] = useState<PlaceReview[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [lightboxPhoto, setLightboxPhoto] = useState<{ url: string; caption: string; credit?: string } | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
     let isCurrent = true;
@@ -1180,7 +1234,13 @@ function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput; lang?
 
   return (
     <div className="lazy-media-drawer">
-      <ImageLightboxModal photo={lightboxPhoto} onClose={() => setLightboxPhoto(null)} />
+      {lightboxIndex !== null ? (
+        <ImageLightboxModal
+          photos={photos}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
+      ) : null}
       <div className="lazy-media-tabs">
         <button
           type="button"
@@ -1207,12 +1267,12 @@ function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput; lang?
         </div>
       ) : activeTab === "photos" ? (
         <div className="photo-grid">
-          {photos?.map((img) => (
+          {photos?.map((img, idx) => (
             <div
               key={img.id}
               className="photo-card"
               title={`${img.caption} (Klicka för fullskala)`}
-              onClick={() => setLightboxPhoto({ url: img.url, caption: img.caption, credit: img.credit })}
+              onClick={() => setLightboxIndex(idx)}
             >
               <img src={img.thumbnailUrl} alt={img.caption} loading="lazy" />
               <span className="photo-caption">{img.caption}</span>

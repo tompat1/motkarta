@@ -1825,6 +1825,45 @@ footer {
   border-color: var(--color-water);
 }
 
+.lightbox-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  transition: all var(--motion-fast);
+}
+
+.lightbox-nav-btn:hover {
+  background: var(--color-water);
+  border-color: var(--color-water);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.lightbox-prev-btn {
+  left: 16px;
+}
+
+.lightbox-next-btn {
+  right: 16px;
+}
+
+.lightbox-counter {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-water);
+  margin-left: 6px;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Geolocation & Map Locate Controls                                         */
 /* -------------------------------------------------------------------------- */
