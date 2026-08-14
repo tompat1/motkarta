@@ -1102,11 +1102,45 @@ function ConciergeAnswerView({
   );
 }
 
+function ImageLightboxModal({
+  photo,
+  onClose,
+}: {
+  photo: { url: string; caption: string; credit?: string } | null;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  if (!photo) return null;
+
+  return (
+    <div className="lightbox-overlay" onClick={onClose}>
+      <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="lightbox-close-btn" onClick={onClose} aria-label="Close lightbox">
+          ✕
+        </button>
+        <img src={photo.url} alt={photo.caption} className="lightbox-img" />
+        <div className="lightbox-caption-bar">
+          <span>{photo.caption}</span>
+          {photo.credit ? <small>{photo.credit}</small> : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput; lang?: Language }) {
   const [activeTab, setActiveTab] = useState<"photos" | "reviews">("photos");
   const [photos, setPhotos] = useState<PlacePhoto[] | null>(null);
   const [reviews, setReviews] = useState<PlaceReview[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lightboxPhoto, setLightboxPhoto] = useState<{ url: string; caption: string; credit?: string } | null>(null);
 
   useEffect(() => {
     let isCurrent = true;
@@ -1134,6 +1168,7 @@ function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput; lang?
 
   return (
     <div className="lazy-media-drawer">
+      <ImageLightboxModal photo={lightboxPhoto} onClose={() => setLightboxPhoto(null)} />
       <div className="lazy-media-tabs">
         <button
           type="button"
@@ -1161,7 +1196,12 @@ function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput; lang?
       ) : activeTab === "photos" ? (
         <div className="photo-grid">
           {photos?.map((img) => (
-            <div key={img.id} className="photo-card" title={img.caption}>
+            <div
+              key={img.id}
+              className="photo-card"
+              title={`${img.caption} (Klicka för fullskala)`}
+              onClick={() => setLightboxPhoto({ url: img.url, caption: img.caption, credit: img.credit })}
+            >
               <img src={img.thumbnailUrl} alt={img.caption} loading="lazy" />
               <span className="photo-caption">{img.caption}</span>
             </div>
