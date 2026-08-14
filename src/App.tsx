@@ -1098,24 +1098,24 @@ function ConciergeAnswerView({
   );
 }
 
-function LazyPlaceMediaDrawer({ placeId, lang = "sv" }: { placeId: number; lang?: Language }) {
+function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput; lang?: Language }) {
   const [activeTab, setActiveTab] = useState<"photos" | "reviews">("photos");
   const [photos, setPhotos] = useState<PlacePhoto[] | null>(null);
   const [reviews, setReviews] = useState<PlaceReview[] | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let active = true;
+    let isCurrent = true;
     setLoading(true);
     setPhotos(null);
     setReviews(null);
 
     async function loadData() {
       const [fetchedPhotos, fetchedReviews] = await Promise.all([
-        fetchPlacePhotos(placeId),
-        fetchPlaceReviews(placeId),
+        fetchPlacePhotos(place),
+        fetchPlaceReviews(place),
       ]);
-      if (active) {
+      if (isCurrent) {
         setPhotos(fetchedPhotos);
         setReviews(fetchedReviews);
         setLoading(false);
@@ -1124,9 +1124,9 @@ function LazyPlaceMediaDrawer({ placeId, lang = "sv" }: { placeId: number; lang?
 
     void loadData();
     return () => {
-      active = false;
+      isCurrent = false;
     };
-  }, [placeId]);
+  }, [place]);
 
   return (
     <div className="lazy-media-drawer">
@@ -1616,7 +1616,7 @@ export default function App() {
             <p className="source-line">
               {t.sourceLabel}: {active.sourceName ?? "OpenStreetMap"} · {t.lastUpdatedLabel}: {formatUpdatedDate(active.lastUpdated)}
             </p>
-            <LazyPlaceMediaDrawer placeId={active.id} lang={lang} />
+            <LazyPlaceMediaDrawer place={active} lang={lang} />
           </article>
         </div>
 

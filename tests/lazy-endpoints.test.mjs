@@ -30,6 +30,20 @@ test("getFallbackPhotos returns high quality photo objects with captions and cre
   assert.ok(photos[0].caption);
 });
 
+test("getFallbackPhotos returns Mexican taco photos for Mexican places", () => {
+  const mexicanContext = { id: 10, name: "La Neta", kind: "Restaurant", cuisine: "mexican", tags: ["tacos"] };
+  const photos = getFallbackPhotos(mexicanContext);
+
+  assert.ok(photos.some((p) => p.caption.toLowerCase().includes("tacos")));
+});
+
+test("getFallbackPhotos returns Pierogi photos for Polish places", () => {
+  const polishContext = { id: 11, name: "Pyza II", kind: "Restaurant", cuisine: "polish", tags: ["pierogi"] };
+  const photos = getFallbackPhotos(polishContext);
+
+  assert.ok(photos.some((p) => p.caption.toLowerCase().includes("pierogi")));
+});
+
 test("fetchPlaceReviews caches results in-memory", async () => {
   const reviews1 = await fetchPlaceReviews(42);
   const reviews2 = await fetchPlaceReviews(42);

@@ -39,6 +39,15 @@ export async function onRequestGet(context: EventContext<Env>) {
     );
   }
 
+  const placeContext = {
+    id: placeId,
+    name: url.searchParams.get("name") || "",
+    kind: url.searchParams.get("kind") || "",
+    cuisine: url.searchParams.get("cuisine") || "",
+    area: url.searchParams.get("area") || "",
+    tags: (url.searchParams.get("tags") || "").split(",").filter(Boolean),
+  };
+
   const db = context.env.DB;
   if (db) {
     try {
@@ -61,7 +70,7 @@ export async function onRequestGet(context: EventContext<Env>) {
   }
 
   // Fallback to grounded photo media library
-  const fallbackPhotos = getFallbackPhotos(placeId);
+  const fallbackPhotos = getFallbackPhotos(placeContext);
   return Response.json(
     { source: "demo", placeId, photos: fallbackPhotos },
     { headers: jsonHeaders },
