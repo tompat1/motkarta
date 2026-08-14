@@ -413,6 +413,29 @@ function sortModeLabel(sortMode: SortMode, lang: Language): string {
 
 export const POPULAR_CONCIERGE_PROMPTS = DEFAULT_CONCIERGE_PROMPTS;
 
+export const STOCKHOLM_REGIONS = [
+  { label: "Södermalm (Söder)", value: "Södermalm", aliases: ["söder", "södermalm", "sofo", "zinken", "mariatorget", "nytorget", "hornstull", "skanstull"] },
+  { label: "Gamla Stan", value: "Gamla Stan", aliases: ["gamla stan", "gamlastan", "baggensgatan"] },
+  { label: "Vasastan", value: "Vasastan", aliases: ["vasastan", "vasastaden", "birkastan", "st eriksplan", "odenplan", "rörstrandsgatan"] },
+  { label: "Birkastan", value: "Birkastan", aliases: ["birkastan", "rörstrandsgatan", "vasastan"] },
+  { label: "City / Norrmalm", value: "Norrmalm", aliases: ["city", "norrmalm", "t-centralen", "hötorget", "klara"] },
+  { label: "Östermalm", value: "Östermalm", aliases: ["östermalm", "ostermalm", "stureplan"] },
+  { label: "Kungsholmen", value: "Kungsholmen", aliases: ["kungsholmen", "fridhemsplan", "kronobergsgatan"] },
+  { label: "Djurgården", value: "Djurgården", aliases: ["djurgården", "djurgarden"] },
+] as const;
+
+export const SEARCH_CUISINE_SUGGESTIONS = [
+  { label: "Specialty Coffee", value: "Specialty Coffee", badge: "Kaffe" },
+  { label: "Mexikanskt / Tacos", value: "Mexican", badge: "Kök" },
+  { label: "Surdegsbageri & Bullar", value: "Bakery", badge: "Bageri" },
+  { label: "Franskt / Bistro", value: "French", badge: "Kök" },
+  { label: "Polsk / Pierogi", value: "Polish", badge: "Kök" },
+  { label: "Japanskt / Izakaya / Yakitori", value: "Japanese", badge: "Kök" },
+  { label: "Svensk Husmanskost", value: "Swedish", badge: "Kök" },
+  { label: "Italienskt / Trattoria", value: "Italian", badge: "Kök" },
+  { label: "Fine Dining", value: "Fine Dining", badge: "Kök" },
+];
+
 function logConciergeQuery(queryText: string, lang: Language) {
   if (!queryText.trim()) return;
   const cleanQuery = queryText.trim();
@@ -1945,6 +1968,8 @@ export default function App() {
     return [];
   });
 
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
   const matchingSuggestions = useMemo(() => {
     const inputClean = concierge.trim().toLowerCase();
     const allCandidates = Array.from(new Set([...conciergeHistory, ...POPULAR_CONCIERGE_PROMPTS]));
@@ -1955,6 +1980,47 @@ export default function App() {
       .filter((prompt) => prompt.toLowerCase().includes(inputClean))
       .slice(0, 5);
   }, [concierge, conciergeHistory]);
+
+  const searchAutocompleteSuggestions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+
+    const matchedRegions = STOCKHOLM_REGIONS.filter(
+      (r) => r.label.toLowerCase().includes(q) || r.aliases.some((a) => a.includes(q))
+    ).map((r) => ({
+      id: `region-${r.value}`,
+      label: r.label,
+      value: r.value,
+      badge: "Stadsdel",
+      icon: "📍",
+    }));
+
+    const matchedCuisines = SEARCH_CUISINE_SUGGESTIONS.filter(
+      (c) => c.label.toLowerCase().includes(q) || c.value.toLowerCase().includes(q)
+    ).map((c) => ({
+      id: `cuisine-${c.value}`,
+      label: c.label,
+      value: c.value,
+      badge: c.badge,
+      icon: "🍴",
+    }));
+
+    const matchedPlaces = places
+      .filter((p) => p.name.toLowerCase().includes(q) || p.area.toLowerCase().includes(q))
+      .slice(0, 5)
+      .map((p) => ({
+        id: `place-${p.id}`,
+        label: `${p.name} (${p.area})`,
+        value: p.name,
+        badge: p.kind,
+        icon: "🏢",
+      }));
+
+    if (!q) {
+      return [...matchedRegions.slice(0, 4), ...matchedCuisines.slice(0, 4), ...matchedPlaces.slice(0, 3)];
+    }
+
+    return [...matchedRegions, ...matchedCuisines, ...matchedPlaces].slice(0, 8);
+  }, [places, query]);
 
   async function askWithQuery(queryText: string) {
     if (!queryText.trim()) return;
@@ -2107,15 +2173,46 @@ export default function App() {
       </section>
 
       <section className="controls" id="map">
-        <label className="search" style={{ display: "flex", alignItems: "center" }}>
-          <MagnifyingGlass size={16} weight="bold" style={{ color: "var(--color-ink)", marginRight: "8px" }} />
-          <input
-            aria-label={t.typeFilterLabel}
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={t.searchPlaceholder}
-          />
-        </label>
+        <div className="search-container-relative">
+          <label className="search" style={{ display: "flex", alignItems: "center" }}>
+            <MagnifyingGlass size={16} weight="bold" style={{ color: "var(--color-ink)", marginRight: "8px" }} />
+            <input
+              aria-label={t.typeFilterLabel}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+              placeholder={lang === "sv" ? "Sök stadsdel (Söder, Vasastan...), ställe eller kök..." : "Search region (Söder, Vasastan...), place or cuisine..."}
+            />
+          </label>
+
+          {isSearchFocused && searchAutocompleteSuggestions.length > 0 ? (
+            <div className="search-autocomplete-box">
+              <div className="autocomplete-category-header">
+                <Compass size={12} weight="bold" />
+                <span>{lang === "sv" ? "AUTOCOMPLETE: STADSDELAR, STÄLLEN & KÖK" : "AUTOCOMPLETE: REGIONS, PLACES & CUISINES"}</span>
+              </div>
+              {searchAutocompleteSuggestions.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="autocomplete-item"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    setQuery(item.value);
+                    setIsSearchFocused(false);
+                  }}
+                >
+                  <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>{item.icon}</span>
+                    <span style={{ fontWeight: 600 }}>{item.label}</span>
+                  </span>
+                  <span className="autocomplete-type-badge">{item.badge}</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
         <div className="chips" aria-label="Filter typ">
           <span className="filter-label">{t.typeFilterLabel}</span>
           <div className="chip-row">

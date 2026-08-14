@@ -1946,6 +1946,80 @@ footer {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Search Autocomplete Box                                                   */
+/* -------------------------------------------------------------------------- */
+
+.search-container-relative {
+  position: relative;
+  width: 100%;
+}
+
+.search-autocomplete-box {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--color-paper);
+  border: 1px solid var(--color-ink);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  z-index: 200;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.autocomplete-category-header {
+  padding: 6px 12px;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.autocomplete-item {
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  transition: background var(--motion-fast);
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item.selected,
+.autocomplete-item:hover {
+  background: rgba(43, 107, 115, 0.1);
+  color: var(--color-water);
+}
+
+.autocomplete-type-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 2px;
+  color: var(--color-stone);
+}
+
+/* -------------------------------------------------------------------------- */
 /* Geolocation & Map Locate Controls                                         */
 /* -------------------------------------------------------------------------- */
 
