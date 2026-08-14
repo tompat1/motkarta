@@ -54,6 +54,7 @@ import {
   type UserPreferences,
   scorePlace,
 } from "../lib/scoring";
+import { DEFAULT_CONCIERGE_PROMPTS, DEFAULT_CURATED_SOURCES } from "../lib/db-sources-prompts";
 
 const establishmentTypes = [
   "All places",
@@ -410,19 +411,7 @@ function sortModeLabel(sortMode: SortMode, lang: Language): string {
   return sortMode;
 }
 
-export const POPULAR_CONCIERGE_PROMPTS = [
-  "specialty coffee och kardemummabulle på Södermalm",
-  "bästa mexikanska tacos i Vasastan",
-  "familjeägd fransk bistro med bra vin i Gamla Stan",
-  "hantverksbageri med surdegsbröd i Zinkensdamm",
-  "handgjorda polska pierogi i Gamla Stan",
-  "dolda pärlor för middag nära mig",
-  "3-stjärnig fine dining med avsmakningsmeny",
-  "svensk husmanskost till rimligt pris",
-  "bageri med nysandade kanelbullar",
-  "italienska trattorias med färsk pasta",
-  "izakaya och yakitori spett i Vasastan",
-] as const;
+export const POPULAR_CONCIERGE_PROMPTS = DEFAULT_CONCIERGE_PROMPTS;
 
 function logConciergeQuery(queryText: string, lang: Language) {
   if (!queryText.trim()) return;
@@ -1344,53 +1333,7 @@ export interface CuratedSource {
   addedByUser?: boolean;
 }
 
-export const INITIAL_CURATED_SOURCES: CuratedSource[] = [
-  {
-    id: "husa-guide",
-    name: "Anders Husa & Kaitlin Orr Guide",
-    url: "https://andershusa.com",
-    type: "Verified Guide",
-    description: "Kurerad krog- och restaurangguide av Michelin- och World's 50 Best-jurymedlemmar Anders Husa & Kaitlin Orr.",
-    license: "Citerat med tillstånd (andershusa.com)",
-    verifiedCount: 50,
-  },
-  {
-    id: "stockholm-stad",
-    name: "Stockholms Stad Livsmedelskontroll",
-    url: "https://miljo.stockholm.se",
-    type: "Municipal Inspection",
-    description: "Officiella kommunala miljö- och hälsoskyddsgranskningar samt livsmedelsinspektioner.",
-    license: "CC0 1.0 Universal / Öppen kommunal data",
-    verifiedCount: 3212,
-  },
-  {
-    id: "openstreetmap",
-    name: "OpenStreetMap Contributors",
-    url: "https://www.openstreetmap.org",
-    type: "Open Data",
-    description: "Geografiska koordinater, byggnadskonturer och oberoende POI-identiteter för Stockholms stad.",
-    license: "ODbL 1.0 (Open Database License)",
-    verifiedCount: 14500,
-  },
-  {
-    id: "white-guide",
-    name: "White Guide Nordic",
-    url: "https://whiteguide.com",
-    type: "Editorial Review",
-    description: "Nordiska krog- och fikatillsynsbedömningar av oberoende gastronomiprofessionella.",
-    license: "Redaktionell granskning",
-    verifiedCount: 85,
-  },
-  {
-    id: "specialty-coffee-se",
-    name: "Specialty Coffee Sweden Registry",
-    url: "https://specialtycoffee.se",
-    type: "Verified Guide",
-    description: "Kvalitetssäkrade kaffebönskällor, spårbarhetsbevis och rosteriverifieringar i Stockholm.",
-    license: "Öppen branschstandard",
-    verifiedCount: 15,
-  },
-];
+export const INITIAL_CURATED_SOURCES = DEFAULT_CURATED_SOURCES;
 
 type SuperpowerMode = "add_place" | "add_review" | "add_photo" | "rate_place" | "add_source";
 
@@ -1876,7 +1819,12 @@ export default function App() {
         localStorage.setItem("motkarta_user_sources", JSON.stringify([...list, newSource]));
       } catch {}
     }
-    setAnswer(`📜 Superpower Aktiverad! Den nya kurerade källan '${newSource.name}' har lagts till i registret och sparas i din källförteckning!`);
+    void fetch("/api/sources", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newSource),
+    }).catch(() => {});
+    setAnswer(`📜 Superpower Aktiverad! Den nya kurerade källan '${newSource.name}' har lagts till i registret och sparats i databasen!`);
   };
   const [answer, setAnswer] = useState<string | null>(null);
   const [asking, setAsking] = useState(false);
@@ -1900,7 +1848,33 @@ export default function App() {
       }
     }
 
+    async function loadDbSources() {
+      try {
+        const resp = await fetch("/api/sources");
+        if (resp.ok) {
+          const payload = (await resp.json()) as { sources?: CuratedSource[] };
+          if (!cancelled && payload.sources?.length) {
+            setCuratedSources(payload.sources);
+          }
+        }
+      } catch {}
+    }
+
+    async function loadDbPrompts() {
+      try {
+        const resp = await fetch("/api/prompts");
+        if (resp.ok) {
+          const payload = (await resp.json()) as { prompts?: string[] };
+          if (!cancelled && payload.prompts?.length) {
+            setConciergeHistory((prev) => Array.from(new Set([...payload.prompts!, ...prev])));
+          }
+        }
+      } catch {}
+    }
+
     void loadPlaces();
+    void loadDbSources();
+    void loadDbPrompts();
 
     return () => {
       cancelled = true;
@@ -2202,7 +2176,7 @@ export default function App() {
             <p className="recommendation">{recommendationExplanation(active)}</p>
             <p className="note">{active.note}</p>
             <div className="tag-row">
-              {active.tags.map((tag) => (
+              {active.tags.map((tag: string) => (
                 <span key={tag}>{tag}</span>
               ))}
             </div>
@@ -2327,7 +2301,7 @@ export default function App() {
             <ExternalMapLinks place={active} lang={lang} />
             {active.discoveryReasons?.length ? (
               <ul className="reason-list" aria-label="Discovery score reasons">
-                {active.discoveryReasons.slice(0, 3).map((reason) => (
+                {active.discoveryReasons.slice(0, 3).map((reason: string) => (
                   <li key={reason} style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
                     <PlusCircle size={14} weight="fill" style={{ color: "var(--orange)", flexShrink: 0, marginTop: "2px" }} />
                     <span>{reason}</span>
