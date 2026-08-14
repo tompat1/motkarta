@@ -10,6 +10,7 @@ import {
   ArrowsOut,
   Bread,
   Certificate,
+  ChatTeardropText,
   Check,
   CheckCircle,
   CircleNotch,
@@ -18,6 +19,7 @@ import {
   Crosshair,
   ForkKnife,
   Globe,
+  Image,
   MapPin,
   MapTrifold,
   MagnifyingGlass,
@@ -33,6 +35,12 @@ import {
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../functions/api/concierge";
+import {
+  fetchPlacePhotos,
+  fetchPlaceReviews,
+  type PlacePhoto,
+  type PlaceReview,
+} from "../lib/lazy-media";
 import {
   type EstablishmentType,
   type PlaceInput,
@@ -1090,6 +1098,92 @@ function ConciergeAnswerView({
   );
 }
 
+function LazyPlaceMediaDrawer({ placeId, lang = "sv" }: { placeId: number; lang?: Language }) {
+  const [activeTab, setActiveTab] = useState<"photos" | "reviews">("photos");
+  const [photos, setPhotos] = useState<PlacePhoto[] | null>(null);
+  const [reviews, setReviews] = useState<PlaceReview[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setPhotos(null);
+    setReviews(null);
+
+    async function loadData() {
+      const [fetchedPhotos, fetchedReviews] = await Promise.all([
+        fetchPlacePhotos(placeId),
+        fetchPlaceReviews(placeId),
+      ]);
+      if (active) {
+        setPhotos(fetchedPhotos);
+        setReviews(fetchedReviews);
+        setLoading(false);
+      }
+    }
+
+    void loadData();
+    return () => {
+      active = false;
+    };
+  }, [placeId]);
+
+  return (
+    <div className="lazy-media-drawer">
+      <div className="lazy-media-tabs">
+        <button
+          type="button"
+          className={`lazy-tab-btn ${activeTab === "photos" ? "active" : ""}`}
+          onClick={() => setActiveTab("photos")}
+        >
+          <Image size={14} weight="bold" />
+          {lang === "sv" ? "Bilder" : "Photos"} ({photos?.length ?? "..."})
+        </button>
+        <button
+          type="button"
+          className={`lazy-tab-btn ${activeTab === "reviews" ? "active" : ""}`}
+          onClick={() => setActiveTab("reviews")}
+        >
+          <ChatTeardropText size={14} weight="bold" />
+          {lang === "sv" ? "Verifierade Recensioner" : "Verified Reviews"} ({reviews?.length ?? "..."})
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="media-loading-skeleton">
+          <CircleNotch size={16} className="animate-spin" />
+          <span>{lang === "sv" ? "Laddar media för stället..." : "Loading media for place..."}</span>
+        </div>
+      ) : activeTab === "photos" ? (
+        <div className="photo-grid">
+          {photos?.map((img) => (
+            <div key={img.id} className="photo-card" title={img.caption}>
+              <img src={img.thumbnailUrl} alt={img.caption} loading="lazy" />
+              <span className="photo-caption">{img.caption}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="review-list">
+          {reviews?.map((rev) => (
+            <article key={rev.id} className="review-card">
+              <div className="review-card-head">
+                <span className="review-author">{rev.author}</span>
+                <span className="review-source-tag">{rev.source}</span>
+              </div>
+              <p className="review-content">"{rev.content}"</p>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "var(--color-stone)" }}>
+                <span>★ {rev.rating.toFixed(1)} / 5.0</span>
+                <span>{rev.date}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function App() {
   const [places, setPlaces] = useState<PlaceInput[]>(demoPlaces);
   const [dataSource, setDataSource] = useState<DataSource>("loading");
@@ -1522,6 +1616,7 @@ export default function App() {
             <p className="source-line">
               {t.sourceLabel}: {active.sourceName ?? "OpenStreetMap"} · {t.lastUpdatedLabel}: {formatUpdatedDate(active.lastUpdated)}
             </p>
+            <LazyPlaceMediaDrawer placeId={active.id} lang={lang} />
           </article>
         </div>
 
