@@ -59,6 +59,30 @@ CURATED_GUIDE_REVIEWS = {
         "source": "Editorial Guide",
         "content": "Authentic Polish pierogarnia in Gamla Stan serving fresh handmade dumplings, borscht, and traditional comfort food.",
     },
+    "operakällaren": {
+        "author": "Anders Husa & Kaitlin Orr Guide",
+        "rating": 4.9,
+        "source": "Editorial Guide",
+        "content": "Iconic Stockholm fine dining landmark located inside the Royal Opera House with grand dining room elegance and top gastronomy.",
+    },
+    "schmaltz": {
+        "author": "Anders Husa & Kaitlin Orr Guide",
+        "rating": 4.7,
+        "source": "Editorial Guide",
+        "content": "Charming European delicatessen and neighborhood bistro serving European classics, natural wines, and cured meats.",
+    },
+    "lillebrors bageri": {
+        "author": "Anders Husa & Kaitlin Orr Guide",
+        "rating": 4.9,
+        "source": "Editorial Guide",
+        "content": "Tiny cult bakery in Vasastan famous for freshly baked cardamom buns, sourdough loaves, and queues out the door.",
+    },
+    "lykke nytorget": {
+        "author": "Anders Husa & Kaitlin Orr Guide",
+        "rating": 4.8,
+        "source": "Specialty Coffee Auditor",
+        "content": "Vibrant specialty coffee hub on Nytorget with direct-trade beans, lively atmosphere, and great breakfast items.",
+    },
 }
 
 OPEN_MEDIA_PHOTOS = {
