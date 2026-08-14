@@ -55,6 +55,7 @@ import {
 
 const establishmentTypes = [
   "All places",
+  "Curated",
   "Saved",
   "Restaurant",
   "Bakery",
@@ -407,8 +408,9 @@ function sortModeLabel(sortMode: SortMode, lang: Language): string {
   return sortMode;
 }
 
-function kindFilterLabel(kind: EstablishmentFilter, lang: Language): string {
+function kindFilterLabel(kind: EstablishmentFilter | string, lang: Language): string {
   if (kind === "All places") return translations[lang].allPlaces;
+  if (kind === "Curated") return lang === "sv" ? "★ Handplockat" : "★ Curated";
   if (kind === "Saved") return lang === "sv" ? "Sparade ★" : "Saved ★";
   if (kind === "Restaurant") return translations[lang].legendRestaurant;
   if (kind === "Bakery") return translations[lang].legendBakery;
@@ -1669,9 +1671,14 @@ export default function App() {
         .filter((place) =>
           kind === "All places"
             ? true
-            : kind === "Saved"
-              ? savedPlaceIds.includes(place.id)
-              : place.kind === kind,
+            : kind === "Curated"
+              ? place.evidence.specialistGuide === 1 ||
+                (place.evidenceLabel ?? "").toLowerCase().includes("guide") ||
+                (place.evidenceLabel ?? "").toLowerCase().includes("specialist") ||
+                (place.sourceName ?? "").toLowerCase().includes("husa")
+              : kind === "Saved"
+                ? savedPlaceIds.includes(place.id)
+                : place.kind === kind,
         )
         .filter((place) => cuisine === allCuisines || cuisineParts(place).includes(cuisine))
         .filter((place) =>
@@ -2018,6 +2025,28 @@ export default function App() {
             </div>
 
             <VerificationBar place={active} lang={lang} />
+            <div
+              className="curated-attribution-box"
+              style={{
+                marginTop: "12px",
+                padding: "10px 14px",
+                background: "var(--color-paper)",
+                border: "1px solid var(--color-ink)",
+                fontSize: "11px",
+                fontFamily: "var(--font-mono)",
+                lineHeight: 1.4,
+              }}
+            >
+              <div style={{ fontWeight: 700, textTransform: "uppercase", marginBottom: "4px", color: "var(--color-ink)", display: "flex", alignItems: "center", gap: "6px" }}>
+                <ShieldCheck size={14} style={{ color: "var(--color-water)" }} />
+                {lang === "sv" ? "KÄLLTILLSKRIVNING & UPPHOVSRÄTT" : "SOURCE ATTRIBUTION & COPYRIGHT"}
+              </div>
+              <div style={{ color: "var(--color-mist)" }}>
+                {lang === "sv"
+                  ? "Guiderekommendationer & citat återges med källhänvisning till Anders Husa & Kaitlin Orr Guide (andershusa.com). Tillsynsdata från Stockholms stad (CC0). Kartdata från OpenStreetMap (ODbL). Alla upphovsrätter tillhör respektive skapare."
+                  : "Guide recommendations & quotes cited with attribution to Anders Husa & Kaitlin Orr Guide (andershusa.com). Inspection data from Stockholm City (CC0). Map data from OpenStreetMap (ODbL). All copyrights belong to their respective owners."}
+              </div>
+            </div>
             <ExternalMapLinks place={active} lang={lang} />
             {active.discoveryReasons?.length ? (
               <ul className="reason-list" aria-label="Discovery score reasons">
