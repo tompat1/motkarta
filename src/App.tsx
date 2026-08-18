@@ -2326,8 +2326,7 @@ export default function App() {
                 aria-label="Clear search field"
                 title={lang === "sv" ? "Rensa fält" : "Clear field"}
               >
-                <span>{lang === "sv" ? "RENSA FÄLT" : "CLEAR FIELD"}</span>
-                <span className="clear-x">✕</span>
+                ✕
               </button>
             ) : null}
           </label>
@@ -2699,8 +2698,7 @@ export default function App() {
                 aria-label="Clear input field"
                 title={lang === "sv" ? "Rensa fält" : "Clear field"}
               >
-                <span>{lang === "sv" ? "RENSA FÄLT" : "CLEAR FIELD"}</span>
-                <span className="clear-x">✕</span>
+                ✕
               </button>
             ) : null}
             <textarea

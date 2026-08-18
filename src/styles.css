@@ -395,34 +395,28 @@ h2 i {
 }
 
 button.search-clear-btn {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--color-ink);
-  color: var(--color-ink);
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  background: transparent;
+  border: 0;
+  color: var(--color-stone);
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 50%;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  white-space: nowrap;
+  justify-content: center;
   margin-left: auto;
   transition: all var(--motion-fast);
 }
 
 button.search-clear-btn:hover {
-  background: var(--color-signal);
-  border-color: var(--color-signal);
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-button.search-clear-btn .clear-x {
-  font-size: 11px;
-  font-weight: 900;
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--color-ink);
 }
 
 .chips {
@@ -1032,33 +1026,28 @@ button.concierge-clear-btn {
   position: absolute;
   top: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--color-ink);
-  color: var(--color-ink);
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  background: transparent;
+  border: 0;
+  color: var(--color-stone);
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 50%;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
   z-index: 5;
   transition: all var(--motion-fast);
 }
 
 button.concierge-clear-btn:hover {
-  background: var(--color-signal);
-  border-color: var(--color-signal);
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-button.concierge-clear-btn .clear-x {
-  font-size: 11px;
-  font-weight: 900;
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--color-ink);
 }
 
 .ask-box textarea {
