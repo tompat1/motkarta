@@ -55,8 +55,8 @@ def scrape_website_photo(url):
         pass
     return None
 
-def fetch_google_place_details(place_name, area, api_key):
-    """Query Google Places API (New) for exact missing address, website, and metadata."""
+def fetch_google_place_details(place_name, area, api_key, retries=3):
+    """Query Google Places API (New) with exponential backoff retry on HTTP 429 rate limit."""
     if not api_key:
         return None
 
@@ -67,24 +67,34 @@ def fetch_google_place_details(place_name, area, api_key):
         "X-Goog-Api-Key": api_key,
         "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.websiteUri,places.location,places.rating,places.userRatingCount"
     }
-    try:
-        req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
-        with urllib.request.urlopen(req, timeout=8) as response:
-            res_data = json.loads(response.read().decode("utf-8"))
-            results = res_data.get("places", [])
-            if results:
-                best = results[0]
-                loc = best.get("location", {})
-                return {
-                    "address": best.get("formattedAddress"),
-                    "website": best.get("websiteUri"),
-                    "rating": best.get("rating"),
-                    "reviewCount": best.get("userRatingCount"),
-                    "lat": loc.get("latitude"),
-                    "lng": loc.get("longitude"),
-                }
-    except Exception as e:
-        print(f"⚠️ API Error for {place_name}: {e}")
+
+    for attempt in range(retries):
+        try:
+            req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
+            with urllib.request.urlopen(req, timeout=8) as response:
+                res_data = json.loads(response.read().decode("utf-8"))
+                results = res_data.get("places", [])
+                if results:
+                    best = results[0]
+                    loc = best.get("location", {})
+                    return {
+                        "address": best.get("formattedAddress"),
+                        "website": best.get("websiteUri"),
+                        "rating": best.get("rating"),
+                        "reviewCount": best.get("userRatingCount"),
+                        "lat": loc.get("latitude"),
+                        "lng": loc.get("longitude"),
+                    }
+                return None
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < retries - 1:
+                time.sleep(2.0 * (attempt + 1))
+                continue
+            print(f"⚠️ API Error for {place_name}: {e}")
+            break
+        except Exception as e:
+            print(f"⚠️ API Error for {place_name}: {e}")
+            break
     return None
 
 def main():

@@ -19,7 +19,7 @@
       ],
       "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
       "evidenceLabel": "Visit Stockholm · White Guide · Editorial",
-      "website": "https://solkantbageri.se",
+      "website": "http://solkantkafferosteri.se/",
       "ratingAverage": 4.9,
       "reliableRatingCount": 610,
       "reviewCount": 740,
@@ -42,8 +42,8 @@
         "dataFreshness": 98,
         "confidence": "High"
       },
-      "latitude": 59.3402,
-      "longitude": 18.0468,
+      "latitude": 59.33159139999999,
+      "longitude": 18.0464765,
       "engagement": {
         "searchImpressions": 6200,
         "profileViews": 2100,
@@ -77,7 +77,7 @@
       ],
       "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
       "evidenceLabel": "Visit Stockholm · White Guide · Editorial",
-      "website": "https://bambinostockholm.se",
+      "website": "http://bistrobananas.se/",
       "ratingAverage": 4.7,
       "reliableRatingCount": 380,
       "reviewCount": 490,
@@ -100,8 +100,8 @@
         "dataFreshness": 94,
         "confidence": "High"
       },
-      "latitude": 59.3118,
-      "longitude": 18.0735,
+      "latitude": 59.31179759999999,
+      "longitude": 18.0752697,
       "engagement": {
         "searchImpressions": 4800,
         "profileViews": 1550,
@@ -135,7 +135,7 @@
       ],
       "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
       "evidenceLabel": "Visit Stockholm · ELLE · Editorial",
-      "website": "https://www.mxco.se",
+      "website": "https://mxco.se/",
       "ratingAverage": 4.8,
       "reliableRatingCount": 520,
       "reviewCount": 680,
@@ -158,8 +158,8 @@
         "dataFreshness": 96,
         "confidence": "High"
       },
-      "latitude": 59.3308,
-      "longitude": 18.056,
+      "latitude": 59.3302398,
+      "longitude": 18.055412999999998,
       "engagement": {
         "searchImpressions": 5400,
         "profileViews": 1800,
@@ -238,10 +238,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.305325,
-      "longitude": 17.9632902,
+      "latitude": 59.305430900000005,
+      "longitude": 17.9632818,
       "x": 42.66,
-      "y": 60.99
+      "y": 60.99,
+      "address": "Klubbacken 51, 129 39 Hägersten, Sweden",
+      "website": "http://marino.se/"
     },
     {
       "id": 3046923730,
@@ -309,10 +311,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3335055,
-      "longitude": 18.0609925,
+      "latitude": 59.3335679,
+      "longitude": 18.0613288,
       "x": 62.2,
-      "y": 50.55
+      "y": 50.55,
+      "address": "Bryggargatan 2, 111 21 Stockholm, Sweden",
+      "website": "http://www.restaurangsantorini.com/"
     },
     {
       "id": 422813754,
@@ -380,10 +384,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3284376,
-      "longitude": 18.0630727,
+      "latitude": 59.3283531,
+      "longitude": 18.063081999999998,
       "x": 62.61,
-      "y": 52.43
+      "y": 52.43,
+      "address": "Tegelbacken 2, 111 52 Stockholm, Sweden",
+      "website": "http://tegelbacken.com/"
     },
     {
       "id": 3207555622,
@@ -447,10 +453,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3357728,
-      "longitude": 18.0879732,
+      "latitude": 59.335741999999996,
+      "longitude": 18.087999999999997,
       "x": 67.59,
-      "y": 49.71
+      "y": 49.71,
+      "address": "Linnégatan 69, 112 12 Stockholm, Sweden",
+      "website": "http://www.brasserieelverket.se/"
     },
     {
       "id": 2310161477,
@@ -517,10 +525,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3365637,
-      "longitude": 18.0884992,
+      "latitude": 59.33646649999999,
+      "longitude": 18.088479,
       "x": 67.7,
-      "y": 49.42
+      "y": 49.42,
+      "address": "Styrmansgatan 52, 114 60 Stockholm, Sweden",
+      "website": "https://magaripizza.com/?utm_source=google"
     },
     {
       "id": 3146000071,
@@ -588,10 +598,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3420427,
-      "longitude": 18.0867581,
+      "latitude": 59.342092400000006,
+      "longitude": 18.0867731,
       "x": 67.35,
-      "y": 47.39
+      "y": 47.39,
+      "address": "Valhallavägen 131, 115 31 Stockholm, Sweden",
+      "website": "https://www.kouzina.se/?utm_source=google"
     },
     {
       "id": 1459428560,
@@ -655,10 +667,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3650517,
-      "longitude": 18.0713552,
+      "latitude": 59.3650361,
+      "longitude": 18.071199999999997,
       "x": 64.27,
-      "y": 38.87
+      "y": 38.87,
+      "address": "Stora Skuggans Väg 38, 115 42 Stockholm, Sweden",
+      "website": "http://www.skafferiet.nu/"
     },
     {
       "id": 2778498136,
@@ -722,10 +736,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3588058,
-      "longitude": 18.0764113,
+      "latitude": 59.358831599999995,
+      "longitude": 18.0765055,
       "x": 65.28,
-      "y": 41.18
+      "y": 41.18,
+      "address": "Björnnäsbacken 15, 115 42 Stockholm, Sweden",
+      "website": "http://www.fiskartorpet.se/"
     },
     {
       "id": 2273478994,
@@ -791,10 +807,11 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.330254,
-      "longitude": 18.1327268,
+      "latitude": 59.3303161,
+      "longitude": 18.132762,
       "x": 76.55,
-      "y": 51.76
+      "y": 51.76,
+      "address": "Djurgårdsbrunnsvägen 63, 115 25 Stockholm, Sweden"
     },
     {
       "id": 3906793649,
@@ -860,10 +877,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3320845,
-      "longitude": 18.1158885,
+      "latitude": 59.3324893,
+      "longitude": 18.1156207,
       "x": 73.18,
-      "y": 51.08
+      "y": 51.08,
+      "address": "Djurgårdsbrunnsvägen 24, 115 27 Stockholm, Sweden",
+      "website": "https://www.sjohistoriska.se/besok/sjohistoriska_cafe"
     },
     {
       "id": 4058647568,
@@ -931,10 +950,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3278542,
-      "longitude": 18.0557102,
+      "latitude": 59.327844799999994,
+      "longitude": 18.0556332,
       "x": 61.14,
-      "y": 52.65
+      "y": 52.65,
+      "address": "Hantverkargatan 1, 111 52 Stockholm, Sweden",
+      "website": "https://www.stadshuskallarensthlm.se/"
     },
     {
       "id": 2734105689,
@@ -999,10 +1020,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3294442,
-      "longitude": 17.928936,
+      "latitude": 59.329439300000004,
+      "longitude": 17.9289983,
       "x": 35.79,
-      "y": 52.06
+      "y": 52.06,
+      "address": "Nockeby torg 6, 143 41 Bromma, Sweden",
+      "website": "https://nockebypizzeria.se/"
     },
     {
       "id": 163021122,
@@ -1066,10 +1089,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3499083,
-      "longitude": 18.0807408,
+      "latitude": 59.3499147,
+      "longitude": 18.080768199999998,
       "x": 66.15,
-      "y": 44.48
+      "y": 44.48,
+      "address": "Södra Fiskartorpsvägen 29, 114 33 Stockholm, Sweden",
+      "website": "http://harpaviljongen.com/"
     },
     {
       "id": 1047024362,
@@ -1135,10 +1160,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3503492,
-      "longitude": 18.0592275,
+      "latitude": 59.3433122,
+      "longitude": 18.1193199,
       "x": 61.85,
-      "y": 44.32
+      "y": 44.32,
+      "address": "Frihamnsgatan 25, 115 56 Stockholm, Sweden",
+      "website": "http://www.tullverket.se/"
     },
     {
       "id": 2198971926,
@@ -1206,10 +1233,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3502571,
-      "longitude": 18.0578379,
+      "latitude": 59.350175799999995,
+      "longitude": 18.0576901,
       "x": 61.57,
-      "y": 44.35
+      "y": 44.35,
+      "address": "Birger Jarlsgatan 121, 113 56 Stockholm, Sweden",
+      "website": "http://www.sultanindisk.se/"
     },
     {
       "id": 3832888205,
@@ -1274,10 +1303,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3328927,
-      "longitude": 17.9774152,
+      "latitude": 59.332865399999996,
+      "longitude": 17.977272799999998,
       "x": 45.48,
-      "y": 50.78
+      "y": 50.78,
+      "address": "Gustavslundsvägen 173, 167 51 Bromma, Sweden",
+      "website": "http://www.alcaminetto.se/"
     },
     {
       "id": 1053351911,
@@ -1343,10 +1374,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3697973,
-      "longitude": 18.0460183,
+      "latitude": 59.369787800000005,
+      "longitude": 18.046101,
       "x": 59.2,
-      "y": 37.11
+      "y": 37.11,
+      "address": "Veit Wittrocks väg 7, 104 05 Stockholm, Sweden",
+      "website": "https://gamlaorangeriet.se/?utm_source=google"
     },
     {
       "id": 1441671158,
@@ -1409,10 +1442,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.2400088,
-      "longitude": 18.1128555,
+      "latitude": 59.335722600000004,
+      "longitude": 18.0724828,
       "x": 72.57,
-      "y": 85.18
+      "y": 85.18,
+      "address": "Stureplan 13, 111 45 Stockholm, Sweden",
+      "website": "https://east.se/"
     },
     {
       "id": 1947185822,
@@ -1480,10 +1515,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3148328,
-      "longitude": 18.0742292,
+      "latitude": 59.31478310000001,
+      "longitude": 18.0742765,
       "x": 64.85,
-      "y": 57.47
+      "y": 57.47,
+      "address": "Tjärhovsgatan 4, 116 21 Stockholm, Sweden",
+      "website": "https://www.kvarnen.com/?utm_source=google"
     },
     {
       "id": 2497095864,
@@ -1548,10 +1585,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3212116,
-      "longitude": 18.02525,
+      "latitude": 59.3301476,
+      "longitude": 18.0582377,
       "x": 55.05,
-      "y": 55.11
+      "y": 55.11,
+      "address": "Centralplan 15, 111 20 Stockholm, Sweden",
+      "website": "http://www.jernhusen.se/"
     },
     {
       "id": 2615537547,
@@ -1617,10 +1656,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3159381,
-      "longitude": 18.082819,
+      "latitude": 59.315916599999994,
+      "longitude": 18.082869499999997,
       "x": 66.56,
-      "y": 57.06
+      "y": 57.06,
+      "address": "Tjärhovsgatan 46, 116 28 Stockholm, Sweden",
+      "website": "https://kafe44.org/"
     },
     {
       "id": 4161538785,
@@ -1685,10 +1726,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.2924236,
-      "longitude": 17.9679342,
+      "latitude": 59.318494699999995,
+      "longitude": 18.0583767,
       "x": 43.59,
-      "y": 65.77
+      "y": 65.77,
+      "address": "Hornsgatan 72, 118 21 Stockholm, Sweden",
+      "website": "http://barcentral.se/"
     },
     {
       "id": 1867818843,
@@ -1754,10 +1797,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3285273,
-      "longitude": 18.1002504,
+      "latitude": 59.328597900000005,
+      "longitude": 18.1003236,
       "x": 70.05,
-      "y": 52.4
+      "y": 52.4,
+      "address": "Rosendalsvägen 9, 115 21 Stockholm, Sweden",
+      "website": "https://villagodthem.se/"
     },
     {
       "id": 3726833667,
@@ -1825,10 +1870,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3281397,
-      "longitude": 18.0999975,
+      "latitude": 59.328070000000004,
+      "longitude": 18.09984,
       "x": 70.0,
-      "y": 52.54
+      "y": 52.54,
+      "address": "Rosendalsvägen 8, 115 21 Stockholm, Sweden",
+      "website": "http://www.ullawinbladh.se/"
     },
     {
       "id": 2514013876,
@@ -1894,10 +1941,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.346092,
-      "longitude": 18.0713793,
+      "latitude": 59.3460085,
+      "longitude": 18.071316,
       "x": 64.28,
-      "y": 45.89
+      "y": 45.89,
+      "address": "Drottning Kristinas väg 1, 114 28 Stockholm, Sweden",
+      "website": "http://www.ostrastation.se/"
     },
     {
       "id": 3028638116,
@@ -1963,10 +2012,11 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3459727,
-      "longitude": 18.0714639,
+      "latitude": 59.3459572,
+      "longitude": 18.071424099999998,
       "x": 64.29,
-      "y": 45.94
+      "y": 45.94,
+      "address": "Valhallavägen 77, 114 28 Stockholm, Sweden"
     },
     {
       "id": 1300866790,
@@ -2031,10 +2081,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3313524,
-      "longitude": 18.0467164,
+      "latitude": 59.3314083,
+      "longitude": 18.0465557,
       "x": 59.34,
-      "y": 51.35
+      "y": 51.35,
+      "address": "Kungsholmsgatan 16, 112 27 Stockholm, Sweden",
+      "website": "https://savoca.se/?utm_source=google"
     },
     {
       "id": 4005203623,
@@ -2101,10 +2153,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3329098,
-      "longitude": 18.0435259,
+      "latitude": 59.32447750000001,
+      "longitude": 18.0717694,
       "x": 58.71,
-      "y": 50.77
+      "y": 50.77,
+      "address": "Svartmangatan 11, 111 29 Stockholm, Sweden",
+      "website": "https://www.texaslonghorn.se/restaurang/gamla-stan/"
     },
     {
       "id": 3770093499,
@@ -2172,10 +2226,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3320634,
-      "longitude": 18.0426741,
+      "latitude": 59.336824099999994,
+      "longitude": 18.067696899999998,
       "x": 58.53,
-      "y": 51.09
+      "y": 51.09,
+      "address": "Regeringsgatan 70, 111 39 Stockholm, Sweden",
+      "website": "https://tabbouli.eu/vara-restauranger/city/?utm_source=google"
     },
     {
       "id": 62915224,
@@ -2241,10 +2297,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3325031,
-      "longitude": 18.0428807,
+      "latitude": 59.3325094,
+      "longitude": 18.042884,
       "x": 58.58,
-      "y": 50.92
+      "y": 50.92,
+      "address": "Norra Agnegatan 43, 112 29 Stockholm, Sweden",
+      "website": "http://restaurangagnes.com/"
     },
     {
       "id": 3590395136,
@@ -2310,10 +2368,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3297574,
-      "longitude": 18.0438194,
+      "latitude": 59.3297567,
+      "longitude": 18.043913099999997,
       "x": 58.76,
-      "y": 51.94
+      "y": 51.94,
+      "address": "Scheelegatan 8, 112 23 Stockholm, Sweden",
+      "website": "https://lokalizakaya.se/?utm_source=google"
     },
     {
       "id": 3088913623,
@@ -2379,10 +2439,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3309127,
-      "longitude": 18.044465,
+      "latitude": 59.33098839999999,
+      "longitude": 18.0445959,
       "x": 58.89,
-      "y": 51.51
+      "y": 51.51,
+      "address": "Scheelegatan 18, 112 28 Stockholm, Sweden",
+      "website": "https://spisahoshelena.se/?utm_source=google"
     },
     {
       "id": 2534225764,
@@ -2450,10 +2512,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3324594,
-      "longitude": 18.0468995,
+      "latitude": 59.332451199999994,
+      "longitude": 18.0469331,
       "x": 59.38,
-      "y": 50.94
+      "y": 50.94,
+      "address": "Fleminggatan 11, 112 26 Stockholm, Sweden",
+      "website": "http://www.eateast.se/"
     },
     {
       "id": 2227518592,
@@ -2521,10 +2585,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3316812,
-      "longitude": 18.0441645,
+      "latitude": 59.3317451,
+      "longitude": 18.0442616,
       "x": 58.83,
-      "y": 51.23
+      "y": 51.23,
+      "address": "Kungsholmsgatan 24, 112 27 Stockholm, Sweden",
+      "website": "https://www.saffrankungsholmen.se/"
     },
     {
       "id": 320333064,
@@ -2588,10 +2654,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3313987,
-      "longitude": 18.0463458,
+      "latitude": 59.3314083,
+      "longitude": 18.0465557,
       "x": 59.27,
-      "y": 51.33
+      "y": 51.33,
+      "address": "Kungsholmsgatan 16, 112 27 Stockholm, Sweden",
+      "website": "https://www.lunasthlm.com/"
     },
     {
       "id": 4008164285,
@@ -2659,10 +2727,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3312046,
-      "longitude": 18.0502379,
+      "latitude": 59.331112100000006,
+      "longitude": 18.0502771,
       "x": 60.05,
-      "y": 51.41
+      "y": 51.41,
+      "address": "Kungsbro strand 23, 112 26 Stockholm, Sweden",
+      "website": "http://www.restauranghongkong.com/"
     },
     {
       "id": 1323358529,
@@ -2728,10 +2798,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3288979,
-      "longitude": 18.0447182,
+      "latitude": 59.3288798,
+      "longitude": 18.0447372,
       "x": 58.94,
-      "y": 52.26
+      "y": 52.26,
+      "address": "Pipersgatan 1, 112 24 Stockholm, Sweden",
+      "website": "http://www.masteranders.se/"
     },
     {
       "id": 442704957,
@@ -2797,10 +2869,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3290771,
-      "longitude": 18.0434275,
+      "latitude": 59.3317102,
+      "longitude": 18.0596566,
       "x": 58.69,
-      "y": 52.19
+      "y": 52.19,
+      "address": "Klarabergsgatan 60, 111 21 Stockholm, Sweden",
+      "website": "http://fabrique.se/"
     },
     {
       "id": 2757205377,
@@ -2871,10 +2945,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.331751,
-      "longitude": 18.0436534,
+      "latitude": 59.3317124,
+      "longitude": 18.0438784,
       "x": 58.73,
-      "y": 51.2
+      "y": 51.2,
+      "address": "Kungsholmsgatan 26, 112 27 Stockholm, Sweden",
+      "website": "http://www.uffeolottas.se/"
     },
     {
       "id": 2732717361,
@@ -2942,10 +3018,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3335318,
-      "longitude": 18.038674,
+      "latitude": 59.337300199999994,
+      "longitude": 18.0582012,
       "x": 57.73,
-      "y": 50.54
+      "y": 50.54,
+      "address": "Drottninggatan 94, 111 36 Stockholm, Sweden",
+      "website": "https://www.dindinclub.se/"
     },
     {
       "id": 1655801737,
@@ -3009,10 +3087,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3399236,
-      "longitude": 17.9405182,
+      "latitude": 59.3398951,
+      "longitude": 17.9405152,
       "x": 38.1,
-      "y": 48.18
+      "y": 48.18,
+      "address": "Kvarnbacksvägen 135, 168 74 Bromma, Sweden",
+      "website": "http://www.sorbon.se/"
     },
     {
       "id": 1901919033,
@@ -3078,10 +3158,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3337563,
-      "longitude": 18.0768282,
+      "latitude": 59.3337513,
+      "longitude": 18.0767956,
       "x": 65.37,
-      "y": 50.46
+      "y": 50.46,
+      "address": "Nybrogatan 6, 114 34 Stockholm, Sweden",
+      "website": "http://www.frippe.se/"
     },
     {
       "id": 2770619391,
@@ -3149,10 +3231,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3312421,
-      "longitude": 18.044641,
+      "latitude": 59.3312692,
+      "longitude": 18.044658899999998,
       "x": 58.93,
-      "y": 51.39
+      "y": 51.39,
+      "address": "Scheelegatan 20, 112 23 Stockholm, Sweden",
+      "website": "https://www.brodernas.nu/restauranger/kungsholmen"
     },
     {
       "id": 1914719025,
@@ -3221,10 +3305,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3268824,
-      "longitude": 18.043854,
+      "latitude": 59.3269139,
+      "longitude": 18.0439118,
       "x": 58.77,
-      "y": 53.01
+      "y": 53.01,
+      "address": "Norr Mälarstrand 30, 112 20 Stockholm, Sweden",
+      "website": "https://www.ilfornodapino.nu/"
     },
     {
       "id": 1850357742,
@@ -3291,10 +3377,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3264528,
-      "longitude": 18.0435193,
+      "latitude": 59.3264546,
+      "longitude": 18.0438902,
       "x": 58.7,
-      "y": 53.17
+      "y": 53.17,
+      "address": "Norr Mälarstrand Kajplats 464, 112 20 Stockholm, Sweden",
+      "website": "https://trattorian.se/"
     },
     {
       "id": 633162647,
@@ -3360,10 +3448,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3293657,
-      "longitude": 18.0412688,
+      "latitude": 59.3177143,
+      "longitude": 18.0543271,
       "x": 58.25,
-      "y": 52.09
+      "y": 52.09,
+      "address": "Hornsgatan 61, 118 49 Stockholm, Sweden",
+      "website": "http://www.mahalosthlm.se/"
     },
     {
       "id": 2342727319,
@@ -3431,10 +3521,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3303189,
-      "longitude": 18.0395502,
+      "latitude": 59.33035889999999,
+      "longitude": 18.039425899999998,
       "x": 57.91,
-      "y": 51.73
+      "y": 51.73,
+      "address": "Bergsgatan 33, 112 28 Stockholm, Sweden",
+      "website": "https://www.mooncake.se/?utm_source=gmb&utm_medium=organic&utm_campaign=gmb"
     },
     {
       "id": 1656785826,
@@ -3500,10 +3592,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3280307,
-      "longitude": 18.0370766,
+      "latitude": 59.3352587,
+      "longitude": 18.0635262,
       "x": 57.42,
-      "y": 52.58
+      "y": 52.58,
+      "address": "Sveavägen 19, 111 57 Stockholm, Sweden",
+      "website": "http://www.petitefrance.se/"
     },
     {
       "id": 3330636361,
@@ -3570,10 +3664,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3298814,
-      "longitude": 18.03602,
+      "latitude": 59.32989029999999,
+      "longitude": 18.035998499999998,
       "x": 57.2,
-      "y": 51.9
+      "y": 51.9,
+      "address": "Hantverkargatan 61, 112 31 Stockholm, Sweden",
+      "website": "https://www.lillacapri.se/"
     },
     {
       "id": 3253255760,
@@ -3639,10 +3735,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3297037,
-      "longitude": 18.0359351,
+      "latitude": 59.3363681,
+      "longitude": 18.0672833,
       "x": 57.19,
-      "y": 51.96
+      "y": 51.96,
+      "address": "Regeringsgatan 77, 111 39 Stockholm, Sweden",
+      "website": "https://restaurangknut.se/regeringsgatan/?utm_source=google"
     },
     {
       "id": 909946785,
@@ -3710,10 +3808,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.329442,
-      "longitude": 18.0295306,
+      "latitude": 59.329335500000006,
+      "longitude": 18.0294162,
       "x": 55.91,
-      "y": 52.06
+      "y": 52.06,
+      "address": "Sankt Eriksgatan 6, 112 39 Stockholm, Sweden",
+      "website": "https://mamadou.se/?utm_source=google"
     },
     {
       "id": 67816739,
@@ -3781,10 +3881,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3286122,
-      "longitude": 18.0302373,
+      "latitude": 59.328652,
+      "longitude": 18.0302927,
       "x": 56.05,
-      "y": 52.37
+      "y": 52.37,
+      "address": "Norr Mälarstrand 76, 112 35 Stockholm, Sweden",
+      "website": "https://www.cafecorniche.se/"
     },
     {
       "id": 2098034722,
@@ -3852,10 +3954,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3321592,
-      "longitude": 18.040793,
+      "latitude": 59.33218309999999,
+      "longitude": 18.0408828,
       "x": 58.16,
-      "y": 51.05
+      "y": 51.05,
+      "address": "Kungsholmsgatan 40, 112 27 Stockholm, Sweden",
+      "website": "http://www.beesthaikungsholmen.com/"
     },
     {
       "id": 411374003,
@@ -3921,10 +4025,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3314556,
-      "longitude": 18.0297414,
+      "latitude": 59.3314734,
+      "longitude": 18.0298578,
       "x": 55.95,
-      "y": 51.31
+      "y": 51.31,
+      "address": "Hantverkargatan 84, 112 38 Stockholm, Sweden",
+      "website": "http://www.restaurangbanyan.se/"
     },
     {
       "id": 1368166775,
@@ -3993,10 +4099,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3314905,
-      "longitude": 18.0296182,
+      "latitude": 59.3314758,
+      "longitude": 18.0294719,
       "x": 55.92,
-      "y": 51.3
+      "y": 51.3,
+      "address": "Hantverkargatan 86, 112 38 Stockholm, Sweden",
+      "website": "http://plus86.se/"
     },
     {
       "id": 2795094298,
@@ -4066,10 +4174,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3318122,
-      "longitude": 18.0287764,
+      "latitude": 59.3318121,
+      "longitude": 18.0286865,
       "x": 55.76,
-      "y": 51.18
+      "y": 51.18,
+      "address": "Drottningholmsvägen 21, 112 42 Stockholm, Sweden",
+      "website": "https://hangchow.se/"
     },
     {
       "id": 956126393,
@@ -4137,10 +4247,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3316918,
-      "longitude": 18.026739,
+      "latitude": 59.3317144,
+      "longitude": 18.0267232,
       "x": 55.35,
-      "y": 51.23
+      "y": 51.23,
+      "address": "Fridhemsplan 29, 112 40 Stockholm, Sweden",
+      "website": "https://restauranglowenbrau.se/"
     },
     {
       "id": 1673196533,
@@ -4207,10 +4319,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.331242,
-      "longitude": 18.027277,
+      "latitude": 59.33593330000001,
+      "longitude": 18.0702917,
       "x": 55.46,
-      "y": 51.39
+      "y": 51.39,
+      "address": "Kungsgatan 7, 111 43 Stockholm, Sweden",
+      "website": "http://www.gnarlyburger.se/"
     },
     {
       "id": 2563585293,
@@ -4278,10 +4392,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.331138,
-      "longitude": 18.0313402,
+      "latitude": 59.31554620000001,
+      "longitude": 18.0830289,
       "x": 56.27,
-      "y": 51.43
+      "y": 51.43,
+      "address": "Folkungagatan 95, 116 30 Stockholm, Sweden",
+      "website": "http://www.restauranggandhi.se/"
     },
     {
       "id": 1358104360,
@@ -4349,10 +4465,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3310303,
-      "longitude": 18.0318331,
+      "latitude": 59.33833249999999,
+      "longitude": 18.080364799999998,
       "x": 56.37,
-      "y": 51.47
+      "y": 51.47,
+      "address": "Nybrogatan 42, 114 40 Stockholm, Sweden",
+      "website": "http://www.thaihousewok.com/"
     },
     {
       "id": 1646452103,
@@ -4419,10 +4537,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3309094,
-      "longitude": 18.0324228,
+      "latitude": 59.342116100000005,
+      "longitude": 18.0486191,
       "x": 56.48,
-      "y": 51.52
+      "y": 51.52,
+      "address": "Odengatan 79, 113 22 Stockholm, Sweden",
+      "website": "http://primociaociao.com/"
     },
     {
       "id": 3031911457,
@@ -4488,10 +4608,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3335441,
-      "longitude": 18.0306102,
+      "latitude": 59.315949599999996,
+      "longitude": 18.0817761,
       "x": 56.12,
-      "y": 50.54
+      "y": 50.54,
+      "address": "Tjärhovsgatan 19, 116 28 Stockholm, Sweden",
+      "website": "https://greasyspoon.se/"
     },
     {
       "id": 4091066559,
@@ -4558,10 +4680,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3341857,
-      "longitude": 18.0320125,
+      "latitude": 59.3341818,
+      "longitude": 18.0320651,
       "x": 56.4,
-      "y": 50.3
+      "y": 50.3,
+      "address": "Sankt Eriksgatan 43, 112 34 Stockholm, Sweden",
+      "website": "http://www.thelinskonditori.se/"
     },
     {
       "id": 3537616884,
@@ -4627,10 +4751,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3332603,
-      "longitude": 18.0432293,
+      "latitude": 59.333320300000004,
+      "longitude": 18.043231199999997,
       "x": 58.65,
-      "y": 50.64
+      "y": 50.64,
+      "address": "Fleminggatan 22a, 112 32 Stockholm, Sweden",
+      "website": "https://www.elcielo.se/?utm_source=google"
     },
     {
       "id": 2772121423,
@@ -4698,10 +4824,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3353351,
-      "longitude": 18.0269488,
+      "latitude": 59.33541119999999,
+      "longitude": 18.0269257,
       "x": 55.39,
-      "y": 49.88
+      "y": 49.88,
+      "address": "Fleminggatan 70, 112 45 Stockholm, Sweden",
+      "website": "http://www.misspuri.se/"
     },
     {
       "id": 1430496059,
@@ -4769,10 +4897,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3350897,
-      "longitude": 18.0289564,
+      "latitude": 59.3351037,
+      "longitude": 18.0289861,
       "x": 55.79,
-      "y": 49.97
+      "y": 49.97,
+      "address": "Fleminggatan 62, 112 45 Stockholm, Sweden",
+      "website": "http://www.kungsholmensvinbar.se/"
     },
     {
       "id": 571857945,
@@ -4838,10 +4968,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3182221,
-      "longitude": 18.0655867,
+      "latitude": 59.31821540000001,
+      "longitude": 18.065578800000004,
       "x": 63.12,
-      "y": 56.21
+      "y": 56.21,
+      "address": "Bellmansgatan 26, 118 47 Stockholm, Sweden",
+      "website": "https://www.frubellman.se/?utm_source=google"
     },
     {
       "id": 2715479736,
@@ -4910,10 +5042,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3333413,
-      "longitude": 18.0425985,
+      "latitude": 59.3370044,
+      "longitude": 18.058634899999998,
       "x": 58.52,
-      "y": 50.61
+      "y": 50.61,
+      "address": "Adolf Fredriks kyrkogata 12, 111 37 Stockholm, Sweden",
+      "website": "https://caliente.se/stockholm?utm_source=google"
     },
     {
       "id": 3055179723,
@@ -4980,10 +5114,11 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3334506,
-      "longitude": 18.0419183,
+      "latitude": 59.3177468,
+      "longitude": 18.0525005,
       "x": 58.38,
-      "y": 50.57
+      "y": 50.57,
+      "address": "Hornsgatan 94, 118 21 Stockholm, Sweden"
     },
     {
       "id": 3852786077,
@@ -5047,10 +5182,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3275701,
-      "longitude": 18.0341686,
+      "latitude": 59.3274705,
+      "longitude": 18.0343205,
       "x": 56.83,
-      "y": 52.75
+      "y": 52.75,
+      "address": "Norr Mälarstrand 64, 112 35 Stockholm, Sweden",
+      "website": "http://malarpaviljongen.se/"
     },
     {
       "id": 1639190962,
@@ -5116,10 +5253,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.2779217,
-      "longitude": 18.0055049,
+      "latitude": 59.277921500000005,
+      "longitude": 18.0054283,
       "x": 51.1,
-      "y": 71.14
+      "y": 71.14,
+      "address": "Johan Skyttes Väg 204, 125 34 Älvsjö, Sweden",
+      "website": "http://www.alvsjo.com/"
     },
     {
       "id": 12005100,
@@ -5184,10 +5323,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.2847478,
-      "longitude": 18.0880387,
+      "latitude": 59.3150461,
+      "longitude": 18.084218,
       "x": 67.61,
-      "y": 68.61
+      "y": 68.61,
+      "address": "Renstiernas gata 19, 116 31 Stockholm, Sweden",
+      "website": "https://robindelseliusbageri.se/"
     },
     {
       "id": 861160153,
@@ -5253,10 +5394,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3184234,
-      "longitude": 18.0635477,
+      "latitude": 59.318307,
+      "longitude": 18.063581,
       "x": 62.71,
-      "y": 56.14
+      "y": 56.14,
+      "address": "Mariatorget 1D, 118 48 Stockholm, Sweden",
+      "website": "http://www.rival.se/"
     },
     {
       "id": 1674861990,
@@ -5324,10 +5467,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.328484,
-      "longitude": 18.019226,
+      "latitude": 59.3285123,
+      "longitude": 18.0191905,
       "x": 53.85,
-      "y": 52.41
+      "y": 52.41,
+      "address": "Gjörwellsgatan 17, 112 60 Stockholm, Sweden",
+      "website": "http://lillaasien.kvartersmenyn.se/"
     },
     {
       "id": 16572138,
@@ -5464,10 +5609,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3312613,
-      "longitude": 17.9986882,
+      "latitude": 59.33121440000001,
+      "longitude": 17.998633899999998,
       "x": 49.74,
-      "y": 51.38
+      "y": 51.38,
+      "address": "Rålambsvägen 69, 112 56 Stockholm, Sweden",
+      "website": "https://fredhallskallare.se/"
     },
     {
       "id": 3109472643,
@@ -5535,10 +5682,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.3282924,
-      "longitude": 18.0126141,
+      "latitude": 59.328306999999995,
+      "longitude": 18.0126435,
       "x": 52.52,
-      "y": 52.48
+      "y": 52.48,
+      "address": "Rålambsvägen 25, 112 59 Stockholm, Sweden",
+      "website": "https://qopla.com/restaurant/rai-sushi-/qj14J39YkR"
     },
     {
       "id": 674281488,
@@ -5815,10 +5964,12 @@
         "recommendations": 0,
         "recentSaves": 0
       },
-      "latitude": 59.347282,
-      "longitude": 18.0652157,
+      "latitude": 59.34723979999999,
+      "longitude": 18.065255699999998,
       "x": 63.04,
-      "y": 45.45
+      "y": 45.45,
+      "address": "Valhallavägen 50, 114 27 Stockholm, Sweden",
+      "website": "https://restaurangcypern.se/?utm_source=google"
     },
     {
       "id": 2193265302,
