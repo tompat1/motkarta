@@ -118,25 +118,18 @@ a {
 }
 
 .brand-counter-pin {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2.5px solid var(--color-ink);
-  position: relative;
+  display: inline-block;
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  vertical-align: middle;
+  flex-shrink: 0;
+  margin-right: -14px;
+  transition: transform 0.2s ease;
 }
 
-.brand-counter-pin::after {
-  content: "";
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 12px;
-  height: 3px;
-  background: var(--color-water);
-  transform: rotate(45deg);
+.brand:hover .brand-counter-pin {
+  transform: scale(1.08) rotate(-3deg);
 }
 
 .brand b {

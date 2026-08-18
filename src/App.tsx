@@ -2114,7 +2114,7 @@ export default function App() {
     <main>
       <header className="topbar">
         <a className="brand" href="#" aria-label="MOTKARTA">
-          <span className="brand-counter-pin" />
+          <img src="/motkarta_drop_divided_black_red.svg" alt="MOTKARTA Pin" className="brand-counter-pin" />
           <img src="/logo.webp" alt="MOTKARTA" className="brand-logo" />
           <span>{t.brandDescriptor}</span>
         </a>
