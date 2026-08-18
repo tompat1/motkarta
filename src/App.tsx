@@ -3,6 +3,7 @@
 import L from "leaflet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { demoPlaces } from "../lib/demo-places";
+import { OnboardingModal } from "./components/OnboardingModal";
 import {
   ArrowRight,
   ArrowSquareOut,
@@ -1829,6 +1830,20 @@ export default function App() {
     return [];
   });
 
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("motkarta_onboarded") !== "true";
+    }
+    return false;
+  });
+
+  const handleCloseOnboarding = () => {
+    setShowOnboarding(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("motkarta_onboarded", "true");
+    }
+  };
+
   const handleRatePlace = (id: number, rating: number) => {
     const updated = { ...userRatings, [id]: rating };
     setUserRatings(updated);
@@ -2160,6 +2175,14 @@ export default function App() {
           <a href="#concierge" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <MagnifyingGlass size={14} weight="bold" /> {t.navConcierge}
           </a>
+          <button
+            type="button"
+            className="onboarding-trigger-btn"
+            onClick={() => setShowOnboarding(true)}
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "none", border: "none", font: "inherit", color: "inherit", cursor: "pointer" }}
+          >
+            <Sparkle size={14} weight="bold" /> {lang === "sv" ? "Principer" : "Principles"}
+          </button>
         </nav>
         <div className="topbar-actions">
           <div className="lang-switcher" aria-label="Language selector">
@@ -2768,6 +2791,16 @@ export default function App() {
           lang={lang}
         />
       ) : null}
+
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onClose={handleCloseOnboarding}
+        onOpenConcierge={() => {
+          const el = document.getElementById("concierge");
+          if (el) el.scrollIntoView({ behavior: "smooth" });
+        }}
+        lang={lang}
+      />
 
       <footer>
         <div style={{ display: "inline-flex", alignItems: "center", gap: "10px" }}>
