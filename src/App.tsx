@@ -234,8 +234,68 @@ function cuisineParts(place: Pick<PlaceInput, "cuisine" | "tags">) {
     .filter(Boolean);
 }
 
-function cuisineLabel(value: string) {
-  return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+export function cuisineLabel(value: string, lang: Language = "sv"): string {
+  const key = value.trim().toLowerCase().replaceAll("_", " ");
+
+  if (lang === "sv") {
+    const svMap: Record<string, string> = {
+      spanish: "Spanskt",
+      french: "Franskt",
+      mexican: "Mexikanskt",
+      german: "Tyskt",
+      polish: "Polskt",
+      austrian: "Österrikiskt",
+      italian: "Italienskt",
+      pizza: "Pizza",
+      sushi: "Sushi",
+      burger: "Hamburgare",
+      thai: "Thailändskt",
+      asian: "Asiatiskt",
+      indian: "Indiskt",
+      japanese: "Japanskt",
+      chinese: "Kinesiskt",
+      "coffee shop": "Kaffebar",
+      coffee: "Kaffe",
+      café: "Café",
+      cafe: "Café",
+      kebab: "Kebab",
+      regional: "Svenskt",
+      swedish: "Svenskt",
+      grill: "Grill & BBQ",
+      pasta: "Pasta",
+      sandwich: "Smörgåsar & Mackor",
+      greek: "Grekiskt",
+      salad: "Sallad",
+      bakery: "Bageri",
+      patisserie: "Konditori",
+      pastry: "Bakverk",
+      schnitzel: "Schnitzel",
+      "eastern european": "Östeuropeiskt",
+      vietnamese: "Vietnamesiskt",
+      korean: "Koreanskt",
+      "middle eastern": "Mellanöstern",
+      lebanese: "Libanesiskt",
+      ramen: "Ramen",
+      tapas: "Tapas",
+      seafood: "Fisk & Skaldjur",
+      bistro: "Bistro",
+    };
+    if (svMap[key]) return svMap[key];
+  } else {
+    const enMap: Record<string, string> = {
+      regional: "Swedish",
+      swedish: "Swedish",
+      "coffee shop": "Coffee Shop",
+      coffee: "Coffee",
+      café: "Café",
+      cafe: "Café",
+      "eastern european": "Eastern European",
+      "middle eastern": "Middle Eastern",
+    };
+    if (enMap[key]) return enMap[key];
+  }
+
+  return key.replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 export type Language = "sv" | "en";
