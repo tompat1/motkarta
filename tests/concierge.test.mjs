@@ -45,8 +45,8 @@ test("RAG retrieveAndSynthesize ranks Polish restaurants for 'food from Poland' 
   const result = retrieveAndSynthesize("I want to eat food from Poland", demoPlaces);
   const recommendedNames = result.recommendedPlaces.map((p) => p.name);
 
-  assert.ok(recommendedNames.some((n) => n.includes("Pyza") || n.includes("Babcia")));
-  assert.equal(recommendedNames.some((n) => n.includes("Bakery") || n.includes("Café")), false);
+  assert.ok(recommendedNames.some((n) => n.includes("Piastowska") || n.includes("85 Kvadrat")));
+  assert.equal(recommendedNames.some((n) => n.includes("Burger") || n.includes("Pizza")), false);
 });
 
 test("RAG retrieveAndSynthesize ranks Mexican places for 'Mexican food' query", () => {
