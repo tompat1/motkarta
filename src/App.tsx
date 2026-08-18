@@ -2318,6 +2318,18 @@ export default function App() {
               onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
               placeholder={lang === "sv" ? "Sök stadsdel (Söder, Vasastan...), ställe eller kök..." : "Search region (Söder, Vasastan...), place or cuisine..."}
             />
+            {query.trim() ? (
+              <button
+                type="button"
+                className="search-clear-btn"
+                onClick={() => setQuery("")}
+                aria-label="Clear search field"
+                title={lang === "sv" ? "Rensa fält" : "Clear field"}
+              >
+                <span>{lang === "sv" ? "RENSA FÄLT" : "CLEAR FIELD"}</span>
+                <span className="clear-x">✕</span>
+              </button>
+            ) : null}
           </label>
 
           {isSearchFocused && searchAutocompleteSuggestions.length > 0 ? (
