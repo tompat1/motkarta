@@ -4,6 +4,7 @@ import L from "leaflet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { demoPlaces } from "../lib/demo-places";
 import { OnboardingModal } from "./components/OnboardingModal";
+import { MerchPanel } from "./components/MerchPanel";
 import {
   ArrowRight,
   ArrowSquareOut,
@@ -29,6 +30,7 @@ import {
   PlusCircle,
   Scales,
   ShieldCheck,
+  ShoppingBag,
   Shuffle,
   Sliders,
   Sparkle,
@@ -2234,6 +2236,9 @@ export default function App() {
           <a href="#concierge" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <MagnifyingGlass size={14} weight="bold" /> {t.navConcierge}
           </a>
+          <a href="#merch" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <ShoppingBag size={14} weight="bold" /> Merch
+          </a>
           <button
             type="button"
             className="onboarding-trigger-btn"
@@ -2846,6 +2851,8 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      <MerchPanel lang={lang} />
 
       {superpowerMode ? (
         <ConciergeSuperpowerModal
