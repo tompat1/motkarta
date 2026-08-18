@@ -3289,7 +3289,26 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[
     }
   }
 
-  return result;
+  // 4. Strict deduplication by ID and normalized name + area
+  const seenIds = new Set<number>();
+  const seenKeys = new Set<string>();
+  const deduped: PlaceInput[] = [];
+
+  for (const place of result) {
+    if (seenIds.has(place.id)) {
+      continue;
+    }
+    const key = `${place.name.toLowerCase().trim()}_${(place.area || "").toLowerCase().trim()}`;
+    if (seenKeys.has(key)) {
+      continue;
+    }
+
+    seenIds.add(place.id);
+    seenKeys.add(key);
+    deduped.push(place);
+  }
+
+  return deduped;
 }
 
 async function fetchPlacesPayload(): Promise<{ source: DataSource; places: PlaceInput[] }> {
