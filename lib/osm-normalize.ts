@@ -117,10 +117,13 @@ export function osmTags(row: OsmFoodPlaceRow) {
   if (cuisine) {
     cuisine
       .split(";")
-      .map((item) => item.trim())
+      .map((item) => item.trim().toLowerCase())
       .filter(Boolean)
       .slice(0, 4)
-      .forEach((item) => tags.add(titleCase(item.replaceAll("_", " "))));
+      .forEach((item) => {
+        const normalized = item === "regional" ? "swedish" : item;
+        tags.add(titleCase(normalized.replaceAll("_", " ")));
+      });
   }
 
   if (row.website?.trim()) {
