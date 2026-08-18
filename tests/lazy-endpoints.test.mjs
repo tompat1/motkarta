@@ -19,29 +19,23 @@ test("getFallbackReviews returns valid review objects with audit source tags", (
   assert.equal(reviews[0].verified, true);
 });
 
-test("getFallbackPhotos returns high quality photo objects with captions and credits", () => {
-  const photos = getFallbackPhotos(1);
+test("getFallbackPhotos returns verified venue photos for verified places", () => {
+  const photos = getFallbackPhotos({ id: 10, name: "Restaurang Frantzén" });
 
   assert.ok(Array.isArray(photos));
-  assert.ok(photos.length >= 3);
-  assert.equal(photos[0].placeId, 1);
+  assert.ok(photos.length >= 1);
+  assert.equal(photos[0].placeId, 10);
   assert.ok(photos[0].url.startsWith("http"));
   assert.ok(photos[0].thumbnailUrl.startsWith("http"));
   assert.ok(photos[0].caption);
 });
 
-test("getFallbackPhotos returns Mexican taco photos for Mexican places", () => {
-  const mexicanContext = { id: 10, name: "La Neta", kind: "Restaurant", cuisine: "mexican", tags: ["tacos"] };
-  const photos = getFallbackPhotos(mexicanContext);
+test("getFallbackPhotos returns empty array when no verified venue photo exists", () => {
+  const unknownContext = { id: 9999, name: "Unknown Place" };
+  const photos = getFallbackPhotos(unknownContext);
 
-  assert.ok(photos.some((p) => p.caption.toLowerCase().includes("tacos")));
-});
-
-test("getFallbackPhotos returns Pierogi photos for Polish places", () => {
-  const polishContext = { id: 11, name: "Pyza II", kind: "Restaurant", cuisine: "polish", tags: ["pierogi"] };
-  const photos = getFallbackPhotos(polishContext);
-
-  assert.ok(photos.some((p) => p.caption.toLowerCase().includes("pierogi")));
+  assert.ok(Array.isArray(photos));
+  assert.equal(photos.length, 0);
 });
 
 test("fetchPlaceReviews caches results in-memory", async () => {
