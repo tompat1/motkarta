@@ -78,6 +78,7 @@ export type PlaceInput = {
   mainstreamExposure: number;
   ageDays: number;
   daysSinceFreshEvidence: number;
+  is_hidden_gem?: boolean;
   evidence: EvidenceSignals;
   engagement: EngagementSignals;
   specialty?: SpecialtyAttributes;

@@ -135,7 +135,11 @@ def answer_query(query: str, documents: list[dict], limit: int = 5) -> list[dict
 
         relevance = 0.0
 
-        if any(chain in title_lower for chain in ["nespresso", "kahls", "espresso house", "starbucks"]):
+        if any(chain in title_lower for chain in [
+            "nespresso", "kahls", "espresso house", "starbucks", "waynes coffee", "wayne's coffee",
+            "bönor & blad", "bönor och blad", "mcdonald", "burger king", "max", "subway", "pizza hut",
+            "joe & the juice", "joe and the juice", "holy greens", "texas longhorn", "bastard burgers"
+        ]):
             return -9999.0
 
         # 1. Food/Query Keyword Match with Alias Expansion
@@ -336,10 +340,25 @@ def synthesize_concierge_response(
 
 
 def call_gemini_api(prompt: str, api_key: str) -> str:
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+    system_instruction = (
+        "You are the core intelligence driving the Motkarta AI Concierge, a highly specialized, "
+        "anti-commercial guide to Stockholm's independent local food and drink scene.\n\n"
+        "OPERATIONAL PRINCIPLES:\n"
+        "1. DATA RIGOR: Base all recommendations strictly on the context payloads provided in the RAG retrieval packet. Never suggest commercial franchises, massive fast-food chains, or heavily advertised tourist traps.\n"
+        "2. STOCKHOLM GEOGRAPHY: Use specific local neighborhood references (e.g., Vasastan, Södermalm, Kungsholmen, Östermalm) to describe locations accurately.\n"
+        "3. HIDDEN GEMS PROMOTION: If a venue in the context is flagged with 'is_hidden_gem: True', explicitly highlight it as a highly curated structural outlier. Tell the user exactly why it qualifies as an authentic alternative to mainstream choices.\n"
+        "4. ANTI-HALLUCINATION: If the retrieved database contexts do not contain an establishment matching the user's specific constraints, say so directly. Propose the nearest geographic alternative explicitly from the context rather than generating a non-existent business."
+    )
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
     payload = {
+        "systemInstruction": {"parts": [{"text": system_instruction}]},
         "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 600},
+        "generationConfig": {
+            "temperature": 0.2,
+            "topP": 0.95,
+            "maxOutputTokens": 800,
+        },
     }
 
     req = urllib.request.Request(

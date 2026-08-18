@@ -421,6 +421,10 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
       ragScore += 5;
     }
 
+    if (place.is_hidden_gem) {
+      ragScore += 20;
+    }
+
     // 6. Quality & Discovery base score (scaled to 15 max)
     ragScore += (scoredPlace.scores.quality / 100) * 15;
     ragScore += (scoredPlace.scores.discovery / 100) * 10;
