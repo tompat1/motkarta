@@ -53,7 +53,7 @@ test("RAG retrieveAndSynthesize ranks Mexican places for 'Mexican food' query", 
   const result = retrieveAndSynthesize("Mexican food", demoPlaces);
   const recommendedNames = result.recommendedPlaces.map((p) => p.name);
 
-  assert.ok(recommendedNames.some((n) => n.includes("La Neta") || n.includes("Cheibo")));
+  assert.ok(recommendedNames.some((n) => n.includes("La Neta") || n.includes("Chelas")));
 });
 
 test("RAG retrieveAndSynthesize ranks Spanish places for 'Spanish tapas' query", () => {
