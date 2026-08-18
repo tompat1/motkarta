@@ -612,14 +612,98 @@ button.search-clear-btn:hover {
   background: var(--color-white);
   border: 1px solid var(--color-ink);
   border-radius: var(--radius-none);
-  left: 24px;
-  padding: 24px;
+  left: 20px;
+  padding: 16px 20px;
   position: absolute;
-  top: 24px;
-  width: min(400px, calc(100% - 48px));
-  max-height: calc(100% - 48px);
+  top: 20px;
+  width: min(380px, calc(100% - 40px));
+  max-height: calc(100% - 40px);
   overflow-y: auto;
   z-index: 100;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transition: all var(--motion-normal);
+}
+
+.map-card.is-minimized {
+  max-height: 64px;
+  overflow: hidden;
+  padding: 12px 16px;
+}
+
+.map-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.map-card:not(.is-minimized) .map-card-header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-mist);
+}
+
+.map-card-title-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.map-card-kind-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-stone);
+  font-weight: 600;
+}
+
+.map-card-header-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.map-card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.map-card-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 5px 9px;
+  cursor: pointer;
+  border-radius: var(--radius-none);
+  transition: all var(--motion-fast);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.map-card-toggle-btn:hover {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.map-card-body {
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .map-toolbar {

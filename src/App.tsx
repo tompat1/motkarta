@@ -17,6 +17,8 @@ import {
   Check,
   CaretLeft,
   CaretRight,
+  CaretUp,
+  CaretDown,
   CheckCircle,
   CircleNotch,
   Coffee,
@@ -38,6 +40,7 @@ import {
   Star,
   ThumbsUp,
   ThumbsDown,
+  X,
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../functions/api/concierge";
@@ -1819,6 +1822,11 @@ export default function App() {
   const [cuisine, setCuisine] = useState<CuisineFilter>(allCuisines);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(1);
+  const [isMapCardMinimized, setIsMapCardMinimized] = useState(false);
+
+  useEffect(() => {
+    setIsMapCardMinimized(false);
+  }, [selected]);
   const [superpowerMode, setSuperpowerMode] = useState<SuperpowerMode | null>(null);
   const [lang, setLang] = useState<Language>(() => {
     if (typeof window !== "undefined") {
@@ -2414,157 +2422,194 @@ export default function App() {
             </span>
           </div>
 
-          <article className="map-card">
-            <p>
-              {kindFilterLabel(active.kind, lang)} · {active.area}
-            </p>
-            <h2>{active.name}</h2>
-            {cuisineParts(active).length ? (
-              <p className="cuisine-line">{cuisineParts(active).map(cuisineLabel).join(" · ")}</p>
-            ) : null}
-            <p className="recommendation">{recommendationExplanation(active)}</p>
-            <p className="note">{active.note}</p>
-            <div className="tag-row">
-              {active.tags.map((tag: string) => (
-                <span key={tag}>{tag}</span>
-              ))}
+          <article className={`map-card ${isMapCardMinimized ? "is-minimized" : ""}`}>
+            <div className="map-card-header">
+              <div className="map-card-title-meta">
+                <span className="map-card-kind-badge">
+                  {kindFilterLabel(active.kind, lang)} · {active.area}
+                </span>
+                <h3 className="map-card-header-title">{active.name}</h3>
+              </div>
+              <div className="map-card-header-actions">
+                <button
+                  type="button"
+                  className="map-card-toggle-btn"
+                  onClick={() => setIsMapCardMinimized(!isMapCardMinimized)}
+                  title={
+                    isMapCardMinimized
+                      ? lang === "sv"
+                        ? "Visa alla detaljer"
+                        : "Expand details"
+                      : lang === "sv"
+                        ? "Minimera kort"
+                        : "Minimize card"
+                  }
+                >
+                  {isMapCardMinimized ? (
+                    <>
+                      <CaretDown size={14} weight="bold" />
+                      <span>{lang === "sv" ? "Visa" : "Expand"}</span>
+                    </>
+                  ) : (
+                    <>
+                      <CaretUp size={14} weight="bold" />
+                      <span>{lang === "sv" ? "Dölj" : "Minimize"}</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
-            <div className="score-row">
-              <div>
-                <b>{rounded(active.scores.quality)}</b>
-                <span>{t.quality}</span>
-              </div>
-              <div>
-                <b>{rounded(active.scores.popularity)}</b>
-                <span>{t.popularity}</span>
-              </div>
-              <div>
-                <b>{rounded(active.scores.discovery)}</b>
-                <span>{t.discovery}</span>
-              </div>
-              <div>
-                <b>{rounded(active.scores.relevance)}</b>
-                <span>{t.relevance}</span>
-              </div>
-            </div>
-            <div
-              className="user-rating-bar"
-              style={{
-                marginTop: "12px",
-                paddingTop: "12px",
-                borderTop: "1px solid var(--color-mist)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: "10px",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span
+
+            {!isMapCardMinimized && (
+              <div className="map-card-body">
+                {cuisineParts(active).length ? (
+                  <p className="cuisine-line">{cuisineParts(active).map(cuisineLabel).join(" · ")}</p>
+                ) : null}
+                <p className="recommendation">{recommendationExplanation(active)}</p>
+                <p className="note">{active.note}</p>
+                <div className="tag-row">
+                  {active.tags.map((tag: string) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
+                </div>
+                <div className="score-row">
+                  <div>
+                    <b>{rounded(active.scores.quality)}</b>
+                    <span>{t.quality}</span>
+                  </div>
+                  <div>
+                    <b>{rounded(active.scores.popularity)}</b>
+                    <span>{t.popularity}</span>
+                  </div>
+                  <div>
+                    <b>{rounded(active.scores.discovery)}</b>
+                    <span>{t.discovery}</span>
+                  </div>
+                  <div>
+                    <b>{rounded(active.scores.relevance)}</b>
+                    <span>{t.relevance}</span>
+                  </div>
+                </div>
+                <div
+                  className="user-rating-bar"
                   style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "11px",
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.06em",
-                    color: "var(--color-ink)",
+                    marginTop: "12px",
+                    paddingTop: "12px",
+                    borderTop: "1px solid var(--color-mist)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    gap: "10px",
                   }}
                 >
-                  {lang === "sv" ? "Ditt betyg:" : "Your rating:"}
-                </span>
-                <div style={{ display: "flex", gap: "3px" }}>
-                  {[1, 2, 3, 4, 5].map((star) => {
-                    const currentRating = userRatings[active.id] ?? 0;
-                    const isFilled = currentRating >= star;
-                    return (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => handleRatePlace(active.id, star)}
-                        style={{
-                          background: "none",
-                          border: "none",
-                          padding: "2px",
-                          cursor: "pointer",
-                          display: "inline-flex",
-                        }}
-                        title={lang === "sv" ? `Ge ${star} av 5 stjärnor` : `Rate ${star} out of 5 stars`}
-                      >
-                        <Star
-                          size={18}
-                          weight={isFilled ? "fill" : "regular"}
-                          style={{ color: isFilled ? "#F59E0B" : "var(--color-mist)" }}
-                        />
-                      </button>
-                    );
-                  })}
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
+                        color: "var(--color-ink)",
+                      }}
+                    >
+                      {lang === "sv" ? "Ditt betyg:" : "Your rating:"}
+                    </span>
+                    <div style={{ display: "flex", gap: "3px" }}>
+                      {[1, 2, 3, 4, 5].map((star) => {
+                        const currentRating = userRatings[active.id] ?? 0;
+                        const isFilled = currentRating >= star;
+                        return (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => handleRatePlace(active.id, star)}
+                            style={{
+                              background: "none",
+                              border: "none",
+                              padding: "2px",
+                              cursor: "pointer",
+                              display: "inline-flex",
+                            }}
+                            title={lang === "sv" ? `Ge ${star} av 5 stjärnor` : `Rate ${star} out of 5 stars`}
+                          >
+                            <Star
+                              size={18}
+                              weight={isFilled ? "fill" : "regular"}
+                              style={{ color: isFilled ? "#F59E0B" : "var(--color-mist)" }}
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleToggleSavePlace(active.id)}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      padding: "6px 12px",
+                      background: savedPlaceIds.includes(active.id) ? "var(--color-ink)" : "var(--color-white)",
+                      color: savedPlaceIds.includes(active.id) ? "var(--color-paper)" : "var(--color-ink)",
+                      border: "1px solid var(--color-mist)",
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "11px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      transition: "all var(--motion-fast)",
+                    }}
+                  >
+                    <Star
+                      size={14}
+                      weight={savedPlaceIds.includes(active.id) ? "fill" : "bold"}
+                      style={{ color: savedPlaceIds.includes(active.id) ? "#F59E0B" : "currentColor" }}
+                    />
+                    {savedPlaceIds.includes(active.id)
+                      ? lang === "sv"
+                        ? "Sparad"
+                        : "Saved"
+                      : lang === "sv"
+                        ? "Spara ställe"
+                        : "Save place"}
+                  </button>
                 </div>
-              </div>
 
-              <button
-                type="button"
-                onClick={() => handleToggleSavePlace(active.id)}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "6px 12px",
-                  background: savedPlaceIds.includes(active.id) ? "var(--color-ink)" : "var(--color-white)",
-                  color: savedPlaceIds.includes(active.id) ? "var(--color-paper)" : "var(--color-ink)",
-                  border: "1px solid var(--color-mist)",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "11px",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  transition: "all var(--motion-fast)",
-                }}
-              >
-                <Star
-                  size={14}
-                  weight={savedPlaceIds.includes(active.id) ? "fill" : "bold"}
-                  style={{ color: savedPlaceIds.includes(active.id) ? "#F59E0B" : "currentColor" }}
-                />
-                {savedPlaceIds.includes(active.id)
-                  ? lang === "sv"
-                    ? "Sparad"
-                    : "Saved"
-                  : lang === "sv"
-                    ? "Spara ställe"
-                    : "Save place"}
-              </button>
-            </div>
-
-            <VerificationBar place={active} lang={lang} />
-            <div className="curated-attribution-box">
-              <div className="curated-attribution-title">
-                <ShieldCheck size={14} style={{ color: "var(--color-water)" }} />
-                {lang === "sv" ? "KÄLLTILLSKRIVNING & UPPHOVSRÄTT" : "SOURCE ATTRIBUTION & COPYRIGHT"}
+                <VerificationBar place={active} lang={lang} />
+                <div className="curated-attribution-box">
+                  <div className="curated-attribution-title">
+                    <ShieldCheck size={14} style={{ color: "var(--color-water)" }} />
+                    {lang === "sv" ? "KÄLLTILLSKRIVNING & UPPHOVSRÄTT" : "SOURCE ATTRIBUTION & COPYRIGHT"}
+                  </div>
+                  <div className="curated-attribution-body">
+                    {lang === "sv"
+                      ? "Guiderekommendationer & citat återges med källhänvisning till Anders Husa & Kaitlin Orr Guide (andershusa.com). Tillsynsdata från Stockholms stad (CC0). Kartdata från OpenStreetMap (ODbL). Alla upphovsrätter tillhör respektive skapare."
+                      : "Guide recommendations & quotes cited with attribution to Anders Husa & Kaitlin Orr Guide (andershusa.com). Inspection data from Stockholm City (CC0). Map data from OpenStreetMap (ODbL). All copyrights belong to their respective owners."}
+                  </div>
+                </div>
+                <ExternalMapLinks place={active} lang={lang} />
+                {active.discoveryReasons?.length ? (
+                  <ul className="reason-list" aria-label="Discovery score reasons">
+                    {active.discoveryReasons.slice(0, 3).map((reason: string) => (
+                      <li key={reason} style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                        <PlusCircle size={14} weight="fill" style={{ color: "var(--orange)", flexShrink: 0, marginTop: "2px" }} />
+                        <span>{reason}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                <small>
+                  {active.evidence.confidence === "High" ? t.confidenceHigh : active.evidence.confidence === "Medium" ? t.confidenceMed : t.confidenceLow} · {active.evidenceLabel}
+                </small>
+                <p className="source-line">
+                  {t.sourceLabel}: {active.sourceName ?? "OpenStreetMap"} · {t.lastUpdatedLabel}: {formatUpdatedDate(active.lastUpdated)}
+                </p>
+                <LazyPlaceMediaDrawer place={active} lang={lang} />
               </div>
-              <div className="curated-attribution-body">
-                {lang === "sv"
-                  ? "Guiderekommendationer & citat återges med källhänvisning till Anders Husa & Kaitlin Orr Guide (andershusa.com). Tillsynsdata från Stockholms stad (CC0). Kartdata från OpenStreetMap (ODbL). Alla upphovsrätter tillhör respektive skapare."
-                  : "Guide recommendations & quotes cited with attribution to Anders Husa & Kaitlin Orr Guide (andershusa.com). Inspection data from Stockholm City (CC0). Map data from OpenStreetMap (ODbL). All copyrights belong to their respective owners."}
-              </div>
-            </div>
-            <ExternalMapLinks place={active} lang={lang} />
-            {active.discoveryReasons?.length ? (
-              <ul className="reason-list" aria-label="Discovery score reasons">
-                {active.discoveryReasons.slice(0, 3).map((reason: string) => (
-                  <li key={reason} style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
-                    <PlusCircle size={14} weight="fill" style={{ color: "var(--orange)", flexShrink: 0, marginTop: "2px" }} />
-                    <span>{reason}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-            <small>
-              {active.evidence.confidence === "High" ? t.confidenceHigh : active.evidence.confidence === "Medium" ? t.confidenceMed : t.confidenceLow} · {active.evidenceLabel}
-            </small>
-            <p className="source-line">
-              {t.sourceLabel}: {active.sourceName ?? "OpenStreetMap"} · {t.lastUpdatedLabel}: {formatUpdatedDate(active.lastUpdated)}
-            </p>
-            <LazyPlaceMediaDrawer place={active} lang={lang} />
+            )}
           </article>
         </div>
 
