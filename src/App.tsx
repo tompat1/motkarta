@@ -34,6 +34,7 @@ import {
   Scales,
   ShieldCheck,
   ShoppingBag,
+  ShoppingCart,
   Shuffle,
   Sliders,
   Sparkle,
@@ -44,6 +45,7 @@ import {
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../functions/api/concierge";
+import { CartDrawer } from "./components/CartDrawer";
 import {
   fetchPlacePhotos,
   fetchPlaceReviews,
@@ -1865,6 +1867,59 @@ export default function App() {
     return [];
   });
 
+  const [cart, setCart] = useState<Record<string, number>>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("motkarta_cart");
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+    return {};
+  });
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const handleAddToCart = (itemId: string) => {
+    setCart((prev) => {
+      const current = prev[itemId] || 0;
+      const next = { ...prev, [itemId]: current + 1 };
+      if (typeof window !== "undefined") {
+        localStorage.setItem("motkarta_cart", JSON.stringify(next));
+      }
+      return next;
+    });
+  };
+
+  const handleUpdateCartQty = (itemId: string, delta: number) => {
+    setCart((prev) => {
+      const current = prev[itemId] || 0;
+      const updated = current + delta;
+      let next: Record<string, number>;
+      if (updated <= 0) {
+        next = { ...prev };
+        delete next[itemId];
+      } else {
+        next = { ...prev, [itemId]: updated };
+      }
+      if (typeof window !== "undefined") {
+        localStorage.setItem("motkarta_cart", JSON.stringify(next));
+      }
+      return next;
+    });
+  };
+
+  const handleRemoveCartItem = (itemId: string) => {
+    setCart((prev) => {
+      const next = { ...prev };
+      delete next[itemId];
+      if (typeof window !== "undefined") {
+        localStorage.setItem("motkarta_cart", JSON.stringify(next));
+      }
+      return next;
+    });
+  };
+
+  const totalCartCount = Object.values(cart).reduce((sum, count) => sum + count, 0);
+
   const [showPreloader, setShowPreloader] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("motkarta_preloader_seen") !== "true";
@@ -2272,6 +2327,16 @@ export default function App() {
           </button>
         </nav>
         <div className="topbar-actions">
+          <button
+            type="button"
+            className={`topbar-cart-btn ${totalCartCount > 0 ? "has-items" : ""}`}
+            onClick={() => setIsCartOpen(true)}
+            aria-label={lang === "sv" ? "Öppna varukorg" : "Open shopping cart"}
+            title={lang === "sv" ? `Varukorg (${totalCartCount})` : `Shopping Cart (${totalCartCount})`}
+          >
+            <ShoppingCart size={16} weight="bold" />
+            <span className="topbar-cart-badge">{totalCartCount}</span>
+          </button>
           <div className="lang-switcher" aria-label="Language selector">
             <button
               type="button"
@@ -2925,7 +2990,12 @@ export default function App() {
         </div>
       </section>
 
-      <MerchPanel lang={lang} />
+      <MerchPanel
+        lang={lang}
+        cart={cart}
+        onAddToCart={handleAddToCart}
+        onOpenCart={() => setIsCartOpen(true)}
+      />
 
       {superpowerMode ? (
         <ConciergeSuperpowerModal
@@ -2955,6 +3025,15 @@ export default function App() {
           const el = document.getElementById("concierge");
           if (el) el.scrollIntoView({ behavior: "smooth" });
         }}
+        lang={lang}
+      />
+
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cart={cart}
+        onUpdateQuantity={handleUpdateCartQty}
+        onRemoveItem={handleRemoveCartItem}
         lang={lang}
       />
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ShoppingBag, Check, Sparkle, ArrowRight, ShieldCheck, Heart } from "@phosphor-icons/react";
+import { ShoppingBag, Check, Sparkle, ArrowRight, ShieldCheck, ShoppingCart, Plus, Minus, Trash, X } from "@phosphor-icons/react";
 
 export type Language = "sv" | "en";
 
@@ -18,6 +18,7 @@ export type MerchItem = {
   specs: string[];
   stockStatusSv: string;
   stockStatusEn: string;
+  image: string;
 };
 
 export const MERCH_ITEMS: MerchItem[] = [
@@ -36,6 +37,7 @@ export const MERCH_ITEMS: MerchItem[] = [
     specs: ["100% Ekologisk bomull (GOTS-certifierad)", "Fit: Relaxed unisex", "Screentryckt i Södermalm"],
     stockStatusSv: "I lager (S, M, L, XL)",
     stockStatusEn: "In stock (S, M, L, XL)",
+    image: "/merch/tshirt.jpg",
   },
   {
     id: "tote-map",
@@ -52,6 +54,7 @@ export const MERCH_ITEMS: MerchItem[] = [
     specs: ["300 GSM Oblekt bomullscanvas", "Förstärkta axelremmar (65 cm)", "Innerficka för nycklar & kort"],
     stockStatusSv: "I lager",
     stockStatusEn: "In stock",
+    image: "/merch/tote.jpg",
   },
   {
     id: "cap-blue",
@@ -68,6 +71,7 @@ export const MERCH_ITEMS: MerchItem[] = [
     specs: ["100% Bomullstwilling", "Justerbar rem (54–62 cm)", "Broderad i Sverige"],
     stockStatusSv: "Fåtal kvar i lager",
     stockStatusEn: "Low stock",
+    image: "/merch/cap.jpg",
   },
   {
     id: "poster-map",
@@ -84,6 +88,7 @@ export const MERCH_ITEMS: MerchItem[] = [
     specs: ["Format: 50×70 cm", "Papper: 170g Munken Polar", "Tryckt i Sverige (Svanenmärkt)"],
     stockStatusSv: "I lager",
     stockStatusEn: "In stock",
+    image: "/merch/poster.jpg",
   },
   {
     id: "stickers-pack",
@@ -100,37 +105,65 @@ export const MERCH_ITEMS: MerchItem[] = [
     specs: ["3 st UV-laminerade vinyldekaler", "Vattentåliga & repfria", "Mått: 7×7 cm"],
     stockStatusSv: "I lager",
     stockStatusEn: "In stock",
+    image: "/merch/stickers.jpg",
   },
 ];
 
-export function MerchPanel({ lang = "sv" }: { lang?: Language }) {
-  const [selectedItem, setSelectedItem] = useState<MerchItem | null>(null);
-  const [addedItems, setAddedItems] = useState<Record<string, number>>({});
+export type MerchPanelProps = {
+  lang?: Language;
+  cart?: Record<string, number>;
+  onAddToCart?: (itemId: string) => void;
+  onOpenCart?: () => void;
+};
+
+export function MerchPanel({
+  lang = "sv",
+  cart = {},
+  onAddToCart,
+  onOpenCart,
+}: MerchPanelProps) {
   const [showCartToast, setShowCartToast] = useState<string | null>(null);
 
   const isSv = lang === "sv";
 
   const handleAddToCart = (item: MerchItem) => {
-    setAddedItems((prev) => ({
-      ...prev,
-      [item.id]: (prev[item.id] || 0) + 1,
-    }));
-
+    if (onAddToCart) {
+      onAddToCart(item.id);
+    }
     const name = isSv ? item.nameSv : item.nameEn;
     setShowCartToast(name);
     setTimeout(() => setShowCartToast(null), 2500);
   };
 
-  const totalCount = Object.values(addedItems).reduce((sum, count) => sum + count, 0);
+  const totalCount = Object.values(cart).reduce((sum, count) => sum + count, 0);
+
+  const totalPriceSek = Object.entries(cart).reduce((sum, [id, qty]) => {
+    const item = MERCH_ITEMS.find((m) => m.id === id);
+    return sum + (item ? item.priceSek * qty : 0);
+  }, 0);
 
   return (
     <section className="merch-section" id="merch">
       <div className="merch-container">
         <div className="merch-header">
-          <div className="merch-eyebrow">
-            <Sparkle size={14} weight="bold" />
-            <span>{isSv ? "OFFICIELL MERCH & PRINTS" : "OFFICIAL MERCH & PRINTS"}</span>
+          <div className="merch-header-top">
+            <div className="merch-eyebrow">
+              <Sparkle size={14} weight="bold" />
+              <span>{isSv ? "OFFICIELL MERCH & PRINTS" : "OFFICIAL MERCH & PRINTS"}</span>
+            </div>
+
+            {/* Cart Trigger Button */}
+            <button
+              type="button"
+              className={`merch-cart-header-btn ${totalCount > 0 ? "has-items" : ""}`}
+              onClick={() => onOpenCart?.()}
+            >
+              <ShoppingCart size={18} weight="bold" />
+              <span>{isSv ? "Varukorg" : "Cart"}</span>
+              <span className="merch-cart-count-badge">{totalCount}</span>
+            </button>
           </div>
+
           <h2>
             {isSv ? "STÖD DEN OBEROENDE MATGUIDEN" : "SUPPORT INDEPENDENT FOOD CULTURE"}
           </h2>
@@ -169,12 +202,18 @@ export function MerchPanel({ lang = "sv" }: { lang?: Language }) {
             const badge = isSv ? item.badgeSv : item.badgeEn;
             const desc = isSv ? item.descSv : item.descEn;
             const stock = isSv ? item.stockStatusSv : item.stockStatusEn;
-            const inCart = addedItems[item.id] || 0;
+            const inCart = cart[item.id] || 0;
 
             return (
               <article key={item.id} className="merch-card">
-                <div className="merch-card-top">
+                {/* Product Image Placeholder Box */}
+                <div className="merch-card-image-wrap">
+                  <img src={item.image} alt={name} className="merch-card-img" />
                   <span className="merch-card-badge">{badge}</span>
+                  <span className="merch-image-placeholder-label">OFFICIAL PRODUCT</span>
+                </div>
+
+                <div className="merch-card-top">
                   <span className="merch-card-price">
                     {item.priceSek} SEK <small>({item.priceEur} €)</small>
                   </span>
@@ -210,7 +249,7 @@ export function MerchPanel({ lang = "sv" }: { lang?: Language }) {
                     ) : (
                       <>
                         <ShoppingBag size={14} weight="bold" />
-                        <span>{isSv ? "Köp nu" : "Order now"}</span>
+                        <span>{isSv ? "Lägg i varukorg" : "Add to cart"}</span>
                       </>
                     )}
                   </button>
@@ -220,14 +259,14 @@ export function MerchPanel({ lang = "sv" }: { lang?: Language }) {
           })}
         </div>
 
-        {/* Cart / Order Summary Bar */}
+        {/* Cart Bottom Summary Bar */}
         {totalCount > 0 ? (
-          <div className="merch-checkout-bar">
+          <div className="merch-checkout-bar" onClick={() => onOpenCart?.()}>
             <div className="checkout-summary">
               <ShoppingBag size={20} weight="fill" style={{ color: "var(--color-paper)" }} />
               <div>
                 <b>
-                  {totalCount} {isSv ? "artiklar i din varukorg" : "items in your order"}
+                  {totalCount} {isSv ? "artiklar i din varukorg" : "items in your order"} ({totalPriceSek} SEK)
                 </b>
                 <span>
                   {isSv
@@ -239,15 +278,12 @@ export function MerchPanel({ lang = "sv" }: { lang?: Language }) {
             <button
               type="button"
               className="checkout-proceed-btn"
-              onClick={() =>
-                alert(
-                  isSv
-                    ? `Tack för ditt stöd! Din order på ${totalCount} artiklar behandlas nu. För förhandsbeställningar och direkt hämtning i Vasastan/Södermalm, kontakta merch@motkarta.se.`
-                    : `Thank you for supporting independent food guide! Your order of ${totalCount} items is ready. Contact merch@motkarta.se for pre-orders and local pickup.`,
-                )
-              }
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenCart?.();
+              }}
             >
-              <span>{isSv ? "Gå till kassan" : "Proceed to checkout"}</span>
+              <span>{isSv ? "Visa varukorg" : "View Cart"}</span>
               <ArrowRight size={16} weight="bold" />
             </button>
           </div>
@@ -255,7 +291,7 @@ export function MerchPanel({ lang = "sv" }: { lang?: Language }) {
 
         {/* Cart Toast Notification */}
         {showCartToast ? (
-          <div className="merch-toast">
+          <div className="merch-toast" onClick={() => onOpenCart?.()}>
             <Check size={16} weight="bold" style={{ color: "#10B981" }} />
             <span>
               <strong>{showCartToast}</strong> {isSv ? "har lagts till i varukorgen!" : "added to cart!"}
