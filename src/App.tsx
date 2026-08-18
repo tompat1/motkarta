@@ -2599,6 +2599,17 @@ export default function App() {
         </div>
         <div className="ask-box" style={{ position: "relative" }}>
           <label htmlFor="ask">{t.askLabel}</label>
+          {concierge.trim() ? (
+            <button
+              type="button"
+              className="concierge-clear-btn"
+              onClick={() => setConcierge("")}
+              aria-label="Clear input field"
+              title={lang === "sv" ? "Rensa fält" : "Clear field"}
+            >
+              ✕
+            </button>
+          ) : null}
           <textarea
             id="ask"
             value={concierge}
@@ -2635,7 +2646,7 @@ export default function App() {
               ))}
             </div>
           ) : null}
-          <button onClick={ask} disabled={asking} type="button">
+          <button onClick={ask} disabled={asking} type="button" className="ask-submit-btn">
             {asking ? (
               <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                 <CircleNotch size={16} className="animate-spin" /> {t.askingButton}
