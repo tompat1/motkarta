@@ -811,13 +811,35 @@ function ConciergeAnswerView({
   const parsed = useMemo(() => parseConciergeAnswer(answer), [answer]);
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
 
-  const handleSelect = (placeName: string) => {
-    const match = places.find(
-      (p) =>
-        p.name.toLowerCase() === placeName.toLowerCase() ||
-        p.name.toLowerCase().includes(placeName.toLowerCase()) ||
-        placeName.toLowerCase().includes(p.name.toLowerCase()),
-    );
+  const handleSelect = (placeName: string, explicitId?: number) => {
+    if (explicitId) {
+      onSelectPlace(explicitId);
+      document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    const cleanQuery = placeName
+      .replace(/^\d+[\.\)]\s*/, "")
+      .replace(/\s*\([^)]*\)/g, "")
+      .trim()
+      .toLowerCase();
+
+    const match =
+      places.find((p) => {
+        const pClean = p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
+        return (
+          pClean === cleanQuery ||
+          pClean.includes(cleanQuery) ||
+          cleanQuery.includes(pClean) ||
+          p.name.toLowerCase().includes(cleanQuery)
+        );
+      }) ??
+      places.find((p) => {
+        const tokens = cleanQuery.split(/\s+/).filter((t) => t.length > 2);
+        const pLower = p.name.toLowerCase();
+        return tokens.length > 0 && tokens.every((t) => pLower.includes(t));
+      });
+
     if (match) {
       onSelectPlace(match.id);
       document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
@@ -960,7 +982,7 @@ function ConciergeAnswerView({
               <h3 className="concierge-card-title">
                 <button
                   type="button"
-                  onClick={() => handleSelect(card.name)}
+                  onClick={() => handleSelect(card.name, matchedPlace?.id)}
                   title="Click to view and highlight on map"
                 >
                   {card.name}
@@ -1014,7 +1036,7 @@ function ConciergeAnswerView({
               <button
                 type="button"
                 className="concierge-btn primary"
-                onClick={() => handleSelect(card.name)}
+                onClick={() => handleSelect(card.name, matchedPlace?.id)}
               >
                 <MapPin size={14} weight="fill" /> Select on Map
               </button>
@@ -1999,7 +2021,25 @@ export default function App() {
   );
   const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
 
-  const active = ranked.find((place) => place.id === selected) ?? ranked[0] ?? scoredPlaces[0];
+  const active = scoredPlaces.find((place) => place.id === selected) ?? ranked[0] ?? scoredPlaces[0];
+
+  const handleSelectPlace = useCallback(
+    (id: number) => {
+      setSelected(id);
+      const isVisibleInRanked = ranked.some((p) => p.id === id);
+      if (!isVisibleInRanked) {
+        setKind("All places");
+        setCuisine("all");
+        setQuery("");
+      }
+    },
+    [ranked],
+  );
+
+  const mapPlaces = useMemo(
+    () => (active && !visibleRanked.some((p) => p.id === active.id) ? [active, ...visibleRanked] : visibleRanked),
+    [active, visibleRanked],
+  );
 
   const [isConciergeFocused, setIsConciergeFocused] = useState(false);
   const [conciergeHistory, setConciergeHistory] = useState<string[]>(() => {
@@ -2303,9 +2343,9 @@ export default function App() {
       <section className="workspace">
         <div className="map-panel">
           <FoodMap
-            places={visibleRanked}
+            places={mapPlaces}
             activePlace={active}
-            onSelect={setSelected}
+            onSelect={handleSelectPlace}
             onUserLocated={(loc) => {
               setUserLocation(loc);
               setSortMode("Distance");
@@ -2661,7 +2701,7 @@ export default function App() {
             <ConciergeAnswerView
               answer={answer}
               places={places}
-              onSelectPlace={setSelected}
+              onSelectPlace={handleSelectPlace}
               onRefineQuery={handleRefineQuery}
               lang={lang}
             />
@@ -2996,7 +3036,8 @@ function FoodMap({
     places.filter(hasCoordinates).forEach((place) => {
       markersRef.current.get(place.id)?.setIcon(placeIcon(place, place.id === activePlace.id));
     });
-    map.panTo([activePlace.latitude, activePlace.longitude], { animate: true, duration: 0.45 });
+    activeMarker.openPopup();
+    map.flyTo([activePlace.latitude, activePlace.longitude], 15, { duration: 0.8 });
   }, [activePlace, places]);
 
   return (
