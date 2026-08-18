@@ -2588,7 +2588,7 @@ export default function App() {
             {!isMapCardMinimized && (
               <div className="map-card-body">
                 {cuisineParts(active).length ? (
-                  <p className="cuisine-line">{cuisineParts(active).map(cuisineLabel).join(" · ")}</p>
+                  <p className="cuisine-line">{cuisineParts(active).map((c) => cuisineLabel(c, lang)).join(" · ")}</p>
                 ) : null}
                 <p className="recommendation">{recommendationExplanation(active)}</p>
                 <p className="note">{active.note}</p>
@@ -3264,7 +3264,7 @@ function FoodMap({
         icon: placeIcon(place, place.id === activePlace.id),
         title: place.name,
       })
-        .bindPopup(placePopupHtml(place, index + 1), { maxWidth: 280 })
+        .bindPopup(placePopupHtml(place, index + 1, lang), { maxWidth: 280 })
         .on("click", () => onSelect(place.id))
         .addTo(map);
 
@@ -3348,8 +3348,8 @@ function placeIcon(place: ScoredPlace, active: boolean) {
   });
 }
 
-function placePopupHtml(place: ScoredPlace, rank: number) {
-  const cuisines = cuisineParts(place).map(cuisineLabel).join(" · ");
+function placePopupHtml(place: ScoredPlace, rank: number, lang: Language = "sv") {
+  const cuisines = cuisineParts(place).map((c) => cuisineLabel(c, lang)).join(" · ");
   const queryText = encodeURIComponent(`${place.name} ${place.address || place.area || ""} Stockholm`);
   const gmapsUrl = place.latitude && place.longitude
     ? `https://www.google.com/maps/search/?api=1&query=${queryText}&query_place_id=${place.latitude},${place.longitude}`
