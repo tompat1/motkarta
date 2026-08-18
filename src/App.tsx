@@ -2729,11 +2729,18 @@ export default function App() {
           </div>
           <div className="list">
             {visibleRanked.map((place, index) => (
-              <button
+              <div
                 key={place.id}
                 className={place.id === active.id ? "place active-place" : "place"}
                 onClick={() => setSelected(place.id)}
-                type="button"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setSelected(place.id);
+                  }
+                }}
               >
                 <span className="rank">{String(index + 1).padStart(2, "0")}</span>
                 <span className="place-main">
@@ -2764,7 +2771,7 @@ export default function App() {
                   </div>
                   <small>{mode === "For you" ? t.matchScoreLabel : t.totalScoreLabel}</small>
                 </span>
-              </button>
+              </div>
             ))}
           </div>
         </aside>
