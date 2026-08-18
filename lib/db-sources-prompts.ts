@@ -46,6 +46,15 @@ export const DEFAULT_CURATED_SOURCES: CuratedSource[] = [
     license: "Öppen branschstandard",
     verifiedCount: 15,
   },
+  {
+    id: "visit-stockholm",
+    name: "Visit Stockholm (Officiella Stadsguiden)",
+    url: "https://www.visitstockholm.se",
+    type: "Official City Guide",
+    description: "Officiell besöks- och restaurangguide från Stockholms Stad. En opartisk och heltäckande resurs för Stockholms matkultur, krogar och caféer.",
+    license: "Officiell stadsportal (Stockholms Stad)",
+    verifiedCount: 240,
+  },
 ];
 
 export const DEFAULT_CONCIERGE_PROMPTS = [

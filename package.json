@@ -18,6 +18,7 @@
     "geojson:extract": ".venv/bin/python scripts/geojson_extractor.py outputs/stockholm_food_places.geojson outputs/motkarta_rag_payload.json",
     "api:serve": ".venv/bin/python scripts/api_endpoint.py",
     "food-control:fetch": ".venv/bin/python scripts/fetch_food_control.py",
+    "photos:fetch": ".venv/bin/python scripts/fetch_place_photos.py",
     "food-control:match": ".venv/bin/python scripts/match_food_control.py",
     "permits:match": ".venv/bin/python scripts/match_serving_permits.py",
     "guides:seed": "node scripts/generate_evidence_seed_sql.mjs examples/independent_guides.sample.json drizzle/seed-guides.sql",

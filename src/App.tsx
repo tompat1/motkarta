@@ -1203,15 +1203,46 @@ function ImageLightboxModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleNext, handlePrev, onClose]);
 
+  // Touch swipe handling for mobile & tablet
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || e.changedTouches.length === 0) return;
+    const dx = e.changedTouches[0].clientX - touchStartRef.current.x;
+    const dy = e.changedTouches[0].clientY - touchStartRef.current.y;
+    touchStartRef.current = null;
+
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) {
+        handleNext();
+      } else {
+        handlePrev();
+      }
+    } else if (dy > 80 && Math.abs(dy) > Math.abs(dx)) {
+      onClose();
+    }
+  };
+
   if (!currentPhoto) return null;
 
   return (
     <div className="lightbox-overlay" onClick={onClose}>
-      <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-        <button type="button" className="lightbox-close-btn" onClick={onClose} aria-label="Close lightbox">
-          ✕
-        </button>
+      <button type="button" className="lightbox-close-btn" onClick={onClose} aria-label="Close lightbox">
+        ✕
+      </button>
 
+      <div
+        className="lightbox-content"
+        onClick={(e) => e.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {total > 1 ? (
           <>
             <button
@@ -1220,7 +1251,7 @@ function ImageLightboxModal({
               onClick={handlePrev}
               aria-label="Previous photo"
             >
-              <CaretLeft size={24} weight="bold" />
+              <CaretLeft size={22} weight="bold" />
             </button>
             <button
               type="button"
@@ -1228,18 +1259,19 @@ function ImageLightboxModal({
               onClick={handleNext}
               aria-label="Next photo"
             >
-              <CaretRight size={24} weight="bold" />
+              <CaretRight size={22} weight="bold" />
             </button>
           </>
         ) : null}
 
         <img src={currentPhoto.url} alt={currentPhoto.caption} className="lightbox-img" />
+
         <div className="lightbox-caption-bar">
-          <div>
+          <div className="lightbox-caption-text">
             <b>{currentPhoto.caption}</b>
             {total > 1 ? <span className="lightbox-counter">({index + 1} / {total})</span> : null}
           </div>
-          {currentPhoto.credit ? <small>{currentPhoto.credit}</small> : null}
+          {currentPhoto.credit ? <small className="lightbox-credit">{currentPhoto.credit}</small> : null}
         </div>
       </div>
     </div>
@@ -1349,7 +1381,7 @@ export interface CuratedSource {
   id: string;
   name: string;
   url: string;
-  type: "Verified Guide" | "Municipal Inspection" | "Open Data" | "Editorial Review" | "Community";
+  type: "Official City Guide" | "Verified Guide" | "Municipal Inspection" | "Open Data" | "Editorial Review" | "Community";
   description: string;
   license: string;
   verifiedCount?: number;

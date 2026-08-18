@@ -72,12 +72,45 @@ export async function fetchPlaceReviews(input: PlaceContext | number): Promise<P
   return fallbackReviews;
 }
 
+let staticPhotosDatasetCache: Record<string, PlacePhoto[]> | null = null;
+
+async function loadStaticPhotosDataset(): Promise<Record<string, PlacePhoto[]>> {
+  if (staticPhotosDatasetCache) return staticPhotosDatasetCache;
+  try {
+    const res = await fetch("/data/place_photos.json");
+    if (res.ok) {
+      const data = (await res.json()) as { photosByPlace?: Record<string, PlacePhoto[]> };
+      if (data.photosByPlace) {
+        staticPhotosDatasetCache = data.photosByPlace;
+        return data.photosByPlace;
+      }
+    }
+  } catch {
+    // Ignore static load failures
+  }
+  staticPhotosDatasetCache = {};
+  return {};
+}
+
 export async function fetchPlacePhotos(input: PlaceContext | number): Promise<PlacePhoto[]> {
   const ctx = parseContext(input);
   if (photosCache.has(ctx.id)) {
     return photosCache.get(ctx.id)!;
   }
 
+  // 1. Try static place_photos dataset
+  try {
+    const dataset = await loadStaticPhotosDataset();
+    const photos = dataset[String(ctx.id)];
+    if (photos && photos.length > 0) {
+      photosCache.set(ctx.id, photos);
+      return photos;
+    }
+  } catch {
+    // Continue to API fetch
+  }
+
+  // 2. Try API endpoint
   try {
     const params = new URLSearchParams({
       place_id: String(ctx.id),
@@ -92,8 +125,10 @@ export async function fetchPlacePhotos(input: PlaceContext | number): Promise<Pl
     if (res.ok) {
       const data = (await res.json()) as { photos?: PlacePhoto[] };
       const photos = data.photos ?? [];
-      photosCache.set(ctx.id, photos);
-      return photos;
+      if (photos.length > 0) {
+        photosCache.set(ctx.id, photos);
+        return photos;
+      }
     }
   } catch {
     // Endpoint fallback below
