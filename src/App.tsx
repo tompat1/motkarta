@@ -61,6 +61,7 @@ const establishmentTypes = [
   "All places",
   "Curated",
   "Saved",
+  "Latest",
   "Restaurant",
   "Bakery",
   "Café",
@@ -460,6 +461,7 @@ function kindFilterLabel(kind: EstablishmentFilter | string, lang: Language): st
   if (kind === "All places") return translations[lang].allPlaces;
   if (kind === "Curated") return lang === "sv" ? "★ Handplockat" : "★ Curated";
   if (kind === "Saved") return lang === "sv" ? "Sparade ★" : "Saved ★";
+  if (kind === "Latest") return lang === "sv" ? "⚡ Senast tillagda" : "⚡ Latest added";
   if (kind === "Restaurant") return translations[lang].legendRestaurant;
   if (kind === "Bakery") return translations[lang].legendBakery;
   if (kind === "Café") return "Café";
@@ -778,7 +780,7 @@ function preferencesFromQuery(query: string, kind: EstablishmentFilter): UserPre
   ].filter((tag) => normalized.includes(tag));
 
   return {
-    kind: kind === "All places" ? undefined : (kind as EstablishmentType),
+    kind: ["All places", "Curated", "Saved", "Latest"].includes(kind) ? undefined : (kind as EstablishmentType),
     tags,
     independentOnly: normalized.includes("independent") || normalized.includes("local"),
     purpose: normalized.includes("lunch")
@@ -2003,12 +2005,21 @@ export default function App() {
             ? true
             : kind === "Curated"
               ? place.evidence.specialistGuide === 1 ||
+                place.evidence.independentEditorial === 1 ||
                 (place.evidenceLabel ?? "").toLowerCase().includes("guide") ||
                 (place.evidenceLabel ?? "").toLowerCase().includes("specialist") ||
-                (place.sourceName ?? "").toLowerCase().includes("husa")
+                (place.evidenceLabel ?? "").toLowerCase().includes("visit stockholm") ||
+                (place.evidenceLabel ?? "").toLowerCase().includes("visitstockholm") ||
+                (place.evidenceLabel ?? "").toLowerCase().includes("officiella stadsguiden") ||
+                (place.sourceName ?? "").toLowerCase().includes("husa") ||
+                (place.sourceName ?? "").toLowerCase().includes("visit stockholm") ||
+                (place.sourceName ?? "").toLowerCase().includes("visitstockholm") ||
+                (place.sourceName ?? "").toLowerCase().includes("officiella stadsguiden")
               : kind === "Saved"
                 ? savedPlaceIds.includes(place.id)
-                : place.kind === kind,
+                : kind === "Latest"
+                  ? true
+                  : place.kind === kind,
         )
         .filter((place) => cuisine === allCuisines || cuisineParts(place).includes(cuisine))
         .filter((place) =>
@@ -2016,7 +2027,15 @@ export default function App() {
             .toLowerCase()
             .includes(query.toLowerCase()),
         )
-        .sort((a, b) => comparePlaces(a, b, mode, sortMode, randomSeed, userLocation ?? stockholmCenter)),
+        .sort((a, b) => {
+          if (kind === "Latest" && sortMode === "Best match") {
+            const dateA = new Date(a.lastUpdated ?? 0).getTime();
+            const dateB = new Date(b.lastUpdated ?? 0).getTime();
+            if (dateA !== dateB) return dateB - dateA;
+            return b.id - a.id;
+          }
+          return comparePlaces(a, b, mode, sortMode, randomSeed, userLocation ?? stockholmCenter);
+        }),
     [cuisine, kind, mode, query, randomSeed, savedPlaceIds, scoredPlaces, sortMode, userLocation],
   );
   const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
