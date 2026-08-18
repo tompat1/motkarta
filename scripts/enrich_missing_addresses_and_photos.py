@@ -56,26 +56,32 @@ def scrape_website_photo(url):
     return None
 
 def fetch_google_place_details(place_name, area, api_key):
-    """Query Google Places API for exact missing address, website, and metadata."""
+    """Query Google Places API (New) for exact missing address, website, and metadata."""
     if not api_key:
         return None
 
-    query_str = urllib.parse.quote(f"{place_name} {area} Stockholm Sweden")
-    url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={query_str}&key={api_key}"
+    url = "https://places.googleapis.com/v1/places:searchText"
+    payload = json.dumps({"textQuery": f"{place_name} {area} Stockholm Sweden"}).encode("utf-8")
+    headers = {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": api_key,
+        "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.websiteUri,places.location,places.rating,places.userRatingCount"
+    }
     try:
-        req = urllib.request.Request(url)
-        with urllib.request.urlopen(req) as response:
+        req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
+        with urllib.request.urlopen(req, timeout=8) as response:
             res_data = json.loads(response.read().decode("utf-8"))
-            results = res_data.get("results", [])
+            results = res_data.get("places", [])
             if results:
                 best = results[0]
+                loc = best.get("location", {})
                 return {
-                    "address": best.get("formatted_address"),
+                    "address": best.get("formattedAddress"),
+                    "website": best.get("websiteUri"),
                     "rating": best.get("rating"),
-                    "reviewCount": best.get("user_ratings_total"),
-                    "place_id": best.get("place_id"),
-                    "lat": best.get("geometry", {}).get("location", {}).get("lat"),
-                    "lng": best.get("geometry", {}).get("location", {}).get("lng"),
+                    "reviewCount": best.get("userRatingCount"),
+                    "lat": loc.get("latitude"),
+                    "lng": loc.get("longitude"),
                 }
     except Exception as e:
         print(f"⚠️ API Error for {place_name}: {e}")
@@ -131,6 +137,9 @@ def main():
                 place["address"] = details["address"]
                 enriched_addresses += 1
 
+            if details.get("website"):
+                place["website"] = details["website"]
+
             if details.get("lat") and details.get("lng"):
                 place["latitude"] = details["lat"]
                 place["longitude"] = details["lng"]
@@ -147,6 +156,8 @@ def main():
                         "credit": f"{place['name']} / Official Site"
                     }]
                     enriched_photos += 1
+
+            print(f"✨ Enriched [{i+1}/{len(places)}] {place['name']} ({place['area']}) -> {place.get('address', 'N/A')}", flush=True)
 
         time.sleep(0.1)  # Rate limiting compliance
 
