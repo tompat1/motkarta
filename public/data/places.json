@@ -1,5 +1,4 @@
 {
-  "source": "osm",
   "places": [
     {
       "id": 99938,
@@ -62495,72 +62494,6 @@
       "y": 56.86
     },
     {
-      "id": 460536912,
-      "name": "Sushi",
-      "kind": "Restaurant",
-      "cuisine": "",
-      "area": "South Stockholm",
-      "note": "Restaurant from OpenStreetMap. Address: Oppundavägen 4.",
-      "tags": [
-        "OpenStreetMap",
-        "Restaurant",
-        "South Stockholm"
-      ],
-      "is_hidden_gem": false,
-      "discoveryReasons": [
-        "it appears independent",
-        "it has lower local visibility"
-      ],
-      "discoverySignals": {
-        "independent_business": true,
-        "underrepresented_cuisine": false,
-        "low_local_visibility": true,
-        "verified_open": false,
-        "complete_profile": false,
-        "recently_updated": false
-      },
-      "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
-      "ratingAverage": 4.1,
-      "reliableRatingCount": 15,
-      "reviewCount": 20,
-      "categoryMeanRating": 4.1,
-      "categoryPopularityRaw": 0.17,
-      "localPopularityPercentile": 0.53,
-      "priceLevel": 2,
-      "mainstreamExposure": 19.9,
-      "ageDays": 1200,
-      "daysSinceFreshEvidence": 15,
-      "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
-        "verifiedUserRating": 0.2,
-        "repeatVisits": 8,
-        "recentReviews": 10,
-        "credibleReviewers": 6,
-        "inspectionStatus": 70.0,
-        "verifiedAttributes": 28.33,
-        "dataFreshness": 80,
-        "confidence": "Medium"
-      },
-      "engagement": {
-        "searchImpressions": 0,
-        "profileViews": 0,
-        "mapMarkerClicks": 0,
-        "saves": 0,
-        "directionRequests": 0,
-        "confirmedVisits": 0,
-        "repeatVisits": 0,
-        "recommendations": 0,
-        "recentSaves": 0
-      },
-      "latitude": 59.2724917,
-      "longitude": 18.0689449,
-      "x": 63.79,
-      "y": 73.15
-    },
-    {
       "id": 3777925036,
       "name": "Lilla Karachi",
       "kind": "Restaurant",
@@ -109404,75 +109337,6 @@
       "longitude": 17.9006864,
       "x": 30.14,
       "y": 37.93
-    },
-    {
-      "id": 3309554988,
-      "name": "Café",
-      "kind": "Café",
-      "cuisine": "",
-      "area": "Central Stockholm",
-      "note": "Café from OpenStreetMap.",
-      "tags": [
-        "Café",
-        "Central Stockholm",
-        "Missing address",
-        "OpenStreetMap",
-        "Opening hours"
-      ],
-      "is_hidden_gem": false,
-      "discoveryReasons": [
-        "it appears independent",
-        "it has lower local visibility",
-        "opening hours are listed"
-      ],
-      "discoverySignals": {
-        "independent_business": true,
-        "underrepresented_cuisine": false,
-        "low_local_visibility": true,
-        "verified_open": true,
-        "complete_profile": false,
-        "recently_updated": false
-      },
-      "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
-      "ratingAverage": 4.1,
-      "reliableRatingCount": 15,
-      "reviewCount": 20,
-      "categoryMeanRating": 4.1,
-      "categoryPopularityRaw": 0.17,
-      "localPopularityPercentile": 0.53,
-      "priceLevel": 2,
-      "mainstreamExposure": 17.2,
-      "ageDays": 1200,
-      "daysSinceFreshEvidence": 15,
-      "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
-        "verifiedUserRating": 0.2,
-        "repeatVisits": 8,
-        "recentReviews": 10,
-        "credibleReviewers": 6,
-        "inspectionStatus": 70.0,
-        "verifiedAttributes": 28.33,
-        "dataFreshness": 80,
-        "confidence": "Medium"
-      },
-      "engagement": {
-        "searchImpressions": 0,
-        "profileViews": 0,
-        "mapMarkerClicks": 0,
-        "saves": 0,
-        "directionRequests": 0,
-        "confirmedVisits": 0,
-        "repeatVisits": 0,
-        "recommendations": 0,
-        "recentSaves": 0
-      },
-      "latitude": 59.3186313,
-      "longitude": 18.0616162,
-      "x": 62.32,
-      "y": 56.06
     },
     {
       "id": 1015879027,
@@ -166109,73 +165973,6 @@
       "y": 71.55
     },
     {
-      "id": 1572216647,
-      "name": "Pub",
-      "kind": "Restaurant",
-      "cuisine": "",
-      "area": "North Stockholm",
-      "note": "Restaurant from OpenStreetMap.",
-      "tags": [
-        "Missing address",
-        "North Stockholm",
-        "OpenStreetMap",
-        "Restaurant"
-      ],
-      "is_hidden_gem": false,
-      "discoveryReasons": [
-        "it appears independent",
-        "it has lower local visibility"
-      ],
-      "discoverySignals": {
-        "independent_business": true,
-        "underrepresented_cuisine": false,
-        "low_local_visibility": true,
-        "verified_open": false,
-        "complete_profile": false,
-        "recently_updated": false
-      },
-      "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
-      "ratingAverage": 4.1,
-      "reliableRatingCount": 0,
-      "reviewCount": 0,
-      "categoryMeanRating": 4.1,
-      "categoryPopularityRaw": 0.0,
-      "localPopularityPercentile": 0.4,
-      "priceLevel": 2,
-      "mainstreamExposure": 19.9,
-      "ageDays": 1200,
-      "daysSinceFreshEvidence": 15,
-      "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.0,
-        "verifiedUserRating": 0.0,
-        "repeatVisits": 0,
-        "recentReviews": 0,
-        "credibleReviewers": 0,
-        "inspectionStatus": 60.0,
-        "verifiedAttributes": 0.0,
-        "dataFreshness": 80,
-        "confidence": "Low"
-      },
-      "engagement": {
-        "searchImpressions": 0,
-        "profileViews": 0,
-        "mapMarkerClicks": 0,
-        "saves": 0,
-        "directionRequests": 0,
-        "confirmedVisits": 0,
-        "repeatVisits": 0,
-        "recommendations": 0,
-        "recentSaves": 0
-      },
-      "latitude": 59.4020901,
-      "longitude": 17.9436196,
-      "x": 38.72,
-      "y": 25.15
-    },
-    {
       "id": 1417834151,
       "name": "Coffee Deli",
       "kind": "Café",
@@ -194454,6 +194251,5 @@
       "x": 68.16,
       "y": 58.79
     }
-  ],
-  "totalPlaces": 2808
+  ]
 }

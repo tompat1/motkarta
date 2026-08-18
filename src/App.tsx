@@ -895,15 +895,16 @@ function ConciergeAnswerView({
       .toLowerCase();
 
     const match =
+      places.find((p) => p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase() === cleanQuery) ||
       places.find((p) => {
         const pClean = p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
-        return (
-          pClean === cleanQuery ||
-          pClean.includes(cleanQuery) ||
-          cleanQuery.includes(pClean) ||
-          p.name.toLowerCase().includes(cleanQuery)
-        );
-      }) ??
+        return pClean.startsWith(cleanQuery) || cleanQuery.startsWith(pClean);
+      }) ||
+      places.find((p) => p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase().includes(cleanQuery)) ||
+      places.find((p) => {
+        const pClean = p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
+        return cleanQuery.includes(pClean) && pClean.length > 4;
+      }) ||
       places.find((p) => {
         const tokens = cleanQuery.split(/\s+/).filter((t) => t.length > 2);
         const pLower = p.name.toLowerCase();
@@ -1027,12 +1028,18 @@ function ConciergeAnswerView({
       ) : null}
 
       {parsed.cards.map((card, idx) => {
-        const matchedPlace = places.find(
-          (p) =>
-            p.name.toLowerCase() === card.name.toLowerCase() ||
-            p.name.toLowerCase().includes(card.name.toLowerCase()) ||
-            card.name.toLowerCase().includes(p.name.toLowerCase()),
-        );
+        const cardNameClean = card.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
+        const matchedPlace =
+          places.find((p) => p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase() === cardNameClean) ||
+          places.find((p) => {
+            const pClean = p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
+            return pClean.startsWith(cardNameClean) || cardNameClean.startsWith(pClean);
+          }) ||
+          places.find((p) => p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase().includes(cardNameClean)) ||
+          places.find((p) => {
+            const pClean = p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
+            return cardNameClean.includes(pClean) && pClean.length > 4;
+          });
 
         const areaStr = card.area ?? matchedPlace?.area ?? "Stockholm";
         const hoursConf = card.hoursConfidence ?? "Verified";
