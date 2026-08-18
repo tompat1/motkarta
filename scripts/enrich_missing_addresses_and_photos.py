@@ -110,11 +110,14 @@ def main():
         print("   To execute the initial full enrichment run, add `GOOGLE_PLACES_API_KEY=your_key` to .env.")
         return
 
-    print("\n⚡ Beginning initial enrichment run with Google Places API & Website Scraper...")
+    print(f"\n⚡ Beginning initial enrichment run with Google Places API & Website Scraper...", flush=True)
     enriched_addresses = 0
     enriched_photos = 0
 
     for i, place in enumerate(places):
+        if i % 25 == 0 and i > 0:
+            print(f"⏳ Progress: {i}/{len(places)} places processed ({enriched_addresses} addresses, {enriched_photos} website photos enriched)...", flush=True)
+
         p_id = str(place["id"])
         needs_address = not place.get("address") or len(place.get("address", "")) < 5
         needs_photo = p_id not in photos_data or not photos_data.get(p_id)
