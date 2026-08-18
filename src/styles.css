@@ -106,7 +106,7 @@ a {
   padding: 0 4vw;
   position: sticky;
   top: 0;
-  z-index: 30;
+  z-index: 1000;
 }
 
 .brand {
@@ -526,6 +526,7 @@ button.search-clear-btn:hover {
   overflow: hidden;
   position: relative;
   background: var(--color-paper);
+  z-index: 10;
 }
 
 .leaflet-shell,
