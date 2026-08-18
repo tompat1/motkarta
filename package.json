@@ -31,7 +31,7 @@
     "db:seed:evidence": "node scripts/generate_evidence_seed_sql.mjs",
     "db:scores:combine": "node scripts/combine_score_export.mjs",
     "db:scores": "node scripts/generate_score_snapshot_sql.mjs",
-    "deploy:cloudflare": "npm run build && wrangler pages deploy dist --project-name stockholm-independent-food-map"
+    "deploy:cloudflare": "npm run build && wrangler pages deploy dist --project-name motkarta"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
