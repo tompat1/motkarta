@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { demoPlaces } from "../lib/demo-places";
 import { OnboardingModal } from "./components/OnboardingModal";
 import { MerchPanel } from "./components/MerchPanel";
+import { PreloaderModal } from "./components/PreloaderModal";
 import {
   ArrowRight,
   ArrowSquareOut,
@@ -1856,6 +1857,20 @@ export default function App() {
     return [];
   });
 
+  const [showPreloader, setShowPreloader] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("motkarta_preloader_seen") !== "true";
+    }
+    return false;
+  });
+
+  const handleClosePreloader = () => {
+    setShowPreloader(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("motkarta_preloader_seen", "true");
+    }
+  };
+
   const [showOnboarding, setShowOnboarding] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("motkarta_onboarded") !== "true";
@@ -2868,6 +2883,12 @@ export default function App() {
           lang={lang}
         />
       ) : null}
+
+      <PreloaderModal
+        isOpen={showPreloader}
+        onClose={handleClosePreloader}
+        lang={lang}
+      />
 
       <OnboardingModal
         isOpen={showOnboarding}
