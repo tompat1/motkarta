@@ -2677,26 +2677,29 @@ export default function App() {
           </div>
         </div>
         <div className="ask-box" style={{ position: "relative" }}>
-          <label htmlFor="ask">{t.askLabel}</label>
-          {concierge.trim() ? (
-            <button
-              type="button"
-              className="concierge-clear-btn"
-              onClick={() => setConcierge("")}
-              aria-label="Clear input field"
-              title={lang === "sv" ? "Rensa fält" : "Clear field"}
-            >
-              ✕
-            </button>
-          ) : null}
-          <textarea
-            id="ask"
-            value={concierge}
-            onChange={(event) => setConcierge(event.target.value)}
-            onFocus={() => setIsConciergeFocused(true)}
-            onBlur={() => setTimeout(() => setIsConciergeFocused(false), 200)}
-            placeholder={t.askPlaceholder}
-          />
+          <div className="ask-input-container">
+            <label htmlFor="ask">{t.askLabel}</label>
+            {concierge.trim() ? (
+              <button
+                type="button"
+                className="concierge-clear-btn"
+                onClick={() => setConcierge("")}
+                aria-label="Clear input field"
+                title={lang === "sv" ? "Rensa fält" : "Clear field"}
+              >
+                <span>{lang === "sv" ? "RENSA FÄLT" : "CLEAR FIELD"}</span>
+                <span className="clear-x">✕</span>
+              </button>
+            ) : null}
+            <textarea
+              id="ask"
+              value={concierge}
+              onChange={(event) => setConcierge(event.target.value)}
+              onFocus={() => setIsConciergeFocused(true)}
+              onBlur={() => setTimeout(() => setIsConciergeFocused(false), 200)}
+              placeholder={t.askPlaceholder}
+            />
+          </div>
 
           {isConciergeFocused && matchingSuggestions.length > 0 ? (
             <div className="concierge-autosuggest-box">

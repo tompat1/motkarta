@@ -992,24 +992,28 @@ h2 i {
   color: var(--color-signal);
 }
 
+.ask-input-container {
+  position: relative;
+  width: 100%;
+}
+
 button.concierge-clear-btn {
   position: absolute;
-  top: 22px;
-  right: 24px;
-  background: rgba(0, 0, 0, 0.06);
-  border: 1px solid var(--color-mist);
-  color: var(--color-stone);
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border-radius: 50%;
-  font-size: 14px;
+  top: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--color-ink);
+  color: var(--color-ink);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
   font-weight: 700;
-  line-height: 1;
+  letter-spacing: 0.06em;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
   z-index: 5;
   transition: all var(--motion-fast);
 }
@@ -1018,7 +1022,12 @@ button.concierge-clear-btn:hover {
   background: var(--color-signal);
   border-color: var(--color-signal);
   color: #ffffff;
-  transform: scale(1.1);
+  transform: translateY(-1px);
+}
+
+button.concierge-clear-btn .clear-x {
+  font-size: 11px;
+  font-weight: 900;
 }
 
 .ask-box textarea {
