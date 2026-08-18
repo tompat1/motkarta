@@ -2113,9 +2113,9 @@ export default function App() {
   return (
     <main>
       <header className="topbar">
-        <a className="brand" href="#">
+        <a className="brand" href="#" aria-label="MOTKARTA">
           <span className="brand-counter-pin" />
-          <b>MOTKARTA</b>
+          <img src="/logo.webp" alt="MOTKARTA" className="brand-logo" />
           <span>{t.brandDescriptor}</span>
         </a>
         <nav>
@@ -2738,7 +2738,10 @@ export default function App() {
       ) : null}
 
       <footer>
-        <span>{t.footerLeft}</span>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: "10px" }}>
+          <img src="/logo.webp" alt="MOTKARTA" className="footer-logo" />
+          <span>/ {t.footerLeft.replace(/^MOTKARTA \/ /, "")}</span>
+        </div>
         <span>{t.footerRight}</span>
       </footer>
     </main>
