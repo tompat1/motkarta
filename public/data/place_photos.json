@@ -1,19 +1,9 @@
 {
   "updatedAt": "2026-08-18T14:51:12Z",
-  "totalPlaces": 11,
-  "totalPhotos": 12,
+  "totalPlaces": 6,
+  "totalPhotos": 6,
   "photosByPlace": {
     "1488435763": [
-      {
-        "id": "photo-1488435763-1",
-        "placeId": 1488435763,
-        "url": "https://upload.wikimedia.org/wikipedia/commons/9/93/Blockmakarens_hus%2C_k%C3%B6ket%2C_2002.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-        "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/9/93/Blockmakarens_hus%2C_k%C3%B6ket%2C_2002.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-        "caption": "H-hus (Blockmakarens hus, köket, 2002)",
-        "credit": "Wikimedia Commons / Fredriksson, Göran H.",
-        "width": 800,
-        "height": 533
-      },
       {
         "id": "photo-1488435763-2",
         "placeId": 1488435763,
@@ -23,18 +13,6 @@
         "credit": "Wikimedia Commons / Fredriksson, Göran H.",
         "width": 800,
         "height": 521
-      }
-    ],
-    "238385895": [
-      {
-        "id": "photo-238385895-1",
-        "placeId": 238385895,
-        "url": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Bullen_Berglund.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-        "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Bullen_Berglund.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-        "caption": "Bullens (Bullen Berglund)",
-        "credit": "Wikimedia Commons / Unknown photographer",
-        "width": 239,
-        "height": 332
       }
     ],
     "587510854": [
@@ -49,18 +27,6 @@
         "height": 2928
       }
     ],
-    "4173619663": [
-      {
-        "id": "photo-4173619663-2",
-        "placeId": 4173619663,
-        "url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Proserpine_by_Dante_Gabriel_Rossetti_%281878%2C_Christie%27s%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-        "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Proserpine_by_Dante_Gabriel_Rossetti_%281878%2C_Christie%27s%29.jpg/960px-Proserpine_by_Dante_Gabriel_Rossetti_%281878%2C_Christie%27s%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-        "caption": "Da Dante (Proserpine by Dante Gabriel Rossetti (1878, Christ)",
-        "credit": "Wikimedia Commons / Dante Gabriel Rossetti",
-        "width": 1547,
-        "height": 3200
-      }
-    ],
     "404474033": [
       {
         "id": "photo-404474033-1",
@@ -71,18 +37,6 @@
         "credit": "Wikimedia Commons / Petter Hektor",
         "width": 300,
         "height": 199
-      }
-    ],
-    "1621738409": [
-      {
-        "id": "photo-1621738409-2",
-        "placeId": 1621738409,
-        "url": "https://upload.wikimedia.org/wikipedia/commons/9/96/Angelo_de_Gubernatis.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-        "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/9/96/Angelo_de_Gubernatis.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-        "caption": "Angelos (Angelo de Gubernatis)",
-        "credit": "Wikimedia Commons / Gunnar Vidar Forssell",
-        "width": 689,
-        "height": 795
       }
     ],
     "1939518288": [
@@ -97,18 +51,6 @@
         "height": 1024
       }
     ],
-    "773823653": [
-      {
-        "id": "photo-773823653-2",
-        "placeId": 773823653,
-        "url": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Anders_Eldeman_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-        "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Anders_Eldeman_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-        "caption": "Lasse i Parken (Anders Eldeman (cropped))",
-        "credit": "Wikimedia Commons / Frankie Fouganthin",
-        "width": 691,
-        "height": 1067
-      }
-    ],
     "525340868": [
       {
         "id": "photo-525340868-1",
@@ -119,18 +61,6 @@
         "credit": "Wikimedia Commons / IMS",
         "width": 227,
         "height": 292
-      }
-    ],
-    "687942764": [
-      {
-        "id": "photo-687942764-1",
-        "placeId": 687942764,
-        "url": "https://upload.wikimedia.org/wikipedia/commons/3/34/CG_Hellqvist_och_maka_detail.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-        "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/3/34/CG_Hellqvist_och_maka_detail.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-        "caption": "Maka Maka (CG Hellqvist och maka detail)",
-        "credit": "Wikimedia Commons / Carl Gustaf Hellqvist",
-        "width": 203,
-        "height": 267
       }
     ],
     "1282124810": [
