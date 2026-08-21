@@ -1,3 +1,5 @@
+import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
+
 type D1Statement = {
   bind(...values: unknown[]): D1Statement;
   all<T = Record<string, unknown>>(): Promise<{ results?: T[] }>;
@@ -14,8 +16,7 @@ type EventContext<Env> = {
 
 type Env = {
   DB?: unknown;
-  MOTKARTA_ADMIN_TOKEN?: string;
-};
+} & AdminAuthEnv;
 
 type CandidateDashboardRow = {
   id: number;
@@ -66,7 +67,7 @@ const jsonHeaders = {
 };
 
 export async function onRequestGet(context: EventContext<Env>) {
-  const auth = requireAdmin(context.request, context.env);
+  const auth = await requireAdmin(context.request, context.env);
   if (auth) return auth;
 
   const db = context.env.DB as D1Database | undefined;
@@ -309,28 +310,4 @@ function normalizeEvidenceSourceType(sourceType: string) {
     return "editorial";
   }
   return sourceType;
-}
-
-function requireAdmin(request: Request, env: Env) {
-  const configuredToken = env.MOTKARTA_ADMIN_TOKEN?.trim();
-  if (!configuredToken) {
-    return Response.json(
-      { error: "Admin review is not configured." },
-      { headers: jsonHeaders, status: 503 },
-    );
-  }
-
-  const authHeader = request.headers.get("authorization") ?? "";
-  const suppliedToken =
-    request.headers.get("x-motkarta-admin-token") ??
-    authHeader.replace(/^Bearer\s+/i, "").trim();
-
-  if (suppliedToken !== configuredToken) {
-    return Response.json(
-      { error: "Unauthorized admin review request." },
-      { headers: jsonHeaders, status: 401 },
-    );
-  }
-
-  return null;
 }

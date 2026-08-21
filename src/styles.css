@@ -1347,6 +1347,49 @@ button.concierge-clear-btn:hover {
   color: var(--color-stone);
 }
 
+.admin-app-shell {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  min-height: 100vh;
+  padding: 0 clamp(18px, 4vw, 52px) 48px;
+}
+
+.admin-app-topbar {
+  align-items: center;
+  border-bottom: 1px solid var(--color-mist);
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  min-height: 78px;
+}
+
+.admin-app-intro {
+  border-bottom: 1px solid var(--color-mist);
+  display: grid;
+  gap: 8px;
+  max-width: 980px;
+  padding: 34px 0 28px;
+}
+
+.admin-app-intro h1 {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: clamp(42px, 7vw, 86px);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 0.9;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.admin-app-intro p:last-child {
+  color: var(--color-stone);
+  font-size: 15px;
+  line-height: 1.45;
+  margin: 0;
+  max-width: 640px;
+}
+
 .admin-review-panel {
   border-bottom: 1px solid var(--color-mist);
   border-top: 2px solid var(--color-ink);
@@ -1390,6 +1433,21 @@ button.concierge-clear-btn:hover {
   gap: 8px;
 }
 
+.admin-session-auth {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-water);
+  color: var(--color-water);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 10px;
+  text-transform: uppercase;
+}
+
 .admin-review-auth input {
   background: var(--color-white);
   border: 1px solid var(--color-ink);
@@ -1403,6 +1461,7 @@ button.concierge-clear-btn:hover {
 }
 
 .admin-review-auth button,
+.admin-session-auth button,
 .admin-refresh-btn,
 .admin-schema-btn,
 .admin-export-btn {
@@ -1424,6 +1483,7 @@ button.concierge-clear-btn:hover {
 }
 
 .admin-review-auth button:hover,
+.admin-session-auth button:hover,
 .admin-refresh-btn:hover,
 .admin-schema-btn:hover,
 .admin-export-btn:hover {
@@ -1432,7 +1492,8 @@ button.concierge-clear-btn:hover {
   color: var(--color-white);
 }
 
-.admin-review-auth .admin-review-ghost-btn {
+.admin-review-auth .admin-review-ghost-btn,
+.admin-session-auth .admin-review-ghost-btn {
   background: var(--color-white);
   color: var(--color-ink);
   min-width: 40px;
@@ -2060,12 +2121,23 @@ footer {
     grid-template-columns: 1fr 1fr;
   }
 
+  .admin-app-topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 0;
+  }
+
   .admin-review-head,
   .admin-review-toolbar,
   .admin-schema-panel,
   .admin-export-panel {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .admin-session-auth {
+    justify-content: space-between;
   }
 
   .admin-session-dashboard {

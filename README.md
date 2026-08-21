@@ -199,21 +199,35 @@ popularity, price level, prominence, or scores. Existing `verified` and
 
 ### Admin review and promotion
 
-Before using the review workflow, open `#admin-review` and enter the admin
-token. The admin UI automatically calls `/api/admin/schema`, verifies the token,
-checks the bound `DB`, and prepares the known admin review tables/columns. No
-Wrangler database name is needed.
+The admin UI lives at the real path `/admin`, not a public hash route. Protect
+both `/admin*` and `/api/admin/*` with Cloudflare Access so the review,
+harvest-status, schema-check, and label-export controls are hidden from public
+visitors before the React app or admin APIs run.
 
-Set the admin token once for the Pages project:
+Recommended production auth uses Cloudflare Access JWT verification:
 
 ```bash
-wrangler pages secret put MOTKARTA_ADMIN_TOKEN
+wrangler pages secret put MOTKARTA_ACCESS_TEAM_DOMAIN
+wrangler pages secret put MOTKARTA_ACCESS_AUD
+wrangler pages secret put MOTKARTA_ADMIN_EMAILS
 ```
 
-The admin UI is available in the app under `#admin-review`. It reads the session
-dashboard from `/api/admin/review-dashboard`, then reads candidates from
-`/api/admin/candidates`. The dashboard shows whether the next operational step
-is review, harvest, export, or caught up. The queue shows source identity,
+`MOTKARTA_ACCESS_TEAM_DOMAIN` is the Access team domain, for example
+`https://your-team.cloudflareaccess.com`. `MOTKARTA_ACCESS_AUD` is the Access
+application audience tag for the protected admin app. `MOTKARTA_ADMIN_EMAILS` is
+an optional comma-separated allowlist of admin account emails.
+
+`MOTKARTA_ADMIN_TOKEN` is still supported as a local/dev fallback, but it is no
+longer the normal production workflow. If Access is active, the browser calls
+`/api/admin/session`, the API verifies the Cloudflare Access session, and the UI
+unlocks without asking for a token.
+
+When `/admin` opens, the UI automatically calls `/api/admin/schema`, checks the
+bound `DB`, and prepares the known admin review tables/columns. No Wrangler
+database name is needed for the admin workflow. It then reads the session
+dashboard from `/api/admin/review-dashboard`, then candidates from
+`/api/admin/candidates`. The dashboard shows whether the next operational step is
+review, harvest, export, or caught up. The queue shows source identity,
 address/website metadata, evidence counts and source gaps, then promotes records
 by updating only `lifecycle_state`, `validation_label`, `validation_notes`, and
 `updated_at` on `establishments`. Hidden-gem promotion requires at least two
@@ -227,14 +241,15 @@ history. `Keep separate` records `duplicate_resolution = 'keep_separate'`
 without promoting the candidate.
 
 Each promotion or duplicate decision writes an `admin_review_events` audit row.
-If `MOTKARTA_ADMIN_TOKEN` is missing, the admin API remains closed. If D1 is
-missing, it returns an unavailable response and never falls back to demo rows.
+If neither Cloudflare Access verification nor the local token fallback is
+configured, the admin API remains closed. If D1 is missing, it returns an
+unavailable response and never falls back to demo rows.
 
-When a review session is done, open `#admin-review`, enter the admin token, and
-press **Export** in the label export row. The browser downloads a portable
-`human_validation_labels` JSON file directly from the D1 audit events. The UI
-export also writes an `admin_label_exports` checkpoint, which lets the dashboard
-show whether any review decisions are newer than the latest export.
+When a review session is done, open `/admin` and press **Export** in the label
+export row. The browser downloads a portable `human_validation_labels` JSON file
+directly from the D1 audit events. The UI export also writes an
+`admin_label_exports` checkpoint, which lets the dashboard show whether any
+review decisions are newer than the latest export.
 
 The same export can still be produced from the command line when needed:
 

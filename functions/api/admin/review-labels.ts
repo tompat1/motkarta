@@ -1,3 +1,4 @@
+import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
 import { buildReviewLabelExport, type ReviewEventExportRow } from "../../../lib/review-labels.ts";
 
 type D1Statement = {
@@ -17,8 +18,7 @@ type EventContext<Env> = {
 
 type Env = {
   DB?: unknown;
-  MOTKARTA_ADMIN_TOKEN?: string;
-};
+} & AdminAuthEnv;
 
 const jsonHeaders = {
   "content-type": "application/json; charset=utf-8",
@@ -34,7 +34,7 @@ export async function onRequestPost(context: EventContext<Env>) {
 }
 
 async function exportReviewLabels(context: EventContext<Env>, recordExport: boolean) {
-  const auth = requireAdmin(context.request, context.env);
+  const auth = await requireAdmin(context.request, context.env);
   if (auth) return auth;
 
   const db = context.env.DB as D1Database | undefined;
@@ -117,28 +117,4 @@ function reviewEventExportQuery() {
     JOIN establishments e ON e.id = ev.establishment_id
     ORDER BY ev.reviewed_at DESC, ev.id DESC
   `;
-}
-
-function requireAdmin(request: Request, env: Env) {
-  const configuredToken = env.MOTKARTA_ADMIN_TOKEN?.trim();
-  if (!configuredToken) {
-    return Response.json(
-      { error: "Admin review is not configured." },
-      { headers: jsonHeaders, status: 503 },
-    );
-  }
-
-  const authHeader = request.headers.get("authorization") ?? "";
-  const suppliedToken =
-    request.headers.get("x-motkarta-admin-token") ??
-    authHeader.replace(/^Bearer\s+/i, "").trim();
-
-  if (suppliedToken !== configuredToken) {
-    return Response.json(
-      { error: "Unauthorized admin review request." },
-      { headers: jsonHeaders, status: 401 },
-    );
-  }
-
-  return null;
 }

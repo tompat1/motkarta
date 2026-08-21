@@ -1984,6 +1984,20 @@ type AdminSchemaStatus = {
   error?: string;
 };
 
+type AdminSessionStatus = {
+  admin: boolean;
+  authMode?: "access_jwt" | "access_header" | "token" | "none";
+  email?: string;
+  reason?: string;
+  configured?: {
+    token: boolean;
+    accessJwt: boolean;
+    trustedHeaders: boolean;
+    emailAllowlist: boolean;
+  };
+  error?: string;
+};
+
 const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "all"];
 
 function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
@@ -2002,11 +2016,24 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
   const [labelExportStatus, setLabelExportStatus] = useState("");
   const [dashboard, setDashboard] = useState<AdminReviewDashboard | null>(null);
   const [schemaStatus, setSchemaStatus] = useState<AdminSchemaStatus | null>(null);
+  const [adminSession, setAdminSession] = useState<AdminSessionStatus | null>(null);
+  const [checkingSession, setCheckingSession] = useState(true);
+  const hasAdminAuth = adminSession?.admin === true;
+
+  const adminHeaders = useCallback(
+    (tokenOverride?: string, extraHeaders?: Record<string, string>) => {
+      const token = (tokenOverride ?? adminToken).trim();
+      return token
+        ? { ...extraHeaders, "x-motkarta-admin-token": token }
+        : { ...extraHeaders };
+    },
+    [adminToken],
+  );
 
   const loadCandidates = useCallback(
     async (tokenOverride?: string) => {
       const token = (tokenOverride ?? adminToken).trim();
-      if (!token) {
+      if (!token && !adminSession?.admin) {
         setCandidates([]);
         setStatus("");
         return;
@@ -2016,7 +2043,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
       setError(null);
       try {
         const response = await fetch(`/api/admin/candidates?state=${stateFilter}&limit=100`, {
-          headers: { "x-motkarta-admin-token": token },
+          headers: adminHeaders(token),
         });
         const payload = (await response.json().catch(() => ({}))) as {
           candidates?: AdminCandidate[];
@@ -2046,13 +2073,13 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
         setLoading(false);
       }
     },
-    [adminToken, lang, stateFilter],
+    [adminHeaders, adminSession?.admin, adminToken, lang, stateFilter],
   );
 
   const loadDashboard = useCallback(
     async (tokenOverride?: string) => {
       const token = (tokenOverride ?? adminToken).trim();
-      if (!token) {
+      if (!token && !adminSession?.admin) {
         setDashboard(null);
         return;
       }
@@ -2060,7 +2087,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
       setLoadingDashboard(true);
       try {
         const response = await fetch("/api/admin/review-dashboard", {
-          headers: { "x-motkarta-admin-token": token },
+          headers: adminHeaders(token),
         });
         const payload = (await response.json().catch(() => ({}))) as AdminReviewDashboard;
 
@@ -2076,20 +2103,20 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
         setLoadingDashboard(false);
       }
     },
-    [adminToken, lang],
+    [adminHeaders, adminSession?.admin, adminToken, lang],
   );
 
   const loadSchemaStatus = useCallback(
     async (tokenOverride?: string) => {
       const token = (tokenOverride ?? adminToken).trim();
-      if (!token) {
+      if (!token && !adminSession?.admin) {
         setSchemaStatus(null);
         return;
       }
 
       try {
         const response = await fetch("/api/admin/schema", {
-          headers: { "x-motkarta-admin-token": token },
+          headers: adminHeaders(token),
         });
         const payload = (await response.json().catch(() => ({}))) as AdminSchemaStatus;
 
@@ -2105,13 +2132,13 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
         return null;
       }
     },
-    [adminToken, lang],
+    [adminHeaders, adminSession?.admin, adminToken, lang],
   );
 
   const runAdminSelfCheck = useCallback(
     async (tokenOverride?: string) => {
       const token = (tokenOverride ?? adminToken).trim();
-      if (!token) return null;
+      if (!token && !adminSession?.admin) return null;
 
       setSchemaBusy(true);
       setError(null);
@@ -2119,7 +2146,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
       try {
         const response = await fetch("/api/admin/schema", {
           method: "POST",
-          headers: { "x-motkarta-admin-token": token },
+          headers: adminHeaders(token),
         });
         const payload = (await response.json().catch(() => ({}))) as AdminSchemaStatus;
 
@@ -2142,20 +2169,65 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
         setSchemaBusy(false);
       }
     },
-    [adminToken, lang, loadCandidates, loadDashboard],
+    [adminHeaders, adminSession?.admin, adminToken, lang, loadCandidates, loadDashboard],
+  );
+
+  const checkAdminSession = useCallback(
+    async (tokenOverride?: string) => {
+      const token = (tokenOverride ?? adminToken).trim();
+      setCheckingSession(true);
+
+      try {
+        const response = await fetch("/api/admin/session", {
+          headers: adminHeaders(token),
+        });
+        const payload = (await response.json().catch(() => ({}))) as AdminSessionStatus;
+        setAdminSession(payload);
+
+        if (!response.ok || !payload.admin) {
+          if (!token) {
+            setStatus(payload.reason ?? (lang === "sv" ? "Admin-konto krävs." : "Admin account required."));
+          }
+          return payload;
+        }
+
+        setStatus(
+          payload.email
+            ? lang === "sv"
+              ? `Adminsession redo: ${payload.email}.`
+              : `Admin session ready: ${payload.email}.`
+            : lang === "sv"
+              ? "Adminsession redo."
+              : "Admin session ready.",
+        );
+        return payload;
+      } catch (sessionError) {
+        const message = sessionError instanceof Error ? sessionError.message : String(sessionError);
+        setAdminSession({ admin: false, reason: message });
+        setStatus(message);
+        return null;
+      } finally {
+        setCheckingSession(false);
+      }
+    },
+    [adminHeaders, adminToken, lang],
   );
 
   useEffect(() => {
-    if (adminToken) {
-      void runAdminSelfCheck(adminToken);
-    }
-  }, [adminToken]);
+    void checkAdminSession();
+  }, []);
 
   useEffect(() => {
-    if (adminToken && schemaStatus?.ready) {
+    if (adminSession?.admin) {
+      void runAdminSelfCheck(adminToken);
+    }
+  }, [adminSession?.admin]);
+
+  useEffect(() => {
+    if (hasAdminAuth && schemaStatus?.ready) {
       void loadCandidates();
     }
-  }, [adminToken, schemaStatus?.ready, loadCandidates]);
+  }, [hasAdminAuth, schemaStatus?.ready, loadCandidates]);
 
   const handleUnlock = (event: React.FormEvent) => {
     event.preventDefault();
@@ -2164,9 +2236,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     if (typeof window !== "undefined" && token) {
       window.sessionStorage.setItem("motkarta_admin_token", token);
     }
-    if (token === adminToken) {
-      void runAdminSelfCheck(token);
-    }
+    void checkAdminSession(token);
   };
 
   const handleForgetToken = () => {
@@ -2182,6 +2252,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     if (typeof window !== "undefined") {
       window.sessionStorage.removeItem("motkarta_admin_token");
     }
+    void checkAdminSession("");
   };
 
   const promoteCandidate = async (
@@ -2189,7 +2260,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     lifecycleState: PlaceLifecycleState,
     validationLabel: AdminValidationLabel,
   ) => {
-    if (!adminToken) return;
+    if (!hasAdminAuth) return;
 
     const validationNotes = (reviewNotes[candidate.id] ?? candidate.validationNotes ?? "").trim();
     setBusyId(candidate.id);
@@ -2198,10 +2269,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     try {
       const response = await fetch("/api/admin/candidates", {
         method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "x-motkarta-admin-token": adminToken,
-        },
+        headers: adminHeaders(undefined, { "content-type": "application/json" }),
         body: JSON.stringify({
           id: candidate.id,
           state: lifecycleState,
@@ -2257,7 +2325,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     action: "merge_duplicate" | "keep_separate",
     targetId?: number,
   ) => {
-    if (!adminToken) return;
+    if (!hasAdminAuth) return;
 
     const validationNotes = (reviewNotes[candidate.id] ?? candidate.validationNotes ?? "").trim();
     setBusyId(candidate.id);
@@ -2266,10 +2334,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     try {
       const response = await fetch("/api/admin/candidates", {
         method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "x-motkarta-admin-token": adminToken,
-        },
+        headers: adminHeaders(undefined, { "content-type": "application/json" }),
         body: JSON.stringify({
           id: candidate.id,
           action,
@@ -2326,7 +2391,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
 
   const exportReviewLabels = async () => {
     const token = adminToken.trim();
-    if (!token || typeof document === "undefined") return;
+    if (!hasAdminAuth || typeof document === "undefined") return;
 
     setExportingLabels(true);
     setError(null);
@@ -2335,7 +2400,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     try {
       const response = await fetch("/api/admin/review-labels", {
         method: "POST",
-        headers: { "x-motkarta-admin-token": token },
+        headers: adminHeaders(token),
       });
       const payload = (await response.json().catch(() => ({}))) as AdminReviewLabelExport;
 
@@ -2389,33 +2454,56 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
           </h3>
         </div>
 
-        <form className="admin-review-auth" onSubmit={handleUnlock}>
-          <label className="sr-only" htmlFor="admin-token">
-            {lang === "sv" ? "Admin-token" : "Admin token"}
-          </label>
-          <input
-            id="admin-token"
-            type="password"
-            value={tokenInput}
-            onChange={(event) => setTokenInput(event.target.value)}
-            placeholder={lang === "sv" ? "Admin-token" : "Admin token"}
-            autoComplete="off"
-          />
-          <button type="submit" title={lang === "sv" ? "Lås upp granskningskön" : "Unlock review queue"}>
+        {hasAdminAuth ? (
+          <div className="admin-session-auth" aria-live="polite">
             <ShieldCheck size={14} weight="bold" />
-            {lang === "sv" ? "Lås upp" : "Unlock"}
-          </button>
-          {adminToken ? (
-            <button
-              type="button"
-              className="admin-review-ghost-btn"
-              onClick={handleForgetToken}
-              title={lang === "sv" ? "Glöm token" : "Forget token"}
-            >
-              <X size={14} weight="bold" />
+            <span>
+              {adminSession?.email
+                ? adminSession.email
+                : lang === "sv"
+                  ? "Adminsession aktiv"
+                  : "Admin session active"}
+            </span>
+            {adminToken ? (
+              <button
+                type="button"
+                className="admin-review-ghost-btn"
+                onClick={handleForgetToken}
+                title={lang === "sv" ? "Glöm lokal token" : "Forget local token"}
+              >
+                <X size={14} weight="bold" />
+              </button>
+            ) : null}
+          </div>
+        ) : (
+          <form className="admin-review-auth" onSubmit={handleUnlock}>
+            <label className="sr-only" htmlFor="admin-token">
+              {lang === "sv" ? "Lokal admin-token" : "Local admin token"}
+            </label>
+            <input
+              id="admin-token"
+              type="password"
+              value={tokenInput}
+              onChange={(event) => setTokenInput(event.target.value)}
+              placeholder={lang === "sv" ? "Lokal/dev-token" : "Local/dev token"}
+              autoComplete="off"
+            />
+            <button type="submit" disabled={checkingSession} title={lang === "sv" ? "Lås upp lokal granskningskö" : "Unlock local review queue"}>
+              {checkingSession ? <CircleNotch size={14} className="animate-spin" /> : <ShieldCheck size={14} weight="bold" />}
+              {checkingSession ? (lang === "sv" ? "Kollar" : "Checking") : lang === "sv" ? "Lås upp" : "Unlock"}
             </button>
-          ) : null}
-        </form>
+            {tokenInput || adminToken ? (
+              <button
+                type="button"
+                className="admin-review-ghost-btn"
+                onClick={handleForgetToken}
+                title={lang === "sv" ? "Glöm lokal token" : "Forget local token"}
+              >
+                <X size={14} weight="bold" />
+              </button>
+            ) : null}
+          </form>
+        )}
       </div>
 
       <div className="admin-review-toolbar" aria-label={lang === "sv" ? "Filter för granskningskö" : "Review queue filters"}>
@@ -2436,7 +2524,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
           type="button"
           className="admin-refresh-btn"
           onClick={() => void loadCandidates()}
-          disabled={!adminToken || loading || schemaStatus?.ready !== true}
+          disabled={!hasAdminAuth || loading || schemaStatus?.ready !== true}
           title={lang === "sv" ? "Ladda om från D1" : "Reload from D1"}
         >
           {loading ? <CircleNotch size={14} className="animate-spin" /> : <ArrowClockwise size={14} weight="bold" />}
@@ -2444,7 +2532,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
         </button>
       </div>
 
-      {adminToken ? (
+      {hasAdminAuth ? (
         <div className={`admin-schema-panel ${schemaStatus?.ready ? "ready" : "needs-setup"}`}>
           <div className="admin-schema-copy">
             <span>{schemaStatus?.ready ? (lang === "sv" ? "Runtime redo" : "Runtime ready") : lang === "sv" ? "Runtime-check" : "Runtime check"}</span>
@@ -2454,7 +2542,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
             type="button"
             className="admin-schema-btn"
             onClick={() => void runAdminSelfCheck()}
-            disabled={!adminToken || schemaBusy}
+            disabled={!hasAdminAuth || schemaBusy}
             title={lang === "sv" ? "Kontrollera token, DB och adminschema" : "Check token, DB, and admin schema"}
           >
             {schemaBusy ? <CircleNotch size={14} className="animate-spin" /> : <ShieldCheck size={14} weight="bold" />}
@@ -2463,7 +2551,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
         </div>
       ) : null}
 
-      {adminToken && schemaStatus?.ready ? (
+      {hasAdminAuth && schemaStatus?.ready ? (
         <div className={`admin-session-dashboard step-${dashboard?.nextStep ?? "loading"}`} aria-live="polite">
           <div className="admin-session-summary">
             <span className="admin-session-badge">
@@ -2493,7 +2581,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
           type="button"
           className="admin-export-btn"
           onClick={() => void exportReviewLabels()}
-          disabled={!adminToken || exportingLabels || schemaStatus?.ready !== true}
+          disabled={!hasAdminAuth || exportingLabels || schemaStatus?.ready !== true}
           title={lang === "sv" ? "Ladda ner label-export från D1" : "Download label export from D1"}
         >
           {exportingLabels ? <CircleNotch size={14} className="animate-spin" /> : <DownloadSimple size={14} weight="bold" />}
@@ -2511,10 +2599,19 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
         {error ? <span className="admin-review-error">{error}</span> : status}
       </div>
 
-      {!adminToken ? (
+      {!hasAdminAuth ? (
         <div className="admin-review-empty">
-          <ShieldCheck size={18} weight="bold" />
-          <span>{lang === "sv" ? "Token krävs för att läsa eller ändra D1." : "Token required before reading or changing D1."}</span>
+          {checkingSession ? <CircleNotch size={18} className="animate-spin" /> : <ShieldCheck size={18} weight="bold" />}
+          <span>
+            {checkingSession
+              ? lang === "sv"
+                ? "Kontrollerar adminsession..."
+                : "Checking admin session..."
+              : adminSession?.reason ??
+                (lang === "sv"
+                  ? "Admin-konto krävs. I produktion ska /admin skyddas med Cloudflare Access."
+                  : "Admin account required. In production, /admin should be protected by Cloudflare Access.")}
+          </span>
         </div>
       ) : schemaBusy || !schemaStatus ? (
         <div className="admin-review-empty">
@@ -2772,7 +2869,7 @@ function dashboardSubcopy(
     return lang === "sv" ? "Kontrollerar D1-kö, granskningshändelser och senaste export." : "Checking D1 queue, review events, and latest export.";
   }
   if (!dashboard) {
-    return lang === "sv" ? "Lås upp med admin-token för att läsa live-status." : "Unlock with an admin token to read live status.";
+    return lang === "sv" ? "Lås upp med adminsession för att läsa live-status." : "Unlock with an admin session to read live status.";
   }
   if (dashboard.exportLogAvailable === false) {
     return lang === "sv" ? "Kör senaste D1-migrationerna så export-checkpoints kan sparas." : "Apply the latest D1 migrations so export checkpoints can be saved.";
@@ -2851,11 +2948,11 @@ function dashboardMetricValue(value: number | undefined) {
 
 function schemaStatusText(status: AdminSchemaStatus | null, lang: Language) {
   if (!status) {
-    return lang === "sv" ? "Token, DB-bindning och adminschema kontrolleras automatiskt." : "Token, DB binding, and admin schema are checked automatically.";
+    return lang === "sv" ? "Adminsession, DB-bindning och adminschema kontrolleras automatiskt." : "Admin session, DB binding, and admin schema are checked automatically.";
   }
 
   if (status.ready) {
-    return lang === "sv" ? "Token fungerar, DB är bunden och adminschema är redo." : "Token works, DB is bound, and admin schema is ready.";
+    return lang === "sv" ? "Adminsession fungerar, DB är bunden och adminschema är redo." : "Admin session works, DB is bound, and admin schema is ready.";
   }
 
   if (status.baseSchemaReady === false) {
@@ -2878,6 +2975,12 @@ function readStoredAdminToken() {
   } catch {
     return "";
   }
+}
+
+function isAdminRoutePath() {
+  if (typeof window === "undefined") return false;
+  const path = window.location.pathname.replace(/\/+$/, "") || "/";
+  return path === "/admin" || path.startsWith("/admin/");
 }
 
 function lifecycleStateLabel(state: AdminStateFilter | string, lang: Language) {
@@ -2954,6 +3057,7 @@ export default function App() {
   });
 
   const t = translations[lang];
+  const isAdminRoute = isAdminRoutePath();
 
   const handleSetLang = (newLang: Language) => {
     setLang(newLang);
@@ -3422,6 +3526,46 @@ export default function App() {
     void askWithQuery(updated);
   };
 
+  if (isAdminRoute) {
+    return (
+      <main className="admin-app-shell">
+        <header className="admin-app-topbar">
+          <a className="brand" href="/" aria-label="MOTKARTA">
+            <img src="/motkarta_drop_divided_black_red.svg" alt="MOTKARTA Pin" className="brand-counter-pin" />
+            <img src="/logo.webp" alt="MOTKARTA" className="brand-logo" />
+            <span>{t.brandDescriptor}</span>
+          </a>
+          <div className="lang-switcher" aria-label="Language selector">
+            <button
+              type="button"
+              className={`lang-btn ${lang === "sv" ? "active" : ""}`}
+              onClick={() => handleSetLang("sv")}
+            >
+              SV
+            </button>
+            <button
+              type="button"
+              className={`lang-btn ${lang === "en" ? "active" : ""}`}
+              onClick={() => handleSetLang("en")}
+            >
+              EN
+            </button>
+          </div>
+        </header>
+        <section className="admin-app-intro" aria-labelledby="admin-app-title">
+          <p className="eyebrow">{lang === "sv" ? "Skyddad adminyta" : "Protected admin area"}</p>
+          <h1 id="admin-app-title">{lang === "sv" ? "Operationskö" : "Operations queue"}</h1>
+          <p>
+            {lang === "sv"
+              ? "Granska kandidater, exportera labels och kontrollera att D1-adminschemat är redo."
+              : "Review candidates, export labels, and check that the D1 admin schema is ready."}
+          </p>
+        </section>
+        <AdminReviewPanel lang={lang} />
+      </main>
+    );
+  }
+
   return (
     <main>
       <header className="topbar">
@@ -3436,9 +3580,6 @@ export default function App() {
           </a>
           <a href="#method" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <ShieldCheck size={14} weight="bold" /> {t.navMethod}
-          </a>
-          <a href="#admin-review" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <CheckCircle size={14} weight="bold" /> {t.navReview}
           </a>
           <a href="#concierge" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <MagnifyingGlass size={14} weight="bold" /> {t.navConcierge}
@@ -4076,8 +4217,6 @@ export default function App() {
           {t.dataNoteLabel}
           <span>{t.dataNoteText}</span>
         </div>
-
-        <AdminReviewPanel lang={lang} />
 
         <div className="curated-sources-panel" style={{ marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--color-mist)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "12px" }}>
