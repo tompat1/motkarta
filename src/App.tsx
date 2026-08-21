@@ -1946,6 +1946,30 @@ type AdminReviewLabelExport = {
   error?: string;
 };
 
+type AdminReviewDashboard = {
+  source?: string;
+  generatedAt?: string;
+  nextStep?: "export" | "review" | "harvest" | "caught_up";
+  actions?: {
+    harvestNeeded: boolean;
+    reviewNeeded: boolean;
+    exportNeeded: boolean;
+  };
+  counts?: {
+    candidateCount: number;
+    newCandidateCount: number;
+    hiddenGemReadyCount: number;
+    needsEvidenceCount: number;
+    possibleDuplicateCount: number;
+    reviewEventCount: number;
+    unexportedReviewCount: number;
+  };
+  latestReviewAt?: string | null;
+  lastExportedAt?: string | null;
+  exportLogAvailable?: boolean;
+  error?: string;
+};
+
 const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "all"];
 
 function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
@@ -1955,11 +1979,13 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
   const [candidates, setCandidates] = useState<AdminCandidate[]>([]);
   const [reviewNotes, setReviewNotes] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(false);
+  const [loadingDashboard, setLoadingDashboard] = useState(false);
   const [exportingLabels, setExportingLabels] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState("");
   const [labelExportStatus, setLabelExportStatus] = useState("");
+  const [dashboard, setDashboard] = useState<AdminReviewDashboard | null>(null);
 
   const loadCandidates = useCallback(
     async (tokenOverride?: string) => {
@@ -2007,11 +2033,42 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     [adminToken, lang, stateFilter],
   );
 
+  const loadDashboard = useCallback(
+    async (tokenOverride?: string) => {
+      const token = (tokenOverride ?? adminToken).trim();
+      if (!token) {
+        setDashboard(null);
+        return;
+      }
+
+      setLoadingDashboard(true);
+      try {
+        const response = await fetch("/api/admin/review-dashboard", {
+          headers: { "x-motkarta-admin-token": token },
+        });
+        const payload = (await response.json().catch(() => ({}))) as AdminReviewDashboard;
+
+        if (!response.ok) {
+          throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte ladda sessionsstatus." : "Could not load session status."));
+        }
+
+        setDashboard(payload);
+      } catch (dashboardError) {
+        setDashboard(null);
+        setError(dashboardError instanceof Error ? dashboardError.message : String(dashboardError));
+      } finally {
+        setLoadingDashboard(false);
+      }
+    },
+    [adminToken, lang],
+  );
+
   useEffect(() => {
     if (adminToken) {
       void loadCandidates();
+      void loadDashboard();
     }
-  }, [adminToken, loadCandidates]);
+  }, [adminToken, loadCandidates, loadDashboard]);
 
   const handleUnlock = (event: React.FormEvent) => {
     event.preventDefault();
@@ -2022,6 +2079,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     }
     if (token === adminToken) {
       void loadCandidates(token);
+      void loadDashboard(token);
     }
   };
 
@@ -2032,6 +2090,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     setReviewNotes({});
     setStatus("");
     setLabelExportStatus("");
+    setDashboard(null);
     setError(null);
     if (typeof window !== "undefined") {
       window.sessionStorage.removeItem("motkarta_admin_token");
@@ -2098,6 +2157,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
           ? `${candidate.name} uppdaterades till ${lifecycleStateLabel(lifecycleState, lang)}.`
           : `${candidate.name} updated to ${lifecycleStateLabel(lifecycleState, lang)}.`,
       );
+      void loadDashboard();
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : String(saveError));
     } finally {
@@ -2169,6 +2229,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
             : `${candidate.name} marked as a separate place.`,
         );
       }
+      void loadDashboard();
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : String(saveError));
     } finally {
@@ -2186,6 +2247,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
 
     try {
       const response = await fetch("/api/admin/review-labels", {
+        method: "POST",
         headers: { "x-motkarta-admin-token": token },
       });
       const payload = (await response.json().catch(() => ({}))) as AdminReviewLabelExport;
@@ -2219,6 +2281,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
           ? `Exporterade ${filePayload.labels.length} labels och ${filePayload.duplicateResolutions.length} dubblettbeslut.`
           : `Exported ${filePayload.labels.length} labels and ${filePayload.duplicateResolutions.length} duplicate decisions.`,
       );
+      await loadDashboard(token);
     } catch (exportError) {
       setError(exportError instanceof Error ? exportError.message : String(exportError));
     } finally {
@@ -2292,6 +2355,27 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
           {lang === "sv" ? "Ladda om" : "Reload"}
         </button>
       </div>
+
+      {adminToken ? (
+        <div className={`admin-session-dashboard step-${dashboard?.nextStep ?? "loading"}`} aria-live="polite">
+          <div className="admin-session-summary">
+            <span className="admin-session-badge">
+              {dashboardStepLabel(dashboard?.nextStep, loadingDashboard, lang)}
+            </span>
+            <strong>{dashboardHeadline(dashboard, loadingDashboard, lang)}</strong>
+            <small>{dashboardSubcopy(dashboard, loadingDashboard, lang)}</small>
+          </div>
+          <div className="admin-session-metrics">
+            {dashboardMetrics(dashboard, lang).map((metric) => (
+              <div key={metric.key} className={`admin-session-metric tone-${metric.tone}`}>
+                <span className="admin-session-metric-icon">{metric.icon}</span>
+                <span>{metric.label}</span>
+                <b>{metric.value}</b>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       <div className="admin-export-panel">
         <div className="admin-export-copy">
@@ -2520,6 +2604,132 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
       )}
     </section>
   );
+}
+
+function dashboardStepLabel(
+  step: AdminReviewDashboard["nextStep"] | undefined,
+  loading: boolean,
+  lang: Language,
+) {
+  if (loading && !step) {
+    return lang === "sv" ? "Laddar" : "Loading";
+  }
+  const labels: Record<NonNullable<AdminReviewDashboard["nextStep"]>, { sv: string; en: string }> = {
+    export: { sv: "Export nu", en: "Export now" },
+    review: { sv: "Review nu", en: "Review now" },
+    harvest: { sv: "Harvest nu", en: "Harvest now" },
+    caught_up: { sv: "Ikapp", en: "Caught up" },
+  };
+  return labels[step ?? "caught_up"][lang];
+}
+
+function dashboardHeadline(
+  dashboard: AdminReviewDashboard | null,
+  loading: boolean,
+  lang: Language,
+) {
+  if (loading && !dashboard) {
+    return lang === "sv" ? "Läser sessionsstatus" : "Reading session status";
+  }
+  if (!dashboard) {
+    return lang === "sv" ? "Sessionsstatus saknas" : "Session status unavailable";
+  }
+  if (dashboard.exportLogAvailable === false) {
+    return lang === "sv" ? "Exportloggen saknar migration" : "Export log migration missing";
+  }
+  const labels: Record<NonNullable<AdminReviewDashboard["nextStep"]>, { sv: string; en: string }> = {
+    export: { sv: "Exportera labels efter granskning", en: "Export labels after review" },
+    review: { sv: "Starta en review-session", en: "Start a review session" },
+    harvest: { sv: "Hämta mer oberoende evidens", en: "Harvest more independent evidence" },
+    caught_up: { sv: "Inget akut i kön", en: "Nothing urgent in the queue" },
+  };
+  return labels[dashboard.nextStep ?? "caught_up"][lang];
+}
+
+function dashboardSubcopy(
+  dashboard: AdminReviewDashboard | null,
+  loading: boolean,
+  lang: Language,
+) {
+  if (loading && !dashboard) {
+    return lang === "sv" ? "Kontrollerar D1-kö, granskningshändelser och senaste export." : "Checking D1 queue, review events, and latest export.";
+  }
+  if (!dashboard) {
+    return lang === "sv" ? "Lås upp med admin-token för att läsa live-status." : "Unlock with an admin token to read live status.";
+  }
+  if (dashboard.exportLogAvailable === false) {
+    return lang === "sv" ? "Kör senaste D1-migrationerna så export-checkpoints kan sparas." : "Apply the latest D1 migrations so export checkpoints can be saved.";
+  }
+
+  const counts = dashboard.counts;
+  if (dashboard.nextStep === "export") {
+    return lang === "sv"
+      ? `${counts?.unexportedReviewCount ?? 0} granskningsbeslut är nyare än senaste export.`
+      : `${counts?.unexportedReviewCount ?? 0} review decisions are newer than the latest export.`;
+  }
+  if (dashboard.nextStep === "review") {
+    return lang === "sv"
+      ? `${counts?.candidateCount ?? 0} kandidater i kön, ${counts?.hiddenGemReadyCount ?? 0} redo för hidden-gem beslut.`
+      : `${counts?.candidateCount ?? 0} candidates in queue, ${counts?.hiddenGemReadyCount ?? 0} ready for hidden-gem decisions.`;
+  }
+  if (dashboard.nextStep === "harvest") {
+    return lang === "sv"
+      ? `${counts?.needsEvidenceCount ?? 0} kandidater behöver fler eller färskare källsignaler.`
+      : `${counts?.needsEvidenceCount ?? 0} candidates need more or fresher source signals.`;
+  }
+  return lang === "sv" ? "Inga oexporterade beslut och inga tydliga review-blockerare." : "No unexported decisions and no clear review blockers.";
+}
+
+function dashboardMetrics(dashboard: AdminReviewDashboard | null, lang: Language) {
+  const counts = dashboard?.counts;
+  return [
+    {
+      key: "new",
+      label: lang === "sv" ? "Nya kandidater" : "New candidates",
+      value: dashboardMetricValue(counts?.newCandidateCount),
+      icon: <PlusCircle size={15} weight="bold" />,
+      tone: counts?.newCandidateCount ? "review" : "neutral",
+    },
+    {
+      key: "ready",
+      label: lang === "sv" ? "Redo pärlor" : "Ready gems",
+      value: dashboardMetricValue(counts?.hiddenGemReadyCount),
+      icon: <Sparkle size={15} weight="bold" />,
+      tone: counts?.hiddenGemReadyCount ? "review" : "neutral",
+    },
+    {
+      key: "gaps",
+      label: lang === "sv" ? "Källgap" : "Source gaps",
+      value: dashboardMetricValue(counts?.needsEvidenceCount),
+      icon: <Sliders size={15} weight="bold" />,
+      tone: counts?.needsEvidenceCount ? "harvest" : "neutral",
+    },
+    {
+      key: "duplicates",
+      label: lang === "sv" ? "Dubbletter" : "Duplicates",
+      value: dashboardMetricValue(counts?.possibleDuplicateCount),
+      icon: <Scales size={15} weight="bold" />,
+      tone: counts?.possibleDuplicateCount ? "review" : "neutral",
+    },
+    {
+      key: "unexported",
+      label: lang === "sv" ? "Oexporterat" : "Unexported",
+      value: dashboardMetricValue(counts?.unexportedReviewCount),
+      icon: <DownloadSimple size={15} weight="bold" />,
+      tone: counts?.unexportedReviewCount ? "export" : "neutral",
+    },
+    {
+      key: "last-export",
+      label: lang === "sv" ? "Senaste export" : "Last export",
+      value: dashboard?.lastExportedAt ? formatUpdatedDate(dashboard.lastExportedAt) : lang === "sv" ? "Aldrig" : "Never",
+      icon: <CheckCircle size={15} weight="bold" />,
+      tone: dashboard?.lastExportedAt ? "ok" : "neutral",
+    },
+  ];
+}
+
+function dashboardMetricValue(value: number | undefined) {
+  return typeof value === "number" ? String(value) : "...";
 }
 
 function readStoredAdminToken() {

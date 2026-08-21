@@ -205,12 +205,14 @@ wrangler d1 migrations apply <database-name> --remote
 wrangler pages secret put MOTKARTA_ADMIN_TOKEN
 ```
 
-The admin UI is available in the app under `#admin-review`. It reads candidates
-from `/api/admin/candidates`, shows source identity, address/website metadata,
-evidence counts and source gaps, then promotes records by updating only
-`lifecycle_state`, `validation_label`, `validation_notes`, and `updated_at` on
-`establishments`. Hidden-gem promotion requires at least two independent
-non-Google evidence signals.
+The admin UI is available in the app under `#admin-review`. It reads the session
+dashboard from `/api/admin/review-dashboard`, then reads candidates from
+`/api/admin/candidates`. The dashboard shows whether the next operational step
+is review, harvest, export, or caught up. The queue shows source identity,
+address/website metadata, evidence counts and source gaps, then promotes records
+by updating only `lifecycle_state`, `validation_label`, `validation_notes`, and
+`updated_at` on `establishments`. Hidden-gem promotion requires at least two
+independent non-Google evidence signals.
 
 The same review panel flags likely duplicates by exact normalized name+area,
 exact normalized address, or near coordinates with similar names. `Merge` copies
@@ -225,7 +227,9 @@ missing, it returns an unavailable response and never falls back to demo rows.
 
 When a review session is done, open `#admin-review`, enter the admin token, and
 press **Export** in the label export row. The browser downloads a portable
-`human_validation_labels` JSON file directly from the D1 audit events.
+`human_validation_labels` JSON file directly from the D1 audit events. The UI
+export also writes an `admin_label_exports` checkpoint, which lets the dashboard
+show whether any review decisions are newer than the latest export.
 
 The same export can still be produced from the command line when needed:
 

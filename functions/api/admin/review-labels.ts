@@ -1,7 +1,9 @@
 import { buildReviewLabelExport, type ReviewEventExportRow } from "../../../lib/review-labels.ts";
 
 type D1Statement = {
+  bind(...values: unknown[]): D1Statement;
   all<T = Record<string, unknown>>(): Promise<{ results?: T[] }>;
+  run(): Promise<{ success?: boolean; meta?: { changes?: number } }>;
 };
 
 type D1Database = {
@@ -24,6 +26,14 @@ const jsonHeaders = {
 };
 
 export async function onRequestGet(context: EventContext<Env>) {
+  return exportReviewLabels(context, false);
+}
+
+export async function onRequestPost(context: EventContext<Env>) {
+  return exportReviewLabels(context, true);
+}
+
+async function exportReviewLabels(context: EventContext<Env>, recordExport: boolean) {
   const auth = requireAdmin(context.request, context.env);
   if (auth) return auth;
 
@@ -43,13 +53,48 @@ export async function onRequestGet(context: EventContext<Env>) {
   const { results } = await db.prepare(reviewEventExportQuery()).all<ReviewEventExportRow>();
   const output = buildReviewLabelExport(results ?? []);
 
+  if (recordExport) {
+    await recordLabelExport(db, {
+      exportedAt: output.updatedAt,
+      eventCount: results?.length ?? 0,
+      labelCount: output.labels.length,
+      duplicateResolutionCount: output.duplicateResolutions.length,
+    });
+  }
+
   return Response.json(
     {
       source: "d1",
+      exportRecorded: recordExport,
       ...output,
     },
     { headers: jsonHeaders },
   );
+}
+
+async function recordLabelExport(
+  db: D1Database,
+  exportEvent: {
+    exportedAt: string;
+    eventCount: number;
+    labelCount: number;
+    duplicateResolutionCount: number;
+  },
+) {
+  await db
+    .prepare(
+      `INSERT INTO admin_label_exports
+        (exported_at, event_count, label_count, duplicate_resolution_count, exported_by)
+       VALUES (?, ?, ?, ?, ?)`,
+    )
+    .bind(
+      exportEvent.exportedAt,
+      exportEvent.eventCount,
+      exportEvent.labelCount,
+      exportEvent.duplicateResolutionCount,
+      "admin_ui",
+    )
+    .run();
 }
 
 function reviewEventExportQuery() {

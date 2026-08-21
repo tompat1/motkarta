@@ -1481,6 +1481,126 @@ button.concierge-clear-btn:hover {
   opacity: 0.58;
 }
 
+.admin-session-dashboard {
+  background: var(--color-white);
+  border: 1px solid var(--color-ink);
+  display: grid;
+  gap: 0;
+  grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr);
+  margin-top: 10px;
+}
+
+.admin-session-dashboard.step-export {
+  border-color: var(--color-signal);
+}
+
+.admin-session-dashboard.step-harvest {
+  border-color: var(--color-water);
+}
+
+.admin-session-dashboard.step-caught_up {
+  border-color: var(--color-water);
+}
+
+.admin-session-summary {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  display: grid;
+  gap: 7px;
+  padding: 14px;
+}
+
+.admin-session-dashboard.step-export .admin-session-summary {
+  background: var(--color-signal);
+  color: var(--color-white);
+}
+
+.admin-session-dashboard.step-harvest .admin-session-summary,
+.admin-session-dashboard.step-caught_up .admin-session-summary {
+  background: var(--color-water);
+  color: var(--color-white);
+}
+
+.admin-session-badge {
+  border: 1px solid currentColor;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  justify-self: start;
+  letter-spacing: 0.06em;
+  padding: 4px 7px;
+  text-transform: uppercase;
+}
+
+.admin-session-summary strong {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.admin-session-summary small {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.admin-session-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.admin-session-metric {
+  align-content: start;
+  border-bottom: 1px solid var(--color-mist);
+  border-left: 1px solid var(--color-mist);
+  display: grid;
+  gap: 5px;
+  min-height: 86px;
+  padding: 10px;
+}
+
+.admin-session-metric:nth-last-child(-n + 3) {
+  border-bottom: 0;
+}
+
+.admin-session-metric-icon {
+  align-items: center;
+  color: var(--color-stone);
+  display: inline-flex;
+}
+
+.admin-session-metric span:not(.admin-session-metric-icon) {
+  color: var(--color-stone);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.admin-session-metric b {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.admin-session-metric.tone-review .admin-session-metric-icon,
+.admin-session-metric.tone-review b,
+.admin-session-metric.tone-export .admin-session-metric-icon,
+.admin-session-metric.tone-export b {
+  color: var(--color-signal);
+}
+
+.admin-session-metric.tone-harvest .admin-session-metric-icon,
+.admin-session-metric.tone-harvest b,
+.admin-session-metric.tone-ok .admin-session-metric-icon,
+.admin-session-metric.tone-ok b {
+  color: var(--color-water);
+}
+
 .admin-export-panel {
   align-items: center;
   background: var(--color-white);
@@ -1902,6 +2022,22 @@ footer {
   .admin-export-panel {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .admin-session-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-session-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-session-metric:nth-last-child(-n + 3) {
+    border-bottom: 1px solid var(--color-mist);
+  }
+
+  .admin-session-metric:nth-last-child(-n + 2) {
+    border-bottom: 0;
   }
 
   .admin-export-btn {

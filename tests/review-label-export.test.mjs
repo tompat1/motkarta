@@ -6,7 +6,10 @@ import { join } from "node:path";
 import { promisify } from "node:util";
 import test from "node:test";
 
-import { onRequestGet as getReviewLabels } from "../functions/api/admin/review-labels.ts";
+import {
+  onRequestGet as getReviewLabels,
+  onRequestPost as postReviewLabels,
+} from "../functions/api/admin/review-labels.ts";
 import { buildReviewLabelExport } from "../lib/review-labels.ts";
 
 const execFileAsync = promisify(execFile);
@@ -169,16 +172,63 @@ test("review labels endpoint exports D1 admin review events", async () => {
   assert.match(db.queries[0], /FROM admin_review_events/);
 });
 
+test("review labels POST records an export checkpoint", async () => {
+  const db = fakeReviewLabelsD1([
+    {
+      event_id: 3,
+      establishment_id: 10,
+      name: "Quiet Counter",
+      candidate_source_type: "municipal_unmatched",
+      candidate_source_id: "source-10",
+      validation_label: "known_hidden_gem",
+      validation_notes: "Two independent signals.",
+      action: "promote",
+      reviewed_at: "2026-08-21T10:00:00Z",
+    },
+  ]);
+
+  const response = await postReviewLabels({
+    request: new Request("https://motkarta.test/api/admin/review-labels", {
+      method: "POST",
+      headers: { "x-motkarta-admin-token": adminToken },
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.exportRecorded, true);
+  assert.equal(db.exports.length, 1);
+  assert.equal(db.exports[0].eventCount, 1);
+  assert.equal(db.exports[0].labelCount, 1);
+  assert.equal(db.exports[0].duplicateResolutionCount, 0);
+});
+
 function fakeReviewLabelsD1(rows) {
-  return {
+  const db = {
     queries: [],
+    exports: [],
     prepare(query) {
       this.queries.push(query);
       return {
+        values: [],
+        bind(...values) {
+          this.values = values;
+          return this;
+        },
         async all() {
           return { results: rows };
+        },
+        async run() {
+          if (query.includes("INSERT INTO admin_label_exports")) {
+            const [exportedAt, eventCount, labelCount, duplicateResolutionCount, exportedBy] = this.values;
+            db.exports.push({ exportedAt, eventCount, labelCount, duplicateResolutionCount, exportedBy });
+            return { success: true, meta: { changes: 1 } };
+          }
+          return { success: true, meta: { changes: 0 } };
         },
       };
     },
   };
+  return db;
 }

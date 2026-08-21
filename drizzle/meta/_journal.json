@@ -43,6 +43,13 @@
       "when": 1787329200000,
       "tag": "0005_duplicate_resolution",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1787332800000,
+      "tag": "0006_admin_label_exports",
+      "breakpoints": true
     }
   ]
 }
