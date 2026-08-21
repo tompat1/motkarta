@@ -70,6 +70,7 @@ for (const entry of entries) {
   const district = clean(entry.area) || "Stockholm";
   const address = clean(entry.address);
   const website = clean(entry.website);
+  const sourceUrl = clean(entry.sourceUrl);
   const sourceName = clean(entry.sourceName) || sourceTypeLabel(sourceType);
   const reviewStatus = clean(entry.reviewStatus);
   const allowedUse = clean(entry.allowedUse);
@@ -110,12 +111,18 @@ for (const entry of entries) {
   );
 
   lines.push(
-    `INSERT INTO evidence_sources (establishment_id, source_type, source_name, url, confidence, captured_at, summary) SELECT ${establishmentRef}, ${sql(evidenceSourceType)}, ${sql(sourceName)}, ${sql(website)}, ${sql(confidenceForSource(sourceType))}, ${sql(capturedAt)}, ${sql(evidenceSummary)} WHERE ${establishmentRef} IS NOT NULL AND NOT EXISTS (SELECT 1 FROM evidence_sources WHERE establishment_id = ${establishmentRef} AND source_type = ${sql(evidenceSourceType)} AND source_name = ${sql(sourceName)});`,
+    `INSERT INTO evidence_sources (establishment_id, source_type, source_name, url, confidence, captured_at, summary) SELECT ${establishmentRef}, ${sql(evidenceSourceType)}, ${sql(sourceName)}, ${sql(sourceUrl || website)}, ${sql(confidenceForSource(sourceType))}, ${sql(capturedAt)}, ${sql(evidenceSummary)} WHERE ${establishmentRef} IS NOT NULL AND NOT EXISTS (SELECT 1 FROM evidence_sources WHERE establishment_id = ${establishmentRef} AND source_type = ${sql(evidenceSourceType)} AND source_name = ${sql(sourceName)});`,
   );
 
   lines.push(
     `INSERT INTO establishment_tags (establishment_id, tag) SELECT ${establishmentRef}, 'Candidate' WHERE ${establishmentRef} IS NOT NULL AND NOT EXISTS (SELECT 1 FROM establishment_tags WHERE establishment_id = ${establishmentRef} AND tag = 'Candidate');`,
   );
+
+  for (const tag of normalizedTags(entry.tags)) {
+    lines.push(
+      `INSERT INTO establishment_tags (establishment_id, tag) SELECT ${establishmentRef}, ${sql(tag)} WHERE ${establishmentRef} IS NOT NULL AND NOT EXISTS (SELECT 1 FROM establishment_tags WHERE establishment_id = ${establishmentRef} AND tag = ${sql(tag)});`,
+    );
+  }
 }
 
 lines.push("COMMIT;");
@@ -175,13 +182,14 @@ function normalizeKind(entry) {
 
 function normalizeEvidenceSourceType(sourceType) {
   if (sourceType === "osm_baseline") return "osm";
+  if (sourceType === "curated_submission") return "editorial";
   return sourceType;
 }
 
 function confidenceForSource(sourceType) {
   if (sourceType === "osm_baseline") return 0.65;
   if (sourceType === "municipal_unmatched") return 0.7;
-  if (sourceType === "curated_submission") return 0.55;
+  if (sourceType === "curated_submission") return 0.72;
   if (sourceType === "google_metadata") return 0.2;
   return 0.5;
 }
@@ -212,6 +220,20 @@ function sourceTypeLabel(sourceType) {
   if (sourceType === "curated_submission") return "Curated submission";
   if (sourceType === "osm_baseline") return "OpenStreetMap";
   return "Candidate queue";
+}
+
+function normalizedTags(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return Array.from(
+    new Set(
+      value
+        .map((tag) => clean(tag))
+        .filter(Boolean)
+        .filter((tag) => !["candidate"].includes(tag.toLowerCase())),
+    ),
+  );
 }
 
 function assertNoForbiddenValueFields(value, path = []) {

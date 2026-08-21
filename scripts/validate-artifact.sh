@@ -25,11 +25,21 @@ node -e "
 const fs = require('node:fs');
 const payload = JSON.parse(fs.readFileSync('dist/data/places.json', 'utf8'));
 const first = payload.places?.[0];
-if (payload.source !== 'osm' || !payload.places?.length || typeof first?.latitude !== 'number' || typeof first?.longitude !== 'number') {
-  console.error('dist/data/places.json must contain OSM places with latitude/longitude.');
+const allowedPayloadSources = new Set(['osm', 'osm_curated_open_sources']);
+if (!allowedPayloadSources.has(payload.source) || !payload.places?.length || typeof first?.latitude !== 'number' || typeof first?.longitude !== 'number') {
+  console.error('dist/data/places.json must contain OSM/open curated places with latitude/longitude.');
   process.exit(69);
 }
-const forbiddenText = /Solkant|Visit Stockholm|Curated|Google Places/i;
+const allowedSourceNames = new Set([
+  'anders husa & kaitlin orr guide',
+  'openstreetmap',
+  'openstreetmap contributors',
+  'specialty coffee sweden registry',
+  'stockholms stad livsmedelskontroll',
+  'visit stockholm (officiella stadsguiden)',
+  'white guide nordic',
+]);
+const forbiddenText = /Google Places|google_metadata|rating-only|review-only|demo fixture/i;
 const forbiddenFields = [
   'ratingAverage',
   'reliableRatingCount',
@@ -41,11 +51,12 @@ const forbiddenFields = [
 ];
 for (const place of payload.places) {
   if (forbiddenText.test(JSON.stringify(place))) {
-    console.error('dist/data/places.json contains curated/demo/commercial source text.');
+    console.error('dist/data/places.json contains demo or commercial source text.');
     process.exit(69);
   }
-  if (place.sourceName !== 'OpenStreetMap') {
-    console.error('dist/data/places.json contains a non-OSM static source.');
+  const normalizedSource = String(place.sourceName || '').trim().toLowerCase();
+  if (!allowedSourceNames.has(normalizedSource)) {
+    console.error('dist/data/places.json contains an unsupported static source:', place.sourceName);
     process.exit(69);
   }
   for (const field of forbiddenFields) {
@@ -57,4 +68,4 @@ for (const place of payload.places) {
 }
 "
 
-echo "Validated Vite artifact: admin aliases, bundled assets and neutral OSM coordinate data are present."
+echo "Validated Vite artifact: admin aliases, bundled assets and neutral OSM/open curated coordinate data are present."

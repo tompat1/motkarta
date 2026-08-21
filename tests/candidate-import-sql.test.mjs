@@ -31,6 +31,18 @@ test("candidate import SQL upserts neutral metadata and preserves reviewed state
           allowedUse: "Candidate existence evidence only.",
         },
         {
+          id: "curated-submission:visit-stockholm-curated",
+          state: "verified",
+          sourceType: "curated_submission",
+          sourceId: "visit-stockholm-curated",
+          name: "Curated Trattoria",
+          address: "Guidegatan 4, Stockholm",
+          website: "https://curated.example",
+          sourceUrl: "https://www.visitstockholm.se/",
+          sourceName: "Visit Stockholm (Officiella Stadsguiden)",
+          tags: ["Curated", "Visit Stockholm"],
+        },
+        {
           id: "osm-baseline:1",
           state: "baseline",
           sourceType: "osm_baseline",
@@ -50,6 +62,9 @@ test("candidate import SQL upserts neutral metadata and preserves reviewed state
   assert.match(generatedSql, /ON CONFLICT\(candidate_source_type, candidate_source_id\)/);
   assert.match(generatedSql, /lifecycle_state = CASE WHEN establishments.lifecycle_state IN \('verified', 'featured'\)/);
   assert.match(generatedSql, /INSERT INTO evidence_sources/);
+  assert.match(generatedSql, /'curated_submission', 'visit-stockholm-curated'/);
+  assert.match(generatedSql, /'editorial', 'Visit Stockholm \(Officiella Stadsguiden\)', 'https:\/\/www\.visitstockholm\.se\/'/);
+  assert.match(generatedSql, /'Visit Stockholm'/);
   assert.doesNotMatch(generatedSql, /Baseline Place/);
   assert.doesNotMatch(generatedSql, /ratingAverage|reviewCount|priceLevel|prominence/);
 });

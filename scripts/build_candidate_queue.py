@@ -178,23 +178,34 @@ def curated_submission_entries(path: Path | None, validations: dict[str, dict[st
     if path is None or not path.exists():
         return []
     payload = json.loads(path.read_text(encoding="utf-8"))
-    records = payload.get("submissions", payload if isinstance(payload, list) else [])
+    records = payload.get("submissions") or payload.get("places") or (payload if isinstance(payload, list) else [])
     entries = []
     for index, record in enumerate(records):
         match = record.get("match", {}) if isinstance(record, dict) else {}
         name = clean_text(record.get("name") or match.get("name"))
         validation = validations.get(normalized_name(name)) or {}
+        default_state = clean_text(record.get("state") or record.get("lifecycleState") or "candidate")
+        source_id = clean_text(record.get("sourceId")) or normalized_name(name) or str(index)
         entry = {
-            "id": f"curated-submission:{normalized_name(name) or index}",
-            "state": apply_validation_state("candidate", validation),
+            "id": f"curated-submission:{source_id}",
+            "state": apply_validation_state(default_state, validation),
             "sourceType": "curated_submission",
+            "sourceId": source_id,
             "name": name,
+            "kind": clean_text(record.get("kind")),
             "address": clean_text(record.get("address") or match.get("address")),
+            "area": clean_text(record.get("area")),
+            "latitude": optional_float(record.get("latitude")),
+            "longitude": optional_float(record.get("longitude")),
+            "website": clean_text(record.get("website")),
+            "sourceUrl": clean_text(record.get("sourceUrl")),
             "sourceName": first_evidence_source_name(record),
+            "capturedAt": clean_text(record.get("lastUpdated") or record.get("capturedAt")),
             "validationLabel": validation.get("label"),
             "validationNotes": validation.get("notes"),
             "reviewStatus": "needs_entity_match_and_source_review",
             "allowedUse": "Candidate evidence only; summaries must be original and source-attributed.",
+            "tags": record.get("tags") if isinstance(record.get("tags"), list) else [],
         }
         entries.append(drop_empty(entry))
     return entries

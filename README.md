@@ -313,6 +313,21 @@ npm run guides:seed
 
 `examples/independent_guides.sample.json` shows the expected format.
 
+Curated open sources may also add or enrich public places when the record is
+neutral and source-attributed. The approved production source set currently
+includes Anders Husa & Kaitlin Orr Guide, White Guide Nordic, Specialty Coffee
+Sweden Registry, Visit Stockholm, Stockholm City food-control data, and
+OpenStreetMap. These sources must not import ratings, review counts, price
+levels, popularity, ranking, copied review text, or synthetic engagement.
+
+```bash
+python3 scripts/sync_curated_sources.py
+```
+
+`data/curated_open_places.json` is the neutral curated source file. The MVP
+pipeline also runs this sync after regenerating the OSM baseline so curated
+open-source additions are not erased by a refresh.
+
 ## Score snapshots
 
 Scores can be recomputed into `score_snapshots` after importing OSM and evidence.

@@ -1,0 +1,85 @@
+{
+  "policy": "Curated open-source records may add or enrich places as source-attributed neutral metadata. No ratings, review counts, Google value fields, price levels, popularity, ranking, copied review text, or synthetic engagement are allowed here.",
+  "places": [
+    {
+      "sourceId": "visit-stockholm:mxco",
+      "name": "MXCO",
+      "kind": "Restaurant",
+      "cuisine": "mexican",
+      "area": "Norrmalm",
+      "address": "Sveavägen 64, Stockholm",
+      "note": "Mexico City-style taqueria and mezcal bar with nixtamal-focused tacos.",
+      "tags": ["Mexican", "Taqueria", "Nixtamal", "Mezcal", "Curated", "Visit Stockholm"],
+      "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
+      "sourceUrl": "https://www.visitstockholm.se/",
+      "evidenceLabel": "Visit Stockholm (Officiella Stadsguiden)",
+      "website": "https://www.mxco.se",
+      "latitude": 59.3382,
+      "longitude": 18.0588,
+      "mainstreamExposure": 55,
+      "daysSinceFreshEvidence": 90,
+      "lastUpdated": "2026-08-22",
+      "lifecycleState": "verified",
+      "evidence": {
+        "independentEditorial": 1,
+        "verifiedAttributes": 30,
+        "dataFreshness": 80,
+        "confidence": "Medium"
+      }
+    },
+    {
+      "sourceId": "visit-stockholm:bambino",
+      "name": "Bambino",
+      "kind": "Restaurant",
+      "cuisine": "italian",
+      "area": "Södermalm",
+      "address": "Götgatan 78, Stockholm",
+      "note": "Italian trattoria with pasta, pizza, and natural wine in Södermalm.",
+      "tags": ["Italian", "Trattoria", "Pasta", "Pizza", "Natural Wine", "Curated", "Visit Stockholm", "White Guide Nordic"],
+      "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
+      "sourceUrl": "https://www.visitstockholm.se/",
+      "evidenceLabel": "Visit Stockholm (Officiella Stadsguiden) · White Guide Nordic",
+      "website": "https://bambinostockholm.se",
+      "latitude": 59.3118,
+      "longitude": 18.0735,
+      "mainstreamExposure": 45,
+      "daysSinceFreshEvidence": 90,
+      "lastUpdated": "2026-08-22",
+      "lifecycleState": "verified",
+      "evidence": {
+        "specialistGuide": 0.6,
+        "independentEditorial": 1,
+        "verifiedAttributes": 35,
+        "dataFreshness": 80,
+        "confidence": "Medium"
+      }
+    },
+    {
+      "sourceId": "visit-stockholm:solkant",
+      "name": "Solkant",
+      "kind": "Bakery",
+      "cuisine": "bakery",
+      "area": "Vasastan",
+      "address": "Hälsingegatan 2, Stockholm",
+      "note": "Sourdough bakery candidate with fika and filter-coffee relevance.",
+      "tags": ["Sourdough", "Cardamom bun", "Fika", "Bakery", "Curated", "Visit Stockholm", "White Guide Nordic"],
+      "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
+      "sourceUrl": "https://www.visitstockholm.se/",
+      "evidenceLabel": "Visit Stockholm (Officiella Stadsguiden) · White Guide Nordic",
+      "website": "https://solkantbageri.se",
+      "latitude": 59.3402,
+      "longitude": 18.0468,
+      "mainstreamExposure": 40,
+      "daysSinceFreshEvidence": 90,
+      "lastUpdated": "2026-08-22",
+      "lifecycleState": "verified",
+      "evidence": {
+        "specialistGuide": 0.6,
+        "independentEditorial": 1,
+        "verifiedAttributes": 35,
+        "dataFreshness": 80,
+        "confidence": "Medium"
+      }
+    }
+  ]
+}

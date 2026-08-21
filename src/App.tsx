@@ -3924,8 +3924,8 @@ export default function App() {
                   </div>
                   <div className="curated-attribution-body">
                     {lang === "sv"
-                      ? "Guiderekommendationer & citat återges med källhänvisning till Anders Husa & Kaitlin Orr Guide (andershusa.com). Tillsynsdata från Stockholms stad (CC0). Kartdata från OpenStreetMap (ODbL). Alla upphovsrätter tillhör respektive skapare."
-                      : "Guide recommendations & quotes cited with attribution to Anders Husa & Kaitlin Orr Guide (andershusa.com). Inspection data from Stockholm City (CC0). Map data from OpenStreetMap (ODbL). All copyrights belong to their respective owners."}
+                      ? "Kurerade källor används som källhänvisad plats- och evidensdata, inte som importerade betyg. Guidedata kan komma från Anders Husa & Kaitlin Orr Guide, White Guide Nordic, Specialty Coffee Sweden Registry och Visit Stockholm. Tillsynsdata från Stockholms stad (CC0). Kartdata från OpenStreetMap (ODbL)."
+                      : "Curated sources are used as attributed place and evidence data, not imported ratings. Guide data may come from Anders Husa & Kaitlin Orr Guide, White Guide Nordic, Specialty Coffee Sweden Registry, and Visit Stockholm. Inspection data from Stockholm City (CC0). Map data from OpenStreetMap (ODbL)."}
                   </div>
                 </div>
                 <ExternalMapLinks place={active} lang={lang} />

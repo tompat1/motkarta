@@ -21,6 +21,7 @@ from motkarta.pipeline import (
     write_place_inputs_json,
     write_rag_corpus,
 )
+from scripts.sync_curated_sources import sync_curated_sources
 
 
 def run_pipeline(
@@ -58,7 +59,9 @@ def run_pipeline(
     write_geojson(scored, output_dir / "stockholm_food_places.geojson")
     write_rag_corpus(scored, output_dir / "rag_corpus.jsonl")
     if public_data_dir is not None:
-        write_place_inputs_json(scored, public_data_dir / "places.json")
+        public_places_path = public_data_dir / "places.json"
+        write_place_inputs_json(scored, public_places_path)
+        sync_curated_sources(public_places_path, quiet=True)
 
     food_control_path = data_dir / "stockholm_food_control.csv"
     matches_path = data_dir / "stockholm_food_control_matches.csv"

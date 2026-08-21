@@ -1,175 +1,274 @@
 #!/usr/bin/env python3
-"""
-sync_curated_sources.py - Sync New Restaurants from Curated Open Sources
+"""Merge neutral curated open-source place records into the public dataset.
 
-Fetches and verifies new restaurant entries from curated official sources:
-- Visit Stockholm (Officiella Stadsguiden)
-- Anders Husa & Kaitlin Orr Guide
-- White Guide Nordic
-- Specialty Coffee Sweden Registry
-
-Adds missing places into public/data/places.json with complete evidence signals.
+Curated sources are allowed to add or enrich places, but they are not allowed to
+bring ratings, review counts, Google popularity, price levels, or synthetic
+engagement into production.
 """
 
+from __future__ import annotations
+
+import argparse
 import json
-import os
 import re
-import urllib.request
+import zlib
+from pathlib import Path
+from typing import Any
 
-DATA_FILE = os.path.join(os.path.dirname(__file__), "..", "public", "data", "places.json")
 
-# Curated reference places to ensure present
-KNOWN_CURATED_PLACES = [
-    {
-        "id": 99936,
-        "name": "MXCO",
-        "kind": "Restaurant",
-        "cuisine": "mexican",
-        "area": "Central Stockholm",
-        "address": "Klarabergsviadukten 65, 111 64 Stockholm",
-        "note": "Authentic Mexico City taqueria & mezcalaria pressing fresh nixtamal tortillas to order. Featured by Visit Stockholm & ELLE.",
-        "tags": ["Mexican", "Taqueria", "Tacos al Pastor", "Nixtamal", "Mezcal", "Curated", "Visit Stockholm"],
-        "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
-        "evidenceLabel": "Visit Stockholm · ELLE · Editorial",
-        "website": "https://www.mxco.se",
-        "ratingAverage": 4.8,
-        "reliableRatingCount": 520,
-        "reviewCount": 680,
-        "categoryMeanRating": 4.25,
-        "categoryPopularityRaw": 0.85,
-        "localPopularityPercentile": 0.95,
-        "priceLevel": 2,
-        "mainstreamExposure": 55,
-        "ageDays": 450,
-        "daysSinceFreshEvidence": 2,
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_DATA_FILE = ROOT / "public" / "data" / "places.json"
+DEFAULT_CURATED_FILE = ROOT / "data" / "curated_open_places.json"
+
+ALLOWED_SOURCE_NAMES = {
+    "anders husa & kaitlin orr guide",
+    "openstreetmap",
+    "openstreetmap contributors",
+    "specialty coffee sweden registry",
+    "stockholms stad livsmedelskontroll",
+    "visit stockholm (officiella stadsguiden)",
+    "white guide nordic",
+}
+
+FORBIDDEN_VALUE_FIELDS = {
+    "rating",
+    "ratingAverage",
+    "reliableRatingCount",
+    "reviewCount",
+    "review_count",
+    "user_ratings_total",
+    "userRatingsTotal",
+    "reviews",
+    "price_level",
+    "priceLevel",
+    "categoryMeanRating",
+    "categoryPopularityRaw",
+    "localPopularityPercentile",
+    "score",
+    "scores",
+    "popularity",
+    "prominence",
+    "editorial_summary",
+    "editorialSummary",
+}
+
+NEUTRAL_VALUE_FIELDS = {
+    "ratingAverage": 0,
+    "reliableRatingCount": 0,
+    "reviewCount": 0,
+    "categoryMeanRating": 0,
+    "categoryPopularityRaw": 0,
+    "localPopularityPercentile": 0,
+    "priceLevel": 0,
+}
+
+NEUTRAL_ENGAGEMENT = {
+    "searchImpressions": 0,
+    "profileViews": 0,
+    "mapMarkerClicks": 0,
+    "saves": 0,
+    "directionRequests": 0,
+    "confirmedVisits": 0,
+    "repeatVisits": 0,
+    "recommendations": 0,
+    "recentSaves": 0,
+}
+
+DEFAULT_EVIDENCE = {
+    "specialistGuide": 0,
+    "independentEditorial": 1,
+    "verifiedUserRating": 0,
+    "repeatVisits": 0,
+    "recentReviews": 0,
+    "credibleReviewers": 0,
+    "inspectionStatus": 0,
+    "verifiedAttributes": 30,
+    "dataFreshness": 80,
+    "confidence": "Medium",
+}
+
+
+def sync_curated_sources(
+    data_file: Path = DEFAULT_DATA_FILE,
+    curated_file: Path = DEFAULT_CURATED_FILE,
+    quiet: bool = False,
+) -> dict[str, int]:
+    if not data_file.exists():
+        raise FileNotFoundError(f"{data_file} not found")
+    if not curated_file.exists():
+        raise FileNotFoundError(f"{curated_file} not found")
+
+    payload = json.loads(data_file.read_text(encoding="utf-8"))
+    places = payload.get("places", []) if isinstance(payload, dict) else payload
+    if not isinstance(places, list):
+        raise ValueError(f"{data_file} does not contain a places list.")
+
+    curated_payload = json.loads(curated_file.read_text(encoding="utf-8"))
+    curated_places = curated_payload.get("places", curated_payload)
+    if not isinstance(curated_places, list):
+        raise ValueError(f"{curated_file} must contain a places array.")
+
+    existing = {place_key(place) for place in places}
+    added = 0
+    updated = 0
+
+    for record in curated_places:
+        assert_no_forbidden_value_fields(record)
+        place = neutral_place(record)
+        key = place_key(place)
+        if key in existing:
+            for index, existing_place in enumerate(places):
+                if place_key(existing_place) == key:
+                    places[index] = merge_existing_place(existing_place, place)
+                    updated += 1
+                    break
+            continue
+
+        places.insert(0, place)
+        existing.add(key)
+        added += 1
+        if not quiet:
+            print(f"Synced curated open-source place: {place['name']} ({place['sourceName']})")
+
+    payload["places"] = places
+    payload["source"] = "osm_curated_open_sources"
+    payload["totalPlaces"] = len(places)
+    data_file.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    if not quiet:
+        print(f"Curated source sync complete: {added} added, {updated} updated, {len(places)} total places.")
+    return {"added": added, "updated": updated, "total": len(places)}
+
+
+def neutral_place(record: dict[str, Any]) -> dict[str, Any]:
+    source_name = clean_text(record.get("sourceName"))
+    if normalized_source(source_name) not in ALLOWED_SOURCE_NAMES:
+        raise ValueError(f"Unsupported curated source: {source_name}")
+
+    latitude = optional_float(record.get("latitude"))
+    longitude = optional_float(record.get("longitude"))
+    place = {
+        "id": int(record.get("id") or stable_numeric_id(record)),
+        "name": clean_text(record.get("name")),
+        "kind": clean_text(record.get("kind") or "Restaurant"),
+        "cuisine": clean_text(record.get("cuisine")),
+        "area": clean_text(record.get("area") or "Stockholm"),
+        "address": clean_text(record.get("address")),
+        "note": clean_text(record.get("note")),
+        "tags": [clean_text(tag) for tag in record.get("tags", []) if clean_text(tag)],
+        "sourceName": source_name,
+        "sourceUrl": clean_text(record.get("sourceUrl")),
+        "lastUpdated": clean_text(record.get("lastUpdated")),
+        "evidenceLabel": clean_text(record.get("evidenceLabel") or source_name),
+        "mainstreamExposure": optional_number(record.get("mainstreamExposure"), 55),
+        "ageDays": optional_number(record.get("ageDays"), 0),
+        "daysSinceFreshEvidence": optional_number(record.get("daysSinceFreshEvidence"), 90),
+        "lifecycleState": clean_text(record.get("lifecycleState") or record.get("state") or "verified"),
         "evidence": {
-            "specialistGuide": 1,
-            "independentEditorial": 1,
-            "verifiedUserRating": 1,
-            "repeatVisits": 85,
-            "recentReviews": 90,
-            "credibleReviewers": 82,
-            "inspectionStatus": 98,
-            "verifiedAttributes": 92,
-            "dataFreshness": 96,
-            "confidence": "High"
+            **DEFAULT_EVIDENCE,
+            **{key: value for key, value in record.get("evidence", {}).items() if key in DEFAULT_EVIDENCE},
         },
-        "latitude": 59.3308,
-        "longitude": 18.0560,
-        "engagement": {"searchImpressions": 5400, "profileViews": 1800, "mapMarkerClicks": 1100, "saves": 620, "directionRequests": 410, "confirmedVisits": 290, "repeatVisits": 140, "recommendations": 115, "recentSaves": 190},
-        "x": 48,
-        "y": 38
-    },
-    {
-        "id": 99937,
-        "name": "Bambino",
-        "kind": "Restaurant",
-        "cuisine": "italian",
-        "area": "Södermalm",
-        "address": "Götgatan 78, 118 30 Stockholm",
-        "note": "Playful Italian trattoria serving hand-rolled pasta, wood-fired pizza and natural wines in Södermalm.",
-        "tags": ["Italian", "Trattoria", "Pasta", "Pizza", "Natural Wine", "Curated", "Visit Stockholm"],
-        "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
-        "evidenceLabel": "Visit Stockholm · White Guide · Editorial",
-        "website": "https://bambinostockholm.se",
-        "ratingAverage": 4.7,
-        "reliableRatingCount": 380,
-        "reviewCount": 490,
-        "categoryMeanRating": 4.2,
-        "categoryPopularityRaw": 0.82,
-        "localPopularityPercentile": 0.92,
-        "priceLevel": 2,
-        "mainstreamExposure": 50,
-        "ageDays": 320,
-        "daysSinceFreshEvidence": 4,
-        "evidence": {
-            "specialistGuide": 1,
-            "independentEditorial": 1,
-            "verifiedUserRating": 1,
-            "repeatVisits": 78,
-            "recentReviews": 84,
-            "credibleReviewers": 78,
-            "inspectionStatus": 95,
-            "verifiedAttributes": 88,
-            "dataFreshness": 94,
-            "confidence": "High"
-        },
-        "latitude": 59.3118,
-        "longitude": 18.0735,
-        "engagement": {"searchImpressions": 4800, "profileViews": 1550, "mapMarkerClicks": 980, "saves": 530, "directionRequests": 370, "confirmedVisits": 240, "repeatVisits": 120, "recommendations": 95, "recentSaves": 160},
-        "x": 52,
-        "y": 78
-    },
-    {
-        "id": 99938,
-        "name": "Solkant",
-        "kind": "Bakery",
-        "cuisine": "bakery",
-        "area": "Vasastan",
-        "address": "Hälsingegatan 2, 113 23 Stockholm",
-        "note": "Artisanal sourdough bakery known for cardamon knots, seasonal fruit tarts, and filter coffee.",
-        "tags": ["Organic flour", "Sourdough", "Cardamom bun", "Fika", "Curated", "Visit Stockholm"],
-        "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
-        "evidenceLabel": "Visit Stockholm · White Guide · Editorial",
-        "website": "https://solkantbageri.se",
-        "ratingAverage": 4.9,
-        "reliableRatingCount": 610,
-        "reviewCount": 740,
-        "categoryMeanRating": 4.3,
-        "categoryPopularityRaw": 0.88,
-        "localPopularityPercentile": 0.98,
-        "priceLevel": 2,
-        "mainstreamExposure": 45,
-        "ageDays": 280,
-        "daysSinceFreshEvidence": 1,
-        "evidence": {
-            "specialistGuide": 1,
-            "independentEditorial": 1,
-            "verifiedUserRating": 1,
-            "repeatVisits": 92,
-            "recentReviews": 95,
-            "credibleReviewers": 90,
-            "inspectionStatus": 99,
-            "verifiedAttributes": 95,
-            "dataFreshness": 98,
-            "confidence": "High"
-        },
-        "latitude": 59.3402,
-        "longitude": 18.0468,
-        "engagement": {"searchImpressions": 6200, "profileViews": 2100, "mapMarkerClicks": 1400, "saves": 780, "directionRequests": 520, "confirmedVisits": 380, "repeatVisits": 190, "recommendations": 160, "recentSaves": 240},
-        "x": 38,
-        "y": 18
+        "engagement": NEUTRAL_ENGAGEMENT.copy(),
+        "latitude": latitude,
+        "longitude": longitude,
+        "x": optional_number(record.get("x"), coordinate_to_map_position(longitude, 17.75, 18.25)),
+        "y": optional_number(record.get("y"), 100 - coordinate_to_map_position(latitude, 59.2, 59.47)),
     }
-]
+    if record.get("website"):
+        place["website"] = clean_text(record.get("website"))
+    place.update(NEUTRAL_VALUE_FIELDS)
+    return drop_empty(place)
 
-def main():
-    if not os.path.exists(DATA_FILE):
-        print("❌ dataset places.json not found")
-        return
 
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        data = json.load(f)
+def merge_existing_place(existing: dict[str, Any], curated: dict[str, Any]) -> dict[str, Any]:
+    merged = {**existing}
+    for key in ["sourceName", "sourceUrl", "evidenceLabel", "lastUpdated", "lifecycleState", "website"]:
+        if curated.get(key):
+            merged[key] = curated[key]
+    for key in ["note", "address", "cuisine", "area", "kind"]:
+        if curated.get(key) and not merged.get(key):
+            merged[key] = curated[key]
 
-    places = data.get("places", [])
-    existing_keys = {f"{p['name'].lower().strip()}_{p.get('area', '').lower().strip()}" for p in places}
+    merged["tags"] = sorted(set([*existing.get("tags", []), *curated.get("tags", [])]))
+    merged["evidence"] = {**existing.get("evidence", {}), **curated.get("evidence", {})}
+    merged["engagement"] = NEUTRAL_ENGAGEMENT.copy()
+    merged.update(NEUTRAL_VALUE_FIELDS)
+    return merged
 
-    added_count = 0
-    for new_place in KNOWN_CURATED_PLACES:
-        key = f"{new_place['name'].lower().strip()}_{new_place.get('area', '').lower().strip()}"
-        if key not in existing_keys:
-            places.insert(0, new_place)
-            existing_keys.add(key)
-            added_count += 1
-            print(f"✨ Synced new curated restaurant: {new_place['name']} ({new_place['area']})")
 
-    if added_count > 0:
-        data["places"] = places
-        data["totalPlaces"] = len(places)
-        with open(DATA_FILE, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        print(f"🎉 Successfully synced {added_count} curated places into places.json!")
-    else:
-        print("ℹ️ All curated places are already synced and up to date.")
+def assert_no_forbidden_value_fields(payload: Any) -> None:
+    found = forbidden_value_fields(payload)
+    if found:
+        raise ValueError(f"Curated source data contains forbidden value fields: {', '.join(sorted(found))}")
+
+
+def forbidden_value_fields(payload: Any, path: tuple[str, ...] = ()) -> set[str]:
+    found: set[str] = set()
+    if isinstance(payload, dict):
+        for key, value in payload.items():
+            if key in FORBIDDEN_VALUE_FIELDS:
+                found.add(".".join((*path, key)))
+            found.update(forbidden_value_fields(value, (*path, key)))
+    elif isinstance(payload, list):
+        for index, item in enumerate(payload):
+            found.update(forbidden_value_fields(item, (*path, str(index))))
+    return found
+
+
+def place_key(place: dict[str, Any]) -> str:
+    return f"{normalized_name(place.get('name'))}:{normalized_name(place.get('address') or place.get('area'))}"
+
+
+def stable_numeric_id(record: dict[str, Any]) -> int:
+    source_id = clean_text(record.get("sourceId"))
+    key = source_id or f"{record.get('sourceName')}:{record.get('name')}:{record.get('address')}"
+    return zlib.crc32(key.encode("utf-8"))
+
+
+def coordinate_to_map_position(value: float | None, min_value: float, max_value: float) -> float:
+    if value is None:
+        return 50
+    return round(min(92, max(8, ((value - min_value) / (max_value - min_value)) * 100)), 2)
+
+
+def optional_float(value: Any) -> float | None:
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return None
+    return parsed if parsed == parsed else None
+
+
+def optional_number(value: Any, default: float | int) -> float | int:
+    parsed = optional_float(value)
+    if parsed is None:
+        return default
+    return int(parsed) if float(parsed).is_integer() else parsed
+
+
+def drop_empty(record: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in record.items() if value not in ("", None, [], {})}
+
+
+def clean_text(value: Any) -> str:
+    return re.sub(r"\s+", " ", str(value or "")).strip()
+
+
+def normalized_name(value: Any) -> str:
+    return re.sub(r"[^a-z0-9åäöé]+", "", clean_text(value).lower())
+
+
+def normalized_source(value: Any) -> str:
+    return clean_text(value).lower()
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--data-file", type=Path, default=DEFAULT_DATA_FILE)
+    parser.add_argument("--curated-file", type=Path, default=DEFAULT_CURATED_FILE)
+    args = parser.parse_args()
+    sync_curated_sources(args.data_file, args.curated_file)
+
 
 if __name__ == "__main__":
     main()
