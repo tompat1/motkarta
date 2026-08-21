@@ -29,6 +29,7 @@ type Env = {
 
 type ValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
 type CandidateStateFilter = PlaceLifecycleState | "all";
+type AdminAction = "promote" | "merge_duplicate" | "keep_separate";
 
 type CandidateRow = {
   id: number;
@@ -45,15 +46,26 @@ type CandidateRow = {
   candidateSourceId: string | null;
   candidateReviewStatus: string | null;
   candidateAllowedUse: string | null;
+  duplicateResolution: "merged" | "keep_separate" | null;
+  mergedIntoEstablishmentId: number | null;
   updatedAt: string | null;
   createdAt: string | null;
   evidenceCount: number | null;
   evidenceSourceTypes: string | null;
   latestEvidenceAt: string | null;
+  possibleDuplicateCount: number | null;
+  possibleDuplicates: string | null;
+};
+
+type EstablishmentLookupRow = {
+  id: number;
+  name: string;
+  lifecycleState: PlaceLifecycleState;
 };
 
 const lifecycleStates: PlaceLifecycleState[] = ["baseline", "candidate", "verified", "featured"];
 const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "all"];
+const adminActions: AdminAction[] = ["promote", "merge_duplicate", "keep_separate"];
 const validationLabels: ValidationLabel[] = [
   "known_mainstream",
   "known_hidden_gem",
@@ -134,6 +146,7 @@ export async function onRequestPost(context: EventContext<Env>) {
   }
 
   const id = numericId(payload.id);
+  const action = normalizeAction(payload.action);
   const requestedState = payload.lifecycleState ?? payload.state;
   const lifecycleState = typeof requestedState === "string" && isLifecycleState(requestedState) ? requestedState : null;
   const validationLabel = normalizeValidationLabel(payload.validationLabel);
@@ -144,6 +157,21 @@ export async function onRequestPost(context: EventContext<Env>) {
       { error: "Missing or invalid establishment id." },
       { headers: jsonHeaders, status: 400 },
     );
+  }
+
+  if (!action) {
+    return Response.json(
+      { error: "Invalid admin review action." },
+      { headers: jsonHeaders, status: 400 },
+    );
+  }
+
+  if (action === "merge_duplicate") {
+    return mergeDuplicate(db, id, payload, validationNotes);
+  }
+
+  if (action === "keep_separate") {
+    return keepSeparate(db, id, validationNotes);
   }
 
   if (!lifecycleState) {
@@ -200,6 +228,7 @@ export async function onRequestPost(context: EventContext<Env>) {
     validationLabel,
     validationNotes,
     reviewedAt: updatedAt,
+    action: "promote",
   });
 
   return Response.json(
@@ -232,11 +261,15 @@ async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit
       e.candidate_source_id AS candidateSourceId,
       e.candidate_review_status AS candidateReviewStatus,
       e.candidate_allowed_use AS candidateAllowedUse,
+      e.duplicate_resolution AS duplicateResolution,
+      e.merged_into_establishment_id AS mergedIntoEstablishmentId,
       e.updated_at AS updatedAt,
       e.created_at AS createdAt,
       COUNT(DISTINCT ev.id) AS evidenceCount,
       GROUP_CONCAT(DISTINCT ev.source_type) AS evidenceSourceTypes,
-      MAX(ev.captured_at) AS latestEvidenceAt
+      MAX(ev.captured_at) AS latestEvidenceAt,
+      ${duplicateCountSubquery()} AS possibleDuplicateCount,
+      ${duplicateMatchesSubquery()} AS possibleDuplicates
     FROM establishments e
     LEFT JOIN evidence_sources ev ON ev.establishment_id = e.id
   `;
@@ -282,6 +315,200 @@ async function loadEvidenceProfile(db: D1Database, id: number) {
   return results?.[0] ?? null;
 }
 
+async function loadEstablishment(db: D1Database, id: number) {
+  const { results } = await db
+    .prepare(
+      `SELECT id, name, lifecycle_state AS lifecycleState
+       FROM establishments
+       WHERE id = ?`,
+    )
+    .bind(id)
+    .all<EstablishmentLookupRow>();
+
+  return results?.[0] ?? null;
+}
+
+async function mergeDuplicate(
+  db: D1Database,
+  id: number,
+  payload: Record<string, unknown>,
+  validationNotes: string | null,
+) {
+  const targetId = numericId(payload.targetId ?? payload.targetEstablishmentId);
+  if (!targetId || targetId === id) {
+    return Response.json(
+      { error: "Missing or invalid duplicate merge target." },
+      { headers: jsonHeaders, status: 400 },
+    );
+  }
+
+  const [candidate, target] = await Promise.all([
+    loadEstablishment(db, id),
+    loadEstablishment(db, targetId),
+  ]);
+
+  if (!candidate) {
+    return Response.json(
+      { error: "Candidate not found." },
+      { headers: jsonHeaders, status: 404 },
+    );
+  }
+
+  if (!target) {
+    return Response.json(
+      { error: "Merge target not found." },
+      { headers: jsonHeaders, status: 404 },
+    );
+  }
+
+  if (target.lifecycleState === "candidate") {
+    return Response.json(
+      { error: "Duplicate merge target must be baseline, verified, or featured." },
+      { headers: jsonHeaders, status: 400 },
+    );
+  }
+
+  const reviewedAt = new Date().toISOString();
+  const notes = joinNotes([
+    validationNotes,
+    `Merged duplicate candidate #${id} (${candidate.name}) into #${targetId} (${target.name}).`,
+  ]);
+
+  await db
+    .prepare(
+      `INSERT INTO evidence_sources (establishment_id, source_type, source_name, url, confidence, captured_at, summary)
+       SELECT ?, source.source_type, source.source_name, source.url, source.confidence, source.captured_at, source.summary
+       FROM evidence_sources source
+       WHERE source.establishment_id = ?
+       AND NOT EXISTS (
+         SELECT 1 FROM evidence_sources existing
+         WHERE existing.establishment_id = ?
+           AND existing.source_type = source.source_type
+           AND existing.source_name = source.source_name
+           AND COALESCE(existing.url, '') = COALESCE(source.url, '')
+       )`,
+    )
+    .bind(targetId, id, targetId)
+    .run();
+
+  await db
+    .prepare(
+      `INSERT INTO establishment_tags (establishment_id, tag)
+       SELECT ?, source.tag
+       FROM establishment_tags source
+       WHERE source.establishment_id = ?
+       AND NOT EXISTS (
+         SELECT 1 FROM establishment_tags existing
+         WHERE existing.establishment_id = ?
+           AND existing.tag = source.tag
+       )`,
+    )
+    .bind(targetId, id, targetId)
+    .run();
+
+  await db
+    .prepare(
+      `UPDATE establishments
+       SET address = COALESCE(NULLIF(address, ''), (SELECT address FROM establishments WHERE id = ?)),
+           website = COALESCE(NULLIF(website, ''), (SELECT website FROM establishments WHERE id = ?)),
+           updated_at = ?
+       WHERE id = ?`,
+    )
+    .bind(id, id, reviewedAt, targetId)
+    .run();
+
+  const updateResult = await db
+    .prepare(
+      `UPDATE establishments
+       SET candidate_review_status = 'merged_duplicate',
+           duplicate_resolution = 'merged',
+           merged_into_establishment_id = ?,
+           validation_notes = ?,
+           updated_at = ?
+       WHERE id = ?`,
+    )
+    .bind(targetId, notes, reviewedAt, id)
+    .run();
+
+  if (updateResult.meta?.changes === 0) {
+    return Response.json(
+      { error: "Candidate not found." },
+      { headers: jsonHeaders, status: 404 },
+    );
+  }
+
+  await recordReviewEvent(db, {
+    establishmentId: id,
+    lifecycleState: candidate.lifecycleState,
+    validationLabel: null,
+    validationNotes: notes,
+    reviewedAt,
+    action: "merge_duplicate",
+    targetEstablishmentId: targetId,
+  });
+
+  return Response.json(
+    {
+      success: true,
+      action: "merge_duplicate",
+      id,
+      targetEstablishmentId: targetId,
+      reviewedAt,
+    },
+    { headers: jsonHeaders },
+  );
+}
+
+async function keepSeparate(db: D1Database, id: number, validationNotes: string | null) {
+  const candidate = await loadEstablishment(db, id);
+  if (!candidate) {
+    return Response.json(
+      { error: "Candidate not found." },
+      { headers: jsonHeaders, status: 404 },
+    );
+  }
+
+  const reviewedAt = new Date().toISOString();
+  const notes = joinNotes([validationNotes, "Duplicate check completed: keep as separate place."]);
+  const updateResult = await db
+    .prepare(
+      `UPDATE establishments
+       SET candidate_review_status = 'duplicate_checked_keep_separate',
+           duplicate_resolution = 'keep_separate',
+           validation_notes = ?,
+           updated_at = ?
+       WHERE id = ?`,
+    )
+    .bind(notes, reviewedAt, id)
+    .run();
+
+  if (updateResult.meta?.changes === 0) {
+    return Response.json(
+      { error: "Candidate not found." },
+      { headers: jsonHeaders, status: 404 },
+    );
+  }
+
+  await recordReviewEvent(db, {
+    establishmentId: id,
+    lifecycleState: candidate.lifecycleState,
+    validationLabel: null,
+    validationNotes: notes,
+    reviewedAt,
+    action: "keep_separate",
+  });
+
+  return Response.json(
+    {
+      success: true,
+      action: "keep_separate",
+      id,
+      reviewedAt,
+    },
+    { headers: jsonHeaders },
+  );
+}
+
 async function recordReviewEvent(
   db: D1Database,
   event: {
@@ -290,14 +517,16 @@ async function recordReviewEvent(
     validationLabel: ValidationLabel | null;
     validationNotes: string | null;
     reviewedAt: string;
+    action: AdminAction;
+    targetEstablishmentId?: number;
   },
 ) {
   try {
     await db
       .prepare(
         `INSERT INTO admin_review_events
-          (establishment_id, lifecycle_state, validation_label, validation_notes, reviewed_at)
-         VALUES (?, ?, ?, ?, ?)`,
+          (establishment_id, lifecycle_state, validation_label, validation_notes, reviewed_at, action, target_establishment_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
       )
       .bind(
         event.establishmentId,
@@ -305,6 +534,8 @@ async function recordReviewEvent(
         event.validationLabel,
         event.validationNotes,
         event.reviewedAt,
+        event.action,
+        event.targetEstablishmentId ?? null,
       )
       .run();
   } catch (error) {
@@ -352,13 +583,74 @@ function candidateFromRow(row: CandidateRow) {
     candidateSourceId: row.candidateSourceId,
     candidateReviewStatus: row.candidateReviewStatus,
     candidateAllowedUse: row.candidateAllowedUse,
+    duplicateResolution: row.duplicateResolution,
+    mergedIntoEstablishmentId: row.mergedIntoEstablishmentId,
     updatedAt: row.updatedAt,
     createdAt: row.createdAt,
     evidenceCount: Number(row.evidenceCount ?? 0),
     evidenceSourceTypes: parseEvidenceSources(row.evidenceSourceTypes),
     latestEvidenceAt: row.latestEvidenceAt,
     evidenceGate: evidenceGateProfile(row),
+    possibleDuplicateCount: Number(row.possibleDuplicateCount ?? 0),
+    possibleDuplicates: parsePossibleDuplicates(row.possibleDuplicates),
   };
+}
+
+function duplicateCountSubquery() {
+  return `(SELECT COUNT(*)
+      FROM establishments m
+      WHERE ${duplicatePredicate("m", "e")})`;
+}
+
+function duplicateMatchesSubquery() {
+  return `(SELECT GROUP_CONCAT(
+        m.id || '|' ||
+        REPLACE(COALESCE(m.name, ''), '|', ' ') || '|' ||
+        REPLACE(COALESCE(m.type, ''), '|', ' ') || '|' ||
+        REPLACE(COALESCE(m.district, ''), '|', ' ') || '|' ||
+        COALESCE(m.lifecycle_state, '') || '|' ||
+        ${duplicateReasonExpression("m", "e")},
+        ';;'
+      )
+      FROM establishments m
+      WHERE ${duplicatePredicate("m", "e")})`;
+}
+
+function duplicatePredicate(matchAlias: string, candidateAlias: string) {
+  const nameMatch = `${normalizedSql(`${matchAlias}.name`)} = ${normalizedSql(`${candidateAlias}.name`)}
+    AND LOWER(COALESCE(${matchAlias}.district, '')) = LOWER(COALESCE(${candidateAlias}.district, ''))`;
+  const addressMatch = `COALESCE(${candidateAlias}.address, '') != ''
+    AND COALESCE(${matchAlias}.address, '') != ''
+    AND ${normalizedSql(`${matchAlias}.address`)} = ${normalizedSql(`${candidateAlias}.address`)}`;
+  const nearbyNameMatch = `${candidateAlias}.latitude IS NOT NULL
+    AND ${candidateAlias}.longitude IS NOT NULL
+    AND ${matchAlias}.latitude IS NOT NULL
+    AND ${matchAlias}.longitude IS NOT NULL
+    AND ABS(${candidateAlias}.latitude - ${matchAlias}.latitude) <= 0.0008
+    AND ABS(${candidateAlias}.longitude - ${matchAlias}.longitude) <= 0.0012
+    AND (
+      INSTR(${normalizedSql(`${matchAlias}.name`)}, ${normalizedSql(`${candidateAlias}.name`)}) > 0
+      OR INSTR(${normalizedSql(`${candidateAlias}.name`)}, ${normalizedSql(`${matchAlias}.name`)}) > 0
+    )`;
+
+  return `${matchAlias}.id != ${candidateAlias}.id
+    AND ${matchAlias}.lifecycle_state IN ('baseline', 'verified', 'featured')
+    AND (${nameMatch} OR ${addressMatch} OR ${nearbyNameMatch})`;
+}
+
+function duplicateReasonExpression(matchAlias: string, candidateAlias: string) {
+  return `CASE
+      WHEN ${normalizedSql(`${matchAlias}.name`)} = ${normalizedSql(`${candidateAlias}.name`)}
+        AND LOWER(COALESCE(${matchAlias}.district, '')) = LOWER(COALESCE(${candidateAlias}.district, '')) THEN 'name_area'
+      WHEN COALESCE(${candidateAlias}.address, '') != ''
+        AND COALESCE(${matchAlias}.address, '') != ''
+        AND ${normalizedSql(`${matchAlias}.address`)} = ${normalizedSql(`${candidateAlias}.address`)} THEN 'address'
+      ELSE 'nearby_name'
+    END`;
+}
+
+function normalizedSql(column: string) {
+  return `LOWER(REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(${column}, ''), ' ', ''), '-', ''), '.', ''), '''', ''))`;
 }
 
 function evidenceGateProfile(
@@ -419,6 +711,18 @@ function isStateFilter(value: string): value is CandidateStateFilter {
   return stateFilters.includes(value as CandidateStateFilter);
 }
 
+function normalizeAction(value: unknown): AdminAction | null {
+  if (value === undefined || value === null || value === "") {
+    return "promote";
+  }
+
+  if (typeof value === "string" && adminActions.includes(value as AdminAction)) {
+    return value as AdminAction;
+  }
+
+  return null;
+}
+
 function normalizeValidationLabel(value: unknown): ValidationLabel | null | "invalid" {
   if (value === undefined || value === null || value === "") {
     return null;
@@ -460,4 +764,33 @@ function parseEvidenceSources(value: string | null) {
   }
 
   return value.split(",").map((item) => item.trim()).filter(Boolean);
+}
+
+function parsePossibleDuplicates(value: string | null) {
+  if (!value) {
+    return [];
+  }
+
+  return value
+    .split(";;")
+    .map((entry) => {
+      const [id, name, kind, area, lifecycleState, reason] = entry.split("|");
+      const parsedId = Number(id);
+      if (!Number.isInteger(parsedId)) {
+        return null;
+      }
+      return {
+        id: parsedId,
+        name: name ?? "",
+        kind: kind ?? "",
+        area: area ?? "",
+        lifecycleState: lifecycleState ?? "",
+        reason: reason ?? "possible_match",
+      };
+    })
+    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+}
+
+function joinNotes(notes: Array<string | null>) {
+  return notes.map((note) => note?.trim()).filter(Boolean).join(" ");
 }

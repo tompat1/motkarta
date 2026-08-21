@@ -1630,6 +1630,94 @@ button.concierge-clear-btn:hover {
   padding-left: 10px;
 }
 
+.admin-duplicate-box {
+  background: var(--color-paper);
+  border: 1px solid var(--color-ink);
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 10px;
+}
+
+.admin-duplicate-title {
+  align-items: center;
+  color: var(--color-signal);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  gap: 6px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.admin-duplicate-row {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 9px 10px;
+}
+
+.admin-duplicate-row b {
+  color: var(--color-ink);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.admin-duplicate-row span {
+  color: var(--color-stone);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+.admin-mini-action {
+  align-items: center;
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  color: var(--color-paper);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  gap: 6px;
+  justify-content: center;
+  min-height: 32px;
+  padding: 6px 9px;
+  text-transform: uppercase;
+}
+
+.admin-mini-action.secondary {
+  background: var(--color-white);
+  color: var(--color-ink);
+  justify-self: start;
+}
+
+.admin-mini-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.admin-duplicate-resolved {
+  border: 1px solid var(--color-water);
+  color: var(--color-water);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  margin: 10px 0;
+  padding: 5px 8px;
+  text-transform: uppercase;
+}
+
 .admin-notes-label {
   color: var(--color-stone);
   display: block;

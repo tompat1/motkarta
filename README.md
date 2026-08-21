@@ -210,10 +210,28 @@ from `/api/admin/candidates`, shows source identity, address/website metadata,
 evidence counts and source gaps, then promotes records by updating only
 `lifecycle_state`, `validation_label`, `validation_notes`, and `updated_at` on
 `establishments`. Hidden-gem promotion requires at least two independent
-non-Google evidence signals. Each promotion also writes an
-`admin_review_events` audit row. If `MOTKARTA_ADMIN_TOKEN` is missing, the admin
-API remains closed. If D1 is missing, it returns an unavailable response and
-never falls back to demo rows.
+non-Google evidence signals.
+
+The same review panel flags likely duplicates by exact normalized name+area,
+exact normalized address, or near coordinates with similar names. `Merge` copies
+candidate evidence/tags onto the selected canonical record, marks the candidate
+as `duplicate_resolution = 'merged'`, and keeps the candidate row as audit
+history. `Keep separate` records `duplicate_resolution = 'keep_separate'`
+without promoting the candidate.
+
+Each promotion or duplicate decision writes an `admin_review_events` audit row.
+If `MOTKARTA_ADMIN_TOKEN` is missing, the admin API remains closed. If D1 is
+missing, it returns an unavailable response and never falls back to demo rows.
+
+Export review decisions into a portable labeled set:
+
+```bash
+wrangler d1 execute <database-name> --remote --json --file scripts/export_review_events.sql > data/review-events-export.json
+npm run reviews:labels -- data/review-events-export.json outputs/human_validation_labels.json
+```
+
+The label export keeps duplicate resolutions separate from hidden-gem/mainstream
+labels so they do not contaminate ML training labels.
 
 Fetch and normalize Stockholm food-control establishments:
 

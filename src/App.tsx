@@ -1909,6 +1909,8 @@ type AdminCandidate = {
   candidateSourceId: string | null;
   candidateReviewStatus: string | null;
   candidateAllowedUse: string | null;
+  duplicateResolution: "merged" | "keep_separate" | null;
+  mergedIntoEstablishmentId: number | null;
   updatedAt: string | null;
   createdAt: string | null;
   evidenceCount: number;
@@ -1921,6 +1923,17 @@ type AdminCandidate = {
     hasCurrentExistence: boolean;
     sourceGaps: string[];
   };
+  possibleDuplicateCount: number;
+  possibleDuplicates: AdminDuplicateMatch[];
+};
+
+type AdminDuplicateMatch = {
+  id: number;
+  name: string;
+  kind: string;
+  area: string;
+  lifecycleState: string;
+  reason: string;
 };
 
 const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "all"];
@@ -2079,6 +2092,77 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     }
   };
 
+  const resolveDuplicate = async (
+    candidate: AdminCandidate,
+    action: "merge_duplicate" | "keep_separate",
+    targetId?: number,
+  ) => {
+    if (!adminToken) return;
+
+    const validationNotes = (reviewNotes[candidate.id] ?? candidate.validationNotes ?? "").trim();
+    setBusyId(candidate.id);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/admin/candidates", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-motkarta-admin-token": adminToken,
+        },
+        body: JSON.stringify({
+          id: candidate.id,
+          action,
+          targetId,
+          validationNotes,
+        }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        reviewedAt?: string;
+        targetEstablishmentId?: number;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte spara dubblettbeslutet." : "Could not save duplicate decision."));
+      }
+
+      if (action === "merge_duplicate") {
+        setCandidates((current) => current.filter((row) => row.id !== candidate.id));
+        setStatus(
+          lang === "sv"
+            ? `${candidate.name} slogs ihop med #${payload.targetEstablishmentId ?? targetId}.`
+            : `${candidate.name} merged into #${payload.targetEstablishmentId ?? targetId}.`,
+        );
+      } else {
+        setCandidates((current) =>
+          current.map((row) =>
+            row.id === candidate.id
+              ? {
+                  ...row,
+                  duplicateResolution: "keep_separate",
+                  candidateReviewStatus: "duplicate_checked_keep_separate",
+                  validationNotes: validationNotes || row.validationNotes,
+                  updatedAt: payload.reviewedAt ?? new Date().toISOString(),
+                  possibleDuplicateCount: 0,
+                  possibleDuplicates: [],
+                }
+              : row,
+          ),
+        );
+        setStatus(
+          lang === "sv"
+            ? `${candidate.name} markerades som separat plats.`
+            : `${candidate.name} marked as a separate place.`,
+        );
+      }
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : String(saveError));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   return (
     <section className="admin-review-panel" id="admin-review" aria-labelledby="admin-review-title">
       <div className="admin-review-head">
@@ -2212,6 +2296,48 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
                     ))}
                   </div>
                 ) : null}
+                {candidate.possibleDuplicates.length ? (
+                  <div className="admin-duplicate-box">
+                    <div className="admin-duplicate-title">
+                      <Scales size={13} weight="bold" />
+                      {lang === "sv" ? "Möjlig dubblett" : "Possible duplicate"}
+                    </div>
+                    {candidate.possibleDuplicates.slice(0, 4).map((match) => (
+                      <div key={match.id} className="admin-duplicate-row">
+                        <div>
+                          <b>#{match.id} {match.name}</b>
+                          <span>
+                            {match.kind} · {match.area} · {lifecycleStateLabel(match.lifecycleState as AdminStateFilter, lang)} · {duplicateReasonLabel(match.reason, lang)}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          className="admin-mini-action"
+                          disabled={busyId === candidate.id}
+                          onClick={() => void resolveDuplicate(candidate, "merge_duplicate", match.id)}
+                          title={lang === "sv" ? "Slå ihop kandidatens källor med vald plats" : "Merge candidate sources into selected place"}
+                        >
+                          <ArrowRight size={13} weight="bold" />
+                          {lang === "sv" ? "Slå ihop" : "Merge"}
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      className="admin-mini-action secondary"
+                      disabled={busyId === candidate.id}
+                      onClick={() => void resolveDuplicate(candidate, "keep_separate")}
+                    >
+                      <CheckCircle size={13} weight="bold" />
+                      {lang === "sv" ? "Behåll separat" : "Keep separate"}
+                    </button>
+                  </div>
+                ) : candidate.duplicateResolution ? (
+                  <div className="admin-duplicate-resolved">
+                    {duplicateResolutionLabel(candidate.duplicateResolution, lang)}
+                    {candidate.mergedIntoEstablishmentId ? ` #${candidate.mergedIntoEstablishmentId}` : ""}
+                  </div>
+                ) : null}
                 {candidate.candidateAllowedUse ? (
                   <p className="admin-allowed-use">{candidate.candidateAllowedUse}</p>
                 ) : null}
@@ -2322,7 +2448,7 @@ function readStoredAdminToken() {
   }
 }
 
-function lifecycleStateLabel(state: AdminStateFilter, lang: Language) {
+function lifecycleStateLabel(state: AdminStateFilter | string, lang: Language) {
   const labels: Record<AdminStateFilter, { sv: string; en: string }> = {
     baseline: { sv: "Baseline", en: "Baseline" },
     candidate: { sv: "Kandidat", en: "Candidate" },
@@ -2330,7 +2456,7 @@ function lifecycleStateLabel(state: AdminStateFilter, lang: Language) {
     featured: { sv: "Utvald", en: "Featured" },
     all: { sv: "Alla", en: "All" },
   };
-  return labels[state][lang];
+  return labels[state as AdminStateFilter]?.[lang] ?? state;
 }
 
 function validationLabelText(label: AdminValidationLabel, lang: Language) {
@@ -2351,6 +2477,24 @@ function sourceGapLabel(gap: string, lang: Language) {
     google_metadata_only: { sv: "Endast Google-metadata", en: "Google metadata only" },
   };
   return labels[gap]?.[lang] ?? gap.replaceAll("_", " ");
+}
+
+function duplicateReasonLabel(reason: string, lang: Language) {
+  const labels: Record<string, { sv: string; en: string }> = {
+    name_area: { sv: "namn + område", en: "name + area" },
+    address: { sv: "adress", en: "address" },
+    nearby_name: { sv: "nära + liknande namn", en: "nearby + similar name" },
+    possible_match: { sv: "möjlig träff", en: "possible match" },
+  };
+  return labels[reason]?.[lang] ?? reason.replaceAll("_", " ");
+}
+
+function duplicateResolutionLabel(resolution: "merged" | "keep_separate", lang: Language) {
+  const labels = {
+    merged: { sv: "Dubblett ihopslagen med", en: "Duplicate merged into" },
+    keep_separate: { sv: "Granskad som separat plats", en: "Reviewed as separate place" },
+  };
+  return labels[resolution][lang];
 }
 
 export default function App() {

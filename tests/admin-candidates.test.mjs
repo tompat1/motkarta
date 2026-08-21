@@ -35,7 +35,13 @@ test("admin candidates endpoint does not serve demo rows when D1 is missing", as
 
 test("admin candidates endpoint lists candidate records only by default", async () => {
   const db = fakeAdminD1([
-    candidateRow({ id: 10, name: "Quiet Counter", lifecycleState: "candidate" }),
+    candidateRow({
+      id: 10,
+      name: "Quiet Counter",
+      lifecycleState: "candidate",
+      possibleDuplicateCount: 1,
+      possibleDuplicates: "11|Quiet Counter|Café|Södermalm|baseline|name_area",
+    }),
     candidateRow({ id: 11, name: "Already Live", lifecycleState: "verified" }),
   ]);
 
@@ -54,6 +60,9 @@ test("admin candidates endpoint lists candidate records only by default", async 
   assert.deepEqual(payload.candidates[0].evidenceSourceTypes, ["osm", "inspection"]);
   assert.equal(payload.candidates[0].evidenceGate.canPromoteHiddenGem, true);
   assert.equal(payload.candidates[0].evidenceGate.independentEvidenceCount, 2);
+  assert.equal(payload.candidates[0].possibleDuplicateCount, 1);
+  assert.equal(payload.candidates[0].possibleDuplicates[0].id, 11);
+  assert.equal(payload.candidates[0].possibleDuplicates[0].reason, "name_area");
 });
 
 test("admin candidate promotion updates lifecycle state and writes audit event", async () => {
@@ -150,6 +159,71 @@ test("admin candidate promotion blocks hidden-gem label without independent evid
   assert.equal(db.events.length, 0);
 });
 
+test("admin candidate duplicate merge copies evidence and marks candidate as merged", async () => {
+  const db = fakeAdminD1([
+    candidateRow({ id: 10, name: "Quiet Counter", lifecycleState: "candidate" }),
+    candidateRow({ id: 11, name: "Quiet Counter", lifecycleState: "baseline" }),
+  ]);
+
+  const response = await postAdminCandidate({
+    request: new Request("https://motkarta.test/api/admin/candidates", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-motkarta-admin-token": adminToken,
+      },
+      body: JSON.stringify({
+        id: 10,
+        action: "merge_duplicate",
+        targetId: 11,
+        validationNotes: "Same name, same block.",
+      }),
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.action, "merge_duplicate");
+  assert.equal(payload.targetEstablishmentId, 11);
+  assert.equal(db.rows[0].duplicateResolution, "merged");
+  assert.equal(db.rows[0].mergedIntoEstablishmentId, 11);
+  assert.equal(db.copiedEvidence.length, 1);
+  assert.equal(db.copiedTags.length, 1);
+  assert.equal(db.events[0].action, "merge_duplicate");
+  assert.equal(db.events[0].targetEstablishmentId, 11);
+});
+
+test("admin candidate duplicate keep-separate records decision without promotion", async () => {
+  const db = fakeAdminD1([
+    candidateRow({ id: 10, name: "Quiet Counter", lifecycleState: "candidate" }),
+  ]);
+
+  const response = await postAdminCandidate({
+    request: new Request("https://motkarta.test/api/admin/candidates", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-motkarta-admin-token": adminToken,
+      },
+      body: JSON.stringify({
+        id: 10,
+        action: "keep_separate",
+        validationNotes: "Different entrance and operator.",
+      }),
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.action, "keep_separate");
+  assert.equal(db.rows[0].duplicateResolution, "keep_separate");
+  assert.equal(db.rows[0].candidateReviewStatus, "duplicate_checked_keep_separate");
+  assert.equal(db.rows[0].lifecycleState, "candidate");
+  assert.equal(db.events[0].action, "keep_separate");
+});
+
 function candidateRow(overrides) {
   const now = new Date("2026-08-21T10:00:00.000Z").toISOString();
   return {
@@ -167,11 +241,15 @@ function candidateRow(overrides) {
     candidateSourceId: "candidate-1",
     candidateReviewStatus: "needs_review",
     candidateAllowedUse: "Candidate evidence only.",
+    duplicateResolution: null,
+    mergedIntoEstablishmentId: null,
     updatedAt: now,
     createdAt: now,
     evidenceCount: 2,
     evidenceSourceTypes: "osm,inspection",
     latestEvidenceAt: now,
+    possibleDuplicateCount: 0,
+    possibleDuplicates: null,
     ...overrides,
   };
 }
@@ -180,6 +258,8 @@ function fakeAdminD1(rows) {
   const db = {
     rows,
     events: [],
+    copiedEvidence: [],
+    copiedTags: [],
     prepare(query) {
       const statement = {
         values: [],
@@ -192,7 +272,7 @@ function fakeAdminD1(rows) {
             return { results: [] };
           }
 
-          if (query.includes("WHERE e.id = ?")) {
+          if (query.includes("WHERE e.id = ?") || query.includes("WHERE id = ?")) {
             const [id] = this.values;
             const row = db.rows.find((item) => item.id === id);
             return { results: row ? [row] : [] };
@@ -205,11 +285,36 @@ function fakeAdminD1(rows) {
         },
         async run() {
           if (query.includes("UPDATE establishments")) {
+            if (query.includes("candidate_review_status = 'merged_duplicate'")) {
+              const [targetId, validationNotes, updatedAt, id] = this.values;
+              const row = db.rows.find((item) => item.id === id);
+              if (!row) return { success: true, meta: { changes: 0 } };
+              row.candidateReviewStatus = "merged_duplicate";
+              row.duplicateResolution = "merged";
+              row.mergedIntoEstablishmentId = targetId;
+              row.validationNotes = validationNotes;
+              row.updatedAt = updatedAt;
+              return { success: true, meta: { changes: 1 } };
+            }
+
+            if (query.includes("candidate_review_status = 'duplicate_checked_keep_separate'")) {
+              const [validationNotes, updatedAt, id] = this.values;
+              const row = db.rows.find((item) => item.id === id);
+              if (!row) return { success: true, meta: { changes: 0 } };
+              row.candidateReviewStatus = "duplicate_checked_keep_separate";
+              row.duplicateResolution = "keep_separate";
+              row.validationNotes = validationNotes;
+              row.updatedAt = updatedAt;
+              return { success: true, meta: { changes: 1 } };
+            }
+
+            if (query.includes("address = COALESCE")) {
+              return { success: true, meta: { changes: 1 } };
+            }
+
             const [lifecycleState, validationLabel, validationNotes, updatedAt, id] = this.values;
             const row = db.rows.find((item) => item.id === id);
-            if (!row) {
-              return { success: true, meta: { changes: 0 } };
-            }
+            if (!row) return { success: true, meta: { changes: 0 } };
             row.lifecycleState = lifecycleState;
             row.validationLabel = validationLabel;
             row.validationNotes = validationNotes;
@@ -217,9 +322,21 @@ function fakeAdminD1(rows) {
             return { success: true, meta: { changes: 1 } };
           }
 
+          if (query.includes("INSERT INTO evidence_sources")) {
+            const [targetId, sourceId] = this.values;
+            db.copiedEvidence.push({ targetId, sourceId });
+            return { success: true, meta: { changes: 1 } };
+          }
+
+          if (query.includes("INSERT INTO establishment_tags")) {
+            const [targetId, sourceId] = this.values;
+            db.copiedTags.push({ targetId, sourceId });
+            return { success: true, meta: { changes: 1 } };
+          }
+
           if (query.includes("INSERT INTO admin_review_events")) {
-            const [establishmentId, lifecycleState, validationLabel, validationNotes, reviewedAt] = this.values;
-            db.events.push({ establishmentId, lifecycleState, validationLabel, validationNotes, reviewedAt });
+            const [establishmentId, lifecycleState, validationLabel, validationNotes, reviewedAt, action, targetEstablishmentId] = this.values;
+            db.events.push({ establishmentId, lifecycleState, validationLabel, validationNotes, reviewedAt, action, targetEstablishmentId });
             return { success: true, meta: { changes: 1 } };
           }
 
