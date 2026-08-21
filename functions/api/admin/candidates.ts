@@ -35,10 +35,16 @@ type CandidateRow = {
   name: string;
   kind: string;
   area: string;
+  address: string | null;
+  website: string | null;
   note: string;
   lifecycleState: PlaceLifecycleState;
   validationLabel: ValidationLabel | null;
   validationNotes: string | null;
+  candidateSourceType: string | null;
+  candidateSourceId: string | null;
+  candidateReviewStatus: string | null;
+  candidateAllowedUse: string | null;
   updatedAt: string | null;
   createdAt: string | null;
   evidenceCount: number | null;
@@ -54,6 +60,21 @@ const validationLabels: ValidationLabel[] = [
   "not_enough_evidence",
   "closed_wrong_category",
 ];
+const hiddenGemEvidenceSourceTypes = new Set([
+  "osm",
+  "osm_baseline",
+  "inspection",
+  "municipal_unmatched",
+  "food_control",
+  "serving_permit",
+  "official_site",
+  "editorial",
+  "independent_editorial",
+  "specialist_guide",
+  "curated_submission",
+  "field_visit",
+  "verified_user_rating",
+]);
 
 const jsonHeaders = {
   "content-type": "application/json; charset=utf-8",
@@ -146,6 +167,16 @@ export async function onRequestPost(context: EventContext<Env>) {
     );
   }
 
+  if ((lifecycleState === "verified" || lifecycleState === "featured") && validationLabel === "known_hidden_gem") {
+    const profile = await loadEvidenceProfile(db, id);
+    if (!profile || evidenceGateProfile(profile).independentEvidenceCount < 2) {
+      return Response.json(
+        { error: "Hidden-gem promotion requires at least 2 independent non-Google evidence signals." },
+        { headers: jsonHeaders, status: 409 },
+      );
+    }
+  }
+
   const updatedAt = new Date().toISOString();
   const updateResult = await db
     .prepare(
@@ -191,10 +222,16 @@ async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit
       e.name,
       e.type AS kind,
       e.district AS area,
+      e.address,
+      e.website,
       e.description AS note,
       e.lifecycle_state AS lifecycleState,
       e.validation_label AS validationLabel,
       e.validation_notes AS validationNotes,
+      e.candidate_source_type AS candidateSourceType,
+      e.candidate_source_id AS candidateSourceId,
+      e.candidate_review_status AS candidateReviewStatus,
+      e.candidate_allowed_use AS candidateAllowedUse,
       e.updated_at AS updatedAt,
       e.created_at AS createdAt,
       COUNT(DISTINCT ev.id) AS evidenceCount,
@@ -223,6 +260,26 @@ async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit
     .bind(state, limit)
     .all<CandidateRow>();
   return results ?? [];
+}
+
+async function loadEvidenceProfile(db: D1Database, id: number) {
+  const { results } = await db
+    .prepare(
+      `SELECT
+        e.id,
+        e.website,
+        e.candidate_source_type AS candidateSourceType,
+        GROUP_CONCAT(DISTINCT ev.source_type) AS evidenceSourceTypes,
+        MAX(ev.captured_at) AS latestEvidenceAt
+       FROM establishments e
+       LEFT JOIN evidence_sources ev ON ev.establishment_id = e.id
+       WHERE e.id = ?
+       GROUP BY e.id`,
+    )
+    .bind(id)
+    .all<Pick<CandidateRow, "id" | "website" | "candidateSourceType" | "evidenceSourceTypes" | "latestEvidenceAt">>();
+
+  return results?.[0] ?? null;
 }
 
 async function recordReviewEvent(
@@ -285,16 +342,73 @@ function candidateFromRow(row: CandidateRow) {
     name: row.name,
     kind: row.kind,
     area: row.area,
+    address: row.address,
+    website: row.website,
     note: row.note,
     lifecycleState: row.lifecycleState,
     validationLabel: row.validationLabel ?? null,
     validationNotes: row.validationNotes ?? null,
+    candidateSourceType: row.candidateSourceType,
+    candidateSourceId: row.candidateSourceId,
+    candidateReviewStatus: row.candidateReviewStatus,
+    candidateAllowedUse: row.candidateAllowedUse,
     updatedAt: row.updatedAt,
     createdAt: row.createdAt,
     evidenceCount: Number(row.evidenceCount ?? 0),
     evidenceSourceTypes: parseEvidenceSources(row.evidenceSourceTypes),
     latestEvidenceAt: row.latestEvidenceAt,
+    evidenceGate: evidenceGateProfile(row),
   };
+}
+
+function evidenceGateProfile(
+  row: Pick<CandidateRow, "candidateSourceType" | "evidenceSourceTypes" | "latestEvidenceAt" | "website">,
+) {
+  const evidenceSourceTypes = parseEvidenceSources(row.evidenceSourceTypes);
+  const independentEvidenceTypes = independentEvidenceTypesFor(evidenceSourceTypes, row.candidateSourceType);
+  const hasGoogleOnlySignal =
+    independentEvidenceTypes.length === 0 &&
+    [row.candidateSourceType, ...evidenceSourceTypes].some((sourceType) => sourceType === "google_metadata");
+  const hasCurrentExistence = Boolean(row.latestEvidenceAt || row.website);
+  const sourceGaps = [
+    independentEvidenceTypes.length < 2 ? "needs_second_independent_evidence" : "",
+    evidenceSourceTypes.includes("osm") || row.candidateSourceType === "osm_baseline" ? "" : "needs_osm_or_open_data_match",
+    hasCurrentExistence ? "" : "needs_current_existence_signal",
+    hasGoogleOnlySignal ? "google_metadata_only" : "",
+  ].filter(Boolean);
+
+  return {
+    independentEvidenceCount: independentEvidenceTypes.length,
+    independentEvidenceTypes,
+    canPromoteHiddenGem: independentEvidenceTypes.length >= 2,
+    hasCurrentExistence,
+    sourceGaps,
+  };
+}
+
+function independentEvidenceTypesFor(evidenceSourceTypes: string[], candidateSourceType: string | null) {
+  const sourceTypes = new Set([candidateSourceType, ...evidenceSourceTypes].filter((item): item is string => Boolean(item)));
+  const independent = new Set<string>();
+  for (const sourceType of sourceTypes) {
+    const normalized = normalizeEvidenceSourceType(sourceType);
+    if (hiddenGemEvidenceSourceTypes.has(normalized)) {
+      independent.add(normalized);
+    }
+  }
+  return [...independent].sort();
+}
+
+function normalizeEvidenceSourceType(sourceType: string) {
+  if (sourceType === "osm_baseline") {
+    return "osm";
+  }
+  if (sourceType === "municipal_unmatched") {
+    return "inspection";
+  }
+  if (sourceType === "independent_editorial") {
+    return "editorial";
+  }
+  return sourceType;
 }
 
 function isLifecycleState(value: string): value is PlaceLifecycleState {

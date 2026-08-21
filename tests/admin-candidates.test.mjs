@@ -52,6 +52,8 @@ test("admin candidates endpoint lists candidate records only by default", async 
   assert.equal(payload.state, "candidate");
   assert.deepEqual(payload.candidates.map((row) => row.name), ["Quiet Counter"]);
   assert.deepEqual(payload.candidates[0].evidenceSourceTypes, ["osm", "inspection"]);
+  assert.equal(payload.candidates[0].evidenceGate.canPromoteHiddenGem, true);
+  assert.equal(payload.candidates[0].evidenceGate.independentEvidenceCount, 2);
 });
 
 test("admin candidate promotion updates lifecycle state and writes audit event", async () => {
@@ -114,6 +116,40 @@ test("admin candidate promotion rejects invalid validation transitions", async (
   assert.equal(db.events.length, 0);
 });
 
+test("admin candidate promotion blocks hidden-gem label without independent evidence", async () => {
+  const db = fakeAdminD1([
+    candidateRow({
+      id: 10,
+      name: "Google Only Candidate",
+      lifecycleState: "candidate",
+      candidateSourceType: "google_metadata",
+      evidenceSourceTypes: "google_metadata",
+    }),
+  ]);
+
+  const response = await postAdminCandidate({
+    request: new Request("https://motkarta.test/api/admin/candidates", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-motkarta-admin-token": adminToken,
+      },
+      body: JSON.stringify({
+        id: 10,
+        state: "verified",
+        validationLabel: "known_hidden_gem",
+      }),
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 409);
+  assert.match(payload.error, /2 independent/i);
+  assert.equal(db.rows[0].lifecycleState, "candidate");
+  assert.equal(db.events.length, 0);
+});
+
 function candidateRow(overrides) {
   const now = new Date("2026-08-21T10:00:00.000Z").toISOString();
   return {
@@ -121,10 +157,16 @@ function candidateRow(overrides) {
     name: "Candidate",
     kind: "Café",
     area: "Södermalm",
+    address: "Kandgatan 1, Stockholm",
+    website: "https://candidate.example",
     note: "Independent candidate.",
     lifecycleState: "candidate",
     validationLabel: null,
     validationNotes: null,
+    candidateSourceType: "osm_baseline",
+    candidateSourceId: "candidate-1",
+    candidateReviewStatus: "needs_review",
+    candidateAllowedUse: "Candidate evidence only.",
     updatedAt: now,
     createdAt: now,
     evidenceCount: 2,
@@ -148,6 +190,12 @@ function fakeAdminD1(rows) {
         async all() {
           if (!query.includes("FROM establishments")) {
             return { results: [] };
+          }
+
+          if (query.includes("WHERE e.id = ?")) {
+            const [id] = this.values;
+            const row = db.rows.find((item) => item.id === id);
+            return { results: row ? [row] : [] };
           }
 
           const state = query.includes("WHERE e.lifecycle_state = ?") ? this.values[0] : "all";

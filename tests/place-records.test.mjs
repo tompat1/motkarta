@@ -22,6 +22,8 @@ test("D1 loader maps rows into scoring inputs", async () => {
         type: "Specialty coffee",
         district: "Södermalm",
         description: "Traceable filter coffee and beans.",
+        address: "Testgatan 10, Stockholm",
+        website: "https://test-roaster.example",
         price_level: 2,
         latitude: 59.31,
         longitude: 18.08,
@@ -85,6 +87,8 @@ test("D1 loader maps rows into scoring inputs", async () => {
   assert.equal(place.kind, "Specialty coffee");
   assert.equal(place.lifecycleState, "verified");
   assert.equal(place.validationLabel, "known_hidden_gem");
+  assert.equal(place.address, "Testgatan 10, Stockholm");
+  assert.equal(place.website, "https://test-roaster.example");
   assert.deepEqual([...place.tags].sort(), ["Filter", "Independent"]);
   assert.equal(place.specialty?.specialtyVerified, true);
   assert.equal(place.evidence.confidence, "Medium");

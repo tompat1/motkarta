@@ -15,6 +15,8 @@ export type PlaceRow = {
   type: EstablishmentType;
   district: string;
   description: string;
+  address: string | null;
+  website: string | null;
   price_level: number | null;
   latitude: number | null;
   longitude: number | null;
@@ -70,6 +72,8 @@ export const placeQuery = `
     e.type,
     e.district,
     e.description,
+    e.address,
+    e.website,
     e.price_level,
     e.latitude,
     e.longitude,
@@ -182,6 +186,7 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
     name: row.name,
     kind: row.type,
     area: row.district,
+    address: row.address ?? undefined,
     note: row.description,
     tags: tags.length ? tags : fallbackTags(row),
     evidenceLabel: evidenceRows.length
@@ -226,6 +231,7 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
     specialty: specialtyFromRow(row),
     latitude: row.latitude ?? undefined,
     longitude: row.longitude ?? undefined,
+    website: row.website ?? undefined,
     x: coordinateToMapPosition(row.longitude, 17.75, 18.25),
     y: 100 - coordinateToMapPosition(row.latitude, 59.2, 59.47),
   };

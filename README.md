@@ -180,12 +180,21 @@ curated-source imports:
 
 ```bash
 npm run candidates:build -- --validation-labels examples/human_validation_labels.sample.json
+npm run candidates:seed -- outputs/candidate_queue.json drizzle/seed-candidates.sql
+wrangler d1 execute <database-name> --remote --file drizzle/seed-candidates.sql
 ```
 
 The queue writes `outputs/candidate_queue.json` with four explicit states:
 `baseline`, `candidate`, `verified`, and `featured`. Candidate records are
 review inputs only; they are not high-confidence recommendations until a human or
 source-gate workflow promotes them.
+
+The candidate seed generator imports candidate/verified/featured queue entries by
+default. It upserts neutral place metadata into D1, stores source identity in
+`candidate_source_type` and `candidate_source_id`, creates source evidence rows,
+and refuses forbidden value fields such as Google ratings, review counts,
+popularity, price level, prominence, or scores. Existing `verified` and
+`featured` lifecycle states are preserved on re-import.
 
 ### Admin review and promotion
 
@@ -197,11 +206,14 @@ wrangler pages secret put MOTKARTA_ADMIN_TOKEN
 ```
 
 The admin UI is available in the app under `#admin-review`. It reads candidates
-from `/api/admin/candidates` and promotes records by updating only
+from `/api/admin/candidates`, shows source identity, address/website metadata,
+evidence counts and source gaps, then promotes records by updating only
 `lifecycle_state`, `validation_label`, `validation_notes`, and `updated_at` on
-`establishments`. Each promotion also writes an `admin_review_events` audit row.
-If `MOTKARTA_ADMIN_TOKEN` is missing, the admin API remains closed. If D1 is
-missing, it returns an unavailable response and never falls back to demo rows.
+`establishments`. Hidden-gem promotion requires at least two independent
+non-Google evidence signals. Each promotion also writes an
+`admin_review_events` audit row. If `MOTKARTA_ADMIN_TOKEN` is missing, the admin
+API remains closed. If D1 is missing, it returns an unavailable response and
+never falls back to demo rows.
 
 Fetch and normalize Stockholm food-control establishments:
 

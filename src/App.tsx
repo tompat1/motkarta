@@ -1899,15 +1899,28 @@ type AdminCandidate = {
   name: string;
   kind: string;
   area: string;
+  address: string | null;
+  website: string | null;
   note: string;
   lifecycleState: PlaceLifecycleState;
   validationLabel: AdminValidationLabel | null;
   validationNotes: string | null;
+  candidateSourceType: string | null;
+  candidateSourceId: string | null;
+  candidateReviewStatus: string | null;
+  candidateAllowedUse: string | null;
   updatedAt: string | null;
   createdAt: string | null;
   evidenceCount: number;
   evidenceSourceTypes: string[];
   latestEvidenceAt: string | null;
+  evidenceGate: {
+    independentEvidenceCount: number;
+    independentEvidenceTypes: string[];
+    canPromoteHiddenGem: boolean;
+    hasCurrentExistence: boolean;
+    sourceGaps: string[];
+  };
 };
 
 const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "all"];
@@ -2161,10 +2174,29 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
                 </div>
                 <h4>{candidate.name}</h4>
                 <p>{candidate.note}</p>
+                <div className="admin-source-strip">
+                  <span>
+                    <ShieldCheck size={13} weight="bold" />
+                    {candidate.candidateSourceType ?? "source_unknown"}
+                  </span>
+                  {candidate.candidateSourceId ? <span>{candidate.candidateSourceId}</span> : null}
+                  {candidate.candidateReviewStatus ? <span>{candidate.candidateReviewStatus}</span> : null}
+                  {candidate.address ? <span>{candidate.address}</span> : null}
+                  {candidate.website ? (
+                    <a href={candidate.website.startsWith("http") ? candidate.website : `https://${candidate.website}`} target="_blank" rel="noopener noreferrer">
+                      <Globe size={13} weight="bold" />
+                      {lang === "sv" ? "Webb" : "Web"}
+                      <ArrowSquareOut size={11} weight="bold" />
+                    </a>
+                  ) : null}
+                </div>
                 <div className="admin-evidence-strip">
                   <span>
                     <ShieldCheck size={13} weight="bold" />
                     {candidate.evidenceCount} {lang === "sv" ? "signaler" : "signals"}
+                  </span>
+                  <span className={candidate.evidenceGate.canPromoteHiddenGem ? "admin-gate-pass" : "admin-gate-warn"}>
+                    {candidate.evidenceGate.independentEvidenceCount}/2 {lang === "sv" ? "oberoende" : "independent"}
                   </span>
                   {candidate.evidenceSourceTypes.slice(0, 4).map((sourceType) => (
                     <span key={sourceType}>{sourceType}</span>
@@ -2173,6 +2205,16 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
                     {lang === "sv" ? "Senast" : "Latest"} {formatUpdatedDate(candidate.latestEvidenceAt ?? undefined)}
                   </span>
                 </div>
+                {candidate.evidenceGate.sourceGaps.length ? (
+                  <div className="admin-gap-row">
+                    {candidate.evidenceGate.sourceGaps.map((gap) => (
+                      <span key={gap}>{sourceGapLabel(gap, lang)}</span>
+                    ))}
+                  </div>
+                ) : null}
+                {candidate.candidateAllowedUse ? (
+                  <p className="admin-allowed-use">{candidate.candidateAllowedUse}</p>
+                ) : null}
                 <label className="admin-notes-label" htmlFor={`admin-notes-${candidate.id}`}>
                   {lang === "sv" ? "Granskningsnotering" : "Review note"}
                 </label>
@@ -2198,7 +2240,14 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
                 <button
                   type="button"
                   className="admin-action-btn primary"
-                  disabled={busyId === candidate.id}
+                  disabled={busyId === candidate.id || !candidate.evidenceGate.canPromoteHiddenGem}
+                  title={
+                    candidate.evidenceGate.canPromoteHiddenGem
+                      ? validationLabelText("known_hidden_gem", lang)
+                      : lang === "sv"
+                        ? "Kräver minst två oberoende icke-Google-signaler"
+                        : "Requires at least two independent non-Google signals"
+                  }
                   onClick={() => void promoteCandidate(candidate, "verified", "known_hidden_gem")}
                 >
                   <Sparkle size={14} weight="bold" />
@@ -2216,7 +2265,14 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
                 <button
                   type="button"
                   className="admin-action-btn"
-                  disabled={busyId === candidate.id}
+                  disabled={busyId === candidate.id || !candidate.evidenceGate.canPromoteHiddenGem}
+                  title={
+                    candidate.evidenceGate.canPromoteHiddenGem
+                      ? validationLabelText("known_hidden_gem", lang)
+                      : lang === "sv"
+                        ? "Kräver minst två oberoende icke-Google-signaler"
+                        : "Requires at least two independent non-Google signals"
+                  }
                   onClick={() => void promoteCandidate(candidate, "featured", "known_hidden_gem")}
                 >
                   <ShieldCheck size={14} weight="bold" />
@@ -2285,6 +2341,16 @@ function validationLabelText(label: AdminValidationLabel, lang: Language) {
     closed_wrong_category: { sv: "Stängd/fel kategori", en: "Closed/wrong category" },
   };
   return labels[label][lang];
+}
+
+function sourceGapLabel(gap: string, lang: Language) {
+  const labels: Record<string, { sv: string; en: string }> = {
+    needs_second_independent_evidence: { sv: "Behöver andra oberoende signalen", en: "Needs second independent signal" },
+    needs_osm_or_open_data_match: { sv: "Behöver OSM/open-data match", en: "Needs OSM/open-data match" },
+    needs_current_existence_signal: { sv: "Behöver aktuell existenssignal", en: "Needs current existence signal" },
+    google_metadata_only: { sv: "Endast Google-metadata", en: "Google metadata only" },
+  };
+  return labels[gap]?.[lang] ?? gap.replaceAll("_", " ");
 }
 
 export default function App() {

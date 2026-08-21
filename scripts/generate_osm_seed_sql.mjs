@@ -32,9 +32,10 @@ for (const row of rows) {
   const latitude = numericOrNull(row.latitude);
   const longitude = numericOrNull(row.longitude);
   const establishmentRef = `(SELECT id FROM establishments WHERE osm_type = ${sql(row.osm_type)} AND osm_id = ${sql(row.osm_id)} LIMIT 1)`;
+  const sourceId = `${row.osm_type}:${row.osm_id}`;
 
   lines.push(
-    `INSERT INTO establishments (name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at) VALUES (${[
+    `INSERT INTO establishments (name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website, candidate_source_type, candidate_source_id) VALUES (${[
       sql(row.name),
       sql(type),
       sql("Stockholm"),
@@ -47,7 +48,11 @@ for (const row of rows) {
       sql(row.osm_id),
       sql(capturedAt),
       sql(capturedAt),
-    ].join(", ")}) ON CONFLICT(osm_type, osm_id) DO UPDATE SET name = excluded.name, type = excluded.type, description = excluded.description, latitude = excluded.latitude, longitude = excluded.longitude, updated_at = excluded.updated_at;`,
+      sql(row.address),
+      sql(row.website),
+      sql("osm_baseline"),
+      sql(sourceId),
+    ].join(", ")}) ON CONFLICT(osm_type, osm_id) DO UPDATE SET name = excluded.name, type = excluded.type, description = excluded.description, latitude = excluded.latitude, longitude = excluded.longitude, address = COALESCE(excluded.address, establishments.address), website = COALESCE(excluded.website, establishments.website), candidate_source_type = COALESCE(establishments.candidate_source_type, excluded.candidate_source_type), candidate_source_id = COALESCE(establishments.candidate_source_id, excluded.candidate_source_id), updated_at = excluded.updated_at;`,
   );
 
   lines.push(

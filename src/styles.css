@@ -1577,13 +1577,57 @@ button.concierge-clear-btn:hover {
   gap: 6px;
 }
 
+.admin-source-strip,
+.admin-gap-row {
+  align-items: center;
+  color: var(--color-stone);
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  gap: 6px;
+  margin: 10px 0;
+  text-transform: uppercase;
+}
+
+.admin-source-strip span,
+.admin-source-strip a,
+.admin-gap-row span,
 .admin-evidence-strip span {
   align-items: center;
   background: var(--color-paper);
   border: 1px solid var(--color-mist);
+  color: var(--color-ink);
   display: inline-flex;
   gap: 5px;
   padding: 4px 7px;
+  text-decoration: none;
+}
+
+.admin-source-strip a {
+  border-color: var(--color-water);
+  color: var(--color-water);
+}
+
+.admin-evidence-strip .admin-gate-pass {
+  border-color: var(--color-water);
+  color: var(--color-water);
+}
+
+.admin-evidence-strip .admin-gate-warn,
+.admin-gap-row span {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+}
+
+.admin-allowed-use {
+  border-left: 3px solid var(--color-water);
+  color: var(--color-stone) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  margin: 8px 0 0 !important;
+  padding-left: 10px;
 }
 
 .admin-notes-label {
