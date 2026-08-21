@@ -58,8 +58,9 @@ The repo also includes `wrangler.toml` with `pages_build_output_dir = "dist"`
 so Pages knows where the built assets belong.
 
 Production APIs do not silently serve demo data. If D1/static OSM data is unavailable,
-`/api/places` and `/api/concierge` return an unavailable response rather than
-mixing illustrative fixtures into live results. For local demos only, set
+`/api/places`, `/api/concierge`, `/api/photos`, and `/api/reviews` return an
+unavailable response rather than mixing illustrative fixtures into live results.
+For local demos only, set
 `ALLOW_DEMO_FALLBACK=true` for Cloudflare Functions and
 `VITE_MOTKARTA_DEMO_MODE=true` for the Vite client.
 
@@ -185,6 +186,22 @@ The queue writes `outputs/candidate_queue.json` with four explicit states:
 `baseline`, `candidate`, `verified`, and `featured`. Candidate records are
 review inputs only; they are not high-confidence recommendations until a human or
 source-gate workflow promotes them.
+
+### Admin review and promotion
+
+Apply the lifecycle migrations through D1 before using the review workflow:
+
+```bash
+wrangler d1 migrations apply <database-name> --remote
+wrangler pages secret put MOTKARTA_ADMIN_TOKEN
+```
+
+The admin UI is available in the app under `#admin-review`. It reads candidates
+from `/api/admin/candidates` and promotes records by updating only
+`lifecycle_state`, `validation_label`, `validation_notes`, and `updated_at` on
+`establishments`. Each promotion also writes an `admin_review_events` audit row.
+If `MOTKARTA_ADMIN_TOKEN` is missing, the admin API remains closed. If D1 is
+missing, it returns an unavailable response and never falls back to demo rows.
 
 Fetch and normalize Stockholm food-control establishments:
 

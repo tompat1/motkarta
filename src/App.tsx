@@ -8,6 +8,7 @@ import { MerchPanel } from "./components/MerchPanel";
 import { PreloaderModal } from "./components/PreloaderModal";
 import {
   ArrowRight,
+  ArrowClockwise,
   ArrowSquareOut,
   ArrowsIn,
   ArrowsOut,
@@ -59,6 +60,7 @@ import {
 import {
   type EstablishmentType,
   type PlaceInput,
+  type PlaceLifecycleState,
   type ScoredPlace,
   type UserPreferences,
   scorePlace,
@@ -308,6 +310,7 @@ export const translations = {
     brandDescriptor: "Stockholms fria matkarta",
     navMap: "KARTA",
     navMethod: "METOD",
+    navReview: "GRANSKNING",
     navConcierge: "CONCIERGE",
     navAbout: "OM",
     dataSourceLiveOsm: "Datafeed: Live OSM",
@@ -388,6 +391,7 @@ export const translations = {
     brandDescriptor: "Stockholm's independent food map",
     navMap: "MAP",
     navMethod: "METHOD",
+    navReview: "REVIEW",
     navConcierge: "CONCIERGE",
     navAbout: "ABOUT",
     dataSourceLiveOsm: "Datafeed: Live OSM",
@@ -1887,6 +1891,402 @@ function ConciergeSuperpowerModal({
   );
 }
 
+type AdminStateFilter = PlaceLifecycleState | "all";
+type AdminValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
+
+type AdminCandidate = {
+  id: number;
+  name: string;
+  kind: string;
+  area: string;
+  note: string;
+  lifecycleState: PlaceLifecycleState;
+  validationLabel: AdminValidationLabel | null;
+  validationNotes: string | null;
+  updatedAt: string | null;
+  createdAt: string | null;
+  evidenceCount: number;
+  evidenceSourceTypes: string[];
+  latestEvidenceAt: string | null;
+};
+
+const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "all"];
+
+function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
+  const [tokenInput, setTokenInput] = useState(readStoredAdminToken);
+  const [adminToken, setAdminToken] = useState(readStoredAdminToken);
+  const [stateFilter, setStateFilter] = useState<AdminStateFilter>("candidate");
+  const [candidates, setCandidates] = useState<AdminCandidate[]>([]);
+  const [reviewNotes, setReviewNotes] = useState<Record<number, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [busyId, setBusyId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState("");
+
+  const loadCandidates = useCallback(
+    async (tokenOverride?: string) => {
+      const token = (tokenOverride ?? adminToken).trim();
+      if (!token) {
+        setCandidates([]);
+        setStatus("");
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`/api/admin/candidates?state=${stateFilter}&limit=100`, {
+          headers: { "x-motkarta-admin-token": token },
+        });
+        const payload = (await response.json().catch(() => ({}))) as {
+          candidates?: AdminCandidate[];
+          error?: string;
+        };
+
+        if (!response.ok) {
+          throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte ladda granskningskön." : "Could not load review queue."));
+        }
+
+        const nextCandidates = payload.candidates ?? [];
+        const nextNotes: Record<number, string> = {};
+        nextCandidates.forEach((candidate) => {
+          nextNotes[candidate.id] = candidate.validationNotes ?? "";
+        });
+        setCandidates(nextCandidates);
+        setReviewNotes(nextNotes);
+        setStatus(
+          lang === "sv"
+            ? `${nextCandidates.length} poster laddade från D1.`
+            : `${nextCandidates.length} records loaded from D1.`,
+        );
+      } catch (loadError) {
+        setCandidates([]);
+        setError(loadError instanceof Error ? loadError.message : String(loadError));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [adminToken, lang, stateFilter],
+  );
+
+  useEffect(() => {
+    if (adminToken) {
+      void loadCandidates();
+    }
+  }, [adminToken, loadCandidates]);
+
+  const handleUnlock = (event: React.FormEvent) => {
+    event.preventDefault();
+    const token = tokenInput.trim();
+    setAdminToken(token);
+    if (typeof window !== "undefined" && token) {
+      window.sessionStorage.setItem("motkarta_admin_token", token);
+    }
+    if (token === adminToken) {
+      void loadCandidates(token);
+    }
+  };
+
+  const handleForgetToken = () => {
+    setAdminToken("");
+    setTokenInput("");
+    setCandidates([]);
+    setReviewNotes({});
+    setStatus("");
+    setError(null);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.removeItem("motkarta_admin_token");
+    }
+  };
+
+  const promoteCandidate = async (
+    candidate: AdminCandidate,
+    lifecycleState: PlaceLifecycleState,
+    validationLabel: AdminValidationLabel,
+  ) => {
+    if (!adminToken) return;
+
+    const validationNotes = (reviewNotes[candidate.id] ?? candidate.validationNotes ?? "").trim();
+    setBusyId(candidate.id);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/admin/candidates", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-motkarta-admin-token": adminToken,
+        },
+        body: JSON.stringify({
+          id: candidate.id,
+          state: lifecycleState,
+          validationLabel,
+          validationNotes,
+        }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        reviewedAt?: string;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte spara granskningen." : "Could not save review."));
+      }
+
+      const updatedCandidate: AdminCandidate = {
+        ...candidate,
+        lifecycleState,
+        validationLabel,
+        validationNotes: validationNotes || null,
+        updatedAt: payload.reviewedAt ?? new Date().toISOString(),
+      };
+
+      setCandidates((current) =>
+        current.flatMap((row) => {
+          if (row.id !== candidate.id) {
+            return [row];
+          }
+
+          if (stateFilter !== "all" && lifecycleState !== stateFilter) {
+            return [];
+          }
+
+          return [updatedCandidate];
+        }),
+      );
+      setStatus(
+        lang === "sv"
+          ? `${candidate.name} uppdaterades till ${lifecycleStateLabel(lifecycleState, lang)}.`
+          : `${candidate.name} updated to ${lifecycleStateLabel(lifecycleState, lang)}.`,
+      );
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : String(saveError));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  return (
+    <section className="admin-review-panel" id="admin-review" aria-labelledby="admin-review-title">
+      <div className="admin-review-head">
+        <div>
+          <p className="admin-review-kicker">
+            <ShieldCheck size={14} weight="bold" /> {lang === "sv" ? "Adminflöde" : "Admin workflow"}
+          </p>
+          <h3 id="admin-review-title">
+            {lang === "sv" ? "Granskningskö" : "Review queue"}
+          </h3>
+        </div>
+
+        <form className="admin-review-auth" onSubmit={handleUnlock}>
+          <label className="sr-only" htmlFor="admin-token">
+            {lang === "sv" ? "Admin-token" : "Admin token"}
+          </label>
+          <input
+            id="admin-token"
+            type="password"
+            value={tokenInput}
+            onChange={(event) => setTokenInput(event.target.value)}
+            placeholder={lang === "sv" ? "Admin-token" : "Admin token"}
+            autoComplete="off"
+          />
+          <button type="submit" title={lang === "sv" ? "Lås upp granskningskön" : "Unlock review queue"}>
+            <ShieldCheck size={14} weight="bold" />
+            {lang === "sv" ? "Lås upp" : "Unlock"}
+          </button>
+          {adminToken ? (
+            <button
+              type="button"
+              className="admin-review-ghost-btn"
+              onClick={handleForgetToken}
+              title={lang === "sv" ? "Glöm token" : "Forget token"}
+            >
+              <X size={14} weight="bold" />
+            </button>
+          ) : null}
+        </form>
+      </div>
+
+      <div className="admin-review-toolbar" aria-label={lang === "sv" ? "Filter för granskningskö" : "Review queue filters"}>
+        <div className="admin-state-tabs">
+          {adminStateFilters.map((state) => (
+            <button
+              key={state}
+              type="button"
+              className={stateFilter === state ? "active" : ""}
+              aria-pressed={stateFilter === state}
+              onClick={() => setStateFilter(state)}
+            >
+              {lifecycleStateLabel(state, lang)}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          className="admin-refresh-btn"
+          onClick={() => void loadCandidates()}
+          disabled={!adminToken || loading}
+          title={lang === "sv" ? "Ladda om från D1" : "Reload from D1"}
+        >
+          {loading ? <CircleNotch size={14} className="animate-spin" /> : <ArrowClockwise size={14} weight="bold" />}
+          {lang === "sv" ? "Ladda om" : "Reload"}
+        </button>
+      </div>
+
+      <div className="admin-review-status" aria-live="polite">
+        {error ? <span className="admin-review-error">{error}</span> : status}
+      </div>
+
+      {!adminToken ? (
+        <div className="admin-review-empty">
+          <ShieldCheck size={18} weight="bold" />
+          <span>{lang === "sv" ? "Token krävs för att läsa eller ändra D1." : "Token required before reading or changing D1."}</span>
+        </div>
+      ) : loading ? (
+        <div className="admin-review-empty">
+          <CircleNotch size={18} className="animate-spin" />
+          <span>{lang === "sv" ? "Laddar kandidater..." : "Loading candidates..."}</span>
+        </div>
+      ) : candidates.length ? (
+        <div className="admin-candidate-list">
+          {candidates.map((candidate) => (
+            <article key={candidate.id} className="admin-candidate-row" aria-busy={busyId === candidate.id}>
+              <div className="admin-candidate-main">
+                <div className="admin-candidate-meta">
+                  <span className={`admin-state-badge state-${candidate.lifecycleState}`}>
+                    {lifecycleStateLabel(candidate.lifecycleState, lang)}
+                  </span>
+                  <span>{candidate.kind} · {candidate.area}</span>
+                  {candidate.validationLabel ? <span>{validationLabelText(candidate.validationLabel, lang)}</span> : null}
+                </div>
+                <h4>{candidate.name}</h4>
+                <p>{candidate.note}</p>
+                <div className="admin-evidence-strip">
+                  <span>
+                    <ShieldCheck size={13} weight="bold" />
+                    {candidate.evidenceCount} {lang === "sv" ? "signaler" : "signals"}
+                  </span>
+                  {candidate.evidenceSourceTypes.slice(0, 4).map((sourceType) => (
+                    <span key={sourceType}>{sourceType}</span>
+                  ))}
+                  <span>
+                    {lang === "sv" ? "Senast" : "Latest"} {formatUpdatedDate(candidate.latestEvidenceAt ?? undefined)}
+                  </span>
+                </div>
+                <label className="admin-notes-label" htmlFor={`admin-notes-${candidate.id}`}>
+                  {lang === "sv" ? "Granskningsnotering" : "Review note"}
+                </label>
+                <textarea
+                  id={`admin-notes-${candidate.id}`}
+                  rows={2}
+                  value={reviewNotes[candidate.id] ?? ""}
+                  onChange={(event) =>
+                    setReviewNotes((current) => ({
+                      ...current,
+                      [candidate.id]: event.target.value,
+                    }))
+                  }
+                  placeholder={
+                    lang === "sv"
+                      ? "T.ex. OSM + kommunal träff + manuell webbkontroll."
+                      : "E.g. OSM + municipal match + manual website check."
+                  }
+                />
+              </div>
+
+              <div className="admin-candidate-actions">
+                <button
+                  type="button"
+                  className="admin-action-btn primary"
+                  disabled={busyId === candidate.id}
+                  onClick={() => void promoteCandidate(candidate, "verified", "known_hidden_gem")}
+                >
+                  <Sparkle size={14} weight="bold" />
+                  {lang === "sv" ? "Dold pärla" : "Hidden gem"}
+                </button>
+                <button
+                  type="button"
+                  className="admin-action-btn"
+                  disabled={busyId === candidate.id}
+                  onClick={() => void promoteCandidate(candidate, "verified", "known_mainstream")}
+                >
+                  <CheckCircle size={14} weight="bold" />
+                  {lang === "sv" ? "Mainstream" : "Mainstream"}
+                </button>
+                <button
+                  type="button"
+                  className="admin-action-btn"
+                  disabled={busyId === candidate.id}
+                  onClick={() => void promoteCandidate(candidate, "featured", "known_hidden_gem")}
+                >
+                  <ShieldCheck size={14} weight="bold" />
+                  {lang === "sv" ? "Featured" : "Featured"}
+                </button>
+                <button
+                  type="button"
+                  className="admin-action-btn muted"
+                  disabled={busyId === candidate.id}
+                  onClick={() => void promoteCandidate(candidate, "candidate", "not_enough_evidence")}
+                >
+                  <Sliders size={14} weight="bold" />
+                  {lang === "sv" ? "Mer bevis" : "More evidence"}
+                </button>
+                <button
+                  type="button"
+                  className="admin-action-btn danger"
+                  disabled={busyId === candidate.id}
+                  onClick={() => void promoteCandidate(candidate, "candidate", "closed_wrong_category")}
+                >
+                  <X size={14} weight="bold" />
+                  {lang === "sv" ? "Stäng" : "Close"}
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="admin-review-empty">
+          <CheckCircle size={18} weight="bold" />
+          <span>{lang === "sv" ? "Inga poster i valt läge." : "No records in selected state."}</span>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function readStoredAdminToken() {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  try {
+    return window.sessionStorage.getItem("motkarta_admin_token") ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function lifecycleStateLabel(state: AdminStateFilter, lang: Language) {
+  const labels: Record<AdminStateFilter, { sv: string; en: string }> = {
+    baseline: { sv: "Baseline", en: "Baseline" },
+    candidate: { sv: "Kandidat", en: "Candidate" },
+    verified: { sv: "Verifierad", en: "Verified" },
+    featured: { sv: "Utvald", en: "Featured" },
+    all: { sv: "Alla", en: "All" },
+  };
+  return labels[state][lang];
+}
+
+function validationLabelText(label: AdminValidationLabel, lang: Language) {
+  const labels: Record<AdminValidationLabel, { sv: string; en: string }> = {
+    known_mainstream: { sv: "Känd mainstream", en: "Known mainstream" },
+    known_hidden_gem: { sv: "Känd dold pärla", en: "Known hidden gem" },
+    not_enough_evidence: { sv: "Otillräckliga bevis", en: "Not enough evidence" },
+    closed_wrong_category: { sv: "Stängd/fel kategori", en: "Closed/wrong category" },
+  };
+  return labels[label][lang];
+}
+
 export default function App() {
   const [places, setPlaces] = useState<PlaceInput[]>(CLIENT_DEMO_MODE ? demoPlaces : []);
   const [dataSource, setDataSource] = useState<DataSource>("loading");
@@ -2394,6 +2794,9 @@ export default function App() {
           </a>
           <a href="#method" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <ShieldCheck size={14} weight="bold" /> {t.navMethod}
+          </a>
+          <a href="#admin-review" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <CheckCircle size={14} weight="bold" /> {t.navReview}
           </a>
           <a href="#concierge" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <MagnifyingGlass size={14} weight="bold" /> {t.navConcierge}
@@ -3031,6 +3434,8 @@ export default function App() {
           {t.dataNoteLabel}
           <span>{t.dataNoteText}</span>
         </div>
+
+        <AdminReviewPanel lang={lang} />
 
         <div className="curated-sources-panel" style={{ marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--color-mist)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "12px" }}>

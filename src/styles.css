@@ -92,6 +92,28 @@ a {
   outline-offset: 2px;
 }
 
+.sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.animate-spin {
+  animation: motkarta-spin 0.8s linear infinite;
+}
+
+@keyframes motkarta-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* -------------------------------------------------------------------------- */
 /* Topbar & Header                                                           */
 /* -------------------------------------------------------------------------- */
@@ -1325,6 +1347,320 @@ button.concierge-clear-btn:hover {
   color: var(--color-stone);
 }
 
+.admin-review-panel {
+  border-bottom: 1px solid var(--color-mist);
+  border-top: 2px solid var(--color-ink);
+  margin-top: 34px;
+  padding: 24px 0 28px;
+}
+
+.admin-review-head {
+  align-items: flex-start;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.admin-review-kicker {
+  align-items: center;
+  color: var(--color-water);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 7px;
+  letter-spacing: 0.08em;
+  margin: 0 0 7px;
+  text-transform: uppercase;
+}
+
+.admin-review-panel h3 {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.admin-review-auth {
+  align-items: stretch;
+  display: flex;
+  gap: 8px;
+}
+
+.admin-review-auth input {
+  background: var(--color-white);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-none);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  min-height: 40px;
+  min-width: 220px;
+  padding: 8px 12px;
+}
+
+.admin-review-auth button,
+.admin-refresh-btn {
+  align-items: center;
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  color: var(--color-paper);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 7px;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 13px;
+  text-transform: uppercase;
+  transition: background var(--motion-fast), border-color var(--motion-fast), color var(--motion-fast);
+}
+
+.admin-review-auth button:hover,
+.admin-refresh-btn:hover {
+  background: var(--color-water);
+  border-color: var(--color-water);
+  color: var(--color-white);
+}
+
+.admin-review-auth .admin-review-ghost-btn {
+  background: var(--color-white);
+  color: var(--color-ink);
+  min-width: 40px;
+  padding: 8px;
+}
+
+.admin-review-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+
+.admin-state-tabs {
+  border: 1px solid var(--color-mist);
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.admin-state-tabs button {
+  background: var(--color-white);
+  border: 0;
+  border-right: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  min-height: 38px;
+  padding: 8px 12px;
+  text-transform: uppercase;
+}
+
+.admin-state-tabs button:last-child {
+  border-right: 0;
+}
+
+.admin-state-tabs button.active {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.admin-refresh-btn:disabled,
+.admin-action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.admin-review-status {
+  color: var(--color-stone);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  min-height: 18px;
+  padding: 12px 0;
+}
+
+.admin-review-error {
+  color: var(--color-signal);
+  font-weight: 700;
+}
+
+.admin-review-empty {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px dashed var(--color-mist);
+  color: var(--color-stone);
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  gap: 8px;
+  min-height: 58px;
+  padding: 16px;
+}
+
+.admin-candidate-list {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-candidate-row {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 240px);
+  padding: 16px;
+}
+
+.admin-candidate-main {
+  min-width: 0;
+}
+
+.admin-candidate-meta,
+.admin-evidence-strip {
+  align-items: center;
+  color: var(--color-stone);
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  gap: 7px;
+  text-transform: uppercase;
+}
+
+.admin-state-badge {
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  display: inline-flex;
+  padding: 3px 7px;
+}
+
+.admin-state-badge.state-candidate {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+}
+
+.admin-state-badge.state-verified,
+.admin-state-badge.state-featured {
+  border-color: var(--color-water);
+  color: var(--color-water);
+}
+
+.admin-candidate-row h4 {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.05;
+  margin: 9px 0 6px;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.admin-candidate-row p {
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0 0 11px;
+}
+
+.admin-evidence-strip {
+  gap: 6px;
+}
+
+.admin-evidence-strip span {
+  align-items: center;
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  display: inline-flex;
+  gap: 5px;
+  padding: 4px 7px;
+}
+
+.admin-notes-label {
+  color: var(--color-stone);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin: 12px 0 5px;
+  text-transform: uppercase;
+}
+
+.admin-candidate-row textarea {
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  display: block;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.35;
+  min-height: 64px;
+  padding: 9px 10px;
+  resize: vertical;
+  width: 100%;
+}
+
+.admin-candidate-actions {
+  align-content: start;
+  display: grid;
+  gap: 8px;
+}
+
+.admin-action-btn {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-ink);
+  color: var(--color-ink);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 7px;
+  justify-content: flex-start;
+  min-height: 38px;
+  padding: 8px 10px;
+  text-transform: uppercase;
+  transition: background var(--motion-fast), color var(--motion-fast), border-color var(--motion-fast);
+}
+
+.admin-action-btn:hover {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.admin-action-btn.primary {
+  background: var(--color-signal);
+  border-color: var(--color-signal);
+  color: var(--color-white);
+}
+
+.admin-action-btn.primary:hover {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+.admin-action-btn.muted {
+  border-color: var(--color-mist);
+  color: var(--color-stone);
+}
+
+.admin-action-btn.danger {
+  border-color: var(--color-signal);
+  color: var(--color-signal);
+}
+
 footer {
   background: var(--color-ink);
   color: var(--color-paper);
@@ -1386,6 +1722,28 @@ footer {
     grid-template-columns: 1fr 1fr;
   }
 
+  .admin-review-head,
+  .admin-review-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-review-auth {
+    flex-wrap: wrap;
+  }
+
+  .admin-review-auth input {
+    flex: 1 1 220px;
+  }
+
+  .admin-candidate-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-candidate-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .controls {
     align-items: flex-start;
     grid-template-columns: 1fr;
@@ -1443,6 +1801,24 @@ footer {
 
   .method-grid {
     grid-template-columns: 1fr;
+  }
+
+  .admin-state-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .admin-state-tabs button {
+    border-bottom: 1px solid var(--color-mist);
+  }
+
+  .admin-candidate-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-action-btn {
+    justify-content: center;
   }
 
   .method-grid article {

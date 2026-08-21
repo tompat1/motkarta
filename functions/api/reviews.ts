@@ -1,4 +1,5 @@
 import { getFallbackReviews, type PlaceReview } from "../../lib/lazy-media.ts";
+import { demoFallbackEnabled } from "../../lib/runtime-flags.ts";
 
 type EventContext<Env> = {
   request: Request;
@@ -6,6 +7,7 @@ type EventContext<Env> = {
 };
 
 type Env = {
+  ALLOW_DEMO_FALLBACK?: string;
   DB?: {
     prepare(query: string): {
       bind(...values: unknown[]): {
@@ -13,6 +15,7 @@ type Env = {
       };
     };
   };
+  MOTKARTA_DEMO_MODE?: string;
 };
 
 const jsonHeaders = {
@@ -69,7 +72,14 @@ export async function onRequestGet(context: EventContext<Env>) {
     }
   }
 
-  // Fallback to grounded audit/editorial data
+  if (!demoFallbackEnabled(context.env)) {
+    return Response.json(
+      { source: "unavailable", placeId, reviews: [] },
+      { headers: jsonHeaders },
+    );
+  }
+
+  // Fallback to grounded audit/editorial data in explicit demo/dev mode only.
   const fallbackReviews = getFallbackReviews(placeContext);
   return Response.json(
     { source: "demo", placeId, reviews: fallbackReviews },
