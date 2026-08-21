@@ -24,3 +24,6 @@ def test_fit_discovery_model_adds_residual_columns():
     assert "expected_platform_rating" in result
     assert "rating_residual" in result
     assert "discovery_percentile" in result
+    assert "ml_lifecycle_state" in result
+    assert "source_gap_flags" in result
+    assert set(result["ml_lifecycle_state"]) == {"candidate"}

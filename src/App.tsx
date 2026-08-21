@@ -95,7 +95,10 @@ type EstablishmentFilter = (typeof establishmentTypes)[number];
 type CuisineFilter = typeof allCuisines | string;
 type Mode = (typeof modes)[number];
 type SortMode = (typeof sortModes)[number];
-type DataSource = "loading" | "demo" | "d1" | "osm";
+type DataSource = "loading" | "demo" | "d1" | "osm" | "unavailable";
+
+const clientEnv = (import.meta as unknown as { env?: { DEV?: boolean; VITE_MOTKARTA_DEMO_MODE?: string } }).env;
+const CLIENT_DEMO_MODE = Boolean(clientEnv?.DEV) || clientEnv?.VITE_MOTKARTA_DEMO_MODE === "true";
 
 function modeScore(place: ScoredPlace, mode: Mode) {
   if (mode === "Hidden gems") {
@@ -311,6 +314,7 @@ export const translations = {
     dataSourceLiveD1: "Datafeed: Live D1",
     dataSourceLoading: "Datafeed: Laddar",
     dataSourceDemo: "Datafeed: Demo",
+    dataSourceUnavailable: "Datafeed: Ej tillgänglig",
     eyebrow: "Stockholms fria matkarta · Ingen betald ranking",
     titleMain: "Stockholm,",
     titleSub: "bord för bord.",
@@ -390,6 +394,7 @@ export const translations = {
     dataSourceLiveD1: "Datafeed: Live D1",
     dataSourceLoading: "Datafeed: Loading",
     dataSourceDemo: "Datafeed: Demo",
+    dataSourceUnavailable: "Datafeed: Unavailable",
     eyebrow: "Stockholm's independent food map · No paid ranking",
     titleMain: "Stockholm,",
     titleSub: "table by table.",
@@ -1562,6 +1567,7 @@ function ConciergeSuperpowerModal({
       note: note.trim() || `Oberoende ${kind.toLowerCase()} i ${area}.`,
       tags: [...tags.split(",").map((t) => t.trim()).filter(Boolean), "Community submission", "Pending verification"],
       evidenceLabel: "Pending community submission · not independently verified",
+      lifecycleState: "candidate",
       ratingAverage: 4.1,
       reliableRatingCount: 0,
       reviewCount: 0,
@@ -1882,7 +1888,7 @@ function ConciergeSuperpowerModal({
 }
 
 export default function App() {
-  const [places, setPlaces] = useState<PlaceInput[]>(demoPlaces);
+  const [places, setPlaces] = useState<PlaceInput[]>(CLIENT_DEMO_MODE ? demoPlaces : []);
   const [dataSource, setDataSource] = useState<DataSource>("loading");
   const [mode, setMode] = useState<Mode>("For you");
   const [sortMode, setSortMode] = useState<SortMode>("Best match");
@@ -2081,13 +2087,24 @@ export default function App() {
         const payload = await fetchPlacesPayload();
 
         if (!cancelled && payload.places?.length) {
-          setPlaces(sanitizeAndAugmentPlaces(payload.places));
+          setPlaces(sanitizeAndAugmentPlaces(payload.places, CLIENT_DEMO_MODE));
           setDataSource(payload.source);
+        } else if (!cancelled && CLIENT_DEMO_MODE) {
+          setPlaces(sanitizeAndAugmentPlaces(demoPlaces, true));
+          setDataSource("demo");
+        } else if (!cancelled) {
+          setPlaces([]);
+          setDataSource("unavailable");
         }
       } catch {
         if (!cancelled) {
-          setPlaces(sanitizeAndAugmentPlaces(demoPlaces));
-          setDataSource("demo");
+          if (CLIENT_DEMO_MODE) {
+            setPlaces(sanitizeAndAugmentPlaces(demoPlaces, true));
+            setDataSource("demo");
+          } else {
+            setPlaces([]);
+            setDataSource("unavailable");
+          }
         }
       }
     }
@@ -2187,7 +2204,7 @@ export default function App() {
   );
   const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
 
-  const active = scoredPlaces.find((place) => place.id === selected) ?? ranked[0] ?? scoredPlaces[0];
+  const active = scoredPlaces.find((place) => place.id === selected) ?? ranked[0] ?? scoredPlaces[0] ?? null;
 
   const handleSelectPlace = useCallback(
     (id: number) => {
@@ -2428,7 +2445,9 @@ export default function App() {
                 ? t.dataSourceLiveD1
                 : dataSource === "loading"
                   ? t.dataSourceLoading
-                  : t.dataSourceDemo}
+                  : dataSource === "demo"
+                    ? t.dataSourceDemo
+                    : t.dataSourceUnavailable}
           </a>
         </div>
       </header>
@@ -2554,6 +2573,7 @@ export default function App() {
             </span>
           </div>
 
+          {active ? (
           <article className={`map-card ${isMapCardMinimized ? "is-minimized" : ""}`}>
             <div className="map-card-header">
               <div className="map-card-title-meta">
@@ -2743,6 +2763,25 @@ export default function App() {
               </div>
             )}
           </article>
+          ) : (
+            <article className="map-card">
+              <div className="map-card-header">
+                <div className="map-card-title-meta">
+                  <span className="map-card-kind-badge">{lang === "sv" ? "Ingen live-data" : "No live data"}</span>
+                  <h3 className="map-card-header-title">
+                    {lang === "sv" ? "Datasetet är inte tillgängligt" : "Dataset unavailable"}
+                  </h3>
+                </div>
+              </div>
+              <div className="map-card-body">
+                <p className="note">
+                  {lang === "sv"
+                    ? "MOTKARTA visar inte demoresultat i produktion. Anslut OSM/static data eller D1 för att fylla kartan."
+                    : "MOTKARTA does not show demo results in production. Connect OSM/static data or D1 to populate the map."}
+                </p>
+              </div>
+            </article>
+          )}
         </div>
 
         <aside className="results">
@@ -2798,7 +2837,7 @@ export default function App() {
             {visibleRanked.map((place, index) => (
               <div
                 key={place.id}
-                className={place.id === active.id ? "place active-place" : "place"}
+                className={active && place.id === active.id ? "place active-place" : "place"}
                 onClick={() => setSelected(place.id)}
                 role="button"
                 tabIndex={0}
@@ -3130,7 +3169,7 @@ function FoodMap({
   lang,
 }: {
   places: ScoredPlace[];
-  activePlace: ScoredPlace;
+  activePlace: ScoredPlace | null;
   onSelect: (id: number) => void;
   onUserLocated?: (loc: { latitude: number; longitude: number }) => void;
   lang: Language;
@@ -3268,7 +3307,7 @@ function FoodMap({
     const bounds = L.latLngBounds([]);
     places.filter(hasCoordinates).forEach((place, index) => {
       const marker = L.marker([place.latitude, place.longitude], {
-        icon: placeIcon(place, place.id === activePlace.id),
+        icon: placeIcon(place, place.id === activePlace?.id),
         title: place.name,
       })
         .bindPopup(placePopupHtml(place, index + 1, lang), { maxWidth: 280 })
@@ -3286,6 +3325,10 @@ function FoodMap({
 
   useEffect(() => {
     const map = mapRef.current;
+    if (!activePlace) {
+      return;
+    }
+
     const activeMarker = markersRef.current.get(activePlace.id);
     if (!map || !activeMarker || !hasCoordinates(activePlace)) {
       return;
@@ -3457,7 +3500,7 @@ const RESTAURANT_GRILL_KEYWORDS = [
   "sportsbar",
 ];
 
-export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[] {
+export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[], includeDemoPlaces = false): PlaceInput[] {
   // 1. Purge commercial chains
   const filtered = inputPlaces.filter((p) => {
     const n = p.name.toLowerCase();
@@ -3515,16 +3558,18 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[
     return p;
   });
 
-  // 3. Ensure all 18 demoPlaces (including all 15 prime specialty coffee venues) are present
+  // 3. In explicit demo/dev mode, ensure fixture places are present for demos.
   const result = [...promoted];
-  for (const demoPlace of demoPlaces) {
-    const exists = result.some(
-      (p) =>
-        p.name.toLowerCase().includes(demoPlace.name.toLowerCase()) ||
-        demoPlace.name.toLowerCase().includes(p.name.toLowerCase()),
-    );
-    if (!exists) {
-      result.push(demoPlace);
+  if (includeDemoPlaces) {
+    for (const demoPlace of demoPlaces) {
+      const exists = result.some(
+        (p) =>
+          p.name.toLowerCase().includes(demoPlace.name.toLowerCase()) ||
+          demoPlace.name.toLowerCase().includes(p.name.toLowerCase()),
+      );
+      if (!exists) {
+        result.push(demoPlace);
+      }
     }
   }
 

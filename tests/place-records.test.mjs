@@ -1,17 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { demoPlaces } from "../lib/demo-places.ts";
 import { loadPlacesFromD1 } from "../lib/place-records.ts";
 
-test("D1 loader falls back to demo places when no rows exist", async () => {
+test("D1 loader returns no places when production rows are absent", async () => {
   const db = fakeD1({
     places: [],
     evidence: [],
     tags: [],
   });
 
-  assert.equal(await loadPlacesFromD1(db), demoPlaces);
+  assert.deepEqual(await loadPlacesFromD1(db), []);
 });
 
 test("D1 loader maps rows into scoring inputs", async () => {
@@ -27,6 +26,9 @@ test("D1 loader maps rows into scoring inputs", async () => {
         latitude: 59.31,
         longitude: 18.08,
         chain_status: "independent",
+        lifecycle_state: "verified",
+        validation_label: "known_hidden_gem",
+        validation_notes: "Human spot-check confirmed",
         rating_average: 4.7,
         reliable_rating_count: 60,
         review_count: 80,
@@ -81,6 +83,8 @@ test("D1 loader maps rows into scoring inputs", async () => {
 
   assert.equal(place.name, "Test Roaster");
   assert.equal(place.kind, "Specialty coffee");
+  assert.equal(place.lifecycleState, "verified");
+  assert.equal(place.validationLabel, "known_hidden_gem");
   assert.deepEqual([...place.tags].sort(), ["Filter", "Independent"]);
   assert.equal(place.specialty?.specialtyVerified, true);
   assert.equal(place.evidence.confidence, "Medium");

@@ -5,6 +5,7 @@ export type EstablishmentType =
   | "Specialty coffee";
 
 export type Confidence = "Low" | "Medium" | "High";
+export type PlaceLifecycleState = "baseline" | "candidate" | "verified" | "featured";
 
 export type SpecialtyAttributes = {
   specialtyVerified: boolean;
@@ -79,6 +80,9 @@ export type PlaceInput = {
   ageDays: number;
   daysSinceFreshEvidence: number;
   is_hidden_gem?: boolean;
+  lifecycleState?: PlaceLifecycleState;
+  validationLabel?: "known_mainstream" | "known_hidden_gem" | "not_enough_evidence" | "closed_wrong_category";
+  validationNotes?: string;
   evidence: EvidenceSignals;
   engagement: EngagementSignals;
   specialty?: SpecialtyAttributes;
@@ -125,6 +129,25 @@ export type VerificationBreakdown = {
 export type ScoredPlace = PlaceInput & {
   scores: ScoreBreakdown;
   verification: VerificationBreakdown;
+  hiddenGem: HiddenGemEligibility;
+};
+
+export type HiddenGemGateStatus = {
+  passed: boolean;
+  label: string;
+  detail: string;
+};
+
+export type HiddenGemEligibility = {
+  eligible: boolean;
+  independentEvidenceCount: number;
+  gates: {
+    lowMainstreamExposure: HiddenGemGateStatus;
+    independentEvidence: HiddenGemGateStatus;
+    currentExistence: HiddenGemGateStatus;
+    distinctiveness: HiddenGemGateStatus;
+    lifecycle: HiddenGemGateStatus;
+  };
 };
 
 const confidenceWeight: Record<Confidence, number> = {
@@ -186,6 +209,99 @@ function sourceConsensus(evidence: EvidenceSignals) {
     evidence.credibleReviewers;
 
   return clamp((sourceCount / 4) * 100 * confidenceWeight[evidence.confidence]);
+}
+
+function signalStrength(value: number | undefined) {
+  const raw = value ?? 0;
+  return clamp(raw <= 1 ? raw * 100 : raw);
+}
+
+export function independentEvidenceCount(place: PlaceInput) {
+  const evidence = place.evidence;
+  const signals = [
+    signalStrength(evidence.specialistGuide) >= 40,
+    signalStrength(evidence.independentEditorial) >= 40,
+    signalStrength(evidence.verifiedUserRating) >= 40 ||
+      signalStrength(evidence.credibleReviewers) >= 40 ||
+      (place.reliableRatingCount ?? 0) >= 20,
+    signalStrength(evidence.inspectionStatus) >= 80,
+    signalStrength(evidence.verifiedAttributes) >= 50 ||
+      (place.specialty?.verificationSources ?? 0) >= 2 ||
+      place.specialty?.specialtyVerified === true,
+  ];
+
+  return signals.filter(Boolean).length;
+}
+
+export function isUserVisibleLifecycleState(state: PlaceLifecycleState | undefined) {
+  return state !== "candidate";
+}
+
+export function evaluateHiddenGemGates(place: PlaceInput): HiddenGemEligibility {
+  const evidenceCount = independentEvidenceCount(place);
+  const nonGenericTags = (place.tags ?? []).filter((tag) => {
+    const normalized = tag.toLowerCase().trim();
+    return ![
+      "restaurant",
+      "bakery",
+      "café",
+      "cafe",
+      "specialty coffee",
+      "independent",
+      "community submission",
+      "pending verification",
+      "openstreetmap",
+      "osm",
+    ].includes(normalized);
+  });
+  const hasDistinctiveStructuredSignal =
+    Boolean(place.discoveryReasons?.length) ||
+    Object.values(place.discoverySignals ?? {}).some(Boolean) ||
+    nonGenericTags.length >= 2 ||
+    (place.cuisine ? !["general", "restaurant", "cafe", "coffee"].includes(place.cuisine.toLowerCase()) : false) ||
+    (place.kind === "Specialty coffee" && verifySpecialtyCoffeeEligibility(place));
+
+  const lifecycleState = place.lifecycleState ?? "baseline";
+  const isKnownBadValidation = place.validationLabel === "closed_wrong_category";
+  const currentExistence =
+    !isKnownBadValidation &&
+    ((place.daysSinceFreshEvidence ?? 365) <= 365 ||
+      signalStrength(place.evidence.dataFreshness) >= 50 ||
+      signalStrength(place.evidence.inspectionStatus) >= 80);
+
+  const gates = {
+    lowMainstreamExposure: {
+      passed: (place.mainstreamExposure ?? 100) <= 40,
+      label: "Low mainstream exposure",
+      detail: `mainstreamExposure ${(place.mainstreamExposure ?? 100).toFixed(0)} <= 40`,
+    },
+    independentEvidence: {
+      passed: evidenceCount >= 2,
+      label: "Two independent evidence signals",
+      detail: `${evidenceCount} independent signal${evidenceCount === 1 ? "" : "s"} found`,
+    },
+    currentExistence: {
+      passed: currentExistence,
+      label: "Current existence",
+      detail: currentExistence ? "Recent or municipal/field evidence is present" : "Needs recent existence verification",
+    },
+    distinctiveness: {
+      passed: hasDistinctiveStructuredSignal,
+      label: "Distinctiveness",
+      detail: hasDistinctiveStructuredSignal ? "Distinctive tags, source reasons, or specialty attributes present" : "Needs a specific reason beyond obscurity",
+    },
+    lifecycle: {
+      passed: isUserVisibleLifecycleState(lifecycleState) && !isKnownBadValidation,
+      label: "Visible lifecycle state",
+      detail: `state=${lifecycleState}${isKnownBadValidation ? ", validation=closed_wrong_category" : ""}`,
+    },
+  };
+
+  return {
+    eligible: Object.values(gates).every((gate) => gate.passed),
+    independentEvidenceCount: evidenceCount,
+    gates,
+  };
 }
 
 export function verifySpecialtyCoffeeEligibility(place: PlaceInput): boolean {
@@ -484,6 +600,7 @@ export function scorePlace(place: PlaceInput, preferences: UserPreferences = {})
   const discovery = discoveryScore(place, quality);
   const freshness = freshnessScore(place);
   const verification = computeVerificationBreakdown(place);
+  const hiddenGem = evaluateHiddenGemGates(place);
   const recommendation = clamp(
     0.35 * relevance +
       0.25 * quality +
@@ -494,6 +611,7 @@ export function scorePlace(place: PlaceInput, preferences: UserPreferences = {})
 
   return {
     ...place,
+    is_hidden_gem: Boolean(place.is_hidden_gem && hiddenGem.eligible),
     scores: {
       quality,
       popularity: popularity.score,
@@ -510,6 +628,7 @@ export function scorePlace(place: PlaceInput, preferences: UserPreferences = {})
       localEngagement: discovery.localEngagement,
     },
     verification,
+    hiddenGem,
   };
 }
 

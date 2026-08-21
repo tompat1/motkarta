@@ -1,5 +1,4 @@
-import { demoPlaces } from "./demo-places.ts";
-import type { Confidence, EstablishmentType, PlaceInput, SpecialtyAttributes } from "./scoring.ts";
+import type { Confidence, EstablishmentType, PlaceInput, PlaceLifecycleState, SpecialtyAttributes } from "./scoring.ts";
 
 type D1Database = {
   prepare(query: string): {
@@ -20,6 +19,9 @@ export type PlaceRow = {
   latitude: number | null;
   longitude: number | null;
   chain_status: string;
+  lifecycle_state: PlaceLifecycleState | null;
+  validation_label: PlaceInput["validationLabel"] | null;
+  validation_notes: string | null;
   rating_average: number | null;
   reliable_rating_count: number | null;
   review_count: number | null;
@@ -72,6 +74,9 @@ export const placeQuery = `
     e.latitude,
     e.longitude,
     e.chain_status,
+    e.lifecycle_state,
+    e.validation_label,
+    e.validation_notes,
     r.rating_average,
     r.reliable_rating_count,
     r.review_count,
@@ -139,7 +144,7 @@ export async function loadPlacesFromD1(db: D1Database): Promise<PlaceInput[]> {
 
   const rows = placeResult.results ?? [];
   if (!rows.length) {
-    return demoPlaces;
+    return [];
   }
 
   return rowsToPlaceInputs(
@@ -192,6 +197,9 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
     mainstreamExposure: mainstreamExposure(row),
     ageDays: 0,
     daysSinceFreshEvidence: daysSince(latestEvidenceDate),
+    lifecycleState: row.lifecycle_state ?? "baseline",
+    validationLabel: row.validation_label ?? undefined,
+    validationNotes: row.validation_notes ?? undefined,
     evidence: {
       specialistGuide: sourceTypes.has("specialist_guide") ? 1 : 0,
       independentEditorial: sourceTypes.has("editorial") ? 1 : 0,

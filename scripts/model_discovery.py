@@ -30,7 +30,46 @@ def fit_discovery_model(frame: pd.DataFrame) -> pd.DataFrame:
     data["expected_platform_rating"] = pipeline.predict(data[features])
     data["rating_residual"] = data["platform_rating"] - data["expected_platform_rating"]
     data["discovery_percentile"] = data["rating_residual"].rank(pct=True).round(4)
+    data["ml_lifecycle_state"] = "candidate"
+    data["ml_allowed_use"] = "Assistant proposal only; evidence gates decide user-facing hidden-gem confidence."
+    data["source_gap_flags"] = data.apply(source_gap_flags, axis=1)
+    data["ml_candidate_reason"] = data.apply(ml_candidate_reason, axis=1)
     return data.sort_values("rating_residual", ascending=False)
+
+
+def source_gap_flags(row: pd.Series) -> str:
+    gaps = []
+    evidence_count = optional_float(row.get("independent_evidence_count"), default=0)
+    if evidence_count < 2:
+        gaps.append("needs_two_independent_evidence_signals")
+    if not truthy(row.get("current_existence_verified")) and not row.get("latest_verified_date"):
+        gaps.append("needs_current_existence_check")
+    if not truthy(row.get("distinctiveness_verified")):
+        cuisine = str(row.get("cuisine") or "").lower()
+        category = str(row.get("category") or "").lower()
+        if cuisine in {"", "general", "restaurant", "cafe", "coffee"} or category in {"", "restaurant", "cafe"}:
+            gaps.append("needs_distinctiveness_reason")
+    return ";".join(gaps) or "no_obvious_source_gap"
+
+
+def ml_candidate_reason(row: pd.Series) -> str:
+    return (
+        f"Residual surprise {row['rating_residual']:.3f} at percentile {row['discovery_percentile']:.4f}; "
+        f"review gaps before promotion: {row['source_gap_flags']}."
+    )
+
+
+def optional_float(value: object, default: float = 0.0) -> float:
+    try:
+        if pd.isna(value):
+            return default
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def truthy(value: object) -> bool:
+    return str(value).strip().lower() in {"1", "true", "yes", "y"}
 
 def main():
     parser = argparse.ArgumentParser()

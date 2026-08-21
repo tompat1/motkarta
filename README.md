@@ -17,7 +17,7 @@ npm run dev
 - Bayesian rating, recency weighting and exposure-adjusted engagement helpers
 - Structured specialty-coffee attributes rather than keyword-only labels
 - Drizzle schema for establishments, evidence sources, ratings, engagement, specialty attributes and score snapshots
-- Cloudflare Pages Function at `/api/places`, with D1 when `DB` is bound and demo fallback otherwise
+- Cloudflare Pages Function at `/api/places`, with D1 when `DB` is bound and demo fallback only when explicitly enabled
 - Explainable demo concierge
 - Explicit confidence and evidence labels
 - OpenStreetMap/Overpass Python collector
@@ -57,7 +57,13 @@ set the Pages build command in the Cloudflare dashboard to `npm run build`.
 The repo also includes `wrangler.toml` with `pages_build_output_dir = "dist"`
 so Pages knows where the built assets belong.
 
-Until D1 is connected, `/api/places` returns the demo data. After creating and binding D1, run the migration and optional demo seed:
+Production APIs do not silently serve demo data. If D1/static OSM data is unavailable,
+`/api/places` and `/api/concierge` return an unavailable response rather than
+mixing illustrative fixtures into live results. For local demos only, set
+`ALLOW_DEMO_FALLBACK=true` for Cloudflare Functions and
+`VITE_MOTKARTA_DEMO_MODE=true` for the Vite client.
+
+After creating and binding D1, run the migration and optional demo seed:
 
 ```bash
 npm run db:generate
@@ -168,6 +174,18 @@ them directly into ranked results. It must not request or store Google ratings,
 reviews, review counts, price level, prominence, ranking, editorial summaries, or
 engagement/value signals.
 
+Build a unified lifecycle queue after OSM, municipal, Google-metadata, and
+curated-source imports:
+
+```bash
+npm run candidates:build -- --validation-labels examples/human_validation_labels.sample.json
+```
+
+The queue writes `outputs/candidate_queue.json` with four explicit states:
+`baseline`, `candidate`, `verified`, and `featured`. Candidate records are
+review inputs only; they are not high-confidence recommendations until a human or
+source-gate workflow promotes them.
+
 Fetch and normalize Stockholm food-control establishments:
 
 ```bash
@@ -248,6 +266,9 @@ python scripts/model_discovery.py enriched_stockholm_places.csv
 ```
 
 The output includes an expected platform rating, rating residual and discovery percentile. A positive residual is interpreted as *algorithmic surprise*, not intrinsic food quality.
+The ML output is always marked as a `candidate` proposal and includes source-gap
+flags; evidence gates decide whether anything can become a high-confidence hidden
+gem.
 
 Run Python tests with:
 
@@ -337,6 +358,15 @@ Rather than producing a single opaque "best" score, the system computes and pres
 | **Popularity** | Evidence that many people choose or return | Bayesian user rating, exposure-adjusted engagement, repeat visit rate, recent saves |
 | **Relevance** | How well it matches the current user | Explicit intent, kind, cuisine, price level, purpose, and preference tags |
 | **Discovery Value** | Strong quality signals with limited exposure | Quality paired with lower mainstream exposure (prevents winner-take-all bias) |
+
+Hidden-gem labeling is gated, not just score-based. A place can only receive the
+high-confidence hidden-gem treatment when all of these pass:
+
+- `mainstreamExposure <= 40`
+- at least 2 independent evidence signals
+- current existence evidence from recent source freshness or municipal/field data
+- a distinctiveness reason beyond simply being obscure
+- lifecycle state is visible (`baseline`, `verified`, or `featured`; not `candidate`)
 
 ### Quality Score Signals & Specialty Attributes
 

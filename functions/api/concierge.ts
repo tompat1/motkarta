@@ -1,6 +1,7 @@
 import { demoPlaces } from "../../lib/demo-places.ts";
 import { loadPlacesFromD1 } from "../../lib/place-records.ts";
-import { scorePlace, type PlaceInput, type ScoredPlace } from "../../lib/scoring.ts";
+import { demoFallbackEnabled } from "../../lib/runtime-flags.ts";
+import { isUserVisibleLifecycleState, scorePlace, type PlaceInput, type ScoredPlace } from "../../lib/scoring.ts";
 
 type EventContext<Env> = {
   request: Request;
@@ -8,7 +9,9 @@ type EventContext<Env> = {
 };
 
 type Env = {
+  ALLOW_DEMO_FALLBACK?: string;
   DB?: unknown;
+  MOTKARTA_DEMO_MODE?: string;
 };
 
 export type StructuredFilters = {
@@ -127,16 +130,25 @@ export async function onRequestPost(context: EventContext<Env>) {
     query = "";
   }
 
-  return processConciergeQuery(query, context.env.DB, customPlaces);
+  return processConciergeQuery(query, context.env.DB, customPlaces, {
+    allowDemoFallback: demoFallbackEnabled(context.env),
+  });
 }
 
 export async function onRequestGet(context: EventContext<Env>) {
   const url = new URL(context.request.url);
   const query = url.searchParams.get("q") || url.searchParams.get("query") || "";
-  return processConciergeQuery(query, context.env.DB);
+  return processConciergeQuery(query, context.env.DB, undefined, {
+    allowDemoFallback: demoFallbackEnabled(context.env),
+  });
 }
 
-export async function processConciergeQuery(query: string, db?: unknown, initialPlaces?: PlaceInput[]) {
+export async function processConciergeQuery(
+  query: string,
+  db?: unknown,
+  initialPlaces?: PlaceInput[],
+  options: { allowDemoFallback?: boolean } = {},
+) {
   const cleanQuery = query.trim();
   if (!cleanQuery) {
     return Response.json(
@@ -167,6 +179,19 @@ export async function processConciergeQuery(query: string, db?: unknown, initial
   }
 
   if (!places.length) {
+    if (!options.allowDemoFallback) {
+      return Response.json(
+        {
+          query: cleanQuery,
+          structuredFilters: extractStructuredFilters(cleanQuery),
+          answer: "The live Motkarta dataset is unavailable, and demo fallback is disabled. No recommendations were generated from illustrative data.",
+          recommendedPlaces: [],
+          source: "unavailable",
+          totalSearchSpace: 0,
+        },
+        { headers: jsonHeaders, status: 503 },
+      );
+    }
     places = demoPlaces;
     dataSource = "demo";
   }
@@ -244,7 +269,7 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
   if (qLower.includes("add review") || qLower.includes("skriv recension") || qLower.includes("lämna recension") || qLower.includes("recension för")) {
     return {
       structuredFilters,
-      answer: "SUPERPOWER_ACTION: add_review\n\n✍️ Superpower Aktiverad! Öppnar formuläret för att skriva en verifierad recension.",
+      answer: "SUPERPOWER_ACTION: add_review\n\n✍️ Superpower Aktiverad! Öppnar formuläret för att skriva en recension som inväntar verifiering.",
       recommendedPlaces: [],
       hasDirectMatches: true,
       missingTerm: null,
@@ -284,7 +309,9 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
 
   const asksAwayFromTourist = ["away from", "outside", "tourist", "hidden", "quiet", "off the beaten path", "suburb"].some((kw) => query.toLowerCase().includes(kw));
 
-  const scored: Array<{ place: ScoredPlace; ragScore: number }> = places.map((place) => {
+  const scored: Array<{ place: ScoredPlace; ragScore: number }> = places
+  .filter((place) => isUserVisibleLifecycleState(place.lifecycleState))
+  .map((place) => {
     const scoredPlace = scorePlace(place);
     const searchTarget = [
       place.name,
@@ -421,7 +448,7 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
       ragScore += 5;
     }
 
-    if (place.is_hidden_gem) {
+    if (scoredPlace.hiddenGem.eligible) {
       ragScore += 20;
     }
 
@@ -504,6 +531,7 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
       kind: p.kind,
       area: p.area,
       scores: p.scores,
+      hiddenGem: p.hiddenGem,
       discoveryReasons: p.discoveryReasons,
     })),
   };

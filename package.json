@@ -21,6 +21,7 @@
     "photos:fetch": ".venv/bin/python scripts/fetch_place_photos.py",
     "food-control:match": ".venv/bin/python scripts/match_food_control.py",
     "permits:match": ".venv/bin/python scripts/match_serving_permits.py",
+    "candidates:build": "python3 scripts/build_candidate_queue.py",
     "guides:seed": "node scripts/generate_evidence_seed_sql.mjs examples/independent_guides.sample.json drizzle/seed-guides.sql",
     "typecheck": "tsc --noEmit",
     "validate:artifact": "bash scripts/validate-artifact.sh",

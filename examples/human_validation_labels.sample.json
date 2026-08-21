@@ -1,0 +1,35 @@
+{
+  "labels": [
+    {
+      "id": "place:99938",
+      "name": "Solkant",
+      "label": "known_hidden_gem",
+      "reviewedBy": "motkarta-editorial",
+      "reviewedAt": "2026-08-21",
+      "notes": "Low mainstream exposure relative to evidence strength; verified current existence and distinct bakery/coffee attributes."
+    },
+    {
+      "name": "Example Mainstream Venue",
+      "label": "known_mainstream",
+      "reviewedBy": "motkarta-editorial",
+      "reviewedAt": "2026-08-21",
+      "notes": "Useful benchmark but should not be presented as a hidden gem."
+    },
+    {
+      "sourceType": "google",
+      "sourceId": "example-google-place-id",
+      "label": "not_enough_evidence",
+      "reviewedBy": "motkarta-editorial",
+      "reviewedAt": "2026-08-21",
+      "notes": "Neutral metadata exists, but no independent source evidence yet."
+    },
+    {
+      "sourceType": "municipal",
+      "sourceId": "example-food-control-id",
+      "label": "closed_wrong_category",
+      "reviewedBy": "motkarta-editorial",
+      "reviewedAt": "2026-08-21",
+      "notes": "Food-control record refers to an institutional kitchen, not a public restaurant/cafe/bakery."
+    }
+  ]
+}
