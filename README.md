@@ -64,7 +64,8 @@ For local demos only, set
 `ALLOW_DEMO_FALLBACK=true` for Cloudflare Functions and
 `VITE_MOTKARTA_DEMO_MODE=true` for the Vite client.
 
-After creating and binding D1, run the migration and optional demo seed:
+After creating and binding D1, run the migration and optional demo seed if you
+are managing the database from the CLI:
 
 ```bash
 npm run db:generate
@@ -198,10 +199,14 @@ popularity, price level, prominence, or scores. Existing `verified` and
 
 ### Admin review and promotion
 
-Apply the lifecycle migrations through D1 before using the review workflow:
+Before using the review workflow, open `#admin-review`, enter the admin token,
+and press **Prepare DB** in the schema setup row. This calls
+`/api/admin/schema` and prepares the known admin review tables/columns against
+the bound `DB`; no Wrangler database name is needed.
+
+Set the admin token once for the Pages project:
 
 ```bash
-wrangler d1 migrations apply <database-name> --remote
 wrangler pages secret put MOTKARTA_ADMIN_TOKEN
 ```
 

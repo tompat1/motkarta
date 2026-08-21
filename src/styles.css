@@ -1404,6 +1404,7 @@ button.concierge-clear-btn:hover {
 
 .admin-review-auth button,
 .admin-refresh-btn,
+.admin-schema-btn,
 .admin-export-btn {
   align-items: center;
   background: var(--color-ink);
@@ -1424,6 +1425,7 @@ button.concierge-clear-btn:hover {
 
 .admin-review-auth button:hover,
 .admin-refresh-btn:hover,
+.admin-schema-btn:hover,
 .admin-export-btn:hover {
   background: var(--color-water);
   border-color: var(--color-water);
@@ -1475,10 +1477,51 @@ button.concierge-clear-btn:hover {
 }
 
 .admin-refresh-btn:disabled,
+.admin-schema-btn:disabled,
 .admin-export-btn:disabled,
 .admin-action-btn:disabled {
   cursor: not-allowed;
   opacity: 0.58;
+}
+
+.admin-schema-panel {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-signal);
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 12px;
+}
+
+.admin-schema-panel.ready {
+  border-color: var(--color-water);
+}
+
+.admin-schema-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.admin-schema-copy span {
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.admin-schema-copy small {
+  color: var(--color-stone);
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.admin-schema-panel.ready .admin-schema-copy span {
+  color: var(--color-water);
 }
 
 .admin-session-dashboard {
@@ -2019,6 +2062,7 @@ footer {
 
   .admin-review-head,
   .admin-review-toolbar,
+  .admin-schema-panel,
   .admin-export-panel {
     align-items: stretch;
     flex-direction: column;
@@ -2041,6 +2085,10 @@ footer {
   }
 
   .admin-export-btn {
+    width: 100%;
+  }
+
+  .admin-schema-btn {
     width: 100%;
   }
 
