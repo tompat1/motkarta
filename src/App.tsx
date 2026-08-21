@@ -2980,7 +2980,7 @@ function readStoredAdminToken() {
 function isAdminRoutePath() {
   if (typeof window === "undefined") return false;
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
-  return path === "/admin" || path.startsWith("/admin/");
+  return path === "/admin" || path.startsWith("/admin/") || path === "/api/admin/app";
 }
 
 function lifecycleStateLabel(state: AdminStateFilter | string, lang: Language) {
