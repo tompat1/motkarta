@@ -25,6 +25,7 @@ import {
   Coffee,
   Compass,
   Crosshair,
+  DownloadSimple,
   ForkKnife,
   Globe,
   Image,
@@ -1936,6 +1937,15 @@ type AdminDuplicateMatch = {
   reason: string;
 };
 
+type AdminReviewLabelExport = {
+  source?: string;
+  updatedAt?: string;
+  policy?: string;
+  labels?: unknown[];
+  duplicateResolutions?: unknown[];
+  error?: string;
+};
+
 const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "all"];
 
 function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
@@ -1945,9 +1955,11 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
   const [candidates, setCandidates] = useState<AdminCandidate[]>([]);
   const [reviewNotes, setReviewNotes] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(false);
+  const [exportingLabels, setExportingLabels] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState("");
+  const [labelExportStatus, setLabelExportStatus] = useState("");
 
   const loadCandidates = useCallback(
     async (tokenOverride?: string) => {
@@ -2019,6 +2031,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     setCandidates([]);
     setReviewNotes({});
     setStatus("");
+    setLabelExportStatus("");
     setError(null);
     if (typeof window !== "undefined") {
       window.sessionStorage.removeItem("motkarta_admin_token");
@@ -2163,6 +2176,56 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     }
   };
 
+  const exportReviewLabels = async () => {
+    const token = adminToken.trim();
+    if (!token || typeof document === "undefined") return;
+
+    setExportingLabels(true);
+    setError(null);
+    setLabelExportStatus("");
+
+    try {
+      const response = await fetch("/api/admin/review-labels", {
+        headers: { "x-motkarta-admin-token": token },
+      });
+      const payload = (await response.json().catch(() => ({}))) as AdminReviewLabelExport;
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte exportera labels." : "Could not export labels."));
+      }
+
+      const filePayload = {
+        updatedAt: payload.updatedAt ?? new Date().toISOString(),
+        policy:
+          payload.policy ??
+          "Human validation labels exported from admin review events. Duplicate resolutions are kept separate from hidden-gem/mainstream labels.",
+        labels: payload.labels ?? [],
+        duplicateResolutions: payload.duplicateResolutions ?? [],
+      };
+      const blob = new Blob([`${JSON.stringify(filePayload, null, 2)}\n`], {
+        type: "application/json;charset=utf-8",
+      });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `motkarta-human-validation-labels-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+
+      setLabelExportStatus(
+        lang === "sv"
+          ? `Exporterade ${filePayload.labels.length} labels och ${filePayload.duplicateResolutions.length} dubblettbeslut.`
+          : `Exported ${filePayload.labels.length} labels and ${filePayload.duplicateResolutions.length} duplicate decisions.`,
+      );
+    } catch (exportError) {
+      setError(exportError instanceof Error ? exportError.message : String(exportError));
+    } finally {
+      setExportingLabels(false);
+    }
+  };
+
   return (
     <section className="admin-review-panel" id="admin-review" aria-labelledby="admin-review-title">
       <div className="admin-review-head">
@@ -2229,6 +2292,29 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
           {lang === "sv" ? "Ladda om" : "Reload"}
         </button>
       </div>
+
+      <div className="admin-export-panel">
+        <div className="admin-export-copy">
+          <span>{lang === "sv" ? "Efter granskning: exportera labels." : "After review: export labels."}</span>
+          <small>{lang === "sv" ? "ML-labels och dubblettbeslut sparas separat." : "ML labels and duplicate decisions stay separate."}</small>
+        </div>
+        <button
+          type="button"
+          className="admin-export-btn"
+          onClick={() => void exportReviewLabels()}
+          disabled={!adminToken || exportingLabels}
+          title={lang === "sv" ? "Ladda ner label-export från D1" : "Download label export from D1"}
+        >
+          {exportingLabels ? <CircleNotch size={14} className="animate-spin" /> : <DownloadSimple size={14} weight="bold" />}
+          {lang === "sv" ? "Exportera" : "Export"}
+        </button>
+      </div>
+
+      {labelExportStatus ? (
+        <div className="admin-export-meta" aria-live="polite">
+          {labelExportStatus}
+        </div>
+      ) : null}
 
       <div className="admin-review-status" aria-live="polite">
         {error ? <span className="admin-review-error">{error}</span> : status}

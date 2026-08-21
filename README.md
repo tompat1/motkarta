@@ -223,7 +223,11 @@ Each promotion or duplicate decision writes an `admin_review_events` audit row.
 If `MOTKARTA_ADMIN_TOKEN` is missing, the admin API remains closed. If D1 is
 missing, it returns an unavailable response and never falls back to demo rows.
 
-Export review decisions into a portable labeled set:
+When a review session is done, open `#admin-review`, enter the admin token, and
+press **Export** in the label export row. The browser downloads a portable
+`human_validation_labels` JSON file directly from the D1 audit events.
+
+The same export can still be produced from the command line when needed:
 
 ```bash
 wrangler d1 execute <database-name> --remote --json --file scripts/export_review_events.sql > data/review-events-export.json
