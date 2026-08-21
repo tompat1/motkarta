@@ -77,6 +77,64 @@ test("admin schema POST prepares known schema against bound DB", async () => {
   assert(db.runs.some((query) => query.includes("CREATE TABLE IF NOT EXISTS admin_label_exports")));
 });
 
+test("admin schema POST is idempotent when runtime is already ready", async () => {
+  const db = fakeSchemaD1({
+    establishments: [
+      "id",
+      "name",
+      "type",
+      "district",
+      "description",
+      "created_at",
+      "updated_at",
+      "lifecycle_state",
+      "validation_label",
+      "validation_notes",
+      "address",
+      "website",
+      "candidate_source_type",
+      "candidate_source_id",
+      "candidate_review_status",
+      "candidate_allowed_use",
+      "duplicate_resolution",
+      "merged_into_establishment_id",
+    ],
+    admin_review_events: [
+      "id",
+      "establishment_id",
+      "lifecycle_state",
+      "validation_label",
+      "validation_notes",
+      "reviewed_at",
+      "action",
+      "target_establishment_id",
+    ],
+    admin_label_exports: [
+      "id",
+      "exported_at",
+      "event_count",
+      "label_count",
+      "duplicate_resolution_count",
+      "exported_by",
+      "notes",
+    ],
+  });
+
+  const response = await postAdminSchema({
+    request: new Request("https://motkarta.test/api/admin/schema", {
+      method: "POST",
+      headers: { "x-motkarta-admin-token": adminToken },
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.ready, true);
+  assert.equal(payload.applied, 0);
+  assert.equal(db.runs.length, 7);
+});
+
 test("admin schema POST reports missing base schema without creating arbitrary app tables", async () => {
   const db = fakeSchemaD1({});
 

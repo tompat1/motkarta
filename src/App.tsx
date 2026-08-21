@@ -2108,17 +2108,54 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     [adminToken, lang],
   );
 
+  const runAdminSelfCheck = useCallback(
+    async (tokenOverride?: string) => {
+      const token = (tokenOverride ?? adminToken).trim();
+      if (!token) return null;
+
+      setSchemaBusy(true);
+      setError(null);
+
+      try {
+        const response = await fetch("/api/admin/schema", {
+          method: "POST",
+          headers: { "x-motkarta-admin-token": token },
+        });
+        const payload = (await response.json().catch(() => ({}))) as AdminSchemaStatus;
+
+        if (!response.ok) {
+          throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte köra runtime-check." : "Could not run runtime check."));
+        }
+
+        setSchemaStatus(payload);
+        if (payload.ready) {
+          setStatus(lang === "sv" ? "Runtime-check klar. DB och adminschema är redo." : "Runtime check complete. DB and admin schema are ready.");
+          await Promise.all([loadDashboard(token), loadCandidates(token)]);
+        }
+        return payload;
+      } catch (schemaError) {
+        setDashboard(null);
+        setCandidates([]);
+        setError(schemaError instanceof Error ? schemaError.message : String(schemaError));
+        return null;
+      } finally {
+        setSchemaBusy(false);
+      }
+    },
+    [adminToken, lang, loadCandidates, loadDashboard],
+  );
+
   useEffect(() => {
     if (adminToken) {
-      void (async () => {
-        const nextSchema = await loadSchemaStatus();
-        if (nextSchema?.ready) {
-          void loadCandidates();
-          void loadDashboard();
-        }
-      })();
+      void runAdminSelfCheck(adminToken);
     }
-  }, [adminToken, loadCandidates, loadDashboard, loadSchemaStatus]);
+  }, [adminToken]);
+
+  useEffect(() => {
+    if (adminToken && schemaStatus?.ready) {
+      void loadCandidates();
+    }
+  }, [adminToken, schemaStatus?.ready, loadCandidates]);
 
   const handleUnlock = (event: React.FormEvent) => {
     event.preventDefault();
@@ -2128,13 +2165,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
       window.sessionStorage.setItem("motkarta_admin_token", token);
     }
     if (token === adminToken) {
-      void (async () => {
-        const nextSchema = await loadSchemaStatus(token);
-        if (nextSchema?.ready) {
-          void loadCandidates(token);
-          void loadDashboard(token);
-        }
-      })();
+      void runAdminSelfCheck(token);
     }
   };
 
@@ -2346,37 +2377,6 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     }
   };
 
-  const ensureAdminSchema = async () => {
-    const token = adminToken.trim();
-    if (!token) return;
-
-    setSchemaBusy(true);
-    setError(null);
-
-    try {
-      const response = await fetch("/api/admin/schema", {
-        method: "POST",
-        headers: { "x-motkarta-admin-token": token },
-      });
-      const payload = (await response.json().catch(() => ({}))) as AdminSchemaStatus;
-
-      if (!response.ok) {
-        throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte förbereda DB-schemat." : "Could not prepare DB schema."));
-      }
-
-      setSchemaStatus(payload);
-      setStatus(lang === "sv" ? "DB-schemat är redo." : "DB schema is ready.");
-      if (payload.ready) {
-        await loadDashboard(token);
-        await loadCandidates(token);
-      }
-    } catch (schemaError) {
-      setError(schemaError instanceof Error ? schemaError.message : String(schemaError));
-    } finally {
-      setSchemaBusy(false);
-    }
-  };
-
   return (
     <section className="admin-review-panel" id="admin-review" aria-labelledby="admin-review-title">
       <div className="admin-review-head">
@@ -2436,7 +2436,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
           type="button"
           className="admin-refresh-btn"
           onClick={() => void loadCandidates()}
-          disabled={!adminToken || loading || schemaStatus?.ready === false}
+          disabled={!adminToken || loading || schemaStatus?.ready !== true}
           title={lang === "sv" ? "Ladda om från D1" : "Reload from D1"}
         >
           {loading ? <CircleNotch size={14} className="animate-spin" /> : <ArrowClockwise size={14} weight="bold" />}
@@ -2447,23 +2447,23 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
       {adminToken ? (
         <div className={`admin-schema-panel ${schemaStatus?.ready ? "ready" : "needs-setup"}`}>
           <div className="admin-schema-copy">
-            <span>{schemaStatus?.ready ? (lang === "sv" ? "Schema redo" : "Schema ready") : lang === "sv" ? "Schema setup" : "Schema setup"}</span>
+            <span>{schemaStatus?.ready ? (lang === "sv" ? "Runtime redo" : "Runtime ready") : lang === "sv" ? "Runtime-check" : "Runtime check"}</span>
             <small>{schemaStatusText(schemaStatus, lang)}</small>
           </div>
           <button
             type="button"
             className="admin-schema-btn"
-            onClick={() => void ensureAdminSchema()}
-            disabled={!adminToken || schemaBusy || schemaStatus?.ready === true}
-            title={lang === "sv" ? "Förbered admin-tabeller mot bunden DB" : "Prepare admin tables against the bound DB"}
+            onClick={() => void runAdminSelfCheck()}
+            disabled={!adminToken || schemaBusy}
+            title={lang === "sv" ? "Kontrollera token, DB och adminschema" : "Check token, DB, and admin schema"}
           >
             {schemaBusy ? <CircleNotch size={14} className="animate-spin" /> : <ShieldCheck size={14} weight="bold" />}
-            {schemaStatus?.ready ? (lang === "sv" ? "Redo" : "Ready") : lang === "sv" ? "Förbered DB" : "Prepare DB"}
+            {schemaBusy ? (lang === "sv" ? "Kollar" : "Checking") : schemaStatus?.ready ? (lang === "sv" ? "Kolla igen" : "Recheck") : lang === "sv" ? "Kör check" : "Run check"}
           </button>
         </div>
       ) : null}
 
-      {adminToken ? (
+      {adminToken && schemaStatus?.ready ? (
         <div className={`admin-session-dashboard step-${dashboard?.nextStep ?? "loading"}`} aria-live="polite">
           <div className="admin-session-summary">
             <span className="admin-session-badge">
@@ -2493,7 +2493,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
           type="button"
           className="admin-export-btn"
           onClick={() => void exportReviewLabels()}
-          disabled={!adminToken || exportingLabels || schemaStatus?.ready === false}
+          disabled={!adminToken || exportingLabels || schemaStatus?.ready !== true}
           title={lang === "sv" ? "Ladda ner label-export från D1" : "Download label export from D1"}
         >
           {exportingLabels ? <CircleNotch size={14} className="animate-spin" /> : <DownloadSimple size={14} weight="bold" />}
@@ -2515,6 +2515,16 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
         <div className="admin-review-empty">
           <ShieldCheck size={18} weight="bold" />
           <span>{lang === "sv" ? "Token krävs för att läsa eller ändra D1." : "Token required before reading or changing D1."}</span>
+        </div>
+      ) : schemaBusy || !schemaStatus ? (
+        <div className="admin-review-empty">
+          <CircleNotch size={18} className="animate-spin" />
+          <span>{lang === "sv" ? "Kör runtime-check mot Cloudflare..." : "Running runtime check against Cloudflare..."}</span>
+        </div>
+      ) : schemaStatus.ready === false ? (
+        <div className="admin-review-empty">
+          <ShieldCheck size={18} weight="bold" />
+          <span>{schemaStatusText(schemaStatus, lang)}</span>
         </div>
       ) : loading ? (
         <div className="admin-review-empty">
@@ -2841,21 +2851,21 @@ function dashboardMetricValue(value: number | undefined) {
 
 function schemaStatusText(status: AdminSchemaStatus | null, lang: Language) {
   if (!status) {
-    return lang === "sv" ? "Kontrollerar bunden DB." : "Checking bound DB.";
+    return lang === "sv" ? "Token, DB-bindning och adminschema kontrolleras automatiskt." : "Token, DB binding, and admin schema are checked automatically.";
   }
 
   if (status.ready) {
-    return lang === "sv" ? "Admin-tabeller och kolumner finns i bunden DB." : "Admin tables and columns exist in the bound DB.";
+    return lang === "sv" ? "Token fungerar, DB är bunden och adminschema är redo." : "Token works, DB is bound, and admin schema is ready.";
   }
 
   if (status.baseSchemaReady === false) {
-    return lang === "sv" ? "Grundtabellen saknas. Skapa och bind D1 först." : "Base table is missing. Create and bind D1 first.";
+    return lang === "sv" ? "DB svarar, men grundtabellen saknas. Kör initial seed/import först." : "DB responds, but the base table is missing. Run the initial seed/import first.";
   }
 
   const missingCount = status.missing?.length ?? 0;
   return lang === "sv"
-    ? `${missingCount} schemadelar saknas. Förbered DB här.`
-    : `${missingCount} schema parts missing. Prepare DB here.`;
+    ? `${missingCount} schemadelar saknades och förbereds automatiskt. Kör check igen om detta kvarstår.`
+    : `${missingCount} schema parts were missing and are prepared automatically. Run check again if this remains.`;
 }
 
 function readStoredAdminToken() {

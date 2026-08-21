@@ -199,10 +199,10 @@ popularity, price level, prominence, or scores. Existing `verified` and
 
 ### Admin review and promotion
 
-Before using the review workflow, open `#admin-review`, enter the admin token,
-and press **Prepare DB** in the schema setup row. This calls
-`/api/admin/schema` and prepares the known admin review tables/columns against
-the bound `DB`; no Wrangler database name is needed.
+Before using the review workflow, open `#admin-review` and enter the admin
+token. The admin UI automatically calls `/api/admin/schema`, verifies the token,
+checks the bound `DB`, and prepares the known admin review tables/columns. No
+Wrangler database name is needed.
 
 Set the admin token once for the Pages project:
 
