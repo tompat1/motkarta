@@ -35,6 +35,7 @@ import {
   PlusCircle,
   Scales,
   ShieldCheck,
+  SignOut,
   ShoppingBag,
   ShoppingCart,
   Shuffle,
@@ -1500,6 +1501,68 @@ export interface CuratedSource {
 
 export const INITIAL_CURATED_SOURCES = DEFAULT_CURATED_SOURCES;
 
+const curatedSourceTypes: CuratedSource["type"][] = [
+  "Official City Guide",
+  "Verified Guide",
+  "Municipal Inspection",
+  "Open Data",
+  "Editorial Review",
+  "Community",
+];
+
+const curatedSourceTypeLabels: Record<Language, Record<CuratedSource["type"], string>> = {
+  sv: {
+    "Official City Guide": "Official City Guide",
+    "Verified Guide": "Verified Guide",
+    "Municipal Inspection": "Municipal Inspection",
+    "Open Data": "Open Data",
+    "Editorial Review": "Editorial Review",
+    Community: "Community",
+  },
+  en: {
+    "Official City Guide": "Official City Guide",
+    "Verified Guide": "Verified Guide",
+    "Municipal Inspection": "Municipal Inspection",
+    "Open Data": "Open Data",
+    "Editorial Review": "Editorial Review",
+    Community: "Community",
+  },
+};
+
+const curatedSourceEnglishCopy: Record<string, Partial<Pick<CuratedSource, "name" | "description" | "license">>> = {
+  "husa-guide": {
+    description:
+      "Curated restaurant guide from Michelin and World's 50 Best jury members Anders Husa & Kaitlin Orr.",
+    license: "Cited with permission (andershusa.com)",
+  },
+  "stockholm-stad": {
+    description: "Official municipal environmental health and food-control inspection records.",
+    license: "CC0 1.0 Universal / Open municipal data",
+  },
+  openstreetmap: {
+    description: "Geographic coordinates, building outlines, and independent POI identities for Stockholm.",
+  },
+  "white-guide": {
+    description: "Nordic restaurant and fika assessments by independent gastronomy professionals.",
+    license: "Editorial review",
+  },
+  "specialty-coffee-se": {
+    description: "Quality-assured coffee bean sources, traceability evidence, and roaster verification in Stockholm.",
+    license: "Open industry standard",
+  },
+  "visit-stockholm": {
+    name: "Visit Stockholm (Official City Guide)",
+    description:
+      "Official visitor and restaurant guide from the City of Stockholm, covering local food culture, restaurants, and cafes.",
+    license: "Official city portal (City of Stockholm)",
+  },
+};
+
+function localizedCuratedSource(source: CuratedSource, lang: Language): CuratedSource {
+  if (lang !== "en") return source;
+  return { ...source, ...curatedSourceEnglishCopy[source.id] };
+}
+
 type SuperpowerMode = "add_place" | "add_review" | "add_photo" | "rate_place" | "add_source";
 
 function ConciergeSuperpowerModal({
@@ -1549,8 +1612,56 @@ function ConciergeSuperpowerModal({
   const [sourceName, setSourceName] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
   const [sourceType, setSourceType] = useState<CuratedSource["type"]>("Verified Guide");
-  const [sourceLicense, setSourceLicense] = useState("Öppen data / Citerat med tillstånd");
+  const [sourceLicense, setSourceLicense] = useState(
+    lang === "sv" ? "Öppen data / Citerat med tillstånd" : "Open data / Cited with permission",
+  );
   const [sourceDesc, setSourceDesc] = useState("");
+  const sourceModalCopy =
+    lang === "sv"
+      ? {
+          title: "📜 Lägg till ny kurerad källa",
+          nameLabel: "Källans namn / Titel *",
+          namePlaceholder: "t.ex. Guide Michelin Stockholm eller Krogen & Bageriet",
+          urlLabel: "Webbadress / URL *",
+          typeLabel: "Typ av källa",
+          typeHelp: {
+            "Official City Guide": "Official City Guide (Officiell stads- eller besöksguide)",
+            "Verified Guide": "Verified Guide (Redaktionell krog- & matguide)",
+            "Municipal Inspection": "Municipal Inspection (Kommunalt tillsynsregister)",
+            "Open Data": "Open Data (Öppet API / Databas)",
+            "Editorial Review": "Editorial Review (Tidningsrecension)",
+            Community: "Community (Verifierad användarsamling)",
+          },
+          licenseLabel: "Licens & Upphovsrättsattribuering",
+          licensePlaceholder: "t.ex. CC0 1.0, ODbL, eller Citerat med tillstånd",
+          descriptionLabel: "Källbeskrivning & Omfång",
+          descriptionPlaceholder: "Beskriv vad källan granskar och bidrar med...",
+          defaultLicense: "Citerat med källhänvisning",
+          defaultDescription: "Kurerat källmaterial inskickat av användare.",
+          submit: "Lägg till ny kurerad källa i registret",
+        }
+      : {
+          title: "📜 Add new curated source",
+          nameLabel: "Source name / Title *",
+          namePlaceholder: "e.g. Michelin Guide Stockholm or Local Food Registry",
+          urlLabel: "Web address / URL *",
+          typeLabel: "Source type",
+          typeHelp: {
+            "Official City Guide": "Official City Guide",
+            "Verified Guide": "Verified Guide",
+            "Municipal Inspection": "Municipal Inspection",
+            "Open Data": "Open Data",
+            "Editorial Review": "Editorial Review",
+            Community: "Community",
+          },
+          licenseLabel: "License & copyright attribution",
+          licensePlaceholder: "e.g. CC0 1.0, ODbL, or Cited with permission",
+          descriptionLabel: "Source description & scope",
+          descriptionPlaceholder: "Describe what the source verifies and contributes...",
+          defaultLicense: "Cited with source attribution",
+          defaultDescription: "Curated source material submitted for admin review.",
+          submit: "Add curated source to registry",
+        };
 
   const duplicateMatch = useMemo(() => {
     if (!name.trim() || mode !== "add_place") return null;
@@ -1654,8 +1765,8 @@ function ConciergeSuperpowerModal({
       name: sourceName.trim(),
       url: sourceUrl.trim(),
       type: sourceType,
-      license: sourceLicense.trim() || "Citerat med källhänvisning",
-      description: sourceDesc.trim() || "Kurerat källmaterial inskickat av användare.",
+      license: sourceLicense.trim() || sourceModalCopy.defaultLicense,
+      description: sourceDesc.trim() || sourceModalCopy.defaultDescription,
       addedByUser: true,
     });
     onClose();
@@ -1670,7 +1781,7 @@ function ConciergeSuperpowerModal({
             {mode === "add_review" && "✍️ Skriv verifierad recension"}
             {mode === "add_photo" && "📷 Lägg till foto till ställe"}
             {mode === "rate_place" && "⭐ Betygsätt ställe"}
-            {mode === "add_source" && "📜 Lägg till ny kurerad källa"}
+            {mode === "add_source" && sourceModalCopy.title}
           </h3>
           <button type="button" className="icon-btn" onClick={onClose}>✕</button>
         </div>
@@ -1835,17 +1946,17 @@ function ConciergeSuperpowerModal({
         {mode === "add_source" && (
           <form className="superpower-form" onSubmit={handleSubmitSource}>
             <div className="superpower-form-group">
-              <label>Källans namn / Titel *</label>
+              <label>{sourceModalCopy.nameLabel}</label>
               <input
                 type="text"
                 required
                 value={sourceName}
                 onChange={(e) => setSourceName(e.target.value)}
-                placeholder="t.ex. Guide Michelin Stockholm eller Krogen & Bageriet"
+                placeholder={sourceModalCopy.namePlaceholder}
               />
             </div>
             <div className="superpower-form-group">
-              <label>Webbadress / URL *</label>
+              <label>{sourceModalCopy.urlLabel}</label>
               <input
                 type="url"
                 required
@@ -1855,40 +1966,133 @@ function ConciergeSuperpowerModal({
               />
             </div>
             <div className="superpower-form-group">
-              <label>Typ av källa</label>
+              <label>{sourceModalCopy.typeLabel}</label>
               <select value={sourceType} onChange={(e) => setSourceType(e.target.value as CuratedSource["type"])}>
-                <option value="Verified Guide">Verified Guide (Redaktionell krog- & matguide)</option>
-                <option value="Municipal Inspection">Municipal Inspection (Kommunalt tillsynsregister)</option>
-                <option value="Open Data">Open Data (Öppet API / Databas)</option>
-                <option value="Editorial Review">Editorial Review (Tidningsrecension)</option>
-                <option value="Community">Community (Verifierad användarsamling)</option>
+                {curatedSourceTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {sourceModalCopy.typeHelp[type]}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="superpower-form-group">
-              <label>Licens & Upphovsrättsattribuering</label>
+              <label>{sourceModalCopy.licenseLabel}</label>
               <input
                 type="text"
                 value={sourceLicense}
                 onChange={(e) => setSourceLicense(e.target.value)}
-                placeholder="t.ex. CC0 1.0, ODbL, eller Citerat med tillstånd"
+                placeholder={sourceModalCopy.licensePlaceholder}
               />
             </div>
             <div className="superpower-form-group">
-              <label>Källbeskrivning & Omfång</label>
+              <label>{sourceModalCopy.descriptionLabel}</label>
               <textarea
                 rows={2}
                 value={sourceDesc}
                 onChange={(e) => setSourceDesc(e.target.value)}
-                placeholder="Beskriv vad källan granskar och bidrar med..."
+                placeholder={sourceModalCopy.descriptionPlaceholder}
               />
             </div>
             <button type="submit" className="superpower-submit-btn">
-              <ShieldCheck size={16} /> Lägg till ny kurerad källa i registret
+              <ShieldCheck size={16} /> {sourceModalCopy.submit}
             </button>
           </form>
         )}
       </div>
     </div>
+  );
+}
+
+function AdminCuratedSourcesPanel({
+  sources,
+  isLoading,
+  lang,
+  onAddSource,
+}: {
+  sources: CuratedSource[];
+  isLoading: boolean;
+  lang: Language;
+  onAddSource: () => void;
+}) {
+  const copy =
+    lang === "sv"
+      ? {
+          kicker: "Källregister",
+          title: "Kurerade öppna källor",
+          description:
+            "Auditerbara dataset och verifierade guider som kan bidra med källhänvisad evidens. Källor skapar kandidater och verifieringssignaler, inte importerade betyg.",
+          addSource: "Lägg till ny källa",
+          syncing: "D1-sync...",
+          submitted: "Inskickad källa",
+          dataPoints: "datapunkter",
+        }
+      : {
+          kicker: "Source registry",
+          title: "Curated open sources",
+          description:
+            "Auditable datasets and verified guides that can contribute source-attributed evidence. Sources create candidates and verification signals, not imported ratings.",
+          addSource: "Add new source",
+          syncing: "D1 sync...",
+          submitted: "Submitted source",
+          dataPoints: "data points",
+        };
+
+  return (
+    <section className="admin-curated-sources-panel" id="admin-sources" aria-labelledby="admin-sources-title">
+      <div className="admin-curated-sources-head">
+        <div>
+          <p className="admin-review-kicker">
+            <ShieldCheck size={14} weight="bold" /> {copy.kicker}
+          </p>
+          <h2 id="admin-sources-title">
+            {copy.title} ({sources.length})
+          </h2>
+          <p>{copy.description}</p>
+        </div>
+        <button type="button" className="admin-source-add-btn" onClick={onAddSource}>
+          <PlusCircle size={15} weight="bold" /> {copy.addSource}
+        </button>
+      </div>
+
+      {isLoading ? (
+        <p className="admin-source-sync" aria-live="polite">
+          <CircleNotch size={13} className="animate-spin" /> {copy.syncing}
+        </p>
+      ) : null}
+
+      <div className="admin-sources-grid">
+        {sources.map((source) => {
+          const displaySource = localizedCuratedSource(source, lang);
+          return (
+            <article className="admin-source-card" key={source.id}>
+              <div>
+                <div className="admin-source-card-topline">
+                  <span className="admin-source-badge">
+                    <span className="admin-source-dot" aria-hidden="true" />
+                    {curatedSourceTypeLabels[lang][source.type]}
+                  </span>
+                  {source.addedByUser ? <span className="admin-source-user-tag">{copy.submitted}</span> : null}
+                </div>
+                <h3>
+                  <a href={displaySource.url} target="_blank" rel="noopener noreferrer">
+                    {displaySource.name} <ArrowSquareOut size={13} />
+                  </a>
+                </h3>
+                <p>{displaySource.description}</p>
+              </div>
+              <div className="admin-source-meta">
+                <span>{displaySource.license}</span>
+                {displaySource.verifiedCount ? (
+                  <span>
+                    {displaySource.verifiedCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} {copy.dataPoints}
+                  </span>
+                ) : null}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -2255,6 +2459,32 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     void checkAdminSession("");
   };
 
+  const handleAdminLogout = () => {
+    setAdminToken("");
+    setTokenInput("");
+    setCandidates([]);
+    setReviewNotes({});
+    setStatus("");
+    setLabelExportStatus("");
+    setDashboard(null);
+    setSchemaStatus(null);
+    setError(null);
+
+    if (typeof window === "undefined") {
+      void checkAdminSession("");
+      return;
+    }
+
+    window.sessionStorage.removeItem("motkarta_admin_token");
+
+    if (adminSession?.authMode === "token") {
+      void checkAdminSession("");
+      return;
+    }
+
+    window.location.assign("/cdn-cgi/access/logout");
+  };
+
   const promoteCandidate = async (
     candidate: AdminCandidate,
     lifecycleState: PlaceLifecycleState,
@@ -2464,16 +2694,16 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
                   ? "Adminsession aktiv"
                   : "Admin session active"}
             </span>
-            {adminToken ? (
-              <button
-                type="button"
-                className="admin-review-ghost-btn"
-                onClick={handleForgetToken}
-                title={lang === "sv" ? "Glöm lokal token" : "Forget local token"}
-              >
-                <X size={14} weight="bold" />
-              </button>
-            ) : null}
+            <button type="button" className="admin-review-ghost-btn admin-logout-btn" onClick={handleAdminLogout}>
+              <SignOut size={14} weight="bold" />
+              {adminSession?.authMode === "token"
+                ? lang === "sv"
+                  ? "Glöm token"
+                  : "Forget token"
+                : lang === "sv"
+                  ? "Logga ut"
+                  : "Log out"}
+            </button>
           </div>
         ) : (
           <form className="admin-review-auth" onSubmit={handleUnlock}>
@@ -3217,7 +3447,11 @@ export default function App() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newSource),
     }).catch(() => {});
-    setAnswer(`📜 Superpower Aktiverad! Den nya kurerade källan '${newSource.name}' har lagts till i registret och sparats i databasen!`);
+    setAnswer(
+      lang === "sv"
+        ? `Källan '${newSource.name}' har lagts till i registret och sparats i databasen.`
+        : `The source '${newSource.name}' has been added to the registry and saved to the database.`,
+    );
   };
   const [answer, setAnswer] = useState<string | null>(null);
   const [asking, setAsking] = useState(false);
@@ -3561,7 +3795,27 @@ export default function App() {
               : "Review candidates, export labels, and check that the D1 admin schema is ready."}
           </p>
         </section>
+        <AdminCuratedSourcesPanel
+          sources={curatedSources}
+          isLoading={isSourcesLoading}
+          lang={lang}
+          onAddSource={() => setSuperpowerMode("add_source")}
+        />
         <AdminReviewPanel lang={lang} />
+        {superpowerMode === "add_source" ? (
+          <ConciergeSuperpowerModal
+            mode={superpowerMode}
+            places={places}
+            activePlace={active}
+            onClose={() => setSuperpowerMode(null)}
+            onAddPlace={handleAddPlaceSuperpower}
+            onAddReview={handleAddReviewSuperpower}
+            onAddPhoto={handleAddPhotoSuperpower}
+            onRatePlace={handleRatePlaceSuperpower}
+            onAddSource={handleAddSourceSuperpower}
+            lang={lang}
+          />
+        ) : null}
       </main>
     );
   }
@@ -4091,9 +4345,6 @@ export default function App() {
             <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("rate_place")}>
               <Star size={14} weight="bold" /> {lang === "sv" ? "⭐ Betygsätt ställe" : "⭐ Rate place"}
             </button>
-            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_source")}>
-              <ShieldCheck size={14} weight="bold" /> {lang === "sv" ? "📜 Lägg till ny källa" : "📜 Add source"}
-            </button>
           </div>
         </div>
         <div className="ask-box" style={{ position: "relative" }}>
@@ -4217,76 +4468,6 @@ export default function App() {
           {t.dataNoteLabel}
           <span>{t.dataNoteText}</span>
         </div>
-
-        <div className="curated-sources-panel" style={{ marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--color-mist)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "12px" }}>
-            <div>
-              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, fontFamily: "var(--font-mono)", textTransform: "uppercase", display: "flex", alignItems: "center", gap: "8px" }}>
-                📜 Kurerade Öppna Källor ({curatedSources.length})
-                {isSourcesLoading ? (
-                  <span style={{ fontSize: "11px", fontWeight: 500, color: "var(--color-water)", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                    <CircleNotch size={12} className="animate-spin" /> D1-sync...
-                  </span>
-                ) : null}
-              </h3>
-              <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: "var(--color-stone)" }}>
-                Auditerbara datakällor och verifierade guider som driver Motkartas ranking.
-              </p>
-            </div>
-            <button
-              type="button"
-              className="superpower-chip-btn"
-              onClick={() => setSuperpowerMode("add_source")}
-              style={{ background: "var(--color-ink)", color: "var(--color-paper)", border: "none" }}
-            >
-              <PlusCircle size={14} weight="bold" /> {lang === "sv" ? "➕ Lägg till ny källa" : "➕ Add new source"}
-            </button>
-          </div>
-
-          <div className="sources-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
-            {curatedSources.map((src) => (
-              <article
-                key={src.id}
-                style={{
-                  padding: "14px 16px",
-                  background: "var(--color-paper)",
-                  border: "1px solid var(--color-ink)",
-                  fontSize: "12px",
-                  fontFamily: "var(--font-mono)",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  gap: "10px",
-                }}
-              >
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                    <span style={{ fontSize: "10px", fontWeight: 700, padding: "2px 6px", background: "var(--color-water)", color: "#fff", borderRadius: "2px" }}>
-                      🟢 {src.type}
-                    </span>
-                    {src.addedByUser ? (
-                      <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--orange)" }}>
-                        [Inskickad källa]
-                      </span>
-                    ) : null}
-                  </div>
-                  <h4 style={{ margin: "0 0 4px 0", fontSize: "14px", fontWeight: 700, color: "var(--color-ink)" }}>
-                    <a href={src.url} target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "underline", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                      {src.name} <ArrowSquareOut size={13} />
-                    </a>
-                  </h4>
-                  <p style={{ margin: 0, color: "rgba(28, 25, 23, 0.85)", lineHeight: 1.45, fontSize: "11px" }}>
-                    {src.description}
-                  </p>
-                </div>
-                <div style={{ borderTop: "1px dashed var(--color-mist)", paddingTop: "8px", fontSize: "10px", color: "var(--color-stone)", display: "flex", justifyContent: "space-between" }}>
-                  <span>📜 {src.license}</span>
-                  {src.verifiedCount ? <span>{src.verifiedCount.toLocaleString()} datapunkter</span> : null}
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
       </section>
 
       <MerchPanel
@@ -4296,7 +4477,7 @@ export default function App() {
         onOpenCart={() => setIsCartOpen(true)}
       />
 
-      {superpowerMode ? (
+      {superpowerMode && superpowerMode !== "add_source" ? (
         <ConciergeSuperpowerModal
           mode={superpowerMode}
           places={places}

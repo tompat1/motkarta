@@ -1390,6 +1390,165 @@ button.concierge-clear-btn:hover {
   max-width: 640px;
 }
 
+.admin-curated-sources-panel {
+  border-bottom: 1px solid var(--color-mist);
+  border-top: 2px solid var(--color-ink);
+  margin-top: 34px;
+  padding: 24px 0 30px;
+}
+
+.admin-curated-sources-head {
+  align-items: flex-start;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.admin-curated-sources-head h2 {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.admin-curated-sources-head p {
+  color: var(--color-stone);
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 8px 0 0;
+  max-width: 740px;
+}
+
+.admin-source-add-btn {
+  align-items: center;
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  color: var(--color-paper);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  gap: 7px;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 13px;
+  text-transform: uppercase;
+  transition: background var(--motion-fast), border-color var(--motion-fast), color var(--motion-fast);
+}
+
+.admin-source-add-btn:hover {
+  background: var(--color-water);
+  border-color: var(--color-water);
+  color: var(--color-white);
+}
+
+.admin-source-sync {
+  align-items: center;
+  color: var(--color-water);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 6px;
+  margin: 14px 0 0;
+  text-transform: uppercase;
+}
+
+.admin-sources-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  margin-top: 18px;
+}
+
+.admin-source-card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-ink);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-mono);
+  gap: 16px;
+  justify-content: space-between;
+  min-height: 214px;
+  padding: 16px;
+}
+
+.admin-source-card-topline {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.admin-source-badge {
+  align-items: center;
+  background: var(--color-water);
+  color: var(--color-white);
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 800;
+  gap: 6px;
+  line-height: 1;
+  padding: 6px 8px;
+  text-transform: uppercase;
+}
+
+.admin-source-dot {
+  background: #20c947;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18) inset;
+  height: 9px;
+  width: 9px;
+}
+
+.admin-source-user-tag {
+  color: var(--orange);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.admin-source-card h3 {
+  color: var(--color-ink);
+  font-size: 16px;
+  line-height: 1.15;
+  margin: 0 0 8px;
+}
+
+.admin-source-card h3 a {
+  align-items: center;
+  color: inherit;
+  display: inline-flex;
+  gap: 5px;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.admin-source-card p {
+  color: rgba(28, 25, 23, 0.84);
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.admin-source-meta {
+  border-top: 1px dashed var(--color-mist);
+  color: var(--color-stone);
+  display: flex;
+  font-size: 11px;
+  gap: 12px;
+  justify-content: space-between;
+  line-height: 1.35;
+  padding-top: 10px;
+}
+
 .admin-review-panel {
   border-bottom: 1px solid var(--color-mist);
   border-top: 2px solid var(--color-ink);
@@ -1498,6 +1657,11 @@ button.concierge-clear-btn:hover {
   color: var(--color-ink);
   min-width: 40px;
   padding: 8px;
+}
+
+.admin-session-auth .admin-logout-btn {
+  min-width: 0;
+  padding: 8px 10px;
 }
 
 .admin-review-toolbar {
@@ -2128,11 +2292,20 @@ footer {
     padding: 16px 0;
   }
 
+  .admin-curated-sources-head,
   .admin-review-head,
   .admin-review-toolbar,
   .admin-schema-panel,
   .admin-export-panel {
     align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-source-add-btn {
+    width: 100%;
+  }
+
+  .admin-source-meta {
     flex-direction: column;
   }
 
