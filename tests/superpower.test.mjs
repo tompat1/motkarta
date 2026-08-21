@@ -84,12 +84,13 @@ test("addUserReview and addUserPhoto dynamically enrich place media", async () =
   const newRev = addUserReview(101, {
     author: "Test User",
     rating: 5,
-    source: "Verified Local",
+    source: "Community Submission",
     content: "Fantastisk mat och utsikt över Beckholmen!",
   });
 
   assert.equal(newRev.placeId, 101);
   assert.equal(newRev.author, "Test User");
+  assert.equal(newRev.verified, false);
 
   const reviews = await fetchPlaceReviews(mockPlaces[0]);
   assert.ok(reviews.some((r) => r.content.includes("Beckholmen")));

@@ -144,6 +144,30 @@ consistent community submissions.
 The next source layer starts with municipal food-control records, serving-permit
 imports and curated guide evidence.
 
+### OpenStreetMap and Overpass Turbo
+
+Production ingestion uses `scripts/fetch_osm.py`, which talks directly to the
+Overpass API and records the query hash/source metadata. Overpass Turbo is useful
+as a human workbench for testing changes to the same Overpass QL query, but it
+should not be a runtime dependency for the app.
+
+### Google metadata quarantine
+
+Google Places is optional and quarantined. Use it only to find possible new
+places, fill missing street/address fields, capture official website URLs, and
+fetch imagery from the venue's own website metadata:
+
+```bash
+python3 scripts/google_places_monthly_sync.py --dry-run
+python3 scripts/google_places_monthly_sync.py
+```
+
+The sync writes Google-only discoveries to
+`outputs/google_places_candidates.json` for manual review instead of publishing
+them directly into ranked results. It must not request or store Google ratings,
+reviews, review counts, price level, prominence, ranking, editorial summaries, or
+engagement/value signals.
+
 Fetch and normalize Stockholm food-control establishments:
 
 ```bash
@@ -293,6 +317,7 @@ flowchart TD
 6. **Explicit Confidence & Uncertainty**: Displays confidence levels (`High`, `Medium`, `Low`) for uncertain attributes and explicitly flags missing data (e.g. unverified opening hours or price tiers).
 7. **Auditable Correction History**: Maintains a change log history rather than silently overwriting records, and supports owner/community corrections via OpenStreetMap.
 8. **Terms Compliance**: Uses open public APIs and datasets (OpenStreetMap Overpass API, Stockholm Stad Portal); **does not scrape Google Maps** in violation of terms.
+9. **Google Metadata Quarantine**: If Google Places is used at all, it is restricted to neutral metadata only: possible new-place discovery, missing street/address fields, official website URL, and official-site imagery. Google ratings, reviews, review counts, price level, prominence, editorial summaries, ranking, and engagement/value signals must never enter Motkarta scoring or evidence confidence. New Google-only discoveries go to a manual candidate queue, not directly into ranked results.
 
 ### Establishment Scope
 

@@ -1433,7 +1433,7 @@ function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput; lang?
           onClick={() => setActiveTab("reviews")}
         >
           <ChatTeardropText size={14} weight="bold" />
-          {lang === "sv" ? "Verifierade Recensioner" : "Verified Reviews"} ({reviews?.length ?? "..."})
+          {lang === "sv" ? "Recensioner" : "Reviews"} ({reviews?.length ?? "..."})
         </button>
       </div>
 
@@ -1509,7 +1509,7 @@ function ConciergeSuperpowerModal({
   activePlace: PlaceInput | null;
   onClose: () => void;
   onAddPlace: (place: PlaceInput) => void;
-  onAddReview: (placeId: number, review: { author: string; rating: number; content: string; source: "Verified Local" }) => void;
+  onAddReview: (placeId: number, review: { author: string; rating: number; content: string; source: "Community Submission" }) => void;
   onAddPhoto: (placeId: number, photo: { url: string; thumbnailUrl: string; caption: string; credit?: string }) => void;
   onRatePlace: (placeId: number, rating: number) => void;
   onAddSource?: (source: CuratedSource) => void;
@@ -1560,42 +1560,42 @@ function ConciergeSuperpowerModal({
       area: area.trim(),
       address: address.trim() || `${area}, Stockholm`,
       note: note.trim() || `Oberoende ${kind.toLowerCase()} i ${area}.`,
-      tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
-      evidenceLabel: "Verifierad användarinskickning · OSM",
-      ratingAverage: rating,
-      reliableRatingCount: 1,
-      reviewCount: 1,
-      categoryMeanRating: 4.2,
-      categoryPopularityRaw: 0.8,
-      localPopularityPercentile: 50,
+      tags: [...tags.split(",").map((t) => t.trim()).filter(Boolean), "Community submission", "Pending verification"],
+      evidenceLabel: "Pending community submission · not independently verified",
+      ratingAverage: 4.1,
+      reliableRatingCount: 0,
+      reviewCount: 0,
+      categoryMeanRating: 4.1,
+      categoryPopularityRaw: 0,
+      localPopularityPercentile: 0.5,
       priceLevel: 2,
-      mainstreamExposure: 20,
+      mainstreamExposure: 0,
       ageDays: 1,
-      daysSinceFreshEvidence: 1,
+      daysSinceFreshEvidence: 365,
       evidence: {
-        specialistGuide: 0.8,
-        independentEditorial: 1,
-        verifiedUserRating: 1,
-        repeatVisits: 50,
-        recentReviews: 90,
-        credibleReviewers: 80,
-        inspectionStatus: 100,
-        verifiedAttributes: 90,
-        dataFreshness: 100,
-        confidence: "High",
+        specialistGuide: 0,
+        independentEditorial: 0,
+        verifiedUserRating: 0,
+        repeatVisits: 0,
+        recentReviews: 0,
+        credibleReviewers: 0,
+        inspectionStatus: 0,
+        verifiedAttributes: 0,
+        dataFreshness: 10,
+        confidence: "Low",
       },
       latitude: activePlace && activePlace.latitude != null ? activePlace.latitude + 0.002 : 59.3326 + (Math.random() - 0.5) * 0.02,
       longitude: activePlace && activePlace.longitude != null ? activePlace.longitude + 0.002 : 18.0649 + (Math.random() - 0.5) * 0.02,
       engagement: {
-        searchImpressions: 100,
-        profileViews: 50,
-        mapMarkerClicks: 30,
-        saves: 10,
-        directionRequests: 5,
-        confirmedVisits: 5,
-        repeatVisits: 2,
-        recommendations: 3,
-        recentSaves: 10,
+        searchImpressions: 0,
+        profileViews: 0,
+        mapMarkerClicks: 0,
+        saves: 0,
+        directionRequests: 0,
+        confirmedVisits: 0,
+        repeatVisits: 0,
+        recommendations: 0,
+        recentSaves: 0,
       },
       x: 50,
       y: 50,
@@ -1612,7 +1612,7 @@ function ConciergeSuperpowerModal({
       author: author.trim() || "Oberoende Matälskare",
       rating,
       content: reviewContent.trim(),
-      source: "Verified Local",
+      source: "Community Submission",
     });
     onClose();
   };
@@ -2329,14 +2329,14 @@ export default function App() {
         localStorage.setItem("motkarta_user_places", JSON.stringify([newPlace, ...list]));
       } catch {}
     }
-    setAnswer(`🎉 Superpower Aktiverad! Ditt nya oberoende ställe '${newPlace.name}' i ${newPlace.area} har lagts till i kartan och är nu live!`);
+    setAnswer(`Superpower aktiverad. Ditt nya oberoende ställe '${newPlace.name}' i ${newPlace.area} har lagts till lokalt som kandidat för verifiering.`);
   };
 
-  const handleAddReviewSuperpower = (placeId: number, rev: { author: string; rating: number; content: string; source: "Verified Local" }) => {
+  const handleAddReviewSuperpower = (placeId: number, rev: { author: string; rating: number; content: string; source: "Community Submission" }) => {
     addUserReview(placeId, rev);
     const targetPlace = places.find((p) => p.id === placeId);
     setSelected(placeId);
-    setAnswer(`✍️ Superpower Aktiverad! Din verifierade recension för '${targetPlace?.name ?? "Stället"}' har publicerats i detaljkortet!`);
+    setAnswer(`Superpower aktiverad. Din recension för '${targetPlace?.name ?? "Stället"}' har sparats och inväntar verifiering.`);
   };
 
   const handleAddPhotoSuperpower = (placeId: number, ph: { url: string; thumbnailUrl: string; caption: string; credit?: string }) => {

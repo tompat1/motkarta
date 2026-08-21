@@ -4,7 +4,7 @@ export type PlaceReview = {
   author: string;
   rating: number;
   date: string;
-  source: "Editorial Guide" | "Food Control Inspection" | "Specialty Coffee Auditor" | "Verified Local";
+  source: "Editorial Guide" | "Food Control Inspection" | "Specialty Coffee Auditor" | "Verified Local" | "Community Submission";
   content: string;
   verified: boolean;
 };
@@ -424,7 +424,7 @@ export function addUserReview(placeId: number, review: Omit<PlaceReview, "id" | 
     placeId,
     id: `user-rev-${placeId}-${Date.now()}`,
     date: new Date().toISOString().split("T")[0],
-    verified: true,
+    verified: false,
   };
 
   const existing = reviewsCache.get(placeId) || [];
