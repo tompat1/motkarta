@@ -2003,16 +2003,16 @@ function ConciergeSuperpowerModal({
   );
 }
 
-function AdminCuratedSourcesPanel({
+function CuratedSourcesPanel({
   sources,
   isLoading,
   lang,
   onAddSource,
 }: {
   sources: CuratedSource[];
-  isLoading: boolean;
+  isLoading?: boolean;
   lang: Language;
-  onAddSource: () => void;
+  onAddSource?: () => void;
 }) {
   const copy =
     lang === "sv"
@@ -2020,7 +2020,7 @@ function AdminCuratedSourcesPanel({
           kicker: "Källregister",
           title: "Kurerade öppna källor",
           description:
-            "Auditerbara dataset och verifierade guider som kan bidra med källhänvisad evidens. Källor skapar kandidater och verifieringssignaler, inte importerade betyg.",
+            "Auditerbara datakällor och verifierade guider som driver Motkartas ranking.",
           addSource: "Lägg till ny källa",
           syncing: "D1-sync...",
           submitted: "Inskickad källa",
@@ -2030,7 +2030,7 @@ function AdminCuratedSourcesPanel({
           kicker: "Source registry",
           title: "Curated open sources",
           description:
-            "Auditable datasets and verified guides that can contribute source-attributed evidence. Sources create candidates and verification signals, not imported ratings.",
+            "Auditable data sources and verified guides powering Motkarta's ranking.",
           addSource: "Add new source",
           syncing: "D1 sync...",
           submitted: "Submitted source",
@@ -2038,20 +2038,19 @@ function AdminCuratedSourcesPanel({
         };
 
   return (
-    <section className="admin-curated-sources-panel" id="admin-sources" aria-labelledby="admin-sources-title">
+    <section className="admin-curated-sources-panel" id="sources" aria-labelledby="sources-title">
       <div className="admin-curated-sources-head">
         <div>
-          <p className="admin-review-kicker">
-            <ShieldCheck size={14} weight="bold" /> {copy.kicker}
-          </p>
-          <h2 id="admin-sources-title">
-            {copy.title} ({sources.length})
+          <h2 id="sources-title">
+            📜 {copy.title} ({sources.length})
           </h2>
           <p>{copy.description}</p>
         </div>
-        <button type="button" className="admin-source-add-btn" onClick={onAddSource}>
-          <PlusCircle size={15} weight="bold" /> {copy.addSource}
-        </button>
+        {onAddSource ? (
+          <button type="button" className="admin-source-add-btn" onClick={onAddSource}>
+            <PlusCircle size={15} weight="bold" /> {copy.addSource}
+          </button>
+        ) : null}
       </div>
 
       {isLoading ? (
@@ -2081,7 +2080,7 @@ function AdminCuratedSourcesPanel({
                 <p>{displaySource.description}</p>
               </div>
               <div className="admin-source-meta">
-                <span>{displaySource.license}</span>
+                <span>📜 {displaySource.license}</span>
                 {displaySource.verifiedCount ? (
                   <span>
                     {displaySource.verifiedCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} {copy.dataPoints}
@@ -3795,7 +3794,7 @@ export default function App() {
               : "Review candidates, export labels, and check that the D1 admin schema is ready."}
           </p>
         </section>
-        <AdminCuratedSourcesPanel
+        <CuratedSourcesPanel
           sources={curatedSources}
           isLoading={isSourcesLoading}
           lang={lang}
@@ -4464,7 +4463,12 @@ export default function App() {
             <p>{t.method04Desc}</p>
           </article>
         </div>
-        <div className="disclaimer" id="sources">
+        <CuratedSourcesPanel
+          sources={curatedSources}
+          isLoading={isSourcesLoading}
+          lang={lang}
+        />
+        <div className="disclaimer">
           {t.dataNoteLabel}
           <span>{t.dataNoteText}</span>
         </div>
