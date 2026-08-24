@@ -3591,7 +3591,7 @@ export default function App() {
       const isVisibleInRanked = ranked.some((p) => p.id === id);
       if (!isVisibleInRanked) {
         setKind("All places");
-        setCuisine("all");
+        setCuisine(allCuisines);
         setQuery("");
       }
     },
@@ -3753,6 +3753,18 @@ export default function App() {
     await askWithQuery(concierge);
   }
 
+  async function askFromSearch() {
+    const searchText = query.trim() || concierge.trim();
+    if (!searchText) return;
+
+    setConcierge(searchText);
+    await askWithQuery(searchText);
+
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 760px)").matches) {
+      document.getElementById("concierge")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
   const handleRefineQuery = (extra: string) => {
     const updated = `${concierge} (${extra})`;
     setConcierge(updated);
@@ -3909,9 +3921,18 @@ export default function App() {
           <label className="search" style={{ display: "flex", alignItems: "center" }}>
             <MagnifyingGlass size={16} weight="bold" style={{ color: "var(--color-ink)", marginRight: "8px" }} />
             <input
-              aria-label={t.typeFilterLabel}
+              aria-label={lang === "sv" ? "Sök ställen, kök, område eller fråga concierge" : "Search places, cuisine, area, or ask concierge"}
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setConcierge(event.target.value);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  void askFromSearch();
+                }
+              }}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
               placeholder={lang === "sv" ? "Sök stadsdel (Söder, Vasastan...), ställe eller kök..." : "Search region (Söder, Vasastan...), place or cuisine..."}
@@ -3920,7 +3941,10 @@ export default function App() {
               <button
                 type="button"
                 className="search-clear-btn"
-                onClick={() => setQuery("")}
+                onClick={() => {
+                  setQuery("");
+                  setConcierge("");
+                }}
                 aria-label="Clear search field"
                 title={lang === "sv" ? "Rensa fält" : "Clear field"}
               >
@@ -3943,6 +3967,7 @@ export default function App() {
                   onMouseDown={(e) => {
                     e.preventDefault();
                     setQuery(item.value);
+                    setConcierge(item.value);
                     setIsSearchFocused(false);
                   }}
                 >
@@ -3955,6 +3980,55 @@ export default function App() {
               ))}
             </div>
           ) : null}
+          <div className="mobile-search-actions" aria-label={lang === "sv" ? "Mobila sökåtgärder" : "Mobile search actions"}>
+            <button
+              type="button"
+              className="search-ai-btn"
+              onClick={() => void askFromSearch()}
+              disabled={asking || !(query.trim() || concierge.trim())}
+            >
+              {asking ? (
+                <CircleNotch size={15} className="animate-spin" />
+              ) : (
+                <Sparkle size={15} weight="bold" />
+              )}
+              <span>{lang === "sv" ? "Fråga concierge" : "Ask concierge"}</span>
+            </button>
+            <button
+              type="button"
+              className="search-reset-btn"
+              onClick={() => {
+                setQuery("");
+                setConcierge("");
+                setKind("All places");
+                setCuisine(allCuisines);
+              }}
+            >
+              {lang === "sv" ? "Rensa" : "Reset"}
+            </button>
+          </div>
+        </div>
+        <div className="mobile-filter-selects" aria-label={lang === "sv" ? "Mobil platsfiltrering" : "Mobile place filters"}>
+          <label>
+            <span>{t.typeFilterLabel}</span>
+            <select value={kind} onChange={(event) => setKind(event.target.value as EstablishmentFilter)}>
+              {establishmentTypes.map((item) => (
+                <option key={item} value={item}>
+                  {kindFilterLabel(item, lang)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>{t.cuisineFilterLabel}</span>
+            <select value={cuisine} onChange={(event) => setCuisine(event.target.value)}>
+              {[allCuisines, ...cuisineOptions].map((item) => (
+                <option key={item} value={item}>
+                  {item === allCuisines ? t.allCuisines : cuisineLabel(item, lang)}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="chips" aria-label="Filter typ">
           <span className="filter-label">{t.typeFilterLabel}</span>
