@@ -67,6 +67,7 @@ import {
   type UserPreferences,
   scorePlace,
 } from "../lib/scoring";
+import { isBroadStockholmArea, resolveStockholmRegion } from "../lib/stockholm-regions";
 import { DEFAULT_CONCIERGE_PROMPTS, DEFAULT_CURATED_SOURCES } from "../lib/db-sources-prompts";
 
 const establishmentTypes = [
@@ -4968,8 +4969,22 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[], includeDemoP
     return !EXCLUDED_COMMERCIAL_CHAINS.some((chain) => n.includes(chain));
   });
 
-  // 2. Normalize and promote matched specialty coffee venues / reclassify grills & gastropubs
-  const promoted = filtered.map((p) => {
+  // 2. Replace broad location buckets with more useful regions when the data supports it.
+  const regionResolved = filtered.map((place) => {
+    const resolvedArea = resolveStockholmRegion(place);
+    if (resolvedArea === place.area) {
+      return place;
+    }
+
+    return {
+      ...place,
+      area: resolvedArea,
+      tags: Array.from(new Set([...place.tags.filter((tag) => !isBroadStockholmArea(tag)), resolvedArea])),
+    };
+  });
+
+  // 3. Normalize and promote matched specialty coffee venues / reclassify grills & gastropubs
+  const promoted = regionResolved.map((p) => {
     const n = p.name.toLowerCase();
     const cu = (p.cuisine ?? "").toLowerCase();
     const fullText = `${n} ${cu}`;
@@ -5019,7 +5034,7 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[], includeDemoP
     return p;
   });
 
-  // 3. In explicit demo/dev mode, ensure fixture places are present for demos.
+  // 4. In explicit demo/dev mode, ensure fixture places are present for demos.
   const result = [...promoted];
   if (includeDemoPlaces) {
     for (const demoPlace of demoPlaces) {
@@ -5034,7 +5049,7 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[], includeDemoP
     }
   }
 
-  // 4. Strict deduplication by ID and normalized name + area
+  // 5. Strict deduplication by ID and normalized name + area
   const seenIds = new Set<number>();
   const seenKeys = new Set<string>();
   const deduped: PlaceInput[] = [];
