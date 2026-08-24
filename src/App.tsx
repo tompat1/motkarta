@@ -4755,9 +4755,17 @@ function FoodMap({
         icon: placeIcon(place, place.id === activePlace?.id),
         title: place.name,
       })
-        .bindPopup(placePopupHtml(place, index + 1, lang), { maxWidth: 280 })
-        .on("click", () => onSelect(place.id))
+        .on("click", () => {
+          onSelect(place.id);
+          if (isMobileMapViewport()) {
+            map.closePopup();
+          }
+        })
         .addTo(map);
+
+      if (!isMobileMapViewport()) {
+        marker.bindPopup(placePopupHtml(place, index + 1, lang), { maxWidth: 280 });
+      }
 
       markersRef.current.set(place.id, marker);
       bounds.extend(marker.getLatLng());
@@ -4782,7 +4790,11 @@ function FoodMap({
     places.filter(hasCoordinates).forEach((place) => {
       markersRef.current.get(place.id)?.setIcon(placeIcon(place, place.id === activePlace.id));
     });
-    activeMarker.openPopup();
+    if (isMobileMapViewport()) {
+      map.closePopup();
+    } else {
+      activeMarker.openPopup();
+    }
     map.flyTo([activePlace.latitude, activePlace.longitude], 15, { duration: 0.8 });
   }, [activePlace, places]);
 
@@ -4832,6 +4844,10 @@ function FoodMap({
 
 function hasCoordinates(place: ScoredPlace): place is ScoredPlace & { latitude: number; longitude: number } {
   return typeof place.latitude === "number" && typeof place.longitude === "number";
+}
+
+function isMobileMapViewport() {
+  return typeof window !== "undefined" && window.matchMedia("(max-width: 760px)").matches;
 }
 
 function placeIcon(place: ScoredPlace, active: boolean) {
