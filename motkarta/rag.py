@@ -23,7 +23,7 @@ def place_to_rag_document(place: dict) -> RagDocument:
     cuisine = place.get("cuisine") or ""
 
     gem_status_str = (
-        "This establishment is officially classified as a Motkarta Hidden Gem based on its highly specialized offerings, high structural complexity, and lower mainstream tourist foot traffic profile."
+        "This establishment has passed Motkarta's independent evidence, current-existence, distinctiveness, and lifecycle gates for Hidden Gem status."
         if is_gem
         else "This establishment is a verified local independent destination."
     )

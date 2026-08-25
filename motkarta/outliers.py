@@ -80,7 +80,12 @@ def compute_opening_hours_score(df: pd.DataFrame) -> pd.Series:
 
 
 def process_motkarta_gems(df: pd.DataFrame, contamination: float = 0.07, random_state: int = 42) -> pd.DataFrame:
-    """Process DataFrame through feature engineering & Isolation Forest to flag hidden gems."""
+    """Flag structurally unusual OSM records for review.
+
+    Isolation Forest detects unusual metadata patterns, not venue quality. Its
+    output must never promote a venue to user-facing hidden-gem status without
+    the separate evidence and lifecycle gates.
+    """
     res = df.copy()
 
     # 1. Feature Engineering
@@ -100,7 +105,7 @@ def process_motkarta_gems(df: pd.DataFrame, contamination: float = 0.07, random_
     res["opening_hours_score"] = compute_opening_hours_score(res)
 
     # 2. Organic Hidden Gem Index
-    res["gem_index"] = (res["tag_complexity"] * res["historic_longevity"]) / (res["spatial_density_300m"] + 1.0)
+    res["structural_interest_index"] = (res["tag_complexity"] * res["historic_longevity"]) / (res["spatial_density_300m"] + 1.0)
 
     # 3. Isolation Forest Outlier Pass
     feature_cols = ["spatial_density_300m", "tag_complexity", "opening_hours_score", "historic_longevity"]
@@ -111,13 +116,22 @@ def process_motkarta_gems(df: pd.DataFrame, contamination: float = 0.07, random_
         X_scaled = scaler.fit_transform(X)
 
         iso_forest = IsolationForest(contamination=contamination, random_state=random_state)
-        res["anomaly_score"] = iso_forest.fit_predict(X_scaled)
+        res["structural_anomaly_score"] = iso_forest.fit_predict(X_scaled)
 
-        median_gem_index = res["gem_index"].median()
-        # Anomaly score -1 indicates structural outlier
-        res["is_hidden_gem"] = (res["anomaly_score"] == -1) & (res["gem_index"] >= median_gem_index)
+        median_interest = res["structural_interest_index"].median()
+        # A score of -1 indicates an unusual data record, not a quality claim.
+        res["is_structural_anomaly"] = (
+            (res["structural_anomaly_score"] == -1)
+            & (res["structural_interest_index"] >= median_interest)
+        )
     else:
-        res["anomaly_score"] = 1
-        res["is_hidden_gem"] = False
+        res["structural_anomaly_score"] = 1
+        res["is_structural_anomaly"] = False
+
+    # Compatibility columns for existing exports. They intentionally no longer
+    # convert an unsupervised anomaly into a hidden-gem recommendation.
+    res["anomaly_score"] = res["structural_anomaly_score"]
+    res["gem_index"] = res["structural_interest_index"]
+    res["is_hidden_gem"] = False
 
     return res

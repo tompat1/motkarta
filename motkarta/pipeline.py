@@ -279,7 +279,7 @@ def score_places(frame: pd.DataFrame) -> pd.DataFrame:
     data["discovery_score"] = data.apply(discovery_score, axis=1)
     data["discovery_reasons"] = data.apply(discovery_reasons, axis=1)
 
-    # Isolation Forest & Structural Hidden Gem Outlier Pipeline (Blueprint 2.2)
+    # Isolation Forest identifies unusual records for review; it does not infer quality.
     data = process_motkarta_gems(data)
 
     return data
@@ -418,8 +418,9 @@ def write_rag_corpus(frame: pd.DataFrame, path: str | Path) -> None:
     with target.open("w", encoding="utf-8") as handle:
         for _, row in frame.iterrows():
             is_gem = bool(row.get("is_hidden_gem", False))
+            is_structural_anomaly = bool(row.get("is_structural_anomaly", False))
             gem_text = (
-                "This establishment is officially classified as a Motkarta Hidden Gem based on its highly specialized offerings, high structural complexity, and lower mainstream tourist foot traffic profile."
+                "This establishment has passed Motkarta's independent evidence, current-existence, distinctiveness, and lifecycle gates for Hidden Gem status."
                 if is_gem
                 else "This establishment is a verified local independent destination."
             )
@@ -452,6 +453,9 @@ def write_rag_corpus(frame: pd.DataFrame, path: str | Path) -> None:
                     "is_hidden_gem": is_gem,
                     "anomaly_score": int(row.get("anomaly_score", 1)),
                     "gem_index": float(row.get("gem_index", 0.0)),
+                    "is_structural_anomaly": is_structural_anomaly,
+                    "structural_anomaly_score": int(row.get("structural_anomaly_score", 1)),
+                    "structural_interest_index": float(row.get("structural_interest_index", 0.0)),
                 },
             }
             handle.write(json.dumps(document, ensure_ascii=False) + "\n")
@@ -693,6 +697,7 @@ def place_input_from_row(row: pd.Series) -> dict:
         "note": place_note(row),
         "tags": place_tags(row),
         "is_hidden_gem": bool(row.get("is_hidden_gem", False)),
+        "is_structural_anomaly": bool(row.get("is_structural_anomaly", False)),
         "discoveryReasons": discovery_reason_list(row),
         "discoverySignals": {
             signal: bool(row.get(signal))
