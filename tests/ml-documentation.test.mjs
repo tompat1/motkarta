@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const requiredDocuments = [
+  "AGENTS.md",
   ".agents/AGENTS.md",
   "directives/ml_recommendation_system.md",
   "docs/ml/README.md",
@@ -30,12 +31,16 @@ test("the complete ML documentation set remains available", async () => {
 });
 
 test("agents are routed to the mandatory ML directive and canonical docs", async () => {
-  const [agentInstructions, directive, index] = await Promise.all([
+  const [entryPoint, agentInstructions, directive, index] = await Promise.all([
+    read("AGENTS.md"),
     read(".agents/AGENTS.md"),
     read("directives/ml_recommendation_system.md"),
     read("docs/ml/README.md"),
   ]);
 
+  assert.match(entryPoint, /\.agents\/AGENTS\.md/);
+  assert.match(entryPoint, /directives\/ml_recommendation_system\.md/);
+  assert.match(entryPoint, /docs\/ml\/README\.md/);
   assert.match(agentInstructions, /directives\/ml_recommendation_system\.md/);
   assert.match(agentInstructions, /docs\/ml\/README\.md/);
 
