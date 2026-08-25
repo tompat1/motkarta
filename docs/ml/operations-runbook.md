@@ -134,6 +134,12 @@ The event schema is introduced by:
 drizzle/0007_pale_mikhail_rasputin.sql
 ```
 
+Event collection controls are introduced by:
+
+```text
+drizzle/0009_breezy_tomas.sql
+```
+
 For new schema changes:
 
 ```bash
@@ -146,16 +152,43 @@ Inspect generated SQL and snapshot changes. Do not apply a production D1
 migration merely because it was generated; production writes require explicit
 deployment scope and a rollback/backup plan.
 
-Before enabling event collection, decide:
+Current shadow-mode event collection decisions:
 
-- Position indexing convention
-- Impression visibility rule
-- Recommendation-mode vocabulary
-- Session duration
-- Outcome attribution window
-- Identifier rotation
-- Retention and deletion
-- Sampling/deduplication behavior
+- Position indexing convention: zero-based.
+- Impression visibility rule: rendered result rows count as impressions.
+- Recommendation-mode vocabulary: `search`, `map`, `list`, `concierge`,
+  `nearby`, `saved`, `curated`, `hidden_gems`.
+- Session identifier: browser session storage.
+- Anonymous identifier rotation: 30 days.
+- Retention: default 180 days; endpoint configuration is bounded to 7-365 days.
+- Deduplication: `idempotency_key` plus `INSERT OR IGNORE`.
+- Query context: structured buckets only; raw query text is rejected.
+
+Outcome attribution window and deletion automation remain future decisions before
+any behavioral training dataset is built.
+
+## Shadow event collection operation
+
+Frontend instrumentation posts batches to:
+
+```text
+POST /api/recommendation-events
+```
+
+The endpoint validates controlled vocabularies, privacy-minimized query context,
+model version, zero-based impression positions, idempotency keys and retention
+window. Without a D1 binding it returns `source: shadow` and does not persist.
+
+Admin-only data-quality reporting is available at:
+
+```text
+GET /api/recommendation-events
+```
+
+The report summarizes event counts, event/mode distributions, missing impression
+positions, missing idempotency or retention metadata, expired rows and whether
+the shadow dataset is structurally ready for deeper analysis. `qualityReady`
+does not authorize ranker training by itself.
 
 ## Full release validation
 
@@ -239,4 +272,3 @@ Future work should add:
 - Drift comparison against prior run
 - Event-quality dashboard
 - Model registry or immutable artifact storage
-

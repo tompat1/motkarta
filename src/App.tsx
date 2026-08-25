@@ -68,6 +68,14 @@ import {
   scorePlace,
 } from "../lib/scoring";
 import { isBroadStockholmArea, resolveStockholmRegion } from "../lib/stockholm-regions";
+import {
+  ANONYMOUS_ID_ROTATION_DAYS,
+  MAX_RECOMMENDATION_EVENTS_PER_BATCH,
+  RECOMMENDATION_SCORER_VERSION,
+  queryLengthBucket,
+  type QueryContext,
+  type RecommendationEventType,
+} from "../lib/recommendation-events";
 import { DEFAULT_CONCIERGE_PROMPTS, DEFAULT_CURATED_SOURCES } from "../lib/db-sources-prompts";
 
 const establishmentTypes = [
@@ -666,7 +674,15 @@ function VerificationBar({ place, lang = "sv" }: { place: ScoredPlace; lang?: La
   );
 }
 
-function ExternalMapLinks({ place, lang = "sv" }: { place: PlaceInput; lang?: Language }) {
+function ExternalMapLinks({
+  place,
+  lang = "sv",
+  onDirectionRequest,
+}: {
+  place: PlaceInput;
+  lang?: Language;
+  onDirectionRequest?: () => void;
+}) {
   const t = translations[lang];
   const queryText = encodeURIComponent(`${place.name} ${place.address || place.area || ""} Stockholm`);
 
@@ -714,6 +730,7 @@ function ExternalMapLinks({ place, lang = "sv" }: { place: PlaceInput; lang?: La
           href={googleMapsUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={onDirectionRequest}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -736,6 +753,7 @@ function ExternalMapLinks({ place, lang = "sv" }: { place: PlaceInput; lang?: La
           href={appleMapsUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={onDirectionRequest}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -758,6 +776,7 @@ function ExternalMapLinks({ place, lang = "sv" }: { place: PlaceInput; lang?: La
           href={osmUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={onDirectionRequest}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -3262,6 +3281,97 @@ function duplicateResolutionLabel(resolution: "merged" | "keep_separate", lang: 
   return labels[resolution][lang];
 }
 
+type RecommendationEventDraft = {
+  establishmentId: number;
+  eventType: RecommendationEventType;
+  resultPosition?: number | null;
+  queryContext?: QueryContext;
+};
+
+type StoredRecommendationIdentity = {
+  anonymousUserId: string;
+  expiresAt: string;
+};
+
+function getRecommendationAnonymousUserId() {
+  if (typeof window === "undefined") return null;
+
+  const now = Date.now();
+  try {
+    const stored = localStorage.getItem("motkarta_recommendation_identity");
+    if (stored) {
+      const parsed = JSON.parse(stored) as StoredRecommendationIdentity;
+      if (parsed.anonymousUserId && new Date(parsed.expiresAt).getTime() > now) {
+        return parsed.anonymousUserId;
+      }
+    }
+  } catch {}
+
+  const anonymousUserId = `anon_${safeRandomId()}`;
+  const expiresAt = new Date(now + ANONYMOUS_ID_ROTATION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  try {
+    localStorage.setItem("motkarta_recommendation_identity", JSON.stringify({ anonymousUserId, expiresAt }));
+  } catch {}
+  return anonymousUserId;
+}
+
+function getRecommendationSessionId() {
+  if (typeof window === "undefined") return `session_${safeRandomId()}`;
+
+  try {
+    const stored = sessionStorage.getItem("motkarta_recommendation_session");
+    if (stored) return stored;
+  } catch {}
+
+  const sessionId = `session_${safeRandomId()}`;
+  try {
+    sessionStorage.setItem("motkarta_recommendation_session", sessionId);
+  } catch {}
+  return sessionId;
+}
+
+function safeRandomId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`;
+}
+
+function recommendationEventIdempotencyKey(
+  sessionId: string,
+  event: RecommendationEventDraft,
+  context: QueryContext,
+) {
+  const contextKey = [
+    context.surface,
+    context.hasQuery,
+    context.queryLengthBucket,
+    context.kind,
+    context.cuisine,
+    context.mode,
+    context.sortMode,
+    context.resultCount,
+  ].map(safeIdempotencyPart).join(":");
+  return [
+    sessionId,
+    event.eventType,
+    event.establishmentId,
+    event.resultPosition ?? "none",
+    RECOMMENDATION_SCORER_VERSION,
+    contextKey,
+  ].map(safeIdempotencyPart).join(":");
+}
+
+function safeIdempotencyPart(value: unknown) {
+  return String(value ?? "none")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48) || "none";
+}
+
 export default function App() {
   const [places, setPlaces] = useState<PlaceInput[]>(CLIENT_DEMO_MODE ? demoPlaces : []);
   const [dataSource, setDataSource] = useState<DataSource>("loading");
@@ -3406,12 +3516,16 @@ export default function App() {
   };
 
   const handleToggleSavePlace = (id: number) => {
+    const wasSaved = savedPlaceIds.includes(id);
     const updated = savedPlaceIds.includes(id)
       ? savedPlaceIds.filter((pId) => pId !== id)
       : [...savedPlaceIds, id];
     setSavedPlaceIds(updated);
     if (typeof window !== "undefined") {
       localStorage.setItem("motkarta_saved_places", JSON.stringify(updated));
+    }
+    if (!wasSaved) {
+      recordRecommendationEvents([{ establishmentId: id, eventType: "save", queryContext: { surface: "place_detail" } }]);
     }
   };
 
@@ -3584,11 +3698,73 @@ export default function App() {
   );
   const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
 
+  const recommendationQueryContext = useMemo<QueryContext>(
+    () => ({
+      hasQuery: Boolean(query.trim()),
+      queryLengthBucket: queryLengthBucket(query),
+      kind,
+      cuisine,
+      mode,
+      sortMode,
+      resultCount: visibleRanked.length,
+      surface: "results",
+    }),
+    [cuisine, kind, mode, query, sortMode, visibleRanked.length],
+  );
+
+  const recordRecommendationEvents = useCallback(
+    (drafts: RecommendationEventDraft[]) => {
+      if (typeof window === "undefined" || !drafts.length) return;
+
+      const anonymousUserId = getRecommendationAnonymousUserId();
+      const sessionId = getRecommendationSessionId();
+      const occurredAt = new Date().toISOString();
+      const events = drafts.map((draft) => {
+        const queryContext = { ...recommendationQueryContext, ...(draft.queryContext ?? {}) };
+        return {
+          establishmentId: draft.establishmentId,
+          anonymousUserId,
+          sessionId,
+          eventType: draft.eventType,
+          resultPosition: draft.resultPosition ?? null,
+          recommendationMode: "search",
+          queryContext,
+          modelVersion: RECOMMENDATION_SCORER_VERSION,
+          occurredAt,
+          idempotencyKey: recommendationEventIdempotencyKey(sessionId, draft, queryContext),
+        };
+      });
+
+      for (let index = 0; index < events.length; index += MAX_RECOMMENDATION_EVENTS_PER_BATCH) {
+        const chunk = events.slice(index, index + MAX_RECOMMENDATION_EVENTS_PER_BATCH);
+        void fetch("/api/recommendation-events", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ events: chunk }),
+          keepalive: chunk.length <= 20,
+        }).catch(() => {});
+      }
+    },
+    [recommendationQueryContext],
+  );
+
+  useEffect(() => {
+    if (!visibleRanked.length) return;
+    recordRecommendationEvents(
+      visibleRanked.map((place, index) => ({
+        establishmentId: place.id,
+        eventType: "impression",
+        resultPosition: index,
+      })),
+    );
+  }, [recordRecommendationEvents, visibleRanked]);
+
   const active = scoredPlaces.find((place) => place.id === selected) ?? ranked[0] ?? scoredPlaces[0] ?? null;
 
   const handleSelectPlace = useCallback(
     (id: number) => {
       setSelected(id);
+      recordRecommendationEvents([{ establishmentId: id, eventType: "profile_view", queryContext: { surface: "map" } }]);
       const isVisibleInRanked = ranked.some((p) => p.id === id);
       if (!isVisibleInRanked) {
         setKind("All places");
@@ -3596,7 +3772,7 @@ export default function App() {
         setQuery("");
       }
     },
-    [ranked],
+    [ranked, recordRecommendationEvents],
   );
 
   const mapPlaces = useMemo(
@@ -4256,7 +4432,15 @@ export default function App() {
                       : "Curated sources are used as attributed place and evidence data, not imported ratings. Guide data may come from Anders Husa & Kaitlin Orr Guide, White Guide Nordic, Specialty Coffee Sweden Registry, and Visit Stockholm. Inspection data from Stockholm City (CC0). Map data from OpenStreetMap (ODbL)."}
                   </div>
                 </div>
-                <ExternalMapLinks place={active} lang={lang} />
+                <ExternalMapLinks
+                  place={active}
+                  lang={lang}
+                  onDirectionRequest={() =>
+                    recordRecommendationEvents([
+                      { establishmentId: active.id, eventType: "direction_request", queryContext: { surface: "place_detail" } },
+                    ])
+                  }
+                />
                 {active.discoveryReasons?.length ? (
                   <ul className="reason-list" aria-label="Discovery score reasons">
                     {active.discoveryReasons.slice(0, 3).map((reason: string) => (
@@ -4352,13 +4536,31 @@ export default function App() {
               <div
                 key={place.id}
                 className={active && place.id === active.id ? "place active-place" : "place"}
-                onClick={() => setSelected(place.id)}
+                onClick={() => {
+                  setSelected(place.id);
+                  recordRecommendationEvents([
+                    {
+                      establishmentId: place.id,
+                      eventType: "profile_view",
+                      resultPosition: index,
+                      queryContext: { surface: "results" },
+                    },
+                  ]);
+                }}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     setSelected(place.id);
+                    recordRecommendationEvents([
+                      {
+                        establishmentId: place.id,
+                        eventType: "profile_view",
+                        resultPosition: index,
+                        queryContext: { surface: "results" },
+                      },
+                    ]);
                   }
                 }}
               >

@@ -159,7 +159,9 @@ Never substitute `discovery_score` as satisfaction for a ranking sorted by
 
 ## Future behavioral ranker
 
-Do not train until the event contract is instrumented and validated.
+Do not train yet. The event contract is instrumented in shadow mode, but a
+behavioral ranker remains blocked until collection quality, privacy behavior,
+retention, attribution windows and slice coverage are validated on real data.
 
 ### Candidate training unit
 
@@ -265,4 +267,3 @@ Record with every run:
 
 The current script writes row-level version/fold data but does not yet persist a
 complete run manifest. Adding a JSON manifest is a high-priority maintenance task.
-

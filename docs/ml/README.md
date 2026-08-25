@@ -43,7 +43,7 @@ As of 2026-08-25:
 | Structural anomaly detection | Implemented as review assistance only | `motkarta/outliers.py` |
 | Hidden-gem evidence gates | Implemented | `lib/scoring.ts` and admin lifecycle |
 | Event-level recommendation schema | Implemented | `recommendation_events` in `db/schema.ts` |
-| Event collection endpoint/UI instrumentation | Not implemented | Next engineering phase |
+| Event collection endpoint/UI instrumentation | Implemented in shadow mode | `functions/api/recommendation-events.ts`, `src/App.tsx` |
 | Personalized learning-to-rank model | Not implemented | Requires real impression/outcome data |
 | Online experiment assignment | Not implemented | Requires event collection and privacy review |
 | Automated drift monitoring | Not implemented | Required before automatic retraining |
@@ -73,7 +73,7 @@ flowchart TD
     C --> D[Transparent scoring]
     D --> E[Candidate retrieval]
     E --> F[Evidence-gated ranking]
-    F --> G[User impressions]
+    F --> G[Shadow-mode user impressions]
     G --> H[Outcome events]
     H --> I[Future debiased ranker]
     J[Quarantined platform research] --> K[OOF residual model]
@@ -83,6 +83,18 @@ flowchart TD
 
 The quarantined platform-research path may nominate a candidate. It never joins
 the public ranking path directly.
+
+## Current event collection foundation
+
+The application collects recommendation events in shadow mode only. Events are
+validated through controlled vocabularies, carry zero-based result positions for
+impressions, include `transparent-scorer-v1` as the deterministic scorer version,
+and store idempotency, receipt, expiry, schema-version and privacy-version
+metadata. Query context is minimized to structured buckets; raw free-text search
+queries are not accepted by the ingestion contract.
+
+Shadow-mode event data is not authorized for personalized ranking. It must first
+pass data-quality reporting, retention/privacy review and attribution analysis.
 
 ## Terminology
 
@@ -126,4 +138,3 @@ ML-related work is not complete until:
 - Model/version identifiers are stored with outputs and events.
 - Python tests, JavaScript tests, typecheck and relevant build checks pass.
 - This documentation and the ML directive still describe the implementation.
-

@@ -209,15 +209,29 @@ model output was merely generated locally.
 
 ## Prioritized next steps
 
-### Next: event collection foundation
+### Completed foundation: shadow event collection
 
-1. Define position indexing, impression visibility and controlled vocabularies.
-2. Define privacy/retention and rotating identifier behavior.
-3. Add authenticated/rate-limited event ingestion endpoint.
-4. Instrument result impressions and explicit outcomes in the frontend.
-5. Add deduplication and schema validation.
-6. Build event-quality queries and tests.
-7. Run in shadow collection mode before any learning.
+1. Zero-based result positions, rendered-row impressions and controlled
+   vocabularies are defined.
+2. Rotating anonymous identifiers, session identifiers, minimized query context
+   and retention metadata are defined.
+3. `POST /api/recommendation-events` validates and ingests shadow events.
+4. `src/App.tsx` instruments result impressions plus profile, save and
+   direction-request outcomes.
+5. Deduplication is enforced with idempotency keys.
+6. `GET /api/recommendation-events` exposes admin-only shadow data-quality
+   reporting.
+
+This foundation remains shadow mode. It is not training authorization.
+
+### Next: validate shadow collection quality
+
+1. Apply the event-control migration in the target D1 environment.
+2. Run shadow collection for a representative interval.
+3. Review event volume, missing metadata, duplicate rate, expired-row behavior,
+   mode distribution and slice coverage.
+4. Decide outcome attribution windows and deletion/cleanup automation.
+5. Document real data-quality metrics and any privacy review outcomes.
 
 ### Then: ranker dataset and baseline
 
@@ -231,4 +245,3 @@ model output was merely generated locally.
 ### Later: controlled online experiment
 
 Only after logging quality, privacy, sample size and rollback behavior are proven.
-

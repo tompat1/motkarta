@@ -65,14 +65,16 @@ materially worsening long-tail group errors without documented review.
 
 ## Recommendation learning prerequisites
 
-Before training a personalized or contextual ranker, record event-level:
+The application now records the following event-level data in shadow mode:
 
 - Impressions, including result position
 - Profile views, saves and direction requests
-- Confirmed visits and `would_return`
-- Dismissals
+- Confirmed visits and `would_return` when explicit UI is added
+- Dismissals when explicit UI is added
 - Session, recommendation mode and model version
 
-Use rotating anonymous identifiers. Do not store raw IP addresses or precise
-device fingerprints. Split evaluation chronologically so future outcomes never
-leak into training.
+Events use rotating anonymous identifiers and minimized structured query context.
+Do not store raw IP addresses, precise device fingerprints or raw free-text
+queries. Before training a personalized or contextual ranker, validate shadow
+data quality, define attribution windows, implement deletion/cleanup operations
+and split evaluation chronologically so future outcomes never leak into training.
