@@ -103,8 +103,16 @@ def evaluate_ranking_experiment(
     ranking_column = "recommendation_score" if "recommendation_score" in data else "discovery_score"
     data_b = data.sort_values(by=ranking_column, ascending=False).head(top_n)
 
-    if outcome_column is not None and outcome_column not in data:
-        raise ValueError(f"Independent outcome column '{outcome_column}' is missing.")
+    if outcome_column is not None:
+        if outcome_column not in data:
+            raise ValueError(f"Independent outcome column '{outcome_column}' is missing.")
+        numeric_outcomes = pd.to_numeric(data[outcome_column], errors="coerce")
+        invalid_outcomes = numeric_outcomes.isna() & data[outcome_column].notna()
+        valid_outcomes = numeric_outcomes.dropna()
+        if valid_outcomes.empty:
+            raise ValueError(f"Independent outcome column '{outcome_column}' has no valid observations.")
+        if invalid_outcomes.any() or not valid_outcomes.isin([0, 1]).all():
+            raise ValueError(f"Independent outcome column '{outcome_column}' must contain numeric binary outcomes.")
 
     def compute_metrics(sub: pd.DataFrame) -> dict[str, float | None]:
         cuisines = sub["cuisine"].dropna().tolist()
