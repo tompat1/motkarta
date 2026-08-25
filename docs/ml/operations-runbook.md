@@ -85,7 +85,7 @@ Expected CSV fields are listed in [data contracts](data-contracts.md).
 Reject or investigate the run if:
 
 - Any row lacks a fold, model version or OOF prediction.
-- Predictions fall outside 1–5 after clipping.
+- Predictions are clipped to 1–5; only clipped values are available for validation.
 - The validation strategy unexpectedly uses shuffled fallback.
 - MAE/RMSE changes materially without an explained data or model change.
 - One district/cuisine dominates top candidates.
