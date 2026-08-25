@@ -82,6 +82,21 @@ The project scope is now split deliberately:
   models and RAG document preparation.
 - TypeScript/React owns the deployed UI and Cloudflare Pages integration.
 
+### ML and recommendation documentation
+
+The canonical agent and maintainer guide is [`docs/ml/README.md`](docs/ml/README.md).
+It distinguishes every scoring subsystem and covers:
+
+- [Architecture and ownership](docs/ml/architecture.md)
+- [Data, label, event and privacy contracts](docs/ml/data-contracts.md)
+- [Training, leakage controls and evaluation](docs/ml/training-and-evaluation.md)
+- [Operations, versioning, rollback and troubleshooting](docs/ml/operations-runbook.md)
+- [Maintenance policy and the prioritized next steps](docs/ml/maintenance-and-change-policy.md)
+- [Mandatory agent SOP](directives/ml_recommendation_system.md)
+
+Read those documents before changing anything described as discovery, scoring,
+recommendation, hidden-gem detection, anomaly detection or personalization.
+
 Install `requirements-python.txt`, then run:
 
 ```bash

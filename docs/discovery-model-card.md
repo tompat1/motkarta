@@ -1,5 +1,12 @@
 # Motkarta underexposure model card
 
+This is the component model card for the offline residual model. The canonical
+system-wide documentation is the [ML documentation index](ml/README.md), with
+full [data contracts](ml/data-contracts.md),
+[training and evaluation](ml/training-and-evaluation.md),
+[operations](ml/operations-runbook.md) and
+[change policy](ml/maintenance-and-change-policy.md).
+
 ## Model identity
 
 - Version: `discovery-hgbr-spatial-oof-v1`

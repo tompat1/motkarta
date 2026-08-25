@@ -98,5 +98,26 @@ You sit between human intent (directives) and deterministic execution (Python sc
 
 ---
 
+## 🤖 ML & Recommendation System Directive
+
+For any work involving machine learning, scoring, recommendation ranking,
+personalization, hidden-gem logic, residual/underexposure research, anomaly
+detection, recommendation events, ranking evaluation, experiments or drift, you
+MUST read and follow
+[`directives/ml_recommendation_system.md`](../directives/ml_recommendation_system.md).
+
+The canonical technical documentation begins at
+[`docs/ml/README.md`](../docs/ml/README.md). Treat those documents as part of the
+implementation: update them whenever a model, field, event, metric, lifecycle
+gate or operating procedure changes.
+
+---
+
 ## ☕ Specialty Coffee Gold Standard Directive
-Always follow [directives/specialty_coffee_gold_standard.md](file:///Users/thomasrynell/proj/motkarta/directives/specialty_coffee_gold_standard.md) as the gold-standard reference list and normalization SOP for Specialty Coffee in Stockholm. Always promote the 15 curated specialty venues (including all 3 Pascal locations, Lykke, Drop Coffee, Solkant, Volca, etc.) and exclude commercial chains (`Nespresso`, `Kahls`, `Wayne's Coffee`, `Espresso House`, `Starbucks`, `Bönor & Blad`).
+Always follow
+[`directives/specialty_coffee_gold_standard.md`](../directives/specialty_coffee_gold_standard.md)
+as the gold-standard reference list and normalization SOP for Specialty Coffee
+in Stockholm. Always promote the 15 curated specialty venues (including all 3
+Pascal locations, Lykke, Drop Coffee, Solkant, Volca, etc.) and exclude commercial
+chains (`Nespresso`, `Kahls`, `Wayne's Coffee`, `Espresso House`, `Starbucks`,
+`Bönor & Blad`).
