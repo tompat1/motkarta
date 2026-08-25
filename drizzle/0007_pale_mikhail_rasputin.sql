@@ -9,7 +9,7 @@ CREATE TABLE `recommendation_events` (
 	`query_context_json` text,
 	`model_version` text NOT NULL,
 	`occurred_at` text NOT NULL,
-	FOREIGN KEY (`establishment_id`) REFERENCES `establishments`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`establishment_id`) REFERENCES `establishments`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE INDEX `recommendation_events_establishment_idx` ON `recommendation_events` (`establishment_id`,`occurred_at`);--> statement-breakpoint
