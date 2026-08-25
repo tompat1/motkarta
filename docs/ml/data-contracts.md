@@ -235,6 +235,11 @@ Current foundation:
 - New rows include `expires_at`; expired rows are reported by the shadow-quality
   endpoint before any cleanup automation is introduced.
 - Raw query text is not accepted in `query_context_json`.
+- Browser ingestion rejects cross-origin writes by default, supports an optional
+  ingestion token and applies per-client write quotas before D1 persistence.
+- The shadow-quality report requires `received_at`, `schema_version`,
+  `privacy_version` and `expires_at` metadata before `qualityReady` can become
+  true.
 
 ## Versioning
 

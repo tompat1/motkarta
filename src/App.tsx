@@ -75,6 +75,7 @@ import {
   queryLengthBucket,
   type QueryContext,
   type RecommendationEventType,
+  type RecommendationMode,
 } from "../lib/recommendation-events";
 import { DEFAULT_CONCIERGE_PROMPTS, DEFAULT_CURATED_SOURCES } from "../lib/db-sources-prompts";
 
@@ -3285,6 +3286,7 @@ type RecommendationEventDraft = {
   establishmentId: number;
   eventType: RecommendationEventType;
   resultPosition?: number | null;
+  recommendationMode?: RecommendationMode;
   queryContext?: QueryContext;
 };
 
@@ -3370,6 +3372,21 @@ function safeIdempotencyPart(value: unknown) {
     .replace(/[^a-z0-9._-]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 48) || "none";
+}
+
+function recommendationModeForEvent(
+  context: QueryContext,
+  kind: EstablishmentFilter,
+  mode: Mode,
+  sortMode: SortMode,
+): RecommendationMode {
+  if (context.surface === "map") return "map";
+  if (context.surface === "concierge") return "concierge";
+  if (kind === "Saved") return "saved";
+  if (kind === "Curated" || mode === "Expert selected") return "curated";
+  if (mode === "Hidden gems") return "hidden_gems";
+  if (sortMode === "Distance") return "nearby";
+  return context.hasQuery ? "search" : "list";
 }
 
 export default function App() {
@@ -3727,7 +3744,7 @@ export default function App() {
           sessionId,
           eventType: draft.eventType,
           resultPosition: draft.resultPosition ?? null,
-          recommendationMode: "search",
+          recommendationMode: draft.recommendationMode ?? recommendationModeForEvent(queryContext, kind, mode, sortMode),
           queryContext,
           modelVersion: RECOMMENDATION_SCORER_VERSION,
           occurredAt,
@@ -3745,7 +3762,7 @@ export default function App() {
         }).catch(() => {});
       }
     },
-    [recommendationQueryContext],
+    [kind, mode, recommendationQueryContext, sortMode],
   );
 
   useEffect(() => {

@@ -177,7 +177,11 @@ POST /api/recommendation-events
 
 The endpoint validates controlled vocabularies, privacy-minimized query context,
 model version, zero-based impression positions, idempotency keys and retention
-window. Without a D1 binding it returns `source: shadow` and does not persist.
+window. It also rejects cross-origin browser writes unless the origin is the
+request origin or appears in `RECOMMENDATION_EVENT_ALLOWED_ORIGINS`, can require
+`RECOMMENDATION_EVENT_INGESTION_TOKEN`, and applies an in-memory per-client
+write quota controlled by `RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE`. Without
+a D1 binding it returns `source: shadow` and does not persist.
 
 Admin-only data-quality reporting is available at:
 
@@ -186,9 +190,9 @@ GET /api/recommendation-events
 ```
 
 The report summarizes event counts, event/mode distributions, missing impression
-positions, missing idempotency or retention metadata, expired rows and whether
-the shadow dataset is structurally ready for deeper analysis. `qualityReady`
-does not authorize ranker training by itself.
+positions, missing idempotency keys, missing receipt/schema/privacy/retention
+metadata, expired rows and whether the shadow dataset is structurally ready for
+deeper analysis. `qualityReady` does not authorize ranker training by itself.
 
 ## Full release validation
 

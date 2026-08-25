@@ -34,6 +34,9 @@ type Env = {
   DB?: unknown;
   RECOMMENDATION_EVENTS_DISABLED?: string;
   RECOMMENDATION_EVENT_RETENTION_DAYS?: string;
+  RECOMMENDATION_EVENT_INGESTION_TOKEN?: string;
+  RECOMMENDATION_EVENT_ALLOWED_ORIGINS?: string;
+  RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE?: string;
 } & AdminAuthEnv;
 
 type CountRow = {
@@ -50,11 +53,23 @@ const jsonHeaders = {
   "cache-control": "no-cache",
 };
 
+const rateLimitWindowMs = 60_000;
+const defaultEventRateLimitPerMinute = 240;
+const rateLimitBuckets = new Map<string, { resetAt: number; count: number }>();
+
 export async function onRequestPost(context: EventContext<Env>) {
   if (context.env.RECOMMENDATION_EVENTS_DISABLED === "true") {
     return Response.json(
       { source: "disabled", accepted: 0, stored: 0, duplicates: 0, trainingUse: false },
       { headers: jsonHeaders, status: 202 },
+    );
+  }
+
+  const access = validateIngestionAccess(context.request, context.env);
+  if (!access.ok) {
+    return Response.json(
+      { source: "rejected", accepted: 0, stored: 0, duplicates: 0, error: access.error, trainingUse: false },
+      { headers: jsonHeaders, status: access.status },
     );
   }
 
@@ -64,6 +79,22 @@ export async function onRequestPost(context: EventContext<Env>) {
     return Response.json(
       { source: "validation", accepted: 0, stored: 0, duplicates: 0, errors: parsed.errors, trainingUse: false },
       { headers: jsonHeaders, status: 400 },
+    );
+  }
+
+  const quota = reserveEventQuota(context.request, context.env, parsed.events);
+  if (!quota.ok) {
+    return Response.json(
+      {
+        source: "rate_limited",
+        accepted: 0,
+        stored: 0,
+        duplicates: 0,
+        error: quota.error,
+        retryAfterSeconds: quota.retryAfterSeconds,
+        trainingUse: false,
+      },
+      { headers: { ...jsonHeaders, "retry-after": String(quota.retryAfterSeconds) }, status: 429 },
     );
   }
 
@@ -139,6 +170,9 @@ export async function onRequestGet(context: EventContext<Env>) {
     missingPosition,
     missingIdempotency,
     missingRetention,
+    missingReceivedAt,
+    missingSchemaVersion,
+    missingPrivacyVersion,
     byEventType,
     byMode,
   ] = await Promise.all([
@@ -147,7 +181,10 @@ export async function onRequestGet(context: EventContext<Env>) {
     count(db, "SELECT COUNT(*) AS value FROM recommendation_events WHERE expires_at IS NOT NULL AND expires_at <= ?", now),
     count(db, "SELECT COUNT(*) AS value FROM recommendation_events WHERE event_type = 'impression' AND result_position IS NULL"),
     count(db, "SELECT COUNT(*) AS value FROM recommendation_events WHERE idempotency_key IS NULL OR idempotency_key = ''"),
-    count(db, "SELECT COUNT(*) AS value FROM recommendation_events WHERE expires_at IS NULL OR privacy_version IS NULL"),
+    count(db, "SELECT COUNT(*) AS value FROM recommendation_events WHERE expires_at IS NULL"),
+    count(db, "SELECT COUNT(*) AS value FROM recommendation_events WHERE received_at IS NULL"),
+    count(db, "SELECT COUNT(*) AS value FROM recommendation_events WHERE schema_version IS NULL OR schema_version = ''"),
+    count(db, "SELECT COUNT(*) AS value FROM recommendation_events WHERE privacy_version IS NULL OR privacy_version = ''"),
     groupCount(db, "SELECT event_type AS key, COUNT(*) AS value FROM recommendation_events GROUP BY event_type"),
     groupCount(db, "SELECT recommendation_mode AS key, COUNT(*) AS value FROM recommendation_events GROUP BY recommendation_mode"),
   ]);
@@ -170,6 +207,9 @@ export async function onRequestGet(context: EventContext<Env>) {
         missingPosition,
         missingIdempotency,
         missingRetention,
+        missingReceivedAt,
+        missingSchemaVersion,
+        missingPrivacyVersion,
       },
       byEventType,
       byMode,
@@ -178,6 +218,9 @@ export async function onRequestGet(context: EventContext<Env>) {
         missingPosition === 0 &&
         missingIdempotency === 0 &&
         missingRetention === 0 &&
+        missingReceivedAt === 0 &&
+        missingSchemaVersion === 0 &&
+        missingPrivacyVersion === 0 &&
         expired === 0,
     },
     { headers: jsonHeaders },
@@ -231,41 +274,44 @@ async function parseEventBatch(request: Request, retentionDays: number) {
 }
 
 async function insertEvent(db: D1Database, event: RecommendationEventRow) {
+  const columns = [
+    "establishment_id",
+    "anonymous_user_id",
+    "session_id",
+    "event_type",
+    "result_position",
+    "recommendation_mode",
+    "query_context_json",
+    "model_version",
+    "occurred_at",
+    "idempotency_key",
+    "received_at",
+    "expires_at",
+    "schema_version",
+    "privacy_version",
+  ] as const;
+  const values = [
+    event.establishmentId,
+    event.anonymousUserId,
+    event.sessionId,
+    event.eventType,
+    event.resultPosition,
+    event.recommendationMode,
+    event.queryContextJson,
+    event.modelVersion,
+    event.occurredAt,
+    event.idempotencyKey,
+    event.receivedAt,
+    event.expiresAt,
+    event.schemaVersion,
+    event.privacyVersion,
+  ];
+
   return db
     .prepare(
-      `INSERT OR IGNORE INTO recommendation_events (
-        establishment_id,
-        anonymous_user_id,
-        session_id,
-        event_type,
-        result_position,
-        recommendation_mode,
-        query_context_json,
-        model_version,
-        occurred_at,
-        idempotency_key,
-        received_at,
-        expires_at,
-        schema_version,
-        privacy_version
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT OR IGNORE INTO recommendation_events (${columns.join(", ")}) VALUES (${columns.map(() => "?").join(", ")})`,
     )
-    .bind(
-      event.establishmentId,
-      event.anonymousUserId,
-      event.sessionId,
-      event.eventType,
-      event.resultPosition,
-      event.recommendationMode,
-      event.queryContextJson,
-      event.modelVersion,
-      event.occurredAt,
-      event.idempotencyKey,
-      event.receivedAt,
-      event.expiresAt,
-      event.schemaVersion,
-      event.privacyVersion,
-    )
+    .bind(...values)
     .run();
 }
 
@@ -285,4 +331,88 @@ function retentionDaysFromEnv(env: Env) {
     return Math.floor(value);
   }
   return RECOMMENDATION_EVENT_RETENTION_DAYS;
+}
+
+function validateIngestionAccess(request: Request, env: Env): { ok: true } | { ok: false; status: number; error: string } {
+  const origin = request.headers.get("origin");
+  if (origin) {
+    const allowedOrigins = allowedIngestionOrigins(request, env);
+    if (!allowedOrigins.has(origin)) {
+      return { ok: false, status: 403, error: "Recommendation event origin is not allowed." };
+    }
+  }
+
+  const expectedToken = env.RECOMMENDATION_EVENT_INGESTION_TOKEN?.trim();
+  if (expectedToken) {
+    const authorization = request.headers.get("authorization") ?? "";
+    const bearerToken = authorization.match(/^Bearer\s+(.+)$/i)?.[1]?.trim();
+    const suppliedToken = request.headers.get("x-motkarta-ingestion-token")?.trim() ?? bearerToken;
+    if (suppliedToken !== expectedToken) {
+      return { ok: false, status: 401, error: "Recommendation event ingestion token is invalid." };
+    }
+  }
+
+  return { ok: true };
+}
+
+function allowedIngestionOrigins(request: Request, env: Env) {
+  const requestOrigin = new URL(request.url).origin;
+  const configured = (env.RECOMMENDATION_EVENT_ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  return new Set([requestOrigin, ...configured]);
+}
+
+function reserveEventQuota(
+  request: Request,
+  env: Env,
+  events: RecommendationEventRow[],
+): { ok: true } | { ok: false; retryAfterSeconds: number; error: string } {
+  const limit = rateLimitFromEnv(env);
+  const now = Date.now();
+  const key = rateLimitKey(request, events);
+  const bucket = rateLimitBuckets.get(key);
+  const activeBucket = bucket && bucket.resetAt > now ? bucket : { resetAt: now + rateLimitWindowMs, count: 0 };
+  const nextCount = activeBucket.count + events.length;
+
+  if (nextCount > limit) {
+    rateLimitBuckets.set(key, activeBucket);
+    return {
+      ok: false,
+      retryAfterSeconds: Math.max(1, Math.ceil((activeBucket.resetAt - now) / 1000)),
+      error: "Recommendation event write quota exceeded.",
+    };
+  }
+
+  activeBucket.count = nextCount;
+  rateLimitBuckets.set(key, activeBucket);
+  pruneRateLimitBuckets(now);
+  return { ok: true };
+}
+
+function rateLimitFromEnv(env: Env) {
+  const value = Number(env.RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE);
+  if (Number.isFinite(value) && value >= MAX_RECOMMENDATION_EVENTS_PER_BATCH && value <= 5_000) {
+    return Math.floor(value);
+  }
+  return defaultEventRateLimitPerMinute;
+}
+
+function rateLimitKey(request: Request, events: RecommendationEventRow[]) {
+  const clientIp =
+    request.headers.get("cf-connecting-ip") ??
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "";
+  const eventClientId = events[0]?.anonymousUserId ?? events[0]?.sessionId ?? "unknown";
+  return clientIp ? `ip:${clientIp}` : `client:${eventClientId}`;
+}
+
+function pruneRateLimitBuckets(now: number) {
+  if (rateLimitBuckets.size < 1_000) return;
+  for (const [key, bucket] of rateLimitBuckets) {
+    if (bucket.resetAt <= now) {
+      rateLimitBuckets.delete(key);
+    }
+  }
 }
