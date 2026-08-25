@@ -132,6 +132,6 @@ def process_motkarta_gems(df: pd.DataFrame, contamination: float = 0.07, random_
     # convert an unsupervised anomaly into a hidden-gem recommendation.
     res["anomaly_score"] = res["structural_anomaly_score"]
     res["gem_index"] = res["structural_interest_index"]
-    res["is_hidden_gem"] = False
+    res["is_hidden_gem"] = res.get("is_hidden_gem", False)
 
     return res
