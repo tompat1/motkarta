@@ -38,9 +38,18 @@ test("agents are routed to the mandatory ML directive and canonical docs", async
     read("docs/ml/README.md"),
   ]);
 
-  assert.match(entryPoint, /\.agents\/AGENTS\.md/);
-  assert.match(entryPoint, /directives\/ml_recommendation_system\.md/);
-  assert.match(entryPoint, /docs\/ml\/README\.md/);
+  assert.match(
+    entryPoint,
+    /Before doing any work in this repository, read and follow\s+\[`\.agents\/AGENTS\.md`\]\(\.agents\/AGENTS\.md\)\./,
+  );
+  assert.match(
+    entryPoint,
+    /1\. Read \[`directives\/ml_recommendation_system\.md`\]\(directives\/ml_recommendation_system\.md\)\./,
+  );
+  assert.match(
+    entryPoint,
+    /2\. Follow the canonical documentation beginning at\s+\[`docs\/ml\/README\.md`\]\(docs\/ml\/README\.md\)\./,
+  );
   assert.match(agentInstructions, /directives\/ml_recommendation_system\.md/);
   assert.match(agentInstructions, /docs\/ml\/README\.md/);
 
