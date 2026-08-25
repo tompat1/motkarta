@@ -123,6 +123,47 @@ export const engagementSnapshots = sqliteTable(
   (table) => [index("engagement_establishment_idx").on(table.establishmentId)],
 );
 
+/**
+ * Event-level recommendation telemetry for debiased learning-to-rank.
+ *
+ * An impression is recorded for every displayed result, including results that
+ * receive no later action. anonymousUserId is an application-generated,
+ * rotating identifier; raw IP addresses and precise device fingerprints do not
+ * belong in this table.
+ */
+export const recommendationEvents = sqliteTable(
+  "recommendation_events",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    establishmentId: integer("establishment_id")
+      .notNull()
+      .references(() => establishments.id, { onDelete: "cascade" }),
+    anonymousUserId: text("anonymous_user_id"),
+    sessionId: text("session_id").notNull(),
+    eventType: text("event_type", {
+      enum: [
+        "impression",
+        "profile_view",
+        "save",
+        "direction_request",
+        "confirmed_visit",
+        "would_return",
+        "dismiss",
+      ],
+    }).notNull(),
+    resultPosition: integer("result_position"),
+    recommendationMode: text("recommendation_mode").notNull(),
+    queryContextJson: text("query_context_json"),
+    modelVersion: text("model_version").notNull(),
+    occurredAt: text("occurred_at").notNull(),
+  },
+  (table) => [
+    index("recommendation_events_establishment_idx").on(table.establishmentId, table.occurredAt),
+    index("recommendation_events_session_idx").on(table.sessionId, table.occurredAt),
+    index("recommendation_events_model_idx").on(table.modelVersion, table.eventType),
+  ],
+);
+
 export const scoreSnapshots = sqliteTable(
   "score_snapshots",
   {

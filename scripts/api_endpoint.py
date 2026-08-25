@@ -46,12 +46,42 @@ def load_vector_db() -> list[dict]:
         Path("outputs/motkarta_rag_payload.json"),
         Path("motkarta_rag_payload.json"),
         Path("outputs/rag_corpus.jsonl"),
+        Path("public/data/places.json"),
     ]
     for path in candidates:
         if path.exists():
             if path.suffix == ".json":
                 with path.open("r", encoding="utf-8") as f:
-                    return json.load(f)
+                    payload = json.load(f)
+                    if isinstance(payload, list):
+                        return payload
+                    # The deployable frontend dataset is a grounded fallback when
+                    # a separately generated RAG artifact is not present.
+                    if isinstance(payload, dict) and isinstance(payload.get("places"), list):
+                        return [
+                            {
+                                "id": place.get("id"),
+                                "name": place.get("name"),
+                                "coordinates": [place.get("latitude") or 0.0, place.get("longitude") or 0.0],
+                                "geohash": "",
+                                "gem_index": 0.0,
+                                "custom_score": 0.0,
+                                "text_content": " ".join(
+                                    str(value)
+                                    for value in [
+                                        place.get("name"),
+                                        place.get("kind"),
+                                        place.get("cuisine"),
+                                        place.get("area"),
+                                        place.get("note"),
+                                        " ".join(place.get("tags") or []),
+                                    ]
+                                    if value
+                                ),
+                            }
+                            for place in payload["places"]
+                        ]
+                    return []
             elif path.suffix == ".jsonl":
                 with path.open("r", encoding="utf-8") as f:
                     docs = []
@@ -77,8 +107,10 @@ MOCK_VECTOR_DB = load_vector_db()
 
 def semantic_vector_match(query_text: str, top_k: int = 4):
     """
-    Substitutes standard vector search by ranking keywords and prioritizing 
-    high-performing ML outlier scores to surface true hidden gems.
+    Substitute vector search with grounded keyword retrieval.
+
+    Structural-interest scores are only a small exploration tie-breaker. They
+    are not evidence of venue quality or automatic hidden-gem status.
     """
     ranked_results = []
     query_words = [w.lower() for w in query_text.replace(",", " ").replace(".", " ").split() if len(w) > 2]
@@ -92,7 +124,7 @@ def semantic_vector_match(query_text: str, top_k: int = 4):
                 match_score += 1
                 
         if match_score > 0:
-            # Boost ranking score for places verified as ML hidden gems
+            # Small exploration tie-breaker for structurally unusual records.
             gem_idx = float(doc.get("gem_index", 0.0))
             final_rank = match_score + (gem_idx * 0.25)
             ranked_results.append((final_rank, doc))
@@ -123,8 +155,8 @@ async def handle_concierge_query(payload: ChatQuery):
     relevant_contexts = semantic_vector_match(payload.message, top_k=4)
     
     if not relevant_contexts:
-        # Fall back to returning top global ML outliers if keyword matching fails
-        relevant_contexts = sorted(MOCK_VECTOR_DB, key=lambda x: float(x.get("gem_index", 0)), reverse=True)[:3]
+        # Prefer the transparent discovery score; never equate anomaly with quality.
+        relevant_contexts = sorted(MOCK_VECTOR_DB, key=lambda x: float(x.get("custom_score", 0)), reverse=True)[:3]
 
     # 2. Build the structural reference context packet
     context_str = "\n\n".join([doc["text_content"] for doc in relevant_contexts])
@@ -136,7 +168,7 @@ async def handle_concierge_query(payload: ChatQuery):
         "CRITICAL BEHAVIORAL DIRECTIVES:\n"
         "1. Never suggest commercial franchises, global chains, or heavily marketed tourist corporations. If a user asks for them, politely refuse and suggest an independent alternative.\n"
         "2. Ground every response explicitly inside the data array provided in the context blocks below. Do not make up locations, addresses, or features.\n"
-        "3. Explicitly emphasize venues categorized with a high Machine Learning Outlier Gem Index, highlighting why they are distinct.\n"
+        "3. Never describe a structural ML anomaly as quality evidence or hidden-gem status. Only use explicit evidence and lifecycle labels for those claims.\n"
         "4. Output responses using clear, conversational structures. End suggestions by naming the specific city neighborhood or geohash sector."
     )
 

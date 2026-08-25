@@ -84,11 +84,12 @@ def test_full_mvp_pipeline_writes_artifacts(tmp_path):
     public_data = tmp_path / "public" / "data"
     run_pipeline(FIXTURE, data_dir, output_dir, public_data)
     places_payload = json.loads((public_data / "places.json").read_text(encoding="utf-8"))
-    assert places_payload["source"] == "osm"
-    assert places_payload["places"][0]["kind"] in {"Café", "Specialty coffee", "Bakery", "Restaurant"}
-    assert "cuisine" in places_payload["places"][0]
-    assert "discoveryReasons" in places_payload["places"][0]
-    assert "discoverySignals" in places_payload["places"][0]
+    assert places_payload["source"] == "osm_curated_open_sources"
+    generated_place = next(place for place in places_payload["places"] if place["name"] == "Small Roaster")
+    assert generated_place["kind"] in {"Café", "Specialty coffee", "Bakery", "Restaurant"}
+    assert "cuisine" in generated_place
+    assert "discoveryReasons" in generated_place
+    assert "discoverySignals" in generated_place
 
     documents = load_rag_corpus(output_dir / "rag_corpus.jsonl")
     results = answer_query("filter coffee roaster", documents, limit=1)
@@ -181,4 +182,3 @@ def test_compute_local_popularity_percentiles():
     assert "local_popularity" in scored
     assert (scored["local_popularity"] >= 0.0).all()
     assert (scored["local_popularity"] <= 1.0).all()
-

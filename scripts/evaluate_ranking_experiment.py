@@ -34,10 +34,15 @@ def main():
     if "neighbourhood" not in df:
         df["neighbourhood"] = "Stockholm"
 
-    res = evaluate_ranking_experiment(df, top_n=20)
+    outcome_column = next(
+        (column for column in ["would_return", "positive_outcome", "human_relevance_label"] if column in df),
+        None,
+    )
+    res = evaluate_ranking_experiment(df, top_n=20, outcome_column=outcome_column)
     output_data = {
         "hypothesis": "Users receiving transparent multi-signal ranking discover a significantly wider range of relevant establishments without reporting lower recommendation satisfaction.",
         "hypothesis_confirmed": res.hypothesis_confirmed,
+        "outcome_column": outcome_column,
         "ranking_a_raw_popularity": res.ranking_a_metrics,
         "ranking_b_transparent_multisignal": res.ranking_b_metrics,
         "summary": res.summary,

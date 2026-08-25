@@ -355,7 +355,11 @@ Then run:
 python scripts/model_discovery.py enriched_stockholm_places.csv
 ```
 
-The output includes an expected platform rating, rating residual and discovery percentile. A positive residual is interpreted as *algorithmic surprise*, not intrinsic food quality.
+The output includes an out-of-fold expected platform rating, residual confidence
+bounds, empirical `underexposure_confidence`, validation fold and model version.
+Spatially grouped cross-validation prevents a venue from being scored by a model
+that trained on that venue. A positive residual is interpreted as *algorithmic
+surprise*, not intrinsic food quality. See [`docs/discovery-model-card.md`](docs/discovery-model-card.md).
 The ML output is always marked as a `candidate` proposal and includes source-gap
 flags; evidence gates decide whether anything can become a high-confidence hidden
 gem.
@@ -547,9 +551,18 @@ PYTHONPATH=. .venv/bin/python scripts/evaluate_ranking_experiment.py
 - **Cuisine Diversity (Shannon Entropy)**: Measure of culinary variety (Ranking A: 2.75 $\rightarrow$ **Ranking B: 4.02**)
 - **Geographic Diversity**: Outer-city vs. central district representation
 - **Independent Business Ratio**: Percentage of non-chain establishments
-- **User Satisfaction Proxy**: Relevance and verified quality retention
+- **Independent Outcome Rate**: only calculated when the input contains an
+  observed or human-labelled outcome such as `would_return`, `positive_outcome`,
+  or `human_relevance_label`
 
-**Hypothesis Confirmed**: Users receiving the transparent multi-signal ranking discover a significantly wider range of relevant establishments without reporting lower recommendation satisfaction.
+Without an independent outcome column the script reports representation metrics,
+but deliberately returns `hypothesis_confirmed: null`. A discovery score is never
+used as a proxy for satisfaction with a ranking produced from that same score.
+
+Event-level learning data is stored in `recommendation_events`. Record an
+`impression` for every displayed venue, including those receiving no later action,
+along with result position and model version. This is required to distinguish
+non-selection from non-exposure and to train a later debiased ranker.
 
 The pipeline excludes obvious large fast-food chains from the scored/map/public
 artifacts by default. Current explicit exclusions are McDonald's, Burger King,
@@ -604,4 +617,5 @@ The residual approach is inspired by Lauren Leek's Open Food Map and London rese
 2. Negotiate/verify licences for specialist guide and editorial data.
 3. Add municipal food establishment and serving-permit registers.
 4. Build source-aware entity matching and manual review.
-5. Validate ranking weights with user testing instead of asserting objective quality.
+5. Collect consent-aware impression and outcome events, then validate ranking
+   weights with temporal holdouts and user testing instead of asserting objective quality.
