@@ -133,11 +133,16 @@ Table: `recommendation_events`.
 | `anonymous_user_id` | No | Rotating application identifier, never raw IP/fingerprint |
 | `session_id` | Yes | Groups one recommendation/search journey |
 | `event_type` | Yes | One of the controlled event types below |
-| `result_position` | For impressions | Zero- or one-based convention must be chosen before instrumentation and never mixed |
-| `recommendation_mode` | Yes | E.g. search, hidden-gems, nearby, concierge; controlled vocabulary required |
-| `query_context_json` | No | Minimized structured context, not unrestricted user text by default |
+| `result_position` | For impressions | Zero-based position in the rendered result set |
+| `recommendation_mode` | Yes | One of the controlled recommendation modes below |
+| `query_context_json` | No | Minimized structured context; unrestricted user text is rejected |
 | `model_version` | Yes | Scorer/ranker version that generated exposure |
 | `occurred_at` | Yes | UTC ISO-8601 timestamp |
+| `idempotency_key` | Yes for new events | Stable key used to deduplicate repeated renders/actions |
+| `received_at` | Yes for new events | UTC ingestion timestamp |
+| `expires_at` | Yes for new events | UTC timestamp for retention cleanup eligibility |
+| `schema_version` | Yes for new events | Event contract version, currently `recommendation-events-v1` |
+| `privacy_version` | Yes for new events | Privacy/identifier contract version, currently `privacy-rotation-v1` |
 
 Allowed event types:
 
@@ -149,13 +154,45 @@ Allowed event types:
 - `would_return`
 - `dismiss`
 
+Allowed recommendation modes:
+
+- `search`
+- `map`
+- `list`
+- `concierge`
+- `nearby`
+- `saved`
+- `curated`
+- `hidden_gems`
+
+Allowed query-context keys:
+
+| Key | Allowed values |
+| --- | --- |
+| `hasQuery` | Boolean only |
+| `queryLengthBucket` | `none`, `short`, `medium`, `long` |
+| `kind` | `all_places`, `curated`, `saved`, `latest`, `restaurant`, `bakery`, `cafe`, `specialty_coffee` |
+| `cuisine` | Controlled cuisine tokens, or `other` for uncategorized/new cuisine values |
+| `mode` | `for_you`, `hidden_gems`, `popular_now`, `local_favourites`, `quality_first`, `recently_opened`, `expert_selected`, `most_verified` |
+| `sortMode` | `best_match`, `distance`, `alphabetical`, `surprise_me` |
+| `resultCount` | Integer from 0 through 5000 |
+| `surface` | `results`, `map`, `place_detail`, `concierge` |
+
+Display labels such as `Restaurant`, `For you` or arbitrary strings under an
+allowed key are rejected. Frontend instrumentation converts UI labels into these
+tokens before submitting events.
+
 ### Impression rules
 
 - Record every venue actually rendered in a result set.
-- Record position and model version.
+- Record zero-based position and model version.
 - Do not record candidates fetched but never displayed.
-- Deduplicate repeated renders caused only by UI reconciliation.
-- Decide and document whether scrolling into view is required; keep the rule stable.
+- Deduplicate repeated renders caused only by UI reconciliation. Distinct result
+  set exposures use an idempotency key built from session, event, venue, position,
+  model version, a per-result-set identity and a hash of the complete structured
+  query context.
+- Current foundation uses rendered result rows as impressions; scrolling into view
+  is not required in version `recommendation-events-v1`.
 - Associate later outcomes with the most relevant prior impression/session.
 
 ### Outcome hierarchy
@@ -198,6 +235,21 @@ lifecycle transition and label export version.
 
 Privacy requirements are product requirements, not optional model cleanup.
 
+Current foundation:
+
+- Browser-generated `anonymous_user_id` values rotate after 30 days.
+- `session_id` is session-scoped browser storage.
+- Default event retention is 180 days, bounded by endpoint configuration to
+  7-365 days.
+- New rows include `expires_at`; expired rows are reported by the shadow-quality
+  endpoint before any cleanup automation is introduced.
+- Raw query text is not accepted in `query_context_json`.
+- Browser ingestion rejects cross-origin writes by default, supports an optional
+  ingestion token and applies per-client write quotas before D1 persistence.
+- The shadow-quality report requires `received_at`, `schema_version`,
+  `privacy_version` and `expires_at` metadata before `qualityReady` can become
+  true.
+
 ## Versioning
 
 Version separately:
@@ -213,4 +265,3 @@ Version separately:
 A model version must change when preprocessing, features, target, folds,
 hyperparameters or post-processing can alter predictions. Documentation-only
 changes do not require a model version bump.
-

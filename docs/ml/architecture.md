@@ -133,11 +133,26 @@ Structural anomaly is never quality evidence.
 
 - Owner: `recommendation_events` in `db/schema.ts`
 - Migration: `drizzle/0007_pale_mikhail_rasputin.sql`
-- Purpose: event-level exposure and outcome data for future debiased ranking
+- Controls migration: `drizzle/0009_breezy_tomas.sql`
+- Ingestion/reporting: `functions/api/recommendation-events.ts`
+- Frontend instrumentation: `src/App.tsx`
+- Purpose: shadow-mode event-level exposure and outcome data for future debiased ranking
 
-The schema exists, but collection endpoints and frontend instrumentation do not.
-No agent may claim a behavioral ranker is ready until impressions and outcomes are
-actually collected and validated.
+The schema, ingestion endpoint and frontend instrumentation exist, but collection
+is shadow-mode only. No agent may claim a behavioral ranker is ready until event
+quality, attribution, retention and privacy behavior are validated over a real
+collection interval.
+
+Current contract decisions:
+
+- Impression `result_position` is zero-based.
+- `model_version` is `transparent-scorer-v1` for deterministic app ranking.
+- Idempotency is enforced through `idempotency_key`; impression keys include a
+  per-result-set identity plus a complete context hash.
+- `expires_at`, `schema_version` and `privacy_version` are stored with new rows.
+- Query context is minimized to controlled structured buckets; raw free text,
+  arbitrary display labels and unrestricted strings under allowlisted keys are
+  rejected.
 
 ## Data flow and trust boundaries
 
@@ -194,4 +209,3 @@ request; do not silently choose whichever version supports the desired outcome.
 - No production ranker calibration or drift dashboard exists.
 
 Address these through explicit migrations, not opportunistic renaming.
-

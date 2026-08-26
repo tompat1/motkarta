@@ -215,9 +215,10 @@ Report:
 
 ## Current next step
 
-Implement the event collection foundation described in
+Validate the shadow-mode event collection foundation described in
 [`docs/ml/maintenance-and-change-policy.md`](../docs/ml/maintenance-and-change-policy.md):
-privacy/retention decisions, controlled vocabularies, ingestion endpoint,
-frontend impressions/outcomes, deduplication and shadow-mode data-quality checks.
-Do not train the personalized ranker before that foundation is validated.
-
+apply the event-control migration in the target D1 environment, collect a
+representative shadow interval, inspect data-quality reporting, document
+duplicate/missing/expired-event behavior, and decide attribution/deletion
+operations. Do not train the personalized ranker before that foundation is
+validated with real collection metrics.

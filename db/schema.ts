@@ -156,11 +156,18 @@ export const recommendationEvents = sqliteTable(
     queryContextJson: text("query_context_json"),
     modelVersion: text("model_version").notNull(),
     occurredAt: text("occurred_at").notNull(),
+    idempotencyKey: text("idempotency_key"),
+    receivedAt: text("received_at"),
+    expiresAt: text("expires_at"),
+    schemaVersion: text("schema_version"),
+    privacyVersion: text("privacy_version"),
   },
   (table) => [
     index("recommendation_events_establishment_idx").on(table.establishmentId, table.occurredAt),
     index("recommendation_events_session_idx").on(table.sessionId, table.occurredAt),
     index("recommendation_events_model_idx").on(table.modelVersion, table.eventType),
+    uniqueIndex("recommendation_events_idempotency_idx").on(table.idempotencyKey),
+    index("recommendation_events_retention_idx").on(table.expiresAt),
   ],
 );
 
