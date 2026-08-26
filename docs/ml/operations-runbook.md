@@ -161,8 +161,11 @@ Current shadow-mode event collection decisions:
 - Session identifier: browser session storage.
 - Anonymous identifier rotation: 30 days.
 - Retention: default 180 days; endpoint configuration is bounded to 7-365 days.
-- Deduplication: `idempotency_key` plus `INSERT OR IGNORE`.
-- Query context: structured buckets only; raw query text is rejected.
+- Deduplication: `idempotency_key` plus `INSERT OR IGNORE`; impression keys
+  include a per-result-set identity and a hash of the complete structured
+  context so returning to a previous filter records a distinct exposure.
+- Query context: controlled structured buckets only; raw query text and display
+  labels under allowlisted keys are rejected.
 
 Outcome attribution window and deletion automation remain future decisions before
 any behavioral training dataset is built.
@@ -177,7 +180,9 @@ POST /api/recommendation-events
 
 The endpoint validates controlled vocabularies, privacy-minimized query context,
 model version, zero-based impression positions, idempotency keys and retention
-window. It also rejects cross-origin browser writes unless the origin is the
+window. Query-context values must match their controlled domains; new or
+uncategorized cuisines are bucketed as `other` by frontend instrumentation. The
+endpoint also rejects cross-origin browser writes unless the origin is the
 request origin or appears in `RECOMMENDATION_EVENT_ALLOWED_ORIGINS`, can require
 `RECOMMENDATION_EVENT_INGESTION_TOKEN`, and applies an in-memory per-client
 write quota controlled by `RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE`. Without

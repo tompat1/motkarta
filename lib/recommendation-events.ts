@@ -37,10 +37,75 @@ export const queryContextKeys = [
   "surface",
 ] as const;
 
+export const queryLengthBuckets = ["none", "short", "medium", "long"] as const;
+export const queryContextKinds = [
+  "all_places",
+  "curated",
+  "saved",
+  "latest",
+  "restaurant",
+  "bakery",
+  "cafe",
+  "specialty_coffee",
+] as const;
+export const queryContextCuisines = [
+  "all_cuisines",
+  "coffee",
+  "cafe",
+  "bakery",
+  "patisserie",
+  "pastry",
+  "pizza",
+  "schnitzel",
+  "burger",
+  "polish",
+  "eastern_european",
+  "mexican",
+  "spanish",
+  "french",
+  "bistro",
+  "german",
+  "austrian",
+  "hungarian",
+  "thai",
+  "italian",
+  "swedish",
+  "regional",
+  "general",
+  "other",
+] as const;
+export const queryContextRankingModes = [
+  "for_you",
+  "hidden_gems",
+  "popular_now",
+  "local_favourites",
+  "quality_first",
+  "recently_opened",
+  "expert_selected",
+  "most_verified",
+] as const;
+export const queryContextSortModes = ["best_match", "distance", "alphabetical", "surprise_me"] as const;
+export const queryContextSurfaces = ["results", "map", "place_detail", "concierge"] as const;
+
 export type RecommendationEventType = (typeof recommendationEventTypes)[number];
 export type RecommendationMode = (typeof recommendationModes)[number];
 export type QueryContextKey = (typeof queryContextKeys)[number];
-export type QueryContext = Partial<Record<QueryContextKey, string | number | boolean | null>>;
+export type QueryLengthBucket = (typeof queryLengthBuckets)[number];
+export type QueryContextKind = (typeof queryContextKinds)[number];
+export type QueryContextCuisine = (typeof queryContextCuisines)[number];
+export type QueryContextRankingMode = (typeof queryContextRankingModes)[number];
+export type QueryContextSortMode = (typeof queryContextSortModes)[number];
+export type QueryContextSurface = (typeof queryContextSurfaces)[number];
+export type QueryContext = Partial<{
+  hasQuery: boolean | null;
+  queryLengthBucket: QueryLengthBucket | null;
+  kind: QueryContextKind | null;
+  cuisine: QueryContextCuisine | null;
+  mode: QueryContextRankingMode | null;
+  sortMode: QueryContextSortMode | null;
+  resultCount: number | null;
+  surface: QueryContextSurface | null;
+}>;
 
 export type RecommendationEventInput = {
   establishmentId: number;
@@ -70,6 +135,12 @@ export type RecommendationEventValidationResult =
 const eventTypeSet = new Set<string>(recommendationEventTypes);
 const modeSet = new Set<string>(recommendationModes);
 const contextKeySet = new Set<string>(queryContextKeys);
+const queryLengthBucketSet = new Set<string>(queryLengthBuckets);
+const queryContextKindSet = new Set<string>(queryContextKinds);
+const queryContextCuisineSet = new Set<string>(queryContextCuisines);
+const queryContextRankingModeSet = new Set<string>(queryContextRankingModes);
+const queryContextSortModeSet = new Set<string>(queryContextSortModes);
+const queryContextSurfaceSet = new Set<string>(queryContextSurfaces);
 
 export function validateRecommendationEvent(
   value: unknown,
@@ -193,14 +264,13 @@ export function serializeQueryContext(value: unknown): { ok: true; value: string
       continue;
     }
 
-    if (raw === null || typeof raw === "string" || typeof raw === "number" || typeof raw === "boolean") {
-      if (typeof raw === "string" && raw.length > 80) {
-        errors.push(`queryContext.${key} is too long`);
-      } else {
-        minimized[key] = raw;
+    const validation = validateQueryContextValue(key as QueryContextKey, raw);
+    if (validation.ok) {
+      if (validation.value !== undefined) {
+        minimized[key] = validation.value;
       }
     } else {
-      errors.push(`queryContext.${key} has an unsupported value type`);
+      errors.push(validation.error);
     }
   }
 
@@ -211,12 +281,143 @@ export function serializeQueryContext(value: unknown): { ok: true; value: string
   return { ok: true, value: Object.keys(minimized).length ? JSON.stringify(minimized) : null };
 }
 
-export function queryLengthBucket(query: string) {
+export function queryLengthBucket(query: string): QueryLengthBucket {
   const length = query.trim().length;
   if (length === 0) return "none";
   if (length <= 12) return "short";
   if (length <= 40) return "medium";
   return "long";
+}
+
+export function recommendationCuisineContext(value: unknown): QueryContextCuisine {
+  const token = normalizeContextToken(value);
+  return queryContextCuisineSet.has(token) ? token as QueryContextCuisine : "other";
+}
+
+export function recommendationModeForContext(context: QueryContext): RecommendationMode {
+  if (context.surface === "map") return "map";
+  if (context.surface === "concierge") return "concierge";
+  if (context.kind === "saved") return "saved";
+  if (context.kind === "curated" || context.mode === "expert_selected") return "curated";
+  if (context.mode === "hidden_gems") return "hidden_gems";
+  if (context.sortMode === "distance") return "nearby";
+  return context.hasQuery ? "search" : "list";
+}
+
+export function recommendationResultSetSignature(context: QueryContext, establishmentIds: number[]) {
+  const orderedIds = establishmentIds.map((id) => Number(id)).filter(Number.isInteger).join(",");
+  return stableHash(`${canonicalizeRecommendationContext(context)}|ids:${orderedIds}`);
+}
+
+export function buildRecommendationEventIdempotencyKey({
+  sessionId,
+  eventType,
+  establishmentId,
+  resultPosition,
+  modelVersion,
+  queryContext,
+  resultSetId,
+}: {
+  sessionId: string;
+  eventType: RecommendationEventType;
+  establishmentId: number;
+  resultPosition?: number | null;
+  modelVersion: string;
+  queryContext: QueryContext;
+  resultSetId?: string | null;
+}) {
+  const contextHash = recommendationContextHash(queryContext);
+  return [
+    sessionId,
+    eventType,
+    establishmentId,
+    resultPosition ?? "none",
+    modelVersion,
+    resultSetId ?? "action",
+    contextHash,
+  ].map(safeIdempotencyPart).join(":");
+}
+
+export function recommendationContextHash(context: QueryContext) {
+  return stableHash(canonicalizeRecommendationContext(context));
+}
+
+export function canonicalizeRecommendationContext(context: QueryContext) {
+  const entries = Object.entries(context)
+    .filter(([key, value]) => contextKeySet.has(key) && value !== undefined)
+    .sort(([left], [right]) => left.localeCompare(right));
+  return JSON.stringify(Object.fromEntries(entries));
+}
+
+function validateQueryContextValue(
+  key: QueryContextKey,
+  raw: unknown,
+): { ok: true; value?: string | number | boolean | null } | { ok: false; error: string } {
+  if (raw === null) {
+    return { ok: true, value: null };
+  }
+
+  if (key === "hasQuery") {
+    return typeof raw === "boolean"
+      ? { ok: true, value: raw }
+      : { ok: false, error: "queryContext.hasQuery must be a boolean" };
+  }
+
+  if (key === "resultCount") {
+    const value = Number(raw);
+    return Number.isInteger(value) && value >= 0 && value <= 5_000
+      ? { ok: true, value }
+      : { ok: false, error: "queryContext.resultCount must be an integer between 0 and 5000" };
+  }
+
+  if (typeof raw !== "string") {
+    return { ok: false, error: `queryContext.${key} must use the controlled string vocabulary` };
+  }
+
+  const allowed = contextValueSet(key);
+  return allowed.has(raw)
+    ? { ok: true, value: raw }
+    : { ok: false, error: `queryContext.${key} is not in the controlled vocabulary` };
+}
+
+function contextValueSet(key: QueryContextKey) {
+  if (key === "queryLengthBucket") return queryLengthBucketSet;
+  if (key === "kind") return queryContextKindSet;
+  if (key === "cuisine") return queryContextCuisineSet;
+  if (key === "mode") return queryContextRankingModeSet;
+  if (key === "sortMode") return queryContextSortModeSet;
+  if (key === "surface") return queryContextSurfaceSet;
+  return new Set<string>();
+}
+
+function normalizeContextToken(value: unknown) {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function safeIdempotencyPart(value: unknown) {
+  return String(value ?? "none")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 64) || "none";
+}
+
+function stableHash(value: string) {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return `h${(hash >>> 0).toString(36)}`;
 }
 
 function cleanIdentifier(value: unknown) {

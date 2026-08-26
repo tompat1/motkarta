@@ -167,21 +167,30 @@ Allowed recommendation modes:
 
 Allowed query-context keys:
 
-- `hasQuery`
-- `queryLengthBucket`
-- `kind`
-- `cuisine`
-- `mode`
-- `sortMode`
-- `resultCount`
-- `surface`
+| Key | Allowed values |
+| --- | --- |
+| `hasQuery` | Boolean only |
+| `queryLengthBucket` | `none`, `short`, `medium`, `long` |
+| `kind` | `all_places`, `curated`, `saved`, `latest`, `restaurant`, `bakery`, `cafe`, `specialty_coffee` |
+| `cuisine` | Controlled cuisine tokens, or `other` for uncategorized/new cuisine values |
+| `mode` | `for_you`, `hidden_gems`, `popular_now`, `local_favourites`, `quality_first`, `recently_opened`, `expert_selected`, `most_verified` |
+| `sortMode` | `best_match`, `distance`, `alphabetical`, `surprise_me` |
+| `resultCount` | Integer from 0 through 5000 |
+| `surface` | `results`, `map`, `place_detail`, `concierge` |
+
+Display labels such as `Restaurant`, `For you` or arbitrary strings under an
+allowed key are rejected. Frontend instrumentation converts UI labels into these
+tokens before submitting events.
 
 ### Impression rules
 
 - Record every venue actually rendered in a result set.
 - Record zero-based position and model version.
 - Do not record candidates fetched but never displayed.
-- Deduplicate repeated renders caused only by UI reconciliation.
+- Deduplicate repeated renders caused only by UI reconciliation. Distinct result
+  set exposures use an idempotency key built from session, event, venue, position,
+  model version, a per-result-set identity and a hash of the complete structured
+  query context.
 - Current foundation uses rendered result rows as impressions; scrolling into view
   is not required in version `recommendation-events-v1`.
 - Associate later outcomes with the most relevant prior impression/session.

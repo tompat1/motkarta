@@ -9,6 +9,10 @@ import {
   RECOMMENDATION_EVENT_PRIVACY_VERSION,
   RECOMMENDATION_EVENT_SCHEMA_VERSION,
   RECOMMENDATION_SCORER_VERSION,
+  buildRecommendationEventIdempotencyKey,
+  recommendationCuisineContext,
+  recommendationModeForContext,
+  recommendationResultSetSignature,
 } from "../lib/recommendation-events.ts";
 
 const adminToken = "events-secret";
@@ -53,6 +57,73 @@ test("recommendation events endpoint rejects unknown vocabularies and raw query 
   assert.equal(response.status, 400);
   assert(payload.errors.some((error) => error.includes("eventType")));
   assert(payload.errors.some((error) => error.includes("rawQuery")));
+});
+
+test("recommendation events endpoint rejects free text hidden in allowlisted context fields", async () => {
+  const response = await postRecommendationEvents({
+    request: requestWithEvents([
+      {
+        ...validEvent(),
+        queryContext: {
+          ...validEvent().queryContext,
+          cuisine: "best dinner near my home",
+          kind: "Restaurant",
+          mode: "For you",
+        },
+      },
+    ]),
+    env: {},
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 400);
+  assert(payload.errors.some((error) => error.includes("queryContext.cuisine")));
+  assert(payload.errors.some((error) => error.includes("queryContext.kind")));
+  assert(payload.errors.some((error) => error.includes("queryContext.mode")));
+});
+
+test("recommendation event helpers preserve result-set identity and mode distribution", () => {
+  const baseContext = validEvent().queryContext;
+  const resultSetA = recommendationResultSetSignature(baseContext, [10, 11, 12]);
+  const resultSetB = recommendationResultSetSignature(baseContext, [12, 11, 10]);
+  const firstExposureKey = buildRecommendationEventIdempotencyKey({
+    sessionId: "session_test",
+    eventType: "impression",
+    establishmentId: 10,
+    resultPosition: 0,
+    modelVersion: RECOMMENDATION_SCORER_VERSION,
+    queryContext: baseContext,
+    resultSetId: `rs_${resultSetA}_1`,
+  });
+  const repeatReconciliationKey = buildRecommendationEventIdempotencyKey({
+    sessionId: "session_test",
+    eventType: "impression",
+    establishmentId: 10,
+    resultPosition: 0,
+    modelVersion: RECOMMENDATION_SCORER_VERSION,
+    queryContext: baseContext,
+    resultSetId: `rs_${resultSetA}_1`,
+  });
+  const laterExposureKey = buildRecommendationEventIdempotencyKey({
+    sessionId: "session_test",
+    eventType: "impression",
+    establishmentId: 10,
+    resultPosition: 0,
+    modelVersion: RECOMMENDATION_SCORER_VERSION,
+    queryContext: baseContext,
+    resultSetId: `rs_${resultSetA}_2`,
+  });
+
+  assert.notEqual(resultSetA, resultSetB);
+  assert.equal(firstExposureKey, repeatReconciliationKey);
+  assert.notEqual(firstExposureKey, laterExposureKey);
+  assert(firstExposureKey.length <= 160);
+  assert.equal(recommendationModeForContext({ ...baseContext, surface: "map" }), "map");
+  assert.equal(recommendationModeForContext({ ...baseContext, kind: "saved" }), "saved");
+  assert.equal(recommendationModeForContext({ ...baseContext, mode: "hidden_gems" }), "hidden_gems");
+  assert.equal(recommendationModeForContext({ ...baseContext, sortMode: "distance" }), "nearby");
+  assert.equal(recommendationModeForContext({ ...baseContext, hasQuery: false }), "list");
+  assert.equal(recommendationCuisineContext("best dinner near my home"), "other");
 });
 
 test("recommendation events endpoint rejects cross-origin and missing-token writes", async () => {
@@ -231,10 +302,10 @@ function validEvent(overrides = {}) {
     queryContext: {
       hasQuery: true,
       queryLengthBucket: "medium",
-      kind: "Restaurant",
+      kind: "restaurant",
       cuisine: "french",
-      mode: "For you",
-      sortMode: "Best match",
+      mode: "for_you",
+      sortMode: "best_match",
       resultCount: 12,
       surface: "results",
     },

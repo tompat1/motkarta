@@ -72,8 +72,15 @@ import {
   ANONYMOUS_ID_ROTATION_DAYS,
   MAX_RECOMMENDATION_EVENTS_PER_BATCH,
   RECOMMENDATION_SCORER_VERSION,
+  buildRecommendationEventIdempotencyKey,
   queryLengthBucket,
+  recommendationCuisineContext,
+  recommendationModeForContext,
+  recommendationResultSetSignature,
   type QueryContext,
+  type QueryContextKind,
+  type QueryContextRankingMode,
+  type QueryContextSortMode,
   type RecommendationEventType,
   type RecommendationMode,
 } from "../lib/recommendation-events";
@@ -3287,6 +3294,7 @@ type RecommendationEventDraft = {
   eventType: RecommendationEventType;
   resultPosition?: number | null;
   recommendationMode?: RecommendationMode;
+  resultSetId?: string;
   queryContext?: QueryContext;
 };
 
@@ -3339,54 +3347,42 @@ function safeRandomId() {
   return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`;
 }
 
-function recommendationEventIdempotencyKey(
-  sessionId: string,
-  event: RecommendationEventDraft,
-  context: QueryContext,
-) {
-  const contextKey = [
-    context.surface,
-    context.hasQuery,
-    context.queryLengthBucket,
-    context.kind,
-    context.cuisine,
-    context.mode,
-    context.sortMode,
-    context.resultCount,
-  ].map(safeIdempotencyPart).join(":");
-  return [
-    sessionId,
-    event.eventType,
-    event.establishmentId,
-    event.resultPosition ?? "none",
-    RECOMMENDATION_SCORER_VERSION,
-    contextKey,
-  ].map(safeIdempotencyPart).join(":");
+function recommendationKindContext(kind: EstablishmentFilter): QueryContextKind {
+  const values: Record<EstablishmentFilter, QueryContextKind> = {
+    "All places": "all_places",
+    Curated: "curated",
+    Saved: "saved",
+    Latest: "latest",
+    Restaurant: "restaurant",
+    Bakery: "bakery",
+    Café: "cafe",
+    "Specialty coffee": "specialty_coffee",
+  };
+  return values[kind];
 }
 
-function safeIdempotencyPart(value: unknown) {
-  return String(value ?? "none")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9._-]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 48) || "none";
+function recommendationRankingModeContext(mode: Mode): QueryContextRankingMode {
+  const values: Record<Mode, QueryContextRankingMode> = {
+    "For you": "for_you",
+    "Hidden gems": "hidden_gems",
+    "Popular now": "popular_now",
+    "Local favourites": "local_favourites",
+    "Quality first": "quality_first",
+    "Recently opened": "recently_opened",
+    "Expert selected": "expert_selected",
+    "Most verified": "most_verified",
+  };
+  return values[mode];
 }
 
-function recommendationModeForEvent(
-  context: QueryContext,
-  kind: EstablishmentFilter,
-  mode: Mode,
-  sortMode: SortMode,
-): RecommendationMode {
-  if (context.surface === "map") return "map";
-  if (context.surface === "concierge") return "concierge";
-  if (kind === "Saved") return "saved";
-  if (kind === "Curated" || mode === "Expert selected") return "curated";
-  if (mode === "Hidden gems") return "hidden_gems";
-  if (sortMode === "Distance") return "nearby";
-  return context.hasQuery ? "search" : "list";
+function recommendationSortModeContext(sortMode: SortMode): QueryContextSortMode {
+  const values: Record<SortMode, QueryContextSortMode> = {
+    "Best match": "best_match",
+    Distance: "distance",
+    Alphabetical: "alphabetical",
+    "Surprise me": "surprise_me",
+  };
+  return values[sortMode];
 }
 
 export default function App() {
@@ -3719,15 +3715,29 @@ export default function App() {
     () => ({
       hasQuery: Boolean(query.trim()),
       queryLengthBucket: queryLengthBucket(query),
-      kind,
-      cuisine,
-      mode,
-      sortMode,
+      kind: recommendationKindContext(kind),
+      cuisine: recommendationCuisineContext(cuisine),
+      mode: recommendationRankingModeContext(mode),
+      sortMode: recommendationSortModeContext(sortMode),
       resultCount: visibleRanked.length,
       surface: "results",
     }),
     [cuisine, kind, mode, query, sortMode, visibleRanked.length],
   );
+  const resultSetSignature = useMemo(
+    () => recommendationResultSetSignature(recommendationQueryContext, visibleRanked.map((place) => place.id)),
+    [recommendationQueryContext, visibleRanked],
+  );
+  const resultSetStateRef = useRef({ signature: "", sequence: 0, id: "" });
+  if (resultSetStateRef.current.signature !== resultSetSignature) {
+    const sequence = resultSetStateRef.current.sequence + 1;
+    resultSetStateRef.current = {
+      signature: resultSetSignature,
+      sequence,
+      id: `rs_${Date.now().toString(36)}_${sequence}_${safeRandomId().slice(0, 12)}`,
+    };
+  }
+  const recommendationResultSetId = resultSetStateRef.current.id;
 
   const recordRecommendationEvents = useCallback(
     (drafts: RecommendationEventDraft[]) => {
@@ -3738,17 +3748,26 @@ export default function App() {
       const occurredAt = new Date().toISOString();
       const events = drafts.map((draft) => {
         const queryContext = { ...recommendationQueryContext, ...(draft.queryContext ?? {}) };
+        const resultSetId = draft.resultSetId ?? (draft.eventType === "impression" ? recommendationResultSetId : null);
         return {
           establishmentId: draft.establishmentId,
           anonymousUserId,
           sessionId,
           eventType: draft.eventType,
           resultPosition: draft.resultPosition ?? null,
-          recommendationMode: draft.recommendationMode ?? recommendationModeForEvent(queryContext, kind, mode, sortMode),
+          recommendationMode: draft.recommendationMode ?? recommendationModeForContext(queryContext),
           queryContext,
           modelVersion: RECOMMENDATION_SCORER_VERSION,
           occurredAt,
-          idempotencyKey: recommendationEventIdempotencyKey(sessionId, draft, queryContext),
+          idempotencyKey: buildRecommendationEventIdempotencyKey({
+            sessionId,
+            eventType: draft.eventType,
+            establishmentId: draft.establishmentId,
+            resultPosition: draft.resultPosition,
+            modelVersion: RECOMMENDATION_SCORER_VERSION,
+            queryContext,
+            resultSetId,
+          }),
         };
       });
 
@@ -3762,7 +3781,7 @@ export default function App() {
         }).catch(() => {});
       }
     },
-    [kind, mode, recommendationQueryContext, sortMode],
+    [recommendationQueryContext, recommendationResultSetId],
   );
 
   useEffect(() => {
@@ -3772,9 +3791,10 @@ export default function App() {
         establishmentId: place.id,
         eventType: "impression",
         resultPosition: index,
+        resultSetId: recommendationResultSetId,
       })),
     );
-  }, [recordRecommendationEvents, visibleRanked]);
+  }, [recordRecommendationEvents, recommendationResultSetId, visibleRanked]);
 
   const active = scoredPlaces.find((place) => place.id === selected) ?? ranked[0] ?? scoredPlaces[0] ?? null;
 
