@@ -72,8 +72,6 @@ const CUISINE_TAGS = new Map([
   ["bistro", "bistro"],
   ["burger", "burger"],
   ["burgers", "burger"],
-  ["cafe", "cafe"],
-  ["café", "cafe"],
   ["cake", "cake"],
   ["chinese", "chinese"],
   ["coffee", "coffee"],
