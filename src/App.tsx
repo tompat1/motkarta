@@ -3745,6 +3745,7 @@ export default function App() {
   }
   const recommendationResultSetId = resultSetStateRef.current.id;
   const attemptedRecommendationEventKeysRef = useRef<Set<string>>(new Set());
+  const recommendationEventFlushRef = useRef<Promise<void>>(Promise.resolve());
 
   const recordRecommendationEvents = useCallback(
     (drafts: RecommendationEventDraft[]) => {
@@ -3794,15 +3795,20 @@ export default function App() {
         }
       }
 
-      for (let index = 0; index < unsentEvents.length; index += MAX_RECOMMENDATION_EVENTS_PER_BATCH) {
-        const chunk = unsentEvents.slice(index, index + MAX_RECOMMENDATION_EVENTS_PER_BATCH);
-        void fetch("/api/recommendation-events", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ events: chunk }),
-          keepalive: chunk.length <= 20,
-        }).catch(() => {});
-      }
+      recommendationEventFlushRef.current = recommendationEventFlushRef.current
+        .catch(() => {})
+        .then(async () => {
+          for (let index = 0; index < unsentEvents.length; index += MAX_RECOMMENDATION_EVENTS_PER_BATCH) {
+            const chunk = unsentEvents.slice(index, index + MAX_RECOMMENDATION_EVENTS_PER_BATCH);
+            await fetch("/api/recommendation-events", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ events: chunk }),
+              keepalive: chunk.length <= 20,
+            }).catch(() => undefined);
+          }
+        });
+      void recommendationEventFlushRef.current;
     },
     [dataSource, recommendationQueryContext, recommendationResultSetId],
   );
