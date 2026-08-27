@@ -6,6 +6,7 @@ import {
   onRequestPost as postRecommendationEvents,
 } from "../functions/api/recommendation-events.ts";
 import {
+  MAX_RECOMMENDATION_EVENTS_PER_BATCH,
   RECOMMENDATION_EVENT_PRIVACY_VERSION,
   RECOMMENDATION_EVENT_SCHEMA_VERSION,
   RECOMMENDATION_SCORER_VERSION,
@@ -57,6 +58,25 @@ test("recommendation events endpoint rejects unknown vocabularies and raw query 
   assert.equal(response.status, 400);
   assert(payload.errors.some((error) => error.includes("eventType")));
   assert(payload.errors.some((error) => error.includes("rawQuery")));
+});
+
+test("recommendation events endpoint rejects batches above the production D1 write envelope", async () => {
+  const response = await postRecommendationEvents({
+    request: requestWithEvents(
+      Array.from({ length: MAX_RECOMMENDATION_EVENTS_PER_BATCH + 1 }, (_, index) =>
+        validEvent({
+          establishmentId: 300 + index,
+          resultPosition: index,
+          idempotencyKey: `session_test:impression:${300 + index}:${index}:transparent-scorer-v1:ctx`,
+        }),
+      ),
+    ),
+    env: { DB: fakeEventsD1() },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 400);
+  assert(payload.errors.some((error) => error.includes(`1-${MAX_RECOMMENDATION_EVENTS_PER_BATCH}`)));
 });
 
 test("recommendation events endpoint rejects free text hidden in allowlisted context fields", async () => {
@@ -155,7 +175,7 @@ test("recommendation events endpoint rejects cross-origin and missing-token writ
 
 test("recommendation events endpoint enforces per-client write quota before D1 writes", async () => {
   const db = fakeEventsD1();
-  const events = Array.from({ length: 50 }, (_, index) =>
+  const events = Array.from({ length: MAX_RECOMMENDATION_EVENTS_PER_BATCH }, (_, index) =>
     validEvent({
       establishmentId: 500 + index,
       anonymousUserId: "anon_quota_user",
@@ -167,24 +187,24 @@ test("recommendation events endpoint enforces per-client write quota before D1 w
 
   const first = await postRecommendationEvents({
     request: requestWithEvents(events, { "cf-connecting-ip": "203.0.113.10" }),
-    env: { DB: db, RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE: "50" },
+    env: { DB: db, RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE: String(MAX_RECOMMENDATION_EVENTS_PER_BATCH) },
   });
   const second = await postRecommendationEvents({
     request: requestWithEvents(events, { "cf-connecting-ip": "203.0.113.10" }),
-    env: { DB: db, RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE: "50" },
+    env: { DB: db, RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE: String(MAX_RECOMMENDATION_EVENTS_PER_BATCH) },
   });
   const secondPayload = await second.json();
 
   assert.equal(first.status, 202);
   assert.equal(second.status, 429);
   assert.equal(secondPayload.source, "rate_limited");
-  assert.equal(db.events.length, 50);
+  assert.equal(db.events.length, MAX_RECOMMENDATION_EVENTS_PER_BATCH);
 });
 
 test("recommendation events endpoint does not rate-limit different clients behind one IP too early", async () => {
   const db = fakeEventsD1();
   const eventsForClient = (clientId) =>
-    Array.from({ length: 50 }, (_, index) =>
+    Array.from({ length: MAX_RECOMMENDATION_EVENTS_PER_BATCH }, (_, index) =>
       validEvent({
         establishmentId: 700 + index,
         anonymousUserId: clientId,
@@ -196,16 +216,16 @@ test("recommendation events endpoint does not rate-limit different clients behin
 
   const first = await postRecommendationEvents({
     request: requestWithEvents(eventsForClient("anon_shared_ip_one"), { "cf-connecting-ip": "203.0.113.20" }),
-    env: { DB: db, RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE: "50" },
+    env: { DB: db, RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE: String(MAX_RECOMMENDATION_EVENTS_PER_BATCH) },
   });
   const second = await postRecommendationEvents({
     request: requestWithEvents(eventsForClient("anon_shared_ip_two"), { "cf-connecting-ip": "203.0.113.20" }),
-    env: { DB: db, RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE: "50" },
+    env: { DB: db, RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE: String(MAX_RECOMMENDATION_EVENTS_PER_BATCH) },
   });
 
   assert.equal(first.status, 202);
   assert.equal(second.status, 202);
-  assert.equal(db.events.length, 100);
+  assert.equal(db.events.length, MAX_RECOMMENDATION_EVENTS_PER_BATCH * 2);
 });
 
 test("recommendation events endpoint stores events idempotently with privacy metadata", async () => {
