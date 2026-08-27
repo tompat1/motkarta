@@ -65,6 +65,55 @@ export type TagRow = {
   tag: string;
 };
 
+const CUISINE_TAGS = new Map([
+  ["american", "american"],
+  ["asian", "asian"],
+  ["austrian", "austrian"],
+  ["bistro", "bistro"],
+  ["burger", "burger"],
+  ["burgers", "burger"],
+  ["cafe", "cafe"],
+  ["café", "cafe"],
+  ["cake", "cake"],
+  ["chinese", "chinese"],
+  ["coffee", "coffee"],
+  ["coffee shop", "coffee shop"],
+  ["deli", "deli"],
+  ["eastern european", "eastern european"],
+  ["fish", "seafood"],
+  ["french", "french"],
+  ["german", "german"],
+  ["greek", "greek"],
+  ["grill", "grill"],
+  ["hamburger", "burger"],
+  ["hamburgers", "burger"],
+  ["hungarian", "hungarian"],
+  ["indian", "indian"],
+  ["italian", "italian"],
+  ["japanese", "japanese"],
+  ["kebab", "kebab"],
+  ["korean", "korean"],
+  ["lebanese", "lebanese"],
+  ["mexican", "mexican"],
+  ["middle eastern", "middle eastern"],
+  ["pasta", "pasta"],
+  ["pastry", "pastry"],
+  ["patisserie", "patisserie"],
+  ["pizza", "pizza"],
+  ["polish", "polish"],
+  ["ramen", "ramen"],
+  ["regional", "regional"],
+  ["salad", "salad"],
+  ["sandwich", "sandwich"],
+  ["seafood", "seafood"],
+  ["spanish", "spanish"],
+  ["sushi", "sushi"],
+  ["swedish", "swedish"],
+  ["tapas", "tapas"],
+  ["thai", "thai"],
+  ["vietnamese", "vietnamese"],
+]);
+
 export const placeQuery = `
   SELECT
     e.id,
@@ -180,11 +229,13 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
   ]);
   const confidence = confidenceFromEvidence(evidenceRows);
   const tags = tagRows.map((row) => row.tag);
+  const cuisines = cuisineFromTags(tags);
 
   return {
     id: row.id,
     name: row.name,
     kind: row.type,
+    cuisine: cuisines.length ? cuisines.join(";") : undefined,
     area: row.district,
     address: row.address ?? undefined,
     note: row.description,
@@ -235,6 +286,29 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
     x: coordinateToMapPosition(row.longitude, 17.75, 18.25),
     y: 100 - coordinateToMapPosition(row.latitude, 59.2, 59.47),
   };
+}
+
+function cuisineFromTags(tags: string[]) {
+  const cuisines = new Set<string>();
+
+  for (const tag of tags) {
+    const normalized = normalizeCuisineTag(tag);
+    const cuisine = CUISINE_TAGS.get(normalized);
+    if (cuisine) {
+      cuisines.add(cuisine);
+    }
+  }
+
+  return [...cuisines];
+}
+
+function normalizeCuisineTag(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replaceAll("_", " ")
+    .replaceAll("-", " ")
+    .replace(/\s+/g, " ");
 }
 
 function specialtyFromRow(row: PlaceRow): SpecialtyAttributes | undefined {

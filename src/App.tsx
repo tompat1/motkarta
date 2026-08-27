@@ -4300,7 +4300,7 @@ export default function App() {
                 onClick={() => setCuisine(item)}
                 type="button"
               >
-                {item === allCuisines ? t.allCuisines : cuisineLabel(item)}
+                {item === allCuisines ? t.allCuisines : cuisineLabel(item, lang)}
               </button>
             ))}
           </div>

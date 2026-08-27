@@ -78,6 +78,8 @@ test("D1 loader maps rows into scoring inputs", async () => {
     tags: [
       { establishment_id: 10, tag: "Independent" },
       { establishment_id: 10, tag: "Filter" },
+      { establishment_id: 10, tag: "Coffee Shop" },
+      { establishment_id: 10, tag: "Single Origin" },
     ],
   });
 
@@ -89,10 +91,87 @@ test("D1 loader maps rows into scoring inputs", async () => {
   assert.equal(place.validationLabel, "known_hidden_gem");
   assert.equal(place.address, "Testgatan 10, Stockholm");
   assert.equal(place.website, "https://test-roaster.example");
-  assert.deepEqual([...place.tags].sort(), ["Filter", "Independent"]);
+  assert.deepEqual([...place.tags].sort(), ["Coffee Shop", "Filter", "Independent", "Single Origin"]);
+  assert.equal(place.cuisine, "coffee shop");
   assert.equal(place.specialty?.specialtyVerified, true);
   assert.equal(place.evidence.confidence, "Medium");
 });
+
+test("D1 loader derives cuisine filters from establishment tags", async () => {
+  const db = fakeD1({
+    places: [
+      {
+        ...basePlaceRow,
+        id: 11,
+        name: "Pizza Test",
+        type: "Restaurant",
+      },
+      {
+        ...basePlaceRow,
+        id: 12,
+        name: "French Test",
+        type: "Restaurant",
+      },
+    ],
+    evidence: [],
+    tags: [
+      { establishment_id: 11, tag: "Pizza" },
+      { establishment_id: 11, tag: "Hamburgers" },
+      { establishment_id: 11, tag: "Opening Hours" },
+      { establishment_id: 12, tag: "French" },
+      { establishment_id: 12, tag: "Bistro" },
+      { establishment_id: 12, tag: "Food-Control Registered" },
+    ],
+  });
+
+  const places = await loadPlacesFromD1(db);
+
+  assert.equal(places.find((place) => place.id === 11)?.cuisine, "pizza;burger");
+  assert.equal(places.find((place) => place.id === 12)?.cuisine, "french;bistro");
+});
+
+const basePlaceRow = {
+  id: 0,
+  name: "Base",
+  type: "Restaurant",
+  district: "Södermalm",
+  description: "Base place.",
+  address: null,
+  website: null,
+  price_level: null,
+  latitude: 59.31,
+  longitude: 18.08,
+  chain_status: "independent",
+  lifecycle_state: null,
+  validation_label: null,
+  validation_notes: null,
+  rating_average: null,
+  reliable_rating_count: null,
+  review_count: null,
+  category_mean_rating: null,
+  search_impressions: null,
+  profile_views: null,
+  map_marker_clicks: null,
+  saves: null,
+  direction_requests: null,
+  confirmed_visits: null,
+  repeat_visits: null,
+  recommendations: null,
+  recent_saves: null,
+  latest_rating_at: null,
+  latest_engagement_at: null,
+  specialty_verified: null,
+  own_roastery: null,
+  traceable_coffee: null,
+  filter_coffee: null,
+  espresso_based: null,
+  rotating_roasters: null,
+  single_origin: null,
+  manual_brew_methods_json: null,
+  decaf_available: null,
+  beans_for_sale: null,
+  verification_sources: null,
+};
 
 function fakeD1({ places, evidence, tags }) {
   return {
