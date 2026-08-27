@@ -52,6 +52,38 @@ test("uses coordinates for broad Stockholm buckets", () => {
   );
 });
 
+test("uses outer Stockholm regions for broad buckets outside the inner city", () => {
+  assert.equal(
+    resolveStockholmRegion({
+      name: "A.B.Café",
+      area: "Stockholm",
+      latitude: 59.2995931,
+      longitude: 17.998632,
+    }),
+    "Söderort",
+  );
+
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Bromma test place",
+      area: "Stockholm",
+      latitude: 59.3547464,
+      longitude: 17.956683,
+    }),
+    "Västerort",
+  );
+
+  assert.equal(
+    resolveStockholmRegion({
+      name: "North test place",
+      area: "Stockholm",
+      latitude: 59.382,
+      longitude: 18.07,
+    }),
+    "Norrort",
+  );
+});
+
 test("detects broad Stockholm area labels", () => {
   assert.equal(isBroadStockholmArea("Central Stockholm"), true);
   assert.equal(isBroadStockholmArea("South Stockholm"), true);

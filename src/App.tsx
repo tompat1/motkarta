@@ -525,6 +525,9 @@ export const STOCKHOLM_REGIONS = [
   { label: "Östermalm", value: "Östermalm", aliases: ["östermalm", "ostermalm", "stureplan"] },
   { label: "Kungsholmen", value: "Kungsholmen", aliases: ["kungsholmen", "fridhemsplan", "kronobergsgatan"] },
   { label: "Djurgården", value: "Djurgården", aliases: ["djurgården", "djurgarden"] },
+  { label: "Söderort", value: "Söderort", aliases: ["söderort", "soderort", "årsta", "arsta", "liljeholmen", "hägersten", "hagersten", "enskede", "farsta", "skarpnäck", "skarpnack"] },
+  { label: "Västerort", value: "Västerort", aliases: ["västerort", "vasterort", "bromma", "alvik", "vällingby", "vallingby", "hässelby", "hasselby", "spånga", "spanga", "kista"] },
+  { label: "Norrort", value: "Norrort", aliases: ["norrort", "solna", "sundbyberg", "danderyd", "täby", "taby", "sollentuna"] },
 ] as const;
 
 export const SEARCH_CUISINE_SUGGESTIONS = [

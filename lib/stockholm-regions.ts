@@ -23,6 +23,9 @@ const AREA_ALIASES: Array<{ region: string; aliases: string[] }> = [
   { region: "Östermalm", aliases: ["östermalm", "ostermalm", "stureplan", "karlaplan", "humlegården", "humlegarden"] },
   { region: "Kungsholmen", aliases: ["kungsholmen", "fridhemsplan", "norr mälarstrand", "norr malarstrand"] },
   { region: "Gamla Stan", aliases: ["gamla stan", "gamlastan", "stortorget"] },
+  { region: "Söderort", aliases: ["söderort", "soderort", "årsta", "arsta", "liljeholmen", "midsommarkransen", "aspudden", "hägersten", "hagersten", "älvsjö", "alvsjo", "enskede", "gullmarsplan", "globen", "hammarbyhöjden", "hammarbyhojden", "björkhagen", "bjorkhagen", "kärrtorp", "karrtorp", "bagarmossen", "skarpnäck", "skarpnack", "farsta", "bandhagen", "högdalen", "hogdalen", "rågsved", "ragsved", "skärholmen", "skarholmen", "bredäng", "bredang", "mälarhöjden", "malarhojden", "sätra", "satra", "telefonplan"] },
+  { region: "Västerort", aliases: ["västerort", "vasterort", "bromma", "alvik", "traneberg", "ulvsunda", "mariehäll", "mariehall", "annedal", "riksby", "blackeberg", "åkeshov", "akeshov", "vällingby", "vallingby", "hässelby", "hasselby", "spånga", "spanga", "tensta", "rinkeby", "kista", "akalla", "husby"] },
+  { region: "Norrort", aliases: ["norrort", "solna", "sundbyberg", "danderyd", "täby", "taby", "sollentuna", "upplands väsby", "upplands vasby", "järfälla", "jarfalla"] },
 ];
 
 const PLACE_OVERRIDES = new Map<string, string>([
@@ -54,6 +57,9 @@ const REGION_BOXES: Array<{
   { region: "Östermalm", latMin: 59.331, latMax: 59.352, lonMin: 18.068, lonMax: 18.120 },
   { region: "Gamla Stan", latMin: 59.321, latMax: 59.3288, lonMin: 18.062, lonMax: 18.082 },
   { region: "Norrmalm", latMin: 59.329, latMax: 59.349, lonMin: 18.044, lonMax: 18.074 },
+  { region: "Söderort", latMin: 59.20, latMax: 59.315, lonMin: 17.86, lonMax: 18.22 },
+  { region: "Västerort", latMin: 59.30, latMax: 59.43, lonMin: 17.75, lonMax: 18.02 },
+  { region: "Norrort", latMin: 59.35, latMax: 59.50, lonMin: 18.00, lonMax: 18.20 },
 ];
 
 export function resolveStockholmRegion(place: RegionPlace): string {

@@ -1,4 +1,5 @@
 import type { Confidence, EstablishmentType, PlaceInput, PlaceLifecycleState, SpecialtyAttributes } from "./scoring.ts";
+import { resolveStockholmRegion } from "./stockholm-regions.ts";
 
 type D1Database = {
   prepare(query: string): {
@@ -228,13 +229,20 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
   const confidence = confidenceFromEvidence(evidenceRows);
   const tags = tagRows.map((row) => row.tag);
   const cuisines = cuisineFromTags(tags);
+  const area = resolveStockholmRegion({
+    name: row.name,
+    area: row.district,
+    address: row.address ?? undefined,
+    latitude: row.latitude ?? undefined,
+    longitude: row.longitude ?? undefined,
+  });
 
   return {
     id: row.id,
     name: row.name,
     kind: row.type,
     cuisine: cuisines.length ? cuisines.join(";") : undefined,
-    area: row.district,
+    area,
     address: row.address ?? undefined,
     note: row.description,
     tags: tags.length ? tags : fallbackTags(row),
@@ -330,7 +338,15 @@ function specialtyFromRow(row: PlaceRow): SpecialtyAttributes | undefined {
 }
 
 function fallbackTags(row: PlaceRow) {
-  return [row.type, row.district, row.chain_status === "independent" ? "Independent" : ""].filter(Boolean);
+  const area = resolveStockholmRegion({
+    name: row.name,
+    area: row.district,
+    address: row.address ?? undefined,
+    latitude: row.latitude ?? undefined,
+    longitude: row.longitude ?? undefined,
+  });
+
+  return [row.type, area, row.chain_status === "independent" ? "Independent" : ""].filter(Boolean);
 }
 
 function mainstreamExposure(row: PlaceRow) {
