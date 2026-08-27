@@ -110,6 +110,7 @@ const modes = [
 ] as const;
 const sortModes = ["Best match", "Distance", "Alphabetical", "Surprise me"] as const;
 const renderLimit = 350;
+const recommendationImpressionLimit = 50;
 const stockholmCenter = { latitude: 59.3293, longitude: 18.0686 };
 
 type EstablishmentFilter = (typeof establishmentTypes)[number];
@@ -332,11 +333,13 @@ export const translations = {
     navReview: "GRANSKNING",
     navConcierge: "CONCIERGE",
     navAbout: "OM",
-    dataSourceLiveOsm: "Datafeed: Live OSM",
-    dataSourceLiveD1: "Datafeed: Live D1",
-    dataSourceLoading: "Datafeed: Laddar",
-    dataSourceDemo: "Datafeed: Demo",
-    dataSourceUnavailable: "Datafeed: Ej tillgänglig",
+    dataSourceLiveOsm: "Live platser",
+    dataSourceLiveD1: "Live platser",
+    dataSourceLoading: "Laddar platser",
+    dataSourceDemo: "Demodata",
+    dataSourceUnavailable: "Platser saknas",
+    noSearchResultsTitle: "Inga träffar",
+    noSearchResultsText: "Vi hittade inga platser som matchar",
     eyebrow: "Stockholms fria matkarta · Ingen betald ranking",
     titleMain: "Stockholm,",
     titleSub: "bord för bord.",
@@ -399,7 +402,7 @@ export const translations = {
     formulaPopularNow: "Popularity = Bayesian rating + exposure-adjusted engagement + repeat visits + recent saves + source consensus",
     formulaQualityFirst: "Quality = guide, editorial, user, inspection, attribute and freshness evidence",
     formulaDefault: "Recommendation = 35% relevance + 25% quality + 15% popularity + 15% discovery + 10% freshness",
-    centerMap: "Centrera",
+    centerMap: "Visa alla",
     fullscreen: "Helskärm",
     exitFullscreen: "Avsluta",
     sourceLabel: "Källa",
@@ -413,11 +416,13 @@ export const translations = {
     navReview: "REVIEW",
     navConcierge: "CONCIERGE",
     navAbout: "ABOUT",
-    dataSourceLiveOsm: "Datafeed: Live OSM",
-    dataSourceLiveD1: "Datafeed: Live D1",
-    dataSourceLoading: "Datafeed: Loading",
-    dataSourceDemo: "Datafeed: Demo",
-    dataSourceUnavailable: "Datafeed: Unavailable",
+    dataSourceLiveOsm: "Live places",
+    dataSourceLiveD1: "Live places",
+    dataSourceLoading: "Loading places",
+    dataSourceDemo: "Demo data",
+    dataSourceUnavailable: "Places unavailable",
+    noSearchResultsTitle: "No matches",
+    noSearchResultsText: "We could not find any places matching",
     eyebrow: "Stockholm's independent food map · No paid ranking",
     titleMain: "Stockholm,",
     titleSub: "table by table.",
@@ -480,7 +485,7 @@ export const translations = {
     formulaPopularNow: "Popularity = Bayesian rating + exposure-adjusted engagement + repeat visits + recent saves + source consensus",
     formulaQualityFirst: "Quality = guide, editorial, user, inspection, attribute and freshness evidence",
     formulaDefault: "Recommendation = 35% relevance + 25% quality + 15% popularity + 15% discovery + 10% freshness",
-    centerMap: "Center",
+    centerMap: "Show all",
     fullscreen: "Fullscreen",
     exitFullscreen: "Exit",
     sourceLabel: "Source",
@@ -3710,6 +3715,7 @@ export default function App() {
     [cuisine, kind, mode, query, randomSeed, savedPlaceIds, scoredPlaces, sortMode, userLocation],
   );
   const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
+  const hasSearchQuery = Boolean(query.trim());
 
   const recommendationQueryContext = useMemo<QueryContext>(
     () => ({
@@ -3738,6 +3744,7 @@ export default function App() {
     };
   }
   const recommendationResultSetId = resultSetStateRef.current.id;
+  const attemptedRecommendationEventKeysRef = useRef<Set<string>>(new Set());
 
   const recordRecommendationEvents = useCallback(
     (drafts: RecommendationEventDraft[]) => {
@@ -3770,9 +3777,24 @@ export default function App() {
           }),
         };
       });
+      const attemptedKeys = attemptedRecommendationEventKeysRef.current;
+      const unsentEvents = events.filter((event) => {
+        if (attemptedKeys.has(event.idempotencyKey)) return false;
+        attemptedKeys.add(event.idempotencyKey);
+        return true;
+      });
 
-      for (let index = 0; index < events.length; index += MAX_RECOMMENDATION_EVENTS_PER_BATCH) {
-        const chunk = events.slice(index, index + MAX_RECOMMENDATION_EVENTS_PER_BATCH);
+      if (!unsentEvents.length) return;
+
+      if (attemptedKeys.size > 2_000) {
+        for (const key of attemptedKeys) {
+          attemptedKeys.delete(key);
+          if (attemptedKeys.size <= 1_500) break;
+        }
+      }
+
+      for (let index = 0; index < unsentEvents.length; index += MAX_RECOMMENDATION_EVENTS_PER_BATCH) {
+        const chunk = unsentEvents.slice(index, index + MAX_RECOMMENDATION_EVENTS_PER_BATCH);
         void fetch("/api/recommendation-events", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -3787,12 +3809,14 @@ export default function App() {
   useEffect(() => {
     if (!visibleRanked.length) return;
     recordRecommendationEvents(
-      visibleRanked.map((place, index) => ({
-        establishmentId: place.id,
-        eventType: "impression",
-        resultPosition: index,
-        resultSetId: recommendationResultSetId,
-      })),
+      visibleRanked
+        .slice(0, recommendationImpressionLimit)
+        .map((place, index) => ({
+          establishmentId: place.id,
+          eventType: "impression",
+          resultPosition: index,
+          resultSetId: recommendationResultSetId,
+        })),
     );
   }, [recordRecommendationEvents, recommendationResultSetId, visibleRanked]);
 
@@ -4569,6 +4593,14 @@ export default function App() {
             </span>
           </div>
           <div className="list">
+            {hasSearchQuery && visibleRanked.length === 0 ? (
+              <div className="search-empty-state" aria-live="polite">
+                <strong>{t.noSearchResultsTitle}</strong>
+                <span>
+                  {t.noSearchResultsText} "{query.trim()}".
+                </span>
+              </div>
+            ) : null}
             {visibleRanked.map((place, index) => (
               <div
                 key={place.id}
@@ -4892,10 +4924,14 @@ function FoodMap({
             iconAnchor: [12, 12],
           });
 
-          userMarkerRef.current = L.marker([coords.latitude, coords.longitude], { icon: pulseIcon })
-            .bindPopup(`<b>${lang === "sv" ? "Din position" : "Your location"}</b>`)
-            .addTo(map)
-            .openPopup();
+          userMarkerRef.current = L.marker([coords.latitude, coords.longitude], { icon: pulseIcon }).addTo(map);
+          if (isMobileMapViewport()) {
+            userMarkerRef.current
+              .bindPopup(`<b>${lang === "sv" ? "Din position" : "Your location"}</b>`)
+              .openPopup();
+          } else {
+            map.closePopup();
+          }
         }
         onUserLocated?.(coords);
       },
@@ -4998,12 +5034,14 @@ function FoodMap({
         .on("click", () => {
           onSelect(place.id);
           if (isMobileMapViewport()) {
+            marker.openPopup();
+          } else {
             map.closePopup();
           }
         })
         .addTo(map);
 
-      if (!isMobileMapViewport()) {
+      if (isMobileMapViewport()) {
         marker.bindPopup(placePopupHtml(place, index + 1, lang), { maxWidth: 280 });
       }
 
@@ -5014,7 +5052,7 @@ function FoodMap({
     if (bounds.isValid()) {
       map.fitBounds(bounds, { padding: [42, 42], maxZoom: 13 });
     }
-  }, [onSelect, places]);
+  }, [lang, onSelect, places]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -5031,34 +5069,34 @@ function FoodMap({
       markersRef.current.get(place.id)?.setIcon(placeIcon(place, place.id === activePlace.id));
     });
     if (isMobileMapViewport()) {
-      map.closePopup();
-    } else {
       activeMarker.openPopup();
+    } else {
+      map.closePopup();
     }
     map.flyTo([activePlace.latitude, activePlace.longitude], 15, { duration: 0.8 });
   }, [activePlace, places]);
 
   return (
     <div className="leaflet-shell">
-      <button
-        type="button"
-        className="map-locate-btn"
-        onClick={handleLocateUser}
-        title={lang === "sv" ? "Visa min position & ställen nära mig" : "Show my location & places near me"}
-      >
-        <Crosshair size={14} weight="bold" />
-        {locating
-          ? (lang === "sv" ? "Söker..." : "Locating...")
-          : (lang === "sv" ? "Min position" : "Near me")}
-      </button>
       <div className="map-toolbar">
+        <button
+          type="button"
+          className="map-control-btn map-locate-btn"
+          onClick={handleLocateUser}
+          title={lang === "sv" ? "Visa min position & ställen nära mig" : "Show my location & places near me"}
+        >
+          <Crosshair size={14} weight="bold" />
+          {locating
+            ? (lang === "sv" ? "Söker..." : "Locating...")
+            : (lang === "sv" ? "Nära mig" : "Near me")}
+        </button>
         <button
           type="button"
           className="map-control-btn"
           onClick={handleRecenter}
           title={t.centerMap}
         >
-          <Crosshair size={14} weight="bold" /> {t.centerMap}
+          <MapTrifold size={14} weight="bold" /> {t.centerMap}
         </button>
         <button
           type="button"

@@ -181,6 +181,33 @@ test("recommendation events endpoint enforces per-client write quota before D1 w
   assert.equal(db.events.length, 50);
 });
 
+test("recommendation events endpoint does not rate-limit different clients behind one IP too early", async () => {
+  const db = fakeEventsD1();
+  const eventsForClient = (clientId) =>
+    Array.from({ length: 50 }, (_, index) =>
+      validEvent({
+        establishmentId: 700 + index,
+        anonymousUserId: clientId,
+        sessionId: `session_${clientId}`,
+        idempotencyKey: `session_${clientId}:impression:${700 + index}:${index}:transparent-scorer-v1:ctx`,
+        resultPosition: index,
+      }),
+    );
+
+  const first = await postRecommendationEvents({
+    request: requestWithEvents(eventsForClient("anon_shared_ip_one"), { "cf-connecting-ip": "203.0.113.20" }),
+    env: { DB: db, RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE: "50" },
+  });
+  const second = await postRecommendationEvents({
+    request: requestWithEvents(eventsForClient("anon_shared_ip_two"), { "cf-connecting-ip": "203.0.113.20" }),
+    env: { DB: db, RECOMMENDATION_EVENT_RATE_LIMIT_PER_MINUTE: "50" },
+  });
+
+  assert.equal(first.status, 202);
+  assert.equal(second.status, 202);
+  assert.equal(db.events.length, 100);
+});
+
 test("recommendation events endpoint stores events idempotently with privacy metadata", async () => {
   const db = fakeEventsD1();
   const event = validEvent();

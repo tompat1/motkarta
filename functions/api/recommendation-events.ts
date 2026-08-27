@@ -371,10 +371,24 @@ function reserveEventQuota(
 ): { ok: true } | { ok: false; retryAfterSeconds: number; error: string } {
   const limit = rateLimitFromEnv(env);
   const now = Date.now();
-  const key = rateLimitKey(request, events);
+  const keys = rateLimitKeys(request, events, limit);
+  for (const { key, limit: bucketLimit } of keys) {
+    const quota = reserveRateLimitBucket(key, bucketLimit, events.length, now);
+    if (!quota.ok) return quota;
+  }
+  pruneRateLimitBuckets(now);
+  return { ok: true };
+}
+
+function reserveRateLimitBucket(
+  key: string,
+  limit: number,
+  eventCount: number,
+  now: number,
+): { ok: true } | { ok: false; retryAfterSeconds: number; error: string } {
   const bucket = rateLimitBuckets.get(key);
   const activeBucket = bucket && bucket.resetAt > now ? bucket : { resetAt: now + rateLimitWindowMs, count: 0 };
-  const nextCount = activeBucket.count + events.length;
+  const nextCount = activeBucket.count + eventCount;
 
   if (nextCount > limit) {
     rateLimitBuckets.set(key, activeBucket);
@@ -387,7 +401,6 @@ function reserveEventQuota(
 
   activeBucket.count = nextCount;
   rateLimitBuckets.set(key, activeBucket);
-  pruneRateLimitBuckets(now);
   return { ok: true };
 }
 
@@ -399,13 +412,24 @@ function rateLimitFromEnv(env: Env) {
   return defaultEventRateLimitPerMinute;
 }
 
-function rateLimitKey(request: Request, events: RecommendationEventRow[]) {
+function rateLimitKeys(request: Request, events: RecommendationEventRow[], limit: number) {
   const clientIp =
     request.headers.get("cf-connecting-ip") ??
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     "";
   const eventClientId = events[0]?.anonymousUserId ?? events[0]?.sessionId ?? "unknown";
-  return clientIp ? `ip:${clientIp}` : `client:${eventClientId}`;
+  const keys = eventClientId !== "unknown"
+    ? [{ key: `client:${eventClientId}`, limit }]
+    : [];
+
+  if (clientIp) {
+    keys.push({
+      key: `ip:${clientIp}`,
+      limit: Math.min(5_000, Math.max(limit * 20, limit)),
+    });
+  }
+
+  return keys.length ? keys : [{ key: "client:unknown", limit }];
 }
 
 function pruneRateLimitBuckets(now: number) {

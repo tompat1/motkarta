@@ -216,21 +216,24 @@ a {
 }
 
 .about {
+  align-items: center;
   background: var(--color-ink);
-  color: var(--color-paper);
   border: 1px solid var(--color-ink);
   border-radius: var(--radius-none);
+  color: var(--color-paper);
+  display: inline-flex;
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  padding: 8px 14px;
+  font-weight: 700;
+  gap: 8px;
+  justify-content: center;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  padding: 0 12px;
   text-decoration: none;
   text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
   transition: background var(--motion-fast), border-color var(--motion-fast);
+  white-space: nowrap;
 }
 
 .about:hover {
@@ -323,6 +326,13 @@ a {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.topbar-cart-btn,
+.lang-switcher,
+.about {
+  box-sizing: border-box;
+  height: 28px;
 }
 
 .topbar-cart-btn {
@@ -676,6 +686,15 @@ button.search-clear-btn:hover {
   padding: 4px 8px !important;
 }
 
+.leaflet-popup {
+  display: none;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  display: none;
+}
+
 .leaflet-popup-content {
   display: grid;
   gap: 4px;
@@ -774,17 +793,19 @@ button.search-clear-btn:hover {
 
 .map-card {
   background: var(--color-white);
-  border: 1px solid var(--color-ink);
+  border: 0;
+  border-right: 2px solid var(--color-ink);
   border-radius: var(--radius-none);
-  left: 20px;
-  padding: 16px 20px;
+  bottom: 0;
+  left: 0;
+  padding: 18px 20px;
   position: absolute;
-  top: 20px;
-  width: min(380px, calc(100% - 40px));
-  max-height: calc(100% - 40px);
+  top: 0;
+  width: clamp(320px, 38%, 420px);
+  max-height: none;
   overflow-y: auto;
   z-index: 100;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16);
+  box-shadow: 10px 0 26px rgba(0, 0, 0, 0.10);
   transition: max-height 0.42s cubic-bezier(0.16, 1, 0.3, 1),
               padding 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.35s ease,
@@ -793,10 +814,13 @@ button.search-clear-btn:hover {
 }
 
 .map-card.is-minimized {
+  bottom: auto;
+  border-bottom: 2px solid var(--color-ink);
   max-height: 54px;
   overflow: hidden;
   padding: 10px 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  width: min(360px, calc(100% - 32px));
+  box-shadow: 8px 0 18px rgba(0, 0, 0, 0.08);
 }
 
 .map-card-header {
@@ -1174,6 +1198,32 @@ button.search-clear-btn:hover {
 
 .list {
   border-top: 1px solid var(--color-mist);
+}
+
+.search-empty-state {
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-mist);
+  display: grid;
+  gap: 6px;
+  padding: 22px 16px;
+}
+
+.search-empty-state strong {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.search-empty-state span {
+  color: var(--color-stone);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
 }
 
 .place {
@@ -3409,24 +3459,8 @@ footer {
 /* -------------------------------------------------------------------------- */
 
 .map-locate-btn {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 1000;
   background: var(--color-paper);
-  border: 1px solid var(--color-ink);
-  color: var(--color-ink);
-  font-family: var(--font-mono);
-  font-size: 11px;
   font-weight: 700;
-  text-transform: uppercase;
-  padding: 8px 12px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: all var(--motion-fast);
 }
 
 .map-locate-btn:hover {
@@ -4671,6 +4705,15 @@ footer {
     overflow-x: hidden;
   }
 
+  .leaflet-popup {
+    display: block;
+  }
+
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip {
+    display: block;
+  }
+
   .topbar {
     height: 60px;
     padding: 0 12px;
@@ -4829,10 +4872,8 @@ footer {
   }
 
   .map-locate-btn {
-    left: 10px;
     min-height: 40px;
     padding: 8px 10px;
-    top: 10px;
   }
 
   .map-toolbar {
@@ -4869,7 +4910,7 @@ footer {
   }
 
   .map-card {
-    border-width: 2px;
+    border: 2px solid var(--color-ink);
     bottom: 12px;
     left: 12px;
     max-height: min(34dvh, 292px);
@@ -4881,8 +4922,11 @@ footer {
   }
 
   .map-card.is-minimized {
+    bottom: 12px;
+    border: 2px solid var(--color-ink);
     max-height: 62px;
     padding: 10px 12px;
+    width: auto;
   }
 
   .map-card-header {
