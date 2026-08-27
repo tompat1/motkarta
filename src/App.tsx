@@ -3749,6 +3749,7 @@ export default function App() {
   const recordRecommendationEvents = useCallback(
     (drafts: RecommendationEventDraft[]) => {
       if (typeof window === "undefined" || !drafts.length) return;
+      if (dataSource !== "d1") return;
 
       const anonymousUserId = getRecommendationAnonymousUserId();
       const sessionId = getRecommendationSessionId();
@@ -3803,7 +3804,7 @@ export default function App() {
         }).catch(() => {});
       }
     },
-    [recommendationQueryContext, recommendationResultSetId],
+    [dataSource, recommendationQueryContext, recommendationResultSetId],
   );
 
   useEffect(() => {
@@ -5350,35 +5351,35 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[], includeDemoP
 
 async function fetchPlacesPayload(): Promise<{ source: DataSource; places: PlaceInput[] }> {
   try {
-    const staticResponse = await fetch("/data/places.json");
-    if (staticResponse.ok) {
-      const payload = (await staticResponse.json()) as { source?: string; places?: PlaceInput[] };
+    const apiResponse = await fetch("/api/places");
+    if (apiResponse.ok) {
+      const payload = (await apiResponse.json()) as { source?: string; places?: PlaceInput[] };
       if (payload.places?.length) {
-        const rawSource = payload.source ?? "osm";
+        const rawSource = payload.source ?? "d1";
         const source: DataSource =
-          rawSource === "d1" ? "d1" : rawSource === "demo" ? "demo" : "osm";
+          rawSource === "osm" || rawSource.startsWith("osm")
+            ? "osm"
+            : rawSource === "demo"
+              ? "demo"
+              : "d1";
         return { source, places: payload.places };
       }
     }
   } catch {
-    // Fall through to the API path when the generated static dataset is absent.
+    // Fall through to the static dataset when the API path is unavailable.
   }
 
-  const apiResponse = await fetch("/api/places");
-  if (!apiResponse.ok) {
-    throw new Error(`Places API responded ${apiResponse.status}`);
+  const staticResponse = await fetch("/data/places.json");
+  if (!staticResponse.ok) {
+    throw new Error(`Static places responded ${staticResponse.status}`);
   }
 
-  const payload = (await apiResponse.json()) as { source?: string; places?: PlaceInput[] };
+  const payload = (await staticResponse.json()) as { source?: string; places?: PlaceInput[] };
   if (!payload.places?.length) {
-    throw new Error("Places API returned no places");
+    throw new Error("Static places returned no places");
   }
-  const rawSource = payload.source ?? "d1";
+  const rawSource = payload.source ?? "osm";
   const source: DataSource =
-    rawSource === "osm" || rawSource.startsWith("osm")
-      ? "osm"
-      : rawSource === "demo"
-        ? "demo"
-        : "d1";
+    rawSource === "d1" ? "d1" : rawSource === "demo" ? "demo" : "osm";
   return { source, places: payload.places };
 }
