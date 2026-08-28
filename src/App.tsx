@@ -4013,7 +4013,7 @@ export default function App() {
   const [kind, setKind] = useState<EstablishmentFilter>("All places");
   const [cuisine, setCuisine] = useState<CuisineFilter>(allCuisines);
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState(1);
+  const [selected, setSelected] = useState<number | null>(null);
   const [isMapCardMinimized, setIsMapCardMinimized] = useState(false);
 
   useEffect(() => {
@@ -4441,7 +4441,7 @@ export default function App() {
     );
   }, [recordRecommendationEvents, recommendationResultSetId, visibleRanked]);
 
-  const active = scoredPlaces.find((place) => place.id === selected) ?? ranked[0] ?? scoredPlaces[0] ?? null;
+  const active = selected !== null ? (scoredPlaces.find((place) => place.id === selected) ?? null) : null;
 
   const handleSelectPlace = useCallback(
     (id: number) => {
