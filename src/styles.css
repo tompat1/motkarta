@@ -929,24 +929,28 @@ button.search-clear-btn:hover {
   right: 16px;
   z-index: 400;
   display: flex;
+  flex-direction: row;
   gap: 8px;
 }
 
 .map-control-btn {
-  background: var(--color-white);
-  border: 1px solid var(--color-ink);
+  background: var(--color-paper);
+  border: 1.5px solid var(--color-ink);
   color: var(--color-ink);
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
-  padding: 8px 14px;
+  font-weight: 700;
+  height: 38px;
+  padding: 0 14px;
   cursor: pointer;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   transition: all var(--motion-fast);
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .map-control-btn:hover {
@@ -954,9 +958,13 @@ button.search-clear-btn:hover {
   color: var(--color-paper);
 }
 
+.map-control-btn.is-active {
+  background: var(--color-ink);
+  color: var(--color-gold);
+}
+
 .leaflet-top.leaflet-right {
-  top: 56px;
-  right: 16px;
+  display: none !important;
 }
 
 .map-panel.is-fullscreen {
@@ -5393,41 +5401,51 @@ footer {
   }
 
   .leaflet-top.leaflet-right {
-    right: 10px;
-    top: 108px;
-  }
-
-  .map-locate-btn {
-    min-height: 40px;
-    padding: 8px 10px;
+    display: none !important;
   }
 
   .map-toolbar {
     align-items: flex-end;
     flex-direction: column;
-    gap: 7px;
-    right: 10px;
-    top: 10px;
+    gap: 6px;
+    right: 12px;
+    top: 12px;
+    z-index: 400;
   }
 
   .map-control-btn {
-    min-height: 40px;
+    width: 40px;
+    height: 40px;
     min-width: 40px;
-    padding: 8px 10px;
+    min-height: 40px;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    border: 1.5px solid var(--color-ink);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   }
 
-  .map-control-btn span,
-  .map-control-btn:not(:last-child) {
-    font-size: 0;
+  .map-control-btn .map-btn-label {
+    display: none !important;
   }
 
   .map-control-btn svg {
     flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
   }
 
-  .map-control-btn:last-child {
+  .map-control-btn:hover,
+  .map-control-btn:active {
     background: var(--color-ink);
     color: var(--color-paper);
+  }
+
+  .map-control-btn.is-active {
+    background: var(--color-ink);
+    color: var(--color-gold);
   }
 
   .map-legend {

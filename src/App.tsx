@@ -34,6 +34,8 @@ import {
   MapPin,
   MapTrifold,
   MagnifyingGlass,
+  Minus,
+  Plus,
   PlusCircle,
   Scales,
   ShieldCheck,
@@ -5478,8 +5480,6 @@ function FoodMap({
       scrollWheelZoom: true,
     });
 
-    L.control.zoom({ position: "topright" }).addTo(map);
-
     L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
       maxZoom: 19,
@@ -5516,6 +5516,14 @@ function FoodMap({
     } else {
       map.setView([59.3293, 18.0686], 12);
     }
+  };
+
+  const handleZoomIn = () => {
+    mapRef.current?.zoomIn();
+  };
+
+  const handleZoomOut = () => {
+    mapRef.current?.zoomOut();
   };
 
   const handleToggleFullscreen = () => {
@@ -5601,41 +5609,60 @@ function FoodMap({
 
   return (
     <div className="leaflet-shell">
-      <div className="map-toolbar">
+      <div className="map-toolbar" role="toolbar" aria-label={lang === "sv" ? "Kartkontroller" : "Map controls"}>
         <button
           type="button"
-          className="map-control-btn map-locate-btn"
+          className={`map-control-btn map-locate-btn ${locating ? "is-active" : ""}`}
           onClick={handleLocateUser}
           title={lang === "sv" ? "Visa min position & ställen nära mig" : "Show my location & places near me"}
+          aria-label={lang === "sv" ? "Nära mig" : "Near me"}
         >
-          <Crosshair size={14} weight="bold" />
-          {locating
-            ? (lang === "sv" ? "Söker..." : "Locating...")
-            : (lang === "sv" ? "Nära mig" : "Near me")}
+          <Crosshair size={16} weight="bold" />
+          <span className="map-btn-label">
+            {locating
+              ? (lang === "sv" ? "Söker..." : "Locating...")
+              : (lang === "sv" ? "Nära mig" : "Near me")}
+          </span>
         </button>
         <button
           type="button"
           className="map-control-btn"
           onClick={handleRecenter}
           title={t.centerMap}
+          aria-label={t.centerMap}
         >
-          <MapTrifold size={14} weight="bold" /> {t.centerMap}
+          <MapTrifold size={16} weight="bold" />
+          <span className="map-btn-label">{t.centerMap}</span>
+        </button>
+        <button
+          type="button"
+          className={`map-control-btn ${isFullscreen ? "is-active" : ""}`}
+          onClick={handleToggleFullscreen}
+          title={isFullscreen ? t.exitFullscreen : t.fullscreen}
+          aria-label={isFullscreen ? t.exitFullscreen : t.fullscreen}
+        >
+          {isFullscreen ? <ArrowsIn size={16} weight="bold" /> : <ArrowsOut size={16} weight="bold" />}
+          <span className="map-btn-label">{isFullscreen ? t.exitFullscreen : t.fullscreen}</span>
         </button>
         <button
           type="button"
           className="map-control-btn"
-          onClick={handleToggleFullscreen}
-          title={t.fullscreen}
+          onClick={handleZoomIn}
+          title={lang === "sv" ? "Zooma in" : "Zoom in"}
+          aria-label={lang === "sv" ? "Zooma in" : "Zoom in"}
         >
-          {isFullscreen ? (
-            <>
-              <ArrowsIn size={14} weight="bold" /> {t.exitFullscreen}
-            </>
-          ) : (
-            <>
-              <ArrowsOut size={14} weight="bold" /> {t.fullscreen}
-            </>
-          )}
+          <Plus size={16} weight="bold" />
+          <span className="map-btn-label">{lang === "sv" ? "Zooma in" : "Zoom in"}</span>
+        </button>
+        <button
+          type="button"
+          className="map-control-btn"
+          onClick={handleZoomOut}
+          title={lang === "sv" ? "Zooma ut" : "Zoom out"}
+          aria-label={lang === "sv" ? "Zooma ut" : "Zoom out"}
+        >
+          <Minus size={16} weight="bold" />
+          <span className="map-btn-label">{lang === "sv" ? "Zooma ut" : "Zoom out"}</span>
         </button>
       </div>
       <div ref={containerRef} className="leaflet-map" aria-label="Interactive Stockholm food map" />
