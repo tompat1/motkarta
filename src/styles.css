@@ -959,8 +959,9 @@ button.search-clear-btn:hover {
 }
 
 .map-control-btn.is-active {
-  background: var(--color-ink);
-  color: var(--color-gold);
+  background: #FFFBEB;
+  border-color: #D97706;
+  color: #B45309;
 }
 
 .leaflet-top.leaflet-right {
@@ -5444,8 +5445,9 @@ footer {
   }
 
   .map-control-btn.is-active {
-    background: var(--color-ink);
-    color: var(--color-gold);
+    background: #FFFBEB;
+    border-color: #D97706;
+    color: #B45309;
   }
 
   .map-legend {
