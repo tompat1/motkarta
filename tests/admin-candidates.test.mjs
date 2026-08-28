@@ -224,6 +224,55 @@ test("admin candidate duplicate keep-separate records decision without promotion
   assert.equal(db.events[0].action, "keep_separate");
 });
 
+test("admin candidates endpoint supports filtering by unresolved_region", async () => {
+  const db = fakeAdminD1([
+    candidateRow({ id: 10, name: "Broad Spot", area: "Stockholm" }),
+    candidateRow({ id: 11, name: "Resolved Spot", area: "Södermalm" }),
+  ]);
+
+  const response = await getAdminCandidates({
+    request: new Request("https://motkarta.test/api/admin/candidates?state=unresolved_region", {
+      headers: { authorization: `Bearer ${adminToken}` },
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.state, "unresolved_region");
+  assert.deepEqual(payload.candidates.map((r) => r.name), ["Broad Spot"]);
+});
+
+test("admin candidates endpoint updates district via update_district action", async () => {
+  const db = fakeAdminD1([
+    candidateRow({ id: 10, name: "Needs Manual Region", area: "Stockholm" }),
+  ]);
+
+  const response = await postAdminCandidate({
+    request: new Request("https://motkarta.test/api/admin/candidates", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-motkarta-admin-token": adminToken,
+      },
+      body: JSON.stringify({
+        id: 10,
+        action: "update_district",
+        district: "Vasastan",
+        validationNotes: "Manual selection from dropdown",
+      }),
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.action, "update_district");
+  assert.equal(payload.district, "Vasastan");
+  assert.equal(db.rows[0].area, "Vasastan");
+  assert.equal(db.events[0].action, "update_district");
+});
+
 function candidateRow(overrides) {
   const now = new Date("2026-08-21T10:00:00.000Z").toISOString();
   return {
@@ -278,6 +327,12 @@ function fakeAdminD1(rows) {
             return { results: row ? [row] : [] };
           }
 
+          if (query.includes("WHERE e.district IS NULL")) {
+            const filtered = db.rows.filter((row) => !row.area || ["stockholm", "central stockholm", "north stockholm", "south stockholm", "east stockholm", "west stockholm", "stockholms lan", "stockholm county", "stockholms kommun", "sweden", "sverige", "unspecified"].includes(row.area.toLowerCase()));
+            const limit = Number(this.values.at(-1) ?? 100);
+            return { results: filtered.slice(0, limit) };
+          }
+
           const state = query.includes("WHERE e.lifecycle_state = ?") ? this.values[0] : "all";
           const limit = Number(this.values.at(-1) ?? 100);
           const filtered = state === "all" ? db.rows : db.rows.filter((row) => row.lifecycleState === state);
@@ -285,6 +340,16 @@ function fakeAdminD1(rows) {
         },
         async run() {
           if (query.includes("UPDATE establishments")) {
+            if (query.includes("district = ?")) {
+              const [district, validationNotes, updatedAt, id] = this.values;
+              const row = db.rows.find((item) => item.id === id);
+              if (!row) return { success: true, meta: { changes: 0 } };
+              row.area = district;
+              row.validationNotes = validationNotes;
+              row.updatedAt = updatedAt;
+              return { success: true, meta: { changes: 1 } };
+            }
+
             if (query.includes("candidate_review_status = 'merged_duplicate'")) {
               const [targetId, validationNotes, updatedAt, id] = this.values;
               const row = db.rows.find((item) => item.id === id);

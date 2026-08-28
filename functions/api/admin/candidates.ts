@@ -28,8 +28,8 @@ type Env = {
 } & AdminAuthEnv;
 
 type ValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
-type CandidateStateFilter = PlaceLifecycleState | "all";
-type AdminAction = "promote" | "merge_duplicate" | "keep_separate";
+type CandidateStateFilter = PlaceLifecycleState | "unresolved_region" | "all";
+type AdminAction = "promote" | "merge_duplicate" | "keep_separate" | "update_district";
 
 type CandidateRow = {
   id: number;
@@ -64,8 +64,8 @@ type EstablishmentLookupRow = {
 };
 
 const lifecycleStates: PlaceLifecycleState[] = ["baseline", "candidate", "verified", "featured"];
-const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "all"];
-const adminActions: AdminAction[] = ["promote", "merge_duplicate", "keep_separate"];
+const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "unresolved_region", "all"];
+const adminActions: AdminAction[] = ["promote", "merge_duplicate", "keep_separate", "update_district"];
 const validationLabels: ValidationLabel[] = [
   "known_mainstream",
   "known_hidden_gem",
@@ -172,6 +172,10 @@ export async function onRequestPost(context: EventContext<Env>) {
 
   if (action === "keep_separate") {
     return keepSeparate(db, id, validationNotes);
+  }
+
+  if (action === "update_district") {
+    return updateDistrict(db, id, payload, validationNotes);
   }
 
   if (!lifecycleState) {
@@ -285,6 +289,16 @@ async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit
 
   if (state === "all") {
     const { results } = await db.prepare(`${select}${order}`).bind(limit).all<CandidateRow>();
+    return results ?? [];
+  }
+
+  if (state === "unresolved_region") {
+    const broadWhere = `
+      WHERE e.district IS NULL
+         OR e.district = ''
+         OR LOWER(e.district) IN ('stockholm', 'central stockholm', 'north stockholm', 'south stockholm', 'east stockholm', 'west stockholm', 'stockholms lan', 'stockholm county', 'stockholms kommun', 'sweden', 'sverige', 'unspecified')
+    `;
+    const { results } = await db.prepare(`${select}${broadWhere} ${order}`).bind(limit).all<CandidateRow>();
     return results ?? [];
   }
 
@@ -503,6 +517,62 @@ async function keepSeparate(db: D1Database, id: number, validationNotes: string 
       success: true,
       action: "keep_separate",
       id,
+      reviewedAt,
+    },
+    { headers: jsonHeaders },
+  );
+}
+
+async function updateDistrict(db: D1Database, id: number, payload: Record<string, unknown>, validationNotes: string | null) {
+  const district = typeof payload.district === "string" ? payload.district.trim() : typeof payload.area === "string" ? payload.area.trim() : null;
+  if (!district) {
+    return Response.json(
+      { error: "Missing or invalid district name." },
+      { headers: jsonHeaders, status: 400 },
+    );
+  }
+
+  const candidate = await loadEstablishment(db, id);
+  if (!candidate) {
+    return Response.json(
+      { error: "Candidate not found." },
+      { headers: jsonHeaders, status: 404 },
+    );
+  }
+
+  const reviewedAt = new Date().toISOString();
+  const notes = joinNotes([validationNotes, `Updated region to '${district}'.`]);
+  const updateResult = await db
+    .prepare(
+      `UPDATE establishments
+       SET district = ?, validation_notes = ?, updated_at = ?
+       WHERE id = ?`,
+    )
+    .bind(district, notes, reviewedAt, id)
+    .run();
+
+  if (updateResult.meta?.changes === 0) {
+    return Response.json(
+      { error: "Candidate not found." },
+      { headers: jsonHeaders, status: 404 },
+    );
+  }
+
+  await recordReviewEvent(db, {
+    establishmentId: id,
+    lifecycleState: candidate.lifecycleState,
+    validationLabel: null,
+    validationNotes: notes,
+    reviewedAt,
+    action: "update_district",
+  });
+
+  return Response.json(
+    {
+      success: true,
+      action: "update_district",
+      id,
+      district,
       reviewedAt,
     },
     { headers: jsonHeaders },

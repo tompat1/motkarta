@@ -1774,6 +1774,7 @@ button.concierge-clear-btn:hover {
 
 .admin-review-auth button,
 .admin-session-auth button,
+.admin-resolve-regions-btn,
 .admin-refresh-btn,
 .admin-schema-btn,
 .admin-export-btn {
@@ -1796,6 +1797,7 @@ button.concierge-clear-btn:hover {
 
 .admin-review-auth button:hover,
 .admin-session-auth button:hover,
+.admin-resolve-regions-btn:hover,
 .admin-refresh-btn:hover,
 .admin-schema-btn:hover,
 .admin-export-btn:hover {
@@ -1854,6 +1856,13 @@ button.concierge-clear-btn:hover {
   color: var(--color-paper);
 }
 
+.admin-toolbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-resolve-regions-btn:disabled,
 .admin-refresh-btn:disabled,
 .admin-schema-btn:disabled,
 .admin-export-btn:disabled,
@@ -2073,6 +2082,67 @@ button.concierge-clear-btn:hover {
 .admin-review-error {
   color: var(--color-signal);
   font-weight: 700;
+}
+
+.admin-region-warn-badge {
+  align-items: center;
+  background: rgba(235, 90, 70, 0.12);
+  border: 1px solid var(--color-signal);
+  color: var(--color-signal);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  gap: 4px;
+  padding: 2px 7px;
+  text-transform: uppercase;
+}
+
+.admin-region-picker-row {
+  align-items: center;
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0 12px;
+  padding: 8px 12px;
+  transition: border-color var(--motion-fast);
+}
+
+.admin-region-picker-row.unresolved {
+  background: #fffdf5;
+  border-color: #f59e0b;
+}
+
+.admin-region-picker-label {
+  align-items: center;
+  color: var(--color-ink);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 5px;
+  text-transform: uppercase;
+}
+
+.admin-region-select {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  cursor: pointer;
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 36px;
+  min-width: 180px;
+  padding: 6px 10px;
+}
+
+.admin-region-select:focus {
+  border-color: var(--color-ink);
+  outline: none;
 }
 
 .admin-review-empty {

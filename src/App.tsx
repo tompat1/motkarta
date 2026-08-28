@@ -67,7 +67,7 @@ import {
   type UserPreferences,
   scorePlace,
 } from "../lib/scoring";
-import { isBroadStockholmArea, resolveStockholmRegion } from "../lib/stockholm-regions";
+import { isBroadStockholmArea, resolveStockholmRegion, STOCKHOLM_REGIONS } from "../lib/stockholm-regions";
 import {
   ANONYMOUS_ID_ROTATION_DAYS,
   MAX_RECOMMENDATION_EVENTS_PER_BATCH,
@@ -2131,7 +2131,7 @@ function CuratedSourcesPanel({
   );
 }
 
-type AdminStateFilter = PlaceLifecycleState | "all";
+type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "all";
 type AdminValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
 
 type AdminCandidate = {
@@ -2237,7 +2237,7 @@ type AdminSessionStatus = {
   error?: string;
 };
 
-const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "all"];
+const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "unresolved_region", "all"];
 
 function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
   const [tokenInput, setTokenInput] = useState(readStoredAdminToken);
@@ -2248,6 +2248,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
   const [loading, setLoading] = useState(false);
   const [loadingDashboard, setLoadingDashboard] = useState(false);
   const [exportingLabels, setExportingLabels] = useState(false);
+  const [resolvingRegions, setResolvingRegions] = useState(false);
   const [schemaBusy, setSchemaBusy] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -2654,6 +2655,56 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     }
   };
 
+  const updateCandidateRegion = async (candidate: AdminCandidate, district: string) => {
+    if (!hasAdminAuth || !district) return;
+
+    const validationNotes = (reviewNotes[candidate.id] ?? candidate.validationNotes ?? "").trim();
+    setBusyId(candidate.id);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/admin/candidates", {
+        method: "POST",
+        headers: adminHeaders(undefined, { "content-type": "application/json" }),
+        body: JSON.stringify({
+          id: candidate.id,
+          action: "update_district",
+          district,
+          validationNotes,
+        }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        reviewedAt?: string;
+        district?: string;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte spara region." : "Could not save region."));
+      }
+
+      setCandidates((current) =>
+        current.flatMap((row) => {
+          if (row.id !== candidate.id) return [row];
+          if (stateFilter === "unresolved_region" && !isBroadStockholmArea(district)) {
+            return [];
+          }
+          return [{ ...row, area: district, updatedAt: payload.reviewedAt ?? new Date().toISOString() }];
+        }),
+      );
+      setStatus(
+        lang === "sv"
+          ? `${candidate.name} uppdaterades till region ${district}.`
+          : `${candidate.name} updated to region ${district}.`,
+      );
+      void loadDashboard();
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : String(saveError));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   const exportReviewLabels = async () => {
     const token = adminToken.trim();
     if (!hasAdminAuth || typeof document === "undefined") return;
@@ -2704,6 +2755,54 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
       setError(exportError instanceof Error ? exportError.message : String(exportError));
     } finally {
       setExportingLabels(false);
+    }
+  };
+
+  const resolvePlacesWithoutRegion = async () => {
+    const token = adminToken.trim();
+    if (!hasAdminAuth) return;
+
+    setResolvingRegions(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/admin/resolve-regions", {
+        method: "POST",
+        headers: adminHeaders(token),
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        success?: boolean;
+        totalChecked?: number;
+        resolvedCount?: number;
+        updatedPlaces?: Array<{ id: number; name: string; previousDistrict: string; resolvedDistrict: string }>;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte lösa saknade regioner." : "Could not resolve missing regions."));
+      }
+
+      const count = payload.resolvedCount ?? 0;
+      const examples = (payload.updatedPlaces ?? [])
+        .slice(0, 3)
+        .map((p) => `${p.name} → ${p.resolvedDistrict}`)
+        .join(", ");
+
+      setStatus(
+        count > 0
+          ? lang === "sv"
+            ? `Löste regioner för ${count} platser${examples ? ` (${examples})` : ""}.`
+            : `Resolved regions for ${count} places${examples ? ` (${examples})` : ""}.`
+          : lang === "sv"
+            ? "Alla platser har redan giltiga regioner."
+            : "All places already have specific regions.",
+      );
+
+      await Promise.all([loadCandidates(token), loadDashboard(token)]);
+    } catch (resolveErr) {
+      setError(resolveErr instanceof Error ? resolveErr.message : String(resolveErr));
+    } finally {
+      setResolvingRegions(false);
     }
   };
 
@@ -2785,16 +2884,32 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
             </button>
           ))}
         </div>
-        <button
-          type="button"
-          className="admin-refresh-btn"
-          onClick={() => void loadCandidates()}
-          disabled={!hasAdminAuth || loading || schemaStatus?.ready !== true}
-          title={lang === "sv" ? "Ladda om från D1" : "Reload from D1"}
-        >
-          {loading ? <CircleNotch size={14} className="animate-spin" /> : <ArrowClockwise size={14} weight="bold" />}
-          {lang === "sv" ? "Ladda om" : "Reload"}
-        </button>
+        <div className="admin-toolbar-actions">
+          <button
+            type="button"
+            className="admin-resolve-regions-btn"
+            onClick={() => void resolvePlacesWithoutRegion()}
+            disabled={!hasAdminAuth || resolvingRegions || loading || schemaStatus?.ready !== true}
+            title={
+              lang === "sv"
+                ? "Lös regioner för alla platser utan specifik region (t.ex. Djurgården, Södermalm, Norrmalm, Vasastan, Söderort, Västerort)"
+                : "Resolve regions for all places without a specific region"
+            }
+          >
+            {resolvingRegions ? <CircleNotch size={14} className="animate-spin" /> : <MapPin size={14} weight="bold" />}
+            {lang === "sv" ? "Lös saknade regioner" : "Resolve missing regions"}
+          </button>
+          <button
+            type="button"
+            className="admin-refresh-btn"
+            onClick={() => void loadCandidates()}
+            disabled={!hasAdminAuth || loading || schemaStatus?.ready !== true}
+            title={lang === "sv" ? "Ladda om från D1" : "Reload from D1"}
+          >
+            {loading ? <CircleNotch size={14} className="animate-spin" /> : <ArrowClockwise size={14} weight="bold" />}
+            {lang === "sv" ? "Ladda om" : "Reload"}
+          </button>
+        </div>
       </div>
 
       {hasAdminAuth ? (
@@ -2903,6 +3018,11 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
                     {lifecycleStateLabel(candidate.lifecycleState, lang)}
                   </span>
                   <span>{candidate.kind} · {candidate.area}</span>
+                  {isBroadStockholmArea(candidate.area) ? (
+                    <span className="admin-region-warn-badge" title={lang === "sv" ? "Saknar specifik region/stadsdel" : "Needs specific region/district"}>
+                      <MapPin size={12} weight="bold" /> {lang === "sv" ? "Saknar region" : "Needs region"}
+                    </span>
+                  ) : null}
                   {candidate.validationLabel ? <span>{validationLabelText(candidate.validationLabel, lang)}</span> : null}
                 </div>
                 <h4>{candidate.name}</h4>
@@ -2990,6 +3110,37 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
                 {candidate.candidateAllowedUse ? (
                   <p className="admin-allowed-use">{candidate.candidateAllowedUse}</p>
                 ) : null}
+
+                <div className={`admin-region-picker-row ${isBroadStockholmArea(candidate.area) ? "unresolved" : ""}`}>
+                  <label htmlFor={`admin-region-select-${candidate.id}`} className="admin-region-picker-label">
+                    <MapPin size={13} weight="bold" />
+                    {lang === "sv" ? "Manuell region / stadsdel:" : "Manual region / district:"}
+                  </label>
+                  <select
+                    id={`admin-region-select-${candidate.id}`}
+                    className="admin-region-select"
+                    value={(STOCKHOLM_REGIONS as readonly string[]).includes(candidate.area) ? candidate.area : ""}
+                    disabled={busyId === candidate.id}
+                    onChange={(event) => {
+                      const nextRegion = event.target.value;
+                      if (nextRegion) {
+                        void updateCandidateRegion(candidate, nextRegion);
+                      }
+                    }}
+                  >
+                    <option value="" disabled>
+                      {isBroadStockholmArea(candidate.area)
+                        ? (lang === "sv" ? "⚠️ Välj region ur listan..." : "⚠️ Select region from list...")
+                        : (lang === "sv" ? "— Välj ny region —" : "— Select new region —")}
+                    </option>
+                    {STOCKHOLM_REGIONS.map((regionName) => (
+                      <option key={regionName} value={regionName}>
+                        {regionName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <label className="admin-notes-label" htmlFor={`admin-notes-${candidate.id}`}>
                   {lang === "sv" ? "Granskningsnotering" : "Review note"}
                 </label>
@@ -3254,6 +3405,7 @@ function lifecycleStateLabel(state: AdminStateFilter | string, lang: Language) {
     candidate: { sv: "Kandidat", en: "Candidate" },
     verified: { sv: "Verifierad", en: "Verified" },
     featured: { sv: "Utvald", en: "Featured" },
+    unresolved_region: { sv: "Saknar region", en: "Needs Region" },
     all: { sv: "Alla", en: "All" },
   };
   return labels[state as AdminStateFilter]?.[lang] ?? state;

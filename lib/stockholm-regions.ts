@@ -6,6 +6,19 @@ type RegionPlace = {
   longitude?: number;
 };
 
+export const STOCKHOLM_REGIONS = [
+  "Djurgården",
+  "Gamla Stan",
+  "Kungsholmen",
+  "Norrmalm",
+  "Östermalm",
+  "Södermalm",
+  "Söderort",
+  "Vasastan",
+  "Västerort",
+  "Norrort",
+] as const;
+
 const BROAD_STOCKHOLM_AREAS = new Set([
   "stockholm",
   "central stockholm",
@@ -13,6 +26,12 @@ const BROAD_STOCKHOLM_AREAS = new Set([
   "south stockholm",
   "east stockholm",
   "west stockholm",
+  "stockholms lan",
+  "stockholm county",
+  "stockholms kommun",
+  "sweden",
+  "sverige",
+  "unspecified",
 ]);
 
 const AREA_ALIASES: Array<{ region: string; aliases: string[] }> = [
@@ -96,7 +115,10 @@ export function resolveStockholmRegion(place: RegionPlace): string {
   return existingArea || "Stockholm";
 }
 
-export function isBroadStockholmArea(area: string) {
+export function isBroadStockholmArea(area?: string | null) {
+  if (!area || !area.trim()) {
+    return true;
+  }
   return BROAD_STOCKHOLM_AREAS.has(normalizeRegionText(area));
 }
 
