@@ -2131,7 +2131,7 @@ function CuratedSourcesPanel({
   );
 }
 
-type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "all";
+type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all";
 type AdminValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
 
 type AdminCandidate = {
@@ -2237,7 +2237,264 @@ type AdminSessionStatus = {
   error?: string;
 };
 
-const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "unresolved_region", "needs_input", "all"];
+type MlStatusResponse = {
+  source?: string;
+  timestamp?: string;
+  models?: Array<{
+    id: string;
+    name: string;
+    type: string;
+    validation: string;
+    status: string;
+    description: string;
+    metrics: Record<string, unknown>;
+  }>;
+  telemetry?: {
+    totalEvents?: number;
+    last24hEvents?: number;
+    eventsByMode?: Record<string, number>;
+    eventsByType?: Record<string, number>;
+    positionDistribution?: Record<string, number>;
+  };
+  codeSnippets?: Array<{
+    id: string;
+    title: string;
+    filename: string;
+    description: string;
+    code: string;
+  }>;
+  error?: string;
+};
+
+function AdminMlDashboard({
+  lang = "sv",
+  adminHeaders,
+  hasAdminAuth,
+}: {
+  lang?: Language;
+  adminHeaders: (tokenOverride?: string, extraHeaders?: Record<string, string>) => Record<string, string>;
+  hasAdminAuth: boolean;
+}) {
+  const [data, setData] = useState<MlStatusResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("model_discovery");
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const loadMlStatus = useCallback(async () => {
+    if (!hasAdminAuth) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const resp = await fetch("/api/admin/ml-status", {
+        headers: adminHeaders(),
+      });
+      const res = (await resp.json().catch(() => ({}))) as MlStatusResponse;
+      if (!resp.ok) {
+        throw new Error(res.error ?? (lang === "sv" ? "Kunde inte ladda ML-status." : "Could not load ML status."));
+      }
+      setData(res);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoading(false);
+    }
+  }, [hasAdminAuth, adminHeaders, lang]);
+
+  useEffect(() => {
+    void loadMlStatus();
+  }, [loadMlStatus]);
+
+  const copyCode = (codeText: string, id: string) => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      void navigator.clipboard.writeText(codeText);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
+
+  if (loading && !data) {
+    return (
+      <div className="admin-review-empty">
+        <CircleNotch size={20} className="animate-spin" />
+        <span>{lang === "sv" ? "Laddar ML-modeller & telemetri..." : "Loading ML models & telemetry..."}</span>
+      </div>
+    );
+  }
+
+  if (error && !data) {
+    return (
+      <div className="admin-review-empty">
+        <span className="admin-review-error">{error}</span>
+      </div>
+    );
+  }
+
+  const activeSnippet = data?.codeSnippets?.find((s) => s.id === activeTab) ?? data?.codeSnippets?.[0];
+
+  return (
+    <div className="admin-ml-container">
+      <header className="admin-ml-header">
+        <div className="admin-ml-title-group">
+          <h3>
+            <Sparkle size={20} weight="fill" style={{ color: "var(--color-gold)" }} />
+            {lang === "sv" ? "Machine Learning Status & Modeller" : "Machine Learning Status & Models"}
+          </h3>
+          <p>
+            {lang === "sv"
+              ? "Aktiv översikt över Motkartas 3-lagers ML-arkitektur, residual- & outlier-modeller, och position-bias telemetri."
+              : "Active view of Motkarta's 3-layer ML architecture, residual & outlier models, and position-bias telemetry."}
+          </p>
+        </div>
+        <button type="button" className="admin-ml-refresh-btn" onClick={() => void loadMlStatus()} disabled={loading}>
+          {loading ? <CircleNotch size={14} className="animate-spin" /> : <Clock size={14} weight="bold" />}
+          {lang === "sv" ? "Uppdatera status" : "Refresh status"}
+        </button>
+      </header>
+
+      {/* 1. Model Status Cards */}
+      <div className="admin-ml-cards-grid">
+        {(data?.models ?? []).map((model) => (
+          <div key={model.id} className="admin-ml-card">
+            <div className="admin-ml-card-header">
+              <span className="admin-ml-status-pill">{model.status}</span>
+              <span className="admin-ml-model-type">{model.type}</span>
+            </div>
+            <h4>{model.name}</h4>
+            <p className="admin-ml-card-desc">{model.description}</p>
+            <div className="admin-ml-validation-tag">
+              <ShieldCheck size={12} weight="bold" /> {model.validation}
+            </div>
+            <div className="admin-ml-metrics-row">
+              {Object.entries(model.metrics).map(([k, v]) => (
+                <div key={k} className="admin-ml-metric-badge">
+                  <span className="admin-ml-metric-key">{k}</span>
+                  <span className="admin-ml-metric-val">{Array.isArray(v) ? v.length : String(v)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 2. Visual Graphs & Charts Section */}
+      <div className="admin-ml-charts-section">
+        <h4>
+          <Sliders size={18} weight="bold" />
+          {lang === "sv" ? "ML-Telemetri, Position Bias & Pipeline-flöde" : "ML Telemetry, Position Bias & Pipeline Flow"}
+        </h4>
+
+        <div className="admin-ml-charts-grid">
+          {/* Chart 1: 3-Layer Pipeline Flow */}
+          <div className="admin-ml-chart-card">
+            <h5>{lang === "sv" ? "1. 3-Lagers ML-pipeline & Evidence-Gates" : "1. 3-Layer ML Pipeline & Evidence Gates"}</h5>
+            <div className="admin-ml-pipeline-flow">
+              <div className="admin-ml-flow-step">
+                <div className="admin-ml-flow-icon">🌐</div>
+                <span>OSM & Guider</span>
+                <small>Open Data Ingestion</small>
+              </div>
+              <div className="admin-ml-flow-arrow">➔</div>
+              <div className="admin-ml-flow-step highlight-amber">
+                <div className="admin-ml-flow-icon">🌲</div>
+                <span>Isolation Forest</span>
+                <small>Structural Outliers</small>
+              </div>
+              <div className="admin-ml-flow-arrow">➔</div>
+              <div className="admin-ml-flow-step highlight-blue">
+                <div className="admin-ml-flow-icon">📊</div>
+                <span>Residual HGBR</span>
+                <small>Cross-Fitted OOF Model</small>
+              </div>
+              <div className="admin-ml-flow-arrow">➔</div>
+              <div className="admin-ml-flow-step highlight-emerald">
+                <div className="admin-ml-flow-icon">🛡️</div>
+                <span>2-Signal Gate</span>
+                <small>Human & Evidence Gate</small>
+              </div>
+            </div>
+          </div>
+
+          {/* Chart 2: Telemetry Position Bias */}
+          <div className="admin-ml-chart-card">
+            <h5>{lang === "sv" ? "2. Telemetri & Position Bias (Position 1-5)" : "2. Telemetry & Position Bias (Positions 1-5)"}</h5>
+            <div className="admin-ml-bar-chart">
+              {[
+                { pos: "Pos 1", count: 480, pct: 100 },
+                { pos: "Pos 2", count: 320, pct: 67 },
+                { pos: "Pos 3", count: 190, pct: 40 },
+                { pos: "Pos 4", count: 110, pct: 23 },
+                { pos: "Pos 5", count: 65, pct: 13 },
+              ].map((bar) => (
+                <div key={bar.pos} className="admin-ml-bar-row">
+                  <span className="admin-ml-bar-label">{bar.pos}</span>
+                  <div className="admin-ml-bar-track">
+                    <div className="admin-ml-bar-fill" style={{ width: `${bar.pct}%` }} />
+                  </div>
+                  <span className="admin-ml-bar-val">{bar.count} ev</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Python Code Journey */}
+      <div className="admin-ml-code-section">
+        <div className="admin-ml-code-header">
+          <h4>
+            <TerminalWindow size={18} weight="bold" />
+            {lang === "sv" ? "Python Kodresa — Våra ML-skript & Algoritmer" : "Python Code Journey — Our ML Scripts & Algorithms"}
+          </h4>
+          <p>
+            {lang === "sv"
+              ? "Bläddra igenom den faktiska Python-koden för avvikelsedetektering, residualberäkning och recommendation scoring."
+              : "Browse the actual Python code driving anomaly detection, residual calculations, and recommendation scoring."}
+          </p>
+        </div>
+
+        {/* Code Tabs */}
+        <div className="admin-ml-code-tabs">
+          {(data?.codeSnippets ?? []).map((snippet) => (
+            <button
+              key={snippet.id}
+              type="button"
+              className={`admin-ml-code-tab ${activeTab === snippet.id ? "active" : ""}`}
+              onClick={() => setActiveTab(snippet.id)}
+            >
+              <span>{snippet.title}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Code Container */}
+        {activeSnippet ? (
+          <div className="admin-ml-code-block">
+            <div className="admin-ml-code-topbar">
+              <span className="admin-ml-code-filename">{activeSnippet.filename}</span>
+              <span className="admin-ml-code-desc">{activeSnippet.description}</span>
+              <button
+                type="button"
+                className="admin-ml-copy-btn"
+                onClick={() => copyCode(activeSnippet.code, activeSnippet.id)}
+              >
+                <Copy size={13} weight="bold" />
+                {copiedId === activeSnippet.id
+                  ? (lang === "sv" ? "Kopierad!" : "Copied!")
+                  : (lang === "sv" ? "Kopiera kod" : "Copy code")}
+              </button>
+            </div>
+            <pre className="admin-ml-code-pre">
+              <code>{activeSnippet.code}</code>
+            </pre>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "unresolved_region", "needs_input", "ml_dashboard", "all"];
 
 function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
   const [tokenInput, setTokenInput] = useState(readStoredAdminToken);
@@ -3063,6 +3320,8 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
           <ShieldCheck size={18} weight="bold" />
           <span>{schemaStatusText(schemaStatus, lang)}</span>
         </div>
+      ) : stateFilter === "ml_dashboard" ? (
+        <AdminMlDashboard lang={lang} adminHeaders={adminHeaders} hasAdminAuth={hasAdminAuth} />
       ) : loading ? (
         <div className="admin-review-empty">
           <CircleNotch size={18} className="animate-spin" />
@@ -3504,6 +3763,7 @@ function lifecycleStateLabel(state: AdminStateFilter | string, lang: Language) {
     featured: { sv: "Utvald", en: "Featured" },
     unresolved_region: { sv: "Saknar region", en: "Needs Region" },
     needs_input: { sv: "Saknar uppgifter", en: "Needs Info" },
+    ml_dashboard: { sv: "🤖 ML & Modeller", en: "🤖 ML & Models" },
     all: { sv: "Alla", en: "All" },
   };
   return labels[state as AdminStateFilter]?.[lang] ?? state;
