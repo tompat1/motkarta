@@ -2631,6 +2631,13 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
         return;
       }
 
+      if (stateFilter === "ml_dashboard") {
+        setCandidates([]);
+        setStatus(lang === "sv" ? "ML-Dashboard aktiv." : "ML Dashboard active.");
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setError(null);
       try {

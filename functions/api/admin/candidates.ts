@@ -28,7 +28,7 @@ type Env = {
 } & AdminAuthEnv;
 
 type ValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
-type CandidateStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "all";
+type CandidateStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all";
 type AdminAction = "promote" | "merge_duplicate" | "keep_separate" | "update_district" | "update_website";
 
 type CandidateRow = {
@@ -64,7 +64,7 @@ type EstablishmentLookupRow = {
 };
 
 const lifecycleStates: PlaceLifecycleState[] = ["baseline", "candidate", "verified", "featured"];
-const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "unresolved_region", "needs_input", "all"];
+const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "unresolved_region", "needs_input", "ml_dashboard", "all"];
 const adminActions: AdminAction[] = ["promote", "merge_duplicate", "keep_separate", "update_district", "update_website"];
 const validationLabels: ValidationLabel[] = [
   "known_mainstream",
@@ -290,6 +290,10 @@ async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit
       e.name ASC
     LIMIT ?
   `;
+
+  if (state === "ml_dashboard") {
+    return [];
+  }
 
   if (state === "all") {
     const { results } = await db.prepare(`${select}${order}`).bind(limit).all<CandidateRow>();
