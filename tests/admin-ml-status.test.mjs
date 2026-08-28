@@ -65,6 +65,10 @@ test("admin ml status endpoint returns model specifications, telemetry, and code
   assert.equal(payload.models[0].id, "discovery-hgbr-spatial-oof-v1");
   assert.equal(payload.models[1].id, "isolation-forest-spatial-v1");
   assert.equal(payload.models[2].id, "rec-v1-debiased");
+  assert.equal(payload.seabornCharts.length, 4);
+  assert.equal(payload.seabornCharts[0].id, "eda_feature_relationships");
+  assert.equal(payload.lifecycleStages.length, 6);
+  assert.equal(payload.gapsAndImprovements.length, 4);
   assert.equal(payload.telemetry.totalEvents, 42);
   assert.equal(payload.codeSnippets.length, 4);
   assert.match(payload.codeSnippets[0].code, /fit_discovery_model/);

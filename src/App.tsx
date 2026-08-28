@@ -2254,6 +2254,26 @@ type MlStatusResponse = {
     description: string;
     metrics: Record<string, unknown>;
   }>;
+  seabornCharts?: Array<{
+    id: string;
+    title: string;
+    url: string;
+    description: string;
+  }>;
+  lifecycleStages?: Array<{
+    stage: string;
+    completion: number;
+    status: string;
+    notes: string;
+  }>;
+  gapsAndImprovements?: Array<{
+    id: string;
+    title: string;
+    impactScore: number;
+    category: string;
+    problem: string;
+    solution: string;
+  }>;
   telemetry?: {
     totalEvents?: number;
     last24hEvents?: number;
@@ -2284,6 +2304,8 @@ function AdminMlDashboard({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("model_discovery");
+  const [activeChartTab, setActiveChartTab] = useState("eda_feature_relationships");
+  const [previewChartUrl, setPreviewChartUrl] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const loadMlStatus = useCallback(async () => {
@@ -2322,7 +2344,7 @@ function AdminMlDashboard({
     return (
       <div className="admin-review-empty">
         <CircleNotch size={20} className="animate-spin" />
-        <span>{lang === "sv" ? "Laddar ML-modeller & telemetri..." : "Loading ML models & telemetry..."}</span>
+        <span>{lang === "sv" ? "Laddar ML-modeller & Seaborn-grafer..." : "Loading ML models & Seaborn charts..."}</span>
       </div>
     );
   }
@@ -2336,6 +2358,7 @@ function AdminMlDashboard({
   }
 
   const activeSnippet = data?.codeSnippets?.find((s) => s.id === activeTab) ?? data?.codeSnippets?.[0];
+  const activeSeabornChart = data?.seabornCharts?.find((c) => c.id === activeChartTab) ?? data?.seabornCharts?.[0];
 
   return (
     <div className="admin-ml-container">
@@ -2343,12 +2366,12 @@ function AdminMlDashboard({
         <div className="admin-ml-title-group">
           <h3>
             <Sparkle size={20} weight="fill" style={{ color: "var(--color-gold)" }} />
-            {lang === "sv" ? "Machine Learning Status & Modeller" : "Machine Learning Status & Models"}
+            {lang === "sv" ? "Machine Learning Status, Seaborn Grafer & Livscykel" : "Machine Learning Status, Seaborn Charts & Lifecycle"}
           </h3>
           <p>
             {lang === "sv"
-              ? "Aktiv översikt över Motkartas 3-lagers ML-arkitektur, residual- & outlier-modeller, och position-bias telemetri."
-              : "Active view of Motkarta's 3-layer ML architecture, residual & outlier models, and position-bias telemetry."}
+              ? "Fullständig livscykel för Motkartas ML-modeller, Seaborn EDA- & Residualgrafer, samt identifierade systemluckor."
+              : "Complete lifecycle for Motkarta's ML models, Seaborn EDA & Residual graphs, and identified system gaps."}
           </p>
         </div>
         <button type="button" className="admin-ml-refresh-btn" onClick={() => void loadMlStatus()} disabled={loading}>
@@ -2382,67 +2405,133 @@ function AdminMlDashboard({
         ))}
       </div>
 
-      {/* 2. Visual Graphs & Charts Section */}
+      {/* 2. Python Seaborn Visualization Gallery */}
+      <div className="admin-ml-seaborn-section">
+        <div className="admin-ml-seaborn-header">
+          <h4>
+            <Image size={18} weight="bold" />
+            {lang === "sv" ? "Python Seaborn Grafer & Diagnosticering" : "Python Seaborn Charts & Diagnostics"}
+          </h4>
+          <p>
+            {lang === "sv"
+              ? "Genererade Seaborn EDA-plots, korrelationsmatriser, residualfelevalvering och Isolation Forest avvikelser."
+              : "Generated Seaborn EDA plots, correlation matrices, residual error evaluation, and Isolation Forest outliers."}
+          </p>
+        </div>
+
+        {/* Seaborn Chart Selector Tabs */}
+        <div className="admin-ml-code-tabs">
+          {(data?.seabornCharts ?? []).map((chart) => (
+            <button
+              key={chart.id}
+              type="button"
+              className={`admin-ml-code-tab ${activeChartTab === chart.id ? "active" : ""}`}
+              onClick={() => setActiveChartTab(chart.id)}
+            >
+              <span>{chart.title}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Display Active Seaborn Chart */}
+        {activeSeabornChart ? (
+          <div className="admin-ml-seaborn-display-card">
+            <div className="admin-ml-seaborn-topbar">
+              <div>
+                <h5>{activeSeabornChart.title}</h5>
+                <small>{activeSeabornChart.description}</small>
+              </div>
+              <button
+                type="button"
+                className="admin-ml-copy-btn"
+                onClick={() => setPreviewChartUrl(activeSeabornChart.url)}
+              >
+                <ArrowsOut size={13} weight="bold" />
+                {lang === "sv" ? "Förstora graf" : "Enlarge chart"}
+              </button>
+            </div>
+            <div className="admin-ml-seaborn-img-container">
+              <img
+                src={activeSeabornChart.url}
+                alt={activeSeabornChart.title}
+                className="admin-ml-seaborn-img"
+                onClick={() => setPreviewChartUrl(activeSeabornChart.url)}
+              />
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      {/* 3. Full ML Model Lifecycle & Stage Progress */}
       <div className="admin-ml-charts-section">
         <h4>
           <Sliders size={18} weight="bold" />
-          {lang === "sv" ? "ML-Telemetri, Position Bias & Pipeline-flöde" : "ML Telemetry, Position Bias & Pipeline Flow"}
+          {lang === "sv" ? "ML-Modellers Livscykel & Genomförandegrad" : "ML Model Lifecycle & Progress Tracking"}
         </h4>
 
-        <div className="admin-ml-charts-grid">
-          {/* Chart 1: 3-Layer Pipeline Flow */}
-          <div className="admin-ml-chart-card">
-            <h5>{lang === "sv" ? "1. 3-Lagers ML-pipeline & Evidence-Gates" : "1. 3-Layer ML Pipeline & Evidence Gates"}</h5>
-            <div className="admin-ml-pipeline-flow">
-              <div className="admin-ml-flow-step">
-                <div className="admin-ml-flow-icon">🌐</div>
-                <span>OSM & Guider</span>
-                <small>Open Data Ingestion</small>
+        <div className="admin-ml-lifecycle-grid">
+          {(data?.lifecycleStages ?? []).map((stage, idx) => (
+            <div key={idx} className="admin-ml-lifecycle-stage-row">
+              <div className="admin-ml-lifecycle-stage-meta">
+                <span className="admin-ml-lifecycle-stage-title">{stage.stage}</span>
+                <span className="admin-ml-lifecycle-stage-pct">{stage.completion}%</span>
               </div>
-              <div className="admin-ml-flow-arrow">➔</div>
-              <div className="admin-ml-flow-step highlight-amber">
-                <div className="admin-ml-flow-icon">🌲</div>
-                <span>Isolation Forest</span>
-                <small>Structural Outliers</small>
+              <div className="admin-ml-bar-track">
+                <div
+                  className={`admin-ml-bar-fill ${stage.completion === 100 ? "complete" : stage.completion >= 70 ? "in-progress" : "planned"}`}
+                  style={{ width: `${stage.completion}%` }}
+                />
               </div>
-              <div className="admin-ml-flow-arrow">➔</div>
-              <div className="admin-ml-flow-step highlight-blue">
-                <div className="admin-ml-flow-icon">📊</div>
-                <span>Residual HGBR</span>
-                <small>Cross-Fitted OOF Model</small>
-              </div>
-              <div className="admin-ml-flow-arrow">➔</div>
-              <div className="admin-ml-flow-step highlight-emerald">
-                <div className="admin-ml-flow-icon">🛡️</div>
-                <span>2-Signal Gate</span>
-                <small>Human & Evidence Gate</small>
-              </div>
+              <small className="admin-ml-lifecycle-notes">{stage.notes}</small>
             </div>
-          </div>
-
-          {/* Chart 2: Telemetry Position Bias */}
-          <div className="admin-ml-chart-card">
-            <h5>{lang === "sv" ? "2. Telemetri & Position Bias (Position 1-5)" : "2. Telemetry & Position Bias (Positions 1-5)"}</h5>
-            <div className="admin-ml-bar-chart">
-              {[
-                { pos: "Pos 1", count: 480, pct: 100 },
-                { pos: "Pos 2", count: 320, pct: 67 },
-                { pos: "Pos 3", count: 190, pct: 40 },
-                { pos: "Pos 4", count: 110, pct: 23 },
-                { pos: "Pos 5", count: 65, pct: 13 },
-              ].map((bar) => (
-                <div key={bar.pos} className="admin-ml-bar-row">
-                  <span className="admin-ml-bar-label">{bar.pos}</span>
-                  <div className="admin-ml-bar-track">
-                    <div className="admin-ml-bar-fill" style={{ width: `${bar.pct}%` }} />
-                  </div>
-                  <span className="admin-ml-bar-val">{bar.count} ev</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
+
+      {/* 4. Identified ML System Gaps & Needed Improvements */}
+      <div className="admin-ml-gaps-section">
+        <div className="admin-ml-gaps-header">
+          <h4>
+            <Scales size={18} weight="bold" />
+            {lang === "sv" ? "Vad Vi Saknar & Behöver Förbättra (Gap Analysis)" : "What We Miss & Need to Improve (Gap Analysis)"}
+          </h4>
+          <p>
+            {lang === "sv"
+              ? "Identifierade utmaningar i nuvarande ML-arkitektur och rekommenderade förbättringsåtgärder."
+              : "Identified challenges in the current ML architecture and recommended improvement actions."}
+          </p>
+        </div>
+
+        <div className="admin-ml-gaps-grid">
+          {(data?.gapsAndImprovements ?? []).map((gap) => (
+            <div key={gap.id} className="admin-ml-gap-card">
+              <div className="admin-ml-gap-card-header">
+                <span className="admin-ml-gap-badge">{gap.category}</span>
+                <span className="admin-ml-gap-severity">Impact {gap.impactScore}/100</span>
+              </div>
+              <h5>{gap.title}</h5>
+              <div className="admin-ml-gap-problem">
+                <strong>{lang === "sv" ? "Utmaning:" : "Challenge:"}</strong> {gap.problem}
+              </div>
+              <div className="admin-ml-gap-solution">
+                <strong>{lang === "sv" ? "Lösning & Åtgärd:" : "Solution & Action:"}</strong> {gap.solution}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Fullscreen Lightbox Preview for Seaborn Charts */}
+      {previewChartUrl ? (
+        <div className="admin-ml-lightbox" onClick={() => setPreviewChartUrl(null)}>
+          <div className="admin-ml-lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="admin-ml-lightbox-close" onClick={() => setPreviewChartUrl(null)}>
+              ✕
+            </button>
+            <img src={previewChartUrl} alt="Seaborn ML Chart Full Preview" className="admin-ml-lightbox-img" />
+          </div>
+        </div>
+      ) : null}
 
       {/* 3. Python Code Journey */}
       <div className="admin-ml-code-section">
