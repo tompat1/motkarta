@@ -273,6 +273,55 @@ test("admin candidates endpoint updates district via update_district action", as
   assert.equal(db.events[0].action, "update_district");
 });
 
+test("admin candidates endpoint supports filtering by needs_input", async () => {
+  const db = fakeAdminD1([
+    candidateRow({ id: 10, name: "Missing Web Place", website: null }),
+    candidateRow({ id: 11, name: "Complete Place", website: "https://complete.se", address: "Götgatan 1", area: "Södermalm" }),
+  ]);
+
+  const response = await getAdminCandidates({
+    request: new Request("https://motkarta.test/api/admin/candidates?state=needs_input", {
+      headers: { authorization: `Bearer ${adminToken}` },
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.state, "needs_input");
+  assert.deepEqual(payload.candidates.map((r) => r.name), ["Missing Web Place"]);
+});
+
+test("admin candidates endpoint updates website via update_website action", async () => {
+  const db = fakeAdminD1([
+    candidateRow({ id: 10, name: "Venue Needing Web", website: null }),
+  ]);
+
+  const response = await postAdminCandidate({
+    request: new Request("https://motkarta.test/api/admin/candidates", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-motkarta-admin-token": adminToken,
+      },
+      body: JSON.stringify({
+        id: 10,
+        action: "update_website",
+        website: "https://example-venue.se",
+        scrapeImage: false,
+      }),
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.action, "update_website");
+  assert.equal(payload.website, "https://example-venue.se");
+  assert.equal(db.rows[0].website, "https://example-venue.se");
+  assert.equal(db.events[0].action, "update_website");
+});
+
 function candidateRow(overrides) {
   const now = new Date("2026-08-21T10:00:00.000Z").toISOString();
   return {
@@ -327,6 +376,18 @@ function fakeAdminD1(rows) {
             return { results: row ? [row] : [] };
           }
 
+          if (query.includes("WHERE e.website IS NULL OR e.website = ''")) {
+            const filtered = db.rows.filter(
+              (row) =>
+                !row.website ||
+                !row.address ||
+                !row.area ||
+                ["stockholm", "central stockholm", "north stockholm", "south stockholm", "east stockholm", "west stockholm", "stockholms lan", "stockholm county", "stockholms kommun", "sweden", "sverige", "unspecified"].includes(row.area.toLowerCase()),
+            );
+            const limit = Number(this.values.at(-1) ?? 100);
+            return { results: filtered.slice(0, limit) };
+          }
+
           if (query.includes("WHERE e.district IS NULL")) {
             const filtered = db.rows.filter((row) => !row.area || ["stockholm", "central stockholm", "north stockholm", "south stockholm", "east stockholm", "west stockholm", "stockholms lan", "stockholm county", "stockholms kommun", "sweden", "sverige", "unspecified"].includes(row.area.toLowerCase()));
             const limit = Number(this.values.at(-1) ?? 100);
@@ -340,6 +401,16 @@ function fakeAdminD1(rows) {
         },
         async run() {
           if (query.includes("UPDATE establishments")) {
+            if (query.includes("website = ?")) {
+              const [website, validationNotes, updatedAt, id] = this.values;
+              const row = db.rows.find((item) => item.id === id);
+              if (!row) return { success: true, meta: { changes: 0 } };
+              row.website = website;
+              row.validationNotes = validationNotes;
+              row.updatedAt = updatedAt;
+              return { success: true, meta: { changes: 1 } };
+            }
+
             if (query.includes("district = ?")) {
               const [district, validationNotes, updatedAt, id] = this.values;
               const row = db.rows.find((item) => item.id === id);

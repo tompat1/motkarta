@@ -2131,7 +2131,7 @@ function CuratedSourcesPanel({
   );
 }
 
-type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "all";
+type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "all";
 type AdminValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
 
 type AdminCandidate = {
@@ -2237,7 +2237,7 @@ type AdminSessionStatus = {
   error?: string;
 };
 
-const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "unresolved_region", "all"];
+const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "unresolved_region", "needs_input", "all"];
 
 function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
   const [tokenInput, setTokenInput] = useState(readStoredAdminToken);
@@ -2249,6 +2249,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
   const [loadingDashboard, setLoadingDashboard] = useState(false);
   const [exportingLabels, setExportingLabels] = useState(false);
   const [resolvingRegions, setResolvingRegions] = useState(false);
+  const [websiteInputs, setWebsiteInputs] = useState<Record<number, string>>({});
   const [schemaBusy, setSchemaBusy] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -2705,6 +2706,65 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     }
   };
 
+  const updateCandidateWebsite = async (candidate: AdminCandidate, rawWebsite: string) => {
+    if (!hasAdminAuth || !rawWebsite.trim()) return;
+
+    const website = rawWebsite.trim();
+    const validationNotes = (reviewNotes[candidate.id] ?? candidate.validationNotes ?? "").trim();
+    setBusyId(candidate.id);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/admin/candidates", {
+        method: "POST",
+        headers: adminHeaders(undefined, { "content-type": "application/json" }),
+        body: JSON.stringify({
+          id: candidate.id,
+          action: "update_website",
+          website,
+          scrapeImage: true,
+          validationNotes,
+        }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        reviewedAt?: string;
+        website?: string;
+        scrapedPhotoUrl?: string | null;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte spara webbadress." : "Could not save website."));
+      }
+
+      const updatedWebsite = payload.website ?? website;
+      setCandidates((current) =>
+        current.flatMap((row) => {
+          if (row.id !== candidate.id) return [row];
+          if (stateFilter === "needs_input" && updatedWebsite && row.address && !isBroadStockholmArea(row.area)) {
+            return [];
+          }
+          return [{ ...row, website: updatedWebsite, updatedAt: payload.reviewedAt ?? new Date().toISOString() }];
+        }),
+      );
+
+      setStatus(
+        payload.scrapedPhotoUrl
+          ? lang === "sv"
+            ? `Webbplats sparad för ${candidate.name} & bild hämtades (${payload.scrapedPhotoUrl}).`
+            : `Saved website for ${candidate.name} & scraped official photo (${payload.scrapedPhotoUrl}).`
+          : lang === "sv"
+            ? `Webbplats sparad för ${candidate.name}.`
+            : `Saved website for ${candidate.name}.`,
+      );
+      void loadDashboard();
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : String(saveError));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   const exportReviewLabels = async () => {
     const token = adminToken.trim();
     if (!hasAdminAuth || typeof document === "undefined") return;
@@ -3141,6 +3201,43 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
                   </select>
                 </div>
 
+                <div className={`admin-website-picker-row ${!candidate.website ? "unresolved" : ""}`}>
+                  <label htmlFor={`admin-website-input-${candidate.id}`} className="admin-website-picker-label">
+                    <Globe size={13} weight="bold" />
+                    {lang === "sv" ? "Webbplats & Bild-scraper:" : "Website & Image Scraper:"}
+                  </label>
+                  <div className="admin-website-input-wrap">
+                    <input
+                      id={`admin-website-input-${candidate.id}`}
+                      type="url"
+                      className="admin-website-input"
+                      value={websiteInputs[candidate.id] ?? candidate.website ?? ""}
+                      onChange={(event) =>
+                        setWebsiteInputs((current) => ({
+                          ...current,
+                          [candidate.id]: event.target.value,
+                        }))
+                      }
+                      placeholder="https://..."
+                    />
+                    <button
+                      type="button"
+                      className="admin-scrape-btn"
+                      disabled={busyId === candidate.id || !(websiteInputs[candidate.id] ?? candidate.website ?? "").trim()}
+                      onClick={() =>
+                        void updateCandidateWebsite(
+                          candidate,
+                          websiteInputs[candidate.id] ?? candidate.website ?? "",
+                        )
+                      }
+                      title={lang === "sv" ? "Spara webbadress och sök automatiskt efter bild (og:image)" : "Save website URL and automatically extract og:image photo"}
+                    >
+                      <DownloadSimple size={13} weight="bold" />
+                      {lang === "sv" ? "Spara & hämta bild" : "Save & scrape photo"}
+                    </button>
+                  </div>
+                </div>
+
                 <label className="admin-notes-label" htmlFor={`admin-notes-${candidate.id}`}>
                   {lang === "sv" ? "Granskningsnotering" : "Review note"}
                 </label>
@@ -3406,6 +3503,7 @@ function lifecycleStateLabel(state: AdminStateFilter | string, lang: Language) {
     verified: { sv: "Verifierad", en: "Verified" },
     featured: { sv: "Utvald", en: "Featured" },
     unresolved_region: { sv: "Saknar region", en: "Needs Region" },
+    needs_input: { sv: "Saknar uppgifter", en: "Needs Info" },
     all: { sv: "Alla", en: "All" },
   };
   return labels[state as AdminStateFilter]?.[lang] ?? state;

@@ -2145,6 +2145,85 @@ button.concierge-clear-btn:hover {
   outline: none;
 }
 
+.admin-website-picker-row {
+  align-items: center;
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 6px 0 12px;
+  padding: 8px 12px;
+  transition: border-color var(--motion-fast);
+}
+
+.admin-website-picker-row.unresolved {
+  background: #fffdf5;
+  border-color: #f59e0b;
+}
+
+.admin-website-picker-label {
+  align-items: center;
+  color: var(--color-ink);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 5px;
+  text-transform: uppercase;
+}
+
+.admin-website-input-wrap {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  min-width: 260px;
+}
+
+.admin-website-input {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  min-height: 36px;
+  padding: 6px 10px;
+}
+
+.admin-website-input:focus {
+  border-color: var(--color-ink);
+  outline: none;
+}
+
+.admin-scrape-btn {
+  align-items: center;
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  color: var(--color-paper);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 5px;
+  padding: 6px 12px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background var(--motion-fast);
+}
+
+.admin-scrape-btn:hover:not(:disabled) {
+  background: var(--color-water);
+  border-color: var(--color-water);
+  color: var(--color-white);
+}
+
+.admin-scrape-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .admin-review-empty {
   align-items: center;
   background: var(--color-white);

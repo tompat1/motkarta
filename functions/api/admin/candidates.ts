@@ -28,8 +28,8 @@ type Env = {
 } & AdminAuthEnv;
 
 type ValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
-type CandidateStateFilter = PlaceLifecycleState | "unresolved_region" | "all";
-type AdminAction = "promote" | "merge_duplicate" | "keep_separate" | "update_district";
+type CandidateStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "all";
+type AdminAction = "promote" | "merge_duplicate" | "keep_separate" | "update_district" | "update_website";
 
 type CandidateRow = {
   id: number;
@@ -64,8 +64,8 @@ type EstablishmentLookupRow = {
 };
 
 const lifecycleStates: PlaceLifecycleState[] = ["baseline", "candidate", "verified", "featured"];
-const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "unresolved_region", "all"];
-const adminActions: AdminAction[] = ["promote", "merge_duplicate", "keep_separate", "update_district"];
+const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "unresolved_region", "needs_input", "all"];
+const adminActions: AdminAction[] = ["promote", "merge_duplicate", "keep_separate", "update_district", "update_website"];
 const validationLabels: ValidationLabel[] = [
   "known_mainstream",
   "known_hidden_gem",
@@ -176,6 +176,10 @@ export async function onRequestPost(context: EventContext<Env>) {
 
   if (action === "update_district") {
     return updateDistrict(db, id, payload, validationNotes);
+  }
+
+  if (action === "update_website") {
+    return updateWebsite(db, id, payload, validationNotes);
   }
 
   if (!lifecycleState) {
@@ -299,6 +303,17 @@ async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit
          OR LOWER(e.district) IN ('stockholm', 'central stockholm', 'north stockholm', 'south stockholm', 'east stockholm', 'west stockholm', 'stockholms lan', 'stockholm county', 'stockholms kommun', 'sweden', 'sverige', 'unspecified')
     `;
     const { results } = await db.prepare(`${select}${broadWhere} ${order}`).bind(limit).all<CandidateRow>();
+    return results ?? [];
+  }
+
+  if (state === "needs_input") {
+    const needsWhere = `
+      WHERE e.website IS NULL OR e.website = ''
+         OR e.address IS NULL OR e.address = ''
+         OR e.district IS NULL OR e.district = ''
+         OR LOWER(e.district) IN ('stockholm', 'central stockholm', 'north stockholm', 'south stockholm', 'east stockholm', 'west stockholm', 'stockholms lan', 'stockholm county', 'stockholms kommun', 'sweden', 'sverige', 'unspecified')
+    `;
+    const { results } = await db.prepare(`${select}${needsWhere} ${order}`).bind(limit).all<CandidateRow>();
     return results ?? [];
   }
 
@@ -573,6 +588,134 @@ async function updateDistrict(db: D1Database, id: number, payload: Record<string
       action: "update_district",
       id,
       district,
+      reviewedAt,
+    },
+    { headers: jsonHeaders },
+  );
+}
+
+async function updateWebsite(db: D1Database, id: number, payload: Record<string, unknown>, validationNotes: string | null) {
+  const websiteInput = typeof payload.website === "string" ? payload.website.trim() : typeof payload.url === "string" ? payload.url.trim() : null;
+  if (!websiteInput) {
+    return Response.json(
+      { error: "Missing or invalid website URL." },
+      { headers: jsonHeaders, status: 400 },
+    );
+  }
+
+  let websiteUrl = websiteInput;
+  if (!websiteUrl.startsWith("http://") && !websiteUrl.startsWith("https://")) {
+    websiteUrl = `https://${websiteUrl}`;
+  }
+
+  const candidate = await loadEstablishment(db, id);
+  if (!candidate) {
+    return Response.json(
+      { error: "Candidate not found." },
+      { headers: jsonHeaders, status: 404 },
+    );
+  }
+
+  const reviewedAt = new Date().toISOString();
+  let scrapedPhotoUrl: string | null = null;
+
+  if (payload.scrapeImage !== false) {
+    try {
+      const resp = await fetch(websiteUrl, {
+        headers: {
+          "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Motkarta/1.0",
+        },
+      });
+      if (resp.ok) {
+        const html = await resp.text();
+        const ogMatch =
+          html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
+          html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i) ||
+          html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i);
+
+        if (ogMatch && ogMatch[1]) {
+          let imgUrl = ogMatch[1].trim();
+          if (imgUrl.startsWith("//")) {
+            imgUrl = `https:${imgUrl}`;
+          } else if (imgUrl.startsWith("/")) {
+            const parsed = new URL(websiteUrl);
+            imgUrl = `${parsed.origin}${imgUrl}`;
+          }
+          if (imgUrl.startsWith("http://") || imgUrl.startsWith("https://")) {
+            scrapedPhotoUrl = imgUrl;
+          }
+        }
+      }
+    } catch (scrapeErr) {
+      console.warn("Website image scrape failed", scrapeErr);
+    }
+  }
+
+  const notes = joinNotes([
+    validationNotes,
+    `Updated website to '${websiteUrl}'.${scrapedPhotoUrl ? ` Scraped og:image '${scrapedPhotoUrl}'.` : ""}`,
+  ]);
+
+  await db
+    .prepare(
+      `UPDATE establishments
+       SET website = ?, validation_notes = ?, updated_at = ?
+       WHERE id = ?`,
+    )
+    .bind(websiteUrl, notes, reviewedAt, id)
+    .run();
+
+  if (scrapedPhotoUrl) {
+    try {
+      await db
+        .prepare(
+          `INSERT INTO place_photos (id, place_id, url, thumbnail_url, caption, credit)
+           VALUES (?, ?, ?, ?, ?, ?)
+           ON CONFLICT(id) DO UPDATE SET url = excluded.url, thumbnail_url = excluded.thumbnail_url`,
+        )
+        .bind(
+          `web-scraped-${id}`,
+          id,
+          scrapedPhotoUrl,
+          scrapedPhotoUrl,
+          `${candidate.name} Official Web Photo`,
+          "Official Venue Website",
+        )
+        .run();
+
+      await db
+        .prepare(
+          `INSERT INTO evidence_sources (establishment_id, source_type, source_name, url, confidence, captured_at, summary)
+           VALUES (?, 'official_site', 'Official Venue Website', ?, 0.9, ?, ?)`,
+        )
+        .bind(
+          id,
+          websiteUrl,
+          reviewedAt,
+          `Venue website and og:image metadata scraped by admin: ${scrapedPhotoUrl}`,
+        )
+        .run();
+    } catch (dbMediaError) {
+      console.warn("Could not insert scraped photo into D1", dbMediaError);
+    }
+  }
+
+  await recordReviewEvent(db, {
+    establishmentId: id,
+    lifecycleState: candidate.lifecycleState,
+    validationLabel: null,
+    validationNotes: notes,
+    reviewedAt,
+    action: "update_website",
+  });
+
+  return Response.json(
+    {
+      success: true,
+      action: "update_website",
+      id,
+      website: websiteUrl,
+      scrapedPhotoUrl,
       reviewedAt,
     },
     { headers: jsonHeaders },
