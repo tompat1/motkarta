@@ -22,8 +22,10 @@ import {
   CaretDown,
   CheckCircle,
   CircleNotch,
+  Clock,
   Coffee,
   Compass,
+  Copy,
   Crosshair,
   DownloadSimple,
   ForkKnife,
@@ -42,6 +44,7 @@ import {
   Sliders,
   Sparkle,
   Star,
+  TerminalWindow,
   ThumbsUp,
   ThumbsDown,
   X,
@@ -67,7 +70,7 @@ import {
   type UserPreferences,
   scorePlace,
 } from "../lib/scoring";
-import { isBroadStockholmArea, resolveStockholmRegion, STOCKHOLM_REGIONS } from "../lib/stockholm-regions";
+import { isBroadStockholmArea, resolveStockholmRegion, STOCKHOLM_REGIONS as STOCKHOLM_REGION_NAMES } from "../lib/stockholm-regions";
 import {
   ANONYMOUS_ID_ROTATION_DAYS,
   MAX_RECOMMENDATION_EVENTS_PER_BATCH,
@@ -516,7 +519,7 @@ function sortModeLabel(sortMode: SortMode, lang: Language): string {
 
 export const POPULAR_CONCIERGE_PROMPTS = DEFAULT_CONCIERGE_PROMPTS;
 
-export const STOCKHOLM_REGIONS = [
+export const STOCKHOLM_REGION_OPTIONS = [
   { label: "Södermalm (Söder)", value: "Södermalm", aliases: ["söder", "södermalm", "sofo", "zinken", "mariatorget", "nytorget", "hornstull", "skanstull"] },
   { label: "Gamla Stan", value: "Gamla Stan", aliases: ["gamla stan", "gamlastan", "baggensgatan"] },
   { label: "Vasastan", value: "Vasastan", aliases: ["vasastan", "vasastaden", "birkastan", "st eriksplan", "odenplan", "rörstrandsgatan"] },
@@ -3438,7 +3441,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
                   <select
                     id={`admin-region-select-${candidate.id}`}
                     className="admin-region-select"
-                    value={(STOCKHOLM_REGIONS as readonly string[]).includes(candidate.area) ? candidate.area : ""}
+                    value={(STOCKHOLM_REGION_NAMES as readonly string[]).includes(candidate.area) ? candidate.area : ""}
                     disabled={busyId === candidate.id}
                     onChange={(event) => {
                       const nextRegion = event.target.value;
@@ -3452,7 +3455,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
                         ? (lang === "sv" ? "⚠️ Välj region ur listan..." : "⚠️ Select region from list...")
                         : (lang === "sv" ? "— Välj ny region —" : "— Select new region —")}
                     </option>
-                    {STOCKHOLM_REGIONS.map((regionName) => (
+                    {STOCKHOLM_REGION_NAMES.map((regionName) => (
                       <option key={regionName} value={regionName}>
                         {regionName}
                       </option>
@@ -4391,7 +4394,7 @@ export default function App() {
   const searchAutocompleteSuggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    const matchedRegions = STOCKHOLM_REGIONS.filter(
+    const matchedRegions = STOCKHOLM_REGION_OPTIONS.filter(
       (r) => r.label.toLowerCase().includes(q) || r.aliases.some((a) => a.includes(q))
     ).map((r) => ({
       id: `region-${r.value}`,
