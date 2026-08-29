@@ -121,3 +121,18 @@ in Stockholm. Always promote the 15 curated specialty venues (including all 3
 Pascal locations, Lykke, Drop Coffee, Solkant, Volca, etc.) and exclude commercial
 chains (`Nespresso`, `Kahls`, `Wayne's Coffee`, `Espresso House`, `Starbucks`,
 `Bönor & Blad`).
+
+---
+
+## 🛡️ PR Approval & Sourcery Quality Directive
+
+From now on, to eliminate technical debt and prevent regression or unnecessary bugs:
+
+1. **Mandatory PR Approval & Planning**:
+   - For non-trivial code changes, refactors, or new features, generate an `implementation_plan.md` artifact detailing proposed modifications, risks, and verification steps.
+   - Seek user PR approval before executing code changes.
+
+2. **Sourcery & Automated Quality Gates**:
+   - All code must comply with `.sourcery.yaml` quality standards.
+   - Eliminate code duplication, overly complex routines, and anti-patterns across Python and TypeScript.
+   - Always run `npm run build` and `npm test` to ensure 100% clean builds with zero test failures before declaring any task complete.

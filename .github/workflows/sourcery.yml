@@ -1,0 +1,45 @@
+name: Sourcery & PR Quality Gate
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  pr-quality-check:
+    name: Typecheck, Build & Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Verify Types & Build
+        run: npm run build
+
+      - name: Run Test Suite
+        run: npm test
+
+  sourcery-code-review:
+    name: Sourcery AI Code Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sourcery AI Review
+        uses: sourcery-ai/sourcery-action@v1
+        with:
+          token: ${{ secrets.SOURCERY_TOKEN }}
+        continue-on-error: true

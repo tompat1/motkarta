@@ -1,0 +1,29 @@
+# Sourcery Configuration File for Motkarta
+# https://docs.sourcery.ai/Configuration/
+
+version: '1'
+
+ignore:
+  - '.venv/**'
+  - '.tmp/**'
+  - 'dist/**'
+  - 'node_modules/**'
+  - 'public/data/**'
+  - 'build/**'
+
+rule_settings:
+  rule_types:
+    - refactoring
+    - bug_risk
+    - performance
+    - security
+
+python:
+  version: '3.11'
+
+github:
+  request_review: true
+  suggest_comment_edits: true
+  sourcery_branch: true
+  labels:
+    - "sourcery-reviewed"
