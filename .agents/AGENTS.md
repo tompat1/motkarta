@@ -128,11 +128,16 @@ chains (`Nespresso`, `Kahls`, `Wayne's Coffee`, `Espresso House`, `Starbucks`,
 
 From now on, to eliminate technical debt and prevent regression or unnecessary bugs:
 
-1. **Mandatory PR Approval & Planning**:
+1. **Mandatory Planning & Implementation Plan**:
    - For non-trivial code changes, refactors, or new features, generate an `implementation_plan.md` artifact detailing proposed modifications, risks, and verification steps.
-   - Seek user PR approval before executing code changes.
+   - Seek user approval on the implementation plan before applying changes.
 
-2. **Sourcery & Automated Quality Gates**:
+2. **Automated PR Creation & Manual User Merge**:
+   - Make clean code edits and verify with `npm run build` and `npm test`.
+   - Commit, push feature branch, and **automatically create/open a Pull Request on GitHub** (via `gh pr create`).
+   - Provide the direct PR link to the user, allowing the user to review and perform the final PR merge manually.
+
+3. **Sourcery & Automated Quality Gates**:
    - All code must comply with `.sourcery.yaml` quality standards.
    - Eliminate code duplication, overly complex routines, and anti-patterns across Python and TypeScript.
    - Always run `npm run build` and `npm test` to ensure 100% clean builds with zero test failures before declaring any task complete.
