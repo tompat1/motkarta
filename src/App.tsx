@@ -214,6 +214,16 @@ function degreesToRadians(value: number) {
   return (value * Math.PI) / 180;
 }
 
+function formatDistance(distKm: number, _lang: Language): string {
+  if (distKm === Number.POSITIVE_INFINITY || isNaN(distKm)) return "";
+  if (distKm < 1) {
+    return `${Math.round(distKm * 1000)} m`;
+  }
+  return `${distKm.toFixed(1)} km`;
+}
+
+const DISTANCE_INTENT_REGEX = /\b(närmast|närmaste|närmst|närmsta|nära|i närheten|kortast|avstånd|closest|nearest|near me|nära mig|close by|closest place)\b/i;
+
 function seededRandom(id: number, seed: number) {
   const value = Math.sin((id + seed) * 12.9898) * 43758.5453;
   return value - Math.floor(value);
@@ -4286,6 +4296,48 @@ export default function App() {
   }, [cuisine, cuisineOptions]);
 
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [locationStatus, setLocationStatus] = useState<"idle" | "requesting" | "acquired" | "denied">("idle");
+  const [locationToast, setLocationToast] = useState<string | null>(null);
+
+  const requestUserLocation = useCallback(
+    (autoSortByDistance = false) => {
+      if (typeof window === "undefined" || !navigator.geolocation) {
+        setLocationStatus("denied");
+        return;
+      }
+      setLocationStatus("requesting");
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const coords = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+          setUserLocation(coords);
+          setLocationStatus("acquired");
+          if (autoSortByDistance) {
+            setSortMode("Distance");
+          }
+        },
+        (err) => {
+          console.warn("Geolocation positioning error:", err);
+          setLocationStatus("denied");
+          if (autoSortByDistance) {
+            setLocationToast(
+              lang === "sv"
+                ? "Kunde inte hämta din position. Tillåt platstjänster i webbläsaren."
+                : "Could not retrieve your location. Please allow location access.",
+            );
+            setTimeout(() => setLocationToast(null), 4000);
+          }
+        },
+        { enableHighAccuracy: true, timeout: 10000 },
+      );
+    },
+    [lang],
+  );
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && navigator.geolocation) {
+      requestUserLocation(false);
+    }
+  }, [requestUserLocation]);
 
   const ranked = useMemo(
     () =>
@@ -4532,6 +4584,15 @@ export default function App() {
 
   async function askWithQuery(queryText: string) {
     if (!queryText.trim()) return;
+
+    if (DISTANCE_INTENT_REGEX.test(queryText)) {
+      if (!userLocation) {
+        requestUserLocation(true);
+      } else {
+        setSortMode("Distance");
+      }
+    }
+
     setAsking(true);
     setAnswer(null);
 
@@ -4783,8 +4844,16 @@ export default function App() {
               aria-label={lang === "sv" ? "Sök ställen, kök, område eller fråga concierge" : "Search places, cuisine, area, or ask concierge"}
               value={query}
               onChange={(event) => {
-                setQuery(event.target.value);
-                setConcierge(event.target.value);
+                const val = event.target.value;
+                setQuery(val);
+                setConcierge(val);
+                if (DISTANCE_INTENT_REGEX.test(val)) {
+                  if (!userLocation) {
+                    requestUserLocation(true);
+                  } else {
+                    setSortMode("Distance");
+                  }
+                }
               }}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
@@ -4926,6 +4995,7 @@ export default function App() {
           <FoodMap
             places={mapPlaces}
             activePlace={active}
+            userLocation={userLocation}
             onSelect={handleSelectPlace}
             onUserLocated={(loc) => {
               setUserLocation(loc);
@@ -4933,6 +5003,12 @@ export default function App() {
             }}
             lang={lang}
           />
+          {locationToast ? (
+            <div className="location-toast" role="status">
+              <span>{locationToast}</span>
+              <button type="button" onClick={() => setLocationToast(null)}>✕</button>
+            </div>
+          ) : null}
           <div className="legend map-legend">
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
               <Coffee size={14} weight="bold" style={{ color: "var(--color-water)" }} /> {t.legendSpecialty}
@@ -4951,6 +5027,7 @@ export default function App() {
               <div className="map-card-title-meta">
                 <span className="map-card-kind-badge">
                   {kindFilterLabel(active.kind, lang)} · {active.area}
+                  {userLocation && hasCoordinates(active) ? ` · 📍 ${formatDistance(distanceFromPoint(active, userLocation), lang)}` : ""}
                 </span>
                 <h3 className="map-card-header-title">{active.name}</h3>
               </div>
@@ -5240,6 +5317,7 @@ export default function App() {
                 <span className="place-main">
                   <small>
                     {kindFilterLabel(place.kind, lang)} · {place.area}
+                    {userLocation && hasCoordinates(place) ? ` · 📍 ${formatDistance(distanceFromPoint(place, userLocation), lang)}` : ""}
                   </small>
                   <strong>{place.name}</strong>
                   <span>{place.tags.slice(0, 2).join(" · ")}</span>
@@ -5484,12 +5562,14 @@ export default function App() {
 function FoodMap({
   places,
   activePlace,
+  userLocation,
   onSelect,
   onUserLocated,
   lang,
 }: {
   places: ScoredPlace[];
   activePlace: ScoredPlace | null;
+  userLocation?: { latitude: number; longitude: number } | null;
   onSelect: (id: number) => void;
   onUserLocated?: (loc: { latitude: number; longitude: number }) => void;
   lang: Language;
@@ -5504,7 +5584,6 @@ function FoodMap({
 
   const handleLocateUser = () => {
     if (typeof window === "undefined" || !navigator.geolocation) {
-      alert(lang === "sv" ? "Geolokaliseringsstöd saknas i din webbläsare." : "Geolocation is not supported by your browser.");
       return;
     }
     setLocating(true);
@@ -5538,13 +5617,28 @@ function FoodMap({
         }
         onUserLocated?.(coords);
       },
-      () => {
+      (err) => {
         setLocating(false);
-        alert(lang === "sv" ? "Kunde inte hämta din position. Tillåt platstjänster i webbläsaren." : "Could not retrieve your location. Please allow location access.");
+        console.warn("Location error:", err);
       },
       { enableHighAccuracy: true, timeout: 8000 }
     );
   };
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !userLocation) return;
+    if (userMarkerRef.current) {
+      userMarkerRef.current.remove();
+    }
+    const pulseIcon = L.divIcon({
+      className: "user-pulse-container",
+      html: '<div class="user-pulse-marker" title="Din position">📍</div>',
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+    });
+    userMarkerRef.current = L.marker([userLocation.latitude, userLocation.longitude], { icon: pulseIcon }).addTo(map);
+  }, [userLocation]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {
