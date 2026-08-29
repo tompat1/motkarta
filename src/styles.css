@@ -816,11 +816,19 @@ button.search-clear-btn:hover {
 .map-card.is-minimized {
   bottom: auto;
   border-bottom: 2px solid var(--color-ink);
-  max-height: 54px;
+  max-height: 80px;
   overflow: hidden;
   padding: 10px 16px;
-  width: min(360px, calc(100% - 32px));
+  width: min(380px, calc(100% - 32px));
   box-shadow: 8px 0 18px rgba(0, 0, 0, 0.08);
+}
+
+.map-card.is-minimized .map-card-header-title {
+  font-size: 15px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .map-card-header {
@@ -1136,15 +1144,33 @@ button.search-clear-btn:hover {
   margin-top: 4px;
 }
 
-.results select {
-  background: var(--color-white);
+.results select,
+.rank-controls select,
+.controls select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: var(--color-white);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23111111' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px 12px;
   border: 1px solid var(--color-ink);
   border-radius: var(--radius-none);
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
-  padding: 8px 12px;
+  padding: 8px 32px 8px 12px;
   color: var(--color-ink);
+  cursor: pointer;
+  line-height: 1.3;
+}
+
+.results select:focus,
+.rank-controls select:focus,
+.controls select:focus {
+  outline: 2px solid var(--color-water);
+  outline-offset: 1px;
 }
 
 .rank-controls {
@@ -5397,7 +5423,11 @@ footer {
   }
 
   .mobile-filter-selects select {
-    background: var(--color-white);
+    background-color: var(--color-white);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23111111' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px 12px;
     border: 1px solid var(--color-ink);
     border-radius: var(--radius-control);
     color: var(--color-ink);
@@ -5499,7 +5529,7 @@ footer {
   .map-card.is-minimized {
     bottom: 12px;
     border: 2px solid var(--color-ink);
-    max-height: 62px;
+    max-height: 84px;
     padding: 10px 12px;
     width: auto;
   }
