@@ -5143,25 +5143,7 @@ export default function App() {
               </div>
             )}
           </article>
-          ) : (
-            <article className="map-card">
-              <div className="map-card-header">
-                <div className="map-card-title-meta">
-                  <span className="map-card-kind-badge">{lang === "sv" ? "Ingen live-data" : "No live data"}</span>
-                  <h3 className="map-card-header-title">
-                    {lang === "sv" ? "Datasetet är inte tillgängligt" : "Dataset unavailable"}
-                  </h3>
-                </div>
-              </div>
-              <div className="map-card-body">
-                <p className="note">
-                  {lang === "sv"
-                    ? "MOTKARTA visar inte demoresultat i produktion. Anslut OSM/static data eller D1 för att fylla kartan."
-                    : "MOTKARTA does not show demo results in production. Connect OSM/static data or D1 to populate the map."}
-                </p>
-              </div>
-            </article>
-          )}
+          ) : null}
         </div>
 
         <aside className="results">
