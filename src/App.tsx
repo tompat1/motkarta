@@ -50,10 +50,20 @@ import {
   ThumbsUp,
   ThumbsDown,
   X,
+  Faders,
+  List,
+  Heart,
+  NavigationArrow,
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../functions/api/concierge";
 import { CartDrawer } from "./components/CartDrawer";
+import {
+  MobileFilterBottomSheet,
+  type MobileFilterState,
+} from "./components/MobileFilterBottomSheet";
+import { PlaceDetailSheet } from "./components/PlaceDetailSheet";
+import { MobilePlaceCardList } from "./components/MobilePlaceCardList";
 import {
   fetchPlacePhotos,
   fetchPlaceReviews,
@@ -118,7 +128,8 @@ const renderLimit = 350;
 const recommendationImpressionLimit = 50;
 const stockholmCenter = { latitude: 59.3293, longitude: 18.0686 };
 
-type EstablishmentFilter = (typeof establishmentTypes)[number];
+export type EstablishmentFilter = (typeof establishmentTypes)[number];
+
 type CuisineFilter = typeof allCuisines | string;
 type Mode = (typeof modes)[number];
 type SortMode = (typeof sortModes)[number];
@@ -190,7 +201,7 @@ function comparePlaces(
   return modeScore(b, mode) - modeScore(a, mode);
 }
 
-function distanceFromPoint(
+export function distanceFromPoint(
   place: Pick<PlaceInput, "latitude" | "longitude">,
   center: { latitude: number; longitude: number } = stockholmCenter
 ) {
@@ -214,13 +225,14 @@ function degreesToRadians(value: number) {
   return (value * Math.PI) / 180;
 }
 
-function formatDistance(distKm: number, _lang: Language): string {
+export function formatDistance(distKm: number, _lang: Language): string {
   if (distKm === Number.POSITIVE_INFINITY || isNaN(distKm)) return "";
   if (distKm < 1) {
     return `${Math.round(distKm * 1000)} m`;
   }
   return `${distKm.toFixed(1)} km`;
 }
+
 
 const DISTANCE_INTENT_REGEX = /\b(närmast|närmaste|närmst|närmsta|nära|i närheten|kortast|avstånd|closest|nearest|near me|nära mig|close by|closest place)\b/i;
 
@@ -4026,9 +4038,54 @@ export default function App() {
   const [selected, setSelected] = useState<number | null>(null);
   const [isMapCardMinimized, setIsMapCardMinimized] = useState(false);
 
+  const [mobileViewMode, setMobileViewMode] = useState<"map" | "list">("map");
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
+  const [isPlaceDetailOpen, setIsPlaceDetailOpen] = useState(false);
+  const [mobileFilters, setMobileFilters] = useState<MobileFilterState>({
+    savedOnly: false,
+    openOnly: false,
+    kind: "All places",
+    cuisine: allCuisines,
+    selectedTags: [],
+  });
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (mobileFilters.savedOnly) count++;
+    if (mobileFilters.openOnly) count++;
+    if (kind !== "All places") count++;
+    if (cuisine !== allCuisines) count++;
+    count += mobileFilters.selectedTags.length;
+    return count;
+  }, [mobileFilters, kind, cuisine]);
+
+  const handleUpdateMobileFilters = (newFilters: MobileFilterState) => {
+    setMobileFilters(newFilters);
+    if (newFilters.kind !== kind) {
+      setKind(newFilters.kind);
+    }
+    if (newFilters.cuisine !== cuisine) {
+      setCuisine(newFilters.cuisine);
+    }
+  };
+
+  const handleResetMobileFilters = () => {
+    setMobileFilters({
+      savedOnly: false,
+      openOnly: false,
+      kind: "All places",
+      cuisine: allCuisines,
+      selectedTags: [],
+    });
+    setKind("All places");
+    setCuisine(allCuisines);
+    setQuery("");
+  };
+
   useEffect(() => {
     setIsMapCardMinimized(false);
   }, [selected]);
+
   const [superpowerMode, setSuperpowerMode] = useState<SuperpowerMode | null>(null);
   const [lang, setLang] = useState<Language>(() => {
     if (typeof window !== "undefined") {
@@ -4340,30 +4397,63 @@ export default function App() {
   }, [requestUserLocation]);
 
   const ranked = useMemo(
+
     () =>
       scoredPlaces
-        .filter((place) =>
-          kind === "All places"
-            ? true
-            : kind === "Curated"
-              ? place.evidence.specialistGuide === 1 ||
-                place.evidence.independentEditorial === 1 ||
-                (place.evidenceLabel ?? "").toLowerCase().includes("guide") ||
-                (place.evidenceLabel ?? "").toLowerCase().includes("specialist") ||
-                (place.evidenceLabel ?? "").toLowerCase().includes("visit stockholm") ||
-                (place.evidenceLabel ?? "").toLowerCase().includes("visitstockholm") ||
-                (place.evidenceLabel ?? "").toLowerCase().includes("officiella stadsguiden") ||
-                (place.sourceName ?? "").toLowerCase().includes("husa") ||
-                (place.sourceName ?? "").toLowerCase().includes("visit stockholm") ||
-                (place.sourceName ?? "").toLowerCase().includes("visitstockholm") ||
-                (place.sourceName ?? "").toLowerCase().includes("officiella stadsguiden")
-              : kind === "Saved"
-                ? savedPlaceIds.includes(place.id)
-                : kind === "Latest"
-                  ? true
-                  : place.kind === kind,
-        )
+        .filter((place) => {
+          if (mobileFilters.savedOnly && !savedPlaceIds.includes(place.id)) {
+            return false;
+          }
+          if (kind === "All places") {
+            return true;
+          }
+          if (kind === "Curated") {
+            return (
+              place.evidence.specialistGuide === 1 ||
+              place.evidence.independentEditorial === 1 ||
+              (place.evidenceLabel ?? "").toLowerCase().includes("guide") ||
+              (place.evidenceLabel ?? "").toLowerCase().includes("specialist") ||
+              (place.evidenceLabel ?? "").toLowerCase().includes("visit stockholm") ||
+              (place.evidenceLabel ?? "").toLowerCase().includes("visitstockholm") ||
+              (place.evidenceLabel ?? "").toLowerCase().includes("officiella stadsguiden") ||
+              (place.sourceName ?? "").toLowerCase().includes("husa") ||
+              (place.sourceName ?? "").toLowerCase().includes("visit stockholm") ||
+              (place.sourceName ?? "").toLowerCase().includes("visitstockholm") ||
+              (place.sourceName ?? "").toLowerCase().includes("officiella stadsguiden")
+            );
+          }
+          if (kind === "Saved") {
+            return savedPlaceIds.includes(place.id);
+          }
+          if (kind === "Latest") {
+            return true;
+          }
+          return place.kind === kind;
+        })
         .filter((place) => cuisine === allCuisines || cuisineParts(place).includes(cuisine))
+        .filter((place) => {
+          if (mobileFilters.selectedTags.length === 0) return true;
+          const searchStr = [
+            ...place.tags,
+            place.kind,
+            place.cuisine || "",
+            place.specialty?.ownRoastery ? "Own roastery" : "",
+            place.specialty?.singleOrigin ? "Single origin" : "",
+            place.specialty?.filterCoffee ? "Filter" : "",
+            ...(place.specialty?.manualBrewMethods || []),
+          ]
+            .join(" ")
+            .toLowerCase();
+
+          return mobileFilters.selectedTags.every((t) => {
+            const tLower = t.toLowerCase();
+            return (
+              searchStr.includes(tLower) ||
+              place.name.toLowerCase().includes(tLower) ||
+              place.note.toLowerCase().includes(tLower)
+            );
+          });
+        })
         .filter((place) =>
           `${place.name} ${place.area} ${place.cuisine ?? ""} ${place.tags.join(" ")}`
             .toLowerCase()
@@ -4378,7 +4468,19 @@ export default function App() {
           }
           return comparePlaces(a, b, mode, sortMode, randomSeed, userLocation ?? stockholmCenter);
         }),
-    [cuisine, kind, mode, query, randomSeed, savedPlaceIds, scoredPlaces, sortMode, userLocation],
+    [
+      cuisine,
+      kind,
+      mobileFilters.savedOnly,
+      mobileFilters.selectedTags,
+      mode,
+      query,
+      randomSeed,
+      savedPlaceIds,
+      scoredPlaces,
+      sortMode,
+      userLocation,
+    ],
   );
   const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
   const hasSearchQuery = Boolean(query.trim());
@@ -4445,6 +4547,7 @@ export default function App() {
           }),
         };
       });
+
       const attemptedKeys = attemptedRecommendationEventKeysRef.current;
       const unsentEvents = events.filter((event) => {
         if (attemptedKeys.has(event.idempotencyKey)) return false;
@@ -4753,7 +4856,211 @@ export default function App() {
 
   return (
     <main>
+      {/* Mobile Dark Header (Matching Motkarta Mock & Coffee Trip Topbar) */}
+      <div className="mobile-dark-header">
+        <div className="mobile-header-top-row">
+          <a
+            href="#"
+            className="mobile-brand-title"
+            onClick={(e) => {
+              e.preventDefault();
+              handleResetMobileFilters();
+            }}
+          >
+            MOTKARTA
+          </a>
+          <div className="mobile-header-actions">
+            <button
+              type="button"
+              className="mobile-nav-toggle-btn"
+              onClick={() => setMobileViewMode(mobileViewMode === "map" ? "list" : "map")}
+              aria-label={mobileViewMode === "map" ? "Visa lista" : "Visa karta"}
+            >
+              {mobileViewMode === "map" ? (
+                <>
+                  <List size={16} weight="bold" />
+                  <span>{lang === "sv" ? "Lista" : "List"}</span>
+                </>
+              ) : (
+                <>
+                  <MapTrifold size={16} weight="bold" />
+                  <span>{lang === "sv" ? "Karta" : "Map"}</span>
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              className="mobile-nav-toggle-btn"
+              onClick={() => handleSetLang(lang === "sv" ? "en" : "sv")}
+              aria-label="Language selector"
+            >
+              <span>{lang.toUpperCase()}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Search Bar Input */}
+        <div className="mobile-search-input-wrapper">
+          <MagnifyingGlass size={18} weight="bold" className="mobile-search-icon" />
+          <input
+            type="text"
+            className="mobile-search-input"
+            value={query}
+            onChange={(e) => {
+              const val = e.target.value;
+              setQuery(val);
+              setConcierge(val);
+            }}
+            placeholder={lang === "sv" ? "Vad vill du äta?" : "What do you want to eat?"}
+          />
+          {query.trim() ? (
+            <button
+              type="button"
+              className="mobile-search-clear"
+              onClick={() => {
+                setQuery("");
+                setConcierge("");
+              }}
+              aria-label="Clear search"
+            >
+              ✕
+            </button>
+          ) : null}
+        </div>
+
+        {/* Horizontal Quick Filter Carousel */}
+        <div className="mobile-quick-filter-carousel" role="toolbar" aria-label="Quick filters">
+          <button
+            type="button"
+            className={`quick-filter-pill ${activeFilterCount > 0 ? "is-primary-active" : ""}`}
+            onClick={() => setIsFilterSheetOpen(true)}
+          >
+            <Faders size={14} weight="bold" />
+            {activeFilterCount > 0 ? (
+              <span className="quick-filter-badge">{activeFilterCount}</span>
+            ) : null}
+            <span>{lang === "sv" ? "Filter" : "Filters"}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`quick-filter-pill ${mobileFilters.savedOnly ? "is-active" : ""}`}
+            onClick={() =>
+              handleUpdateMobileFilters({
+                ...mobileFilters,
+                savedOnly: !mobileFilters.savedOnly,
+              })
+            }
+          >
+            <Heart
+              size={13}
+              weight={mobileFilters.savedOnly ? "fill" : "bold"}
+            />
+            <span>{lang === "sv" ? "Sparade" : "Saved"}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`quick-filter-pill ${mobileFilters.openOnly ? "is-active" : ""}`}
+            onClick={() =>
+              handleUpdateMobileFilters({
+                ...mobileFilters,
+                openOnly: !mobileFilters.openOnly,
+              })
+            }
+          >
+            <Clock size={13} weight="bold" />
+            <span>{lang === "sv" ? "Öppet nu" : "Open now"}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`quick-filter-pill ${kind === "Specialty coffee" ? "is-active" : ""}`}
+            onClick={() => {
+              const nextKind = kind === "Specialty coffee" ? "All places" : "Specialty coffee";
+              setKind(nextKind);
+              setMobileFilters((prev) => ({ ...prev, kind: nextKind }));
+            }}
+          >
+            <span>Specialty Coffee</span>
+          </button>
+
+          <button
+            type="button"
+            className={`quick-filter-pill ${cuisine === "pizza" ? "is-active" : ""}`}
+            onClick={() => {
+              const nextCuisine = cuisine === "pizza" ? allCuisines : "pizza";
+              setCuisine(nextCuisine);
+              setMobileFilters((prev) => ({ ...prev, cuisine: nextCuisine }));
+            }}
+          >
+            <span>Pizza</span>
+          </button>
+
+          <button
+            type="button"
+            className={`quick-filter-pill ${kind === "Bakery" ? "is-active" : ""}`}
+            onClick={() => {
+              const nextKind = kind === "Bakery" ? "All places" : "Bakery";
+              setKind(nextKind);
+              setMobileFilters((prev) => ({ ...prev, kind: nextKind }));
+            }}
+          >
+            <span>{lang === "sv" ? "Bageri" : "Bakery"}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`quick-filter-pill ${kind === "Restaurant" ? "is-active" : ""}`}
+            onClick={() => {
+              const nextKind = kind === "Restaurant" ? "All places" : "Restaurant";
+              setKind(nextKind);
+              setMobileFilters((prev) => ({ ...prev, kind: nextKind }));
+            }}
+          >
+            <span>{lang === "sv" ? "Restaurang" : "Restaurant"}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`quick-filter-pill ${query.toLowerCase() === "vasastan" ? "is-active" : ""}`}
+            onClick={() => {
+              const nextQuery = query.toLowerCase() === "vasastan" ? "" : "Vasastan";
+              setQuery(nextQuery);
+              setConcierge(nextQuery);
+            }}
+          >
+            <span>Vasastan</span>
+          </button>
+
+          <button
+            type="button"
+            className={`quick-filter-pill ${query.toLowerCase() === "södermalm" ? "is-active" : ""}`}
+            onClick={() => {
+              const nextQuery = query.toLowerCase() === "södermalm" ? "" : "Södermalm";
+              setQuery(nextQuery);
+              setConcierge(nextQuery);
+            }}
+          >
+            <span>Södermalm</span>
+          </button>
+
+          <button
+            type="button"
+            className={`quick-filter-pill ${query.toLowerCase() === "östermalm" ? "is-active" : ""}`}
+            onClick={() => {
+              const nextQuery = query.toLowerCase() === "östermalm" ? "" : "Östermalm";
+              setQuery(nextQuery);
+              setConcierge(nextQuery);
+            }}
+          >
+            <span>Östermalm</span>
+          </button>
+        </div>
+      </div>
+
       <header className="topbar">
+
         <a className="brand" href="#" aria-label="MOTKARTA">
           <img src="/motkarta_drop_divided_black_red.svg" alt="MOTKARTA Pin" className="brand-counter-pin" />
           <img src="/logo.webp" alt="MOTKARTA" className="brand-logo" />
@@ -4991,18 +5298,34 @@ export default function App() {
       </section>
 
       <section className="workspace">
-        <div className="map-panel">
-          <FoodMap
-            places={mapPlaces}
+        {mobileViewMode === "list" ? (
+          <MobilePlaceCardList
+            places={visibleRanked}
             activePlace={active}
+            savedPlaceIds={savedPlaceIds}
             userLocation={userLocation}
-            onSelect={handleSelectPlace}
-            onUserLocated={(loc) => {
-              setUserLocation(loc);
-              setSortMode("Distance");
-            }}
             lang={lang}
+            onSelectPlace={(p) => {
+              setSelected(p.id);
+              setIsPlaceDetailOpen(true);
+            }}
+            onToggleSave={handleToggleSavePlace}
           />
+        ) : (
+          <div className="map-panel">
+            <FoodMap
+              places={mapPlaces}
+              activePlace={active}
+              userLocation={userLocation}
+              onSelect={handleSelectPlace}
+              onUserLocated={(loc) => {
+                setUserLocation(loc);
+                setSortMode("Distance");
+              }}
+              onToggleView={() => setMobileViewMode("list")}
+              lang={lang}
+            />
+
           {locationToast ? (
             <div className="location-toast" role="status">
               <span>{locationToast}</span>
@@ -5222,8 +5545,10 @@ export default function App() {
           </article>
           ) : null}
         </div>
+        )}
 
         <aside className="results">
+
           <div className="results-head">
             <div>
               <p className="eyebrow">{t.eyebrow}</p>
@@ -5548,7 +5873,37 @@ export default function App() {
         lang={lang}
       />
 
+      <MobileFilterBottomSheet
+        isOpen={isFilterSheetOpen}
+        onClose={() => setIsFilterSheetOpen(false)}
+        filters={mobileFilters}
+        onUpdateFilters={handleUpdateMobileFilters}
+        onResetFilters={handleResetMobileFilters}
+        matchingCount={ranked.length}
+        lang={lang}
+      />
+
+      {active ? (
+        <PlaceDetailSheet
+          place={active}
+          isOpen={isPlaceDetailOpen}
+          isSaved={savedPlaceIds.includes(active.id)}
+          userRating={userRatings[active.id] ?? 0}
+          userLocation={userLocation}
+          lang={lang}
+          onClose={() => setIsPlaceDetailOpen(false)}
+          onToggleSave={handleToggleSavePlace}
+          onRatePlace={handleRatePlace}
+          onViewOnMap={(p) => {
+            setSelected(p.id);
+            setMobileViewMode("map");
+            setIsPlaceDetailOpen(false);
+          }}
+        />
+      ) : null}
+
       <footer>
+
         <div style={{ display: "inline-flex", alignItems: "center", gap: "10px" }}>
           <img src="/logo.webp" alt="MOTKARTA" className="footer-logo" />
           <span>/ {t.footerLeft.replace(/^MOTKARTA \/ /, "")}</span>
@@ -5565,6 +5920,7 @@ function FoodMap({
   userLocation,
   onSelect,
   onUserLocated,
+  onToggleView,
   lang,
 }: {
   places: ScoredPlace[];
@@ -5572,6 +5928,7 @@ function FoodMap({
   userLocation?: { latitude: number; longitude: number } | null;
   onSelect: (id: number) => void;
   onUserLocated?: (loc: { latitude: number; longitude: number }) => void;
+  onToggleView?: () => void;
   lang: Language;
 }) {
   const t = translations[lang];
@@ -5652,8 +6009,13 @@ function FoodMap({
       scrollWheelZoom: true,
     });
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    const isMobile = isMobileMapViewport();
+    const tileUrl = isMobile
+      ? "https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png"
+      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+    L.tileLayer(tileUrl, {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       maxZoom: 19,
     }).addTo(map);
 
@@ -5837,12 +6199,37 @@ function FoodMap({
           <span className="map-btn-label">{lang === "sv" ? "Zooma ut" : "Zoom out"}</span>
         </button>
       </div>
+
+      {/* Floating Map Controls for Mobile */}
+      <button
+        type="button"
+        className="mobile-floating-control-btn floating-gps-btn"
+        onClick={handleLocateUser}
+        title={lang === "sv" ? "Min position" : "My location"}
+        aria-label={lang === "sv" ? "Min position" : "My location"}
+      >
+        <NavigationArrow size={22} weight="bold" />
+      </button>
+
+      {onToggleView ? (
+        <button
+          type="button"
+          className="mobile-floating-control-btn floating-view-toggle-btn"
+          onClick={onToggleView}
+          title={lang === "sv" ? "Visa lista" : "Show list"}
+          aria-label={lang === "sv" ? "Visa lista" : "Show list"}
+        >
+          <List size={20} weight="bold" />
+          <span>{lang === "sv" ? "Lista" : "List"}</span>
+        </button>
+      ) : null}
+
       <div ref={containerRef} className="leaflet-map" aria-label="Interactive Stockholm food map" />
     </div>
   );
 }
 
-function hasCoordinates(place: ScoredPlace): place is ScoredPlace & { latitude: number; longitude: number } {
+export function hasCoordinates(place: ScoredPlace): place is ScoredPlace & { latitude: number; longitude: number } {
   return typeof place.latitude === "number" && typeof place.longitude === "number";
 }
 
@@ -5852,12 +6239,13 @@ function isMobileMapViewport() {
 
 function placeIcon(place: ScoredPlace, active: boolean) {
   return L.divIcon({
-    className: "",
-    html: `<span class="leaflet-place-marker ${kindClass(place.kind)} ${active ? "active" : ""}">${escapeHtml(place.name.slice(0, 1))}</span>`,
-    iconSize: active ? [32, 32] : [24, 24],
-    iconAnchor: active ? [16, 16] : [12, 12],
+    className: "custom-map-pin-container",
+    html: `<span class="leaflet-place-marker ${kindClass(place.kind)} ${active ? "active" : ""}"></span>`,
+    iconSize: active ? [24, 24] : [14, 14],
+    iconAnchor: active ? [12, 12] : [7, 7],
   });
 }
+
 
 function placePopupHtml(place: ScoredPlace, rank: number, lang: Language = "sv") {
   const cuisines = cuisineParts(place).map((c) => cuisineLabel(c, lang)).join(" · ");
