@@ -211,6 +211,17 @@ const VENUE_SPECIFIC_PHOTOS: Record<string, PlacePhoto[]> = {
       credit: "Lykke Coffee Farms Nytorget",
     },
   ],
+  "savoj pizza": [
+    {
+      id: "venue-savoj-1",
+      placeId: 39,
+      url: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
+      thumbnailUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80",
+      caption: "Savoj Pizza Hantverkssurdeg & Vedugn (Vasastan)",
+      credit: "Savoj Pizza Stockholm",
+    },
+  ],
+
   "frantzén": [
     {
       id: "venue-frantzen-1",
