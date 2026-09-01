@@ -21,7 +21,7 @@ def build_folium_map(frame: pd.DataFrame, output_path: str | Path) -> None:
     if not data.empty:
         center = [float(data["latitude"].mean()), float(data["longitude"].mean())]
 
-    fmap = folium.Map(location=center, zoom_start=12, tiles="CartoDB positron")
+    fmap = folium.Map(location=center, zoom_start=12, tiles="OpenStreetMap")
     add_title(fmap, "Motkarta Stockholm Food Map")
 
     for establishment_type, group in data.groupby("establishment_type"):
