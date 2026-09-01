@@ -123,3 +123,20 @@ Recommendations prioritize transparent quality and discovery signals over raw re
   assert.equal(parsed.cards[1].name, "Stockholm Roast");
   assert.ok(parsed.charter.length > 0);
 });
+
+test("extractStructuredFilters and retrieveAndSynthesize prioritize dog-friendly places", () => {
+  const query = "hundvänligt café i Stockholm";
+  const filters = extractStructuredFilters(query);
+  assert.equal(filters.dog_friendly, true);
+
+  const result = retrieveAndSynthesize(query, demoPlaces);
+  assert.ok(result.recommendedPlaces.length > 0);
+  const topPick = result.recommendedPlaces[0];
+  const placeData = demoPlaces.find((p) => p.id === topPick.id);
+  assert.ok(placeData);
+  assert.ok(
+    placeData.tags.includes("Dog friendly") ||
+    placeData.tags.includes("Hundvänligt") ||
+    placeData.name.includes("Dog")
+  );
+});

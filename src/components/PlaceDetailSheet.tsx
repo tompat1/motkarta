@@ -12,6 +12,7 @@ import {
   ArrowSquareOut,
   NavigationArrow,
   Check,
+  PawPrint,
 } from "@phosphor-icons/react";
 import type { ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../App";
@@ -215,11 +216,19 @@ export function PlaceDetailSheet({
           {/* Tags */}
           {place.tags?.length > 0 ? (
             <div className="place-detail-tags">
-              {place.tags.map((tag) => (
-                <span key={tag} className="place-detail-tag-chip">
-                  {tag}
-                </span>
-              ))}
+              {place.tags.map((tag) => {
+                const isDogTag = tag.toLowerCase().includes("dog") || tag.toLowerCase().includes("hund") || tag.toLowerCase() === "tasstipset";
+                return (
+                  <span
+                    key={tag}
+                    className={`place-detail-tag-chip ${isDogTag ? "is-dog-friendly-chip" : ""}`}
+                    style={isDogTag ? { display: "inline-flex", alignItems: "center", gap: "4px" } : undefined}
+                  >
+                    {isDogTag ? <PawPrint size={13} weight="bold" /> : null}
+                    {tag}
+                  </span>
+                );
+              })}
             </div>
           ) : null}
 

@@ -54,6 +54,7 @@ import {
   List,
   Heart,
   NavigationArrow,
+  PawPrint,
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../functions/api/concierge";
@@ -4447,6 +4448,18 @@ export default function App() {
 
           return mobileFilters.selectedTags.every((t) => {
             const tLower = t.toLowerCase();
+            if (tLower === "dog friendly" || tLower === "hundvänligt") {
+              return (
+                searchStr.includes("dog friendly") ||
+                searchStr.includes("hundvänligt") ||
+                searchStr.includes("hundvänlig") ||
+                searchStr.includes("tasstipset") ||
+                place.name.toLowerCase().includes("dog") ||
+                place.note.toLowerCase().includes("hund") ||
+                place.note.toLowerCase().includes("dog") ||
+                place.tags.some((pt) => ["dog friendly", "hundvänligt", "tasstipset"].includes(pt.toLowerCase()))
+              );
+            }
             return (
               searchStr.includes(tLower) ||
               place.name.toLowerCase().includes(tLower) ||
@@ -4975,6 +4988,27 @@ export default function App() {
 
           <button
             type="button"
+            className={`quick-filter-pill ${mobileFilters.selectedTags.includes("Dog friendly") ? "is-active" : ""}`}
+            onClick={() => {
+              const exists = mobileFilters.selectedTags.includes("Dog friendly");
+              const updated = exists
+                ? mobileFilters.selectedTags.filter((t) => t !== "Dog friendly")
+                : [...mobileFilters.selectedTags, "Dog friendly"];
+              handleUpdateMobileFilters({
+                ...mobileFilters,
+                selectedTags: updated,
+              });
+            }}
+          >
+            <PawPrint
+              size={13}
+              weight={mobileFilters.selectedTags.includes("Dog friendly") ? "fill" : "bold"}
+            />
+            <span>{lang === "sv" ? "Hundvänligt" : "Dog friendly"}</span>
+          </button>
+
+          <button
+            type="button"
             className={`quick-filter-pill ${kind === "Specialty coffee" ? "is-active" : ""}`}
             onClick={() => {
               const nextKind = kind === "Specialty coffee" ? "All places" : "Specialty coffee";
@@ -5293,6 +5327,77 @@ export default function App() {
                 {item === allCuisines ? t.allCuisines : cuisineLabel(item, lang)}
               </button>
             ))}
+          </div>
+        </div>
+        <div className="chips feature-chips" aria-label="Filter egenskaper">
+          <span className="filter-label">{lang === "sv" ? "Egenskaper" : "Features"}</span>
+          <div className="chip-row">
+            <button
+              className={mobileFilters.selectedTags.includes("Dog friendly") ? "active" : ""}
+              onClick={() => {
+                const exists = mobileFilters.selectedTags.includes("Dog friendly");
+                const updated = exists
+                  ? mobileFilters.selectedTags.filter((t) => t !== "Dog friendly")
+                  : [...mobileFilters.selectedTags, "Dog friendly"];
+                handleUpdateMobileFilters({
+                  ...mobileFilters,
+                  selectedTags: updated,
+                });
+              }}
+              type="button"
+              style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}
+            >
+              <PawPrint size={13} weight={mobileFilters.selectedTags.includes("Dog friendly") ? "fill" : "bold"} />
+              <span>{lang === "sv" ? "Hundvänligt" : "Dog Friendly"}</span>
+            </button>
+            <button
+              className={mobileFilters.selectedTags.includes("Outdoor seating") ? "active" : ""}
+              onClick={() => {
+                const exists = mobileFilters.selectedTags.includes("Outdoor seating");
+                const updated = exists
+                  ? mobileFilters.selectedTags.filter((t) => t !== "Outdoor seating")
+                  : [...mobileFilters.selectedTags, "Outdoor seating"];
+                handleUpdateMobileFilters({
+                  ...mobileFilters,
+                  selectedTags: updated,
+                });
+              }}
+              type="button"
+            >
+              {lang === "sv" ? "Uteservering" : "Outdoor Seating"}
+            </button>
+            <button
+              className={mobileFilters.selectedTags.includes("Wi-Fi") ? "active" : ""}
+              onClick={() => {
+                const exists = mobileFilters.selectedTags.includes("Wi-Fi");
+                const updated = exists
+                  ? mobileFilters.selectedTags.filter((t) => t !== "Wi-Fi")
+                  : [...mobileFilters.selectedTags, "Wi-Fi"];
+                handleUpdateMobileFilters({
+                  ...mobileFilters,
+                  selectedTags: updated,
+                });
+              }}
+              type="button"
+            >
+              {lang === "sv" ? "Wi-Fi" : "Free Wi-Fi"}
+            </button>
+            <button
+              className={mobileFilters.selectedTags.includes("Vegan options") ? "active" : ""}
+              onClick={() => {
+                const exists = mobileFilters.selectedTags.includes("Vegan options");
+                const updated = exists
+                  ? mobileFilters.selectedTags.filter((t) => t !== "Vegan options")
+                  : [...mobileFilters.selectedTags, "Vegan options"];
+                handleUpdateMobileFilters({
+                  ...mobileFilters,
+                  selectedTags: updated,
+                });
+              }}
+              type="button"
+            >
+              {lang === "sv" ? "Veganskt" : "Vegan Options"}
+            </button>
           </div>
         </div>
       </section>

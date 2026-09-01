@@ -20,6 +20,7 @@ export type StructuredFilters = {
   independent_preferred: boolean;
   tourist_centre: boolean;
   near_public_transport: boolean;
+  dog_friendly?: boolean;
 };
 
 const jsonHeaders = {
@@ -108,12 +109,17 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     (kw) => qLower.includes(kw),
   );
 
+  const dogFriendly = ["dog", "dogs", "hund", "hundar", "hundvänlig", "hundvänligt", "tasstipset", "dog-friendly"].some(
+    (kw) => qLower.includes(kw),
+  );
+
   return {
     cuisines: [...new Set(cuisines)],
     price_max: priceMax,
     independent_preferred: independentPreferred,
     tourist_centre: touristCentre,
     near_public_transport: nearPublicTransport,
+    dog_friendly: dogFriendly,
   };
 }
 
@@ -308,6 +314,7 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
   );
 
   const asksAwayFromTourist = ["away from", "outside", "tourist", "hidden", "quiet", "off the beaten path", "suburb"].some((kw) => query.toLowerCase().includes(kw));
+  const isDogQuery = ["dog", "dogs", "hund", "hundar", "hundvänlig", "hundvänligt", "tasstipset", "dog-friendly"].some((kw) => query.toLowerCase().includes(kw));
 
   const scored: Array<{ place: ScoredPlace; ragScore: number }> = places
   .filter((place) => isUserVisibleLifecycleState(place.lifecycleState))
@@ -357,6 +364,22 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
     // 2. Direct Cuisine Match
     if (structuredFilters.cuisines.some((c) => searchTarget.includes(c))) {
       ragScore += 50;
+    }
+
+    // Dog-friendly query match
+    if (isDogQuery) {
+      const isDogFriendly =
+        searchTarget.includes("dog friendly") ||
+        searchTarget.includes("hundvänligt") ||
+        searchTarget.includes("hundvänlig") ||
+        searchTarget.includes("tasstipset") ||
+        searchTarget.includes("dog bakery") ||
+        place.tags?.some((t) => t.toLowerCase() === "dog friendly" || t.toLowerCase() === "hundvänligt");
+      if (isDogFriendly) {
+        ragScore += 60;
+      } else {
+        ragScore -= 40;
+      }
     }
 
     // 3. Specialty Coffee Verification Gate (Rule #1)

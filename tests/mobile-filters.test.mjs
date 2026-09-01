@@ -41,4 +41,25 @@ test("Savoj Pizza is present in demoPlaces with correct attributes", () => {
   assert.ok(savoj.tags.includes("Pizza"));
   assert.ok(savoj.tags.includes("Sourdough"));
   assert.ok(savoj.tags.includes("Locally owned"));
+  assert.ok(savoj.tags.includes("Dog friendly"));
+});
+
+test("Dog friendly filter item exists and matches verified dog-friendly places", () => {
+  const servicesSection = FILTER_SECTIONS.find((s) => s.id === "services");
+  assert.ok(servicesSection);
+  const dogItem = servicesSection.items.find((i) => i.id === "dog");
+  assert.ok(dogItem, "Dog item must exist in services section");
+  assert.equal(dogItem.tag, "Dog friendly");
+  assert.equal(dogItem.labelSv, "Hundvänligt");
+  assert.equal(dogItem.labelEn, "Dog Friendly");
+
+  const dogFriendlyPlaces = demoPlaces.filter((p) =>
+    p.tags.includes("Dog friendly") || p.tags.includes("Hundvänligt") || p.name.includes("Dog")
+  );
+  assert.ok(dogFriendlyPlaces.length >= 5, "Should have multiple verified dog-friendly places in demoPlaces");
+  const names = dogFriendlyPlaces.map((p) => p.name);
+  assert.ok(names.some((n) => n.includes("Drop Coffee")));
+  assert.ok(names.some((n) => n.includes("Pascal")));
+  assert.ok(names.some((n) => n.includes("Lykke")));
+  assert.ok(names.some((n) => n.includes("Dog Bakery")));
 });
