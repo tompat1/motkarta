@@ -4888,49 +4888,107 @@ export default function App() {
 
   return (
     <main>
-      {/* Mobile Dark Header (Matching Motkarta Mock & Coffee Trip Topbar) */}
-      <div className="mobile-dark-header">
-        <div className="mobile-header-top-row">
-          <a
-            href="#"
-            className="mobile-brand-title"
-            onClick={(e) => {
-              e.preventDefault();
-              handleResetMobileFilters();
-            }}
-          >
-            MOTKARTA
+      {/* Unified Motkarta Top Header */}
+      <header className="topbar">
+        <a
+          className="brand"
+          href="#"
+          aria-label="MOTKARTA"
+          onClick={(e) => {
+            e.preventDefault();
+            handleResetMobileFilters();
+          }}
+        >
+          <img src="/motkarta_drop_divided_black_red.svg" alt="MOTKARTA Pin" className="brand-counter-pin" />
+          <img src="/logo.webp" alt="MOTKARTA" className="brand-logo" />
+          <span className="brand-descriptor">{t.brandDescriptor}</span>
+        </a>
+        <nav>
+          <a href="#map" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <Compass size={14} weight="bold" /> {t.navMap}
           </a>
-          <div className="mobile-header-actions">
+          <a href="#method" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <ShieldCheck size={14} weight="bold" /> {t.navMethod}
+          </a>
+          <a href="#concierge" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <MagnifyingGlass size={14} weight="bold" /> {t.navConcierge}
+          </a>
+          <a href="#merch" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <ShoppingBag size={14} weight="bold" /> Merch
+          </a>
+          <button
+            type="button"
+            className="onboarding-trigger-btn"
+            onClick={() => setShowOnboarding(true)}
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "none", border: "none", font: "inherit", color: "inherit", cursor: "pointer" }}
+          >
+            <Sparkle size={14} weight="bold" /> {lang === "sv" ? "Principer" : "Principles"}
+          </button>
+        </nav>
+        <div className="topbar-actions">
+          {/* Mobile view toggle (Map / List) - only visible on mobile */}
+          <button
+            type="button"
+            className="mobile-nav-toggle-btn"
+            onClick={() => setMobileViewMode(mobileViewMode === "map" ? "list" : "map")}
+            aria-label={mobileViewMode === "map" ? "Visa lista" : "Visa karta"}
+          >
+            {mobileViewMode === "map" ? (
+              <>
+                <List size={16} weight="bold" />
+                <span>{lang === "sv" ? "Lista" : "List"}</span>
+              </>
+            ) : (
+              <>
+                <MapTrifold size={16} weight="bold" />
+                <span>{lang === "sv" ? "Karta" : "Map"}</span>
+              </>
+            )}
+          </button>
+
+          <button
+            type="button"
+            className={`topbar-cart-btn ${totalCartCount > 0 ? "has-items" : ""}`}
+            onClick={() => setIsCartOpen(true)}
+            aria-label={lang === "sv" ? "Öppna varukorg" : "Open shopping cart"}
+            title={lang === "sv" ? `Varukorg (${totalCartCount})` : `Shopping Cart (${totalCartCount})`}
+          >
+            <ShoppingCart size={16} weight="bold" />
+            <span className="topbar-cart-badge">{totalCartCount}</span>
+          </button>
+
+          <div className="lang-switcher" aria-label="Language selector">
             <button
               type="button"
-              className="mobile-nav-toggle-btn"
-              onClick={() => setMobileViewMode(mobileViewMode === "map" ? "list" : "map")}
-              aria-label={mobileViewMode === "map" ? "Visa lista" : "Visa karta"}
+              className={`lang-btn ${lang === "sv" ? "active" : ""}`}
+              onClick={() => handleSetLang("sv")}
             >
-              {mobileViewMode === "map" ? (
-                <>
-                  <List size={16} weight="bold" />
-                  <span>{lang === "sv" ? "Lista" : "List"}</span>
-                </>
-              ) : (
-                <>
-                  <MapTrifold size={16} weight="bold" />
-                  <span>{lang === "sv" ? "Karta" : "Map"}</span>
-                </>
-              )}
+              SV
             </button>
             <button
               type="button"
-              className="mobile-nav-toggle-btn"
-              onClick={() => handleSetLang(lang === "sv" ? "en" : "sv")}
-              aria-label="Language selector"
+              className={`lang-btn ${lang === "en" ? "active" : ""}`}
+              onClick={() => handleSetLang("en")}
             >
-              <span>{lang.toUpperCase()}</span>
+              EN
             </button>
           </div>
-        </div>
 
+          <a className="about" href="#sources">
+            <span className={`status-dot status-dot-${dataSource}`} />
+            {dataSource === "osm"
+              ? t.dataSourceLiveOsm
+              : dataSource === "d1"
+                ? t.dataSourceLiveD1
+                : dataSource === "loading"
+                  ? t.dataSourceLoading
+                  : t.dataSourceUnavailable}
+          </a>
+        </div>
+      </header>
+
+      {/* Mobile-only Quick Search & Filter Controls */}
+      <div className="mobile-controls-bar">
         {/* Search Bar Input */}
         <div className="mobile-search-input-wrapper">
           <MagnifyingGlass size={18} weight="bold" className="mobile-search-icon" />
@@ -5111,75 +5169,6 @@ export default function App() {
           </button>
         </div>
       </div>
-
-      <header className="topbar">
-
-        <a className="brand" href="#" aria-label="MOTKARTA">
-          <img src="/motkarta_drop_divided_black_red.svg" alt="MOTKARTA Pin" className="brand-counter-pin" />
-          <img src="/logo.webp" alt="MOTKARTA" className="brand-logo" />
-          <span>{t.brandDescriptor}</span>
-        </a>
-        <nav>
-          <a href="#map" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <Compass size={14} weight="bold" /> {t.navMap}
-          </a>
-          <a href="#method" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <ShieldCheck size={14} weight="bold" /> {t.navMethod}
-          </a>
-          <a href="#concierge" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <MagnifyingGlass size={14} weight="bold" /> {t.navConcierge}
-          </a>
-          <a href="#merch" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <ShoppingBag size={14} weight="bold" /> Merch
-          </a>
-          <button
-            type="button"
-            className="onboarding-trigger-btn"
-            onClick={() => setShowOnboarding(true)}
-            style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "none", border: "none", font: "inherit", color: "inherit", cursor: "pointer" }}
-          >
-            <Sparkle size={14} weight="bold" /> {lang === "sv" ? "Principer" : "Principles"}
-          </button>
-        </nav>
-        <div className="topbar-actions">
-          <button
-            type="button"
-            className={`topbar-cart-btn ${totalCartCount > 0 ? "has-items" : ""}`}
-            onClick={() => setIsCartOpen(true)}
-            aria-label={lang === "sv" ? "Öppna varukorg" : "Open shopping cart"}
-            title={lang === "sv" ? `Varukorg (${totalCartCount})` : `Shopping Cart (${totalCartCount})`}
-          >
-            <ShoppingCart size={16} weight="bold" />
-            <span className="topbar-cart-badge">{totalCartCount}</span>
-          </button>
-          <div className="lang-switcher" aria-label="Language selector">
-            <button
-              type="button"
-              className={`lang-btn ${lang === "sv" ? "active" : ""}`}
-              onClick={() => handleSetLang("sv")}
-            >
-              SV
-            </button>
-            <button
-              type="button"
-              className={`lang-btn ${lang === "en" ? "active" : ""}`}
-              onClick={() => handleSetLang("en")}
-            >
-              EN
-            </button>
-          </div>
-          <a className="about" href="#sources">
-            <span className={`status-dot status-dot-${dataSource}`} />
-            {dataSource === "osm"
-              ? t.dataSourceLiveOsm
-              : dataSource === "d1"
-                ? t.dataSourceLiveD1
-                : dataSource === "loading"
-                  ? t.dataSourceLoading
-                  : t.dataSourceUnavailable}
-          </a>
-        </div>
-      </header>
 
       <section className="intro">
         <div>
