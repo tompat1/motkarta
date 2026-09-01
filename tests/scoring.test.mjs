@@ -9,7 +9,6 @@ import {
   scorePlace,
   verifySpecialtyCoffeeEligibility,
 } from "../lib/scoring.ts";
-import { demoPlaces } from "../lib/demo-places.ts";
 
 test("bayesian rating tempers tiny sample sizes", () => {
   const tinyPerfectSample = bayesianRating(5, 3, 4.1, 30);
@@ -41,7 +40,47 @@ test("exposure-adjusted rate rewards efficient engagement", () => {
 });
 
 test("places receive all promised score dimensions", () => {
-  const scored = scorePlace(demoPlaces[0], { kind: "Specialty coffee", tags: ["filter"] });
+  const samplePlace = {
+    id: 1,
+    name: "Sample Roastery",
+    kind: "Specialty coffee",
+    cuisine: "coffee",
+    area: "Södermalm",
+    tags: ["Filter", "Single origin", "Specialty coffee"],
+    ratingAverage: 4.6,
+    reliableRatingCount: 200,
+    reviewCount: 250,
+    categoryMeanRating: 4.2,
+    categoryPopularityRaw: 0.8,
+    localPopularityPercentile: 75,
+    mainstreamExposure: 30,
+    ageDays: 1000,
+    daysSinceFreshEvidence: 30,
+    evidence: {
+      specialistGuide: 1,
+      independentEditorial: 1,
+      verifiedUserRating: 1,
+      repeatVisits: 80,
+      recentReviews: 80,
+      credibleReviewers: 80,
+      inspectionStatus: 90,
+      verifiedAttributes: 85,
+      dataFreshness: 80,
+      confidence: "High",
+    },
+    engagement: {
+      searchImpressions: 1000,
+      profileViews: 200,
+      mapMarkerClicks: 100,
+      saves: 50,
+      directionRequests: 30,
+      confirmedVisits: 20,
+      repeatVisits: 10,
+      recommendations: 5,
+      recentSaves: 10,
+    },
+  };
+  const scored = scorePlace(samplePlace, { kind: "Specialty coffee", tags: ["filter"] });
 
   assert.ok(scored.scores.quality > 0);
   assert.ok(scored.scores.popularity > 0);

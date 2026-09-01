@@ -6,14 +6,13 @@ import { join } from "node:path";
 import { promisify } from "node:util";
 import test from "node:test";
 
-import { demoPlaces } from "../lib/demo-places.ts";
-
 const execFileAsync = promisify(execFile);
 
 test("score snapshot generator emits score inserts from PlaceInput records", async () => {
   const source = join(tmpdir(), `motkarta-score-input-${process.pid}.json`);
   const target = join(tmpdir(), `motkarta-score-output-${process.pid}.sql`);
-  await writeFile(source, JSON.stringify(demoPlaces.slice(0, 2)), "utf8");
+  const livePlaces = JSON.parse(await readFile(new URL("../public/data/places.json", import.meta.url), "utf8")).places;
+  await writeFile(source, JSON.stringify(livePlaces.slice(0, 2)), "utf8");
 
   await execFileAsync("node", ["scripts/generate_score_snapshot_sql.mjs", source, target]);
   const sql = await readFile(target, "utf8");

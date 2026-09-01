@@ -57,21 +57,15 @@ set the Pages build command in the Cloudflare dashboard to `npm run build`.
 The repo also includes `wrangler.toml` with `pages_build_output_dir = "dist"`
 so Pages knows where the built assets belong.
 
-Production APIs do not silently serve demo data. If D1/static OSM data is unavailable,
-`/api/places`, `/api/concierge`, `/api/photos`, and `/api/reviews` return an
-unavailable response rather than mixing illustrative fixtures into live results.
-For local demos only, set
-`ALLOW_DEMO_FALLBACK=true` for Cloudflare Functions and
-`VITE_MOTKARTA_DEMO_MODE=true` for the Vite client.
+Production APIs and the web application always run against the live OpenStreetMap + ML dataset (`public/data/places.json` or Cloudflare D1). If D1 is not bound, `/api/places` returns a 503 response and the client automatically loads the pre-generated static live dataset directly.
 
-After creating and binding D1, run the migration and optional demo seed if you
-are managing the database from the CLI:
+After creating and binding D1, run the migration and seed scripts:
 
 ```bash
 npm run db:generate
-npm run db:seed:demo
+npm run db:seed:osm
 wrangler d1 migrations apply <database-name> --remote
-wrangler d1 execute <database-name> --remote --file drizzle/seed-demo.sql
+wrangler d1 execute <database-name> --remote --file drizzle/seed-osm.sql
 ```
 
 ## Python data pipeline

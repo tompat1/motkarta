@@ -2,7 +2,6 @@
 
 import L from "leaflet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { demoPlaces } from "../lib/demo-places";
 import { OnboardingModal } from "./components/OnboardingModal";
 import { MerchPanel } from "./components/MerchPanel";
 import { PreloaderModal } from "./components/PreloaderModal";
@@ -134,10 +133,7 @@ export type EstablishmentFilter = (typeof establishmentTypes)[number];
 type CuisineFilter = typeof allCuisines | string;
 type Mode = (typeof modes)[number];
 type SortMode = (typeof sortModes)[number];
-type DataSource = "loading" | "demo" | "d1" | "osm" | "unavailable";
-
-const clientEnv = (import.meta as unknown as { env?: { DEV?: boolean; VITE_MOTKARTA_DEMO_MODE?: string } }).env;
-const CLIENT_DEMO_MODE = Boolean(clientEnv?.DEV) || clientEnv?.VITE_MOTKARTA_DEMO_MODE === "true";
+type DataSource = "loading" | "d1" | "osm" | "unavailable";
 
 function modeScore(place: ScoredPlace, mode: Mode) {
   if (mode === "Hidden gems") {
@@ -4057,7 +4053,7 @@ function recommendationSortModeContext(sortMode: SortMode): QueryContextSortMode
 }
 
 export default function App() {
-  const [places, setPlaces] = useState<PlaceInput[]>(CLIENT_DEMO_MODE ? demoPlaces : []);
+  const [places, setPlaces] = useState<PlaceInput[]>([]);
   const [dataSource, setDataSource] = useState<DataSource>("loading");
   const [mode, setMode] = useState<Mode>("For you");
   const [sortMode, setSortMode] = useState<SortMode>("Best match");
@@ -4310,24 +4306,16 @@ export default function App() {
         const payload = await fetchPlacesPayload();
 
         if (!cancelled && payload.places?.length) {
-          setPlaces(sanitizeAndAugmentPlaces(payload.places, CLIENT_DEMO_MODE));
+          setPlaces(sanitizeAndAugmentPlaces(payload.places));
           setDataSource(payload.source);
-        } else if (!cancelled && CLIENT_DEMO_MODE) {
-          setPlaces(sanitizeAndAugmentPlaces(demoPlaces, true));
-          setDataSource("demo");
         } else if (!cancelled) {
           setPlaces([]);
           setDataSource("unavailable");
         }
       } catch {
         if (!cancelled) {
-          if (CLIENT_DEMO_MODE) {
-            setPlaces(sanitizeAndAugmentPlaces(demoPlaces, true));
-            setDataSource("demo");
-          } else {
-            setPlaces([]);
-            setDataSource("unavailable");
-          }
+          setPlaces([]);
+          setDataSource("unavailable");
         }
       }
     }
@@ -5188,9 +5176,7 @@ export default function App() {
                 ? t.dataSourceLiveD1
                 : dataSource === "loading"
                   ? t.dataSourceLoading
-                  : dataSource === "demo"
-                    ? t.dataSourceDemo
-                    : t.dataSourceUnavailable}
+                  : t.dataSourceUnavailable}
           </a>
         </div>
       </header>
@@ -6496,7 +6482,7 @@ const RESTAURANT_GRILL_KEYWORDS = [
   "sportsbar",
 ];
 
-export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[], includeDemoPlaces = false): PlaceInput[] {
+export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[] {
   // 1. Purge commercial chains
   const filtered = inputPlaces.filter((p) => {
     const n = p.name.toLowerCase();
@@ -6568,20 +6554,7 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[], includeDemoP
     return p;
   });
 
-  // 4. In explicit demo/dev mode, ensure fixture places are present for demos.
   const result = [...promoted];
-  if (includeDemoPlaces) {
-    for (const demoPlace of demoPlaces) {
-      const exists = result.some(
-        (p) =>
-          p.name.toLowerCase().includes(demoPlace.name.toLowerCase()) ||
-          demoPlace.name.toLowerCase().includes(p.name.toLowerCase()),
-      );
-      if (!exists) {
-        result.push(demoPlace);
-      }
-    }
-  }
 
   // 5. Strict deduplication by ID and normalized name + area
   const seenIds = new Set<number>();
@@ -6615,9 +6588,7 @@ async function fetchPlacesPayload(): Promise<{ source: DataSource; places: Place
         const source: DataSource =
           rawSource === "osm" || rawSource.startsWith("osm")
             ? "osm"
-            : rawSource === "demo"
-              ? "demo"
-              : "d1";
+            : "d1";
         return { source, places: payload.places };
       }
     }
@@ -6635,7 +6606,6 @@ async function fetchPlacesPayload(): Promise<{ source: DataSource; places: Place
     throw new Error("Static places returned no places");
   }
   const rawSource = payload.source ?? "osm";
-  const source: DataSource =
-    rawSource === "d1" ? "d1" : rawSource === "demo" ? "demo" : "osm";
+  const source: DataSource = rawSource === "d1" ? "d1" : "osm";
   return { source, places: payload.places };
 }

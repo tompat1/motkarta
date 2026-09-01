@@ -1,6 +1,4 @@
-import { demoPlaces } from "../../lib/demo-places.ts";
 import { loadPlacesFromD1 } from "../../lib/place-records.ts";
-import { demoFallbackEnabled } from "../../lib/runtime-flags.ts";
 import { isUserVisibleLifecycleState, scorePlace, type PlaceInput, type ScoredPlace } from "../../lib/scoring.ts";
 
 type EventContext<Env> = {
@@ -9,9 +7,7 @@ type EventContext<Env> = {
 };
 
 type Env = {
-  ALLOW_DEMO_FALLBACK?: string;
   DB?: unknown;
-  MOTKARTA_DEMO_MODE?: string;
 };
 
 export type StructuredFilters = {
@@ -136,24 +132,19 @@ export async function onRequestPost(context: EventContext<Env>) {
     query = "";
   }
 
-  return processConciergeQuery(query, context.env.DB, customPlaces, {
-    allowDemoFallback: demoFallbackEnabled(context.env),
-  });
+  return processConciergeQuery(query, context.env.DB, customPlaces);
 }
 
 export async function onRequestGet(context: EventContext<Env>) {
   const url = new URL(context.request.url);
   const query = url.searchParams.get("q") || url.searchParams.get("query") || "";
-  return processConciergeQuery(query, context.env.DB, undefined, {
-    allowDemoFallback: demoFallbackEnabled(context.env),
-  });
+  return processConciergeQuery(query, context.env.DB);
 }
 
 export async function processConciergeQuery(
   query: string,
   db?: unknown,
   initialPlaces?: PlaceInput[],
-  options: { allowDemoFallback?: boolean } = {},
 ) {
   const cleanQuery = query.trim();
   if (!cleanQuery) {
@@ -170,7 +161,7 @@ export async function processConciergeQuery(
   }
 
   let places: PlaceInput[] = initialPlaces ?? [];
-  let dataSource = initialPlaces?.length ? "full_dataset" : "demo";
+  let dataSource = initialPlaces?.length ? "full_dataset" : "d1";
 
   if (!places.length && db) {
     try {
@@ -185,21 +176,17 @@ export async function processConciergeQuery(
   }
 
   if (!places.length) {
-    if (!options.allowDemoFallback) {
-      return Response.json(
-        {
-          query: cleanQuery,
-          structuredFilters: extractStructuredFilters(cleanQuery),
-          answer: "The live Motkarta dataset is unavailable, and demo fallback is disabled. No recommendations were generated from illustrative data.",
-          recommendedPlaces: [],
-          source: "unavailable",
-          totalSearchSpace: 0,
-        },
-        { headers: jsonHeaders, status: 503 },
-      );
-    }
-    places = demoPlaces;
-    dataSource = "demo";
+    return Response.json(
+      {
+        query: cleanQuery,
+        structuredFilters: extractStructuredFilters(cleanQuery),
+        answer: "The live Motkarta dataset is unavailable. No recommendations were generated.",
+        recommendedPlaces: [],
+        source: "unavailable",
+        totalSearchSpace: 0,
+      },
+      { headers: jsonHeaders, status: 503 },
+    );
   }
 
   const RAGResult = retrieveAndSynthesize(cleanQuery, places);

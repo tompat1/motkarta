@@ -1,15 +1,11 @@
-import { demoPlaces } from "../../lib/demo-places.ts";
 import { loadPlacesFromD1 } from "../../lib/place-records.ts";
-import { demoFallbackEnabled } from "../../lib/runtime-flags.ts";
 
 type EventContext<Env> = {
   env: Env;
 };
 
 type Env = {
-  ALLOW_DEMO_FALLBACK?: string;
   DB?: unknown;
-  MOTKARTA_DEMO_MODE?: string;
 };
 
 const jsonHeaders = {
@@ -19,18 +15,11 @@ const jsonHeaders = {
 
 export async function onRequestGet(context: EventContext<Env>) {
   const db = context.env.DB;
-  const allowDemo = demoFallbackEnabled(context.env);
 
   if (!db) {
-    if (!allowDemo) {
-      return Response.json(
-        { source: "unavailable", places: [], error: "No production dataset is bound. Demo fallback is disabled." },
-        { headers: jsonHeaders, status: 503 },
-      );
-    }
     return Response.json(
-      { source: "demo", places: demoPlaces },
-      { headers: jsonHeaders },
+      { source: "unavailable", places: [], error: "No production dataset is bound." },
+      { headers: jsonHeaders, status: 503 },
     );
   }
 
@@ -42,15 +31,9 @@ export async function onRequestGet(context: EventContext<Env>) {
     );
   } catch (error) {
     console.error("Failed to load places from D1", error);
-    if (!allowDemo) {
-      return Response.json(
-        { source: "unavailable", places: [], error: "Failed to load production dataset. Demo fallback is disabled." },
-        { headers: jsonHeaders, status: 503 },
-      );
-    }
     return Response.json(
-      { source: "demo", places: demoPlaces },
-      { headers: jsonHeaders },
+      { source: "unavailable", places: [], error: "Failed to load production dataset." },
+      { headers: jsonHeaders, status: 503 },
     );
   }
 }

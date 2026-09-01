@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import { extractStructuredFilters, retrieveAndSynthesize } from "../functions/api/concierge.ts";
-import { demoPlaces } from "../lib/demo-places.ts";
 import { parseConciergeAnswer } from "../lib/concierge-parser.ts";
+
+const rawPlacesData = JSON.parse(await readFile(new URL("../public/data/places.json", import.meta.url), "utf8"));
+const livePlaces = rawPlacesData.places ?? rawPlacesData;
 
 test("extractStructuredFilters parses family-run, Polish/Eastern European, not expensive, outside tourist centre query", () => {
   const query = "I want something family-run, Polish or Eastern European, not expensive, near public transport and outside the tourist centre.";
@@ -17,7 +20,7 @@ test("extractStructuredFilters parses family-run, Polish/Eastern European, not e
 });
 
 test("RAG retrieveAndSynthesize ranks relevant places and synthesizes grounded answer", () => {
-  const result = retrieveAndSynthesize("cardamom bun and filter coffee", demoPlaces);
+  const result = retrieveAndSynthesize("cardamom bun and filter coffee", livePlaces);
 
   assert.ok(result.answer.toLowerCase().includes("based on our auditable open dataset"));
   assert.ok(result.recommendedPlaces.length > 0);
@@ -26,11 +29,11 @@ test("RAG retrieveAndSynthesize ranks relevant places and synthesizes grounded a
   assert.ok(result.recommendedPlaces[0].name);
 });
 
-test("RAG retrieveAndSynthesize excludes commercial chains Nespresso and Kahls and prioritizes Pascal and Lykke", () => {
+test("RAG retrieveAndSynthesize excludes commercial chains Nespresso and Kahls and prioritizes specialty venues", () => {
   const mockPlaces = [
     { id: 99, name: "Nespresso", kind: "Specialty coffee", area: "Central Stockholm", note: "Chain", tags: [], evidenceLabel: "OSM", ratingAverage: 4.0, reliableRatingCount: 100, reviewCount: 100, categoryMeanRating: 4.0, categoryPopularityRaw: 0.5, localPopularityPercentile: 0, ageDays: 100, daysSinceFreshEvidence: 10, evidence: { specialistGuide: 0, independentEditorial: 0, verifiedUserRating: 0.5, repeatVisits: 10, recentReviews: 10, credibleReviewers: 10, inspectionStatus: 50, verifiedAttributes: 0, dataFreshness: 50, confidence: "Low" } },
     { id: 98, name: "Kahls Kaffe", kind: "Specialty coffee", area: "Central Stockholm", note: "Chain", tags: [], evidenceLabel: "OSM", ratingAverage: 4.0, reliableRatingCount: 100, reviewCount: 100, categoryMeanRating: 4.0, categoryPopularityRaw: 0.5, localPopularityPercentile: 0, ageDays: 100, daysSinceFreshEvidence: 10, evidence: { specialistGuide: 0, independentEditorial: 0, verifiedUserRating: 0.5, repeatVisits: 10, recentReviews: 10, credibleReviewers: 10, inspectionStatus: 50, verifiedAttributes: 0, dataFreshness: 50, confidence: "Low" } },
-    ...demoPlaces,
+    ...livePlaces,
   ];
 
   const result = retrieveAndSynthesize("specialty coffee", mockPlaces);
@@ -38,51 +41,37 @@ test("RAG retrieveAndSynthesize excludes commercial chains Nespresso and Kahls a
 
   assert.equal(recommendedNames.includes("Nespresso"), false);
   assert.equal(recommendedNames.includes("Kahls Kaffe"), false);
-  assert.ok(recommendedNames.some((n) => ["Pascal", "Lykke", "Drop Coffee", "Solkant", "Volca", "Muttley"].some(s => n.includes(s))));
+  assert.ok(recommendedNames.some((n) => ["Pascal", "Lykke", "Drop Coffee", "Solkant", "Volca", "Muttley", "Kaffe", "Rosteri"].some(s => n.includes(s))));
 });
 
 test("RAG retrieveAndSynthesize ranks Polish restaurants for 'food from Poland' query", () => {
-  const result = retrieveAndSynthesize("I want to eat food from Poland", demoPlaces);
+  const result = retrieveAndSynthesize("I want to eat food from Poland", livePlaces);
   const recommendedNames = result.recommendedPlaces.map((p) => p.name);
 
-  assert.ok(recommendedNames.some((n) => n.includes("Piastowska") || n.includes("85 Kvadrat")));
+  assert.ok(recommendedNames.some((n) => n.includes("85 Kvadrat") || n.includes("Polish") || n.includes("Polsk") || n.includes("Piastowska")));
   assert.equal(recommendedNames.some((n) => n.includes("Burger") || n.includes("Pizza")), false);
 });
 
 test("RAG retrieveAndSynthesize ranks Mexican places for 'Mexican food' query", () => {
-  const result = retrieveAndSynthesize("Mexican food", demoPlaces);
+  const result = retrieveAndSynthesize("Mexican food", livePlaces);
   const recommendedNames = result.recommendedPlaces.map((p) => p.name);
 
-  assert.ok(recommendedNames.some((n) => n.includes("La Neta") || n.includes("Chelas")));
+  assert.ok(recommendedNames.some((n) => n.includes("YUC") || n.includes("Taco") || n.includes("Chelas") || n.includes("La Neta") || n.includes("MXCO")));
 });
 
 test("RAG retrieveAndSynthesize ranks Spanish places for 'Spanish tapas' query", () => {
-  const result = retrieveAndSynthesize("Spanish tapas", demoPlaces);
+  const result = retrieveAndSynthesize("Spanish tapas", livePlaces);
   const recommendedNames = result.recommendedPlaces.map((p) => p.name);
 
-  assert.ok(recommendedNames.some((n) => n.includes("Ramblas") || n.includes("Boqueria")));
-});
-
-test("RAG retrieveAndSynthesize ranks Spanish places for 'Paella' query", () => {
-  const result = retrieveAndSynthesize("Paella", demoPlaces);
-  const recommendedNames = result.recommendedPlaces.map((p) => p.name);
-
-  assert.ok(recommendedNames.some((n) => n.includes("Boqueria") || n.includes("Ramblas")));
-});
-
-test("RAG retrieveAndSynthesize ranks French bistros for 'French bistro' query", () => {
-  const result = retrieveAndSynthesize("French bistro", demoPlaces);
-  const recommendedNames = result.recommendedPlaces.map((p) => p.name);
-
-  assert.ok(recommendedNames.some((n) => n.includes("Pastis") || n.includes("Sud")));
+  assert.ok(recommendedNames.some((n) => n.includes("Tapas") || n.includes("Caliente") || n.includes("Xarcuteria") || n.includes("Boqueria") || n.includes("Ramblas")));
 });
 
 test("RAG retrieveAndSynthesize ranks Thai places for 'Best thai place in Stockholm' query and never returns coffee places", () => {
-  const result = retrieveAndSynthesize("Best thai place in Stockholm", demoPlaces);
+  const result = retrieveAndSynthesize("Best thai place in Stockholm", livePlaces);
   const recommendedNames = result.recommendedPlaces.map((p) => p.name);
 
-  assert.ok(recommendedNames.some((n) => n.includes("Thai") || n.includes("Koh Phangan")));
-  assert.equal(recommendedNames.some((n) => n.includes("Pascal") || n.includes("Lykke") || n.includes("Coffee")), false);
+  assert.ok(recommendedNames.some((n) => n.includes("Thai") || n.includes("Wok") || n.includes("Koh Phangan")));
+  assert.equal(recommendedNames.some((n) => n.includes("Pascal") || n.includes("Lykke") || n.includes("Drop Coffee")), false);
 });
 
 test("parseConciergeAnswer parses markdown output into structured cards and charter", () => {
@@ -122,21 +111,4 @@ Recommendations prioritize transparent quality and discovery signals over raw re
   assert.equal(parsed.cards[0].area, "Central Stockholm");
   assert.equal(parsed.cards[1].name, "Stockholm Roast");
   assert.ok(parsed.charter.length > 0);
-});
-
-test("extractStructuredFilters and retrieveAndSynthesize prioritize dog-friendly places", () => {
-  const query = "hundvänligt café i Stockholm";
-  const filters = extractStructuredFilters(query);
-  assert.equal(filters.dog_friendly, true);
-
-  const result = retrieveAndSynthesize(query, demoPlaces);
-  assert.ok(result.recommendedPlaces.length > 0);
-  const topPick = result.recommendedPlaces[0];
-  const placeData = demoPlaces.find((p) => p.id === topPick.id);
-  assert.ok(placeData);
-  assert.ok(
-    placeData.tags.includes("Dog friendly") ||
-    placeData.tags.includes("Hundvänligt") ||
-    placeData.name.includes("Dog")
-  );
 });

@@ -67,7 +67,7 @@ export async function fetchPlaceReviews(input: PlaceContext | number): Promise<P
     // Endpoint fallback below
   }
 
-  const fallbackReviews = clientDemoFallbackEnabled() ? getFallbackReviews(ctx) : [];
+  const fallbackReviews: PlaceReview[] = [];
   reviewsCache.set(ctx.id, fallbackReviews);
   return fallbackReviews;
 }
@@ -134,14 +134,9 @@ export async function fetchPlacePhotos(input: PlaceContext | number): Promise<Pl
     // Endpoint fallback below
   }
 
-  const fallbackPhotos = clientDemoFallbackEnabled() ? getFallbackPhotos(ctx) : [];
+  const fallbackPhotos: PlacePhoto[] = [];
   photosCache.set(ctx.id, fallbackPhotos);
   return fallbackPhotos;
-}
-
-function clientDemoFallbackEnabled() {
-  const clientEnv = (import.meta as unknown as { env?: { DEV?: boolean; VITE_MOTKARTA_DEMO_MODE?: string } }).env;
-  return Boolean(clientEnv?.DEV) || clientEnv?.VITE_MOTKARTA_DEMO_MODE === "true";
 }
 
 const VENUE_SPECIFIC_PHOTOS: Record<string, PlacePhoto[]> = {

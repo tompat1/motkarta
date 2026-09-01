@@ -31,7 +31,7 @@
     "validate:artifact": "bash scripts/validate-artifact.sh",
     "lint": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "db:seed:demo": "node scripts/generate_seed_sql.mjs",
+    "db:seed:places": "node scripts/generate_seed_sql.mjs",
     "db:seed:osm": "node scripts/generate_osm_seed_sql.mjs",
     "db:seed:evidence": "node scripts/generate_evidence_seed_sql.mjs",
     "db:scores:combine": "node scripts/combine_score_export.mjs",
