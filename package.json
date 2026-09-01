@@ -19,7 +19,9 @@
     "api:serve": ".venv/bin/python scripts/api_endpoint.py",
     "food-control:fetch": ".venv/bin/python scripts/fetch_food_control.py",
     "photos:fetch": ".venv/bin/python scripts/fetch_place_photos.py",
+    "tasstipset:fetch": ".venv/bin/python scripts/fetch_tasstipset_dog_places.py",
     "food-control:match": ".venv/bin/python scripts/match_food_control.py",
+
     "permits:match": ".venv/bin/python scripts/match_serving_permits.py",
     "candidates:build": "python3 scripts/build_candidate_queue.py",
     "candidates:seed": "node scripts/generate_candidate_import_sql.mjs",

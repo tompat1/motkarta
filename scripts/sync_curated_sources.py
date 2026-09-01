@@ -26,6 +26,9 @@ ALLOWED_SOURCE_NAMES = {
     "openstreetmap contributors",
     "specialty coffee sweden registry",
     "stockholms stad livsmedelskontroll",
+    "tasstipset",
+    "tasstipset (hundvänliga ställen)",
+    "tasstipset — hundvänliga caféer & restauranger",
     "visit stockholm (officiella stadsguiden)",
     "white guide nordic",
 }
