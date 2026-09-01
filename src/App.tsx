@@ -946,12 +946,14 @@ function ConciergeAnswerView({
   onSelectPlace,
   onRefineQuery,
   lang = "sv",
+  onClose,
 }: {
   answer: string;
   places: PlaceInput[];
   onSelectPlace: (id: number) => void;
   onRefineQuery?: (extra: string) => void;
   lang?: Language;
+  onClose?: () => void;
 }) {
   const parsed = useMemo(() => parseConciergeAnswer(answer), [answer]);
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
@@ -994,6 +996,33 @@ function ConciergeAnswerView({
 
   return (
     <div className="concierge-results">
+      {onClose ? (
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", paddingBottom: "10px", borderBottom: "1px solid var(--color-mist)" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "var(--font-mono)", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--color-water)" }}>
+            <Sparkle size={15} weight="bold" /> {lang === "sv" ? "AI-Concierge Svar" : "AI Concierge Result"}
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              background: "var(--color-white)",
+              border: "1px solid var(--color-ink)",
+              padding: "4px 10px",
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
+              fontWeight: 600,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              textTransform: "uppercase",
+            }}
+            title={lang === "sv" ? "Dölj svar" : "Dismiss"}
+          >
+            <X size={13} weight="bold" /> {lang === "sv" ? "Dölj svar" : "Dismiss"}
+          </button>
+        </div>
+      ) : null}
       {parsed.clarification ? (
         <div
           className="concierge-clarification-box"
@@ -4796,8 +4825,10 @@ export default function App() {
     setConcierge(searchText);
     await askWithQuery(searchText);
 
-    if (typeof window !== "undefined" && window.matchMedia("(max-width: 760px)").matches) {
-      document.getElementById("concierge")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (typeof window !== "undefined") {
+      setTimeout(() => {
+        document.getElementById("concierge-answer")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
     }
   }
 
@@ -5179,8 +5210,8 @@ export default function App() {
 
       <section className="controls" id="map">
         <div className="search-container-relative">
-          <label className="search" style={{ display: "flex", alignItems: "center" }}>
-            <MagnifyingGlass size={16} weight="bold" style={{ color: "var(--color-ink)", marginRight: "8px" }} />
+          <div className="unified-search-input-wrapper">
+            <MagnifyingGlass size={18} weight="bold" style={{ color: "var(--color-ink)", flexShrink: 0 }} />
             <input
               aria-label={lang === "sv" ? "Sök ställen, kök, område eller fråga concierge" : "Search places, cuisine, area, or ask concierge"}
               value={query}
@@ -5203,8 +5234,8 @@ export default function App() {
                 }
               }}
               onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-              placeholder={lang === "sv" ? "Sök stadsdel (Söder, Vasastan...), ställe eller kök..." : "Search region (Söder, Vasastan...), place or cuisine..."}
+              onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
+              placeholder={lang === "sv" ? "Sök ställe, kök, stadsdel eller ställ en fråga till concierge..." : "Search place, cuisine, region or ask concierge..."}
             />
             {query.trim() ? (
               <button
@@ -5220,41 +5251,12 @@ export default function App() {
                 ✕
               </button>
             ) : null}
-          </label>
-
-          {isSearchFocused && searchAutocompleteSuggestions.length > 0 ? (
-            <div className="search-autocomplete-box">
-              <div className="autocomplete-category-header">
-                <Compass size={12} weight="bold" />
-                <span>{lang === "sv" ? "AUTOCOMPLETE: STADSDELAR, STÄLLEN & KÖK" : "AUTOCOMPLETE: REGIONS, PLACES & CUISINES"}</span>
-              </div>
-              {searchAutocompleteSuggestions.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className="autocomplete-item"
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    setQuery(item.value);
-                    setConcierge(item.value);
-                    setIsSearchFocused(false);
-                  }}
-                >
-                  <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>{item.icon}</span>
-                    <span style={{ fontWeight: 600 }}>{item.label}</span>
-                  </span>
-                  <span className="autocomplete-type-badge">{item.badge}</span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-          <div className="mobile-search-actions" aria-label={lang === "sv" ? "Mobila sökåtgärder" : "Mobile search actions"}>
             <button
               type="button"
-              className="search-ai-btn"
+              className="unified-search-ai-btn"
               onClick={() => void askFromSearch()}
               disabled={asking || !(query.trim() || concierge.trim())}
+              title={lang === "sv" ? "Ställ fråga till AI-Concierge" : "Ask AI Concierge"}
             >
               {asking ? (
                 <CircleNotch size={15} className="animate-spin" />
@@ -5263,19 +5265,96 @@ export default function App() {
               )}
               <span>{lang === "sv" ? "Fråga concierge" : "Ask concierge"}</span>
             </button>
-            <button
-              type="button"
-              className="search-reset-btn"
-              onClick={() => {
-                setQuery("");
-                setConcierge("");
-                setKind("All places");
-                setCuisine(allCuisines);
-              }}
-            >
-              {lang === "sv" ? "Rensa" : "Reset"}
-            </button>
           </div>
+
+          <div className="unified-superpower-row" aria-label="Concierge superpowers">
+            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_place")}>
+              <PlusCircle size={13} weight="bold" /> {lang === "sv" ? "➕ Nytt ställe" : "➕ Add place"}
+            </button>
+            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_review")}>
+              <Sparkle size={13} weight="bold" /> {lang === "sv" ? "✍️ Recension" : "✍️ Review"}
+            </button>
+            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_photo")}>
+              <Image size={13} weight="bold" /> {lang === "sv" ? "📷 Foto" : "📷 Photo"}
+            </button>
+            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("rate_place")}>
+              <Star size={13} weight="bold" /> {lang === "sv" ? "⭐ Betygsätt" : "⭐ Rate"}
+            </button>
+            {(query.trim() || kind !== "All places" || cuisine !== allCuisines || mobileFilters.selectedTags.length > 0) ? (
+              <button
+                type="button"
+                className="superpower-chip-btn"
+                style={{ marginLeft: "auto", background: "transparent", borderColor: "var(--color-mist)", color: "var(--color-stone)" }}
+                onClick={handleResetMobileFilters}
+                title={lang === "sv" ? "Återställ alla filter och sökning" : "Reset all filters"}
+              >
+                ✕ {lang === "sv" ? "Rensa allt" : "Reset all"}
+              </button>
+            ) : null}
+          </div>
+
+          {isSearchFocused && (searchAutocompleteSuggestions.length > 0 || matchingSuggestions.length > 0) ? (
+            <div className="search-autocomplete-box">
+              {searchAutocompleteSuggestions.length > 0 ? (
+                <>
+                  <div className="autocomplete-category-header">
+                    <Compass size={12} weight="bold" />
+                    <span>{lang === "sv" ? "STADSDELAR, STÄLLEN & KÖK" : "REGIONS, PLACES & CUISINES"}</span>
+                  </div>
+                  {searchAutocompleteSuggestions.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className="autocomplete-item"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setQuery(item.value);
+                        setConcierge(item.value);
+                        setIsSearchFocused(false);
+                      }}
+                    >
+                      <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span>{item.icon}</span>
+                        <span style={{ fontWeight: 600 }}>{item.label}</span>
+                      </span>
+                      <span className="autocomplete-type-badge">{item.badge}</span>
+                    </button>
+                  ))}
+                </>
+              ) : null}
+
+              {matchingSuggestions.length > 0 ? (
+                <>
+                  <div className="autocomplete-category-header" style={{ marginTop: searchAutocompleteSuggestions.length > 0 ? "8px" : "0", borderTop: searchAutocompleteSuggestions.length > 0 ? "1px solid var(--color-mist)" : "none", paddingTop: "8px" }}>
+                    <Sparkle size={12} weight="bold" />
+                    <span>{lang === "sv" ? "FRÅGA AI-CONCIERGE" : "ASK AI CONCIERGE"}</span>
+                  </div>
+                  {matchingSuggestions.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      className="autocomplete-item"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setQuery(item);
+                        setConcierge(item);
+                        setIsSearchFocused(false);
+                        void askWithQuery(item);
+                      }}
+                    >
+                      <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        <Sparkle size={13} style={{ color: "var(--color-water)" }} />
+                        <span>{item}</span>
+                      </span>
+                      <span className="autocomplete-type-badge" style={{ background: "rgba(37, 99, 235, 0.1)", color: "var(--color-water)" }}>
+                        {lang === "sv" ? "Fråga" : "Ask"}
+                      </span>
+                    </button>
+                  ))}
+                </>
+              ) : null}
+            </div>
+          ) : null}
         </div>
         <div className="mobile-filter-selects" aria-label={lang === "sv" ? "Mobil platsfiltrering" : "Mobile place filters"}>
           <label>
@@ -5401,6 +5480,19 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      {answer ? (
+        <section className="concierge-answer-section" id="concierge-answer" aria-label="Concierge answer">
+          <ConciergeAnswerView
+            answer={answer}
+            places={places}
+            onSelectPlace={handleSelectPlace}
+            onRefineQuery={handleRefineQuery}
+            lang={lang}
+            onClose={() => setAnswer(null)}
+          />
+        </section>
+      ) : null}
 
       <section className="workspace">
         {mobileViewMode === "list" ? (
@@ -5803,77 +5895,29 @@ export default function App() {
             </button>
           </div>
         </div>
-        <div className="ask-box" style={{ position: "relative" }}>
-          <div className="ask-input-container">
-            <label htmlFor="ask">{t.askLabel}</label>
-            {concierge.trim() ? (
-              <button
-                type="button"
-                className="concierge-clear-btn"
-                onClick={() => setConcierge("")}
-                aria-label="Clear input field"
-                title={lang === "sv" ? "Rensa fält" : "Clear field"}
-              >
-                ✕
-              </button>
-            ) : null}
-            <textarea
-              id="ask"
-              value={concierge}
-              onChange={(event) => setConcierge(event.target.value)}
-              onFocus={() => setIsConciergeFocused(true)}
-              onBlur={() => setTimeout(() => setIsConciergeFocused(false), 200)}
-              placeholder={t.askPlaceholder}
-            />
+        <div className="concierge-showcase-box">
+          <div className="concierge-showcase-header">
+            <Sparkle size={14} weight="bold" style={{ color: "var(--color-water)" }} />
+            <span>{lang === "sv" ? "Populära frågor att ställa i sökfältet" : "Popular questions to ask in the search bar"}</span>
           </div>
-
-          {isConciergeFocused && matchingSuggestions.length > 0 ? (
-            <div className="concierge-autosuggest-box">
-              <div className="autosuggest-header">
-                <Sparkle size={12} weight="bold" />
-                <span>{lang === "sv" ? "FÖRSLAG & ML-SÖKHISTORIK" : "AUTOSUGGEST & SEARCH HISTORY"}</span>
-                {isPromptsLoading ? (
-                  <CircleNotch size={11} className="animate-spin" style={{ marginLeft: "auto" }} />
-                ) : null}
-              </div>
-              {matchingSuggestions.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  className="autosuggest-item"
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    setConcierge(item);
-                    setIsConciergeFocused(false);
-                    void askWithQuery(item);
-                  }}
-                >
-                  <MagnifyingGlass size={13} style={{ color: "var(--color-water)" }} />
-                  <span>{item}</span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-          <button onClick={ask} disabled={asking} type="button" className="ask-submit-btn">
-            {asking ? (
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <CircleNotch size={16} className="animate-spin" /> {t.askingButton}
-              </span>
-            ) : (
-              <>
-                {t.askButton} <ArrowRight size={16} weight="bold" />
-              </>
-            )}
-          </button>
-          {answer ? (
-            <ConciergeAnswerView
-              answer={answer}
-              places={places}
-              onSelectPlace={handleSelectPlace}
-              onRefineQuery={handleRefineQuery}
-              lang={lang}
-            />
-          ) : null}
+          <div className="concierge-prompt-cloud">
+            {POPULAR_CONCIERGE_PROMPTS.slice(0, 6).map((promptText) => (
+              <button
+                key={promptText}
+                type="button"
+                className="concierge-prompt-pill"
+                onClick={() => {
+                  setQuery(promptText);
+                  setConcierge(promptText);
+                  document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+                  void askWithQuery(promptText);
+                }}
+              >
+                <MagnifyingGlass size={13} style={{ color: "var(--color-water)", flexShrink: 0 }} />
+                <span>{promptText}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 

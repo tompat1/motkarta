@@ -63,3 +63,20 @@ test("Dog friendly filter item exists and matches verified dog-friendly places",
   assert.ok(names.some((n) => n.includes("Lykke")));
   assert.ok(names.some((n) => n.includes("Dog Bakery")));
 });
+
+test("unified search query matches places by name, cuisine, region or tags", () => {
+  const query = "vasastan pizza";
+  const terms = query.toLowerCase().split(/\s+/);
+  const matched = demoPlaces.filter((p) =>
+    terms.every(
+      (term) =>
+        p.name.toLowerCase().includes(term) ||
+        p.area.toLowerCase().includes(term) ||
+        p.cuisine.toLowerCase().includes(term) ||
+        p.tags.some((t) => t.toLowerCase().includes(term))
+    )
+  );
+  assert.ok(matched.length > 0);
+  assert.ok(matched.some((p) => p.name === "Savoj Pizza"));
+});
+
