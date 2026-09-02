@@ -67,3 +67,14 @@ test("unified search query matches places by name, cuisine, region or tags", () 
   assert.ok(matched.length > 0);
   assert.ok(matched.some((p) => p.name.toLowerCase().includes("savoj") || p.name.toLowerCase().includes("pizza")));
 });
+
+test("dog friendly filter returns verified venues across Stockholm", () => {
+  const dogVenues = livePlaces.filter((p) => {
+    const tags = (p.tags ?? []).map((t) => t.toLowerCase());
+    return tags.includes("dog friendly") || tags.includes("hundvänligt") || tags.includes("tasstipset");
+  });
+  assert.ok(dogVenues.length >= 100, `Expected at least 100 dog friendly venues, found ${dogVenues.length}`);
+  const sampleNames = dogVenues.map((p) => p.name.toLowerCase());
+  assert.ok(sampleNames.some((n) => n.includes("drop coffee") || n.includes("bambino") || n.includes("kvarnen")));
+});
+

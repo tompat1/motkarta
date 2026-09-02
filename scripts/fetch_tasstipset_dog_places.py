@@ -10,11 +10,14 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import math
 import re
 import sys
 import time
 import urllib.parse
 import urllib.request
+import zlib
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
@@ -27,6 +30,8 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT_PATH = ROOT / "outputs" / "tasstipset_dog_places_stockholm.json"
+DEFAULT_PLACES_PATH = ROOT / "public" / "data" / "places.json"
+DEFAULT_CURATED_PATH = ROOT / "data" / "curated_open_places.json"
 BASE_URL = "https://tasstipset.se"
 STOCKHOLM_URL = f"{BASE_URL}/stad/stockholm"
 
@@ -75,7 +80,7 @@ def fetch_url(url: str, timeout: int = 15) -> str:
 def extract_json_ld_blocks(html_content: str) -> list[dict[str, Any]]:
     """Extract all valid JSON-LD script blocks from an HTML page."""
     blocks: list[dict[str, Any]] = []
-    
+
     if BeautifulSoup:
         soup = BeautifulSoup(html_content, "html.parser")
         for script in soup.find_all("script", type="application/ld+json"):
@@ -91,8 +96,10 @@ def extract_json_ld_blocks(html_content: str) -> list[dict[str, Any]]:
             except Exception:
                 continue
     else:
-        # Fallback regex extraction if bs4 is unavailable
-        pattern = re.compile(r'<script[^>]*type=[\'"]application/ld\+json[\'"][^>]*>(.*?)</script>', re.DOTALL | re.IGNORECASE)
+        pattern = re.compile(
+            r'<script[^>]*type=[\'"]application/ld\+json[\'"][^>]*>(.*?)</script>',
+            re.DOTALL | re.IGNORECASE,
+        )
         for match in pattern.finditer(html_content):
             text = match.group(1).strip()
             if not text:
@@ -113,45 +120,59 @@ def extract_stockholm_place_links(
     html_content: str,
     base_url: str = BASE_URL,
     crawl_subpages: bool = False,
+    max_workers: int = 8,
 ) -> list[dict[str, str]]:
     """Extract list of Stockholm venue links from the city landing page and optionally its subpages."""
     links: list[dict[str, str]] = []
     seen_urls: set[str] = set()
 
-    def add_from_html(content: str) -> None:
-        # 1. Try extracting from ItemList in JSON-LD
+    def parse_links_from_text(content: str) -> list[tuple[str, str]]:
+        found = []
+        # 1. JSON-LD ItemList
         json_blocks = extract_json_ld_blocks(content)
         for block in json_blocks:
             if block.get("@type") == "ItemList" and "itemListElement" in block:
                 for item in block["itemListElement"]:
                     url = item.get("url")
                     name = item.get("name", "")
-                    if url and "/plats/" in url and url not in seen_urls:
-                        seen_urls.add(url)
-                        links.append({"name": name, "url": url})
+                    if url and "/plats/" in url:
+                        full_url = urllib.parse.urljoin(base_url, url)
+                        found.append((name, full_url))
 
-        # 2. Fallback / supplement: regex extraction of href="/plats/..."
+        # 2. Regex search
         href_pattern = re.compile(r'href=[\'"](/plats/[a-zA-Z0-9_\-]+)[\'"]', re.IGNORECASE)
         for match in href_pattern.finditer(content):
             path = match.group(1)
             full_url = urllib.parse.urljoin(base_url, path)
-            if full_url not in seen_urls:
-                seen_urls.add(full_url)
-                slug = path.replace("/plats/", "").replace("-", " ").title()
-                links.append({"name": slug, "url": full_url})
+            slug = path.replace("/plats/", "").replace("-", " ").title()
+            found.append((slug, full_url))
 
-    add_from_html(html_content)
+        return found
+
+    for name, full_url in parse_links_from_text(html_content):
+        if full_url not in seen_urls:
+            seen_urls.add(full_url)
+            links.append({"name": name, "url": full_url})
 
     if crawl_subpages:
         sub_pattern = re.compile(r'href=[\'"](/stad/stockholm/[a-zA-Z0-9_\-]+)[\'"]', re.IGNORECASE)
         sub_paths = sorted(set(sub_pattern.findall(html_content)))
-        for sub in sub_paths:
+        sub_urls = [urllib.parse.urljoin(base_url, p) for p in sub_paths]
+
+        def fetch_sub(sub_url: str) -> list[tuple[str, str]]:
             try:
-                sub_url = urllib.parse.urljoin(base_url, sub)
                 sub_html = fetch_url(sub_url)
-                add_from_html(sub_html)
+                return parse_links_from_text(sub_html)
             except Exception:
-                continue
+                return []
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            sub_results = executor.map(fetch_sub, sub_urls)
+            for items in sub_results:
+                for name, full_url in items:
+                    if full_url not in seen_urls:
+                        seen_urls.add(full_url)
+                        links.append({"name": name, "url": full_url})
 
     return links
 
@@ -159,17 +180,17 @@ def extract_stockholm_place_links(
 def map_category_to_kind(category_str: str) -> str:
     """Map Tasstipset category string to Motkarta establishment kind."""
     cat_lower = category_str.lower()
-    if "cafeorcoffeeshop" in cat_lower or "caf" in cat_lower or "kafe" in cat_lower or "fika" in cat_lower:
+    if any(k in cat_lower for k in ["cafeorcoffeeshop", "caf", "kafe", "fika", "kafé"]):
         return "Café"
-    if "bakery" in cat_lower or "bageri" in cat_lower:
+    if any(k in cat_lower for k in ["bakery", "bageri", "konditori"]):
         return "Bakery"
-    if "restaurang" in cat_lower or "restaurant" in cat_lower or "bistro" in cat_lower or "brasserie" in cat_lower:
+    if any(k in cat_lower for k in ["restaurang", "restaurant", "bistro", "brasserie", "krog"]):
         return "Restaurant"
-    if "bar" in cat_lower or "pub" in cat_lower or "vin" in cat_lower:
+    if any(k in cat_lower for k in ["bar", "pub", "vin", "bryggeri"]):
         return "Restaurant"
-    if "hotell" in cat_lower or "hotel" in cat_lower:
+    if any(k in cat_lower for k in ["hotell", "hotel"]):
         return "Hotell"
-    if "park" in cat_lower or "strand" in cat_lower:
+    if any(k in cat_lower for k in ["park", "strand"]):
         return "Park"
     return "Restaurant"
 
@@ -192,7 +213,19 @@ def parse_tasstipset_place_page(html_content: str, url: str) -> DogPlaceRecord:
     json_ld_type = ""
     for block in json_blocks:
         btype = str(block.get("@type", ""))
-        if any(k in btype.lower() for k in ["cafe", "restaurant", "bakery", "localbusiness", "foodestablishment", "store", "park", "hotel"]):
+        if any(
+            k in btype.lower()
+            for k in [
+                "cafe",
+                "restaurant",
+                "bakery",
+                "localbusiness",
+                "foodestablishment",
+                "store",
+                "park",
+                "hotel",
+            ]
+        ):
             place_json = block
             json_ld_type = btype
             break
@@ -200,7 +233,7 @@ def parse_tasstipset_place_page(html_content: str, url: str) -> DogPlaceRecord:
     # Extract Name & Description
     name = place_json.get("name")
     if not name:
-        h1_m = re.search(r'<h1[^>]*>(.*?)</h1>', html_content, re.IGNORECASE | re.DOTALL)
+        h1_m = re.search(r"<h1[^>]*>(.*?)</h1>", html_content, re.IGNORECASE | re.DOTALL)
         if h1_m:
             name = clean_text_emojis(h1_m.group(1))
         else:
@@ -216,7 +249,11 @@ def parse_tasstipset_place_page(html_content: str, url: str) -> DogPlaceRecord:
     same_as = place_json.get("sameAs")
     website = same_as[0] if (isinstance(same_as, list) and same_as) else None
     if not website:
-        web_m = re.search(r'href=[\'"](https?://[^\'"]+)[\'"][^>]*>[^<]*Webbplats', html_content, re.IGNORECASE)
+        web_m = re.search(
+            r'href=[\'"](https?://[^\'"]+)[\'"][^>]*>[^<]*Webbplats',
+            html_content,
+            re.IGNORECASE,
+        )
         if web_m:
             website = web_m.group(1)
 
@@ -224,9 +261,9 @@ def parse_tasstipset_place_page(html_content: str, url: str) -> DogPlaceRecord:
     addr_obj = place_json.get("address", {})
     street_address = addr_obj.get("streetAddress", "") if isinstance(addr_obj, dict) else ""
     if not street_address:
-        header_m = re.search(r'<header[^>]*>(.*?)</header>', html_content, re.IGNORECASE | re.DOTALL)
+        header_m = re.search(r"<header[^>]*>(.*?)</header>", html_content, re.IGNORECASE | re.DOTALL)
         if header_m:
-            p_matches = re.findall(r'<p[^>]*>(.*?)</p>', header_m.group(1), re.IGNORECASE | re.DOTALL)
+            p_matches = re.findall(r"<p[^>]*>(.*?)</p>", header_m.group(1), re.IGNORECASE | re.DOTALL)
             for p_text in p_matches:
                 cleaned_p = clean_text_emojis(p_text)
                 if any(c.isdigit() for c in cleaned_p) and "stockholm" in cleaned_p.lower():
@@ -234,8 +271,16 @@ def parse_tasstipset_place_page(html_content: str, url: str) -> DogPlaceRecord:
                     break
 
     geo_obj = place_json.get("geo", {})
-    latitude = float(geo_obj["latitude"]) if isinstance(geo_obj, dict) and "latitude" in geo_obj else None
-    longitude = float(geo_obj["longitude"]) if isinstance(geo_obj, dict) and "longitude" in geo_obj else None
+    latitude = (
+        float(geo_obj["latitude"])
+        if isinstance(geo_obj, dict) and "latitude" in geo_obj and geo_obj["latitude"]
+        else None
+    )
+    longitude = (
+        float(geo_obj["longitude"])
+        if isinstance(geo_obj, dict) and "longitude" in geo_obj and geo_obj["longitude"]
+        else None
+    )
 
     # Category & Area
     category = "Restaurang"
@@ -248,99 +293,60 @@ def parse_tasstipset_place_page(html_content: str, url: str) -> DogPlaceRecord:
     is_venue_verified = False
     verification_date = None
 
-    KNOWN_AREAS = {
-        "södermalm": "Södermalm",
-        "norrmalm": "Norrmalm",
-        "vasastan": "Vasastan",
-        "östermalm": "Östermalm",
-        "gamla stan": "Gamla stan",
-        "kungsholmen": "Kungsholmen",
-        "djurgården": "Djurgården",
-        "norra djurgården": "Norra Djurgården",
-        "liljeholmen": "Liljeholmen",
-        "aspudden": "Aspudden",
-        "midsommarkransen": "Midsommarkransen",
-        "johanneshov": "Johanneshov",
-        "hjorthagen": "Hjorthagen",
-        "birkastan": "Birkastan",
-        "marieberg": "Marieberg",
-        "stadshagen": "Stadshagen",
-        "farsta": "Farsta",
-        "kista": "Kista",
-        "ladugårdsgärdet": "Ladugårdsgärdet",
-        "södra hammarbyhamnen": "Södra Hammarbyhamnen",
-        "hammarby sjöstad": "Hammarby Sjöstad",
-    }
-
-    header_m = re.search(r'<header[^>]*>(.*?)</header>', html_content, re.IGNORECASE | re.DOTALL)
+    # Parse HTML details (Header badges, area, verified status)
+    header_m = re.search(r"<header[^>]*>(.*?)</header>", html_content, re.IGNORECASE | re.DOTALL)
     if header_m:
-        header_content = header_m.group(1)
-        span_texts = [clean_text_emojis(s) for s in re.findall(r'<span[^>]*>(.*?)</span>', header_content, re.IGNORECASE | re.DOTALL)]
-        for s in span_texts:
-            if s in ["Café", "Restaurang", "Park", "Hotell", "Bageri", "Butik", "Strand"]:
-                category = s
-            if s.lower() in KNOWN_AREAS:
-                area = KNOWN_AREAS[s.lower()]
+        header_html = header_m.group(1)
+        spans = re.findall(r"<span[^>]*>(.*?)</span>", header_html, re.IGNORECASE | re.DOTALL)
+        for span in spans:
+            cleaned_s = clean_text_emojis(span)
+            s_lower = cleaned_s.lower()
+            if any(k in s_lower for k in ["café", "restaurang", "bageri", "hotell", "park", "bar", "vinbar"]):
+                category = cleaned_s
+            elif any(
+                dist in s_lower
+                for dist in [
+                    "södermalm",
+                    "vasastan",
+                    "östermalm",
+                    "gamla stan",
+                    "kungsholmen",
+                    "norrmalm",
+                    "djurgården",
+                    "hammarby sjöstad",
+                    "enskede",
+                    "bromma",
+                    "liljeholmen",
+                    "årsta",
+                ]
+            ):
+                area = cleaned_s.title()
+            elif "verifierat av stället" in s_lower or "bekräftat" in s_lower:
+                is_venue_verified = True
+            elif "inne" in s_lower and "ute" in s_lower:
+                dog_policy = "Hundar välkomna inne och ute"
+            elif "endast ute" in s_lower or "uteservering" in s_lower:
+                dog_policy = "Endast uteservering"
 
-    # Area fallback from breadcrumbs or title/body
-    breadcrumb_m = re.search(r'<nav[^>]*aria-label=[\'"](?:Brödsmulor|Breadcrumbs)[\'"][^>]*>(.*?)</nav>', html_content, re.IGNORECASE | re.DOTALL)
-    if breadcrumb_m:
-        bc_items = re.findall(r'<li[^>]*>(.*?)</li>', breadcrumb_m.group(1), re.IGNORECASE | re.DOTALL)
-        for item in bc_items:
-            c = clean_text_emojis(item).lower()
-            if c in KNOWN_AREAS:
-                area = KNOWN_AREAS[c]
+    # Extract Dog Policy Quote / Section
+    policy_m = re.search(
+        r"<h[23][^>]*>Hundpolicy</h[23]>\s*<p[^>]*>(.*?)</p>",
+        html_content,
+        re.IGNORECASE | re.DOTALL,
+    )
+    if policy_m:
+        dog_policy_quote = clean_text_emojis(policy_m.group(1))
 
-    if area == "Stockholm":
-        # Search title and header for area keywords
-        title_m = re.search(r'<title[^>]*>(.*?)</title>', html_content, re.IGNORECASE)
-        title_text = title_m.group(1).lower() if title_m else ""
-        for key, val in KNOWN_AREAS.items():
-            if f"i {key}" in title_text or f"· {key}" in title_text or f"- {key}" in title_text:
-                area = val
-                break
-
-    # Dog Policy Badge (e.g. "Hundar inne & ute", "Hundar inne", "Endast ute")
-    badge_m = re.search(r'class="[^"]*(?:emerald|badge)[^"]*"[^>]*>(.*?)</span>', html_content, re.IGNORECASE | re.DOTALL)
-    if badge_m:
-        badge_text = clean_text_emojis(badge_m.group(1))
-        if "hund" in badge_text.lower() or "ute" in badge_text.lower() or "inne" in badge_text.lower():
-            dog_policy = badge_text
-
-    # Dog Policy Quote / Section
-    policy_sec_m = re.search(r'<section[^>]*>.*?<h2[^>]*>Hundpolicy</h2>\s*<p[^>]*>(.*?)</p>.*?</section>', html_content, re.IGNORECASE | re.DOTALL)
-    if policy_sec_m:
-        dog_policy_quote = clean_text_emojis(policy_sec_m.group(1))
-    else:
-        hitta_m = re.search(r'<section[^>]*>.*?<h2[^>]*>Hitta hit</h2>.*?<p[^>]*>(.*?)</p>.*?</section>', html_content, re.IGNORECASE | re.DOTALL)
-        if hitta_m and "hund" in hitta_m.group(1).lower():
-            dog_policy_quote = clean_text_emojis(hitta_m.group(1))
-
-    # Verification Status
-    if "Verifierat av stället" in html_content or "Restaurangen själv har bekräftat" in html_content:
-        is_venue_verified = True
-
-    # Verification Date
-    date_match = re.search(r"kontrollerat\s+([0-9]+\s+[a-zåäöA-ZÅÄÖ]+\s+[0-9]{4})", html_content, re.IGNORECASE)
-    if date_match:
-        verification_date = date_match.group(1)
-    elif date_match := re.search(r"\(([0-9]+\s+[a-zåäöA-ZÅÄÖ]+\s+[0-9]{4})\)", html_content):
-        verification_date = date_match.group(1)
-
-    kind = map_category_to_kind(category)
-
+    # Determine tags
     tags = ["Dog friendly", "Hundvänligt", "Tasstipset"]
-    if "inne" in dog_policy.lower() and "ute" in dog_policy.lower():
-        tags.append("Hundar inne & ute")
-    elif "inne" in dog_policy.lower():
-        tags.append("Hundar inomhus")
-    elif "ute" in dog_policy.lower():
-        tags.append("Endast uteservering")
-
     if is_venue_verified:
         tags.append("Verifierad hundpolicy")
+    if "inne" in dog_policy.lower() and "ute" in dog_policy.lower():
+        tags.append("Hundar inne & ute")
+    elif "uteservering" in dog_policy.lower():
+        tags.append("Endast uteservering")
 
-
+    kind = map_category_to_kind(category)
 
     return DogPlaceRecord(
         source_id=source_id,
@@ -363,10 +369,25 @@ def parse_tasstipset_place_page(html_content: str, url: str) -> DogPlaceRecord:
     )
 
 
+def is_food_establishment(record: DogPlaceRecord) -> bool:
+    """Check if record is a food/drink establishment (not a dog park, pet salon, or pure hotel)."""
+    name_l = record.name.lower()
+    cat_l = record.category.lower()
+    if "hundrastgård" in name_l or "rastgård" in name_l or "hundpark" in name_l:
+        return False
+    if "hunddagis" in name_l or "veterinär" in name_l or "djursjukhus" in name_l:
+        return False
+    if cat_l in ["park"]:
+        return False
+    return True
+
+
 def scrape_tasstipset_stockholm(
     output_path: Path = DEFAULT_OUTPUT_PATH,
     limit: int | None = None,
-    delay: float = 0.25,
+    delay: float = 0.05,
+    crawl_subpages: bool = True,
+    max_workers: int = 8,
     quiet: bool = False,
 ) -> list[dict[str, Any]]:
     """Scrape all dog-friendly venues in Stockholm from Tasstipset."""
@@ -374,7 +395,11 @@ def scrape_tasstipset_stockholm(
         print(f"🐶 Fetching Stockholm venue directory from: {STOCKHOLM_URL}")
 
     stockholm_html = fetch_url(STOCKHOLM_URL)
-    place_links = extract_stockholm_place_links(stockholm_html)
+    place_links = extract_stockholm_place_links(
+        stockholm_html,
+        crawl_subpages=crawl_subpages,
+        max_workers=max_workers,
+    )
 
     if not quiet:
         print(f"🐾 Found {len(place_links)} places in Stockholm directory.")
@@ -385,27 +410,35 @@ def scrape_tasstipset_stockholm(
             print(f"⚡ Limiting scrape to first {limit} places.")
 
     records: list[DogPlaceRecord] = []
-    for i, item in enumerate(place_links, 1):
-        url = item["url"]
-        name = item.get("name", "")
-        if not quiet:
-            print(f"[{i}/{len(place_links)}] Scraping: {name} ({url})")
 
+    def fetch_record(item: dict[str, str]) -> DogPlaceRecord | None:
+        url = item["url"]
         try:
             place_html = fetch_url(url)
-            record = parse_tasstipset_place_page(place_html, url)
-            records.append(record)
+            return parse_tasstipset_place_page(place_html, url)
         except Exception as err:
             if not quiet:
                 print(f"  ⚠️ Error scraping {url}: {err}", file=sys.stderr)
+            return None
 
-        if delay > 0:
-            time.sleep(delay)
+    if max_workers > 1 and len(place_links) > 2:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            for rec in executor.map(fetch_record, place_links):
+                if rec:
+                    records.append(rec)
+    else:
+        for i, item in enumerate(place_links, 1):
+            rec = fetch_record(item)
+            if rec:
+                records.append(rec)
+            if delay > 0:
+                time.sleep(delay)
 
     output_data = {
         "source": "https://tasstipset.se",
         "city": "Stockholm",
         "total_places": len(records),
+        "food_places_count": sum(1 for r in records if is_food_establishment(r)),
         "verified_places_count": sum(1 for r in records if r.is_venue_verified),
         "scraped_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "places": [asdict(r) for r in records],
@@ -420,23 +453,208 @@ def scrape_tasstipset_stockholm(
     return output_data["places"]
 
 
+def norm_str(s: Any) -> str:
+    """Normalize string for fuzzy matching."""
+    return re.sub(r"[^a-z0-9åäö]+", "", str(s or "").lower())
+
+
+def haversine_distance_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Calculate distance in meters between two lat/lon points."""
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
+    )
+    return 6371000 * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+
+def sync_tasstipset_to_places(
+    dog_places: list[dict[str, Any]],
+    places_path: Path = DEFAULT_PLACES_PATH,
+    curated_path: Path = DEFAULT_CURATED_PATH,
+    quiet: bool = False,
+) -> dict[str, int]:
+    """Sync scraped dog-friendly venues into public/data/places.json and data/curated_open_places.json."""
+    if not places_path.exists():
+        raise FileNotFoundError(f"{places_path} not found")
+
+    payload = json.loads(places_path.read_text(encoding="utf-8"))
+    places = payload.get("places", payload)
+    if not isinstance(places, list):
+        raise ValueError("Invalid places payload format.")
+
+    matched_count = 0
+    added_count = 0
+
+    dog_tags_standard = ["Dog friendly", "Hundvänligt", "Tasstipset"]
+
+    for d in dog_places:
+        d_name = d.get("name", "")
+        d_norm_name = norm_str(d_name)
+        d_lat = d.get("latitude")
+        d_lon = d.get("longitude")
+        d_kind = d.get("kind", "Restaurant")
+        d_quote = d.get("dog_policy_quote")
+        d_tags = d.get("tags", dog_tags_standard)
+
+        # Skip non-food places like pure dog parks
+        dummy_rec = DogPlaceRecord(
+            source_id=d.get("source_id", ""),
+            name=d_name,
+            url=d.get("url", ""),
+            category=d.get("category", ""),
+            kind=d_kind,
+            area=d.get("area", ""),
+            address=d.get("address", ""),
+            latitude=d_lat,
+            longitude=d_lon,
+        )
+        if not is_food_establishment(dummy_rec):
+            continue
+
+        matched_index = None
+
+        # 1. Try exact/close normalized name match
+        for idx, p in enumerate(places):
+            p_norm_name = norm_str(p.get("name"))
+            if not p_norm_name:
+                continue
+
+            # Exact name match
+            if p_norm_name == d_norm_name:
+                matched_index = idx
+                break
+
+            # Substring match if name is long enough
+            if len(p_norm_name) >= 5 and len(d_norm_name) >= 5:
+                if p_norm_name in d_norm_name or d_norm_name in p_norm_name:
+                    p_lat = p.get("latitude")
+                    p_lon = p.get("longitude")
+                    if p_lat and p_lon and d_lat and d_lon:
+                        dist = haversine_distance_m(p_lat, p_lon, d_lat, d_lon)
+                        if dist <= 300:
+                            matched_index = idx
+                            break
+
+            # Coordinate proximity match if normalized name overlap
+            p_lat = p.get("latitude")
+            p_lon = p.get("longitude")
+            if p_lat and p_lon and d_lat and d_lon:
+                dist = haversine_distance_m(p_lat, p_lon, d_lat, d_lon)
+                if dist <= 60:  # Same building / corner
+                    matched_index = idx
+                    break
+
+        if matched_index is not None:
+            # Enrich existing place
+            target = places[matched_index]
+            existing_tags = set(target.get("tags", []))
+            for t in d_tags:
+                existing_tags.add(t)
+            target["tags"] = sorted(existing_tags)
+
+            # Evidence label
+            ev_label = target.get("evidenceLabel", "")
+            if "Tasstipset" not in ev_label:
+                target["evidenceLabel"] = f"{ev_label} · Tasstipset".strip(" ·")
+
+            # Evidence object
+            ev = target.get("evidence", {})
+            ev["specialistGuide"] = max(ev.get("specialistGuide", 0), 0.7 if d.get("is_venue_verified") else 0.5)
+            target["evidence"] = ev
+
+            if d_quote and not target.get("note"):
+                target["note"] = f"Hundpolicy: {d_quote}"
+
+            matched_count += 1
+        else:
+            # Add new independent food place
+            if d_lat and d_lon:
+                new_id = zlib.crc32(f"tasstipset:{d_name}:{d.get('address')}".encode("utf-8"))
+                new_place = {
+                    "id": new_id,
+                    "name": d_name,
+                    "kind": d_kind if d_kind in ["Café", "Bakery", "Restaurant"] else "Restaurant",
+                    "cuisine": d.get("category", "Restaurant").lower(),
+                    "area": d.get("area") or "Stockholm",
+                    "address": d.get("address") or f"{d.get('area', 'Stockholm')}, Stockholm",
+                    "note": f"Hundpolicy: {d_quote}" if d_quote else "Hundar välkomna (verifierad via Tasstipset)",
+                    "tags": sorted(set([*d_tags, "Curated", "Tasstipset"])),
+                    "sourceName": "Tasstipset",
+                    "sourceUrl": d.get("url") or "https://tasstipset.se/",
+                    "evidenceLabel": "Tasstipset (Hundvänliga ställen)",
+                    "website": d.get("website"),
+                    "latitude": d_lat,
+                    "longitude": d_lon,
+                    "x": round(min(92, max(8, ((d_lon - 17.75) / (18.25 - 17.75)) * 100)), 2),
+                    "y": round(100 - min(92, max(8, ((d_lat - 59.2) / (59.47 - 59.2)) * 100)), 2),
+                    "ratingAverage": 0,
+                    "reliableRatingCount": 0,
+                    "reviewCount": 0,
+                    "priceLevel": 0,
+                    "categoryMeanRating": 0,
+                    "categoryPopularityRaw": 0,
+                    "localPopularityPercentile": 0,
+                    "mainstreamExposure": 45,
+                    "daysSinceFreshEvidence": 30,
+                    "lifecycleState": "verified" if d.get("is_venue_verified") else "active",
+                    "evidence": {
+                        "specialistGuide": 0.7 if d.get("is_venue_verified") else 0.5,
+                        "independentEditorial": 1,
+                        "verifiedAttributes": 35,
+                        "dataFreshness": 90,
+                        "confidence": "High" if d.get("is_venue_verified") else "Medium",
+                    },
+                    "engagement": {
+                        "searchImpressions": 0,
+                        "profileViews": 0,
+                        "mapMarkerClicks": 0,
+                        "saves": 0,
+                        "directionRequests": 0,
+                        "confirmedVisits": 0,
+                        "repeatVisits": 0,
+                        "recommendations": 0,
+                        "recentSaves": 0,
+                    },
+                }
+                places.append(new_place)
+                added_count += 1
+
+    payload["places"] = places
+    payload["totalPlaces"] = len(places)
+    places_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    if not quiet:
+        print(f"🎉 Tasstipset sync finished: {matched_count} existing places enriched, {added_count} new dog places added.")
+
+    return {"matched": matched_count, "added": added_count, "total": len(places)}
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Scrape dog-friendly places in Stockholm from Tasstipset.se")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_PATH, help="Output JSON path")
+    parser.add_argument("--places-file", type=Path, default=DEFAULT_PLACES_PATH, help="Live places JSON path")
     parser.add_argument("--limit", type=int, default=None, help="Limit number of places to scrape")
-    parser.add_argument("--delay", type=float, default=0.2, help="Delay in seconds between requests")
+    parser.add_argument("--delay", type=float, default=0.05, help="Delay in seconds between requests")
+    parser.add_argument("--workers", type=int, default=8, help="Number of concurrent scraper workers")
+    parser.add_argument("--sync", action="store_true", help="Sync scraped dog places into places.json")
     parser.add_argument("--quiet", action="store_true", help="Suppress progress output")
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    scrape_tasstipset_stockholm(
+    scraped_places = scrape_tasstipset_stockholm(
         output_path=args.output,
         limit=args.limit,
         delay=args.delay,
+        crawl_subpages=True,
+        max_workers=args.workers,
         quiet=args.quiet,
     )
+    if args.sync:
+        sync_tasstipset_to_places(scraped_places, places_path=args.places_file, quiet=args.quiet)
 
 
 if __name__ == "__main__":
