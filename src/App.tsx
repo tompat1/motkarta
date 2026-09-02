@@ -4465,22 +4465,42 @@ export default function App() {
 
           return mobileFilters.selectedTags.every((t) => {
             const tLower = t.toLowerCase();
+            const noteLower = (place.note ?? "").toLowerCase();
+            const nameLower = (place.name ?? "").toLowerCase();
+            const evLabelLower = (place.evidenceLabel ?? "").toLowerCase();
+            const placeTags = (place.tags ?? []).map((pt) => pt.toLowerCase());
+
             if (tLower === "dog friendly" || tLower === "hundvänligt") {
               return (
                 searchStr.includes("dog friendly") ||
                 searchStr.includes("hundvänligt") ||
                 searchStr.includes("hundvänlig") ||
                 searchStr.includes("tasstipset") ||
-                place.name.toLowerCase().includes("dog") ||
-                place.note.toLowerCase().includes("hund") ||
-                place.note.toLowerCase().includes("dog") ||
-                place.tags.some((pt) => ["dog friendly", "hundvänligt", "tasstipset"].includes(pt.toLowerCase()))
+                evLabelLower.includes("tasstipset") ||
+                nameLower.includes("dog") ||
+                nameLower.includes("hund") ||
+                noteLower.includes("hund") ||
+                noteLower.includes("dog") ||
+                placeTags.some((pt) =>
+                  [
+                    "dog friendly",
+                    "hundvänligt",
+                    "tasstipset",
+                    "hundar välkomna",
+                    "verifierad hundpolicy",
+                    "hundar inne & ute",
+                    "endast uteservering",
+                  ].includes(pt) ||
+                  pt.includes("dog") ||
+                  pt.includes("hund")
+                )
               );
             }
             return (
               searchStr.includes(tLower) ||
-              place.name.toLowerCase().includes(tLower) ||
-              place.note.toLowerCase().includes(tLower)
+              nameLower.includes(tLower) ||
+              noteLower.includes(tLower) ||
+              placeTags.some((pt) => pt.includes(tLower))
             );
           });
         })

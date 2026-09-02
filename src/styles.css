@@ -141,12 +141,12 @@ a {
 
 .brand-counter-pin {
   display: inline-block;
-  height: 60px;
+  height: 68px;
   width: auto;
   object-fit: contain;
   vertical-align: middle;
   flex-shrink: 0;
-  margin-right: -14px;
+  margin-right: -12px;
   transition: transform 0.2s ease;
 }
 
@@ -164,9 +164,9 @@ a {
 }
 
 .brand-logo {
-  height: 28px;
+  height: 32px;
   width: auto;
-  max-width: 180px;
+  max-width: 200px;
   object-fit: contain;
   display: inline-block;
   vertical-align: middle;
@@ -325,19 +325,22 @@ a {
 .topbar-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
+.mobile-nav-toggle-btn,
 .topbar-cart-btn,
 .lang-switcher,
 .about {
   box-sizing: border-box;
-  height: 28px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
 }
 
 .topbar-cart-btn {
-  display: inline-flex;
-  align-items: center;
   gap: 6px;
   background: var(--color-white);
   border: 1px solid var(--color-ink);
@@ -345,10 +348,11 @@ a {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
-  padding: 5px 10px;
+  padding: 0 10px;
   cursor: pointer;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  line-height: 1;
   transition: all var(--motion-fast);
 }
 
@@ -374,11 +378,10 @@ a {
 }
 
 .lang-switcher {
-  display: inline-flex;
-  align-items: center;
   background: var(--color-white);
-  border: 1px solid var(--color-mist);
+  border: 1px solid var(--color-ink);
   padding: 2px;
+  gap: 2px;
 }
 
 .lang-btn {
@@ -386,12 +389,18 @@ a {
   border: none;
   color: var(--color-stone);
   cursor: pointer;
-  padding: 4px 10px;
+  height: 100%;
+  padding: 0 8px;
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
   transition: all var(--motion-fast);
 }
 
@@ -6038,7 +6047,7 @@ footer {
   flex-direction: column;
   gap: 8px;
   position: sticky;
-  top: 56px;
+  top: 64px;
   z-index: 999;
 }
 
@@ -6054,7 +6063,9 @@ footer {
   border: 1px solid var(--color-ink);
   border-radius: 4px;
   color: var(--color-ink);
-  padding: 5px 9px;
+  padding: 0 10px;
+  height: 34px;
+  box-sizing: border-box;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
@@ -6062,7 +6073,8 @@ footer {
   text-transform: uppercase;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 6px;
   cursor: pointer;
   line-height: 1;
   transition: all 0.15s ease;
@@ -6838,7 +6850,7 @@ footer {
 @media (max-width: 768px) {
   .topbar {
     display: flex !important;
-    height: 56px;
+    height: 64px;
     padding: 0 12px;
     background: var(--color-paper);
     border-bottom: 1px solid var(--color-mist);
@@ -6861,13 +6873,13 @@ footer {
   }
 
   .topbar .brand-counter-pin {
-    height: 42px;
+    height: 50px;
     margin-right: -8px;
   }
 
   .topbar .brand-logo {
-    height: 22px;
-    max-width: 125px;
+    height: 26px;
+    max-width: 140px;
   }
 
   .topbar .brand .brand-descriptor,
