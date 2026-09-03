@@ -1685,6 +1685,13 @@ button.concierge-clear-btn:hover {
   min-height: 78px;
 }
 
+.admin-topbar-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .admin-app-intro {
   border-bottom: 1px solid var(--color-mist);
   display: grid;
@@ -1951,9 +1958,14 @@ button.concierge-clear-btn:hover {
   font-size: 11px;
   font-weight: 800;
   gap: 8px;
-  min-height: 40px;
-  padding: 8px 10px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0 4px 0 10px;
   text-transform: uppercase;
+}
+
+.topbar-session-auth {
+  margin-right: 4px;
 }
 
 .admin-review-auth input {
@@ -2011,8 +2023,23 @@ button.concierge-clear-btn:hover {
 }
 
 .admin-session-auth .admin-logout-btn {
+  background: var(--color-white);
+  border: 1px solid var(--color-ink);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 5px;
+  height: 28px;
+  min-height: 28px;
   min-width: 0;
-  padding: 8px 10px;
+  padding: 0 8px;
+}
+
+.admin-session-auth .admin-logout-btn:hover {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-paper);
 }
 
 .admin-review-toolbar {

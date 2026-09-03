@@ -2941,7 +2941,17 @@ function AdminMlDashboard({
 
 const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "unresolved_region", "needs_input", "ml_dashboard", "all"];
 
-function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
+function AdminReviewPanel({
+  lang = "sv",
+  adminSession: propAdminSession,
+  onSessionChange,
+  onLogout,
+}: {
+  lang?: Language;
+  adminSession?: AdminSessionStatus | null;
+  onSessionChange?: (session: AdminSessionStatus | null) => void;
+  onLogout?: () => void;
+}) {
   const [tokenInput, setTokenInput] = useState(readStoredAdminToken);
   const [adminToken, setAdminToken] = useState(readStoredAdminToken);
   const [stateFilter, setStateFilter] = useState<AdminStateFilter>("candidate");
@@ -2959,7 +2969,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
   const [labelExportStatus, setLabelExportStatus] = useState("");
   const [dashboard, setDashboard] = useState<AdminReviewDashboard | null>(null);
   const [schemaStatus, setSchemaStatus] = useState<AdminSchemaStatus | null>(null);
-  const [adminSession, setAdminSession] = useState<AdminSessionStatus | null>(null);
+  const [adminSession, setAdminSession] = useState<AdminSessionStatus | null>(propAdminSession ?? null);
   const [checkingSession, setCheckingSession] = useState(true);
   const hasAdminAuth = adminSession?.admin === true;
 
@@ -3133,6 +3143,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
         });
         const payload = (await response.json().catch(() => ({}))) as AdminSessionStatus;
         setAdminSession(payload);
+        onSessionChange?.(payload);
 
         if (!response.ok || !payload.admin) {
           if (!token) {
@@ -3153,14 +3164,16 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
         return payload;
       } catch (sessionError) {
         const message = sessionError instanceof Error ? sessionError.message : String(sessionError);
-        setAdminSession({ admin: false, reason: message });
+        const failStatus: AdminSessionStatus = { admin: false, reason: message };
+        setAdminSession(failStatus);
+        onSessionChange?.(failStatus);
         setStatus(message);
         return null;
       } finally {
         setCheckingSession(false);
       }
     },
-    [adminHeaders, adminToken, lang],
+    [adminHeaders, adminToken, lang, onSessionChange],
   );
 
   useEffect(() => {
@@ -3202,6 +3215,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     if (typeof window !== "undefined") {
       window.sessionStorage.removeItem("motkarta_admin_token");
     }
+    onSessionChange?.(null);
     void checkAdminSession("");
   };
 
@@ -3215,6 +3229,11 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
     setDashboard(null);
     setSchemaStatus(null);
     setError(null);
+
+    if (onLogout) {
+      onLogout();
+      return;
+    }
 
     if (typeof window === "undefined") {
       void checkAdminSession("");
@@ -3587,28 +3606,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
           </h3>
         </div>
 
-        {hasAdminAuth ? (
-          <div className="admin-session-auth" aria-live="polite">
-            <ShieldCheck size={14} weight="bold" />
-            <span>
-              {adminSession?.email
-                ? adminSession.email
-                : lang === "sv"
-                  ? "Adminsession aktiv"
-                  : "Admin session active"}
-            </span>
-            <button type="button" className="admin-review-ghost-btn admin-logout-btn" onClick={handleAdminLogout}>
-              <SignOut size={14} weight="bold" />
-              {adminSession?.authMode === "token"
-                ? lang === "sv"
-                  ? "Glöm token"
-                  : "Forget token"
-                : lang === "sv"
-                  ? "Logga ut"
-                  : "Log out"}
-            </button>
-          </div>
-        ) : (
+        {!hasAdminAuth ? (
           <form className="admin-review-auth" onSubmit={handleUnlock}>
             <label className="sr-only" htmlFor="admin-token">
               {lang === "sv" ? "Lokal admin-token" : "Local admin token"}
@@ -3636,7 +3634,7 @@ function AdminReviewPanel({ lang = "sv" }: { lang?: Language }) {
               </button>
             ) : null}
           </form>
-        )}
+        ) : null}
       </div>
 
       <div className="admin-review-toolbar" aria-label={lang === "sv" ? "Filter för granskningskö" : "Review queue filters"}>
@@ -4604,6 +4602,43 @@ export default function App() {
 
   const [isSourcesLoading, setIsSourcesLoading] = useState(false);
   const [isPromptsLoading, setIsPromptsLoading] = useState(false);
+  const [adminSession, setAdminSession] = useState<AdminSessionStatus | null>(null);
+
+  const checkGlobalAdminSession = useCallback(async (tokenOverride?: string) => {
+    const token = (tokenOverride ?? readStoredAdminToken()).trim();
+    try {
+      const res = await fetch("/api/admin/session", {
+        headers: token ? { "x-motkarta-admin-token": token } : {},
+      });
+      const data = (await res.json().catch(() => null)) as AdminSessionStatus | null;
+      if (res.ok && data?.admin) {
+        setAdminSession(data);
+      } else {
+        setAdminSession(null);
+      }
+    } catch {
+      setAdminSession(null);
+    }
+  }, []);
+
+  const handleGlobalAdminLogout = () => {
+    if (typeof window !== "undefined") {
+      window.sessionStorage.removeItem("motkarta_admin_token");
+    }
+    const mode = adminSession?.authMode;
+    setAdminSession(null);
+    if (mode === "token") {
+      void checkGlobalAdminSession("");
+      return;
+    }
+    if (typeof window !== "undefined") {
+      window.location.assign("/cdn-cgi/access/logout");
+    }
+  };
+
+  useEffect(() => {
+    void checkGlobalAdminSession();
+  }, [checkGlobalAdminSession]);
 
   useEffect(() => {
     let cancelled = false;
@@ -5162,21 +5197,50 @@ export default function App() {
             <img src="/logo.webp" alt="MOTKARTA" className="brand-logo" />
             <span>{t.brandDescriptor}</span>
           </a>
-          <div className="lang-switcher" aria-label="Language selector">
-            <button
-              type="button"
-              className={`lang-btn ${lang === "sv" ? "active" : ""}`}
-              onClick={() => handleSetLang("sv")}
-            >
-              SV
-            </button>
-            <button
-              type="button"
-              className={`lang-btn ${lang === "en" ? "active" : ""}`}
-              onClick={() => handleSetLang("en")}
-            >
-              EN
-            </button>
+          <div className="admin-topbar-actions">
+            {adminSession?.admin ? (
+              <div className="admin-session-auth" aria-live="polite">
+                <ShieldCheck size={14} weight="bold" />
+                <span>
+                  {adminSession.email
+                    ? adminSession.email
+                    : lang === "sv"
+                      ? "Adminsession aktiv"
+                      : "Admin session active"}
+                </span>
+                <button
+                  type="button"
+                  className="admin-review-ghost-btn admin-logout-btn"
+                  onClick={handleGlobalAdminLogout}
+                  title={lang === "sv" ? "Logga ut från adminsession" : "Log out from admin session"}
+                >
+                  <SignOut size={14} weight="bold" />
+                  {adminSession.authMode === "token"
+                    ? lang === "sv"
+                      ? "Glöm token"
+                      : "Forget token"
+                    : lang === "sv"
+                      ? "Logga ut"
+                      : "Log out"}
+                </button>
+              </div>
+            ) : null}
+            <div className="lang-switcher" aria-label="Language selector">
+              <button
+                type="button"
+                className={`lang-btn ${lang === "sv" ? "active" : ""}`}
+                onClick={() => handleSetLang("sv")}
+              >
+                SV
+              </button>
+              <button
+                type="button"
+                className={`lang-btn ${lang === "en" ? "active" : ""}`}
+                onClick={() => handleSetLang("en")}
+              >
+                EN
+              </button>
+            </div>
           </div>
         </header>
         <section className="admin-app-intro" aria-labelledby="admin-app-title">
@@ -5194,7 +5258,12 @@ export default function App() {
           lang={lang}
           onAddSource={() => setSuperpowerMode("add_source")}
         />
-        <AdminReviewPanel lang={lang} />
+        <AdminReviewPanel
+          lang={lang}
+          adminSession={adminSession}
+          onSessionChange={setAdminSession}
+          onLogout={handleGlobalAdminLogout}
+        />
         {superpowerMode === "add_source" ? (
           <ConciergeSuperpowerModal
             mode={superpowerMode}
@@ -5253,6 +5322,34 @@ export default function App() {
           </button>
         </nav>
         <div className="topbar-actions">
+          {adminSession?.admin ? (
+            <div className="admin-session-auth topbar-session-auth" aria-live="polite">
+              <ShieldCheck size={14} weight="bold" />
+              <span>
+                {adminSession.email
+                  ? adminSession.email
+                  : lang === "sv"
+                    ? "Admin"
+                    : "Admin"}
+              </span>
+              <button
+                type="button"
+                className="admin-review-ghost-btn admin-logout-btn"
+                onClick={handleGlobalAdminLogout}
+                title={lang === "sv" ? "Logga ut från adminsession" : "Log out of admin session"}
+              >
+                <SignOut size={14} weight="bold" />
+                {adminSession.authMode === "token"
+                  ? lang === "sv"
+                    ? "Glöm"
+                    : "Forget"
+                  : lang === "sv"
+                    ? "Logga ut"
+                    : "Log out"}
+              </button>
+            </div>
+          ) : null}
+
           {/* Mobile view toggle (Map / List) - only visible on mobile */}
           <button
             type="button"
