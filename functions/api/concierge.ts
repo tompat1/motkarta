@@ -416,9 +416,9 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
 
     if (isSpecialtyQuery) {
       if (isVerifiedSpecialty) {
-        ragScore += 30;
+        ragScore += 80;
       } else {
-        ragScore -= 30;
+        ragScore -= 60;
       }
     }
 

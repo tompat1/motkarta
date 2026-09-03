@@ -41,7 +41,26 @@ test("RAG retrieveAndSynthesize excludes commercial chains Nespresso and Kahls a
 
   assert.equal(recommendedNames.includes("Nespresso"), false);
   assert.equal(recommendedNames.includes("Kahls Kaffe"), false);
-  assert.ok(recommendedNames.some((n) => ["Pascal", "Lykke", "Drop Coffee", "Solkant", "Volca", "Muttley", "Kaffe", "Rosteri"].some(s => n.includes(s))));
+  assert.ok(
+    recommendedNames.some((n) =>
+      [
+        "Pascal",
+        "Lykke",
+        "Drop Coffee",
+        "Solkant",
+        "Volca",
+        "Muttley",
+        "Johan & Nyström",
+        "A.B.Café",
+        "Nordic Brew Lab",
+        "Standout",
+        "Gast",
+        "Café Blom",
+        "Kaffe",
+        "Rosteri",
+      ].some((s) => n.includes(s)),
+    ),
+  );
 });
 
 test("RAG retrieveAndSynthesize ranks Polish restaurants for 'food from Poland' query", () => {

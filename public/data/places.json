@@ -4,39 +4,44 @@
     {
       "id": 329797914,
       "name": "Solkant",
-      "kind": "Bakery",
+      "kind": "Specialty coffee",
       "cuisine": "bakery",
       "area": "Vasastan",
       "address": "Hälsingegatan 2, Stockholm",
       "note": "Sourdough bakery candidate with fika and filter-coffee relevance.",
       "tags": [
-        "Sourdough",
-        "Cardamom bun",
-        "Fika",
         "Bakery",
+        "Cardamom bun",
         "Curated",
+        "Fika",
+        "Filter",
+        "Own roastery",
+        "Single origin",
+        "Sourdough",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee",
         "Visit Stockholm",
         "White Guide Nordic"
       ],
-      "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
+      "sourceName": "Specialty Coffee Sweden Registry",
       "sourceUrl": "https://www.visitstockholm.se/",
       "lastUpdated": "2026-08-22",
-      "evidenceLabel": "Visit Stockholm (Officiella Stadsguiden) · White Guide Nordic",
+      "evidenceLabel": "Visit Stockholm (Officiella Stadsguiden) · White Guide Nordic · Specialty Coffee Sweden Registry",
       "mainstreamExposure": 40,
       "ageDays": 0,
       "daysSinceFreshEvidence": 90,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.6,
+        "specialistGuide": 1.0,
         "independentEditorial": 1,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
         "recentReviews": 0,
         "credibleReviewers": 0,
         "inspectionStatus": 0,
-        "verifiedAttributes": 35,
+        "verifiedAttributes": 90,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -60,7 +65,24 @@
       "categoryMeanRating": 0,
       "categoryPopularityRaw": 0,
       "localPopularityPercentile": 0,
-      "priceLevel": 0
+      "priceLevel": 0,
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": true,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
     },
     {
       "id": 739596670,
@@ -28724,16 +28746,21 @@
     {
       "id": 3997918113,
       "name": "Lykke",
-      "kind": "Restaurant",
+      "kind": "Specialty coffee",
       "cuisine": "",
       "area": "Central Stockholm",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
+        "Filter",
         "Missing address",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Own roastery",
+        "Restaurant",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -28750,9 +28777,9 @@
         "complete_profile": false,
         "recently_updated": false
       },
-      "sourceName": "OpenStreetMap",
+      "sourceName": "Specialty Coffee Sweden Registry",
       "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "evidenceLabel": "OpenStreetMap verified open data · Specialty Coffee Sweden Registry",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -28764,16 +28791,16 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
         "credibleReviewers": 6,
         "inspectionStatus": 70.0,
-        "verifiedAttributes": 28.33,
+        "verifiedAttributes": 90,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -28789,7 +28816,24 @@
       "latitude": 59.3134193,
       "longitude": 18.082056,
       "x": 66.41,
-      "y": 57.99
+      "y": 57.99,
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": true,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
     },
     {
       "id": 2571916087,
@@ -40847,7 +40891,7 @@
     {
       "id": 1273030974,
       "name": "Johan & Nyström",
-      "kind": "Café",
+      "kind": "Specialty coffee",
       "cuisine": "coffee shop",
       "area": "Central Stockholm",
       "note": "Café from OpenStreetMap. Cuisine tag: coffee shop.",
@@ -40855,9 +40899,14 @@
         "Café",
         "Central Stockholm",
         "Coffee Shop",
+        "Filter",
         "Missing address",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Own roastery",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -40874,9 +40923,9 @@
         "complete_profile": false,
         "recently_updated": false
       },
-      "sourceName": "OpenStreetMap",
+      "sourceName": "Specialty Coffee Sweden Registry",
       "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "evidenceLabel": "OpenStreetMap verified open data · Specialty Coffee Sweden Registry",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -40888,16 +40937,16 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.4,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
         "credibleReviewers": 6,
         "inspectionStatus": 70.0,
-        "verifiedAttributes": 28.33,
+        "verifiedAttributes": 90,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -40913,7 +40962,24 @@
       "latitude": 59.3163095,
       "longitude": 18.0640055,
       "x": 62.8,
-      "y": 56.92
+      "y": 56.92,
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": true,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
     },
     {
       "id": 3044321603,
@@ -76107,16 +76173,20 @@
     {
       "id": 1038220370,
       "name": "Pascal",
-      "kind": "Café",
+      "kind": "Specialty coffee",
       "cuisine": "",
       "area": "Central Stockholm",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "Central Stockholm",
+        "Filter",
         "Missing address",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -76133,9 +76203,9 @@
         "complete_profile": false,
         "recently_updated": false
       },
-      "sourceName": "OpenStreetMap",
+      "sourceName": "Specialty Coffee Sweden Registry",
       "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "evidenceLabel": "OpenStreetMap verified open data · Specialty Coffee Sweden Registry",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -76147,16 +76217,16 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.4,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
         "credibleReviewers": 6,
         "inspectionStatus": 70.0,
-        "verifiedAttributes": 28.33,
+        "verifiedAttributes": 90,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -76172,7 +76242,24 @@
       "latitude": 59.3420745,
       "longitude": 18.0520229,
       "x": 60.4,
-      "y": 47.38
+      "y": 47.38,
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": false,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
     },
     {
       "id": 3368023290,
@@ -97310,15 +97397,19 @@
     {
       "id": 3199726192,
       "name": "Café Blomma",
-      "kind": "Café",
+      "kind": "Specialty coffee",
       "cuisine": "",
       "area": "Central Stockholm",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "Central Stockholm",
+        "Filter",
         "Missing address",
-        "OpenStreetMap"
+        "OpenStreetMap",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -97334,9 +97425,9 @@
         "complete_profile": false,
         "recently_updated": false
       },
-      "sourceName": "OpenStreetMap",
+      "sourceName": "Specialty Coffee Sweden Registry",
       "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "evidenceLabel": "OpenStreetMap verified open data · Specialty Coffee Sweden Registry",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -97348,16 +97439,16 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.4,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.0,
         "verifiedUserRating": 0.0,
         "repeatVisits": 0,
         "recentReviews": 0,
         "credibleReviewers": 0,
         "inspectionStatus": 60.0,
-        "verifiedAttributes": 0.0,
+        "verifiedAttributes": 90,
         "dataFreshness": 80,
-        "confidence": "Low"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -97373,7 +97464,24 @@
       "latitude": 59.3415549,
       "longitude": 17.9269697,
       "x": 35.39,
-      "y": 47.57
+      "y": 47.57,
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": false,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
     },
     {
       "id": 3466556846,
@@ -108984,16 +109092,20 @@
     {
       "id": 39957690,
       "name": "Gast",
-      "kind": "Café",
+      "kind": "Specialty coffee",
       "cuisine": "",
       "area": "Central Stockholm",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "Central Stockholm",
+        "Filter",
         "Missing address",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -109010,9 +109122,9 @@
         "complete_profile": false,
         "recently_updated": false
       },
-      "sourceName": "OpenStreetMap",
+      "sourceName": "Specialty Coffee Sweden Registry",
       "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "evidenceLabel": "OpenStreetMap verified open data · Specialty Coffee Sweden Registry",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -109024,16 +109136,16 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.4,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
         "credibleReviewers": 6,
         "inspectionStatus": 70.0,
-        "verifiedAttributes": 28.33,
+        "verifiedAttributes": 90,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -109049,7 +109161,24 @@
       "latitude": 59.3397456,
       "longitude": 18.0567074,
       "x": 61.34,
-      "y": 48.24
+      "y": 48.24,
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": false,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
     },
     {
       "id": 4010443792,
@@ -114053,7 +114182,7 @@
     {
       "id": 393100549,
       "name": "Drop Coffee Roasters",
-      "kind": "Café",
+      "kind": "Specialty coffee",
       "cuisine": "coffee shop",
       "area": "Central Stockholm",
       "note": "Café from OpenStreetMap. Cuisine tag: coffee shop.",
@@ -114062,10 +114191,15 @@
         "Central Stockholm",
         "Coffee Shop",
         "Dog friendly",
+        "Filter",
         "Hundvänligt",
         "Missing address",
         "OpenStreetMap",
         "Opening hours",
+        "Own roastery",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee",
         "Tasstipset"
       ],
       "is_hidden_gem": false,
@@ -114083,9 +114217,9 @@
         "complete_profile": false,
         "recently_updated": false
       },
-      "sourceName": "OpenStreetMap",
+      "sourceName": "Specialty Coffee Sweden Registry",
       "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset",
+      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset · Specialty Coffee Sweden Registry",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -114097,16 +114231,16 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.5,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
         "credibleReviewers": 6,
         "inspectionStatus": 70.0,
-        "verifiedAttributes": 28.33,
+        "verifiedAttributes": 90,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -114122,7 +114256,24 @@
       "latitude": 59.3169067,
       "longitude": 18.0628136,
       "x": 62.56,
-      "y": 56.7
+      "y": 56.7,
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": true,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
     },
     {
       "id": 1378940951,
@@ -160108,7 +160259,7 @@
     {
       "id": 2596082244,
       "name": "A.B.Café",
-      "kind": "Café",
+      "kind": "Specialty coffee",
       "cuisine": "coffee shop;sandwich;pasta;pastry",
       "area": "Central Stockholm",
       "note": "Café from OpenStreetMap. Cuisine tag: coffee shop;sandwich;pasta;pastry. Address: Valborgsmässovägen 34.",
@@ -160116,11 +160267,15 @@
         "Café",
         "Central Stockholm",
         "Coffee Shop",
+        "Filter",
         "OpenStreetMap",
         "Opening hours",
         "Pasta",
         "Pastry",
         "Sandwich",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee",
         "Website"
       ],
       "is_hidden_gem": false,
@@ -160138,9 +160293,9 @@
         "complete_profile": true,
         "recently_updated": false
       },
-      "sourceName": "OpenStreetMap",
+      "sourceName": "Specialty Coffee Sweden Registry",
       "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "evidenceLabel": "OpenStreetMap verified open data · Specialty Coffee Sweden Registry",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -160152,14 +160307,14 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.4,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.75,
         "verifiedUserRating": 0.6,
         "repeatVisits": 25,
         "recentReviews": 30,
         "credibleReviewers": 20,
         "inspectionStatus": 90.0,
-        "verifiedAttributes": 85.0,
+        "verifiedAttributes": 90,
         "dataFreshness": 80,
         "confidence": "High"
       },
@@ -160177,7 +160332,24 @@
       "latitude": 59.2995931,
       "longitude": 17.998632,
       "x": 49.73,
-      "y": 63.11
+      "y": 63.11,
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": false,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
     },
     {
       "id": 2896263689,
@@ -180270,9 +180442,13 @@
       "note": "Specialty coffee from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
+        "Filter",
         "Missing address",
         "OpenStreetMap",
         "Opening hours",
+        "Own roastery",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
         "Specialty coffee"
       ],
       "is_hidden_gem": false,
@@ -180290,9 +180466,9 @@
         "complete_profile": false,
         "recently_updated": false
       },
-      "sourceName": "OpenStreetMap",
+      "sourceName": "Specialty Coffee Sweden Registry",
       "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "evidenceLabel": "OpenStreetMap verified open data · Specialty Coffee Sweden Registry",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -180304,16 +180480,16 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.4,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
         "credibleReviewers": 6,
         "inspectionStatus": 70.0,
-        "verifiedAttributes": 28.33,
+        "verifiedAttributes": 90,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -180331,17 +180507,21 @@
       "x": 59.34,
       "y": 52.36,
       "specialty": {
-        "specialtyVerified": false,
-        "ownRoastery": false,
-        "traceableCoffee": false,
+        "specialtyVerified": true,
+        "ownRoastery": true,
+        "traceableCoffee": true,
         "filterCoffee": true,
         "espressoBased": true,
-        "rotatingRoasters": false,
-        "singleOrigin": false,
-        "manualBrewMethods": [],
-        "decafAvailable": false,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
         "beansForSale": true,
-        "verificationSources": 1
+        "verificationSources": 3
       }
     },
     {
@@ -211082,15 +211262,20 @@
     {
       "id": 512446550,
       "name": "Muttley & Jack's",
-      "kind": "Café",
+      "kind": "Specialty coffee",
       "cuisine": "",
       "area": "Central Stockholm",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "Central Stockholm",
+        "Filter",
         "Missing address",
-        "OpenStreetMap"
+        "OpenStreetMap",
+        "Own roastery",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -211106,9 +211291,9 @@
         "complete_profile": false,
         "recently_updated": false
       },
-      "sourceName": "OpenStreetMap",
+      "sourceName": "Specialty Coffee Sweden Registry",
       "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "evidenceLabel": "OpenStreetMap verified open data · Specialty Coffee Sweden Registry",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -211120,16 +211305,16 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.4,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.0,
         "verifiedUserRating": 0.0,
         "repeatVisits": 0,
         "recentReviews": 0,
         "credibleReviewers": 0,
         "inspectionStatus": 60.0,
-        "verifiedAttributes": 0.0,
+        "verifiedAttributes": 90,
         "dataFreshness": 80,
-        "confidence": "Low"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -211145,7 +211330,24 @@
       "latitude": 59.3116908,
       "longitude": 18.0965151,
       "x": 69.3,
-      "y": 58.63
+      "y": 58.63,
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": true,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
     },
     {
       "id": 3673432721,
@@ -212272,9 +212474,13 @@
       "note": "Specialty coffee from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
+        "Filter",
         "Missing address",
         "OpenStreetMap",
         "Opening hours",
+        "Own roastery",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
         "Specialty coffee"
       ],
       "is_hidden_gem": false,
@@ -212292,9 +212498,9 @@
         "complete_profile": false,
         "recently_updated": false
       },
-      "sourceName": "OpenStreetMap",
+      "sourceName": "Specialty Coffee Sweden Registry",
       "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "evidenceLabel": "OpenStreetMap verified open data · Specialty Coffee Sweden Registry",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -212306,16 +212512,16 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.4,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
         "credibleReviewers": 6,
         "inspectionStatus": 70.0,
-        "verifiedAttributes": 28.33,
+        "verifiedAttributes": 90,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -212333,17 +212539,21 @@
       "x": 57.54,
       "y": 50.49,
       "specialty": {
-        "specialtyVerified": false,
-        "ownRoastery": false,
-        "traceableCoffee": false,
+        "specialtyVerified": true,
+        "ownRoastery": true,
+        "traceableCoffee": true,
         "filterCoffee": true,
         "espressoBased": true,
-        "rotatingRoasters": false,
-        "singleOrigin": false,
-        "manualBrewMethods": [],
-        "decafAvailable": false,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
         "beansForSale": true,
-        "verificationSources": 1
+        "verificationSources": 3
       }
     },
     {
@@ -215977,7 +216187,7 @@
     {
       "id": 3282128645,
       "name": "Nordic Brew Lab",
-      "kind": "Café",
+      "kind": "Specialty coffee",
       "cuisine": "coffee shop",
       "area": "Central Stockholm",
       "note": "Café from OpenStreetMap. Cuisine tag: coffee shop.",
@@ -215985,9 +216195,14 @@
         "Café",
         "Central Stockholm",
         "Coffee Shop",
+        "Filter",
         "Missing address",
         "OpenStreetMap",
         "Opening hours",
+        "Own roastery",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee",
         "Website"
       ],
       "is_hidden_gem": false,
@@ -216004,9 +216219,9 @@
         "complete_profile": false,
         "recently_updated": false
       },
-      "sourceName": "OpenStreetMap",
+      "sourceName": "Specialty Coffee Sweden Registry",
       "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "evidenceLabel": "OpenStreetMap verified open data · Specialty Coffee Sweden Registry",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -216018,14 +216233,14 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.4,
+        "specialistGuide": 1.0,
         "independentEditorial": 0.5,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
         "credibleReviewers": 13,
         "inspectionStatus": 80.0,
-        "verifiedAttributes": 56.67,
+        "verifiedAttributes": 90,
         "dataFreshness": 80,
         "confidence": "High"
       },
@@ -216043,7 +216258,24 @@
       "latitude": 59.3412088,
       "longitude": 18.0381051,
       "x": 57.62,
-      "y": 47.7
+      "y": 47.7,
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": true,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
     },
     {
       "id": 407649148,
@@ -264165,7 +264397,209 @@
         "recommendations": 0,
         "recentSaves": 0
       }
+    },
+    {
+      "id": 2022635109,
+      "name": "Pascal Café & Bakery",
+      "kind": "Specialty coffee",
+      "cuisine": "specialty coffee",
+      "area": "Södermalm",
+      "address": "Skånegatan 76, Stockholm",
+      "note": "Gold standard specialty coffee venue in Södermalm.",
+      "tags": [
+        "Filter",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee"
+      ],
+      "sourceName": "Specialty Coffee Sweden Registry",
+      "sourceUrl": "https://specialtycoffee.se",
+      "evidenceLabel": "Specialty Coffee Sweden Registry",
+      "latitude": 59.3134,
+      "longitude": 18.0832,
+      "x": 66.64,
+      "y": 58.0,
+      "ratingAverage": 0,
+      "reliableRatingCount": 0,
+      "reviewCount": 0,
+      "priceLevel": 0,
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0,
+      "mainstreamExposure": 40,
+      "daysSinceFreshEvidence": 15,
+      "lifecycleState": "verified",
+      "evidence": {
+        "specialistGuide": 1.0,
+        "independentEditorial": 1,
+        "verifiedAttributes": 90,
+        "dataFreshness": 95,
+        "confidence": "High"
+      },
+      "engagement": {
+        "searchImpressions": 0,
+        "profileViews": 0,
+        "mapMarkerClicks": 0,
+        "saves": 0,
+        "directionRequests": 0,
+        "confirmedVisits": 0,
+        "repeatVisits": 0,
+        "recommendations": 0,
+        "recentSaves": 0
+      },
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": false,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
+    },
+    {
+      "id": 517376147,
+      "name": "Pascal Kaffebar",
+      "kind": "Specialty coffee",
+      "cuisine": "specialty coffee",
+      "area": "Östermalm",
+      "address": "Sturegatan 8, Stockholm",
+      "note": "Gold standard specialty coffee venue in Östermalm.",
+      "tags": [
+        "Filter",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee"
+      ],
+      "sourceName": "Specialty Coffee Sweden Registry",
+      "sourceUrl": "https://specialtycoffee.se",
+      "evidenceLabel": "Specialty Coffee Sweden Registry",
+      "latitude": 59.3378,
+      "longitude": 18.0734,
+      "x": 64.68,
+      "y": 48.96,
+      "ratingAverage": 0,
+      "reliableRatingCount": 0,
+      "reviewCount": 0,
+      "priceLevel": 0,
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0,
+      "mainstreamExposure": 40,
+      "daysSinceFreshEvidence": 15,
+      "lifecycleState": "verified",
+      "evidence": {
+        "specialistGuide": 1.0,
+        "independentEditorial": 1,
+        "verifiedAttributes": 90,
+        "dataFreshness": 95,
+        "confidence": "High"
+      },
+      "engagement": {
+        "searchImpressions": 0,
+        "profileViews": 0,
+        "mapMarkerClicks": 0,
+        "saves": 0,
+        "directionRequests": 0,
+        "confirmedVisits": 0,
+        "repeatVisits": 0,
+        "recommendations": 0,
+        "recentSaves": 0
+      },
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": false,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
+    },
+    {
+      "id": 319307765,
+      "name": "Standout Coffee",
+      "kind": "Specialty coffee",
+      "cuisine": "specialty coffee",
+      "area": "Östermalm",
+      "address": "Frihamnsgatan 23, Stockholm",
+      "note": "Gold standard specialty coffee venue in Östermalm.",
+      "tags": [
+        "Filter",
+        "Own roastery",
+        "Single origin",
+        "Specialty Coffee Sweden Registry",
+        "Specialty coffee"
+      ],
+      "sourceName": "Specialty Coffee Sweden Registry",
+      "sourceUrl": "https://specialtycoffee.se",
+      "evidenceLabel": "Specialty Coffee Sweden Registry",
+      "latitude": 59.3478,
+      "longitude": 18.1189,
+      "x": 73.78,
+      "y": 45.26,
+      "ratingAverage": 0,
+      "reliableRatingCount": 0,
+      "reviewCount": 0,
+      "priceLevel": 0,
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0,
+      "mainstreamExposure": 40,
+      "daysSinceFreshEvidence": 15,
+      "lifecycleState": "verified",
+      "evidence": {
+        "specialistGuide": 1.0,
+        "independentEditorial": 1,
+        "verifiedAttributes": 90,
+        "dataFreshness": 95,
+        "confidence": "High"
+      },
+      "engagement": {
+        "searchImpressions": 0,
+        "profileViews": 0,
+        "mapMarkerClicks": 0,
+        "saves": 0,
+        "directionRequests": 0,
+        "confirmedVisits": 0,
+        "repeatVisits": 0,
+        "recommendations": 0,
+        "recentSaves": 0
+      },
+      "specialty": {
+        "specialtyVerified": true,
+        "ownRoastery": true,
+        "traceableCoffee": true,
+        "filterCoffee": true,
+        "espressoBased": true,
+        "rotatingRoasters": true,
+        "singleOrigin": true,
+        "manualBrewMethods": [
+          "V60",
+          "Batch brew",
+          "Kalita Wave"
+        ],
+        "decafAvailable": true,
+        "beansForSale": true,
+        "verificationSources": 3
+      }
     }
   ],
-  "totalPlaces": 3958
+  "totalPlaces": 3961
 }

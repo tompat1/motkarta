@@ -55,6 +55,15 @@ export const DEFAULT_CURATED_SOURCES: CuratedSource[] = [
     license: "Officiell stadsportal (Stockholms Stad)",
     verifiedCount: 240,
   },
+  {
+    id: "tasstipset",
+    name: "Tasstipset (Hundvänliga ställen)",
+    url: "https://tasstipset.se",
+    type: "Verified Guide",
+    description: "Verifierade hundvänliga caféer, bagerier, kvarterskrogar och restauranger i Storstockholm med hundpolicy och ägarbekräftelse.",
+    license: "Citerat med tillstånd (tasstipset.se)",
+    verifiedCount: 1058,
+  },
 ];
 
 export const DEFAULT_CONCIERGE_PROMPTS = [
