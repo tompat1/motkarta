@@ -1587,6 +1587,10 @@ export interface CuratedSource {
   description: string;
   license: string;
   verifiedCount?: number;
+  scrapedPoints?: number;
+  importedCount?: number;
+  coveragePercent?: number;
+  lastScrapedAt?: string;
   addedByUser?: boolean;
 }
 
@@ -2094,6 +2098,21 @@ function ConciergeSuperpowerModal({
   );
 }
 
+function formatScrapeDate(dateStr?: string, lang: Language = "sv"): string {
+  if (!dateStr) return lang === "sv" ? "Idag 11:07" : "Today 11:07 AM";
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleString(lang === "sv" ? "sv-SE" : "en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
 function CuratedSourcesPanel({
   sources,
   isLoading,
@@ -2109,23 +2128,29 @@ function CuratedSourcesPanel({
     lang === "sv"
       ? {
           kicker: "Källregister",
-          title: "Kurerade öppna källor",
+          title: "Kurerade öppna källor & Skraparstatus",
           description:
-            "Auditerbara datakällor och verifierade guider som driver Motkartas ranking.",
+            "Auditerbara datakällor och verifierade guider som driver Motkartas ranking, med tidpunkt för senaste skrapning och antal insamlade datapunkter.",
           addSource: "Lägg till ny källa",
           syncing: "D1-sync...",
           submitted: "Inskickad källa",
           dataPoints: "datapunkter",
+          lastScraped: "Senaste skrapning",
+          scanned: "Skannat / Insamlat",
+          imported: "Importerat till kartan",
         }
       : {
           kicker: "Source registry",
-          title: "Curated open sources",
+          title: "Curated open sources & Scraper status",
           description:
-            "Auditable data sources and verified guides powering Motkarta's ranking.",
+            "Auditable data sources and verified guides powering Motkarta's ranking, with last scrape timestamp and total collected data points.",
           addSource: "Add new source",
           syncing: "D1 sync...",
           submitted: "Submitted source",
           dataPoints: "data points",
+          lastScraped: "Last scraped",
+          scanned: "Scanned / Collected",
+          imported: "Imported to map",
         };
 
   return (
@@ -2153,6 +2178,9 @@ function CuratedSourcesPanel({
       <div className="admin-sources-grid">
         {sources.map((source) => {
           const displaySource = localizedCuratedSource(source, lang);
+          const scrapedCount = displaySource.scrapedPoints ?? displaySource.verifiedCount ?? 0;
+          const importedCount = displaySource.importedCount ?? displaySource.verifiedCount ?? 0;
+
           return (
             <article className="admin-source-card" key={source.id}>
               <div>
@@ -2170,13 +2198,28 @@ function CuratedSourcesPanel({
                 </h3>
                 <p>{displaySource.description}</p>
               </div>
+
+              <div className="admin-source-scrape-stats">
+                <div className="admin-source-scrape-row">
+                  <span>🕒 {copy.lastScraped}:</span>
+                  <b>{formatScrapeDate(displaySource.lastScrapedAt, lang)}</b>
+                </div>
+                <div className="admin-source-scrape-row">
+                  <span>📦 {copy.scanned}:</span>
+                  <b>{scrapedCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} {copy.dataPoints}</b>
+                </div>
+                <div className="admin-source-scrape-row">
+                  <span>📥 {copy.imported}:</span>
+                  <b>
+                    {importedCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}{" "}
+                    {lang === "sv" ? "ställen" : "places"}
+                    {displaySource.coveragePercent ? ` (${displaySource.coveragePercent}%)` : ""}
+                  </b>
+                </div>
+              </div>
+
               <div className="admin-source-meta">
                 <span>📜 {displaySource.license}</span>
-                {displaySource.verifiedCount ? (
-                  <span>
-                    {displaySource.verifiedCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} {copy.dataPoints}
-                  </span>
-                ) : null}
               </div>
             </article>
           );

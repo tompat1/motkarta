@@ -1860,6 +1860,33 @@ button.concierge-clear-btn:hover {
   margin: 0;
 }
 
+.admin-source-scrape-stats {
+  background: var(--color-sand);
+  border: 1px solid var(--color-mist);
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 8px 10px;
+}
+
+.admin-source-scrape-row {
+  align-items: center;
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  justify-content: space-between;
+  line-height: 1.35;
+}
+
+.admin-source-scrape-row span {
+  color: var(--color-stone);
+}
+
+.admin-source-scrape-row b {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
 .admin-source-meta {
   border-top: 1px dashed var(--color-mist);
   color: var(--color-stone);
@@ -1868,7 +1895,7 @@ button.concierge-clear-btn:hover {
   gap: 12px;
   justify-content: space-between;
   line-height: 1.35;
-  padding-top: 10px;
+  padding-top: 8px;
 }
 
 .admin-review-panel {
