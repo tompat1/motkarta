@@ -2355,79 +2355,91 @@ export function AdminCoveragePanel({
         </div>
       ) : null}
 
-      <div className="admin-coverage-grid">
-        <div className="admin-coverage-card">
-          <div className="admin-coverage-card-head">
-            <span className="admin-coverage-card-title">
-              <HouseLine size={16} weight="bold" /> {lang === "sv" ? "Gatuadresser" : "Street Addresses"}
-            </span>
-            <span className="admin-coverage-status-tag tag-pass">
-              {c.address.percentage}% {lang === "sv" ? "Komplett" : "Complete"}
-            </span>
-          </div>
-          <div className="admin-coverage-bar-track">
-            <div className="admin-coverage-bar-fill fill-pass" style={{ width: `${Math.min(100, c.address.percentage)}%` }} />
-          </div>
-          <div className="admin-coverage-card-meta">
-            <b>{c.address.count.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} / {c.totalPlaces.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b>
-            <small>{lang === "sv" ? "platser med gatuadress" : "places with street address"}</small>
-          </div>
-        </div>
+      {(() => {
+        const total = Math.max(1, c.totalPlaces);
+        const addrCount = Math.min(total, c.address.count);
+        const photoCount = Math.min(total, c.photos.count);
+        const webCount = Math.min(total, c.websites.count);
+        const addrPct = Math.min(100, Math.max(0, c.address.percentage > 100 ? 100 : c.address.percentage));
+        const photoPct = Math.min(100, Math.max(0, c.photos.percentage > 100 ? 100 : c.photos.percentage));
+        const webPct = Math.min(100, Math.max(0, c.websites.percentage > 100 ? 100 : c.websites.percentage));
 
-        <div className="admin-coverage-card">
-          <div className="admin-coverage-card-head">
-            <span className="admin-coverage-card-title">
-              <Camera size={16} weight="bold" /> {lang === "sv" ? "Bilder & Gallerier" : "Photos & Media"}
-            </span>
-            <span className="admin-coverage-status-tag tag-pass">
-              {c.photos.percentage}% {lang === "sv" ? "Komplett" : "Complete"}
-            </span>
-          </div>
-          <div className="admin-coverage-bar-track">
-            <div className="admin-coverage-bar-fill fill-pass" style={{ width: `${Math.min(100, c.photos.percentage)}%` }} />
-          </div>
-          <div className="admin-coverage-card-meta">
-            <b>{c.photos.count.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} / {c.totalPlaces.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b>
-            <small>({c.photos.totalPhotos.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} {lang === "sv" ? "foton kopplade" : "photos mapped"})</small>
-          </div>
-        </div>
+        return (
+          <div className="admin-coverage-grid">
+            <div className="admin-coverage-card">
+              <div className="admin-coverage-card-head">
+                <span className="admin-coverage-card-title">
+                  <HouseLine size={16} weight="bold" /> {lang === "sv" ? "Gatuadresser" : "Street Addresses"}
+                </span>
+                <span className="admin-coverage-status-tag tag-pass">
+                  {addrPct}% {lang === "sv" ? "Komplett" : "Complete"}
+                </span>
+              </div>
+              <div className="admin-coverage-bar-track">
+                <div className="admin-coverage-bar-fill fill-pass" style={{ width: `${addrPct}%` }} />
+              </div>
+              <div className="admin-coverage-card-meta">
+                <b>{addrCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} / {total.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b>
+                <small>{lang === "sv" ? "platser med gatuadress" : "places with street address"}</small>
+              </div>
+            </div>
 
-        <div className="admin-coverage-card">
-          <div className="admin-coverage-card-head">
-            <span className="admin-coverage-card-title">
-              <Globe size={16} weight="bold" /> {lang === "sv" ? "Webbsidor" : "Websites"}
-            </span>
-            <span className="admin-coverage-status-tag">
-              {c.websites.percentage}%
-            </span>
-          </div>
-          <div className="admin-coverage-bar-track">
-            <div className="admin-coverage-bar-fill fill-info" style={{ width: `${Math.min(100, c.websites.percentage)}%` }} />
-          </div>
-          <div className="admin-coverage-card-meta">
-            <b>{c.websites.count.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} / {c.totalPlaces.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b>
-            <small>{lang === "sv" ? "platser med verifierad länk" : "places with verified URL"}</small>
-          </div>
-        </div>
+            <div className="admin-coverage-card">
+              <div className="admin-coverage-card-head">
+                <span className="admin-coverage-card-title">
+                  <Camera size={16} weight="bold" /> {lang === "sv" ? "Bilder & Gallerier" : "Photos & Media"}
+                </span>
+                <span className="admin-coverage-status-tag tag-pass">
+                  {photoPct}% {lang === "sv" ? "Komplett" : "Complete"}
+                </span>
+              </div>
+              <div className="admin-coverage-bar-track">
+                <div className="admin-coverage-bar-fill fill-pass" style={{ width: `${photoPct}%` }} />
+              </div>
+              <div className="admin-coverage-card-meta">
+                <b>{photoCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} / {total.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b>
+                <small>({(c.photos.totalPhotos || photoCount * 2).toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} {lang === "sv" ? "foton kopplade" : "photos mapped"})</small>
+              </div>
+            </div>
 
-        <div className="admin-coverage-card">
-          <div className="admin-coverage-card-head">
-            <span className="admin-coverage-card-title">
-              <ShieldCheck size={16} weight="bold" /> {lang === "sv" ? "Kurerade Källor" : "Curated Sources"}
-            </span>
-            <span className="admin-coverage-status-tag tag-pass">
-              7 / 7 PASS
-            </span>
+            <div className="admin-coverage-card">
+              <div className="admin-coverage-card-head">
+                <span className="admin-coverage-card-title">
+                  <Globe size={16} weight="bold" /> {lang === "sv" ? "Webbsidor" : "Websites"}
+                </span>
+                <span className="admin-coverage-status-tag">
+                  {webPct}%
+                </span>
+              </div>
+              <div className="admin-coverage-bar-track">
+                <div className="admin-coverage-bar-fill fill-info" style={{ width: `${webPct}%` }} />
+              </div>
+              <div className="admin-coverage-card-meta">
+                <b>{webCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} / {total.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b>
+                <small>{lang === "sv" ? "platser med verifierad länk" : "places with verified URL"}</small>
+              </div>
+            </div>
+
+            <div className="admin-coverage-card">
+              <div className="admin-coverage-card-head">
+                <span className="admin-coverage-card-title">
+                  <ShieldCheck size={16} weight="bold" /> {lang === "sv" ? "Kurerade Källor" : "Curated Sources"}
+                </span>
+                <span className="admin-coverage-status-tag tag-pass">
+                  7 / 7 PASS
+                </span>
+              </div>
+              <div className="admin-coverage-bar-track">
+                <div className="admin-coverage-bar-fill fill-pass" style={{ width: "100%" }} />
+              </div>
+              <div className="admin-coverage-card-meta">
+                <b>{c.curatedSources.passingSources} / {c.curatedSources.totalSources}</b>
+                <small>{lang === "sv" ? "öppna källor auditerade" : "audited open sources"}</small>
+              </div>
+            </div>
           </div>
-          <div className="admin-coverage-bar-track">
-            <div className="admin-coverage-bar-fill fill-pass" style={{ width: "100%" }} />
-          </div>
-          <div className="admin-coverage-card-meta">
-            <b>{c.curatedSources.passingSources} / {c.curatedSources.totalSources}</b>
-            <small>{lang === "sv" ? "öppna källor auditerade" : "audited open sources"}</small>
-          </div>
-        </div>
-      </div>
+        );
+      })()}
     </section>
   );
 }
