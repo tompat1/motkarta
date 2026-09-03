@@ -207,3 +207,15 @@ def test_scrape_tasstipset_stockholm_mocked(tmp_path):
     assert saved["total_places"] == 2
     assert saved["places"][0]["name"] == "Drop Coffee Roasters"
     assert saved["places"][1]["name"] == "Capri Due"
+
+
+def test_verify_tasstipset_scraping_report():
+    from scripts.verify_tasstipset_scraping import run_verification
+
+    summary = run_verification(quiet=True)
+    assert summary["status"] == "PASS"
+    assert summary["ground_truth"]["total"] >= 300
+    assert summary["scraper"]["total_scraped"] >= 300
+    assert summary["public_dataset"]["dog_friendly_places"] >= 150
+    assert summary["public_dataset"]["ground_truth_coverage_pct"] >= 80.0
+

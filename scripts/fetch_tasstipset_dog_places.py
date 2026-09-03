@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Python scraper for verified dog-friendly places in Stockholm from https://tasstipset.se/.
+"""Python scraper for verified dog-friendly places in Greater Stockholm from https://tasstipset.se/.
 
 Extracts structured venue records, dog-friendly policy badges (inside/outside),
 verification quotes from venue owners, geographic coordinates, and metadata.
@@ -34,8 +34,47 @@ DEFAULT_PLACES_PATH = ROOT / "public" / "data" / "places.json"
 DEFAULT_CURATED_PATH = ROOT / "data" / "curated_open_places.json"
 BASE_URL = "https://tasstipset.se"
 STOCKHOLM_URL = f"{BASE_URL}/stad/stockholm"
+SITEMAP_URL = f"{BASE_URL}/sitemap.xml"
 
 USER_AGENT = "MotkartaBot/1.0 (+https://motkarta.se; dog-friendly places aggregator)"
+
+STOCKHOLM_MUNICIPALITIES = {
+    "stockholm",
+    "solna",
+    "sundbyberg",
+    "nacka",
+    "lidingö",
+    "lidingo",
+    "sollentuna",
+    "täby",
+    "taby",
+    "danderyd",
+    "huddinge",
+    "järfälla",
+    "jarfalla",
+    "tyresö",
+    "tyreso",
+    "upplands väsby",
+    "upplands vasby",
+    "botkyrka",
+    "haninge",
+    "vallentuna",
+    "österåker",
+    "osteraker",
+    "vaxholm",
+    "värmdö",
+    "varmdo",
+    "salem",
+    "ekerö",
+    "ekero",
+    "södertälje",
+    "sodertalje",
+    "sigtuna",
+    "upplands-bro",
+    "nykvarn",
+    "nynäshamn",
+    "nynashamn",
+}
 
 
 @dataclass
@@ -116,6 +155,22 @@ def extract_json_ld_blocks(html_content: str) -> list[dict[str, Any]]:
     return blocks
 
 
+def extract_sitemap_place_urls(sitemap_content: str) -> list[str]:
+    """Extract place URLs from sitemap XML content."""
+    urls = re.findall(r"<loc>(https://tasstipset\.se/plats/[^<]+)</loc>", sitemap_content)
+    return sorted(set(urls))
+
+
+def is_in_greater_stockholm(lat: float | None, lon: float | None, area: str = "", address: str = "") -> bool:
+    """Check if geographic coordinates or address belong to Greater Stockholm."""
+    if lat is not None and lon is not None:
+        if (58.95 <= lat <= 59.85) and (17.30 <= lon <= 18.95):
+            return True
+
+    text = f"{area} {address}".lower()
+    return any(m in text for m in STOCKHOLM_MUNICIPALITIES)
+
+
 def extract_stockholm_place_links(
     html_content: str,
     base_url: str = BASE_URL,
@@ -155,7 +210,7 @@ def extract_stockholm_place_links(
             links.append({"name": name, "url": full_url})
 
     if crawl_subpages:
-        sub_pattern = re.compile(r'href=[\'"](/stad/stockholm/[a-zA-Z0-9_\-]+)[\'"]', re.IGNORECASE)
+        sub_pattern = re.compile(r'href=[\'"](/stad/[a-zA-Z0-9_\-]+)[\'"]', re.IGNORECASE)
         sub_paths = sorted(set(sub_pattern.findall(html_content)))
         sub_urls = [urllib.parse.urljoin(base_url, p) for p in sub_paths]
 
@@ -266,7 +321,9 @@ def parse_tasstipset_place_page(html_content: str, url: str) -> DogPlaceRecord:
             p_matches = re.findall(r"<p[^>]*>(.*?)</p>", header_m.group(1), re.IGNORECASE | re.DOTALL)
             for p_text in p_matches:
                 cleaned_p = clean_text_emojis(p_text)
-                if any(c.isdigit() for c in cleaned_p) and "stockholm" in cleaned_p.lower():
+                if any(c.isdigit() for c in cleaned_p) and any(
+                    city in cleaned_p.lower() for city in ["stockholm", "solna", "sundbyberg", "nacka", "lidingö"]
+                ):
                     street_address = cleaned_p
                     break
 
@@ -318,6 +375,15 @@ def parse_tasstipset_place_page(html_content: str, url: str) -> DogPlaceRecord:
                     "bromma",
                     "liljeholmen",
                     "årsta",
+                    "solna",
+                    "sundbyberg",
+                    "råsunda",
+                    "skytteholm",
+                    "stadshagen",
+                    "kristineberg",
+                    "nacka",
+                    "lidingö",
+                    "sollentuna",
                 ]
             ):
                 area = cleaned_s.title()
@@ -385,50 +451,68 @@ def is_food_establishment(record: DogPlaceRecord) -> bool:
 def scrape_tasstipset_stockholm(
     output_path: Path = DEFAULT_OUTPUT_PATH,
     limit: int | None = None,
-    delay: float = 0.05,
-    crawl_subpages: bool = True,
-    max_workers: int = 8,
+    delay: float = 0.02,
+    crawl_sitemap: bool = True,
+    max_workers: int = 16,
     quiet: bool = False,
 ) -> list[dict[str, Any]]:
-    """Scrape all dog-friendly venues in Stockholm from Tasstipset."""
+    """Scrape all dog-friendly venues in Greater Stockholm from Tasstipset."""
     if not quiet:
-        print(f"🐶 Fetching Stockholm venue directory from: {STOCKHOLM_URL}")
+        print("🐶 Initiating Tasstipset scraper for Greater Stockholm...")
 
-    stockholm_html = fetch_url(STOCKHOLM_URL)
-    place_links = extract_stockholm_place_links(
-        stockholm_html,
-        crawl_subpages=crawl_subpages,
-        max_workers=max_workers,
-    )
+    place_urls: list[str] = []
 
-    if not quiet:
-        print(f"🐾 Found {len(place_links)} places in Stockholm directory.")
+    # 1. Try sitemap first for full country-wide completeness
+    if crawl_sitemap:
+        try:
+            if not quiet:
+                print(f"📡 Fetching sitemap from: {SITEMAP_URL}")
+            sitemap_xml = fetch_url(SITEMAP_URL, timeout=12)
+            place_urls = extract_sitemap_place_urls(sitemap_xml)
+            if not quiet:
+                print(f"🗺️ Found {len(place_urls)} total venue URLs in sitemap.")
+        except Exception as e:
+            if not quiet:
+                print(f"⚠️ Sitemap fetch failed ({e}), falling back to HTML directory crawl.")
+
+    # 2. Fallback / supplement via directory crawl
+    if not place_urls:
+        stockholm_html = fetch_url(STOCKHOLM_URL)
+        place_links = extract_stockholm_place_links(
+            stockholm_html,
+            crawl_subpages=True,
+            max_workers=max_workers,
+        )
+        place_urls = [item["url"] for item in place_links]
 
     if limit and limit > 0:
-        place_links = place_links[:limit]
+        place_urls = place_urls[:limit]
         if not quiet:
             print(f"⚡ Limiting scrape to first {limit} places.")
 
     records: list[DogPlaceRecord] = []
 
-    def fetch_record(item: dict[str, str]) -> DogPlaceRecord | None:
-        url = item["url"]
+    def fetch_and_filter(url: str) -> DogPlaceRecord | None:
         try:
-            place_html = fetch_url(url)
-            return parse_tasstipset_place_page(place_html, url)
-        except Exception as err:
-            if not quiet:
-                print(f"  ⚠️ Error scraping {url}: {err}", file=sys.stderr)
-            return None
+            place_html = fetch_url(url, timeout=12)
+            rec = parse_tasstipset_place_page(place_html, url)
+            if is_in_greater_stockholm(rec.latitude, rec.longitude, rec.area, rec.address):
+                return rec
+        except Exception:
+            pass
+        return None
 
-    if max_workers > 1 and len(place_links) > 2:
+    if not quiet:
+        print(f"🚀 Parsing and filtering Greater Stockholm venues ({len(place_urls)} candidates)...")
+
+    if max_workers > 1 and len(place_urls) > 2:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            for rec in executor.map(fetch_record, place_links):
+            for rec in executor.map(fetch_and_filter, place_urls):
                 if rec:
                     records.append(rec)
     else:
-        for i, item in enumerate(place_links, 1):
-            rec = fetch_record(item)
+        for url in place_urls:
+            rec = fetch_and_filter(url)
             if rec:
                 records.append(rec)
             if delay > 0:
@@ -437,6 +521,7 @@ def scrape_tasstipset_stockholm(
     output_data = {
         "source": "https://tasstipset.se",
         "city": "Stockholm",
+        "region": "Greater Stockholm (Stockholms län)",
         "total_places": len(records),
         "food_places_count": sum(1 for r in records if is_food_establishment(r)),
         "verified_places_count": sum(1 for r in records if r.is_venue_verified),
@@ -448,7 +533,7 @@ def scrape_tasstipset_stockholm(
     output_path.write_text(json.dumps(output_data, ensure_ascii=False, indent=2), encoding="utf-8")
 
     if not quiet:
-        print(f"✨ Successfully saved {len(records)} dog-friendly places to: {output_path}")
+        print(f"✨ Successfully saved {len(records)} Greater Stockholm dog-friendly places to: {output_path}")
 
     return output_data["places"]
 
@@ -475,7 +560,10 @@ def sync_tasstipset_to_places(
     curated_path: Path = DEFAULT_CURATED_PATH,
     quiet: bool = False,
 ) -> dict[str, int]:
-    """Sync scraped dog-friendly venues into public/data/places.json and data/curated_open_places.json."""
+    """Sync scraped dog-friendly venues into public/data/places.json using robust inverted index matching."""
+    import difflib
+    from collections import defaultdict
+
     if not places_path.exists():
         raise FileNotFoundError(f"{places_path} not found")
 
@@ -484,21 +572,36 @@ def sync_tasstipset_to_places(
     if not isinstance(places, list):
         raise ValueError("Invalid places payload format.")
 
+    # Build fast inverted indexes over existing places
+    exact_map: dict[str, list[int]] = defaultdict(list)
+    token_map: dict[str, list[int]] = defaultdict(list)
+
+    def extract_tokens(s: Any) -> list[str]:
+        cleaned = re.sub(r"[^a-z0-9åäö]+", " ", str(s or "").lower())
+        return [t for t in cleaned.split() if len(t) >= 3]
+
+    for idx, p in enumerate(places):
+        pname = p.get("name", "")
+        pnorm = norm_str(pname)
+        if pnorm:
+            exact_map[pnorm].append(idx)
+        for tok in extract_tokens(pname):
+            token_map[tok].append(idx)
+
     matched_count = 0
     added_count = 0
-
     dog_tags_standard = ["Dog friendly", "Hundvänligt", "Tasstipset"]
+    enriched_indices: set[int] = set()
 
     for d in dog_places:
         d_name = d.get("name", "")
-        d_norm_name = norm_str(d_name)
+        d_norm = norm_str(d_name)
         d_lat = d.get("latitude")
         d_lon = d.get("longitude")
         d_kind = d.get("kind", "Restaurant")
         d_quote = d.get("dog_policy_quote")
         d_tags = d.get("tags", dog_tags_standard)
 
-        # Skip non-food places like pure dog parks
         dummy_rec = DogPlaceRecord(
             source_id=d.get("source_id", ""),
             name=d_name,
@@ -513,53 +616,53 @@ def sync_tasstipset_to_places(
         if not is_food_establishment(dummy_rec):
             continue
 
-        matched_index = None
+        best_idx: int | None = None
 
-        # 1. Try exact/close normalized name match
-        for idx, p in enumerate(places):
-            p_norm_name = norm_str(p.get("name"))
-            if not p_norm_name:
-                continue
+        # 1. Exact normalized name match
+        if d_norm in exact_map:
+            best_idx = exact_map[d_norm][0]
+        else:
+            # 2. Token-based candidate match
+            candidates: set[int] = set()
+            for tok in extract_tokens(d_name):
+                for idx in token_map.get(tok, []):
+                    candidates.add(idx)
 
-            # Exact name match
-            if p_norm_name == d_norm_name:
-                matched_index = idx
-                break
+            best_score = 0.0
+            for c_idx in candidates:
+                c_name = places[c_idx].get("name", "")
+                c_norm = norm_str(c_name)
 
-            # Substring match if name is long enough
-            if len(p_norm_name) >= 5 and len(d_norm_name) >= 5:
-                if p_norm_name in d_norm_name or d_norm_name in p_norm_name:
-                    p_lat = p.get("latitude")
-                    p_lon = p.get("longitude")
-                    if p_lat and p_lon and d_lat and d_lon:
-                        dist = haversine_distance_m(p_lat, p_lon, d_lat, d_lon)
-                        if dist <= 300:
-                            matched_index = idx
-                            break
+                if (d_norm in c_norm or c_norm in d_norm) and min(len(d_norm), len(c_norm)) >= 4:
+                    score = 0.95
+                else:
+                    score = difflib.SequenceMatcher(None, d_norm, c_norm).ratio()
 
-            # Coordinate proximity match if normalized name overlap
-            p_lat = p.get("latitude")
-            p_lon = p.get("longitude")
-            if p_lat and p_lon and d_lat and d_lon:
-                dist = haversine_distance_m(p_lat, p_lon, d_lat, d_lon)
-                if dist <= 60:  # Same building / corner
-                    matched_index = idx
-                    break
+                if score < 0.78:
+                    continue
 
-        if matched_index is not None:
-            # Enrich existing place
-            target = places[matched_index]
+                c_lat = places[c_idx].get("latitude")
+                c_lon = places[c_idx].get("longitude")
+                if d_lat and d_lon and c_lat and c_lon:
+                    dist = haversine_distance_m(d_lat, d_lon, c_lat, c_lon)
+                    if dist > 2000 and score < 0.95:
+                        continue
+
+                if score > best_score:
+                    best_score = score
+                    best_idx = c_idx
+
+        if best_idx is not None:
+            target = places[best_idx]
             existing_tags = set(target.get("tags", []))
             for t in d_tags:
                 existing_tags.add(t)
             target["tags"] = sorted(existing_tags)
 
-            # Evidence label
             ev_label = target.get("evidenceLabel", "")
             if "Tasstipset" not in ev_label:
                 target["evidenceLabel"] = f"{ev_label} · Tasstipset".strip(" ·")
 
-            # Evidence object
             ev = target.get("evidence", {})
             ev["specialistGuide"] = max(ev.get("specialistGuide", 0), 0.7 if d.get("is_venue_verified") else 0.5)
             target["evidence"] = ev
@@ -567,10 +670,12 @@ def sync_tasstipset_to_places(
             if d_quote and not target.get("note"):
                 target["note"] = f"Hundpolicy: {d_quote}"
 
-            matched_count += 1
+            if best_idx not in enriched_indices:
+                enriched_indices.add(best_idx)
+                matched_count += 1
         else:
-            # Add new independent food place
-            if d_lat and d_lon:
+            # Add new independent food place if valid coordinates
+            if d_lat and d_lon and is_in_greater_stockholm(d_lat, d_lon, d.get("area", ""), d.get("address", "")):
                 new_id = zlib.crc32(f"tasstipset:{d_name}:{d.get('address')}".encode("utf-8"))
                 new_place = {
                     "id": new_id,
@@ -632,12 +737,12 @@ def sync_tasstipset_to_places(
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Scrape dog-friendly places in Stockholm from Tasstipset.se")
+    parser = argparse.ArgumentParser(description="Scrape dog-friendly places in Greater Stockholm from Tasstipset.se")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_PATH, help="Output JSON path")
     parser.add_argument("--places-file", type=Path, default=DEFAULT_PLACES_PATH, help="Live places JSON path")
     parser.add_argument("--limit", type=int, default=None, help="Limit number of places to scrape")
-    parser.add_argument("--delay", type=float, default=0.05, help="Delay in seconds between requests")
-    parser.add_argument("--workers", type=int, default=8, help="Number of concurrent scraper workers")
+    parser.add_argument("--delay", type=float, default=0.01, help="Delay in seconds between requests")
+    parser.add_argument("--workers", type=int, default=16, help="Number of concurrent scraper workers")
     parser.add_argument("--sync", action="store_true", help="Sync scraped dog places into places.json")
     parser.add_argument("--quiet", action="store_true", help="Suppress progress output")
     return parser.parse_args()
@@ -649,7 +754,7 @@ def main() -> None:
         output_path=args.output,
         limit=args.limit,
         delay=args.delay,
-        crawl_subpages=True,
+        crawl_sitemap=True,
         max_workers=args.workers,
         quiet=args.quiet,
     )
