@@ -2200,6 +2200,200 @@ button.concierge-clear-btn:hover {
   color: var(--color-water);
 }
 
+.admin-coverage-dashboard {
+  background: var(--color-white);
+  border: 1px solid var(--color-ink);
+  display: grid;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 18px;
+}
+
+.admin-coverage-head {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.admin-coverage-badge {
+  align-items: center;
+  border: 1px solid var(--color-ink);
+  color: var(--color-ink);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  gap: 6px;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+  padding: 3px 8px;
+  text-transform: uppercase;
+}
+
+.admin-coverage-head h4 {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+}
+
+.admin-coverage-head p {
+  color: var(--color-stone);
+  font-family: var(--font-body);
+  font-size: 13px;
+  margin: 0;
+}
+
+.admin-coverage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-coverage-btn {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-ink);
+  color: var(--color-ink);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  transition: all 0.15s ease;
+}
+
+.admin-coverage-btn:hover:not(:disabled) {
+  background: var(--color-sand);
+  transform: translateY(-1px);
+}
+
+.admin-coverage-btn-primary {
+  background: var(--color-ink);
+  color: var(--color-white);
+}
+
+.admin-coverage-btn-primary:hover:not(:disabled) {
+  background: var(--color-signal);
+  border-color: var(--color-signal);
+  color: var(--color-white);
+}
+
+.admin-coverage-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.admin-coverage-alert {
+  background: var(--color-sand);
+  border-left: 3px solid var(--color-water);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 14px;
+}
+
+.admin-coverage-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.admin-coverage-card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.admin-coverage-card:hover {
+  border-color: var(--color-ink);
+}
+
+.admin-coverage-card-head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.admin-coverage-card-title {
+  align-items: center;
+  color: var(--color-ink);
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.admin-coverage-status-tag {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+}
+
+.admin-coverage-status-tag.tag-pass {
+  background: var(--color-water);
+  border-color: var(--color-water);
+  color: var(--color-white);
+}
+
+.admin-coverage-bar-track {
+  background: var(--color-sand);
+  border: 1px solid var(--color-mist);
+  height: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.admin-coverage-bar-fill {
+  background: var(--color-ink);
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+.admin-coverage-bar-fill.fill-pass {
+  background: var(--color-water);
+}
+
+.admin-coverage-bar-fill.fill-info {
+  background: var(--color-signal);
+}
+
+.admin-coverage-card-meta {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-coverage-card-meta b {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+
+.admin-coverage-card-meta small {
+  color: var(--color-stone);
+  font-family: var(--font-body);
+  font-size: 12px;
+}
+
 .admin-export-panel {
   align-items: center;
   background: var(--color-white);

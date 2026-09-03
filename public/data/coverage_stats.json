@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-09-03T09:07:41Z",
+  "totalPlaces": 3961,
+  "address": {
+    "count": 3961,
+    "percentage": 100.0,
+    "target": 100.0,
+    "status": "PASS"
+  },
+  "photos": {
+    "count": 3961,
+    "totalPhotos": 7513,
+    "percentage": 100.0,
+    "target": 100.0,
+    "status": "PASS"
+  },
+  "websites": {
+    "count": 672,
+    "percentage": 17.0
+  },
+  "coordinates": {
+    "count": 3961,
+    "percentage": 100.0,
+    "status": "PASS"
+  },
+  "curatedSources": {
+    "totalSources": 7,
+    "passingSources": 7,
+    "percentage": 100.0,
+    "status": "PASS"
+  }
+}
