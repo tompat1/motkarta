@@ -19,6 +19,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from motkarta.stockholm_boundary import is_stockholm_municipality_place
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PLACES_FILE = ROOT / "public" / "data" / "places.json"
@@ -182,6 +184,8 @@ def curated_submission_entries(path: Path | None, validations: dict[str, dict[st
     entries = []
     for index, record in enumerate(records):
         match = record.get("match", {}) if isinstance(record, dict) else {}
+        if not is_curated_submission_in_stockholm(record, match):
+            continue
         name = clean_text(record.get("name") or match.get("name"))
         validation = validations.get(normalized_name(name)) or {}
         default_state = clean_text(record.get("state") or record.get("lifecycleState") or "candidate")
@@ -209,6 +213,17 @@ def curated_submission_entries(path: Path | None, validations: dict[str, dict[st
         }
         entries.append(drop_empty(entry))
     return entries
+
+
+def is_curated_submission_in_stockholm(record: dict[str, Any], match: dict[str, Any]) -> bool:
+    return is_stockholm_municipality_place(
+        record.get("latitude") or match.get("latitude"),
+        record.get("longitude") or match.get("longitude"),
+        area=record.get("area") or match.get("area", ""),
+        address=record.get("address") or match.get("address", ""),
+        source_url=record.get("sourceUrl") or match.get("sourceUrl", ""),
+        name=record.get("name") or match.get("name", ""),
+    )
 
 
 def load_validation_labels(path: Path | None) -> dict[str, dict[str, Any]]:

@@ -91,3 +91,94 @@ def test_curated_source_sync_rejects_value_fields(tmp_path):
 
     with pytest.raises(ValueError, match="forbidden value fields"):
         sync.sync_curated_sources(places_path, curated_path, quiet=True)
+
+
+def test_curated_source_sync_skips_out_of_scope_places(tmp_path):
+    places_path = tmp_path / "places.json"
+    curated_path = tmp_path / "curated.json"
+    places_path.write_text(json.dumps({"source": "osm", "places": []}), encoding="utf-8")
+    curated_path.write_text(
+        json.dumps(
+            {
+                "places": [
+                    {
+                        "sourceId": "tasstipset:basta-umea",
+                        "name": "Basta Umeå",
+                        "kind": "Restaurant",
+                        "area": "Stockholm",
+                        "address": "Västra Rådhusgatan 7, 903 26 Umeå",
+                        "sourceName": "Tasstipset",
+                        "sourceUrl": "https://tasstipset.se/plats/basta-umea",
+                        "latitude": 63.8258,
+                        "longitude": 20.263,
+                    },
+                    {
+                        "sourceId": "visit-stockholm:local",
+                        "name": "Local Stockholm",
+                        "kind": "Restaurant",
+                        "area": "Norrmalm",
+                        "address": "Drottninggatan 1, Stockholm",
+                        "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
+                        "sourceUrl": "https://www.visitstockholm.se/",
+                        "latitude": 59.33,
+                        "longitude": 18.06,
+                    },
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = sync.sync_curated_sources(places_path, curated_path, quiet=True)
+    payload = json.loads(places_path.read_text(encoding="utf-8"))
+
+    assert result["added"] == 1
+    assert result["skipped_out_of_scope"] == 1
+    assert [place["name"] for place in payload["places"]] == ["Local Stockholm"]
+
+
+def test_curated_source_sync_does_not_merge_out_of_scope_records(tmp_path):
+    places_path = tmp_path / "places.json"
+    curated_path = tmp_path / "curated.json"
+    places_path.write_text(
+        json.dumps(
+            {
+                "source": "osm",
+                "places": [
+                    {
+                        "id": 1,
+                        "name": "Basta Umeå",
+                        "area": "Stockholm",
+                        "address": "Västra Rådhusgatan 7, 903 26 Umeå",
+                        "sourceName": "OpenStreetMap",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    curated_path.write_text(
+        json.dumps(
+            {
+                "places": [
+                    {
+                        "sourceId": "tasstipset:basta-umea",
+                        "name": "Basta Umeå",
+                        "kind": "Restaurant",
+                        "area": "Stockholm",
+                        "address": "Västra Rådhusgatan 7, 903 26 Umeå",
+                        "sourceName": "Tasstipset",
+                        "sourceUrl": "https://tasstipset.se/plats/basta-umea",
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = sync.sync_curated_sources(places_path, curated_path, quiet=True)
+    payload = json.loads(places_path.read_text(encoding="utf-8"))
+
+    assert result["updated"] == 0
+    assert result["skipped_out_of_scope"] == 1
+    assert payload["places"][0]["sourceName"] == "OpenStreetMap"

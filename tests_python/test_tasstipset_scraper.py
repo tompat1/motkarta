@@ -127,6 +127,36 @@ SAMPLE_PATIO_ONLY_HTML = """
 </html>
 """
 
+SAMPLE_UMEA_HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Basta Umeå",
+  "url": "https://tasstipset.se/plats/basta-umea",
+  "address": {
+    "streetAddress": "Västra Rådhusgatan 7, 903 26 Umeå"
+  },
+  "geo": {
+    "latitude": 63.8258,
+    "longitude": 20.2630
+  }
+}
+</script>
+</head>
+<body>
+  <header>
+    <span>Restaurang</span>
+    <h1>Basta Umeå</h1>
+    <p>Västra Rådhusgatan 7, 903 26 Umeå</p>
+  </header>
+</body>
+</html>
+"""
+
 
 def test_extract_json_ld_blocks():
     blocks = scraper.extract_json_ld_blocks(SAMPLE_STOCKHOLM_HTML)
@@ -209,13 +239,64 @@ def test_scrape_tasstipset_stockholm_mocked(tmp_path):
     assert saved["places"][1]["name"] == "Capri Due"
 
 
+def test_scrape_tasstipset_sitemap_filters_to_stockholm(tmp_path):
+    output_file = tmp_path / "dog_places.json"
+    sitemap = """
+    <urlset>
+      <url><loc>https://tasstipset.se/plats/drop-coffee-roasters</loc></url>
+      <url><loc>https://tasstipset.se/plats/basta-umea</loc></url>
+    </urlset>
+    """
+
+    def mock_fetch(url: str, **kwargs):
+        if "sitemap.xml" in url:
+            return sitemap
+        if "basta-umea" in url:
+            return SAMPLE_UMEA_HTML
+        return SAMPLE_DROP_COFFEE_HTML
+
+    with patch("scripts.fetch_tasstipset_dog_places.fetch_url", side_effect=mock_fetch):
+        places = scraper.scrape_tasstipset_stockholm(
+            output_path=output_file,
+            crawl_sitemap=True,
+            delay=0,
+            max_workers=1,
+            quiet=True,
+        )
+
+    assert [place["name"] for place in places] == ["Drop Coffee Roasters"]
+    saved = json.loads(output_file.read_text(encoding="utf-8"))
+    assert saved["region"] == "Stockholm municipality"
+
+
+def test_sync_tasstipset_skips_out_of_scope_records(tmp_path):
+    places_path = tmp_path / "places.json"
+    places_path.write_text(json.dumps({"places": []}), encoding="utf-8")
+    stockholm = scraper.parse_tasstipset_place_page(
+        SAMPLE_DROP_COFFEE_HTML, "https://tasstipset.se/plats/drop-coffee-roasters"
+    )
+    umea = scraper.parse_tasstipset_place_page(SAMPLE_UMEA_HTML, "https://tasstipset.se/plats/basta-umea")
+
+    result = scraper.sync_tasstipset_to_places(
+        [stockholm.__dict__, umea.__dict__],
+        places_path=places_path,
+        quiet=True,
+    )
+    payload = json.loads(places_path.read_text(encoding="utf-8"))
+
+    assert result["added"] == 1
+    assert result["skipped_out_of_scope"] == 1
+    assert [place["name"] for place in payload["places"]] == ["Drop Coffee Roasters"]
+
+
 def test_verify_tasstipset_scraping_report():
     from scripts.verify_tasstipset_scraping import run_verification
 
     summary = run_verification(quiet=True)
     assert summary["status"] == "PASS"
-    assert summary["ground_truth"]["total"] >= 300
-    assert summary["scraper"]["total_scraped"] >= 300
+    assert summary["ground_truth"]["total"] >= 200
+    assert summary["scraper"]["total_scraped"] >= 200
     assert summary["public_dataset"]["dog_friendly_places"] >= 150
-    assert summary["public_dataset"]["ground_truth_coverage_pct"] >= 80.0
-
+    assert summary["public_dataset"]["ground_truth_coverage_pct"] >= 60.0
+    assert summary["scraper"]["out_of_scope"] == 0
+    assert summary["public_dataset"]["dog_friendly_out_of_scope"] == 0

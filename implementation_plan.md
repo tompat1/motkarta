@@ -1,6 +1,6 @@
 # Stockholm-only curated and scraped source plan
 
-Status: proposed; awaiting approval.
+Status: approved and implemented.
 
 ## Goal
 
@@ -117,3 +117,17 @@ municipality tokens.
   cover clear examples and keep the boundary helper conservative.
 - Cleaning generated data can produce a large diff. The cleanup should be
   deterministic and narrowly scoped to out-of-bound curated/scraped records.
+
+## Result
+
+- Added the shared `motkarta.stockholm_boundary` guard.
+- Defaulted Tasstipset scraping to the Stockholm page/subpage path and made
+  sitemap crawling explicit opt-in.
+- Enforced Stockholm scope in Tasstipset sync, curated source sync and curated
+  candidate-queue ingestion.
+- Regenerated `outputs/tasstipset_dog_places_stockholm.json` from the live
+  Stockholm page: 285 records, 0 out of scope.
+- Cleaned `public/data/places.json`: 3,245 total records, 0 out-of-scope
+  dog/Tasstipset records.
+- Updated ML data-contract and operations docs.
+- Verified with Python, Node, TypeScript, build and diff checks.

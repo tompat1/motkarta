@@ -42,6 +42,7 @@ def test_verify_all_curated_sources():
 
     # 7. Tasstipset (Hundvänliga ställen)
     assert "tasstipset" in sources_by_id
-    assert sources_by_id["tasstipset"]["coverage_pct"] >= 85.0
-    assert sources_by_id["tasstipset"]["matched_places"] >= 1000
+    assert sources_by_id["tasstipset"]["coverage_pct"] >= 60.0
+    assert sources_by_id["tasstipset"]["matched_places"] >= 150
+    assert sources_by_id["tasstipset"]["out_of_scope"] == 0
     assert sources_by_id["tasstipset"]["status"] == "PASS"

@@ -9,6 +9,23 @@ model or score.
 Every derived dataset should be reconstructable from identified raw sources and
 should preserve venue identity, capture time and transformation version.
 
+## Geographic Cohort
+
+Motkarta's production, review, ML training and RAG concierge cohorts are scoped
+to Stockholm municipality unless a separate experiment explicitly documents a
+different cohort. This matches the OSM baseline query for `Stockholms kommun`.
+
+Curated and scraped inputs, including Tasstipset and manually curated
+open-source records, must pass the shared Stockholm boundary guard before they
+can be synced into `public/data/places.json` or admitted to the candidate queue.
+Country-wide source crawls are allowed only as intermediate acquisition steps;
+non-Stockholm records must be discarded before merge, scoring, candidate review
+or RAG indexing.
+
+Do not treat a default display area such as `Stockholm` as boundary evidence
+when a source URL, address, locality or coordinates identify a place outside the
+municipality.
+
 ## Venue identity
 
 Preferred stable identity order:

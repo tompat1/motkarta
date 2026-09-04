@@ -55,6 +55,8 @@ name,platform_rating,review_count,price_level,latitude,longitude,category,cuisin
 Before training, check:
 
 - Duplicate venue identities
+- Stockholm municipality boundary compliance for every curated, scraped and
+  candidate-review source row
 - Rating range and missing target values
 - Negative review counts
 - Coordinate validity
@@ -62,6 +64,12 @@ Before training, check:
 - Chain-status vocabulary
 - Capture dates and source terms
 - Commercial-data quarantine destination
+
+Tasstipset and other country-wide directories may be crawled as acquisition
+inputs, but only records passing
+`motkarta.stockholm_boundary.is_stockholm_municipality_place` may enter
+`public/data/places.json`, the lifecycle candidate queue, model training inputs
+or the RAG concierge corpus.
 
 Never commit raw licensed or personal datasets unless their license and repository
 policy explicitly permit it.

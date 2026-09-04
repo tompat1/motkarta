@@ -100,6 +100,18 @@ def test_candidate_queue_combines_sources_and_keeps_value_fields_out(tmp_path):
                         "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
                         "sourceUrl": "https://www.visitstockholm.se/",
                         "tags": ["Curated", "Visit Stockholm"],
+                    },
+                    {
+                        "sourceId": "tasstipset:basta-umea",
+                        "state": "candidate",
+                        "name": "Basta Umeå",
+                        "kind": "Restaurant",
+                        "area": "Stockholm",
+                        "address": "Västra Rådhusgatan 7, 903 26 Umeå",
+                        "latitude": 63.8258,
+                        "longitude": 20.263,
+                        "sourceName": "Tasstipset",
+                        "sourceUrl": "https://tasstipset.se/plats/basta-umea",
                     }
                 ]
             }
@@ -147,4 +159,5 @@ def test_candidate_queue_combines_sources_and_keeps_value_fields_out(tmp_path):
     assert by_name["Curated Cafe"]["sourceType"] == "curated_submission"
     assert by_name["Curated Cafe"]["sourceId"] == "visit-stockholm:curated-cafe"
     assert by_name["Curated Cafe"]["sourceUrl"] == "https://www.visitstockholm.se/"
+    assert "Basta Umeå" not in by_name
     assert queue.forbidden_value_fields(entries) == set()

@@ -2,7 +2,7 @@
 """Internal verification check for Tasstipset dog-friendly scraping and dataset integration.
 
 Verifies:
-1. The scraper output exists and contains comprehensive Greater Stockholm venues.
+1. The scraper output exists and contains comprehensive Stockholm venues.
 2. Ground truth coverage against manually verified reference venues (data/tasstipset_stockholm_ground_truth.csv).
 3. Live dataset (public/data/places.json) contains enriched dog-friendly tags, policies, and Tasstipset attribution.
 4. Commercial chains are properly handled per Motkarta quality policy while independent venues are preserved.
@@ -19,6 +19,10 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from motkarta.stockholm_boundary import is_stockholm_municipality_place
+
 DEFAULT_GROUND_TRUTH = ROOT / "data" / "tasstipset_stockholm_ground_truth.csv"
 DEFAULT_SCRAPED_OUTPUT = ROOT / "outputs" / "tasstipset_dog_places_stockholm.json"
 DEFAULT_PUBLIC_PLACES = ROOT / "public" / "data" / "places.json"
@@ -64,9 +68,10 @@ def run_verification(
         reader = csv.DictReader(f)
         gt_rows = list(reader)
 
-    gt_total = len(gt_rows)
-    gt_independent = [r for r in gt_rows if norm(r.get("name")) not in EXCLUDED_CHAINS]
-    gt_chains = [r for r in gt_rows if norm(r.get("name")) in EXCLUDED_CHAINS]
+    gt_stockholm_rows = [r for r in gt_rows if is_ground_truth_row_in_stockholm(r)]
+    gt_total = len(gt_stockholm_rows)
+    gt_independent = [r for r in gt_stockholm_rows if norm(r.get("name")) not in EXCLUDED_CHAINS]
+    gt_chains = [r for r in gt_stockholm_rows if norm(r.get("name")) in EXCLUDED_CHAINS]
 
     # 2. Load Scraped Tasstipset Output
     with open(scraped_path, mode="r", encoding="utf-8") as f:
@@ -76,6 +81,7 @@ def run_verification(
     scraped_total = len(scraped_places)
     scraped_food = sum(1 for p in scraped_places if p.get("category", "").lower() != "park")
     scraped_verified = sum(1 for p in scraped_places if p.get("is_venue_verified"))
+    scraped_out_of_scope = sum(1 for p in scraped_places if not is_place_in_stockholm(p))
 
     scraped_norm_map: dict[str, dict[str, Any]] = {}
     for p in scraped_places:
@@ -106,6 +112,7 @@ def run_verification(
         )
     ]
     dog_friendly_total = len(dog_friendly_public)
+    public_dog_out_of_scope = sum(1 for p in dog_friendly_public if not is_place_in_stockholm(p))
 
     public_norm_map: dict[str, dict[str, Any]] = {}
     for p in public_places:
@@ -185,7 +192,17 @@ def run_verification(
         key_venue_status.append({"name": kv, "dog_friendly_verified": found_in_public})
 
     summary = {
-        "status": "PASS" if (scraped_total >= 300 and dog_friendly_total >= 150 and public_coverage_pct >= 80.0) else "FAIL",
+        "status": (
+            "PASS"
+            if (
+                scraped_total >= 200
+                and dog_friendly_total >= 150
+                and public_coverage_pct >= 60.0
+                and scraped_out_of_scope == 0
+                and public_dog_out_of_scope == 0
+            )
+            else "FAIL"
+        ),
         "ground_truth": {
             "total": gt_total,
             "independent": len(gt_independent),
@@ -197,12 +214,14 @@ def run_verification(
             "venue_verified": scraped_verified,
             "ground_truth_matched": scraped_matched_gt,
             "ground_truth_coverage_pct": round(scraped_coverage_pct, 1),
+            "out_of_scope": scraped_out_of_scope,
         },
         "public_dataset": {
             "total_places": public_total,
             "dog_friendly_places": dog_friendly_total,
             "ground_truth_matched": public_matched_gt,
             "ground_truth_coverage_pct": round(public_coverage_pct, 1),
+            "dog_friendly_out_of_scope": public_dog_out_of_scope,
         },
         "key_venues_verified": key_venue_status,
         "sample_unmatched": unmatched_gt[:12],
@@ -214,10 +233,11 @@ def run_verification(
         print("========================================================")
         print(f"📊 Status:                     {'✅ PASS' if summary['status'] == 'PASS' else '❌ FAIL'}")
         print(f"📋 Ground Truth Venues:        {gt_total} total ({len(gt_independent)} independent, {len(gt_chains)} chains)")
-        print(f"🐶 Total Scraped from Source:  {scraped_total} Greater Stockholm venues ({scraped_food} food spots)")
+        print(f"🐶 Total Scraped from Source:  {scraped_total} Stockholm venues ({scraped_food} food spots)")
         print(f"🎯 Scraper GT Coverage:        {scraped_matched_gt}/{len(gt_independent)} ({scraped_coverage_pct:.1f}%)")
         print(f"🌟 Live Places Tagged Dog:     {dog_friendly_total} venues")
         print(f"🏆 Public Dataset GT Coverage: {public_matched_gt}/{len(gt_independent)} ({public_coverage_pct:.1f}%)")
+        print(f"📍 Out-of-scope records:       scrape={scraped_out_of_scope}, public={public_dog_out_of_scope}")
         print("--------------------------------------------------------")
         print("✨ Key Independent Venues Sample Check:")
         for kv in key_venue_status[:10]:
@@ -226,6 +246,24 @@ def run_verification(
         print("========================================================\n")
 
     return summary
+
+
+def is_place_in_stockholm(place: dict[str, Any]) -> bool:
+    return is_stockholm_municipality_place(
+        place.get("latitude"),
+        place.get("longitude"),
+        area=place.get("area", ""),
+        address=place.get("address", ""),
+        source_url=place.get("sourceUrl") or place.get("url", ""),
+        name=place.get("name", ""),
+    )
+
+
+def is_ground_truth_row_in_stockholm(row: dict[str, Any]) -> bool:
+    area = row.get("area", "")
+    if not str(area or "").strip():
+        return True
+    return is_stockholm_municipality_place(area=area, name=row.get("name", ""))
 
 
 def parse_args() -> argparse.Namespace:

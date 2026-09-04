@@ -15,6 +15,8 @@ import zlib
 from pathlib import Path
 from typing import Any
 
+from motkarta.stockholm_boundary import is_stockholm_municipality_place
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_FILE = ROOT / "public" / "data" / "places.json"
@@ -114,9 +116,15 @@ def sync_curated_sources(
     existing = {place_key(place) for place in places}
     added = 0
     updated = 0
+    skipped_out_of_scope = 0
 
     for record in curated_places:
         assert_no_forbidden_value_fields(record)
+        if not is_record_in_stockholm(record):
+            skipped_out_of_scope += 1
+            if not quiet:
+                print(f"Skipped out-of-scope curated place: {clean_text(record.get('name'))}")
+            continue
         place = neutral_place(record)
         key = place_key(place)
         if key in existing:
@@ -139,8 +147,12 @@ def sync_curated_sources(
     data_file.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     if not quiet:
-        print(f"Curated source sync complete: {added} added, {updated} updated, {len(places)} total places.")
-    return {"added": added, "updated": updated, "total": len(places)}
+        print(
+            "Curated source sync complete: "
+            f"{added} added, {updated} updated, {skipped_out_of_scope} out-of-scope skipped, "
+            f"{len(places)} total places."
+        )
+    return {"added": added, "updated": updated, "skipped_out_of_scope": skipped_out_of_scope, "total": len(places)}
 
 
 def neutral_place(record: dict[str, Any]) -> dict[str, Any]:
@@ -197,6 +209,17 @@ def merge_existing_place(existing: dict[str, Any], curated: dict[str, Any]) -> d
     merged["engagement"] = NEUTRAL_ENGAGEMENT.copy()
     merged.update(NEUTRAL_VALUE_FIELDS)
     return merged
+
+
+def is_record_in_stockholm(record: dict[str, Any]) -> bool:
+    return is_stockholm_municipality_place(
+        record.get("latitude"),
+        record.get("longitude"),
+        area=record.get("area", ""),
+        address=record.get("address", ""),
+        source_url=record.get("sourceUrl", ""),
+        name=record.get("name", ""),
+    )
 
 
 def assert_no_forbidden_value_fields(payload: Any) -> None:
