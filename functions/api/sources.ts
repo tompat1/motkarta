@@ -1,5 +1,5 @@
 import { DEFAULT_CURATED_SOURCES, loadSourcesFromD1, saveSourceToD1 } from "../../lib/db-sources-prompts.ts";
-import type { CuratedSource } from "../../src/App";
+import type { CuratedSource } from "../../src/app/shared";
 
 type EventContext<Env> = {
   request: Request;

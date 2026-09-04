@@ -5,7 +5,7 @@ import {
   Check,
   ArrowCounterClockwise,
 } from "@phosphor-icons/react";
-import type { EstablishmentFilter, Language } from "../App";
+import type { EstablishmentFilter, Language } from "../app/shared";
 import { FILTER_SECTIONS } from "../../lib/mobile-filters";
 
 export { FILTER_SECTIONS };

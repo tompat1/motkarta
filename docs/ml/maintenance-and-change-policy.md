@@ -216,8 +216,9 @@ model output was merely generated locally.
 2. Rotating anonymous identifiers, session identifiers, minimized query context
    and retention metadata are defined.
 3. `POST /api/recommendation-events` validates and ingests shadow events.
-4. `src/App.tsx` instruments result impressions plus profile, save and
-   direction-request outcomes.
+4. `src/ml/recommendationInstrumentation.ts` owns frontend event identifiers,
+   query-context conversion and result-set helpers; `src/App.tsx` wires them to
+   result impressions plus profile, save and direction-request outcomes.
 5. Deduplication is enforced with idempotency keys.
 6. `GET /api/recommendation-events` exposes admin-only shadow data-quality
    reporting.

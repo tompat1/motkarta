@@ -135,13 +135,22 @@ Structural anomaly is never quality evidence.
 - Migration: `drizzle/0007_pale_mikhail_rasputin.sql`
 - Controls migration: `drizzle/0009_breezy_tomas.sql`
 - Ingestion/reporting: `functions/api/recommendation-events.ts`
-- Frontend instrumentation: `src/App.tsx`
+- Frontend instrumentation helpers: `src/ml/recommendationInstrumentation.ts`
+- Frontend wiring: `src/App.tsx`
+- Admin model-status surface: `src/admin/AdminMlDashboard.tsx`
 - Purpose: shadow-mode event-level exposure and outcome data for future debiased ranking
 
 The schema, ingestion endpoint and frontend instrumentation exist, but collection
 is shadow-mode only. No agent may claim a behavioral ranker is ready until event
 quality, attribution, retention and privacy behavior are validated over a real
 collection interval.
+
+The frontend instrumentation module is a separation boundary, not a new ranking
+authority. It owns browser/session identifiers, result-set identities and
+controlled query-context conversion for rendered OpenStreetMap/Overpass-derived
+results. Future hidden-gem training or expert RAG Concierge work should add
+feature extraction, attribution datasets or model-status surfaces beside this
+module, while preserving the event contract and deterministic hidden-gem gates.
 
 Current contract decisions:
 

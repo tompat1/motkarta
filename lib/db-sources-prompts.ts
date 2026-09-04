@@ -1,4 +1,4 @@
-import type { CuratedSource } from "../src/App";
+import type { CuratedSource } from "../src/app/shared";
 
 export const DEFAULT_CURATED_SOURCES: CuratedSource[] = [
   {

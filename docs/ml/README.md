@@ -43,10 +43,16 @@ As of 2026-08-25:
 | Structural anomaly detection | Implemented as review assistance only | `motkarta/outliers.py` |
 | Hidden-gem evidence gates | Implemented | `lib/scoring.ts` and admin lifecycle |
 | Event-level recommendation schema | Implemented | `recommendation_events` in `db/schema.ts` |
-| Event collection endpoint/UI instrumentation | Implemented in shadow mode | `functions/api/recommendation-events.ts`, `src/App.tsx` |
+| Event collection endpoint/UI instrumentation | Implemented in shadow mode | `functions/api/recommendation-events.ts`, `src/ml/recommendationInstrumentation.ts`, `src/App.tsx` wiring |
 | Personalized learning-to-rank model | Not implemented | Requires real impression/outcome data |
 | Online experiment assignment | Not implemented | Requires event collection and privacy review |
 | Automated drift monitoring | Not implemented | Required before automatic retraining |
+
+Frontend ML/recommendation code is intentionally split from the app shell:
+`src/ml/recommendationInstrumentation.ts` owns shadow-mode event identifiers,
+query-context token mapping and result-set helpers, while
+`src/admin/AdminMlDashboard.tsx` owns the admin model-status surface. `src/App.tsx`
+only composes those modules with rendered map/list results.
 
 ## The five non-negotiable boundaries
 

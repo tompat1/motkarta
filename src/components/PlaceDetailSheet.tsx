@@ -15,9 +15,9 @@ import {
   PawPrint,
 } from "@phosphor-icons/react";
 import type { ScoredPlace } from "../../lib/scoring";
-import type { Language } from "../App";
+import type { Language } from "../app/shared";
 import { fetchPlacePhotos, type PlacePhoto } from "../../lib/lazy-media";
-import { formatDistance, distanceFromPoint } from "../App";
+import { formatDistance, distanceFromPoint } from "../app/shared";
 
 interface PlaceDetailSheetProps {
   place: ScoredPlace;
