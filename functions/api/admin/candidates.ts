@@ -29,7 +29,7 @@ type Env = {
 
 type ValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
 type CandidateStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all";
-type AdminAction = "promote" | "merge_duplicate" | "keep_separate" | "update_district" | "update_website";
+type AdminAction = "promote" | "merge_duplicate" | "keep_separate" | "update_district" | "update_website" | "create_place" | "mark_closed";
 
 type CandidateRow = {
   id: number;
@@ -65,7 +65,7 @@ type EstablishmentLookupRow = {
 
 const lifecycleStates: PlaceLifecycleState[] = ["baseline", "candidate", "verified", "featured"];
 const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "unresolved_region", "needs_input", "ml_dashboard", "all"];
-const adminActions: AdminAction[] = ["promote", "merge_duplicate", "keep_separate", "update_district", "update_website"];
+const adminActions: AdminAction[] = ["promote", "merge_duplicate", "keep_separate", "update_district", "update_website", "create_place", "mark_closed"];
 const validationLabels: ValidationLabel[] = [
   "known_mainstream",
   "known_hidden_gem",
@@ -107,6 +107,7 @@ export async function onRequestGet(context: EventContext<Env>) {
 
   const url = new URL(context.request.url);
   const stateParam = url.searchParams.get("state") ?? "candidate";
+  const queryParam = url.searchParams.get("q")?.trim() ?? "";
   if (!isStateFilter(stateParam)) {
     return Response.json(
       { error: `Invalid state '${stateParam}'.` },
@@ -115,10 +116,10 @@ export async function onRequestGet(context: EventContext<Env>) {
   }
 
   const limit = clampLimit(url.searchParams.get("limit"));
-  const rows = await loadCandidates(db, stateParam, limit);
+  const rows = await loadCandidates(db, stateParam, limit, queryParam);
 
   return Response.json(
-    { source: "d1", state: stateParam, candidates: rows.map(candidateFromRow) },
+    { source: "d1", state: stateParam, query: queryParam, candidates: rows.map(candidateFromRow) },
     { headers: jsonHeaders },
   );
 }
@@ -145,12 +146,17 @@ export async function onRequestPost(context: EventContext<Env>) {
     );
   }
 
-  const id = numericId(payload.id);
   const action = normalizeAction(payload.action);
+  const validationNotes = normalizeNotes(payload.validationNotes);
+
+  if (action === "create_place") {
+    return createPlace(db, payload, validationNotes);
+  }
+
+  const id = numericId(payload.id);
   const requestedState = payload.lifecycleState ?? payload.state;
   const lifecycleState = typeof requestedState === "string" && isLifecycleState(requestedState) ? requestedState : null;
   const validationLabel = normalizeValidationLabel(payload.validationLabel);
-  const validationNotes = normalizeNotes(payload.validationNotes);
 
   if (!id) {
     return Response.json(
@@ -164,6 +170,10 @@ export async function onRequestPost(context: EventContext<Env>) {
       { error: "Invalid admin review action." },
       { headers: jsonHeaders, status: 400 },
     );
+  }
+
+  if (action === "mark_closed") {
+    return markClosed(db, id, validationNotes);
   }
 
   if (action === "merge_duplicate") {
@@ -252,7 +262,141 @@ export async function onRequestPost(context: EventContext<Env>) {
   );
 }
 
-async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit: number) {
+async function createPlace(db: D1Database, payload: Record<string, unknown>, validationNotes: string | null) {
+  const name = typeof payload.name === "string" ? payload.name.trim() : "";
+  if (!name) {
+    return Response.json({ error: "Name is required for a new place." }, { headers: jsonHeaders, status: 400 });
+  }
+
+  const kind = typeof payload.kind === "string" && ["Restaurant", "Bakery", "Café", "Specialty coffee"].includes(payload.kind)
+    ? payload.kind
+    : "Restaurant";
+  const area = typeof payload.area === "string" && payload.area.trim() ? payload.area.trim() : "Stockholm";
+  const address = typeof payload.address === "string" ? payload.address.trim() : "";
+  const website = typeof payload.website === "string" ? payload.website.trim() : "";
+  const description = typeof payload.note === "string" ? payload.note.trim() : (typeof payload.description === "string" ? payload.description.trim() : "");
+  const lat = typeof payload.latitude === "number" && !Number.isNaN(payload.latitude) ? payload.latitude : 59.3293;
+  const lng = typeof payload.longitude === "number" && !Number.isNaN(payload.longitude) ? payload.longitude : 18.0686;
+  const lifecycleState = typeof payload.lifecycleState === "string" && isLifecycleState(payload.lifecycleState)
+    ? payload.lifecycleState
+    : "verified";
+  const validationLabel = normalizeValidationLabel(payload.validationLabel) ?? "known_hidden_gem";
+
+  const now = new Date().toISOString();
+  const newId = Date.now();
+
+  await db
+    .prepare(
+      `INSERT INTO establishments (
+        id, name, type, district, address, website, description, latitude, longitude,
+        lifecycle_state, validation_label, validation_notes, candidate_source_type, candidate_source_id,
+        created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin_entry', ?, ?, ?)`
+    )
+    .bind(
+      newId, name, kind, area, address || null, website || null, description || null, lat, lng,
+      lifecycleState, validationLabel, validationNotes || "Created manually by admin", `admin:${newId}`,
+      now, now
+    )
+    .run();
+
+  await db
+    .prepare(
+      `INSERT INTO evidence_sources (establishment_id, source_type, source_name, confidence, captured_at, summary)
+       VALUES (?, 'admin_entry', 'Admin Manual Entry', 1.0, ?, 'Added directly via admin portal')`
+    )
+    .bind(newId, now)
+    .run()
+    .catch(() => {});
+
+  if (payload.cuisine && typeof payload.cuisine === "string" && payload.cuisine.trim()) {
+    await db
+      .prepare(`INSERT INTO establishment_tags (establishment_id, tag) VALUES (?, ?)`)
+      .bind(newId, payload.cuisine.trim())
+      .run()
+      .catch(() => {});
+  }
+
+  await recordAdminReviewEvent(db, {
+    id: newId,
+    name,
+    lifecycleState,
+    validationLabel,
+    validationNotes: validationNotes || "Created manually by admin",
+    reviewedAt: now,
+    action: "create_place",
+  });
+
+  return Response.json(
+    {
+      success: true,
+      candidate: {
+        id: newId,
+        name,
+        kind,
+        area,
+        address: address || null,
+        website: website || null,
+        note: description,
+        latitude: lat,
+        longitude: lng,
+        lifecycleState,
+        validationLabel,
+        validationNotes: validationNotes || "Created manually by admin",
+        candidateSourceType: "admin_entry",
+        candidateSourceId: `admin:${newId}`,
+        candidateReviewStatus: "verified",
+        candidateAllowedUse: "unrestricted",
+        duplicateResolution: null,
+        mergedIntoEstablishmentId: null,
+        updatedAt: now,
+        createdAt: now,
+        evidenceCount: 1,
+        evidenceSourceTypes: "admin_entry",
+        latestEvidenceAt: now,
+        possibleDuplicateCount: 0,
+        possibleDuplicates: "",
+      },
+    },
+    { headers: jsonHeaders }
+  );
+}
+
+async function markClosed(db: D1Database, id: number, validationNotes: string | null) {
+  const updatedAt = new Date().toISOString();
+  const note = validationNotes || "Stängd / Ej längre i drift (Marked closed by admin)";
+  await db
+    .prepare(
+      `UPDATE establishments
+       SET lifecycle_state = 'candidate', validation_label = 'closed_wrong_category', validation_notes = ?, updated_at = ?
+       WHERE id = ?`
+    )
+    .bind(note, updatedAt, id)
+    .run();
+
+  await recordAdminReviewEvent(db, {
+    id,
+    lifecycleState: "candidate",
+    validationLabel: "closed_wrong_category",
+    validationNotes: note,
+    reviewedAt: updatedAt,
+    action: "mark_closed",
+  });
+
+  return Response.json(
+    {
+      success: true,
+      id,
+      lifecycleState: "candidate",
+      validationLabel: "closed_wrong_category",
+      validationNotes: note,
+      reviewedAt: updatedAt,
+    },
+    { headers: jsonHeaders }
+  );
+}
+
+async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit: number, query = "") {
   const select = `
     SELECT
       e.id,
@@ -293,6 +437,64 @@ async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit
 
   if (state === "ml_dashboard") {
     return [];
+  }
+
+  const trimmedQuery = query.trim();
+
+  if (trimmedQuery) {
+    const qPattern = `%${trimmedQuery}%`;
+    const searchClause = `(
+      e.name LIKE ?
+      OR e.address LIKE ?
+      OR e.district LIKE ?
+      OR e.description LIKE ?
+      OR CAST(e.id AS TEXT) = ?
+    )`;
+
+    if (state === "all") {
+      const { results } = await db
+        .prepare(`${select} WHERE ${searchClause} ${order}`)
+        .bind(qPattern, qPattern, qPattern, qPattern, trimmedQuery, limit)
+        .all<CandidateRow>();
+      return results ?? [];
+    }
+
+    if (state === "unresolved_region") {
+      const broadWhere = `
+        WHERE (${searchClause}) AND (
+          e.district IS NULL
+          OR e.district = ''
+          OR LOWER(e.district) IN ('stockholm', 'central stockholm', 'north stockholm', 'south stockholm', 'east stockholm', 'west stockholm', 'stockholms lan', 'stockholm county', 'stockholms kommun', 'sweden', 'sverige', 'unspecified')
+        )
+      `;
+      const { results } = await db
+        .prepare(`${select} ${broadWhere} ${order}`)
+        .bind(qPattern, qPattern, qPattern, qPattern, trimmedQuery, limit)
+        .all<CandidateRow>();
+      return results ?? [];
+    }
+
+    if (state === "needs_input") {
+      const needsWhere = `
+        WHERE (${searchClause}) AND (
+          e.website IS NULL OR e.website = ''
+          OR e.address IS NULL OR e.address = ''
+          OR e.district IS NULL OR e.district = ''
+          OR LOWER(e.district) IN ('stockholm', 'central stockholm', 'north stockholm', 'south stockholm', 'east stockholm', 'west stockholm', 'stockholms lan', 'stockholm county', 'stockholms kommun', 'sweden', 'sverige', 'unspecified')
+        )
+      `;
+      const { results } = await db
+        .prepare(`${select} ${needsWhere} ${order}`)
+        .bind(qPattern, qPattern, qPattern, qPattern, trimmedQuery, limit)
+        .all<CandidateRow>();
+      return results ?? [];
+    }
+
+    const { results } = await db
+      .prepare(`${select} WHERE e.lifecycle_state = ? AND ${searchClause} ${order}`)
+      .bind(state, qPattern, qPattern, qPattern, qPattern, trimmedQuery, limit)
+      .all<CandidateRow>();
+    return results ?? [];
   }
 
   if (state === "all") {

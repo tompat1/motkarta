@@ -1894,10 +1894,10 @@ INSERT INTO establishment_tags (establishment_id, tag) VALUES (1158657787, 'Open
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (1158657787, 'Opening hours');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (1158657787, 'Pizza');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (1158657787, 'Restaurant');
-INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website) VALUES (4002637501, 'Arirang', 'Restaurant', 'Central Stockholm', 'Restaurant from OpenStreetMap. Cuisine tag: korean.', 0, 59.3405343, 18.0602688, 'unknown', NULL, NULL, '2026-09-03T08:47:39.200Z', '2026-09-03T08:47:39.200Z', NULL, NULL);
+INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website) VALUES (4002637501, 'Arirang', 'Restaurant', 'Central Stockholm', 'Stängde permanent i december 2025 (Permanently closed).', 0, 59.3405343, 18.0602688, 'unknown', NULL, NULL, '2026-09-03T08:47:39.200Z', '2026-09-04T11:00:00.000Z', 'Luntmakargatan 65, 113 58 Stockholm', NULL);
+INSERT INTO establishment_tags (establishment_id, tag) VALUES (4002637501, 'Closed');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (4002637501, 'Central Stockholm');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (4002637501, 'Korean');
-INSERT INTO establishment_tags (establishment_id, tag) VALUES (4002637501, 'Missing address');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (4002637501, 'OpenStreetMap');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (4002637501, 'Restaurant');
 INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website) VALUES (732718105, 'Le Kebab', 'Restaurant', 'Central Stockholm', 'Restaurant from OpenStreetMap. Cuisine tag: kebab.', 0, 59.3391644, 18.0682747, 'unknown', NULL, NULL, '2026-09-03T08:47:39.200Z', '2026-09-03T08:47:39.200Z', NULL, NULL);

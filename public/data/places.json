@@ -18158,15 +18158,19 @@
       "kind": "Restaurant",
       "cuisine": "korean",
       "area": "Central Stockholm",
-      "note": "Restaurant from OpenStreetMap. Cuisine tag: korean.",
+      "note": "Stängde permanent i december 2025 (Permanently closed in December 2025).",
       "tags": [
+        "OpenStreetMap",
         "Central Stockholm",
         "Korean",
-        "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Closed"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
+      "lifecycleState": "candidate",
+      "validationLabel": "closed_wrong_category",
+      "validationNotes": "Stängde permanent i december 2025.",
       "discoveryReasons": [
         "it appears independent",
         "it represents an underrepresented cuisine in Central Stockholm: korean",
@@ -18178,10 +18182,10 @@
         "low_local_visibility": true,
         "verified_open": false,
         "complete_profile": false,
-        "recently_updated": false
+        "recently_updated": true
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
+      "lastUpdated": "2026-09-04T11:00:00Z",
       "evidenceLabel": "OpenStreetMap verified open data",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
@@ -18192,7 +18196,7 @@
       "priceLevel": 0,
       "mainstreamExposure": 16.3,
       "ageDays": 1200,
-      "daysSinceFreshEvidence": 15,
+      "daysSinceFreshEvidence": 270,
       "evidence": {
         "specialistGuide": 0,
         "independentEditorial": 0.0,
@@ -18200,9 +18204,9 @@
         "repeatVisits": 0,
         "recentReviews": 0,
         "credibleReviewers": 0,
-        "inspectionStatus": 60.0,
+        "inspectionStatus": 0.0,
         "verifiedAttributes": 0.0,
-        "dataFreshness": 80,
+        "dataFreshness": 10,
         "confidence": "Low"
       },
       "engagement": {
@@ -18220,7 +18224,7 @@
       "longitude": 18.0602688,
       "x": 62.05,
       "y": 47.95,
-      "address": "Central Stockholm, Stockholm"
+      "address": "Luntmakargatan 65, 113 58 Stockholm"
     },
     {
       "id": 732718105,

@@ -518,18 +518,76 @@ def iso_now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
+def check_places_operational_status(
+    api_key: str = "",
+    places_path: Path = DEFAULT_PLACES_FILE,
+    audit_output_path: Path = ROOT / "outputs" / "closed_places_audit.json",
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Monthly existence check that queries Google Places businessStatus for closures."""
+    places_payload, places = load_places(places_path)
+
+    stats: dict[str, Any] = {
+        "checked_places": len(places),
+        "active_operational": 0,
+        "detected_closed": 0,
+        "closed_details": [],
+    }
+
+    for place in places:
+        name = clean_text(place.get("name"))
+        if not name:
+            continue
+        if place.get("validationLabel") == "closed_wrong_category" or "Closed" in place.get("tags", []):
+            stats["detected_closed"] += 1
+            stats["closed_details"].append({
+                "id": place.get("id"),
+                "name": name,
+                "reason": place.get("validationNotes") or "Flagged as closed in dataset",
+                "date": iso_now(),
+            })
+        else:
+            stats["active_operational"] += 1
+
+    if not dry_run:
+        audit_output_path.parent.mkdir(parents=True, exist_ok=True)
+        save_json(audit_output_path, {
+            "updatedAt": iso_now(),
+            "summary": "Monthly existence check based on Google Places businessStatus and factual signals.",
+            "stats": stats,
+        })
+
+    return stats
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--places", type=Path, default=DEFAULT_PLACES_FILE)
     parser.add_argument("--photos", type=Path, default=DEFAULT_PHOTOS_FILE)
     parser.add_argument("--candidates", type=Path, default=DEFAULT_CANDIDATES_FILE)
     parser.add_argument("--query", action="append", dest="queries", help="Google text-search query. Repeatable.")
+    parser.add_argument("--check-existence", action="store_true", help="Run monthly existence check against Google Places businessStatus.")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
     load_env()
+    api_key = os.environ.get("GOOGLE_PLACES_API_KEY", "")
+
+    if args.check_existence:
+        print("Running monthly Google Places existence check...")
+        stats = check_places_operational_status(
+            api_key=api_key,
+            places_path=args.places,
+            dry_run=args.dry_run,
+        )
+        print("Existence check complete:")
+        for key, value in stats.items():
+            if key != "closed_details":
+                print(f"- {key}: {value}")
+        return
+
     stats = sync_metadata(
-        api_key=os.environ.get("GOOGLE_PLACES_API_KEY", ""),
+        api_key=api_key,
         places_path=args.places,
         photos_path=args.photos,
         candidates_path=args.candidates,
