@@ -102,6 +102,7 @@ import {
   type RecommendationMode,
 } from "../lib/recommendation-events";
 import { DEFAULT_CONCIERGE_PROMPTS, DEFAULT_CURATED_SOURCES } from "../lib/db-sources-prompts";
+import { fetchPlacesPayload, type DataSource } from "../lib/place-payload";
 
 const establishmentTypes = [
   "All places",
@@ -135,8 +136,6 @@ export type EstablishmentFilter = (typeof establishmentTypes)[number];
 type CuisineFilter = typeof allCuisines | string;
 type Mode = (typeof modes)[number];
 type SortMode = (typeof sortModes)[number];
-type DataSource = "loading" | "d1" | "osm" | "unavailable";
-
 function modeScore(place: ScoredPlace, mode: Mode) {
   if (mode === "Hidden gems") {
     return place.scores.discovery;
@@ -6989,36 +6988,4 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[
   }
 
   return deduped;
-}
-
-async function fetchPlacesPayload(): Promise<{ source: DataSource; places: PlaceInput[] }> {
-  try {
-    const apiResponse = await fetch("/api/places");
-    if (apiResponse.ok) {
-      const payload = (await apiResponse.json()) as { source?: string; places?: PlaceInput[] };
-      if (payload.places?.length) {
-        const rawSource = payload.source ?? "d1";
-        const source: DataSource =
-          rawSource === "osm" || rawSource.startsWith("osm")
-            ? "osm"
-            : "d1";
-        return { source, places: payload.places };
-      }
-    }
-  } catch {
-    // Fall through to the static dataset when the API path is unavailable.
-  }
-
-  const staticResponse = await fetch("/data/places.json");
-  if (!staticResponse.ok) {
-    throw new Error(`Static places responded ${staticResponse.status}`);
-  }
-
-  const payload = (await staticResponse.json()) as { source?: string; places?: PlaceInput[] };
-  if (!payload.places?.length) {
-    throw new Error("Static places returned no places");
-  }
-  const rawSource = payload.source ?? "osm";
-  const source: DataSource = rawSource === "d1" ? "d1" : "osm";
-  return { source, places: payload.places };
 }

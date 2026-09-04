@@ -280,7 +280,14 @@ async function createPlace(db: D1Database, payload: Record<string, unknown>, val
   const lifecycleState = typeof payload.lifecycleState === "string" && isLifecycleState(payload.lifecycleState)
     ? payload.lifecycleState
     : "verified";
-  const validationLabel = normalizeValidationLabel(payload.validationLabel) ?? "known_hidden_gem";
+  const rawValidationLabel = normalizeValidationLabel(payload.validationLabel);
+  if (rawValidationLabel === "invalid") {
+    return Response.json(
+      { error: "Invalid validation label." },
+      { headers: jsonHeaders, status: 400 },
+    );
+  }
+  const validationLabel = rawValidationLabel ?? "known_hidden_gem";
 
   const now = new Date().toISOString();
   const newId = Date.now();
@@ -317,9 +324,8 @@ async function createPlace(db: D1Database, payload: Record<string, unknown>, val
       .catch(() => {});
   }
 
-  await recordAdminReviewEvent(db, {
-    id: newId,
-    name,
+  await recordReviewEvent(db, {
+    establishmentId: newId,
     lifecycleState,
     validationLabel,
     validationNotes: validationNotes || "Created manually by admin",
@@ -374,8 +380,8 @@ async function markClosed(db: D1Database, id: number, validationNotes: string | 
     .bind(note, updatedAt, id)
     .run();
 
-  await recordAdminReviewEvent(db, {
-    id,
+  await recordReviewEvent(db, {
+    establishmentId: id,
     lifecycleState: "candidate",
     validationLabel: "closed_wrong_category",
     validationNotes: note,
