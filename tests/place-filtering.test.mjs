@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { cuisineOptionsFromPlaces } from "../src/app/cuisine-options.ts";
 import { isLatestAddedPlace, matchesEstablishmentFilter } from "../src/app/place-filtering.ts";
 
 function place(overrides = {}) {
@@ -44,4 +45,16 @@ test("visible establishment filters omit low-value curated shortcut", async () =
   assert.match(sharedSource, /visibleEstablishmentTypes = establishmentTypes\.filter\(\(item\) => item !== "Curated"\)/);
   assert.equal(appSource.includes("visibleEstablishmentTypes.map"), true);
   assert.equal(appSource.includes("establishmentTypes.map"), false);
+});
+
+test("cuisine filters omit venue-type placeholders", () => {
+  const options = cuisineOptionsFromPlaces([
+    place({ cuisine: "restaurant" }),
+    place({ cuisine: "italian;restaurant" }),
+    place({ cuisine: "thai" }),
+  ]);
+
+  assert.equal(options.includes("restaurant"), false);
+  assert.equal(options.includes("italian"), true);
+  assert.equal(options.includes("thai"), true);
 });
