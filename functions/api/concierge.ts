@@ -32,6 +32,7 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     ["poland", "polish"],
     ["polish", "polish"],
     ["polska", "polish"],
+    ["polsk", "polish"],
     ["pierogi", "polish"],
     ["eastern european", "eastern_european"],
     ["eastern european", "polish"],
@@ -39,18 +40,30 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     ["ukrainian", "ukrainian"],
     ["france", "french"],
     ["french", "french"],
+    ["fransk", "french"],
     ["franskt", "french"],
     ["bistro", "bistro"],
     ["brasserie", "bistro"],
     ["sweden", "swedish"],
     ["swedish", "swedish"],
+    ["svensk", "swedish"],
     ["husmanskost", "swedish"],
     ["italy", "italian"],
     ["italian", "italian"],
+    ["italiensk", "italian"],
+    ["italienska", "italian"],
+    ["italienskt", "italian"],
+    ["trattoria", "italian"],
+    ["trattorias", "italian"],
     ["pizza", "pizza"],
     ["sushi", "sushi"],
     ["japan", "japanese"],
     ["japanese", "japanese"],
+    ["japansk", "japanese"],
+    ["japanska", "japanese"],
+    ["japanskt", "japanese"],
+    ["izakaya", "japanese"],
+    ["yakitori", "japanese"],
     ["germany", "german"],
     ["german", "german"],
     ["austria", "austrian"],
@@ -61,14 +74,42 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     ["schnitzel", "schnitzel"],
     ["thai", "thai"],
     ["thailand", "thai"],
+    ["thailändsk", "thai"],
+    ["thailändskt", "thai"],
     ["indian", "indian"],
     ["india", "indian"],
+    ["indisk", "indian"],
+    ["indiska", "indian"],
+    ["indiskt", "indian"],
+    ["koreansk", "korean"],
+    ["koreanska", "korean"],
+    ["korean", "korean"],
+    ["kinesisk", "chinese"],
+    ["kinesiska", "chinese"],
+    ["kinesiskt", "chinese"],
+    ["chinese", "chinese"],
+    ["vietnamesisk", "vietnamese"],
+    ["vietnamesiska", "vietnamese"],
+    ["vietnamese", "vietnamese"],
     ["coffee", "coffee"],
+    ["kaffe", "coffee"],
     ["bakery", "bakery"],
+    ["bageri", "bakery"],
+    ["hantverksbageri", "bakery"],
+    ["kardemummabulle", "bakery"],
+    ["kardemumma", "bakery"],
+    ["kanelbulle", "bakery"],
+    ["kanelbullar", "bakery"],
+    ["surdegsbröd", "bakery"],
+    ["surdeg", "bakery"],
+    ["sourdough", "bakery"],
     ["burger", "burger"],
     ["middle eastern", "middle_eastern"],
     ["mexican", "mexican"],
+    ["mexikansk", "mexican"],
+    ["mexikanska", "mexican"],
     ["mexico", "mexican"],
+    ["tacos", "mexican"],
     ["tapas", "tapas"],
     ["tapas", "spanish"],
     ["spanish", "spanish"],
@@ -87,13 +128,13 @@ export function extractStructuredFilters(query: string): StructuredFilters {
   }
 
   let priceMax: number | null = null;
-  if (["not expensive", "budget", "affordable", "cheap", "cheaply", "moderate"].some((kw) => qLower.includes(kw))) {
+  if (["not expensive", "budget", "affordable", "cheap", "cheaply", "moderate", "rimligt pris", "billigt", "prisvärt", "överkomligt"].some((kw) => qLower.includes(kw))) {
     priceMax = 250;
-  } else if (["fine dining", "expensive", "upscale"].some((kw) => qLower.includes(kw))) {
+  } else if (["fine dining", "expensive", "upscale", "avsmakningsmeny", "tasting menu"].some((kw) => qLower.includes(kw))) {
     priceMax = 800;
   }
 
-  const independentPreferred = ["family-run", "family run", "independent", "local", "authentic", "small business"].some(
+  const independentPreferred = ["family-run", "family run", "family-owned", "independent", "local", "authentic", "small business", "familjeägd", "familjeägt", "oberoende", "handgjorda", "handgjord", "hantverks", "artisan"].some(
     (kw) => qLower.includes(kw),
   );
 
@@ -205,26 +246,41 @@ export async function processConciergeQuery(
 }
 
 const CUISINE_ALIASES: Record<string, string[]> = {
-  poland: ["polish", "poland", "polska", "pierogi", "eastern_european", "eastern european"],
-  polish: ["polish", "poland", "polska", "pierogi", "eastern_european", "eastern european"],
-  polska: ["polish", "poland", "polska", "pierogi", "eastern_european", "eastern european"],
-  pierogi: ["polish", "poland", "polska", "pierogi", "eastern_european"],
+  poland: ["polish", "poland", "polska", "polsk", "pierogi", "eastern_european", "eastern european"],
+  polish: ["polish", "poland", "polska", "polsk", "pierogi", "eastern_european", "eastern european"],
+  polska: ["polish", "poland", "polska", "polsk", "pierogi", "eastern_european", "eastern european"],
+  polsk: ["polish", "poland", "polska", "polsk", "pierogi", "eastern_european"],
+  pierogi: ["polish", "poland", "polska", "polsk", "pierogi", "eastern_european"],
   sweden: ["swedish", "sweden", "svensk", "husmanskost"],
   swedish: ["swedish", "sweden", "svensk", "husmanskost"],
-  italy: ["italian", "italy", "pasta", "pizza"],
-  italian: ["italian", "italy", "pasta", "pizza"],
-  japan: ["japanese", "japan", "sushi", "ramen"],
-  japanese: ["japanese", "japan", "sushi", "ramen"],
-  mexico: ["mexican", "mexico", "tacos"],
-  mexican: ["mexican", "mexico", "tacos"],
+  svensk: ["swedish", "sweden", "svensk", "husmanskost"],
+  husmanskost: ["swedish", "husmanskost", "svensk"],
+  italy: ["italian", "italy", "italiensk", "italienska", "pasta", "pizza", "trattoria"],
+  italian: ["italian", "italy", "italiensk", "italienska", "pasta", "pizza", "trattoria"],
+  italiensk: ["italian", "italy", "italiensk", "italienska", "pasta", "pizza", "trattoria"],
+  italienska: ["italian", "italy", "italiensk", "italienska", "pasta", "pizza", "trattoria"],
+  trattoria: ["italian", "trattoria", "trattorias", "pasta", "pizza"],
+  trattorias: ["italian", "trattoria", "trattorias", "pasta", "pizza"],
+  japan: ["japanese", "japan", "japansk", "japanska", "sushi", "ramen", "izakaya", "yakitori"],
+  japanese: ["japanese", "japan", "japansk", "japanska", "sushi", "ramen", "izakaya", "yakitori"],
+  japansk: ["japanese", "japan", "japansk", "japanska", "sushi", "ramen", "izakaya", "yakitori"],
+  japanska: ["japanese", "japan", "japansk", "japanska", "sushi", "ramen", "izakaya", "yakitori"],
+  izakaya: ["japanese", "japan", "izakaya", "yakitori"],
+  yakitori: ["japanese", "japan", "izakaya", "yakitori"],
+  mexico: ["mexican", "mexico", "mexikansk", "mexikanska", "tacos"],
+  mexican: ["mexican", "mexico", "mexikansk", "mexikanska", "tacos"],
+  mexikansk: ["mexican", "mexico", "mexikansk", "mexikanska", "tacos"],
+  mexikanska: ["mexican", "mexico", "mexikansk", "mexikanska", "tacos"],
+  tacos: ["mexican", "mexico", "mexikansk", "mexikanska", "tacos"],
   germany: ["german", "germany", "schnitzel", "austrian"],
   german: ["german", "germany", "schnitzel", "austrian"],
   austria: ["austrian", "austria", "schnitzel", "german"],
   austrian: ["austrian", "austria", "schnitzel", "german"],
   schnitzel: ["schnitzel", "german", "austrian", "czech"],
-  french: ["french", "france", "franskt", "bistro", "brasserie"],
-  france: ["french", "france", "franskt", "bistro", "brasserie"],
-  bistro: ["bistro", "french", "brasserie"],
+  french: ["french", "france", "fransk", "franskt", "bistro", "brasserie"],
+  france: ["french", "france", "fransk", "franskt", "bistro", "brasserie"],
+  fransk: ["french", "france", "fransk", "franskt", "bistro", "brasserie"],
+  bistro: ["bistro", "french", "fransk", "brasserie"],
   hungary: ["hungarian", "hungary", "goulash", "austrian"],
   hungarian: ["hungarian", "hungary", "goulash", "austrian"],
   goulash: ["goulash", "hungarian", "austrian"],
@@ -234,6 +290,23 @@ const CUISINE_ALIASES: Record<string, string[]> = {
   spanskt: ["spanish", "spain", "spansk", "spanskt", "paella", "tapas"],
   paella: ["paella", "spanish", "spansk", "spanskt", "tapas"],
   tapas: ["tapas", "spanish", "spansk", "spanskt", "paella"],
+  thai: ["thai", "thailand", "thailändsk", "thailändskt"],
+  thailändsk: ["thai", "thailand", "thailändsk", "thailändskt"],
+  indian: ["indian", "india", "indisk", "indiska", "indiskt"],
+  indisk: ["indian", "india", "indisk", "indiska", "indiskt"],
+  korean: ["korean", "koreansk", "koreanska"],
+  koreansk: ["korean", "koreansk", "koreanska"],
+  chinese: ["chinese", "kinesisk", "kinesiska", "kinesiskt"],
+  kinesisk: ["chinese", "kinesisk", "kinesiska", "kinesiskt"],
+  vietnamese: ["vietnamese", "vietnamesisk", "vietnamesiska"],
+  vietnamesisk: ["vietnamese", "vietnamesisk", "vietnamesiska"],
+  kardemummabulle: ["bakery", "cardamom", "kardemumma", "fika"],
+  kardemumma: ["bakery", "cardamom", "kardemumma", "fika"],
+  surdegsbröd: ["bakery", "sourdough", "surdeg", "bread"],
+  surdeg: ["bakery", "sourdough", "surdeg", "bread"],
+  sourdough: ["bakery", "sourdough", "surdeg", "bread"],
+  kanelbulle: ["bakery", "cinnamon", "fika"],
+  kanelbullar: ["bakery", "cinnamon", "fika"],
 };
 
 function matchTokenWithAliases(token: string, target: string): boolean {
@@ -289,18 +362,77 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
     };
   }
 
-  const stopWords = new Set(["and", "the", "for", "with", "from", "some", "best", "good", "great", "find", "where", "what", "want", "like", "near", "place", "places", "food", "eat", "get", "have"]);
+  const stopWords = new Set([
+    // English
+    "and", "the", "for", "with", "from", "some", "best", "good", "great", "find",
+    "where", "what", "want", "like", "near", "place", "places", "food", "eat",
+    "get", "have", "looking",
+    // Swedish
+    "och", "den", "det", "ett", "att", "som", "har", "kan", "ska",
+    "med", "bra", "för", "nära", "mig", "dig", "sin", "sina",
+    "vara", "eller", "inte", "alla", "bästa", "hitta", "var",
+    "deras", "här", "där", "ställe", "ställen", "mat", "äta",
+    "vill",
+  ]);
   const queryTokens = query
     .toLowerCase()
     .replace(/[,.!?()]/g, " ")
     .split(/\s+/)
-    .filter((token) => token.length > 2 && !stopWords.has(token));
+    .filter((token) => token.length > 1 && !stopWords.has(token));
+
+  // Stockholm area names should not count as food tokens
+  const areaNames = new Set([
+    "södermalm", "söder", "vasastan", "vasastaden", "gamla", "stan",
+    "zinkensdamm", "zinken", "kungsholmen", "östermalm", "ostermalm",
+    "norrmalm", "city", "djurgården", "birkastan", "hornstull",
+    "skanstull", "mariatorget", "nytorget", "sofo", "odenplan",
+    "fridhemsplan", "stureplan", "hötorget", "slussen", "medborgarplatsen",
+    "stockholm", "stockholms",
+  ]);
+
+  // Intent/descriptor words that shouldn't be treated as food signals
+  const intentWords = new Set([
+    "tourist", "streets", "center", "centre", "busiest", "quiet",
+    "cheap", "expensive", "independent", "local",
+    // Swedish descriptors
+    "familjeägd", "familjeägt", "oberoende", "handgjorda", "handgjord",
+    "dolda", "pärlor", "pärla", "gömda", "gömd",
+  ]);
 
   const foodSpecificTokens = queryTokens.filter(
-    (t) => !["tourist", "streets", "center", "centre", "busiest", "quiet", "cheap", "expensive", "independent", "local"].includes(t),
+    (t) => !intentWords.has(t) && !areaNames.has(t),
   );
 
-  const asksAwayFromTourist = ["away from", "outside", "tourist", "hidden", "quiet", "off the beaten path", "suburb"].some((kw) => query.toLowerCase().includes(kw));
+  // ---- Kind inference: what type of place does the query expect? ----
+  type ExpectedKind = "Restaurant" | "Bakery" | "Specialty coffee" | "Café" | null;
+  let expectedKind: ExpectedKind = null;
+
+  const bakerySignals = ["bageri", "bakery", "hantverksbageri", "kanelbulle", "kanelbullar", "surdegsbröd", "surdeg", "sourdough", "artisan bakery", "cinnamon bun", "cinnamon buns"];
+  const restaurantSignals = ["pierogi", "tacos", "bistro", "trattoria", "trattorias", "restaurang", "restaurant", "middag", "dinner", "fine dining", "husmanskost", "pasta", "izakaya", "yakitori", "ramen"];
+  const coffeeSignals = ["specialty coffee", "specialty", "kaffe", "rosteri", "roaster", "roastery"];
+  const cafeSignals = ["café", "cafe", "fika"];
+
+  const hasBakerySignal = bakerySignals.some((s) => qLower.includes(s));
+  const hasRestaurantSignal = restaurantSignals.some((s) => qLower.includes(s));
+  const hasCoffeeSignal = coffeeSignals.some((s) => qLower.includes(s));
+  const hasCafeSignal = cafeSignals.some((s) => qLower.includes(s));
+
+  // Only infer a single kind when the query is unambiguous
+  const kindSignalCount = [hasBakerySignal, hasRestaurantSignal, hasCoffeeSignal, hasCafeSignal].filter(Boolean).length;
+  if (kindSignalCount === 1) {
+    if (hasBakerySignal) expectedKind = "Bakery";
+    else if (hasRestaurantSignal) expectedKind = "Restaurant";
+    else if (hasCoffeeSignal) expectedKind = "Specialty coffee";
+    else if (hasCafeSignal) expectedKind = "Café";
+  }
+  // Special case: "specialty coffee och kardemummabulle" → both coffee and bakery → no kind penalty
+  // (kindSignalCount > 1 → expectedKind stays null)
+
+  // ---- Intent detection ----
+  const isHiddenGemQuery = ["dolda pärlor", "dold pärla", "gömda pärlor", "hidden gems", "hidden gem", "off the beaten path"].some((kw) => qLower.includes(kw));
+  const isDinnerQuery = ["middag", "dinner", "kvällsmat", "evening meal"].some((kw) => qLower.includes(kw));
+
+  const asksAwayFromTourist = ["away from", "outside", "tourist", "hidden", "quiet", "off the beaten path", "suburb"].some((kw) => qLower.includes(kw));
   const isDogQuery = ["dog", "dogs", "hund", "hundar", "hundvänlig", "hundvänligt", "tasstipset", "dog-friendly"].some((kw) => query.toLowerCase().includes(kw));
 
   const scored: Array<{ place: ScoredPlace; ragScore: number }> = places
@@ -427,21 +559,41 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
     const isExplicitNonCoffeeQuery =
       foodSpecificTokens.length > 0 &&
       !isSpecialtyQuery &&
-      !queryTokens.some((t) => ["fika", "coffee", "bun", "bakery", "pastry", "breakfast"].includes(t));
+      !queryTokens.some((t) => ["fika", "coffee", "kaffe", "bun", "bakery", "bageri", "pastry", "breakfast", "frukost"].includes(t));
 
     if (isExplicitNonCoffeeQuery && isCoffeeOrBakeryPlace) {
       ragScore -= 500;
     }
 
-    // 4. Cardamom Bun / Bakery match points
-    if (queryTokens.includes("cardamom") || queryTokens.includes("bun") || queryTokens.includes("bakery")) {
+    // 4. Cardamom Bun / Bakery match points (Swedish + English)
+    const isCardamomBakeryQuery = ["cardamom", "kardemummabulle", "kardemumma", "bun", "bakery", "bageri",
+      "hantverksbageri", "kanelbulle", "kanelbullar", "surdegsbröd", "surdeg", "sourdough",
+      "cinnamon bun", "cinnamon buns", "artisan bakery"].some((t) => qLower.includes(t));
+    if (isCardamomBakeryQuery) {
       if (
         searchTarget.includes("cardamom") ||
+        searchTarget.includes("kardemumma") ||
+        searchTarget.includes("kanelbulle") ||
+        searchTarget.includes("surdeg") ||
+        searchTarget.includes("sourdough") ||
         place.kind === "Bakery" ||
         searchTarget.includes("bakery") ||
+        searchTarget.includes("bageri") ||
         searchTarget.includes("fika")
       ) {
         ragScore += 25;
+      }
+    }
+
+    // 4b. Kind mismatch penalty
+    if (expectedKind && place.kind !== expectedKind) {
+      // Allow Café to pass when expecting Bakery (cafés often serve pastries)
+      const isCompatible =
+        (expectedKind === "Bakery" && place.kind === "Café") ||
+        (expectedKind === "Café" && place.kind === "Bakery") ||
+        (expectedKind === "Specialty coffee" && place.kind === "Café");
+      if (!isCompatible) {
+        ragScore -= 200;
       }
     }
 
@@ -458,8 +610,20 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
       ragScore += 5;
     }
 
-    if (scoredPlace.hiddenGem.eligible) {
+    // Hidden gem intent boost
+    if (isHiddenGemQuery && scoredPlace.hiddenGem.eligible) {
+      ragScore += 40;
+    } else if (scoredPlace.hiddenGem.eligible) {
       ragScore += 20;
+    }
+
+    // Dinner intent: penalize breakfast/fika-only places
+    if (isDinnerQuery) {
+      const isFikaOnly = (place.kind === "Bakery" || place.kind === "Café") &&
+        !searchTarget.includes("dinner") && !searchTarget.includes("middag") && !searchTarget.includes("restaurant");
+      if (isFikaOnly) {
+        ragScore -= 100;
+      }
     }
 
     // 6. Quality & Discovery base score (scaled to 15 max)
@@ -477,7 +641,7 @@ export function retrieveAndSynthesize(query: string, places: PlaceInput[]) {
   const isExplicitNonCoffeeQuery =
     foodSpecificTokens.length > 0 &&
     !isSpecialtyQuery &&
-    !queryTokens.some((t) => ["fika", "coffee", "bun", "bakery", "pastry", "breakfast"].includes(t));
+    !queryTokens.some((t) => ["fika", "coffee", "kaffe", "bun", "bakery", "bageri", "pastry", "breakfast", "frukost"].includes(t));
 
   const validScored = scored.filter((item) => item.ragScore > 0);
   validScored.sort((a, b) => b.ragScore - a.ragScore);
