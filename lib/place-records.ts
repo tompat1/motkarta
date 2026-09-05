@@ -1,3 +1,5 @@
+import type { ConciergePlace } from './concierge/contracts.ts';
+import { safeUrl } from './concierge/facts.ts';
 import type { Confidence, EstablishmentType, PlaceInput, PlaceLifecycleState, SpecialtyAttributes } from "./scoring.ts";
 import { resolveStockholmRegion } from "./stockholm-regions.ts";
 
@@ -54,6 +56,9 @@ export type PlaceRow = {
 };
 
 export type EvidenceRow = {
+  id?: number;
+  url?: string | null;
+  summary?: string | null;
   establishment_id: number;
   source_type: string;
   source_name: string;
@@ -176,7 +181,7 @@ export const placeQuery = `
 `;
 
 export const evidenceQuery = `
-  SELECT establishment_id, source_type, source_name, confidence, captured_at
+  SELECT id, establishment_id, source_type, source_name, url, summary, confidence, captured_at
   FROM evidence_sources
   ORDER BY captured_at DESC, id DESC
 `;
@@ -187,7 +192,7 @@ export const tagQuery = `
   ORDER BY tag ASC
 `;
 
-export async function loadPlacesFromD1(db: D1Database): Promise<PlaceInput[]> {
+export async function loadPlacesFromD1(db: D1Database): Promise<ConciergePlace[]> {
   const [placeResult, evidenceResult, tagResult] = await Promise.all([
     db.prepare(placeQuery).all<PlaceRow>(),
     db.prepare(evidenceQuery).all<EvidenceRow>(),
@@ -219,7 +224,7 @@ export function rowsToPlaceInputs(
   );
 }
 
-export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagRows: TagRow[]): PlaceInput {
+export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagRows: TagRow[]): ConciergePlace {
   const sourceTypes = new Set(evidenceRows.map((row) => row.source_type));
   const latestEvidenceDate = latestDate([
     row.latest_rating_at,
@@ -239,6 +244,9 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
 
   return {
     id: row.id,
+    chainStatus: row.chain_status === "chain" ? "chain" : row.chain_status === "independent" ? "independent" : "unknown",
+    sourcePriceLevel: row.price_level ?? null,
+    evidenceSources: evidenceRows.map((evidence, index) => ({ id: String(evidence.id ?? `${row.id}:${index}`), name: evidence.source_name, type: evidence.source_type, url: safeUrl(evidence.url), capturedAt: evidence.captured_at, summary: evidence.summary ?? undefined })),
     name: row.name,
     kind: row.type,
     cuisine: cuisines.length ? cuisines.join(";") : undefined,

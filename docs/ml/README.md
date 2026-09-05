@@ -146,3 +146,10 @@ ML-related work is not complete until:
 - Model/version identifiers are stored with outputs and events.
 - Python tests, JavaScript tests, typecheck and relevant build checks pass.
 - This documentation and the ML directive still describe the implementation.
+
+## Concierge RAG implementation (2026-09-05)
+
+Stages 1–4 are implemented locally with mocked provider validation. See
+[Concierge RAG](concierge-rag.md) for contracts, versions and operation, and
+[evaluation](concierge-evaluation.md) for measured limitations. Cloud AI remains
+disabled; no production activation or personalized learning is implied.

@@ -1,6 +1,13 @@
 from __future__ import annotations
 
+import json
+import re
 from dataclasses import dataclass
+from pathlib import Path
+from motkarta.stockholm_boundary import normalized_boundary_text, contains_boundary_token
+
+POLICY = json.loads((Path(__file__).resolve().parents[1] / 'lib/concierge/policy.json').read_text())
+CORPUS_VERSION = 'concierge-facts-v1'
 
 
 @dataclass(frozen=True)
@@ -8,76 +15,63 @@ class RagDocument:
     id: str
     title: str
     text: str
-    metadata: dict[str, str | int | float | bool | None]
+    metadata: dict
+
+
+def eligible_place(place: dict) -> bool:
+    state = place.get('lifecycleState', place.get('lifecycle_state')) or 'baseline'
+    if state not in {'baseline', 'active', 'verified', 'featured'}:
+        return False
+    if place.get('validationLabel', place.get('validation_label')) == 'closed_wrong_category':
+        return False
+    if place.get('chainStatus', place.get('chain_status')) == 'chain':
+        return False
+    name = normalized_boundary_text(place.get('name', ''))
+    if any(contains_boundary_token(name, chain) for chain in POLICY['excludedChains']):
+        return False
+    location = normalized_boundary_text(' '.join(str(place.get(k) or '') for k in ['area', 'address', 'sourceUrl']))
+    return not any(contains_boundary_token(location, area) for area in POLICY['excludedLocalities']) and any(contains_boundary_token(location, area) for area in POLICY['stockholmLocalities'])
+
+
+def clean(value: object) -> str:
+    return re.sub(r'[\r\n\x00-\x1f#*<>`]', ' ', str(value or '')).strip()[:500]
 
 
 def place_to_rag_document(place: dict) -> RagDocument:
-    """Create a retrieval document for a place with rich semantic narrative synthesis (Blueprint 3.1)."""
-
-    tags = place.get("tags") or []
-    scores = place.get("scores") or {}
-    name = place.get("name") or "Establishment"
-    kind = place.get("kind") or place.get("type") or "venue"
-    area = place.get("area") or place.get("district") or "Stockholm"
-    is_gem = bool(place.get("is_hidden_gem") or place.get("is_gem"))
-    cuisine = place.get("cuisine") or ""
-
-    gem_status_str = (
-        "This establishment has passed Motkarta's independent evidence, current-existence, distinctiveness, and lifecycle gates for Hidden Gem status."
-        if is_gem
-        else "This establishment is a verified local independent destination."
-    )
-
-    feature_items = []
-    if cuisine:
-        feature_items.append(f"cuisine: {cuisine}")
-    if tags:
-        feature_items.extend(tags[:5])
-    features_str = ", ".join(feature_items) if feature_items else "authentic local food and beverage service"
-
-    narrative_text = (
-        f"ID: {place.get('id')}. Name: {name} is a verified independent {kind} located in the {area} neighborhood of Stockholm. "
-        f"{gem_status_str} Features include {features_str}. "
-        f"It exhibits high community stability and is fully independent from commercial corporate chains."
-    )
-
-    evidence_label = place.get("evidenceLabel") or place.get("evidence_label") or ""
-    if evidence_label:
-        narrative_text += f" Evidence proof: {evidence_label}."
-
-    if scores:
-        score_str = ", ".join(f"{key}={round(value, 2)}" for key, value in scores.items() if isinstance(value, int | float))
-        narrative_text += f" Auditable score profile: {score_str}."
-
-    return RagDocument(
-        id=str(place.get("id")),
-        title=str(name),
-        text=narrative_text,
-        metadata={
-            "place_id": place.get("id"),
-            "type": kind,
-            "area": area,
-            "is_hidden_gem": is_gem,
-            "quality_score": scores.get("quality", 0) if isinstance(scores, dict) else 0,
-            "discovery_score": scores.get("discovery", 0) if isinstance(scores, dict) else 0,
-        },
-    )
+    """Factual corpus only: no invented verification, independence or quality."""
+    kind = place.get('kind') or place.get('type') or 'venue'
+    area = place.get('area') or place.get('district') or ''
+    fields = {'name': place.get('name'), 'kind': kind, 'area': area,
+              'address': place.get('address'), 'cuisine': place.get('cuisine')}
+    lines = [f'{key}: {clean(value)}' for key, value in fields.items() if value]
+    tags = [clean(tag) for tag in place.get('tags', []) if isinstance(tag, str) and not re.search(r'rating|review|popular|quality|hidden gem|verified|independent|anomal|residual', tag, re.I)]
+    lines.extend(f'tags: {tag}' for tag in tags)
+    # Evidence labels are metadata, not claims that all attributes were verified.
+    metadata = {
+        'place_id': place.get('id'), 'type': kind, 'establishment_type': kind,
+        'area': area, 'neighbourhood': area, 'cuisine': place.get('cuisine', ''),
+        'tags': tags, 'address': place.get('address', ''),
+        'source_url': place.get('sourceUrl'), 'source_name': place.get('sourceName'),
+        'evidence_label': place.get('evidenceLabel', ''),
+        'lifecycle_state': place.get('lifecycleState') or 'baseline',
+        'chain_status': place.get('chainStatus') or 'unknown',
+        'validation_label': place.get('validationLabel'),
+        'eligible': eligible_place({**place, 'area': area}),
+        'corpus_version': CORPUS_VERSION, 'is_hidden_gem': False,
+    }
+    return RagDocument(str(place.get('id')), clean(place.get('name')), '\n'.join(lines), metadata)
 
 
 def chunk_documents(documents: list[RagDocument], max_chars: int = 1200) -> list[RagDocument]:
-    chunks: list[RagDocument] = []
+    if max_chars <= 0:
+        raise ValueError('max_chars must be positive')
+    chunks = []
     for document in documents:
-        text = document.text
-        if len(text) <= max_chars:
+        if len(document.text) <= max_chars:
             chunks.append(document)
             continue
-        for index, start in enumerate(range(0, len(text), max_chars)):
-            chunks.append(
-                RagDocument(
-                    id=f"{document.id}:{index}",
-                    title=document.title,
-                    text=text[start : start + max_chars],
-                    metadata={**document.metadata, "chunk": index},
-                )
-            )
+        for index, start in enumerate(range(0, len(document.text), max_chars)):
+            chunks.append(RagDocument(f'{document.id}:{index}', document.title,
+                                      document.text[start:start + max_chars],
+                                      {**document.metadata, 'chunk': index}))
     return chunks

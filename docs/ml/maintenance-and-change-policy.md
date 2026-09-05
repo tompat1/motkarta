@@ -246,3 +246,11 @@ This foundation remains shadow mode. It is not training authorization.
 ### Later: controlled online experiment
 
 Only after logging quality, privacy, sample size and rollback behavior are proven.
+
+## Concierge maintenance boundary (2026-09-05)
+
+Version corpus serialization, lexical/hybrid retrieval and synthesis prompts
+independently of the global scorer. Keep `docs/ml/concierge-rag.md`, the evaluation
+record, shared policy fixtures and provider/fallback tests synchronized with
+behavior. Cloud activation remains a separate release gate; passing mocked
+integration tests does not promote a model or satisfy the fresh-holdout requirement.

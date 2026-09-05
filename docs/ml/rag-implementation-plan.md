@@ -1,7 +1,9 @@
 # Multilingual, evidence-grounded RAG concierge
 
-Status: proposal, 2026-09-05. Implementation awaits the repository's required
-plan approval. This document describes proposed behavior, not deployed capability.
+Status: stages 1–4 approved and implemented locally on 2026-09-05.
+The original proposal below is retained for traceability. The actual implementation,
+including narrowed synthesis and deferred vector-budget expansion, is documented
+in [Concierge RAG](concierge-rag.md). No cloud activation has occurred.
 
 ## Outcome
 
@@ -265,7 +267,7 @@ new hard gates and honest unknown handling active. Revert index alias/config to
 the previously validated version when needed; never roll back to the known chain
 fallback bug. Recheck current lifecycle at serving time throughout rollback.
 
-Next step: approve stages 1–4 for local implementation and mocked validation.
-Cloud provisioning, billable provider evaluation and production deployment remain
-explicit activation steps with a concrete configuration, cost budget and rollback
-review. The present deliverable is this plan and baseline review only.
+Next step after local implementation: reconcile live D1 coverage and review preview
+configuration, rate gate, spending budget and a fresh holdout before authorizing
+cloud provisioning/provider evaluation. Production deployment remains a separate
+activation step. See the current implementation/runbook for validation results.

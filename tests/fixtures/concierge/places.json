@@ -1,0 +1,368 @@
+{
+  "places": [
+    {
+      "note": "",
+      "tags": [
+        "pierogi"
+      ],
+      "area": "Södermalm",
+      "kind": "Restaurant",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 1,
+      "name": "Pierogi House",
+      "cuisine": "polish"
+    },
+    {
+      "note": "",
+      "tags": [
+        "tacos"
+      ],
+      "area": "Vasastan",
+      "kind": "Restaurant",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 2,
+      "name": "Casa Azul",
+      "cuisine": "mexican"
+    },
+    {
+      "note": "",
+      "tags": [
+        "wine"
+      ],
+      "area": "Gamla Stan",
+      "kind": "Restaurant",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 3,
+      "name": "Bistro Lumiere",
+      "cuisine": "french"
+    },
+    {
+      "note": "",
+      "tags": [
+        "Filter",
+        "Cardamom"
+      ],
+      "area": "Södermalm",
+      "kind": "Specialty coffee",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 4,
+      "name": "Drop Coffee",
+      "cuisine": "coffee",
+      "specialty": {
+        "specialtyVerified": true
+      }
+    },
+    {
+      "note": "",
+      "tags": [
+        "Sourdough"
+      ],
+      "area": "Zinkensdamm",
+      "kind": "Bakery",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 5,
+      "name": "Bread Works"
+    },
+    {
+      "note": "",
+      "tags": [
+        "sushi"
+      ],
+      "area": "Södermalm",
+      "kind": "Restaurant",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 6,
+      "name": "Sakura",
+      "cuisine": "japanese"
+    },
+    {
+      "note": "",
+      "tags": [
+        "ramen"
+      ],
+      "area": "Södermalm",
+      "kind": "Restaurant",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 7,
+      "name": "Ramen Nook",
+      "cuisine": "japanese"
+    },
+    {
+      "note": "",
+      "tags": [],
+      "area": "Södermalm",
+      "kind": "Restaurant",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 8,
+      "name": "Siam Table",
+      "cuisine": "thai"
+    },
+    {
+      "note": "",
+      "tags": [],
+      "area": "Södermalm",
+      "kind": "Restaurant",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 9,
+      "name": "Beirut Kitchen",
+      "cuisine": "lebanese"
+    },
+    {
+      "note": "",
+      "tags": [
+        "khachapuri"
+      ],
+      "area": "Södermalm",
+      "kind": "Restaurant",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 10,
+      "name": "Tbilisi",
+      "cuisine": "georgian"
+    },
+    {
+      "note": "",
+      "tags": [],
+      "area": "Vasastan",
+      "kind": "Specialty coffee",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 11,
+      "name": "Pascal",
+      "address": "Norrtullsgatan 4",
+      "specialty": {
+        "specialtyVerified": true
+      }
+    },
+    {
+      "note": "",
+      "tags": [],
+      "area": "Östermalm",
+      "kind": "Specialty coffee",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 12,
+      "name": "Pascal",
+      "address": "Sturegatan 8",
+      "specialty": {
+        "specialtyVerified": true
+      }
+    },
+    {
+      "note": "",
+      "tags": [
+        "Dog friendly"
+      ],
+      "area": "Södermalm",
+      "kind": "Café",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 13,
+      "name": "Canine Cafe"
+    },
+    {
+      "note": "",
+      "tags": [],
+      "area": "Södermalm",
+      "kind": "Restaurant",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 14,
+      "name": "Closed Thai",
+      "cuisine": "thai",
+      "validationLabel": "closed_wrong_category"
+    },
+    {
+      "note": "",
+      "tags": [],
+      "area": "Södermalm",
+      "kind": "Restaurant",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "candidate",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 15,
+      "name": "Candidate Thai",
+      "cuisine": "thai"
+    },
+    {
+      "note": "",
+      "tags": [],
+      "area": "Södermalm",
+      "kind": "Specialty coffee",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "chain",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 16,
+      "name": "Starbucks"
+    },
+    {
+      "note": "",
+      "tags": [],
+      "area": "Solna",
+      "kind": "Restaurant",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 17,
+      "name": "Outside Thai",
+      "cuisine": "thai"
+    },
+    {
+      "note": "",
+      "tags": [],
+      "area": "Södermalm",
+      "kind": "Specialty coffee",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 18,
+      "name": "Kahls"
+    },
+    {
+      "note": "",
+      "tags": [
+        "intimate atmosphere"
+      ],
+      "area": "Södermalm",
+      "kind": "Café",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 19,
+      "name": "Quiet Corner"
+    },
+    {
+      "note": "",
+      "tags": [],
+      "area": "Södermalm",
+      "kind": "Restaurant",
+      "evidenceLabel": "Fixture catalog",
+      "chainStatus": "independent",
+      "lifecycleState": "baseline",
+      "sourceName": "Fixture catalog",
+      "sourceUrl": "https://example.org/catalog",
+      "latitude": 59.315,
+      "longitude": 18.06,
+      "id": 20,
+      "name": "Transit Lunch",
+      "cuisine": "swedish",
+      "sourceFacts": [
+        {
+          "id": "20:price",
+          "placeId": 20,
+          "field": "priceSEK",
+          "value": "150",
+          "source": "Fixture menu",
+          "verification": "listed"
+        },
+        {
+          "id": "20:transit",
+          "placeId": 20,
+          "field": "transit",
+          "value": "100 m from station",
+          "source": "Fixture survey",
+          "verification": "listed"
+        }
+      ]
+    }
+  ]
+}

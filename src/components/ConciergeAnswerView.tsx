@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
 import { parseConciergeAnswer } from "../../lib/concierge-parser";
+import type { ConciergeResponse } from "../../lib/concierge/contracts";
+import { safeUrl } from "../../lib/concierge/facts";
 import type { PlaceInput } from "../../lib/scoring";
 import type { Language } from "../app/shared";
 import { ArrowSquareOut, CheckCircle, Globe, MapPin, MapTrifold, Sliders, Sparkle, ThumbsDown, ThumbsUp, X } from "@phosphor-icons/react";
 
 export function ConciergeAnswerView({
   answer,
+  response,
   places,
   onSelectPlace,
   onRefineQuery,
@@ -13,13 +16,17 @@ export function ConciergeAnswerView({
   onClose,
 }: {
   answer: string;
+  response?: ConciergeResponse;
   places: PlaceInput[];
   onSelectPlace: (id: number) => void;
   onRefineQuery?: (extra: string) => void;
   lang?: Language;
   onClose?: () => void;
 }) {
-  const parsed = useMemo(() => parseConciergeAnswer(answer), [answer]);
+  const parsed = useMemo(() => response ? {
+    intro: response.intro, cards: response.cards, charter: [],
+    clarification: response.status === 'clarification' ? { queryTerm: response.query, question: response.intro } : undefined,
+  } : parseConciergeAnswer(answer), [answer, response]);
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
 
   const handleSelect = (placeName: string, explicitId?: number) => {
@@ -88,117 +95,28 @@ export function ConciergeAnswerView({
         </div>
       ) : null}
       {parsed.clarification ? (
-        <div
-          className="concierge-clarification-box"
-          style={{
-            background: "var(--color-paper)",
-            border: "2px solid var(--color-signal)",
-            padding: "16px 20px",
-            marginBottom: "20px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              color: "var(--color-signal)",
-              fontWeight: 700,
-              textTransform: "uppercase",
-              fontFamily: "var(--font-mono)",
-              fontSize: "12px",
-              marginBottom: "8px",
-            }}
-          >
-            <Sliders size={16} weight="bold" /> Sökförtydligande krävs
-          </div>
-          <p
-            style={{
-              margin: "0 0 12px",
-              fontFamily: "var(--font-body)",
-              fontSize: "15px",
-              fontWeight: 500,
-              lineHeight: 1.4,
-              color: "var(--color-ink)",
-            }}
-          >
-            {parsed.clarification.question}
-          </p>
-
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
-            {["Spanien / Spanskt", "Mexiko / Mexikanskt", "Italien / Italienskt", "Frankrike / Franskt", "Asien / Thai"].map(
-              (suggestion) => (
-                <button
-                  key={suggestion}
-                  type="button"
-                  style={{
-                    background: "var(--color-white)",
-                    border: "1px solid var(--color-ink)",
-                    color: "var(--color-ink)",
-                    fontWeight: 600,
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "11px",
-                    padding: "6px 12px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => onRefineQuery?.(suggestion.split(" / ")[0])}
-                >
-                  + {suggestion}
-                </button>
-              ),
-            )}
-          </div>
-
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const form = e.currentTarget;
-              const input = form.elements.namedItem("country") as HTMLInputElement;
-              if (input?.value.trim()) {
-                onRefineQuery?.(input.value.trim());
-              }
-            }}
-            style={{ display: "flex", gap: "8px" }}
-          >
-            <input
-              name="country"
-              type="text"
-              placeholder="Skriv land eller kök (t.ex. Spanien)..."
-              style={{
-                flex: 1,
-                padding: "8px 12px",
-                border: "1px solid var(--color-mist)",
-                background: "var(--color-white)",
-                fontFamily: "var(--font-body)",
-                fontSize: "13px",
-              }}
-            />
-            <button
-              type="submit"
-              style={{
-                background: "var(--color-ink)",
-                color: "var(--color-paper)",
-                border: "none",
-                padding: "8px 16px",
-                fontFamily: "var(--font-mono)",
-                fontSize: "11px",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                cursor: "pointer",
-              }}
-            >
-              Precisera sökning
-            </button>
+        <div className="concierge-clarification-box" style={{ background: 'var(--color-paper)', border: '2px solid var(--color-signal)', padding: '16px 20px', marginBottom: 20 }}>
+          <p style={{ fontWeight: 700 }}><Sliders size={16} /> {lang === 'sv' ? 'Förtydliga sökningen' : 'Refine your search'}</p>
+          <p>{parsed.clarification.question}</p>
+          <form onSubmit={(event) => {
+            event.preventDefault();
+            const input = event.currentTarget.elements.namedItem('refinedQuery') as HTMLInputElement;
+            if (input.value.trim()) onRefineQuery?.(input.value.trim());
+          }} style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <input name="refinedQuery" type="text" maxLength={1000}
+              aria-label={lang === 'sv' ? 'Ny sökning' : 'New search'}
+              placeholder={lang === 'sv' ? 'T.ex. pierogi på Södermalm' : 'E.g. pierogi in Södermalm'}
+              style={{ flex: '1 1 180px', minWidth: 0, padding: '10px 12px', border: '1px solid var(--color-mist)' }} />
+            <button type="submit" className="concierge-btn primary">{lang === 'sv' ? 'Sök igen' : 'Search again'}</button>
           </form>
         </div>
-      ) : parsed.intro ? (
-        <p className="concierge-intro">{parsed.intro}</p>
-      ) : null}
+      ) : parsed.intro ? <p className="concierge-intro">{parsed.intro}</p> : null}
 
       {parsed.cards.map((card, idx) => {
         const cardNameClean = card.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
         const matchedPlace =
-          places.find((p) => p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase() === cardNameClean) ||
+          (card.id !== undefined ? places.find((p) => p.id === card.id) : undefined) ||
+          (!response ? places.find((p) => p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase() === cardNameClean) ||
           places.find((p) => {
             const pClean = p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
             return pClean.startsWith(cardNameClean) || cardNameClean.startsWith(pClean);
@@ -207,27 +125,26 @@ export function ConciergeAnswerView({
           places.find((p) => {
             const pClean = p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
             return cardNameClean.includes(pClean) && pClean.length > 4;
-          });
+          }) : undefined);
 
         const areaStr = card.area ?? matchedPlace?.area ?? "Stockholm";
-        const hoursConf = card.hoursConfidence ?? "Verified";
+        const hoursConf = card.hoursConfidence ?? (lang === "sv" ? "Uppgift saknas" : "Unknown");
         const isHigh = hoursConf.toLowerCase().includes("high");
-        const isMed =
-          hoursConf.toLowerCase().includes("medium") ||
-          hoursConf.toLowerCase().includes("unverified");
+        const isMed = hoursConf.toLowerCase().includes("medium");
 
         const queryStr = `${card.name} ${areaStr} Stockholm`;
         const osmUrl = `https://www.openstreetmap.org/search?query=${encodeURIComponent(queryStr)}`;
         const gmapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(queryStr)}`;
-        const websiteUrl = matchedPlace?.website;
+        const websiteUrl = safeUrl(card.website ?? matchedPlace?.website);
 
         return (
-          <article key={`${card.name}-${idx}`} className="concierge-card">
+          <article key={card.id ?? `${card.name}-${idx}`} className="concierge-card">
             <div className="concierge-card-head">
               <h3 className="concierge-card-title">
                 <button
                   type="button"
-                  onClick={() => handleSelect(card.name, matchedPlace?.id)}
+                  disabled={Boolean(response && !matchedPlace)}
+                  onClick={() => handleSelect(card.name, card.id ?? matchedPlace?.id)}
                   title="Click to view and highlight on map"
                 >
                   {card.name}
@@ -243,47 +160,56 @@ export function ConciergeAnswerView({
 
             {card.whyItMatches ? (
               <div className="concierge-match-box">
-                <b>Why it matches:</b> {card.whyItMatches}
+                <b>{lang === 'sv' ? 'Varför det matchar:' : 'Why it matches:'}</b> {card.whyItMatches}
               </div>
             ) : null}
 
             <div className="concierge-details">
               {card.priceConfidence ? (
                 <div className="concierge-detail-row">
-                  <span className="concierge-label">Price Confidence:</span>
+                  <span className="concierge-label">{lang === 'sv' ? 'Prisuppgift:' : 'Price Confidence:'}</span>
                   <span>{card.priceConfidence}</span>
                 </div>
               ) : null}
 
               {card.dataSources ? (
                 <div className="concierge-detail-row">
-                  <span className="concierge-label">Data Sources:</span>
+                  <span className="concierge-label">{lang === 'sv' ? 'Källor:' : 'Data Sources:'}</span>
                   <span>{card.dataSources}</span>
                 </div>
               ) : null}
 
               {card.lastVerified ? (
                 <div className="concierge-detail-row">
-                  <span className="concierge-label">Last Verified:</span>
+                  <span className="concierge-label">{lang === 'sv' ? 'Senast verifierat:' : 'Last Verified:'}</span>
                   <span>{card.lastVerified}</span>
                 </div>
               ) : null}
 
               {card.missingInfo ? (
                 <div className="concierge-detail-row">
-                  <span className="concierge-label">Missing/Uncertain Info:</span>
+                  <span className="concierge-label">{lang === 'sv' ? 'Saknat eller osäkert:' : 'Missing/Uncertain Info:'}</span>
                   <span style={{ color: "#854d0e" }}>{card.missingInfo}</span>
                 </div>
               ) : null}
             </div>
 
+            {card.distanceKm !== undefined ? <p>{lang === 'sv' ? 'Avstånd' : 'Distance'}: {card.distanceKm.toFixed(1)} km</p> : null}
+            {card.citations?.some((fact) => safeUrl(fact.url)) ? (
+              <ul aria-label={lang === 'sv' ? 'Källor' : 'Sources'}>
+                {Array.from(new Map(card.citations.filter((fact) => safeUrl(fact.url)).map((fact) => [fact.url, fact])).values()).map((fact) => (
+                  <li key={fact.id}><a href={safeUrl(fact.url)} target="_blank" rel="noopener noreferrer">{fact.source}</a>{fact.capturedAt ? ` · ${fact.capturedAt.slice(0, 10)}` : ''}</li>
+                ))}
+              </ul>
+            ) : null}
             <div className="concierge-actions">
               <button
                 type="button"
                 className="concierge-btn primary"
-                onClick={() => handleSelect(card.name, matchedPlace?.id)}
+                disabled={Boolean(response && !matchedPlace)}
+                  onClick={() => handleSelect(card.name, card.id ?? matchedPlace?.id)}
               >
-                <MapPin size={14} weight="fill" /> Select on Map
+                <MapPin size={14} weight="fill" /> {lang === 'sv' ? 'Visa på kartan' : 'Select on Map'}
               </button>
               <a
                 href={gmapsUrl}
@@ -303,7 +229,7 @@ export function ConciergeAnswerView({
               </a>
               {websiteUrl ? (
                 <a
-                  href={websiteUrl.startsWith("http") ? websiteUrl : `https://${websiteUrl}`}
+                  href={websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="concierge-btn"

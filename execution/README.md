@@ -18,3 +18,14 @@ This directory houses **deterministic Python scripts** or CLI utilities. The age
   import os
   os.makedirs(os.path.dirname(output_file), exist_ok=True)
   ```
+
+## Concierge tools
+
+- `index_concierge.py`: dry-run by default; deterministic canonical export,
+  incremental index plan and explicit-budget apply to an existing index.
+- `export_concierge.mjs`: uses the production TypeScript facts/gates for identical
+  corpus text and hashes (called by the Python indexer).
+- `evaluate_concierge.py`: offline baseline/slice metrics without provider calls.
+- `run_concierge_evaluation.mjs`: runs the actual TypeScript retrieval for evaluation.
+
+See [the RAG runbook](../docs/ml/concierge-rag.md).

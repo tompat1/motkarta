@@ -282,3 +282,14 @@ Version separately:
 A model version must change when preprocessing, features, target, folds,
 hyperparameters or post-processing can alter predictions. Documentation-only
 changes do not require a model version bump.
+
+## Concierge facts and response contract (2026-09-05)
+
+`lib/concierge/contracts.ts` defines the versioned request context, source facts,
+canonical venue additions, structured cards and response. See
+[Concierge RAG](concierge-rag.md#data-and-grounding) for field lineage and unknown
+handling. `sourcePriceLevel` preserves null independently of scorer defaults;
+evidence records retain URLs and capture dates without becoming field verification.
+Raw client venue corpora are rejected. No database/event migration is introduced.
+RAG scope uses the shared locality policy and conservatively declines coordinate-
+only records; the importer’s broader fallback is not sufficient RAG scope evidence.

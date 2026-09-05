@@ -238,3 +238,13 @@ request; do not silently choose whichever version supports the desired outcome.
 - No production ranker calibration or drift dashboard exists.
 
 Address these through explicit migrations, not opportunistic renaming.
+
+## Concierge architecture update (2026-09-05)
+
+The Pages production owner is `functions/api/concierge.ts`, with pure modules in
+`lib/concierge/`. The server trusts D1, merges lexical/vector candidates behind
+flags, rechecks current evidence and lifecycle, and validates constrained fact-ID
+synthesis. The browser sends query/context and renders cards by ID. Python is
+an offline adapter. This supersedes section 7’s incomplete owner inventory.
+See [Concierge RAG](concierge-rag.md) for the implemented boundaries and deliberate
+Python/TypeScript differences. The global scorer formula/version is unchanged.

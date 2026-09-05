@@ -222,3 +222,18 @@ representative shadow interval, inspect data-quality reporting, document
 duplicate/missing/expired-event behavior, and decide attribution/deletion
 operations. Do not train the personalized ranker before that foundation is
 validated with real collection metrics.
+
+## Concierge implementation notes (2026-09-05)
+
+- Production Pages retrieval/synthesis is owned by `functions/api/concierge.ts`
+  and `lib/concierge/`; Python is a conservative offline adapter. Follow
+  [`docs/ml/concierge-rag.md`](../docs/ml/concierge-rag.md) for actual contracts.
+- Client place arrays are untrusted. Hydrate server facts and recheck eligibility
+  after vector retrieval, including document hashes and current closure labels.
+- A citation ID is not proof of arbitrary generated prose. Initial synthesis
+  selects existing fact IDs; protected facts are rendered deterministically.
+- Index API acceptance is asynchronous. Verify hashes/deletions/count and a
+  preview query before activation; dry-run indexing must not call providers.
+- Local test mocks do not establish multilingual model quality. The initial
+  synthetic holdout was used in safety debugging; collect a fresh one before
+  calibration/promotion. Global scorer and shadow event versions are unchanged.

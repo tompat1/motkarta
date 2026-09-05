@@ -1,7 +1,9 @@
 # Current proposal: multilingual, evidence-grounded RAG concierge
 
-Status: proposed on 2026-09-05; awaiting implementation approval required by
-`.agents/AGENTS.md`. No RAG runtime changes or cloud resources have been made.
+Status: stages 1–4 approved and implemented locally on 2026-09-05.
+See the [implementation/runbook](docs/ml/concierge-rag.md) and
+[evaluation record](docs/ml/concierge-evaluation.md). Cloud resources, paid
+inference and deployment remain inactive.
 
 The review, architecture, implementation sequence, acceptance criteria and
 baseline results are in [the RAG implementation plan](docs/ml/rag-implementation-plan.md).

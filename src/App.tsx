@@ -100,7 +100,8 @@ import {
   PawPrint,
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
-import { retrieveAndSynthesize } from "../functions/api/concierge";
+import { retrieveAndSynthesize } from "../lib/concierge/response";
+import type { ConciergeResponse } from "../lib/concierge/contracts";
 import { CartDrawer } from "./components/CartDrawer";
 import {
   MobileFilterBottomSheet,
@@ -360,6 +361,9 @@ export default function App() {
     );
   };
   const [answer, setAnswer] = useState<string | null>(null);
+  const [conciergeResponse, setConciergeResponse] = useState<ConciergeResponse | null>(null);
+  const conciergeRequest = useRef<AbortController | null>(null);
+  useEffect(() => () => conciergeRequest.current?.abort(), []);
   const [asking, setAsking] = useState(false);
 
   const [isSourcesLoading, setIsSourcesLoading] = useState(false);
@@ -479,16 +483,17 @@ export default function App() {
   const [locationToast, setLocationToast] = useState<string | null>(null);
 
   const requestUserLocation = useCallback(
-    (autoSortByDistance = false) => {
+    (autoSortByDistance = false): Promise<{ latitude: number; longitude: number } | null> => {
       if (typeof window === "undefined" || !navigator.geolocation) {
         setLocationStatus("denied");
-        return;
+        return Promise.resolve(null);
       }
       setLocationStatus("requesting");
-      navigator.geolocation.getCurrentPosition(
+      return new Promise((resolve) => navigator.geolocation.getCurrentPosition(
         (pos) => {
           const coords = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
           setUserLocation(coords);
+          resolve(coords);
           setLocationStatus("acquired");
           if (autoSortByDistance) {
             setSortMode("Distance");
@@ -496,6 +501,7 @@ export default function App() {
         },
         (err) => {
           console.warn("Geolocation positioning error:", err);
+          resolve(null);
           setLocationStatus("denied");
           if (autoSortByDistance) {
             setLocationToast(
@@ -507,7 +513,7 @@ export default function App() {
           }
         },
         { enableHighAccuracy: true, timeout: 10000 },
-      );
+      ));
     },
     [lang],
   );
@@ -846,16 +852,18 @@ export default function App() {
   async function askWithQuery(queryText: string) {
     if (!queryText.trim()) return;
 
-    if (DISTANCE_INTENT_REGEX.test(queryText)) {
-      if (!userLocation) {
-        requestUserLocation(true);
-      } else {
-        setSortMode("Distance");
-      }
-    }
-
+    conciergeRequest.current?.abort();
+    const controller = new AbortController();
+    conciergeRequest.current = controller;
     setAsking(true);
     setAnswer(null);
+    setConciergeResponse(null);
+    let queryLocation = userLocation;
+    if (DISTANCE_INTENT_REGEX.test(queryText)) {
+      if (!queryLocation) queryLocation = await requestUserLocation(true);
+      else setSortMode("Distance");
+    }
+    if (conciergeRequest.current !== controller || controller.signal.aborted) return;
 
     logConciergeQuery(queryText, lang);
     setConciergeHistory((prev) => {
@@ -863,36 +871,39 @@ export default function App() {
       return [queryText.trim(), ...filtered].slice(0, 100);
     });
 
-    let finalAnswer = "";
-
+    const timer = setTimeout(() => controller.abort(), 6000);
     try {
       const resp = await fetch("/api/concierge", {
-        method: "POST",
+        method: "POST", signal: controller.signal,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: queryText, places }),
+        body: JSON.stringify({ query: queryText, language: lang, ...(queryLocation ? { location: queryLocation } : {}) }),
       });
-
-      if (resp.ok) {
-        const payload = (await resp.json()) as { answer?: string };
-        if (payload.answer) {
-          finalAnswer = payload.answer;
-        }
-      }
+      const payload = await resp.json() as ConciergeResponse;
+      if (payload.schemaVersion !== 'concierge-response-v1' || typeof payload.answer !== 'string' || !Array.isArray(payload.cards)) throw new Error('invalid_response');
+      if (conciergeRequest.current !== controller || controller.signal.aborted) return;
+      setConciergeResponse(payload);
+      setAnswer(payload.answer);
+      if (payload.action) setSuperpowerMode(payload.action);
     } catch {
-      // Fallback to local RAG when endpoint is unreachable in standalone dev
-    }
-
-    if (!finalAnswer) {
-      const ragResult = retrieveAndSynthesize(queryText, places);
-      finalAnswer = ragResult.answer;
-    }
-
-    setAnswer(finalAnswer);
-    setAsking(false);
-
-    const parsed = parseConciergeAnswer(finalAnswer);
-    if (parsed.superpowerAction) {
-      setSuperpowerMode(parsed.superpowerAction);
+      if (conciergeRequest.current !== controller) return;
+      if (import.meta.env.DEV && !controller.signal.aborted) {
+        try {
+          // Use the published snapshot, never augmented/user-submitted records.
+          const snapshot = await fetch('/data/places.json', { signal: controller.signal }).then((res) => res.json());
+          if (conciergeRequest.current !== controller || controller.signal.aborted) return;
+          const result = retrieveAndSynthesize(queryText, snapshot.places ?? snapshot, { language: lang, ...(queryLocation ? { location: queryLocation } : {}) });
+          setConciergeResponse(result);
+          setAnswer(result.answer);
+          if (result.action) setSuperpowerMode(result.action);
+        } catch {
+          if (conciergeRequest.current === controller) setAnswer(lang === 'sv' ? 'Katalogen är inte tillgänglig just nu.' : 'The catalog is currently unavailable.');
+        }
+      } else {
+        setAnswer(lang === 'sv' ? 'Conciergen är inte tillgänglig just nu. Försök igen.' : 'The concierge is currently unavailable. Please try again.');
+      }
+    } finally {
+      clearTimeout(timer);
+      if (conciergeRequest.current === controller) setAsking(false);
     }
   }
 
@@ -949,8 +960,9 @@ export default function App() {
   }
 
   const handleRefineQuery = (extra: string) => {
-    const updated = `${concierge} (${extra})`;
+    const updated = extra.trim();
     setConcierge(updated);
+    setQuery(updated);
     void askWithQuery(updated);
   };
 
@@ -1602,11 +1614,12 @@ export default function App() {
         <section className="concierge-answer-section" id="concierge-answer" aria-label="Concierge answer">
           <ConciergeAnswerView
             answer={answer}
+            response={conciergeResponse?.answer === answer ? conciergeResponse : undefined}
             places={places}
             onSelectPlace={handleSelectPlace}
             onRefineQuery={handleRefineQuery}
             lang={lang}
-            onClose={() => setAnswer(null)}
+            onClose={() => { conciergeRequest.current?.abort(); setAnswer(null); setConciergeResponse(null); }}
           />
         </section>
       ) : null}

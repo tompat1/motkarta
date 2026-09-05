@@ -132,127 +132,25 @@ Recommendations prioritize transparent quality and discovery signals over raw re
   assert.ok(parsed.charter.length > 0);
 });
 
-// ─── Swedish prompt tests ────────────────────────────────────────────
-
-test("SV: 'specialty coffee och kardemummabulle på Södermalm' returns specialty coffee or bakery in Södermalm", () => {
-  const result = retrieveAndSynthesize("specialty coffee och kardemummabulle på Södermalm", livePlaces);
-  assert.ok(result.recommendedPlaces.length > 0, "Should return at least one place");
-  assert.ok(
-    result.recommendedPlaces.some((p) => p.kind === "Specialty coffee" || p.kind === "Bakery" || p.kind === "Café"),
-    "Should return specialty coffee, bakery or café places",
-  );
-});
-
-test("SV: 'bästa mexikanska tacos i Vasastan' returns Mexican restaurants, no bakeries or coffee", () => {
-  const result = retrieveAndSynthesize("bästa mexikanska tacos i Vasastan", livePlaces);
-  assert.ok(result.recommendedPlaces.length > 0, "Should return at least one place");
-  const kinds = result.recommendedPlaces.map((p) => p.kind);
-  assert.ok(
-    kinds.every((k) => k === "Restaurant"),
-    `All results should be restaurants, got: ${kinds.join(", ")}`,
-  );
-});
-
-test("SV: 'familjeägd fransk bistro med bra vin i Gamla Stan' returns French restaurants", () => {
-  const result = retrieveAndSynthesize("familjeägd fransk bistro med bra vin i Gamla Stan", livePlaces);
-  assert.ok(result.recommendedPlaces.length > 0, "Should return at least one place");
-  const kinds = result.recommendedPlaces.map((p) => p.kind);
-  assert.ok(
-    kinds.every((k) => k === "Restaurant"),
-    `All results should be restaurants, got: ${kinds.join(", ")}`,
-  );
-});
-
-test("SV: 'hantverksbageri med surdegsbröd i Zinkensdamm' returns bakeries, no restaurants", () => {
-  const result = retrieveAndSynthesize("hantverksbageri med surdegsbröd i Zinkensdamm", livePlaces);
-  assert.ok(result.recommendedPlaces.length > 0, "Should return at least one place");
-  const kinds = result.recommendedPlaces.map((p) => p.kind);
-  assert.ok(
-    kinds.every((k) => k === "Bakery" || k === "Café"),
-    `All results should be bakery or café, got: ${kinds.join(", ")}`,
-  );
-});
-
-test("SV: 'handgjorda polska pierogi i Gamla Stan' returns Polish restaurants, NO bakeries", () => {
-  const result = retrieveAndSynthesize("handgjorda polska pierogi i Gamla Stan", livePlaces);
-  assert.ok(result.recommendedPlaces.length > 0, "Should return at least one place");
-  const kinds = result.recommendedPlaces.map((p) => p.kind);
-  assert.ok(
-    kinds.every((k) => k === "Restaurant"),
-    `All results should be restaurants (not bakeries), got: ${kinds.join(", ")}`,
-  );
-});
-
-test("SV: 'dolda pärlor för middag nära mig' returns restaurant hidden gems, no coffee shops", () => {
-  const result = retrieveAndSynthesize("dolda pärlor för middag nära mig", livePlaces);
-  assert.ok(result.recommendedPlaces.length > 0, "Should return at least one place");
-  const kinds = result.recommendedPlaces.map((p) => p.kind);
-  assert.ok(
-    kinds.every((k) => k === "Restaurant"),
-    `All results should be restaurants (dinner query), got: ${kinds.join(", ")}`,
-  );
-});
-
-// ─── English prompt tests ────────────────────────────────────────────
-
-test("EN: 'specialty coffee and a cardamom bun in Södermalm' returns specialty coffee or bakery", () => {
-  const result = retrieveAndSynthesize("specialty coffee and a cardamom bun in Södermalm", livePlaces);
-  assert.ok(result.recommendedPlaces.length > 0, "Should return at least one place");
-  assert.ok(
-    result.recommendedPlaces.some((p) => p.kind === "Specialty coffee" || p.kind === "Bakery" || p.kind === "Café"),
-    "Should return specialty coffee, bakery or café places",
-  );
-});
-
-test("EN: 'best Mexican tacos in Vasastan' returns Mexican restaurants, no bakeries or coffee", () => {
-  const result = retrieveAndSynthesize("best Mexican tacos in Vasastan", livePlaces);
-  assert.ok(result.recommendedPlaces.length > 0, "Should return at least one place");
-  const kinds = result.recommendedPlaces.map((p) => p.kind);
-  assert.ok(
-    kinds.every((k) => k === "Restaurant"),
-    `All results should be restaurants, got: ${kinds.join(", ")}`,
-  );
-});
-
-test("EN: 'family-owned French bistro with great wine in Gamla Stan' returns French restaurants", () => {
-  const result = retrieveAndSynthesize("family-owned French bistro with great wine in Gamla Stan", livePlaces);
-  assert.ok(result.recommendedPlaces.length > 0, "Should return at least one place");
-  const kinds = result.recommendedPlaces.map((p) => p.kind);
-  assert.ok(
-    kinds.every((k) => k === "Restaurant"),
-    `All results should be restaurants, got: ${kinds.join(", ")}`,
-  );
-});
-
-test("EN: 'artisan bakery with sourdough bread in Zinkensdamm' returns bakeries, no restaurants", () => {
-  const result = retrieveAndSynthesize("artisan bakery with sourdough bread in Zinkensdamm", livePlaces);
-  assert.ok(result.recommendedPlaces.length > 0, "Should return at least one place");
-  const kinds = result.recommendedPlaces.map((p) => p.kind);
-  assert.ok(
-    kinds.every((k) => k === "Bakery" || k === "Café"),
-    `All results should be bakery or café, got: ${kinds.join(", ")}`,
-  );
-});
-
-test("EN: 'handmade Polish pierogi in Gamla Stan' returns Polish restaurants, NO bakeries", () => {
-  const result = retrieveAndSynthesize("handmade Polish pierogi in Gamla Stan", livePlaces);
-  assert.ok(result.recommendedPlaces.length > 0, "Should return at least one place");
-  const kinds = result.recommendedPlaces.map((p) => p.kind);
-  assert.ok(
-    kinds.every((k) => k === "Restaurant"),
-    `All results should be restaurants (not bakeries), got: ${kinds.join(", ")}`,
-  );
-});
-
-test("EN: 'hidden gems for dinner near me' returns restaurant hidden gems, no coffee shops", () => {
-  const result = retrieveAndSynthesize("hidden gems for dinner near me", livePlaces);
-  assert.ok(result.recommendedPlaces.length > 0, "Should return at least one place");
-  const kinds = result.recommendedPlaces.map((p) => p.kind);
-  assert.ok(
-    kinds.every((k) => k === "Restaurant"),
-    `All results should be restaurants (dinner query), got: ${kinds.join(", ")}`,
-  );
-});
+// Constraint behavior is tested on explicit source facts, rather than expecting
+// unrelated real-catalog results when the requested dish/location is absent.
+const fixturePlaces = JSON.parse(await readFile(new URL('./fixtures/concierge/places.json', import.meta.url), 'utf8')).places;
+for (const [query, ids] of [
+  ['specialty coffee och kardemummabulle på Södermalm', [4]],
+  ['best Mexican tacos in Vasastan', [2]],
+  ['fransk bistro i Gamla Stan', [3]],
+  ['artisan bakery with sourdough bread in Zinkensdamm', [5]],
+  ['polska pierogi i Södermalm', [1]],
+  ['handmade Polish pierogi in Gamla Stan', []],
+  ['hidden gems for dinner near me', []],
+  ['dolda pärlor för middag nära mig', []],
+]) {
+  test(`grounded constraints: ${query}`, () => {
+    const result = retrieveAndSynthesize(query, fixturePlaces);
+    assert.deepEqual(result.recommendedPlaces.map((p) => p.id), ids);
+    assert.equal(result.status, ids.length ? 'ok' : 'clarification');
+  });
+}
 
 test("extractStructuredFilters parses Swedish cuisine keywords", () => {
   const filters = extractStructuredFilters("mexikanska tacos och familjeägd restaurang till rimligt pris");

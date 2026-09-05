@@ -289,3 +289,12 @@ Future work should add:
 - Drift comparison against prior run
 - Event-quality dashboard
 - Model registry or immutable artifact storage
+
+## Concierge RAG operations (2026-09-05)
+
+The [Concierge runbook](concierge-rag.md#local-operations-and-activation) documents
+disabled flags, canonical corpus export, dry-run indexing, explicit apply budgets,
+metadata-index prerequisites, verified manifests, timeouts and rollback.
+AI/index/rate-gate resources and live D1 coverage have not been validated.
+Ordinary tests use mocks and need no provider credentials. Never run indexing
+`--apply` or enable AI flags as part of routine validation.

@@ -267,3 +267,14 @@ Record with every run:
 
 The current script writes row-level version/fold data but does not yet persist a
 complete run manifest. Adding a JSON manifest is a high-priority maintenance task.
+
+## Concierge retrieval evaluation (2026-09-05)
+
+`execution/evaluate_concierge.py` evaluates lexical baselines and optional captured
+semantic results on source-labeled query fixtures with intent-family splits.
+It reports Recall@50, NDCG@5, exact-name success, unsupported-query abstention,
+coverage, independent exposure and exposure Gini, with language/cuisine/geography/
+type/chain/metadata slices. Satisfaction remains null. See the
+[evaluation record](concierge-evaluation.md); synthetic regression results and
+provider mocks do not establish real-world quality. The original holdout was used
+in safety debugging and must be replaced before any production promotion decision.

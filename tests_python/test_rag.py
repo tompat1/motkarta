@@ -17,12 +17,13 @@ def test_place_to_rag_document_includes_evidence_and_scores():
     )
 
     assert document.id == "1"
-    assert "Editorial review" in document.text
+    assert document.metadata["evidence_label"] == "Editorial review"
+    assert "verified independent" not in document.text
     assert document.metadata["type"] == "Bakery"
 
 
 def test_chunk_documents_splits_long_documents():
-    document = place_to_rag_document({"id": 1, "name": "Long", "note": "x" * 100})
+    document = place_to_rag_document({"id": 1, "name": "Long", "address": "x" * 100})
     chunks = chunk_documents([document], max_chars=30)
 
     assert len(chunks) > 1

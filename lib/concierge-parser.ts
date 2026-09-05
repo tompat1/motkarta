@@ -1,5 +1,9 @@
 export type ParsedConciergeCard = {
+  id?: number;
   name: string;
+  citations?: import("./concierge/contracts.ts").SourceFact[];
+  distanceKm?: number;
+  website?: string;
   whyItMatches?: string;
   area?: string;
   priceConfidence?: string;
@@ -129,10 +133,10 @@ export function parseConciergeAnswer(text: string): ParsedConciergeResponse {
         name: placeName,
         area: areaName,
         whyItMatches: scorePart ? `Top recommendation (${scorePart})` : "Matches discovery criteria",
-        hoursConfidence: "Verified",
-        priceConfidence: "Medium",
-        dataSources: "OpenStreetMap (ODbL), Stockholm Stad Open Data (CC0)",
-        lastVerified: "Recently verified",
+        hoursConfidence: "Unknown",
+        priceConfidence: "Unknown",
+        dataSources: "Unknown",
+        lastVerified: "Unknown",
       });
       continue;
     }
