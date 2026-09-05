@@ -24,7 +24,6 @@ import {
   cuisineOptionsFromPlaces,
   cuisineParts,
   distanceFromPoint,
-  establishmentTypes,
   formatDistance,
   formatUpdatedDate,
   hasCoordinates,
@@ -42,6 +41,7 @@ import {
   sortModes,
   stockholmCenter,
   translations,
+  visibleEstablishmentTypes,
   type CuratedSource,
   type CuisineFilter,
   type EstablishmentFilter,
@@ -1502,7 +1502,7 @@ export default function App() {
           <label>
             <span>{t.typeFilterLabel}</span>
             <select value={kind} onChange={(event) => setKind(event.target.value as EstablishmentFilter)}>
-              {establishmentTypes.map((item) => (
+              {visibleEstablishmentTypes.map((item) => (
                 <option key={item} value={item}>
                   {kindFilterLabel(item, lang)}
                 </option>
@@ -1523,7 +1523,7 @@ export default function App() {
         <div className="chips" aria-label="Filter typ">
           <span className="filter-label">{t.typeFilterLabel}</span>
           <div className="chip-row">
-            {establishmentTypes.map((item) => (
+            {visibleEstablishmentTypes.map((item) => (
               <button
                 key={item}
                 className={kind === item ? "active" : ""}

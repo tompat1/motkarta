@@ -18,6 +18,8 @@ export const establishmentTypes = [
   "Specialty coffee",
 ] as const;
 
+export const visibleEstablishmentTypes = establishmentTypes.filter((item) => item !== "Curated");
+
 export const allCuisines = "All cuisines";
 export const modes = [
   "For you",

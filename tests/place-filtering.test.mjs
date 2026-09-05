@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { isLatestAddedPlace, matchesEstablishmentFilter } from "../src/app/place-filtering.ts";
 
 function place(overrides = {}) {
@@ -34,4 +35,13 @@ test("establishment filter applies special and concrete type filters", () => {
   assert.equal(matchesEstablishmentFilter(latest, "Latest", []), true);
   assert.equal(matchesEstablishmentFilter(restaurant, "Latest", []), false);
   assert.equal(matchesEstablishmentFilter(cafe, "Saved", [2]), true);
+});
+
+test("visible establishment filters omit low-value curated shortcut", async () => {
+  const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+  const sharedSource = await readFile(new URL("../src/app/shared.ts", import.meta.url), "utf8");
+
+  assert.match(sharedSource, /visibleEstablishmentTypes = establishmentTypes\.filter\(\(item\) => item !== "Curated"\)/);
+  assert.equal(appSource.includes("visibleEstablishmentTypes.map"), true);
+  assert.equal(appSource.includes("establishmentTypes.map"), false);
 });
