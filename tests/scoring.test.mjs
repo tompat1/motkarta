@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
@@ -88,6 +89,57 @@ test("places receive all promised score dimensions", () => {
   assert.ok(scored.scores.discovery > 0);
   assert.ok(scored.scores.freshness > 0);
   assert.ok(scored.scores.recommendation > 0);
+});
+
+test("partial evidence records score as finite neutral values instead of NaN", () => {
+  const scored = scorePlace({
+    id: 2022635109,
+    name: "Pascal Café & Bakery",
+    kind: "Specialty coffee",
+    cuisine: "coffee",
+    area: "Södermalm",
+    note: "Curated specialty venue",
+    tags: ["Filter", "Single origin", "Specialty coffee"],
+    evidenceLabel: "Specialist guide",
+    ratingAverage: 0,
+    reliableRatingCount: 0,
+    reviewCount: 0,
+    categoryMeanRating: 0,
+    categoryPopularityRaw: 0,
+    localPopularityPercentile: 0,
+    priceLevel: 2,
+    mainstreamExposure: 40,
+    ageDays: 365,
+    daysSinceFreshEvidence: 15,
+    evidence: {
+      specialistGuide: 1,
+      independentEditorial: 1,
+      verifiedAttributes: 90,
+      dataFreshness: 95,
+      confidence: "High",
+    },
+  });
+
+  for (const [key, value] of Object.entries(scored.scores)) {
+    assert.equal(Number.isFinite(value), true, `${key} should be finite`);
+  }
+});
+
+test("static production places never produce non-finite score dimensions", async () => {
+  const payload = JSON.parse(await readFile(new URL("../public/data/places.json", import.meta.url), "utf8"));
+  const places = Array.isArray(payload) ? payload : payload.places;
+  const failures = [];
+
+  for (const place of places) {
+    const scored = scorePlace(place);
+    for (const [key, value] of Object.entries(scored.scores)) {
+      if (!Number.isFinite(value)) {
+        failures.push(`${place.id} ${place.name} ${key}=${String(value)}`);
+      }
+    }
+  }
+
+  assert.deepEqual(failures, []);
 });
 
 test("specialty coffee verification requires explicit gates, rejecting marketing text", () => {

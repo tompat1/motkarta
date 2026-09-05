@@ -1910,6 +1910,10 @@ export default function App() {
                 ? t.formulaPopularNow
                 : mode === "Quality first"
                   ? t.formulaQualityFirst
+                  : mode === "Expert selected"
+                    ? t.formulaExpertSelected
+                    : mode === "Most verified"
+                      ? t.formulaMostVerified
                   : t.formulaDefault}
           </p>
           <div className="principles" aria-label="Ranking principles">

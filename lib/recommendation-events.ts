@@ -1,6 +1,6 @@
 export const RECOMMENDATION_EVENT_SCHEMA_VERSION = "recommendation-events-v1";
 export const RECOMMENDATION_EVENT_PRIVACY_VERSION = "privacy-rotation-v1";
-export const RECOMMENDATION_SCORER_VERSION = "transparent-scorer-v1";
+export const RECOMMENDATION_SCORER_VERSION = "transparent-scorer-v1.1";
 export const RECOMMENDATION_EVENT_RETENTION_DAYS = 180;
 export const ANONYMOUS_ID_ROTATION_DAYS = 30;
 export const MAX_RECOMMENDATION_EVENTS_PER_BATCH = 10;

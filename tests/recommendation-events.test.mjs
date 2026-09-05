@@ -67,7 +67,7 @@ test("recommendation events endpoint rejects batches above the production D1 wri
         validEvent({
           establishmentId: 300 + index,
           resultPosition: index,
-          idempotencyKey: `session_test:impression:${300 + index}:${index}:transparent-scorer-v1:ctx`,
+          idempotencyKey: `session_test:impression:${300 + index}:${index}:transparent-scorer-v1.1:ctx`,
         }),
       ),
     ),
@@ -180,7 +180,7 @@ test("recommendation events endpoint enforces per-client write quota before D1 w
       establishmentId: 500 + index,
       anonymousUserId: "anon_quota_user",
       sessionId: "session_quota",
-      idempotencyKey: `session_quota:impression:${500 + index}:${index}:transparent-scorer-v1:ctx`,
+      idempotencyKey: `session_quota:impression:${500 + index}:${index}:transparent-scorer-v1.1:ctx`,
       resultPosition: index,
     }),
   );
@@ -209,7 +209,7 @@ test("recommendation events endpoint does not rate-limit different clients behin
         establishmentId: 700 + index,
         anonymousUserId: clientId,
         sessionId: `session_${clientId}`,
-        idempotencyKey: `session_${clientId}:impression:${700 + index}:${index}:transparent-scorer-v1:ctx`,
+        idempotencyKey: `session_${clientId}:impression:${700 + index}:${index}:transparent-scorer-v1.1:ctx`,
         resultPosition: index,
       }),
     );
@@ -268,7 +268,7 @@ test("recommendation events report is admin protected and summarizes shadow data
           establishmentId: 11,
           eventType: "save",
           resultPosition: null,
-          idempotencyKey: "session_test:save:11:none:transparent-scorer-v1:ctx",
+          idempotencyKey: "session_test:save:11:none:transparent-scorer-v1.1:ctx",
         }),
       },
     ]),
@@ -316,7 +316,7 @@ test("recommendation events report fails readiness when required control metadat
     query_context_json: "{}",
     model_version: RECOMMENDATION_SCORER_VERSION,
     occurred_at: new Date().toISOString(),
-    idempotency_key: "session_test:impression:10:0:transparent-scorer-v1:ctx",
+    idempotency_key: "session_test:impression:10:0:transparent-scorer-v1.1:ctx",
     received_at: null,
     expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     schema_version: "",
@@ -358,7 +358,7 @@ function validEvent(overrides = {}) {
     },
     modelVersion: RECOMMENDATION_SCORER_VERSION,
     occurredAt: new Date().toISOString(),
-    idempotencyKey: "session_test:impression:10:0:transparent-scorer-v1:ctx",
+    idempotencyKey: "session_test:impression:10:0:transparent-scorer-v1.1:ctx",
     ...overrides,
   };
 }

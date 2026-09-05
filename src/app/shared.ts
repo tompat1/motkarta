@@ -42,6 +42,10 @@ export type EstablishmentFilter = (typeof establishmentTypes)[number];
 export type CuisineFilter = typeof allCuisines | string;
 
 export function rounded(value: number) {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+
   return Math.round(value);
 }
 
@@ -237,10 +241,12 @@ export const translations = {
     dataNoteText: "MOTKARTA kombinerar öppen grunddata från OpenStreetMap med verifierade tillsynsregister från Stockholms stad och kurerad redaktionell granskning.",
     footerLeft: "MOTKARTA / STOCKHOLMS FRIA MATKARTA",
     footerRight: "ÖPPEN DATA · ÖPPEN METOD · ÖPPEN STAD",
-    formulaHiddenGems: "Discovery = quality + specialist confidence + local engagement + freshness - mainstream exposure",
-    formulaPopularNow: "Popularity = Bayesian rating + exposure-adjusted engagement + repeat visits + recent saves + source consensus",
-    formulaQualityFirst: "Quality = guide, editorial, user, inspection, attribute and freshness evidence",
-    formulaDefault: "Recommendation = 35% relevance + 25% quality + 15% popularity + 15% discovery + 10% freshness",
+    formulaHiddenGems: "Dolda pärlor = kvalitet + specialistbevis + lokalt engagemang + färskhet - mainstreamsynlighet",
+    formulaPopularNow: "Populärt nu = bayesianskt betyg + exponeringsjusterat engagemang + återbesök + färska sparningar + källsamstämmighet",
+    formulaQualityFirst: "Kvalitet = guide-, redaktions-, användar-, tillsyns-, attribut- och färskhetsbevis",
+    formulaExpertSelected: "Expertvalda = specialistguide, oberoende redaktion och verifierade specialty-signaler först",
+    formulaMostVerified: "Mest verifierade = hög konfidens och flera oberoende beviskällor först",
+    formulaDefault: "Motkarta-poäng = 35% relevans + 25% kvalitet + 15% popularitet + 15% upptäckt + 10% färskhet",
     centerMap: "Visa alla",
     fullscreen: "Helskärm",
     exitFullscreen: "Avsluta",
@@ -324,10 +330,12 @@ export const translations = {
     dataNoteText: "The deployed app can load the Python-generated OpenStreetMap baseline, while D1 remains available for later curated evidence and score snapshots.",
     footerLeft: "MOTKARTA / STOCKHOLM INDEPENDENT FOOD MAP",
     footerRight: "OPEN DATA · OPEN METHOD · OPEN CITY",
-    formulaHiddenGems: "Discovery = quality + specialist confidence + local engagement + freshness - mainstream exposure",
-    formulaPopularNow: "Popularity = Bayesian rating + exposure-adjusted engagement + repeat visits + recent saves + source consensus",
+    formulaHiddenGems: "Hidden gems = quality + specialist evidence + local engagement + freshness - mainstream exposure",
+    formulaPopularNow: "Popular now = Bayesian rating + exposure-adjusted engagement + repeat visits + recent saves + source consensus",
     formulaQualityFirst: "Quality = guide, editorial, user, inspection, attribute and freshness evidence",
-    formulaDefault: "Recommendation = 35% relevance + 25% quality + 15% popularity + 15% discovery + 10% freshness",
+    formulaExpertSelected: "Expert selected = specialist guides, independent editorial and verified specialty signals first",
+    formulaMostVerified: "Most verified = high confidence and multiple independent evidence sources first",
+    formulaDefault: "Motkarta score = 35% relevance + 25% quality + 15% popularity + 15% discovery + 10% freshness",
     centerMap: "Show all",
     fullscreen: "Fullscreen",
     exitFullscreen: "Exit",

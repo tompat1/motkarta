@@ -96,7 +96,7 @@ the public ranking path directly.
 
 The application collects recommendation events in shadow mode only. Events are
 validated through controlled vocabularies, carry zero-based result positions for
-impressions, include `transparent-scorer-v1` as the deterministic scorer version,
+impressions, include `transparent-scorer-v1.1` as the deterministic scorer version,
 and store idempotency, receipt, expiry, schema-version and privacy-version
 metadata. Query context is minimized to structured buckets; raw free-text search
 queries are not accepted by the ingestion contract.

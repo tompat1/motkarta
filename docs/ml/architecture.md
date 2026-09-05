@@ -42,6 +42,7 @@ still contain OSM contributor-activity bias and must not be presented as food qu
 - Output dimensions: quality, popularity, relevance, discovery, freshness and
   recommendation, plus verification and hidden-gem gate breakdowns
 - Used by: the Vite/Cloudflare application
+- Current scorer version: `transparent-scorer-v1.1`
 
 Recommendation formula:
 
@@ -55,6 +56,11 @@ Recommendation formula:
 
 This is the production authority for application scoring. A weight change is a
 ranking-policy change and follows the maintenance policy.
+
+`transparent-scorer-v1.1` keeps the formula and gates from v1, but normalizes
+partial evidence and engagement records at the scoring boundary. Missing numeric
+subfields are treated as absent evidence rather than allowed to produce `NaN`
+scores.
 
 The app-level ranking controls live in `src/app/place-ranking.ts`. They avoid
 personalization claims: `All recommendations` means the deterministic Motkarta
@@ -169,7 +175,7 @@ module, while preserving the event contract and deterministic hidden-gem gates.
 Current contract decisions:
 
 - Impression `result_position` is zero-based.
-- `model_version` is `transparent-scorer-v1` for deterministic app ranking.
+- `model_version` is `transparent-scorer-v1.1` for deterministic app ranking.
 - Idempotency is enforced through `idempotency_key`; impression keys include a
   per-result-set identity plus a complete context hash.
 - `expires_at`, `schema_version` and `privacy_version` are stored with new rows.
