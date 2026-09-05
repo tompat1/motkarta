@@ -56,6 +56,14 @@ Recommendation formula:
 This is the production authority for application scoring. A weight change is a
 ranking-policy change and follows the maintenance policy.
 
+The app-level ranking controls live in `src/app/place-ranking.ts`. They sort
+already-scored venues by the selected recommendation mode or explicit sort mode,
+then apply deterministic tie-breakers so broad evidence buckets do not leave the
+rendered list unchanged. The app shell clears the active map card when these
+controls change so an old selection is not presented as the new result. Controls
+without backing public data are hidden until their data source exists. These
+tie-breakers do not change stored score outputs or authorize a learned ranker.
+
 ### 3. Python scoring counterpart
 
 - Owner: `motkarta/scoring.py`

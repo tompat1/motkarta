@@ -31,7 +31,6 @@ import {
   logConciergeQuery,
   modeLabel,
   modeScore,
-  modes,
   preferencesFromQuery,
   recommendationExplanation,
   recommendationImpressionLimit,
@@ -41,6 +40,7 @@ import {
   sortModes,
   stockholmCenter,
   translations,
+  visibleModes,
   visibleEstablishmentTypes,
   type CuratedSource,
   type CuisineFilter,
@@ -732,6 +732,21 @@ export default function App() {
       setSelected(null);
     }
   }, [ranked, selected]);
+
+  const previousRankingControlsRef = useRef({ mode, randomSeed, sortMode });
+  useEffect(() => {
+    const previousControls = previousRankingControlsRef.current;
+    const rankingControlsChanged =
+      previousControls.mode !== mode ||
+      previousControls.sortMode !== sortMode ||
+      previousControls.randomSeed !== randomSeed;
+
+    previousRankingControlsRef.current = { mode, randomSeed, sortMode };
+
+    if (rankingControlsChanged) {
+      setSelected(null);
+    }
+  }, [mode, randomSeed, sortMode, visibleRanked]);
 
   const handleSelectPlace = useCallback(
     (id: number) => {
@@ -1848,7 +1863,7 @@ export default function App() {
             </div>
             <div className="rank-controls">
               <select value={mode} onChange={(event) => setMode(event.target.value as Mode)}>
-                {modes.map((item) => (
+                {visibleModes.map((item) => (
                   <option key={item} value={item}>{modeLabel(item, lang)}</option>
                 ))}
               </select>

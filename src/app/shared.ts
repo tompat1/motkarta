@@ -6,6 +6,17 @@ import {
   type UserPreferences,
 } from "../../lib/scoring";
 import { isBroadStockholmArea, resolveStockholmRegion } from "../../lib/stockholm-regions";
+import type { Mode, SortMode } from "./place-ranking";
+export {
+  comparePlaces,
+  distanceFromPoint,
+  modeScore,
+  modes,
+  sortModes,
+  stockholmCenter,
+  visibleModes,
+} from "./place-ranking";
+export type { Mode, SortMode } from "./place-ranking";
 
 export const establishmentTypes = [
   "All places",
@@ -21,111 +32,15 @@ export const establishmentTypes = [
 export const visibleEstablishmentTypes = establishmentTypes.filter((item) => item !== "Curated");
 
 export const allCuisines = "All cuisines";
-export const modes = [
-  "For you",
-  "Hidden gems",
-  "Popular now",
-  "Local favourites",
-  "Quality first",
-  "Recently opened",
-  "Expert selected",
-  "Most verified",
-] as const;
-export const sortModes = ["Best match", "Distance", "Alphabetical", "Surprise me"] as const;
 export const renderLimit = 350;
 export const recommendationImpressionLimit = 50;
-export const stockholmCenter = { latitude: 59.3293, longitude: 18.0686 };
 
 export type EstablishmentFilter = (typeof establishmentTypes)[number];
 
 export type CuisineFilter = typeof allCuisines | string;
-export type Mode = (typeof modes)[number];
-export type SortMode = (typeof sortModes)[number];
-export function modeScore(place: ScoredPlace, mode: Mode) {
-  if (mode === "Hidden gems") {
-    return place.scores.discovery;
-  }
-
-  if (mode === "Popular now") {
-    return place.scores.popularity;
-  }
-
-  if (mode === "Local favourites") {
-    return (place.localPopularityPercentile ?? 0) * 100;
-  }
-
-  if (mode === "Quality first") {
-    return place.scores.quality;
-  }
-
-  if (mode === "Recently opened") {
-    return place.scores.freshness;
-  }
-
-  if (mode === "Expert selected") {
-    return (place.evidence?.specialistGuide ?? 0) * 50 + place.scores.quality * 0.5;
-  }
-
-  if (mode === "Most verified") {
-    return place.evidence?.confidence === "High"
-      ? 100
-      : place.evidence?.confidence === "Medium"
-        ? 60
-        : 20;
-  }
-
-  return place.scores.recommendation;
-}
 
 export function rounded(value: number) {
   return Math.round(value);
-}
-
-export function comparePlaces(
-  a: ScoredPlace,
-  b: ScoredPlace,
-  mode: Mode,
-  sortMode: SortMode,
-  randomSeed: number,
-  userCenter: { latitude: number; longitude: number } = stockholmCenter
-) {
-  if (sortMode === "Alphabetical") {
-    return a.name.localeCompare(b.name, "sv");
-  }
-
-  if (sortMode === "Distance") {
-    return distanceFromPoint(a, userCenter) - distanceFromPoint(b, userCenter);
-  }
-
-  if (sortMode === "Surprise me") {
-    return seededRandom(a.id, randomSeed) - seededRandom(b.id, randomSeed);
-  }
-
-  return modeScore(b, mode) - modeScore(a, mode);
-}
-
-export function distanceFromPoint(
-  place: Pick<PlaceInput, "latitude" | "longitude">,
-  center: { latitude: number; longitude: number } = stockholmCenter
-) {
-  if (typeof place.latitude !== "number" || typeof place.longitude !== "number") {
-    return Number.POSITIVE_INFINITY;
-  }
-
-  const earthRadius = 6371;
-  const latDelta = degreesToRadians(place.latitude - center.latitude);
-  const lonDelta = degreesToRadians(place.longitude - center.longitude);
-  const startLat = degreesToRadians(center.latitude);
-  const endLat = degreesToRadians(place.latitude);
-  const haversine =
-    Math.sin(latDelta / 2) ** 2 +
-    Math.cos(startLat) * Math.cos(endLat) * Math.sin(lonDelta / 2) ** 2;
-
-  return 2 * earthRadius * Math.asin(Math.sqrt(haversine));
-}
-
-function degreesToRadians(value: number) {
-  return (value * Math.PI) / 180;
 }
 
 export function formatDistance(distKm: number, _lang: Language): string {
@@ -138,11 +53,6 @@ export function formatDistance(distKm: number, _lang: Language): string {
 
 
 export const DISTANCE_INTENT_REGEX = /\b(närmast|närmaste|närmst|närmsta|nära|i närheten|kortast|avstånd|closest|nearest|near me|nära mig|close by|closest place)\b/i;
-
-export function seededRandom(id: number, seed: number) {
-  const value = Math.sin((id + seed) * 12.9898) * 43758.5453;
-  return value - Math.floor(value);
-}
 
 export function formatUpdatedDate(value: string | undefined) {
   if (!value) {

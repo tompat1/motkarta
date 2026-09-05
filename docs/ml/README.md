@@ -49,6 +49,8 @@ As of 2026-08-25:
 | Automated drift monitoring | Not implemented | Required before automatic retraining |
 
 Frontend ML/recommendation code is intentionally split from the app shell:
+`src/app/place-ranking.ts` owns user-facing mode/sort ranking controls for
+already-scored places and hides controls that have no backing public data,
 `src/ml/recommendationInstrumentation.ts` owns shadow-mode event identifiers,
 query-context token mapping and result-set helpers, while
 `src/admin/AdminMlDashboard.tsx` owns the admin model-status surface. `src/App.tsx`
