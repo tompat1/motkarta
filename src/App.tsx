@@ -10,6 +10,7 @@ import { ExternalMapLinks } from "./components/ExternalMapLinks";
 import { FoodMap } from "./components/FoodMap";
 import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
 import { VerificationBar } from "./components/VerificationBar";
+import { matchesEstablishmentFilter } from "./app/place-filtering";
 import { sanitizeAndAugmentPlaces } from "./app/place-sanitization";
 import {
   DISTANCE_INTENT_REGEX,
@@ -524,31 +525,7 @@ export default function App() {
           if (mobileFilters.savedOnly && !savedPlaceIds.includes(place.id)) {
             return false;
           }
-          if (kind === "All places") {
-            return true;
-          }
-          if (kind === "Curated") {
-            return (
-              place.evidence.specialistGuide === 1 ||
-              place.evidence.independentEditorial === 1 ||
-              (place.evidenceLabel ?? "").toLowerCase().includes("guide") ||
-              (place.evidenceLabel ?? "").toLowerCase().includes("specialist") ||
-              (place.evidenceLabel ?? "").toLowerCase().includes("visit stockholm") ||
-              (place.evidenceLabel ?? "").toLowerCase().includes("visitstockholm") ||
-              (place.evidenceLabel ?? "").toLowerCase().includes("officiella stadsguiden") ||
-              (place.sourceName ?? "").toLowerCase().includes("husa") ||
-              (place.sourceName ?? "").toLowerCase().includes("visit stockholm") ||
-              (place.sourceName ?? "").toLowerCase().includes("visitstockholm") ||
-              (place.sourceName ?? "").toLowerCase().includes("officiella stadsguiden")
-            );
-          }
-          if (kind === "Saved") {
-            return savedPlaceIds.includes(place.id);
-          }
-          if (kind === "Latest") {
-            return true;
-          }
-          return place.kind === kind;
+          return matchesEstablishmentFilter(place, kind, savedPlaceIds);
         })
         .filter((place) => cuisine === allCuisines || cuisineParts(place).includes(cuisine))
         .filter((place) => {
@@ -748,7 +725,13 @@ export default function App() {
     );
   }, [recordRecommendationEvents, recommendationResultSetId, visibleRanked]);
 
-  const active = selected !== null ? (scoredPlaces.find((place) => place.id === selected) ?? null) : null;
+  const active = selected !== null ? (ranked.find((place) => place.id === selected) ?? null) : null;
+
+  useEffect(() => {
+    if (selected !== null && !ranked.some((place) => place.id === selected)) {
+      setSelected(null);
+    }
+  }, [ranked, selected]);
 
   const handleSelectPlace = useCallback(
     (id: number) => {
