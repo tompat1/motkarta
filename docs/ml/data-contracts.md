@@ -190,12 +190,12 @@ Allowed query-context keys:
 | `queryLengthBucket` | `none`, `short`, `medium`, `long` |
 | `kind` | `all_places`, `curated`, `saved`, `latest`, `restaurant`, `bakery`, `cafe`, `specialty_coffee` |
 | `cuisine` | Controlled cuisine tokens, or `other` for uncategorized/new cuisine values |
-| `mode` | `for_you`, `hidden_gems`, `popular_now`, `local_favourites`, `quality_first`, `recently_opened`, `expert_selected`, `most_verified` |
-| `sortMode` | `best_match`, `distance`, `alphabetical`, `surprise_me` |
+| `mode` | `all_recommendations`, `hidden_gems`, `popular_now`, `local_favourites`, `quality_first`, `recently_opened`, `expert_selected`, `most_verified`; legacy `for_you` remains accepted for old shadow events |
+| `sortMode` | `motkarta_score`, `distance`, `alphabetical`, `surprise_me`; legacy `best_match` remains accepted for old shadow events |
 | `resultCount` | Integer from 0 through 5000 |
 | `surface` | `results`, `map`, `place_detail`, `concierge` |
 
-Display labels such as `Restaurant`, `For you` or arbitrary strings under an
+Display labels such as `Restaurant`, `All recommendations` or arbitrary strings under an
 allowed key are rejected. Frontend instrumentation converts UI labels into these
 tokens before submitting events.
 

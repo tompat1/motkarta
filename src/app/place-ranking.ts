@@ -1,7 +1,7 @@
 import type { PlaceInput, ScoredPlace } from "../../lib/scoring";
 
 export const modes = [
-  "For you",
+  "All recommendations",
   "Hidden gems",
   "Popular now",
   "Local favourites",
@@ -11,7 +11,7 @@ export const modes = [
   "Most verified",
 ] as const;
 
-export const sortModes = ["Best match", "Distance", "Alphabetical", "Surprise me"] as const;
+export const sortModes = ["Motkarta score", "Distance", "Alphabetical", "Surprise me"] as const;
 export const stockholmCenter = { latitude: 59.3293, longitude: 18.0686 };
 
 export type Mode = (typeof modes)[number];

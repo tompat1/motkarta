@@ -56,16 +56,19 @@ Recommendation formula:
 This is the production authority for application scoring. A weight change is a
 ranking-policy change and follows the maintenance policy.
 
-The app-level ranking controls live in `src/app/place-ranking.ts`. The first
-dropdown narrows already-scored venues by recommendation mode before sorting:
+The app-level ranking controls live in `src/app/place-ranking.ts`. They avoid
+personalization claims: `All recommendations` means the deterministic Motkarta
+recommendation score, not a user/account-specific feed. The first dropdown
+narrows already-scored venues by recommendation mode before sorting:
 hidden-gem eligible venues, the top popularity slice, specialist-selected venues
 or high-confidence verified venues. The second dropdown only sorts that current
-result set, so it should not change the result count. Deterministic tie-breakers
-keep broad evidence buckets from leaving the rendered list unchanged. The app
-shell clears the active map card when these controls change so an old selection
-is not presented as the new result. Controls without backing public data are
-hidden until their data source exists. These controls do not change stored score
-outputs or authorize a learned ranker.
+result set, so it should not change the result count. `Motkarta score` is the
+transparent scorer order. Deterministic
+tie-breakers keep broad evidence buckets from leaving the rendered list
+unchanged. The app shell clears the active map card when these controls change
+so an old selection is not presented as the new result. Controls without backing
+public data are hidden until their data source exists. These controls do not
+change stored score outputs or authorize a learned ranker.
 
 ### 3. Python scoring counterpart
 

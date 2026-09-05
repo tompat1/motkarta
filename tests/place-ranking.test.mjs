@@ -116,13 +116,13 @@ test("ranking controls produce distinct top results", () => {
     }),
   ];
 
-  assert.equal(sortedIds(places, "For you", "Best match")[0], 2);
-  assert.equal(sortedIds(places, "Quality first", "Best match")[0], 3);
-  assert.equal(sortedIds(places, "For you", "Distance")[0], 1);
-  assert.equal(sortedIds(places, "For you", "Alphabetical")[0], 1);
+  assert.equal(sortedIds(places, "All recommendations", "Motkarta score")[0], 2);
+  assert.equal(sortedIds(places, "Quality first", "Motkarta score")[0], 3);
+  assert.equal(sortedIds(places, "All recommendations", "Distance")[0], 1);
+  assert.equal(sortedIds(places, "All recommendations", "Alphabetical")[0], 1);
 });
 
-test("best-match mode ties are broken by mode-specific evidence", () => {
+test("motkarta score mode ties are broken by mode-specific evidence", () => {
   const broadMatch = scoredPlace({
     id: 1,
     name: "Broad Match",
@@ -149,10 +149,11 @@ test("best-match mode ties are broken by mode-specific evidence", () => {
   });
 
   assert.equal(modeScore(broadMatch, "Most verified"), modeScore(deeplyVerified, "Most verified"));
-  assert.equal(sortedIds([broadMatch, deeplyVerified], "Most verified", "Best match")[0], 2);
+  assert.equal(sortedIds([broadMatch, deeplyVerified], "Most verified", "Motkarta score")[0], 2);
 });
 
 test("ranking mode menu omits modes without backing public data", () => {
+  assert.equal(visibleModes.includes("All recommendations"), true);
   assert.equal(visibleModes.includes("Local favourites"), false);
   assert.equal(visibleModes.includes("Quality first"), false);
   assert.equal(visibleModes.includes("Recently opened"), false);
@@ -173,7 +174,7 @@ test("hidden-gem mode prioritizes eligible places before discovery score", () =>
     hiddenGem: { ...scoredPlace().hiddenGem, eligible: true },
   });
 
-  assert.equal(sortedIds([ineligibleHighDiscovery, eligibleDiscovery], "Hidden gems", "Best match")[0], 2);
+  assert.equal(sortedIds([ineligibleHighDiscovery, eligibleDiscovery], "Hidden gems", "Motkarta score")[0], 2);
 });
 
 test("ranking modes narrow the result set before sorting", () => {
@@ -199,7 +200,7 @@ test("ranking modes narrow the result set before sorting", () => {
     }),
   ];
 
-  assert.deepEqual(filterPlacesByRankingMode(places, "For you").map((place) => place.id), [1, 2, 3, 4]);
+  assert.deepEqual(filterPlacesByRankingMode(places, "All recommendations").map((place) => place.id), [1, 2, 3, 4]);
   assert.deepEqual(filterPlacesByRankingMode(places, "Hidden gems").map((place) => place.id), [2]);
   assert.deepEqual(filterPlacesByRankingMode(places, "Expert selected").map((place) => place.id), [3]);
   assert.deepEqual(filterPlacesByRankingMode(places, "Most verified").map((place) => place.id), [4]);

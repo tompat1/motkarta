@@ -122,8 +122,8 @@ import { fetchPlacesPayload, type DataSource } from "../lib/place-payload";
 export default function App() {
   const [places, setPlaces] = useState<PlaceInput[]>([]);
   const [dataSource, setDataSource] = useState<DataSource>("loading");
-  const [mode, setMode] = useState<Mode>("For you");
-  const [sortMode, setSortMode] = useState<SortMode>("Best match");
+  const [mode, setMode] = useState<Mode>("All recommendations");
+  const [sortMode, setSortMode] = useState<SortMode>("Motkarta score");
   const [randomSeed, setRandomSeed] = useState(1);
   const [kind, setKind] = useState<EstablishmentFilter>("All places");
   const [cuisine, setCuisine] = useState<CuisineFilter>(allCuisines);
@@ -596,7 +596,7 @@ export default function App() {
     );
 
     return modeFilteredPlaces.sort((a, b) => {
-      if (kind === "Latest" && sortMode === "Best match") {
+      if (kind === "Latest" && sortMode === "Motkarta score") {
         const dateA = new Date(a.lastUpdated ?? 0).getTime();
         const dateB = new Date(b.lastUpdated ?? 0).getTime();
         if (dateA !== dateB) return dateB - dateA;
@@ -1980,7 +1980,7 @@ export default function App() {
                     </button>
                     <b>{rounded(modeScore(place, mode))}</b>
                   </div>
-                  <small>{mode === "For you" ? t.matchScoreLabel : t.totalScoreLabel}</small>
+                  <small>{t.totalScoreLabel}</small>
                 </span>
               </div>
             ))}

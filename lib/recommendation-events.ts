@@ -75,6 +75,7 @@ export const queryContextCuisines = [
   "other",
 ] as const;
 export const queryContextRankingModes = [
+  "all_recommendations",
   "for_you",
   "hidden_gems",
   "popular_now",
@@ -84,7 +85,7 @@ export const queryContextRankingModes = [
   "expert_selected",
   "most_verified",
 ] as const;
-export const queryContextSortModes = ["best_match", "distance", "alphabetical", "surprise_me"] as const;
+export const queryContextSortModes = ["motkarta_score", "best_match", "distance", "alphabetical", "surprise_me"] as const;
 export const queryContextSurfaces = ["results", "map", "place_detail", "concierge"] as const;
 
 export type RecommendationEventType = (typeof recommendationEventTypes)[number];

@@ -90,7 +90,7 @@ export function recommendationKindContext(kind: EstablishmentFilter): QueryConte
 
 export function recommendationRankingModeContext(mode: Mode): QueryContextRankingMode {
   const values: Record<Mode, QueryContextRankingMode> = {
-    "For you": "for_you",
+    "All recommendations": "all_recommendations",
     "Hidden gems": "hidden_gems",
     "Popular now": "popular_now",
     "Local favourites": "local_favourites",
@@ -104,7 +104,7 @@ export function recommendationRankingModeContext(mode: Mode): QueryContextRankin
 
 export function recommendationSortModeContext(sortMode: SortMode): QueryContextSortMode {
   const values: Record<SortMode, QueryContextSortMode> = {
-    "Best match": "best_match",
+    "Motkarta score": "motkarta_score",
     Distance: "distance",
     Alphabetical: "alphabetical",
     "Surprise me": "surprise_me",

@@ -336,7 +336,7 @@ export const translations = {
 };
 
 export function modeLabel(mode: Mode, lang: Language): string {
-  if (mode === "For you") return lang === "sv" ? "För dig" : "For you";
+  if (mode === "All recommendations") return lang === "sv" ? "Alla rekommendationer" : "All recommendations";
   if (mode === "Hidden gems") return lang === "sv" ? "Dolda pärlor" : "Hidden gems";
   if (mode === "Popular now") return lang === "sv" ? "Populära nu" : "Popular now";
   if (mode === "Local favourites") return lang === "sv" ? "Lokala favoriter" : "Local favourites";
@@ -348,7 +348,7 @@ export function modeLabel(mode: Mode, lang: Language): string {
 }
 
 export function sortModeLabel(sortMode: SortMode, lang: Language): string {
-  if (sortMode === "Best match") return lang === "sv" ? "Bästa matchning" : "Best match";
+  if (sortMode === "Motkarta score") return lang === "sv" ? "Motkarta-poäng" : "Motkarta score";
   if (sortMode === "Distance") return lang === "sv" ? "Avstånd" : "Distance";
   if (sortMode === "Alphabetical") return lang === "sv" ? "Alfabetiskt" : "Alphabetical";
   if (sortMode === "Surprise me") return lang === "sv" ? "Överraska mig" : "Surprise me";
