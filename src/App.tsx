@@ -24,6 +24,7 @@ import {
   cuisineOptionsFromPlaces,
   cuisineParts,
   distanceFromPoint,
+  filterPlacesByRankingMode,
   formatDistance,
   formatUpdatedDate,
   hasCoordinates,
@@ -517,86 +518,93 @@ export default function App() {
     }
   }, [requestUserLocation]);
 
-  const ranked = useMemo(
+  const ranked = useMemo(() => {
+    const baseFilteredPlaces = scoredPlaces
+      .filter((place) => {
+        if (mobileFilters.savedOnly && !savedPlaceIds.includes(place.id)) {
+          return false;
+        }
+        return matchesEstablishmentFilter(place, kind, savedPlaceIds);
+      })
+      .filter((place) => cuisine === allCuisines || cuisineParts(place).includes(cuisine))
+      .filter((place) => {
+        if (mobileFilters.selectedTags.length === 0) return true;
+        const searchStr = [
+          ...place.tags,
+          place.kind,
+          place.cuisine || "",
+          place.specialty?.ownRoastery ? "Own roastery" : "",
+          place.specialty?.singleOrigin ? "Single origin" : "",
+          place.specialty?.filterCoffee ? "Filter" : "",
+          ...(place.specialty?.manualBrewMethods || []),
+        ]
+          .join(" ")
+          .toLowerCase();
 
-    () =>
-      scoredPlaces
-        .filter((place) => {
-          if (mobileFilters.savedOnly && !savedPlaceIds.includes(place.id)) {
-            return false;
-          }
-          return matchesEstablishmentFilter(place, kind, savedPlaceIds);
-        })
-        .filter((place) => cuisine === allCuisines || cuisineParts(place).includes(cuisine))
-        .filter((place) => {
-          if (mobileFilters.selectedTags.length === 0) return true;
-          const searchStr = [
-            ...place.tags,
-            place.kind,
-            place.cuisine || "",
-            place.specialty?.ownRoastery ? "Own roastery" : "",
-            place.specialty?.singleOrigin ? "Single origin" : "",
-            place.specialty?.filterCoffee ? "Filter" : "",
-            ...(place.specialty?.manualBrewMethods || []),
-          ]
-            .join(" ")
-            .toLowerCase();
+        return mobileFilters.selectedTags.every((t) => {
+          const tLower = t.toLowerCase();
+          const noteLower = (place.note ?? "").toLowerCase();
+          const nameLower = (place.name ?? "").toLowerCase();
+          const evLabelLower = (place.evidenceLabel ?? "").toLowerCase();
+          const placeTags = (place.tags ?? []).map((pt) => pt.toLowerCase());
 
-          return mobileFilters.selectedTags.every((t) => {
-            const tLower = t.toLowerCase();
-            const noteLower = (place.note ?? "").toLowerCase();
-            const nameLower = (place.name ?? "").toLowerCase();
-            const evLabelLower = (place.evidenceLabel ?? "").toLowerCase();
-            const placeTags = (place.tags ?? []).map((pt) => pt.toLowerCase());
-
-            if (tLower === "dog friendly" || tLower === "hundvänligt") {
-              return (
-                searchStr.includes("dog friendly") ||
-                searchStr.includes("hundvänligt") ||
-                searchStr.includes("hundvänlig") ||
-                searchStr.includes("tasstipset") ||
-                evLabelLower.includes("tasstipset") ||
-                nameLower.includes("dog") ||
-                nameLower.includes("hund") ||
-                noteLower.includes("hund") ||
-                noteLower.includes("dog") ||
-                placeTags.some((pt) =>
-                  [
-                    "dog friendly",
-                    "hundvänligt",
-                    "tasstipset",
-                    "hundar välkomna",
-                    "verifierad hundpolicy",
-                    "hundar inne & ute",
-                    "endast uteservering",
-                  ].includes(pt) ||
-                  pt.includes("dog") ||
-                  pt.includes("hund")
-                )
-              );
-            }
+          if (tLower === "dog friendly" || tLower === "hundvänligt") {
             return (
-              searchStr.includes(tLower) ||
-              nameLower.includes(tLower) ||
-              noteLower.includes(tLower) ||
-              placeTags.some((pt) => pt.includes(tLower))
+              searchStr.includes("dog friendly") ||
+              searchStr.includes("hundvänligt") ||
+              searchStr.includes("hundvänlig") ||
+              searchStr.includes("tasstipset") ||
+              evLabelLower.includes("tasstipset") ||
+              nameLower.includes("dog") ||
+              nameLower.includes("hund") ||
+              noteLower.includes("hund") ||
+              noteLower.includes("dog") ||
+              placeTags.some((pt) =>
+                [
+                  "dog friendly",
+                  "hundvänligt",
+                  "tasstipset",
+                  "hundar välkomna",
+                  "verifierad hundpolicy",
+                  "hundar inne & ute",
+                  "endast uteservering",
+                ].includes(pt) ||
+                pt.includes("dog") ||
+                pt.includes("hund")
+              )
             );
-          });
-        })
-        .filter((place) =>
-          `${place.name} ${place.area} ${place.cuisine ?? ""} ${place.tags.join(" ")}`
-            .toLowerCase()
-            .includes(query.toLowerCase()),
-        )
-        .sort((a, b) => {
-          if (kind === "Latest" && sortMode === "Best match") {
-            const dateA = new Date(a.lastUpdated ?? 0).getTime();
-            const dateB = new Date(b.lastUpdated ?? 0).getTime();
-            if (dateA !== dateB) return dateB - dateA;
-            return b.id - a.id;
           }
-          return comparePlaces(a, b, mode, sortMode, randomSeed, userLocation ?? stockholmCenter);
-        }),
+          return (
+            searchStr.includes(tLower) ||
+            nameLower.includes(tLower) ||
+            noteLower.includes(tLower) ||
+            placeTags.some((pt) => pt.includes(tLower))
+          );
+        });
+      })
+      .filter((place) =>
+        `${place.name} ${place.area} ${place.cuisine ?? ""} ${place.tags.join(" ")}`
+          .toLowerCase()
+          .includes(query.toLowerCase())
+      );
+
+    const modeFilteredPlaces = filterPlacesByRankingMode(
+      baseFilteredPlaces,
+      mode,
+      randomSeed,
+      userLocation ?? stockholmCenter,
+    );
+
+    return modeFilteredPlaces.sort((a, b) => {
+      if (kind === "Latest" && sortMode === "Best match") {
+        const dateA = new Date(a.lastUpdated ?? 0).getTime();
+        const dateB = new Date(b.lastUpdated ?? 0).getTime();
+        if (dateA !== dateB) return dateB - dateA;
+        return b.id - a.id;
+      }
+      return comparePlaces(a, b, mode, sortMode, randomSeed, userLocation ?? stockholmCenter);
+    });
+  },
     [
       cuisine,
       kind,

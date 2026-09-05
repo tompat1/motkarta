@@ -79,6 +79,31 @@ export function comparePlaces(
   return compareBestMatch(a, b, mode, userCenter);
 }
 
+export function filterPlacesByRankingMode(
+  places: ScoredPlace[],
+  mode: Mode,
+  randomSeed = 1,
+  userCenter: { latitude: number; longitude: number } = stockholmCenter
+) {
+  if (mode === "Hidden gems") {
+    return places.filter((place) => place.hiddenGem?.eligible === true);
+  }
+
+  if (mode === "Popular now") {
+    return topShareByModeScore(places, mode, 0.25, randomSeed, userCenter);
+  }
+
+  if (mode === "Expert selected") {
+    return places.filter((place) => expertEvidence(place) > 0);
+  }
+
+  if (mode === "Most verified") {
+    return places.filter((place) => place.evidence?.confidence === "High");
+  }
+
+  return places;
+}
+
 function compareBestMatch(
   a: ScoredPlace,
   b: ScoredPlace,
@@ -105,6 +130,21 @@ function compareBestMatch(
   }
 
   return compareText(a.name, b.name) || a.id - b.id;
+}
+
+function topShareByModeScore(
+  places: ScoredPlace[],
+  mode: Mode,
+  share: number,
+  randomSeed: number,
+  userCenter: { latitude: number; longitude: number }
+) {
+  const finitePlaces = places.filter((place) => Number.isFinite(modeScore(place, mode)));
+  const count = Math.max(1, Math.ceil(finitePlaces.length * share));
+
+  return [...finitePlaces]
+    .sort((a, b) => compareBestMatch(a, b, mode, userCenter) || comparePlaces(a, b, mode, "Surprise me", randomSeed, userCenter))
+    .slice(0, count);
 }
 
 function hiddenGemPriority(place: ScoredPlace) {

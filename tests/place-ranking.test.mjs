@@ -1,6 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { comparePlaces, distanceFromPoint, modeScore, stockholmCenter, visibleModes } from "../src/app/place-ranking.ts";
+import {
+  comparePlaces,
+  distanceFromPoint,
+  filterPlacesByRankingMode,
+  modeScore,
+  stockholmCenter,
+  visibleModes,
+} from "../src/app/place-ranking.ts";
 
 function scoredPlace(overrides = {}) {
   return {
@@ -167,6 +174,36 @@ test("hidden-gem mode prioritizes eligible places before discovery score", () =>
   });
 
   assert.equal(sortedIds([ineligibleHighDiscovery, eligibleDiscovery], "Hidden gems", "Best match")[0], 2);
+});
+
+test("ranking modes narrow the result set before sorting", () => {
+  const places = [
+    scoredPlace({ id: 1, name: "General Match", scores: { ...scoredPlace().scores, popularity: 5 } }),
+    scoredPlace({
+      id: 2,
+      name: "Hidden Gem",
+      hiddenGem: { ...scoredPlace().hiddenGem, eligible: true },
+      scores: { ...scoredPlace().scores, popularity: 80 },
+    }),
+    scoredPlace({
+      id: 3,
+      name: "Expert Pick",
+      evidence: { ...scoredPlace().evidence, specialistGuide: 1 },
+      scores: { ...scoredPlace().scores, popularity: 70 },
+    }),
+    scoredPlace({
+      id: 4,
+      name: "Most Verified",
+      evidence: { ...scoredPlace().evidence, confidence: "High" },
+      scores: { ...scoredPlace().scores, popularity: 60 },
+    }),
+  ];
+
+  assert.deepEqual(filterPlacesByRankingMode(places, "For you").map((place) => place.id), [1, 2, 3, 4]);
+  assert.deepEqual(filterPlacesByRankingMode(places, "Hidden gems").map((place) => place.id), [2]);
+  assert.deepEqual(filterPlacesByRankingMode(places, "Expert selected").map((place) => place.id), [3]);
+  assert.deepEqual(filterPlacesByRankingMode(places, "Most verified").map((place) => place.id), [4]);
+  assert.deepEqual(filterPlacesByRankingMode(places, "Popular now").map((place) => place.id), [2]);
 });
 
 test("distance calculation remains centered on Stockholm by default", () => {

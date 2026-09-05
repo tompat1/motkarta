@@ -10,6 +10,7 @@ import type { Mode, SortMode } from "./place-ranking";
 export {
   comparePlaces,
   distanceFromPoint,
+  filterPlacesByRankingMode,
   modeScore,
   modes,
   sortModes,
