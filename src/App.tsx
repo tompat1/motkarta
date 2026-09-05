@@ -1864,27 +1864,39 @@ export default function App() {
         <aside className="results">
 
           <div className="results-head">
-            <div>
-              <p className="eyebrow">{t.eyebrow}</p>
-              <h2>{ranked.length} {t.placesInView}</h2>
-              {ranked.length > renderLimit ? <small>{t.showingTop} {renderLimit}</small> : null}
+            <div className="results-summary">
+              <p className="eyebrow results-eyebrow">{t.eyebrow}</p>
+              <div className="results-count-row">
+                <h2>
+                  <span>{ranked.length}</span> <span>{t.placesInView}</span>
+                </h2>
+                {ranked.length > renderLimit ? <small>{t.showingTop} {renderLimit}</small> : null}
+              </div>
             </div>
             <div className="rank-controls">
-              <select value={mode} onChange={(event) => setMode(event.target.value as Mode)}>
-                {visibleModes.map((item) => (
-                  <option key={item} value={item}>{modeLabel(item, lang)}</option>
-                ))}
-              </select>
-              <select value={sortMode} onChange={(event) => setSortMode(event.target.value as SortMode)}>
-                {sortModes.map((item) => (
-                  <option key={item} value={item}>{sortModeLabel(item, lang)}</option>
-                ))}
-              </select>
+              <label className="rank-control">
+                <span>{t.resultModeControlLabel}</span>
+                <select value={mode} onChange={(event) => setMode(event.target.value as Mode)}>
+                  {visibleModes.map((item) => (
+                    <option key={item} value={item}>{modeLabel(item, lang)}</option>
+                  ))}
+                </select>
+                <small>{t.resultModeControlHint}</small>
+              </label>
+              <label className="rank-control">
+                <span>{t.resultSortControlLabel}</span>
+                <select value={sortMode} onChange={(event) => setSortMode(event.target.value as SortMode)}>
+                  {sortModes.map((item) => (
+                    <option key={item} value={item}>{sortModeLabel(item, lang)}</option>
+                  ))}
+                </select>
+                <small>{t.resultSortControlHint}</small>
+              </label>
               {sortMode === "Surprise me" ? (
                 <button
                   type="button"
                   onClick={() => setRandomSeed((value) => value + 1)}
-                  style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}
+                  className="rank-shuffle-button"
                 >
                   <Shuffle size={13} weight="bold" /> {t.shuffle}
                 </button>
