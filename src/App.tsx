@@ -15,7 +15,7 @@ import { sanitizeAndAugmentPlaces } from "./app/place-sanitization";
 import {
   DISTANCE_INTENT_REGEX,
   INITIAL_CURATED_SOURCES,
-  POPULAR_CONCIERGE_PROMPTS,
+  getPopularConciergePrompts,
   SEARCH_CUISINE_SUGGESTIONS,
   STOCKHOLM_REGION_OPTIONS,
   allCuisines,
@@ -793,14 +793,14 @@ export default function App() {
 
   const matchingSuggestions = useMemo(() => {
     const inputClean = concierge.trim().toLowerCase();
-    const allCandidates = Array.from(new Set([...conciergeHistory, ...POPULAR_CONCIERGE_PROMPTS]));
+    const allCandidates = Array.from(new Set([...conciergeHistory, ...getPopularConciergePrompts(lang)]));
     if (!inputClean) {
       return allCandidates.slice(0, 5);
     }
     return allCandidates
       .filter((prompt) => prompt.toLowerCase().includes(inputClean))
       .slice(0, 5);
-  }, [concierge, conciergeHistory]);
+  }, [concierge, conciergeHistory, lang]);
 
   const searchAutocompleteSuggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -2034,7 +2034,7 @@ export default function App() {
             <span>{lang === "sv" ? "Populära frågor att ställa i sökfältet" : "Popular questions to ask in the search bar"}</span>
           </div>
           <div className="concierge-prompt-cloud">
-            {POPULAR_CONCIERGE_PROMPTS.slice(0, 6).map((promptText) => (
+            {getPopularConciergePrompts(lang).slice(0, 6).map((promptText) => (
               <button
                 key={promptText}
                 type="button"

@@ -1,4 +1,4 @@
-import { DEFAULT_CONCIERGE_PROMPTS, DEFAULT_CURATED_SOURCES } from "../../lib/db-sources-prompts";
+import { DEFAULT_CONCIERGE_PROMPTS, DEFAULT_CONCIERGE_PROMPTS_EN, DEFAULT_CURATED_SOURCES } from "../../lib/db-sources-prompts";
 import {
   type EstablishmentType,
   type PlaceInput,
@@ -366,6 +366,11 @@ export function sortModeLabel(sortMode: SortMode, lang: Language): string {
 }
 
 export const POPULAR_CONCIERGE_PROMPTS = DEFAULT_CONCIERGE_PROMPTS;
+export const POPULAR_CONCIERGE_PROMPTS_EN = DEFAULT_CONCIERGE_PROMPTS_EN;
+
+export function getPopularConciergePrompts(lang: Language): string[] {
+  return lang === "en" ? POPULAR_CONCIERGE_PROMPTS_EN : POPULAR_CONCIERGE_PROMPTS;
+}
 
 export const STOCKHOLM_REGION_OPTIONS = [
   { label: "Södermalm (Söder)", value: "Södermalm", aliases: ["söder", "södermalm", "sofo", "zinken", "mariatorget", "nytorget", "hornstull", "skanstull"] },

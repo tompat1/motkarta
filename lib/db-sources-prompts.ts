@@ -108,6 +108,20 @@ export const DEFAULT_CONCIERGE_PROMPTS = [
   "izakaya och yakitori spett i Vasastan",
 ];
 
+export const DEFAULT_CONCIERGE_PROMPTS_EN = [
+  "specialty coffee and a cardamom bun in Södermalm",
+  "best Mexican tacos in Vasastan",
+  "family-owned French bistro with great wine in Gamla Stan",
+  "artisan bakery with sourdough bread in Zinkensdamm",
+  "handmade Polish pierogi in Gamla Stan",
+  "hidden gems for dinner near me",
+  "3-star fine dining with a tasting menu",
+  "traditional Swedish home cooking at a fair price",
+  "bakery with freshly baked cinnamon buns",
+  "Italian trattorias with fresh pasta",
+  "izakaya and yakitori skewers in Vasastan",
+];
+
 type D1Db = {
   prepare(query: string): {
     bind(...values: unknown[]): {
