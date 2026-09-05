@@ -55,13 +55,10 @@ export const FILTER_SECTIONS: MobileFilterSection[] = [
     titleSv: "Tjänster & Faciliteter",
     titleEn: "Services",
     items: [
-      { id: "wifi", labelSv: "Gratis Wi-Fi", labelEn: "Free Wi-Fi", tag: "Wi-Fi" },
       { id: "laptop", labelSv: "Laptop-vänligt", labelEn: "Laptop Friendly", tag: "Laptop friendly" },
       { id: "cards", labelSv: "Kortbetalning", labelEn: "Credit Cards", tag: "Cards" },
-      { id: "vegan", labelSv: "Veganska alternativ", labelEn: "Vegan Options", tag: "Vegan options" },
       { id: "kids", labelSv: "Barnvänligt", labelEn: "Kids Friendly", tag: "Family" },
       { id: "dog", labelSv: "Hundvänligt", labelEn: "Dog Friendly", tag: "Dog friendly" },
-      { id: "outdoor", labelSv: "Uteservering", labelEn: "Outdoor Seating", tag: "Outdoor seating" },
       { id: "wheelchair", labelSv: "Rullstolsanpassat", labelEn: "Wheelchair Access", tag: "Accessible" },
     ],
   },

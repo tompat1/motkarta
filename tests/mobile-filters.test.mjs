@@ -52,6 +52,13 @@ test("Dog friendly filter item exists with localized labels", () => {
   assert.equal(dogItem.labelEn, "Dog Friendly");
 });
 
+test("empty feature filters are not exposed", () => {
+  const tags = FILTER_SECTIONS.flatMap((section) => section.items.map((item) => item.tag));
+  assert.equal(tags.includes("Outdoor seating"), false);
+  assert.equal(tags.includes("Wi-Fi"), false);
+  assert.equal(tags.includes("Vegan options"), false);
+});
+
 test("unified search query matches places by name, cuisine, region or tags", () => {
   const query = "pizza";
   const terms = query.toLowerCase().split(/\s+/);
@@ -77,4 +84,3 @@ test("dog friendly filter returns verified venues across Stockholm", () => {
   const sampleNames = dogVenues.map((p) => p.name.toLowerCase());
   assert.ok(sampleNames.some((n) => n.includes("drop coffee") || n.includes("bambino") || n.includes("kvarnen")));
 });
-

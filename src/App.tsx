@@ -1588,54 +1588,6 @@ export default function App() {
               <PawPrint size={13} weight={mobileFilters.selectedTags.includes("Dog friendly") ? "fill" : "bold"} />
               <span>{lang === "sv" ? "Hundvänligt" : "Dog Friendly"}</span>
             </button>
-            <button
-              className={mobileFilters.selectedTags.includes("Outdoor seating") ? "active" : ""}
-              onClick={() => {
-                const exists = mobileFilters.selectedTags.includes("Outdoor seating");
-                const updated = exists
-                  ? mobileFilters.selectedTags.filter((t) => t !== "Outdoor seating")
-                  : [...mobileFilters.selectedTags, "Outdoor seating"];
-                handleUpdateMobileFilters({
-                  ...mobileFilters,
-                  selectedTags: updated,
-                });
-              }}
-              type="button"
-            >
-              {lang === "sv" ? "Uteservering" : "Outdoor Seating"}
-            </button>
-            <button
-              className={mobileFilters.selectedTags.includes("Wi-Fi") ? "active" : ""}
-              onClick={() => {
-                const exists = mobileFilters.selectedTags.includes("Wi-Fi");
-                const updated = exists
-                  ? mobileFilters.selectedTags.filter((t) => t !== "Wi-Fi")
-                  : [...mobileFilters.selectedTags, "Wi-Fi"];
-                handleUpdateMobileFilters({
-                  ...mobileFilters,
-                  selectedTags: updated,
-                });
-              }}
-              type="button"
-            >
-              {lang === "sv" ? "Wi-Fi" : "Free Wi-Fi"}
-            </button>
-            <button
-              className={mobileFilters.selectedTags.includes("Vegan options") ? "active" : ""}
-              onClick={() => {
-                const exists = mobileFilters.selectedTags.includes("Vegan options");
-                const updated = exists
-                  ? mobileFilters.selectedTags.filter((t) => t !== "Vegan options")
-                  : [...mobileFilters.selectedTags, "Vegan options"];
-                handleUpdateMobileFilters({
-                  ...mobileFilters,
-                  selectedTags: updated,
-                });
-              }}
-              type="button"
-            >
-              {lang === "sv" ? "Veganskt" : "Vegan Options"}
-            </button>
           </div>
         </div>
       </section>
