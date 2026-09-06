@@ -12,6 +12,7 @@ import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
 import { VerificationBar } from "./components/VerificationBar";
 import { matchesEstablishmentFilter } from "./app/place-filtering";
 import { sanitizeAndAugmentPlaces } from "./app/place-sanitization";
+import { requestPosition, locationFailureMessage } from "./app/geolocation";
 import {
   DISTANCE_INTENT_REGEX,
   INITIAL_CURATED_SOURCES,
@@ -479,50 +480,27 @@ export default function App() {
   }, [cuisine, cuisineOptions]);
 
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [locationStatus, setLocationStatus] = useState<"idle" | "requesting" | "acquired" | "denied">("idle");
   const [locationToast, setLocationToast] = useState<string | null>(null);
+  const locationToastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(locationToastTimer.current), []);
 
   const requestUserLocation = useCallback(
-    (autoSortByDistance = false): Promise<{ latitude: number; longitude: number } | null> => {
-      if (typeof window === "undefined" || !navigator.geolocation) {
-        setLocationStatus("denied");
-        return Promise.resolve(null);
+    async (autoSortByDistance = false): Promise<{ latitude: number; longitude: number } | null> => {
+      const result = await requestPosition();
+      clearTimeout(locationToastTimer.current);
+      if (result.status === 'acquired') {
+        setUserLocation(result.location); setLocationToast(null);
+        if (autoSortByDistance) setSortMode('Distance');
+        return result.location;
       }
-      setLocationStatus("requesting");
-      return new Promise((resolve) => navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const coords = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-          setUserLocation(coords);
-          resolve(coords);
-          setLocationStatus("acquired");
-          if (autoSortByDistance) {
-            setSortMode("Distance");
-          }
-        },
-        (err) => {
-          console.warn("Geolocation positioning error:", err);
-          resolve(null);
-          setLocationStatus("denied");
-          if (autoSortByDistance) {
-            setLocationToast(
-              lang === "sv"
-                ? "Kunde inte hämta din position. Tillåt platstjänster i webbläsaren."
-                : "Could not retrieve your location. Please allow location access.",
-            );
-            setTimeout(() => setLocationToast(null), 4000);
-          }
-        },
-        { enableHighAccuracy: true, timeout: 10000 },
-      ));
+      if (autoSortByDistance) {
+        setLocationToast(locationFailureMessage(result.status, lang));
+        locationToastTimer.current = setTimeout(() => setLocationToast(null), 6000);
+      }
+      return null;
     },
     [lang],
   );
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && navigator.geolocation) {
-      requestUserLocation(false);
-    }
-  }, [requestUserLocation]);
 
   const ranked = useMemo(() => {
     const baseFilteredPlaces = scoredPlaces
@@ -1396,13 +1374,7 @@ export default function App() {
                 const val = event.target.value;
                 setQuery(val);
                 setConcierge(val);
-                if (DISTANCE_INTENT_REGEX.test(val)) {
-                  if (!userLocation) {
-                    requestUserLocation(true);
-                  } else {
-                    setSortMode("Distance");
-                  }
-                }
+                if (userLocation && DISTANCE_INTENT_REGEX.test(val)) setSortMode('Distance');
               }}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {

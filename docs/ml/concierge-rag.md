@@ -191,6 +191,16 @@ its late result. Browser network timeout is six seconds; initial location permis
 may take up to ten additional seconds. These are configured bounds, not measured
 Cloudflare latency/CPU guarantees.
 
+Browser location is requested only by an explicit location action or submitting
+a nearby query without coordinates. Mounting, typing and switching language do
+not request it. Map and concierge share one pending browser request, with a
+ten-second client deadline, high accuracy disabled and browser-cached positions
+up to one minute old accepted. No automatic retry or persistent location storage
+is added. Timeout, permission denial, unavailable positioning and unsupported
+browsers receive distinct localized guidance; late callbacks cannot overwrite
+the result of a completed request. A timeout still allows searching by area or
+explicitly retrying location.
+
 Dry-run the canonical fact exporter/index plan without credentials:
 
 ```bash

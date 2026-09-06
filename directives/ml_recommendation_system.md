@@ -249,3 +249,7 @@ validated with real collection metrics.
   not zero. Source-field repairs require identity/state/timestamp guards and
   post-write verification. See `docs/ml/concierge-reconciliation.md` for the
   applied repair, current versions and remaining deployment/evaluation boundaries.
+- Nearby discovery should request browser location on explicit actions only.
+  Share pending map/concierge requests and distinguish timeout from permission
+  denial. Bound client waits and ignore late callbacks; do not retry automatically
+  from mount effects, language changes or query keystrokes.

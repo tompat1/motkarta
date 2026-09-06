@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { EstablishmentType, ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
 import { cuisineLabel, cuisineParts, hasCoordinates, translations } from "../app/shared";
+import { requestPosition, locationFailureMessage, type LocationResult } from '../app/geolocation';
 import { ArrowsIn, ArrowsOut, Crosshair, List, MapTrifold, Minus, NavigationArrow, Plus } from "@phosphor-icons/react";
 
 export function FoodMap({
@@ -29,48 +30,41 @@ export function FoodMap({
   const userMarkerRef = useRef<L.Marker | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [locationFailure, setLocationFailure] = useState<Exclude<LocationResult['status'], 'acquired'> | null>(null);
 
-  const handleLocateUser = () => {
-    if (typeof window === "undefined" || !navigator.geolocation) {
-      return;
-    }
+  const handleLocateUser = async () => {
+    if (locating) return;
     setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const coords = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-        setLocating(false);
-        const map = mapRef.current;
-        if (map) {
-          map.flyTo([coords.latitude, coords.longitude], 14, { duration: 1.2 });
+    setLocationFailure(null);
+    const result = await requestPosition();
+    setLocating(false);
+    if (result.status !== 'acquired') { setLocationFailure(result.status); return; }
+    const coords = result.location;
+    const map = mapRef.current;
+    if (map) {
+      map.flyTo([coords.latitude, coords.longitude], 14, { duration: 1.2 });
 
-          if (userMarkerRef.current) {
-            userMarkerRef.current.remove();
-          }
+      if (userMarkerRef.current) {
+        userMarkerRef.current.remove();
+      }
 
-          const pulseIcon = L.divIcon({
-            className: "user-pulse-container",
-            html: '<div class="user-pulse-marker" title="Din position">📍</div>',
-            iconSize: [24, 24],
-            iconAnchor: [12, 12],
-          });
+      const pulseIcon = L.divIcon({
+        className: "user-pulse-container",
+        html: '<div class="user-pulse-marker" title="Din position">📍</div>',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+      });
 
-          userMarkerRef.current = L.marker([coords.latitude, coords.longitude], { icon: pulseIcon }).addTo(map);
-          if (isMobileMapViewport()) {
-            userMarkerRef.current
-              .bindPopup(`<b>${lang === "sv" ? "Din position" : "Your location"}</b>`)
-              .openPopup();
-          } else {
-            map.closePopup();
-          }
-        }
-        onUserLocated?.(coords);
-      },
-      (err) => {
-        setLocating(false);
-        console.warn("Location error:", err);
-      },
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
+      userMarkerRef.current = L.marker([coords.latitude, coords.longitude], { icon: pulseIcon }).addTo(map);
+      if (isMobileMapViewport()) {
+        userMarkerRef.current
+          .bindPopup(`<b>${lang === "sv" ? "Din position" : "Your location"}</b>`)
+          .openPopup();
+      } else {
+        map.closePopup();
+      }
+    }
+    onUserLocated?.(coords);
   };
 
   useEffect(() => {
@@ -232,11 +226,17 @@ export function FoodMap({
 
   return (
     <div className="leaflet-shell">
+      {locationFailure ? <div className="location-toast" role="status">
+        <span>{locationFailureMessage(locationFailure, lang)}</span>
+        <button type="button" onClick={() => setLocationFailure(null)} aria-label={lang === 'sv' ? 'Stäng' : 'Close'}>×</button>
+      </div> : null}
       <div className="map-toolbar" role="toolbar" aria-label={lang === "sv" ? "Kartkontroller" : "Map controls"}>
         <button
           type="button"
           className={`map-control-btn map-locate-btn ${locating ? "is-active" : ""}`}
           onClick={handleLocateUser}
+          disabled={locating}
+          aria-busy={locating}
           title={lang === "sv" ? "Visa min position & ställen nära mig" : "Show my location & places near me"}
           aria-label={lang === "sv" ? "Nära mig" : "Near me"}
         >
@@ -294,6 +294,8 @@ export function FoodMap({
         type="button"
         className="mobile-floating-control-btn floating-gps-btn"
         onClick={handleLocateUser}
+        disabled={locating}
+        aria-busy={locating}
         title={lang === "sv" ? "Min position" : "My location"}
         aria-label={lang === "sv" ? "Min position" : "My location"}
       >

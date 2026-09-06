@@ -99,10 +99,15 @@ The text-length token estimate is not a billing guarantee.
 - Corpus/prompt/global scorer unchanged: `concierge-facts-v1`,
   `concierge-synthesis-v1`, `transparent-scorer-v1.1`.
 - Tool contracts: `concierge-reconciliation-v1`, `concierge-catalog-audit-v2`.
-- 194 JavaScript tests, 70 Python tests, typecheck, lint and build pass. Existing
+- 198 JavaScript tests, 70 Python tests, typecheck, lint and build pass. Existing
   bundle-size and Python dependency/platform warnings remain.
 - Browser checks using captured D1 responses pass for Drop Coffee Roasters and
   the Spiga Madre → Spigamadre duplicate alias; no browser runtime errors.
+- Follow-up geolocation regression passes: no request on mount, language change
+  or typing; concurrent map/concierge actions share a pending request. Timeouts
+  show localized retry/area-search guidance, and an explicit retry supplies
+  coordinates to the concierge. Four unit tests cover request sharing, failure
+  classification, bounded waits, late callbacks and invalid coordinates.
 - The 128-query synthetic regression retains NDCG@5 0.929 and unsupported-query
   abstention 100%. It is not a fresh holdout or a real-model quality measurement.
 

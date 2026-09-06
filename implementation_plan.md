@@ -7,6 +7,14 @@ Local identity bridge, source locality gates, importer safeguards and validation
 pass. See [the repair record](docs/ml/concierge-reconciliation.md). Code remains
 undeployed; no paid inference or Vectorize mutation occurred.
 
+Follow-up to the reported repeated geolocation timeout: remove implicit mount,
+language-change and typing requests; share pending map/concierge requests; retain
+explicit nearby search and map actions with accurate timeout/retry feedback.
+Validate request sharing, late callbacks and successful retry in unit and browser
+tests, then run the full test/build gates. Completed locally: 198 JavaScript tests
+and build pass, including the browser regression. Actual positioning remains
+dependent on the browser and device location service.
+
 - Refresh D1, retain its IDs, and generate guarded updates only for corroborated
   source street addresses, invalid coordinates and the existing closed label.
 - Rehearse updates and rollback locally; retain the before snapshot and inspect
