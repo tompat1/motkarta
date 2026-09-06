@@ -37,6 +37,12 @@ Preferred stable identity order:
 Names alone are not stable identifiers. Renaming, transliteration and multiple
 locations make name-only joins unsafe.
 
+The [concierge audit](concierge-catalog-readiness.md) confirms that public CRC32
+OSM IDs and D1 establishment IDs have zero numeric overlap. These are separate
+namespaces. Derived OSM mappings need name/location checks and collision review;
+a matching name or 32-bit hash alone does not authorize merging records.
+Concierge index input must use the D1 runtime normalization.
+
 ## Data classes
 
 | Class | Examples | Allowed use |

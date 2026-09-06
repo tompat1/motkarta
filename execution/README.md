@@ -1,5 +1,10 @@
 # Layer 3: Execution Scripts
 
+`audit_concierge_catalog.mjs` compares a read-only D1 query export with the public
+catalog and writes mapping candidates, release blockers and normalized D1 index
+input. See the [audit runbook](../docs/ml/concierge-catalog-readiness.md).
+It never applies mappings, updates D1 or calls model providers.
+
 This directory houses **deterministic Python scripts** or CLI utilities. The agent calls these scripts during the execution phase to perform data-heavy, repetitive, or integration tasks.
 
 ## ⚙️ Operating Rules

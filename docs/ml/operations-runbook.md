@@ -1,5 +1,10 @@
 # ML operations runbook
 
+For concierge preview preparation, first follow the
+[live catalog audit](concierge-catalog-readiness.md). It exports D1 through query
+mode, checks identity/current fact hashes and creates a canonical index dry-run
+input without applying database changes.
+
 ## Scope
 
 This runbook covers environment setup, residual-model execution, evaluation,

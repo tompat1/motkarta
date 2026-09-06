@@ -153,3 +153,7 @@ Stages 1–4 are implemented locally with mocked provider validation. See
 [Concierge RAG](concierge-rag.md) for contracts, versions and operation, and
 [evaluation](concierge-evaluation.md) for measured limitations. Cloud AI remains
 disabled; no production activation or personalized learning is implied.
+
+The [live catalog readiness audit](concierge-catalog-readiness.md) documents
+identity and freshness blockers for preview and provides a reproducible D1 index
+input. Audit tooling does not apply mappings or database repairs.

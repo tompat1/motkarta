@@ -1,5 +1,10 @@
 # Concierge RAG: local implementation
 
+The subsequent [live catalog audit](concierge-catalog-readiness.md) found zero
+shared numeric IDs between D1 and the public map, differing fact hashes and
+unreconciled closure/location data. Reconcile those before preview activation;
+use the audit's D1-normalized export for the next index dry run.
+
 Stages 1–4 were approved for local implementation and testing on 2026-09-05.
 The Cloudflare integrations are implemented behind disabled flags. No index,
 paid inference, migration or deployment has been performed. The release gates

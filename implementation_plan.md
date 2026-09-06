@@ -1,5 +1,12 @@
 # Current proposal: multilingual, evidence-grounded RAG concierge
 
+Next-step audit authorized by “so continue pls”: read the configured D1 catalog,
+compare identity/eligibility/fact hashes with the public snapshot, and prepare a
+reproducible canonical D1 index input and reconciliation report. Do not apply ID
+mappings, database mutations, paid inference or deployment. Validate the audit
+against malformed snapshots, duplicate identities and mismatched venue records;
+run the repository test/build gates and document measured release blockers.
+
 Status: stages 1–4 approved and implemented locally on 2026-09-05.
 See the [implementation/runbook](docs/ml/concierge-rag.md) and
 [evaluation record](docs/ml/concierge-evaluation.md). Cloud resources, paid

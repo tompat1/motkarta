@@ -237,3 +237,8 @@ validated with real collection metrics.
 - Local test mocks do not establish multilingual model quality. The initial
   synthetic holdout was used in safety debugging; collect a fresh one before
   calibration/promotion. Global scorer and shadow event versions are unchanged.
+- The live concierge catalog audit found separate public/D1 ID namespaces and
+  differing normalized facts. Run `execution/audit_concierge_catalog.mjs` before
+  preview. Use Wrangler query mode (`--command`) for row exports; its bulk-file
+  path returns execution summaries. Keep the source IDs and lifecycle conflicts
+  explicit; do not automatically renumber or overwrite records from public defaults.
