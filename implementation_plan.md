@@ -1,5 +1,14 @@
 # Current proposal: multilingual, evidence-grounded RAG concierge
 
+2026-09-06 continuation: deploy and validate a lexical concierge preview on the
+`concierge-rag-preview` Pages branch. Build an advanced-mode preview worker that
+exposes only the existing concierge GET/POST handlers, allows only the three
+catalog SELECT statements, and strips AI bindings. Other APIs, admin paths and
+writes are disabled in this preview. Read the existing D1 catalog without
+mutations; preserve the production branch/configuration. Test isolation and
+live API/map behavior, record the deployment and prepare a concrete budgeted
+semantic-test proposal. Paid inference and production activation remain pending.
+
 2026-09-06 catalog repair authorized by “Pls run”:
 
 Completed: 454 guarded D1 updates applied and verified; all original IDs preserved.

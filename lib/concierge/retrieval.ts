@@ -43,12 +43,13 @@ export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent,
 }
 export function lexicalCandidates(query: string, places: ConciergePlace[], context: QueryContext = {}): RankedCandidate[] {
   const intent = parseIntent(query, context);
+  if (intent.outsideStockholm || intent.excludedBrandRequested || intent.openNow || ((intent.near || context.radiusKm !== undefined) && !coordinates(context.location))) return [];
   const normalizedQuery = normalize(intent.positive);
   const namedIds = exactNameIds(query, places);
   const candidates: RankedCandidate[] = [];
   const seen = new Set<number>();
   for (const place of places) {
-    if (seen.has(place.id) || !eligiblePlace(place) || (namedIds.size && !namedIds.has(place.id))) continue;
+    if (seen.has(place.id) || (namedIds.size && !namedIds.has(place.id)) || !eligiblePlace(place)) continue;
     seen.add(place.id);
     const facts = placeFacts(place);
     const text = normalize(facts.document);
@@ -56,9 +57,11 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     const matchingTerms = intent.terms.filter((term) => matchesTerm(term, text));
     // Area alone must not make an unsupported food query relevant.
     const lexicalScore = matchingTerms.length / Math.max(1, intent.terms.length);
+    const relevant = exact || lexicalScore > 0 || (!intent.terms.length && (intent.area || intent.dinner || intent.hiddenGem || intent.near || intent.exclusions.length || intent.priceMax !== null || intent.filters.near_public_transport));
+    if (!relevant) continue;
     const candidate: RankedCandidate = { place: scorePlace(place), facts, exact, lexicalScore, fusionScore: 0 };
     if (!satisfiesConstraints(candidate, intent, context)) continue;
-    if (exact || lexicalScore > 0 || (!intent.terms.length && (intent.area || intent.dinner || intent.hiddenGem || intent.near || intent.exclusions.length || intent.priceMax !== null || intent.filters.near_public_transport))) candidates.push(candidate);
+    candidates.push(candidate);
   }
   candidates.sort((a, b) => Number(b.exact) - Number(a.exact) || b.lexicalScore - a.lexicalScore || b.place.scores.recommendation - a.place.scores.recommendation || a.place.id - b.place.id);
   return candidates.map((candidate, index) => ({ ...candidate, lexicalRank: index + 1, fusionScore: 1 / (60 + index + 1) }));
