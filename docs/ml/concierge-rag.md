@@ -1,9 +1,9 @@
 # Concierge RAG: local implementation
 
-The subsequent [live catalog audit](concierge-catalog-readiness.md) found zero
-shared numeric IDs between D1 and the public map, differing fact hashes and
-unreconciled closure/location data. Reconcile those before preview activation;
-use the audit's D1-normalized export for the next index dry run.
+The [live catalog audit](concierge-catalog-readiness.md) led to the
+[2026-09-06 reconciliation](concierge-reconciliation.md): guarded D1 data repairs
+are applied and the local OSM identity bridge passes for all 3,143 eligible D1
+records. The new code is not deployed. Use the repaired D1-normalized index input.
 
 Stages 1–4 were approved for local implementation and testing on 2026-09-05.
 The Cloudflare integrations are implemented behind disabled flags. No index,
@@ -126,9 +126,9 @@ Legacy `answer`, `recommendedPlaces`, `source`, `totalSearchSpace` and
 The legacy filter extractor remains a compatibility field; `parseIntent` is the
 constraint authority and preserves negation that the legacy summary cannot express.
 
-The UI uses structured IDs for cards/map actions and displays source links. If a
-server ID is absent from the browser's dataset, the map button is disabled rather
-than guessing another branch by name. New requests abort old ones and stale
+The UI uses namespaced IDs and the [validated OSM identity bridge](concierge-reconciliation.md)
+for map actions and displays source links. Unresolved or ambiguous identities
+disable the map button rather than guessing another branch by name. New requests abort old ones and stale
 responses cannot replace the current answer. Only Vite development can fall back
 to the published static snapshot, never the augmented user-submission collection.
 Production failures are visible. Legacy parser defaults no longer invent verified
@@ -140,10 +140,10 @@ hours, medium prices or recent verification.
 | --- | --- |
 | Response | `concierge-response-v1` |
 | Corpus | `concierge-facts-v1` |
-| Corrected lexical | `concierge-lexical-v1` |
-| Hybrid ranking | `concierge-hybrid-v1` |
+| Corrected lexical | `concierge-lexical-v2` |
+| Hybrid ranking | `concierge-hybrid-v2` |
 | Synthesis prompt | `concierge-synthesis-v1` |
-| Python offline ranking | `concierge-python-lexical-v1` |
+| Python offline ranking | `concierge-python-lexical-v2` |
 | Global scorer (unchanged) | `transparent-scorer-v1.1` |
 
 No recommendation-event schema or learning behavior changes. Existing shadow

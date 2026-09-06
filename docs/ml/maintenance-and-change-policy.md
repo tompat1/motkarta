@@ -1,5 +1,12 @@
 # ML maintenance and change policy
 
+For the applied catalog data repair and locally implemented admission/identity
+changes, see [Concierge reconciliation](concierge-reconciliation.md). Retain its
+pre/post snapshots and guarded rollback when reviewing the 454 updates. Public
+catalog regeneration must preserve/rebuild full OSM identities and corroborated
+aliases, then pass the catalog audit. Neither identity repair nor zero audit
+blockers authorizes deployment, paid inference or personalized learning.
+
 ## Purpose
 
 ML behavior can change through code, data, labels, features, weights, prompts or

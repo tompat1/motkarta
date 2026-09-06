@@ -1,5 +1,11 @@
 # ML training and evaluation
 
+The [2026-09-06 concierge reconciliation](concierge-reconciliation.md) validates
+identity, source locality, lifecycle propagation and index compatibility against
+live D1 readback. Lexical/hybrid admission versions are now v2. The synthetic
+regression scores remain unchanged; no new model-quality or satisfaction claim
+follows from passing catalog checks. A fresh labeled evaluation is still required.
+
 ## Current trained model
 
 The only trained recommendation-adjacent model currently authorized is the

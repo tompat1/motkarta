@@ -14,6 +14,8 @@ type D1Database = {
 
 export type PlaceRow = {
   id: number;
+  osm_type?: string | null;
+  osm_id?: string | null;
   name: string;
   type: EstablishmentType;
   district: string;
@@ -121,6 +123,8 @@ const CUISINE_TAGS = new Map([
 export const placeQuery = `
   SELECT
     e.id,
+    e.osm_type,
+    e.osm_id,
     e.name,
     e.type,
     e.district,
@@ -244,6 +248,9 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
 
   return {
     id: row.id,
+    idNamespace: 'd1',
+    osmIdentity: ['node', 'way', 'relation'].includes(row.osm_type ?? '') && /^\d+$/.test(row.osm_id ?? '') ? `${row.osm_type}:${row.osm_id}` : undefined,
+    sourceArea: row.district,
     chainStatus: row.chain_status === "chain" ? "chain" : row.chain_status === "independent" ? "independent" : "unknown",
     sourcePriceLevel: row.price_level ?? null,
     evidenceSources: evidenceRows.map((evidence, index) => ({ id: String(evidence.id ?? `${row.id}:${index}`), name: evidence.source_name, type: evidence.source_type, url: safeUrl(evidence.url), capturedAt: evidence.captured_at, summary: evidence.summary ?? undefined })),

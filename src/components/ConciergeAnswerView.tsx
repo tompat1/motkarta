@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { parseConciergeAnswer } from "../../lib/concierge-parser";
 import type { ConciergeResponse } from "../../lib/concierge/contracts";
 import { safeUrl } from "../../lib/concierge/facts";
+import { resolveConciergeMapPlace } from "../../lib/concierge/map-identity";
 import type { PlaceInput } from "../../lib/scoring";
 import type { Language } from "../app/shared";
 import { ArrowSquareOut, CheckCircle, Globe, MapPin, MapTrifold, Sliders, Sparkle, ThumbsDown, ThumbsUp, X } from "@phosphor-icons/react";
@@ -114,7 +115,7 @@ export function ConciergeAnswerView({
 
       {parsed.cards.map((card, idx) => {
         const cardNameClean = card.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
-        const matchedPlace =
+        const matchedPlace = response ? resolveConciergeMapPlace(response.cards[idx], places) :
           (card.id !== undefined ? places.find((p) => p.id === card.id) : undefined) ||
           (!response ? places.find((p) => p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase() === cardNameClean) ||
           places.find((p) => {
@@ -144,7 +145,7 @@ export function ConciergeAnswerView({
                 <button
                   type="button"
                   disabled={Boolean(response && !matchedPlace)}
-                  onClick={() => handleSelect(card.name, card.id ?? matchedPlace?.id)}
+                  onClick={() => handleSelect(card.name, matchedPlace?.id ?? card.id)}
                   title="Click to view and highlight on map"
                 >
                   {card.name}
@@ -207,7 +208,7 @@ export function ConciergeAnswerView({
                 type="button"
                 className="concierge-btn primary"
                 disabled={Boolean(response && !matchedPlace)}
-                  onClick={() => handleSelect(card.name, card.id ?? matchedPlace?.id)}
+                  onClick={() => handleSelect(card.name, matchedPlace?.id ?? card.id)}
               >
                 <MapPin size={14} weight="fill" /> {lang === 'sv' ? 'Visa på kartan' : 'Select on Map'}
               </button>

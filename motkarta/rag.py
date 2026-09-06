@@ -5,6 +5,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from motkarta.stockholm_boundary import normalized_boundary_text, contains_boundary_token
+from motkarta.stockholm_boundary import STOCKHOLM_MUNICIPALITY_BBOX
 
 POLICY = json.loads((Path(__file__).resolve().parents[1] / 'lib/concierge/policy.json').read_text())
 CORPUS_VERSION = 'concierge-facts-v1'
@@ -27,9 +28,16 @@ def eligible_place(place: dict) -> bool:
     if place.get('chainStatus', place.get('chain_status')) == 'chain':
         return False
     name = normalized_boundary_text(place.get('name', ''))
+    if name in POLICY['excludedExactChains']:
+        return False
     if any(contains_boundary_token(name, chain) for chain in POLICY['excludedChains']):
         return False
-    location = normalized_boundary_text(' '.join(str(place.get(k) or '') for k in ['area', 'address', 'sourceUrl']))
+    latitude, longitude = place.get('latitude'), place.get('longitude')
+    if isinstance(latitude, (int, float)) and isinstance(longitude, (int, float)):
+        south, west, north, east = STOCKHOLM_MUNICIPALITY_BBOX
+        if not (south <= latitude <= north and west <= longitude <= east):
+            return False
+    location = normalized_boundary_text(' '.join(str(place.get(k) or '') for k in ['area', 'sourceArea', 'address', 'sourceUrl']))
     return not any(contains_boundary_token(location, area) for area in POLICY['excludedLocalities']) and any(contains_boundary_token(location, area) for area in POLICY['stockholmLocalities'])
 
 

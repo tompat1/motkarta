@@ -1,5 +1,9 @@
 # Layer 3: Execution Scripts
 
+`reconcile_concierge_catalog.mjs` generates guarded source-fact repairs, rollback
+SQL and corroborated public OSM identities/duplicate aliases. It only writes local
+artifacts; see the [repair record and replay instructions](../docs/ml/concierge-reconciliation.md).
+
 `audit_concierge_catalog.mjs` compares a read-only D1 query export with the public
 catalog and writes mapping candidates, release blockers and normalized D1 index
 input. See the [audit runbook](../docs/ml/concierge-catalog-readiness.md).

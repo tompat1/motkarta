@@ -137,3 +137,12 @@ def test_query_set_has_120_cases_and_no_family_leakage():
     bad['queries'][1]['split'] = 'holdout'
     with pytest.raises(ValueError, match='leakage'):
         report({'results': []}, bad, {str(p['id']): p for p in PLACES})
+
+
+def test_reconciled_locality_and_chain_policy():
+    place = {**PLACES[0], 'area': 'Norrort', 'sourceArea': 'Stockholm', 'latitude': 59.36, 'longitude': 18.08}
+    assert eligible_place(place)
+    assert not eligible_place({**place, 'address': 'Solna, Stockholm'})
+    assert not eligible_place({**place, 'latitude': 0, 'longitude': 0})
+    for name in ["McDonald's", 'Max', 'Sibylla']:
+        assert not eligible_place({**place, 'name': name})

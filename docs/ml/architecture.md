@@ -1,5 +1,11 @@
 # ML and ranking architecture
 
+Concierge catalog update (2026-09-06): the
+[reconciliation record](concierge-reconciliation.md) describes the applied data
+repairs and local identity bridge. D1 remains the server authority; public IDs
+remain stable for map/saved/media state. Explicit OSM identities and existing
+duplicate mappings connect the namespaces without database entity merges.
+
 ## Purpose
 
 This document separates Motkarta's scoring and ML subsystems. Several modules

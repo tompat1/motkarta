@@ -1,5 +1,9 @@
 # Concierge catalog readiness — 2026-09-05
 
+Historical baseline: the subsequent [2026-09-06 reconciliation](concierge-reconciliation.md)
+applied guarded data repairs and implemented a validated identity bridge. Its
+post-repair results supersede the blockers below for the D1-backed cohort.
+
 The authorized next-step audit read `motkarta-prod` D1 and compared it with
 `public/data/places.json`. No venue rows were written, no resources were
 provisioned, and no model inference or deployment occurred. Stage 5 is **not

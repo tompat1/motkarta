@@ -15,6 +15,8 @@ export function makeCard(candidate: RankedCandidate, language: 'sv' | 'en'): Con
   const listed = facts.facts.filter((f) => ['cuisine', 'kind', 'area'].includes(f.field)).map((f) => f.value).join('; ');
   return {
     id: place.id, name: plainText(place.name), kind: place.kind, area: plainText(place.area),
+    idNamespace: place.idNamespace, osmIdentity: place.osmIdentity,
+    latitude: place.latitude, longitude: place.longitude,
     whyItMatches: candidate.exact ? (sv ? 'Namnet matchar din sökning.' : 'The name matches your search.') : `${sv ? 'Listade uppgifter' : 'Listed attributes'}: ${listed}.`,
     hoursConfidence: hours ? `${hours.value} (${sv ? 'listade tider, öppet nu ej verifierat' : 'listed hours; open now unverified'})` : unknown,
     priceConfidence: price ? `${price.value} SEK (${sv ? 'listat pris' : 'listed price'})` : unknown,

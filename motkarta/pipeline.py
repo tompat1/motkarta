@@ -690,6 +690,8 @@ def place_input_from_row(row: pd.Series) -> dict:
 
     place = {
         "id": stable_numeric_id(row),
+        "idNamespace": "public",
+        "osmIdentity": f"{row['osm_type']}:{row['osm_id']}",
         "name": clean_text(row["name"]),
         "kind": establishment_type,
         "cuisine": cuisine,

@@ -1,5 +1,10 @@
 # ML operations runbook
 
+The [2026-09-06 catalog repair record](concierge-reconciliation.md) documents
+applied D1 repairs, guarded rollback and the validated local identity bridge.
+Use its repaired D1 snapshot workflow for the next index plan; no AI activation
+or code deployment was performed with the data repair.
+
 For concierge preview preparation, first follow the
 [live catalog audit](concierge-catalog-readiness.md). It exports D1 through query
 mode, checks identity/current fact hashes and creates a canonical index dry-run

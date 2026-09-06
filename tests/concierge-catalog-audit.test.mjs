@@ -69,3 +69,15 @@ test('matching catalogs still do not constitute production approval; closure dri
   assert.equal(closure.counts.closureConflicts, 1);
   assert.ok(closure.blockers.includes('public_closure_missing_from_d1'));
 });
+
+test('audit validates the deployed identity bridge and D1 index contract separately', async () => {
+  const d1 = place({ idNamespace: 'd1', osmIdentity: 'node:123' });
+  const pub = place({ id: 4153755288, idNamespace: 'public', osmIdentity: 'node:123', address: 'Static-only address' });
+  const report = await auditCatalog([pub], snapshot([d1]), [d1]);
+  assert.equal(report.counts.sameIds, 0);
+  assert.equal(report.counts.resolvedMapRecords, 1);
+  assert.equal(report.counts.compatibleIndexRecords, 1);
+  assert.deepEqual(report.blockers, []);
+  const stale = await auditCatalog([pub], snapshot([d1]), [{ ...d1, name: 'Old name' }]);
+  assert.ok(stale.blockers.includes('index_input_does_not_match_d1'));
+});

@@ -131,10 +131,14 @@
     "pressbyran",
     "7 eleven",
     "mcdonalds",
+    "mcdonald s",
+    "max burgers",
+    "sibylla",
     "burger king",
     "subway",
     "pizza hut"
   ],
+  "excludedExactChains": ["max"],
   "specialtyNames": [
     "pascal",
     "drop coffee",

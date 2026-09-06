@@ -2,7 +2,7 @@ import type { PlaceInput, ScoredPlace } from '../scoring.ts';
 
 export const VERSIONS = {
   schema: 'concierge-response-v1', corpus: 'concierge-facts-v1',
-  lexical: 'concierge-lexical-v1', hybrid: 'concierge-hybrid-v1',
+  lexical: 'concierge-lexical-v2', hybrid: 'concierge-hybrid-v2',
   prompt: 'concierge-synthesis-v1', scorer: 'transparent-scorer-v1.1',
 } as const;
 export const EMBEDDING_MODEL = '@cf/baai/bge-m3';
@@ -21,6 +21,7 @@ export type ConciergePlace = PlaceInput & {
   sourceUrl?: string; chainStatus?: 'independent' | 'chain' | 'unknown';
   sourceFacts?: SourceFact[]; evidenceSources?: EvidenceSource[];
   sourcePriceLevel?: number | null;
+  sourceArea?: string;
 };
 export type ConciergePlaceFacts = {
   id: number; facts: SourceFact[]; document: string; chainStatus: string;
@@ -30,6 +31,8 @@ export type ConciergeCard = {
   hoursConfidence: string; priceConfidence: string; lastVerified: string;
   missingInfo: string; dataSources: string; citations: SourceFact[];
   distanceKm?: number; website?: string;
+  idNamespace?: 'd1' | 'public'; osmIdentity?: string;
+  latitude?: number; longitude?: number;
 };
 export type RankedCandidate = {
   place: ScoredPlace; facts: ConciergePlaceFacts; lexicalScore: number;

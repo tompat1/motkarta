@@ -170,5 +170,5 @@ def synthesize_concierge_response(query: str, documents: list[dict], limit: int 
     answer = '\n\n'.join(items) if items else 'No places could be confirmed for your requirements. Please refine the query.'
     return {'query': query, 'structured_filters': extract_structured_filters(query),
             'synthesized_answer': answer, 'retrieved_places': retrieved, 'grounded': True,
-            'source': 'deterministic', 'model_version': 'concierge-python-lexical-v1',
+            'source': 'deterministic', 'model_version': 'concierge-python-lexical-v2',
             'status': 'ok' if retrieved else 'clarification'}

@@ -157,3 +157,7 @@ disabled; no production activation or personalized learning is implied.
 The [live catalog readiness audit](concierge-catalog-readiness.md) documents
 identity and freshness blockers for preview and provides a reproducible D1 index
 input. Audit tooling does not apply mappings or database repairs.
+
+The [2026-09-06 reconciliation](concierge-reconciliation.md) applied 454 guarded
+D1 repairs while preserving all IDs. The local identity bridge and D1 index contract
+now pass; code deployment and paid model evaluation remain separate steps.

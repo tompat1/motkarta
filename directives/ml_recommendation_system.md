@@ -242,3 +242,10 @@ validated with real collection metrics.
   preview. Use Wrangler query mode (`--command`) for row exports; its bulk-file
   path returns execution summaries. Keep the source IDs and lifecycle conflicts
   explicit; do not automatically renumber or overwrite records from public defaults.
+- The 2026-09-06 reconciliation preserves both numeric namespaces and uses full
+  OSM identities plus validated existing duplicate aliases for map actions.
+  Source locality must survive derived region labels; impossible coordinates
+  and explicit outside localities still reject. Missing CSV numbers are NULL,
+  not zero. Source-field repairs require identity/state/timestamp guards and
+  post-write verification. See `docs/ml/concierge-reconciliation.md` for the
+  applied repair, current versions and remaining deployment/evaluation boundaries.

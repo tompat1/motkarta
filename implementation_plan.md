@@ -1,5 +1,24 @@
 # Current proposal: multilingual, evidence-grounded RAG concierge
 
+2026-09-06 catalog repair authorized by “Pls run”:
+
+Completed: 454 guarded D1 updates applied and verified; all original IDs preserved.
+Local identity bridge, source locality gates, importer safeguards and validation
+pass. See [the repair record](docs/ml/concierge-reconciliation.md). Code remains
+undeployed; no paid inference or Vectorize mutation occurred.
+
+- Refresh D1, retain its IDs, and generate guarded updates only for corroborated
+  source street addresses, invalid coordinates and the existing closed label.
+- Rehearse updates and rollback locally; retain the before snapshot and inspect
+  exact field changes before executing any repair. Do not insert/delete venues,
+  replace evidence, promote labels or enable paid inference/deployment.
+- Add full OSM identity to public/server records and validate map joins by that
+  identity, name and location; preserve existing public IDs and saved/media keys.
+- Separate source locality evidence from derived region labels and reject
+  coordinates outside the established Stockholm bounding envelope.
+- Run identity, stale-update, rollback, lifecycle, geography, HTTP/map and full
+  test/build checks. Re-audit, documenting unmatched venues without guessing merges.
+
 Next-step audit authorized by “so continue pls”: read the configured D1 catalog,
 compare identity/eligibility/fact hashes with the public snapshot, and prepare a
 reproducible canonical D1 index input and reconciliation report. Do not apply ID

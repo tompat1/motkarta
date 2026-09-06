@@ -57,6 +57,9 @@ export type UserPreferences = {
 
 export type PlaceInput = {
   id: number;
+  idNamespace?: 'd1' | 'public';
+  osmIdentity?: string;
+  osmAliases?: string[];
   name: string;
   kind: EstablishmentType;
   cuisine?: string;

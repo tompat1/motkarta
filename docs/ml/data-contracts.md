@@ -43,6 +43,13 @@ namespaces. Derived OSM mappings need name/location checks and collision review;
 a matching name or 32-bit hash alone does not authorize merging records.
 Concierge index input must use the D1 runtime normalization.
 
+The [implemented bridge](concierge-reconciliation.md) carries `idNamespace`, full
+`osmIdentity` and corroborated `osmAliases` without changing numeric IDs. These
+fields identify map records; they are not scoring evidence. `sourceArea` retains
+source locality separately from derived display regions. Existing closure labels
+remain authoritative; neither bridge metadata nor duplicate aliases can promote
+venue lifecycle or hidden-gem status.
+
 ## Data classes
 
 | Class | Examples | Allowed use |
