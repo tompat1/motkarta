@@ -8,7 +8,7 @@ import path from 'node:path';
 // Local preparation only. Deployment is a separate, explicit Wrangler command.
 const root = fileURLToPath(new URL('../', import.meta.url));
 const destination = path.join(root, '.tmp/concierge-preview');
-const site = path.join(destination, 'site');
+const site = path.join(destination, 'dist');
 const require = createRequire(import.meta.url);
 const { build } = createRequire(require.resolve('wrangler/package.json'))('esbuild');
 await mkdir(destination, { recursive: true });
@@ -19,11 +19,11 @@ await writeFile(path.join(site, '_routes.json'), JSON.stringify({ version: 1, in
 const config = await readFile(path.join(root, 'wrangler.toml'), 'utf8');
 // Stop on configuration drift; review any new binding before a preview uses it.
 const sections = [...config.matchAll(/^\s*\[+([^\]]+)\]+/gm)].map((match) => match[1]);
-if (sections.some((section) => !['d1_databases', 'vars'].includes(section)) || /\b(AI|CONCIERGE_INDEX|CONCIERGE_RATE_LIMITER)\b/.test(config)) throw new Error('Review new bindings before preparing a lexical preview');
+if (sections.some((section) => !['d1_databases', 'vars', 'limits'].includes(section)) || /\b(AI|CONCIERGE_INDEX|CONCIERGE_RATE_LIMITER)\b/.test(config)) throw new Error('Review new bindings before preparing a lexical preview');
 const dbId = config.match(/database_id\s*=\s*"([\w-]+)"/)?.[1];
 const date = config.match(/compatibility_date\s*=\s*"([\d-]+)"/)?.[1];
 if (!dbId || !date) throw new Error('Missing catalog binding or compatibility date');
-await writeFile(path.join(destination, 'wrangler.toml'), `name = "motkarta"\npages_build_output_dir = "site"\ncompatibility_date = "${date}"\n\n[limits]\ncpu_ms = 1000\n\n[[d1_databases]]\nbinding = "DB"\ndatabase_name = "motkarta-prod"\ndatabase_id = "${dbId}"\n\n[vars]\nCONCIERGE_RETRIEVAL_MODE = "lexical"\nCONCIERGE_SYNTHESIS_MODE = "template"\n`);
+await writeFile(path.join(destination, 'wrangler.toml'), `name = "motkarta"\npages_build_output_dir = "dist"\ncompatibility_date = "${date}"\n\n[limits]\ncpu_ms = 1000\n\n[[d1_databases]]\nbinding = "DB"\ndatabase_name = "motkarta-prod"\ndatabase_id = "${dbId}"\n\n[vars]\nCONCIERGE_RETRIEVAL_MODE = "lexical"\nCONCIERGE_SYNTHESIS_MODE = "template"\n`);
 const hash = async (file) => createHash('sha256').update(await readFile(file)).digest('hex');
 const manifest = {
   version: 'concierge-preview-v1', preparedAt: new Date().toISOString(),

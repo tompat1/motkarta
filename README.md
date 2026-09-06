@@ -42,7 +42,20 @@ Cloudflare is kept as the deployment target without making local development dep
 npm run deploy:cloudflare
 ```
 
-That command builds the Vite app and deploys `dist/` with Wrangler Pages. Connect the Cloudflare project/account before running it.
+That command builds the Vite app and all Pages Functions, validates the combined
+`dist/` artifact, then deploys it with Wrangler Pages. Connect the Cloudflare
+project/account before running it.
+
+The build uses the repository's pinned Wrangler to generate `dist/_worker.js`
+and `dist/_routes.json`. This preserves every API/admin handler and avoids the
+older automatic Pages Functions parser, which rejects JSON import attributes
+(`Expected \";\" but found \"with\"`). Do not remove the JSON import attributes;
+Node's native TypeScript tests need them. A frontend-only Vite build is not a
+complete deployment artifact.
+
+`wrangler.toml` sets the tested 1,000 ms CPU limit for catalog processing. This
+is separate from request/network timeouts; Cloudflare `exceededCpu` failures
+cannot be fixed by increasing browser timeouts.
 
 For the GitHub-connected Cloudflare Pages project:
 
@@ -50,7 +63,7 @@ For the GitHub-connected Cloudflare Pages project:
 - Output directory: `dist`
 - Node version: `22.13.0` or newer
 - D1 binding name: `DB`
-- Deployment type: Cloudflare Pages static site, not Wrangler/Workers deploy
+- Deployment type: Cloudflare Pages with a compiled Functions worker
 
 If the deployment log says `No build command specified. Skipping build step.`,
 set the Pages build command in the Cloudflare dashboard to `npm run build`.

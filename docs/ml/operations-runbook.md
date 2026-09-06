@@ -1,5 +1,9 @@
 # ML operations runbook
 
+The [Pages build repair](../build-deployment-repair.md) makes server compilation
+and route/auth validation part of `npm run build`, fixes Node 22.16 test execution,
+and carries the validated catalog CPU limit in root Wrangler configuration.
+
 For the deployed read-only concierge preview, commands, CPU-limit finding and
 pending model-test budget, see [Concierge preview](concierge-preview.md).
 

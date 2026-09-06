@@ -1,5 +1,28 @@
 # Current proposal: multilingual, evidence-grounded RAG concierge
 
+Build/deployment repair completed and deployed to production as
+`d947add9-a120-4ec0-accf-66da3faffc8f`. Exact Node 22.16.0 build and all 203 JS tests
+pass; 74 Python tests pass. Live production checks confirm lexical/template D1
+responses, source exclusions, `dist` output and the 1,000 ms CPU limit.
+See [the repair record](docs/build-deployment-repair.md). The paid RAG trial remains
+paused at the user's build-first request, with one empty index and no inference.
+
+Build/deployment repair takes priority per the user's correction and pasted log.
+Compile all Pages Functions into `dist/_worker.js` and generate routes during the
+verified build using pinned Wrangler 4.92.0. Validate the server artifact and
+align GitHub CI with Node 22. Preserve source JSON imports and all API/admin
+handlers. Test the compiled worker and local runtime, then verify upload before
+restoring normal production deployment. The approved RAG trial is paused: the
+isolated index was created empty; no model calls or vector writes have started.
+
+Real-model trial authorized by “So yes go ahead” after the US$1 proposal.
+Create only the isolated preview index, cap corpus input at 150,000 estimated
+tokens, and run at most 128 diagnostic query embeddings/searches and 32 synthesis
+calls (500 output tokens each). Maintain a usage ledger including failed calls,
+verify current D1 hashes and all index records, and report genuine model results
+without treating diagnostic queries as an untouched holdout. Preserve production
+and the lexical-only public preview; no plan upgrade is authorized.
+
 Preview continuation completed: [tested deployment and findings](docs/ml/concierge-preview.md).
 203 JavaScript/70 Python tests, build and live browser/HTTP checks pass. Reduced
 unnecessary lexical computation with 256 unchanged ranking comparisons. The

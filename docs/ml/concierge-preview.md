@@ -1,5 +1,10 @@
 # Concierge preview — 2026-09-06
 
+Subsequent [build/deployment repair](../build-deployment-repair.md) adds complete
+Functions bundling to the regular build and prevents preview output-directory
+drift. The US$1 model trial was approved, then paused at the user's request to
+fix builds first. Its isolated index exists empty; no model calls have started.
+
 The lexical concierge is deployed at
 [concierge-rag-preview.motkarta.pages.dev](https://concierge-rag-preview.motkarta.pages.dev).
 The tested immutable deployment is
@@ -72,7 +77,7 @@ wall-clock stage diagnostics are not CPU measurements.
 npm test
 npm run build
 node execution/prepare_concierge_preview.mjs
-npx wrangler pages deploy site --cwd .tmp/concierge-preview \
+npx wrangler pages deploy dist --cwd .tmp/concierge-preview \
   --project-name motkarta --branch concierge-rag-preview --commit-dirty true
 node execution/smoke_concierge_preview.mjs https://concierge-rag-preview.motkarta.pages.dev
 ```
@@ -89,7 +94,7 @@ checks, `d1.json`, `audit/`, `index-plan.json`, `http-checks.json`,
 Rollback is a replacement deployment to this preview branch or removal of its
 specific deployment. No production rollback or catalog reversal is needed.
 
-## Next: one bounded real-model trial (pending spending approval)
+## Next: one bounded real-model trial (approved, paused for build repair)
 
 Proposed scope is one isolated `motkarta-concierge-preview-v1` index with
 1,024-dimensional cosine vectors and metadata indexes for corpus version,

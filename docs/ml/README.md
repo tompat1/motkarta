@@ -1,5 +1,9 @@
 # Motkarta ML system
 
+Latest concierge status: [production build repaired](../build-deployment-repair.md)
+with corrected lexical/template responses deployed. Semantic retrieval and model
+synthesis remain off; the approved trial has not made inference calls.
+
 This directory is the canonical documentation for machine learning, ranking,
 recommendation telemetry, evaluation and model maintenance in Motkarta.
 

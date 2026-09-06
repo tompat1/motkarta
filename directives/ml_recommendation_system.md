@@ -258,3 +258,8 @@ validated with real collection metrics.
   3.114.17 while pinned 4.92.0 compiled them. Compile the preview worker locally.
   Verify CPU limits with execution telemetry: wall-clock deadlines cannot prevent
   `exceededCpu`. See `docs/ml/concierge-preview.md` for the tested preview setup.
+- The regular build now packages all Functions with pinned Wrangler and validates
+  the executable worker. Wrangler 4 `--outfile` is multipart; use `--outdir` and
+  validate the emitted module before publishing `_worker.js`. Keep preview and
+  production `pages_build_output_dir` identical to avoid shared-project drift.
+  Node 22.16 native TypeScript flags must also reach test CLI subprocesses.

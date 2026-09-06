@@ -10,7 +10,7 @@
     "dev": "vite",
     "build": "bash scripts/build-verified.sh",
     "start": "vite preview",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node scripts/run-tests.mjs",
     "test:python": "python3 -m pytest tests_python",
     "mvp:fetch": ".venv/bin/python scripts/fetch_osm.py",
     "mvp": ".venv/bin/python scripts/run_mvp_pipeline.py",

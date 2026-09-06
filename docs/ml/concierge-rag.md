@@ -1,5 +1,10 @@
 # Concierge RAG: implementation and preview
 
+The [build/deployment repair](../build-deployment-repair.md) subsequently deployed
+the corrected lexical/template app to production. Real semantic retrieval and
+model synthesis remain disabled. The approved US$1 trial is paused with an empty
+preview index while the user prioritizes the deployment repair.
+
 The [2026-09-06 lexical preview](concierge-preview.md) is deployed and tested
 against live D1. It is read-only and hard-disables AI. Production activation,
 real embeddings and constrained model evaluation remain pending.

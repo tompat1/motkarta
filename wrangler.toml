@@ -2,6 +2,10 @@ name = "motkarta"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-08-13"
 
+# Verified with the full D1 catalog in the concierge preview.
+[limits]
+cpu_ms = 1000
+
 [[d1_databases]]
 binding = "DB"
 database_name = "motkarta-prod"

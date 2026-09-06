@@ -6,6 +6,20 @@ if [[ ! -f dist/index.html ]]; then
   exit 69
 fi
 
+if [[ ! -s dist/_worker.js || ! -s dist/_routes.json ]]; then
+  echo "Compiled Pages worker/routes are missing. Run npm run build first." >&2
+  exit 69
+fi
+
+node -e "
+const fs = require('node:fs');
+const routes = JSON.parse(fs.readFileSync('dist/_routes.json', 'utf8'));
+if (routes.version !== 1 || !Array.isArray(routes.include) || !routes.include.length || !Array.isArray(routes.exclude)) {
+  console.error('Invalid Pages routing artifact.');
+  process.exit(69);
+}
+"
+
 if [[ ! -f dist/admin || ! -f dist/admin.html ]]; then
   echo "Admin SPA aliases are missing. Run npm run build first." >&2
   exit 69
@@ -36,6 +50,7 @@ const allowedSourceNames = new Set([
   'openstreetmap contributors',
   'specialty coffee sweden registry',
   'stockholms stad livsmedelskontroll',
+  'tasstipset',
   'visit stockholm (officiella stadsguiden)',
   'white guide nordic',
 ]);
@@ -68,4 +83,5 @@ for (const place of payload.places) {
 }
 "
 
-echo "Validated Vite artifact: admin aliases, bundled assets and neutral OSM/open curated coordinate data are present."
+node scripts/check-pages-worker.mjs
+echo "Validated Pages artifact: compiled worker/routes, admin aliases, bundled assets and neutral OSM/open curated coordinate data are present."
