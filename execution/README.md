@@ -38,3 +38,11 @@ This directory houses **deterministic Python scripts** or CLI utilities. The age
 - `run_concierge_evaluation.mjs`: runs the actual TypeScript retrieval for evaluation.
 
 See [the RAG runbook](../docs/ml/concierge-rag.md).
+# Concierge preview
+
+`prepare_concierge_preview.mjs` packages a verified `dist/` build into a separate
+read-only Pages preview with a manifest; it does not deploy. The wrapper is
+`concierge-preview-worker.ts`. `smoke_concierge_preview.mjs [PREVIEW_URL]` performs
+fixed live catalog and API-isolation checks without AI. Follow
+[the preview runbook](../docs/ml/concierge-preview.md) for deployment, limits and
+the pending real-model trial.

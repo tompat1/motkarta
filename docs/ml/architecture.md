@@ -1,5 +1,9 @@
 # ML and ranking architecture
 
+The [read-only concierge preview](concierge-preview.md) wraps the existing Pages
+handler with a SELECT-only D1 facade and hard-disabled AI. It is a separate
+deployment artifact, not a new ranking authority or production configuration.
+
 Concierge catalog update (2026-09-06): the
 [reconciliation record](concierge-reconciliation.md) describes the applied data
 repairs and local identity bridge. D1 remains the server authority; public IDs

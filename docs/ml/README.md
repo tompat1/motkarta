@@ -161,3 +161,7 @@ input. Audit tooling does not apply mappings or database repairs.
 The [2026-09-06 reconciliation](concierge-reconciliation.md) applied 454 guarded
 D1 repairs while preserving all IDs. The local identity bridge and D1 index contract
 now pass; code deployment and paid model evaluation remain separate steps.
+
+The [lexical concierge preview](concierge-preview.md) is now deployed with live D1
+reads, map/browser validation, an explicit preview CPU limit and write/AI isolation.
+Real embedding and synthesis quality remain unmeasured; production is unchanged.

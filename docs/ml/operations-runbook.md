@@ -1,5 +1,8 @@
 # ML operations runbook
 
+For the deployed read-only concierge preview, commands, CPU-limit finding and
+pending model-test budget, see [Concierge preview](concierge-preview.md).
+
 The [2026-09-06 catalog repair record](concierge-reconciliation.md) documents
 applied D1 repairs, guarded rollback and the validated local identity bridge.
 Use its repaired D1 snapshot workflow for the next index plan; no AI activation

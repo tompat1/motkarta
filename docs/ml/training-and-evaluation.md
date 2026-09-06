@@ -1,5 +1,9 @@
 # ML training and evaluation
 
+The [concierge preview record](concierge-preview.md) adds live HTTP/browser
+integration checks and 256 before/after ranking comparisons for a computation
+optimization. These are operational/parity checks, not new model-quality labels.
+
 The [2026-09-06 concierge reconciliation](concierge-reconciliation.md) validates
 identity, source locality, lifecycle propagation and index compatibility against
 live D1 readback. Lexical/hybrid admission versions are now v2. The synthetic

@@ -253,3 +253,8 @@ validated with real collection metrics.
   Share pending map/concierge requests and distinguish timeout from permission
   denial. Bound client waits and ignore late callbacks; do not retry automatically
   from mount effects, language changes or query keystrokes.
+- Cloudflare Pages' automatic Functions builder can use an older Wrangler than
+  the repository. Check deployed build logs; JSON import attributes failed under
+  3.114.17 while pinned 4.92.0 compiled them. Compile the preview worker locally.
+  Verify CPU limits with execution telemetry: wall-clock deadlines cannot prevent
+  `exceededCpu`. See `docs/ml/concierge-preview.md` for the tested preview setup.

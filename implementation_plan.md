@@ -1,5 +1,12 @@
 # Current proposal: multilingual, evidence-grounded RAG concierge
 
+Preview continuation completed: [tested deployment and findings](docs/ml/concierge-preview.md).
+203 JavaScript/70 Python tests, build and live browser/HTTP checks pass. Reduced
+unnecessary lexical computation with 256 unchanged ranking comparisons. The
+preview has an explicit 1,000 ms CPU limit after an initial resource-limit failure;
+production is unchanged. The next real-model trial has a concrete US$1 proposal,
+pending spending approval; no public AI activation or plan upgrade is included.
+
 2026-09-06 continuation: deploy and validate a lexical concierge preview on the
 `concierge-rag-preview` Pages branch. Build an advanced-mode preview worker that
 exposes only the existing concierge GET/POST handlers, allows only the three

@@ -1,13 +1,18 @@
-# Concierge RAG: local implementation
+# Concierge RAG: implementation and preview
+
+The [2026-09-06 lexical preview](concierge-preview.md) is deployed and tested
+against live D1. It is read-only and hard-disables AI. Production activation,
+real embeddings and constrained model evaluation remain pending.
 
 The [live catalog audit](concierge-catalog-readiness.md) led to the
 [2026-09-06 reconciliation](concierge-reconciliation.md): guarded D1 data repairs
 are applied and the local OSM identity bridge passes for all 3,143 eligible D1
-records. The new code is not deployed. Use the repaired D1-normalized index input.
+records. The code is now in a separate preview. Use the repaired D1-normalized index input.
 
 Stages 1–4 were approved for local implementation and testing on 2026-09-05.
 The Cloudflare integrations are implemented behind disabled flags. No index,
-paid inference, migration or deployment has been performed. The release gates
+paid inference or migration was performed in stages 1–4. The later preview deployment
+is recorded separately above. The release gates
 in the [implementation plan](rag-implementation-plan.md) still apply to activation.
 
 ## Runtime authority
