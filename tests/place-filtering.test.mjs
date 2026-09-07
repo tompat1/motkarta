@@ -58,3 +58,11 @@ test("cuisine filters omit venue-type placeholders", () => {
   assert.equal(options.includes("italian"), true);
   assert.equal(options.includes("thai"), true);
 });
+
+test("selecting any filter clears concierge state in App.tsx", async () => {
+  const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+  assert.equal(appSource.includes("clearConciergeState();"), true);
+  assert.equal(appSource.includes("selectKindFilter"), true);
+  assert.equal(appSource.includes("selectCuisineFilter"), true);
+});
+
