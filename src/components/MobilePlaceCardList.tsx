@@ -65,15 +65,7 @@ export function MobilePlaceCardList({
       {places.map((place) => {
         const isSaved = savedPlaceIds.includes(place.id);
         const isActive = activePlace?.id === place.id;
-        const photoUrl =
-          photoMap[place.id] ||
-          (place.kind === "Specialty coffee"
-            ? "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80"
-            : place.cuisine === "pizza"
-              ? "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80"
-              : place.kind === "Bakery"
-                ? "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80"
-                : "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80");
+        const photoUrl = photoMap[place.id] || null;
 
         const distanceMeters =
           userLocation && hasCoordinates(place)
@@ -91,8 +83,8 @@ export function MobilePlaceCardList({
             onClick={() => onSelectPlace(place)}
           >
             <div
-              className="mobile-photo-card-bg"
-              style={{ backgroundImage: `url(${photoUrl})` }}
+              className={`mobile-photo-card-bg ${!photoUrl ? "mobile-photo-card-no-photo" : ""}`}
+              style={photoUrl ? { backgroundImage: `url(${photoUrl})` } : undefined}
             >
               <div className="mobile-photo-card-gradient" />
 

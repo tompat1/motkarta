@@ -92,18 +92,6 @@ OPEN_MEDIA_PHOTOS = {
         "caption": "Frantzén Three-Michelin Star Dining",
         "credit": "Wikimedia Commons / CC-BY-SA",
     },
-    "drop coffee": {
-        "url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
-        "thumbnailUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=300&q=80",
-        "caption": "Drop Coffee Roasters Mariatorget",
-        "credit": "CC-BY / Specialty Coffee Guide",
-    },
-    "pascal": {
-        "url": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80",
-        "thumbnailUrl": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=300&q=80",
-        "caption": "Café Pascal Vasastan Espresso Bar",
-        "credit": "CC-BY / Barista Craft",
-    },
 }
 
 def main():

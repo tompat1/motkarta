@@ -23,204 +23,112 @@ HEADERS = {
     "User-Agent": "MotkartaFoodMap/1.0 (Stockholm Independent Food Map; contact@motkarta.se)"
 }
 
-# Category fallback photos for high-aesthetic default imagery
-CUISINE_PHOTO_PRESETS = {
-    "specialty coffee": [
-        {
-            "url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80",
-            "caption": "Handbryggt Specialty Coffee & Espressobar",
-            "credit": "Unsplash / Specialty Coffee Collection",
-        },
-        {
-            "url": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80",
-            "caption": "Spårbart V60 Filterkaffe Single-Origin",
-            "credit": "Unsplash / Barista Craft",
-        },
-    ],
-    "bakery": [
-        {
-            "url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80",
-            "caption": "Färskt Surdegsbröd & Kardemummabullar",
-            "credit": "Unsplash / Swedish Bakery Collection",
-        },
-        {
-            "url": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=400&q=80",
-            "caption": "Hantverksbageri & Frasiga Croissanter",
-            "credit": "Unsplash / Artisanal Bakery",
-        },
-    ],
-    "restaurant": [
-        {
-            "url": "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=400&q=80",
-            "caption": "Restaurangmiljö & Gastronomiska Rätter",
-            "credit": "Unsplash / Nordic Dining",
-        },
-        {
-            "url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80",
-            "caption": "Stämningsfull Servering & Kvarterskrog",
-            "credit": "Unsplash / Restaurant Interior",
-        },
-    ],
-    "mexican": [
-        {
-            "url": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=400&q=80",
-            "caption": "Autentiska Tacos på Majstortilla & Salsa",
-            "credit": "Unsplash / Taqueria Craft",
-        },
-    ],
-    "italian": [
-        {
-            "url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80",
-            "caption": "Dagsfärsk Pasta & Italienska Klassiker",
-            "credit": "Unsplash / Italian Dining",
-        },
-    ],
-    "pizza": [
-        {
-            "url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80",
-            "caption": "Vedugnsbakad Napolitansk Pizza",
-            "credit": "Unsplash / Pizza Artisans",
-        },
-    ],
-}
+def scrape_place_website_photos(website_url: str, place_name: str, limit: int = 3) -> list[dict]:
+    """Scrape real venue photos directly from the place's official website."""
+    photos = []
+    if not website_url or not website_url.startswith("http"):
+        return photos
+
+    try:
+        domain = urllib.parse.urlparse(website_url).netloc
+        res = requests.get(website_url, headers=HEADERS, timeout=5)
+        if res.status_code != 200:
+            return photos
+
+        html = res.text
+
+        # 1. OpenGraph / Twitter meta image tags
+        og_matches = re.findall(r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', html, re.I)
+        og_matches += re.findall(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']', html, re.I)
+        og_matches += re.findall(r'<meta[^>]+name=["\']twitter:image["\'][^>]+content=["\']([^"\']+)["\']', html, re.I)
+
+        seen_urls = set()
+        for img_src in og_matches:
+            full_url = urllib.parse.urljoin(website_url, img_src)
+            if full_url not in seen_urls and not any(x in full_url.lower() for x in ["favicon", "logo", "icon", "1x1", "pixel", "badge"]):
+                seen_urls.add(full_url)
+                photos.append({
+                    "url": full_url,
+                    "thumbnailUrl": full_url,
+                    "caption": f"{place_name} (Officiell bild)",
+                    "credit": f"Official Website ({domain})",
+                })
+                if len(photos) >= limit:
+                    return photos
+
+        # 2. Hero <img> tags
+        img_tags = re.findall(r'<img[^>]+src=["\']([^"\']+\.(?:jpg|jpeg|png|webp))["\']', html, re.I)
+        for img_src in img_tags:
+            full_url = urllib.parse.urljoin(website_url, img_src)
+            if full_url not in seen_urls and not any(x in full_url.lower() for x in ["favicon", "logo", "icon", "1x1", "pixel", "badge", "social", "avatar", "tracking"]):
+                seen_urls.add(full_url)
+                photos.append({
+                    "url": full_url,
+                    "thumbnailUrl": full_url,
+                    "caption": f"{place_name} ({domain})",
+                    "credit": f"Official Website ({domain})",
+                })
+                if len(photos) >= limit:
+                    break
+    except Exception:
+        pass
+
+    return photos
 
 
-def search_wikimedia_commons(query: str, limit: int = 3):
-    """Search Wikimedia Commons API for CC/public domain images matching place query."""
+def search_visit_stockholm_photos(place_name: str, limit: int = 2) -> list[dict]:
+    """Search Visit Stockholm official city portal for venue photos."""
     photos = []
     try:
-        url = "https://commons.wikimedia.org/w/api.php"
-        params = {
-            "action": "query",
-            "generator": "search",
-            "gsrsearch": f"{query} Stockholm",
-            "gsrnamespace": "6",
-            "gsrlimit": str(limit),
-            "prop": "imageinfo",
-            "iiprop": "url|extmetadata|dimensions",
-            "iiurlwidth": "800",
-            "format": "json",
-        }
-        res = requests.get(url, params=params, headers=HEADERS, timeout=6)
+        query = urllib.parse.quote(f"{place_name} Stockholm")
+        url = f"https://www.visitstockholm.com/api/v1/search/?q={query}"
+        res = requests.get(url, headers=HEADERS, timeout=5)
         if res.status_code == 200:
             data = res.json()
-            pages = data.get("query", {}).get("pages", {})
-            for page_id, page in pages.items():
-                imageinfo = page.get("imageinfo", [])
-                if not imageinfo:
-                    continue
-                info = imageinfo[0]
-                img_url = info.get("url")
-                thumb_url = info.get("thumburl", img_url)
-                ext = info.get("extmetadata", {})
-                title = page.get("title", "").replace("File:", "")
-                clean_title = re.sub(r"\.[a-zA-Z0-9]+$", "", title).replace("_", " ")
-
-                credit = "Wikimedia Commons / Public Domain"
-                if "Artist" in ext:
-                    artist_value = ext["Artist"].get("value", "")
-                    clean_artist = re.sub(r"<[^>]+>", "", artist_value).strip()
-                    if clean_artist:
-                        credit = f"Wikimedia Commons / {clean_artist[:40]}"
-
-                if img_url:
+            results = data.get("results", [])
+            for r in results[:limit]:
+                img_url = r.get("image") or r.get("hero_image")
+                if img_url and not any(x in img_url.lower() for x in ["favicon", "logo", "icon"]):
                     photos.append({
                         "url": img_url,
-                        "thumbnailUrl": thumb_url,
-                        "caption": f"{query} ({clean_title[:50]})",
-                        "credit": credit,
-                        "width": info.get("width"),
-                        "height": info.get("height"),
+                        "thumbnailUrl": img_url,
+                        "caption": f"{place_name} (Visit Stockholm)",
+                        "credit": "Visit Stockholm / Official City Portal",
                     })
-    except Exception as err:
+    except Exception:
         pass
     return photos
 
 
-def search_duckduckgo_images(query: str, limit: int = 3):
-    """Fetch images via DuckDuckGo web search endpoint."""
+def search_wikimedia_commons(place_name: str, limit: int = 2) -> list[dict]:
+    """Query Wikimedia Commons API for open media photos of Stockholm venues."""
     photos = []
     try:
-        # Step 1: get vqd token
-        token_url = "https://duckduckgo.com/"
-        token_res = requests.post(token_url, data={"q": f"{query} Stockholm restaurant cafe"}, headers=HEADERS, timeout=5)
-        vqd_match = re.search(r'vqd=([\d-]+)', token_res.text) or re.search(r'vqd="([\d-]+)"', token_res.text)
-        
-        if vqd_match:
-            vqd = vqd_match.group(1)
-            img_url = "https://duckduckgo.com/i.js"
-            params = {
-                "l": "us-en",
-                "o": "json",
-                "q": f"{query} Stockholm",
-                "vqd": vqd,
-                "f": ",,,",
-                "p": "1",
-            }
-            res = requests.get(img_url, params=params, headers=HEADERS, timeout=5)
-            if res.status_code == 200:
-                results = res.json().get("results", [])
-                for r in results[:limit]:
-                    image_link = r.get("image")
-                    thumb_link = r.get("thumbnail") or image_link
-                    title = r.get("title", query)
-                    domain = r.get("source", "Web Search")
-                    if image_link:
+        query = urllib.parse.quote(f"{place_name} Stockholm")
+        url = (
+            f"https://commons.wikimedia.org/w/api.php?action=query&generator=search"
+            f"&gsrsearch={query}&gsrnamespace=6&gsrlimit={limit}&prop=imageinfo"
+            f"&iiprop=url|extmetadata&format=json"
+        )
+        res = requests.get(url, headers=HEADERS, timeout=5)
+        if res.status_code == 200:
+            pages = res.json().get("query", {}).get("pages", {})
+            for page_id, page in pages.items():
+                imageinfo = page.get("imageinfo", [])
+                if imageinfo:
+                    info = imageinfo[0]
+                    img_url = info.get("url")
+                    thumb_url = info.get("thumburl") or img_url
+                    extmeta = info.get("extmetadata", {})
+                    artist = extmeta.get("Artist", {}).get("value", "Wikimedia Commons")
+                    # Clean up HTML tags in artist string
+                    clean_artist = re.sub(r"<[^>]+>", "", artist).strip() or "Wikimedia Commons"
+                    if img_url:
                         photos.append({
-                            "url": image_link,
-                            "thumbnailUrl": thumb_link,
-                            "caption": f"{query} — {title[:60]}",
-                            "credit": f"Photo via {domain}",
-                            "width": r.get("width"),
-                            "height": r.get("height"),
-                        })
-    except Exception as err:
-        pass
-    return photos
-
-
-def search_visit_stockholm_photos(query: str, limit: int = 2):
-    """Search Visit Stockholm official city portal images for place query."""
-    photos = []
-    try:
-        token_url = "https://duckduckgo.com/"
-        token_res = requests.post(token_url, data={"q": f"site:visitstockholm.se {query}"}, headers=HEADERS, timeout=5)
-        vqd_match = re.search(r'vqd=([\d-]+)', token_res.text) or re.search(r'vqd="([\d-]+)"', token_res.text)
-        if vqd_match:
-            vqd = vqd_match.group(1)
-            img_url = "https://duckduckgo.com/i.js"
-            params = {
-                "l": "us-en",
-                "o": "json",
-                "q": f"site:visitstockholm.se {query}",
-                "vqd": vqd,
-                "f": ",,,",
-                "p": "1",
-            }
-            res = requests.get(img_url, params=params, headers=HEADERS, timeout=5)
-            if res.status_code == 200:
-                results = res.json().get("results", [])
-                for r in results[:limit]:
-                    image_link = r.get("image")
-                    thumb_link = r.get("thumbnail") or image_link
-                    title = r.get("title", query)
-                    if image_link:
-                        photos.append({
-                            "url": image_link,
-                            "thumbnailUrl": thumb_link,
-                            "caption": f"{query} (Visit Stockholm Guide)",
-                            "credit": "Visit Stockholm / Official City Portal",
-                            "width": r.get("width"),
-                            "height": r.get("height"),
+                            "url": img_url,
+                            "thumbnailUrl": thumb_url,
+                            "caption": f"{place_name} (Wikimedia Commons)",
+                            "credit": f"Wikimedia Commons / {clean_artist}",
                         })
     except Exception:
         pass
@@ -231,51 +139,24 @@ def fetch_photos_for_place(place: dict) -> tuple:
     place_id = place.get("id")
     name = place.get("name", "")
     area = place.get("area", "Stockholm")
-    kind = place.get("kind", "").lower()
-    tags = [t.lower() for t in place.get("tags", [])]
+    website = place.get("website")
 
     photos = []
 
-    # 1. Search Visit Stockholm official city portal first
-    visit_photos = search_visit_stockholm_photos(name, limit=2)
-    photos.extend(visit_photos)
+    # Priority 1: Scrape real official website photos
+    if website:
+        site_photos = scrape_place_website_photos(website, name, limit=3)
+        photos.extend(site_photos)
 
-    # 2. Search Wikimedia Commons for real historical/official photos
+    # Priority 2: Search Visit Stockholm official city portal
+    if len(photos) < 2:
+        visit_photos = search_visit_stockholm_photos(name, limit=2 - len(photos))
+        photos.extend(visit_photos)
+
+    # Priority 3: Search Wikimedia Commons for open venue/place photos
     if len(photos) < 2:
         wiki_photos = search_wikimedia_commons(name, limit=2 - len(photos))
         photos.extend(wiki_photos)
-
-    # 2. Search DuckDuckGo images if wiki photos are fewer than 2
-    if len(photos) < 2:
-        ddg_photos = search_duckduckgo_images(name, limit=2 - len(photos))
-        photos.extend(ddg_photos)
-
-    # 3. Apply category fallback presets if still needed
-    if len(photos) < 2:
-        matched_preset = None
-        if "specialty coffee" in kind or "specialty coffee" in tags:
-            matched_preset = CUISINE_PHOTO_PRESETS.get("specialty coffee")
-        elif "bakery" in kind or "bakery" in tags:
-            matched_preset = CUISINE_PHOTO_PRESETS.get("bakery")
-        elif "mexican" in tags or "taco" in tags:
-            matched_preset = CUISINE_PHOTO_PRESETS.get("mexican")
-        elif "italian" in tags or "pasta" in tags:
-            matched_preset = CUISINE_PHOTO_PRESETS.get("italian")
-        elif "pizza" in tags:
-            matched_preset = CUISINE_PHOTO_PRESETS.get("pizza")
-        else:
-            matched_preset = CUISINE_PHOTO_PRESETS.get("restaurant")
-
-        if matched_preset:
-            for p in matched_preset:
-                if len(photos) >= 2:
-                    break
-                photos.append({
-                    "url": p["url"],
-                    "thumbnailUrl": p["thumbnailUrl"],
-                    "caption": f"{name} ({p['caption']})",
-                    "credit": p["credit"],
-                })
 
     # Format photo entries with unique IDs
     formatted = []
@@ -295,36 +176,37 @@ def fetch_photos_for_place(place: dict) -> tuple:
 
 
 def main():
-    print("🚀 Starting Motkarta Place Image Scraper & Search Pipeline...")
+    print("🚀 Starting Motkarta Place Image Scraper & Search Pipeline...", flush=True)
 
     if not os.path.exists(PLACES_FILE):
-        print(f"❌ Places file not found: {PLACES_FILE}")
+        print(f"❌ Places file not found: {PLACES_FILE}", flush=True)
         sys.exit(1)
 
     with open(PLACES_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     places = data.get("places", []) if isinstance(data, dict) else data
-    print(f"📦 Loaded {len(places)} places from places.json")
+    print(f"📦 Loaded {len(places)} places from places.json", flush=True)
 
     photos_by_place = {}
     total_photos = 0
 
     # Process places concurrently using ThreadPoolExecutor
-    max_workers = 8
-    print(f"🌐 Searching images concurrently across {max_workers} threads...")
+    max_workers = 12
+    print(f"🌐 Searching images concurrently across {max_workers} threads...", flush=True)
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [executor.submit(fetch_photos_for_place, place) for place in places]
         for idx, future in enumerate(as_completed(futures), 1):
             try:
                 place_id, place_photos = future.result()
-                photos_by_place[str(place_id)] = place_photos
-                total_photos += len(place_photos)
-                if idx % 25 == 0 or idx == len(places):
-                    print(f"  Processed {idx}/{len(places)} places ({total_photos} total photos acquired)")
+                if place_photos:
+                    photos_by_place[str(place_id)] = place_photos
+                    total_photos += len(place_photos)
+                if idx % 100 == 0 or idx == len(places):
+                    print(f"  Processed {idx}/{len(places)} places ({total_photos} total photos acquired)", flush=True)
             except Exception as e:
-                print(f"⚠️ Error processing place: {e}")
+                print(f"⚠️ Error processing place: {e}", flush=True)
 
     # Construct final dataset payload
     output_payload = {
@@ -339,7 +221,7 @@ def main():
     with open(OUTPUT_JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(output_payload, f, ensure_ascii=False, indent=2)
 
-    print(f"✅ Saved place photos dataset to: {OUTPUT_JSON_FILE} ({total_photos} photos across {len(photos_by_place)} places)")
+    print(f"✅ Saved place photos dataset to: {OUTPUT_JSON_FILE} ({total_photos} photos across {len(photos_by_place)} places)", flush=True)
 
     # Generate SQL seed file for D1 database
     os.makedirs(os.path.dirname(OUTPUT_SQL_FILE), exist_ok=True)
@@ -359,7 +241,7 @@ def main():
                     f"VALUES ('{sql_id}', {sql_place_id}, '{sql_url}', '{sql_thumb}', '{sql_cap}', '{sql_credit}');\n"
                 )
 
-    print(f"✅ Generated SQL seed file: {OUTPUT_SQL_FILE}")
+    print(f"✅ Generated SQL seed file: {OUTPUT_SQL_FILE}", flush=True)
 
 
 if __name__ == "__main__":

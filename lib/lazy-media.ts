@@ -140,83 +140,6 @@ export async function fetchPlacePhotos(input: PlaceContext | number): Promise<Pl
 }
 
 const VENUE_SPECIFIC_PHOTOS: Record<string, PlacePhoto[]> = {
-  "drop coffee": [
-    {
-      id: "venue-drop-1",
-      placeId: 1,
-      url: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80",
-      caption: "Drop Coffee Rosteri & Baristabar (Mariatorget)",
-      credit: "Drop Coffee Roasters / Official",
-    },
-    {
-      id: "venue-drop-2",
-      placeId: 1,
-      url: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80",
-      caption: "Spårbart Handbryggt V60 Single-Origin",
-      credit: "Specialty Coffee Guide",
-    },
-  ],
-  "pascal": [
-    {
-      id: "venue-pascal-1",
-      placeId: 3,
-      url: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=400&q=80",
-      caption: "Café Pascal Espressobar & Servering (Vasastan)",
-      credit: "Café Pascal Stockholm",
-    },
-    {
-      id: "venue-pascal-2",
-      placeId: 3,
-      url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80",
-      caption: "Pascal Kardemummabullar & Fika",
-      credit: "Specialty Fika Guide",
-    },
-  ],
-  "solkant": [
-    {
-      id: "venue-solkant-1",
-      placeId: 4,
-      url: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80",
-      caption: "Solkant Hantverkskaffe & Surdegsbageri",
-      credit: "Solkant Specialty Roastery",
-    },
-  ],
-  "volca": [
-    {
-      id: "venue-volca-1",
-      placeId: 5,
-      url: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=400&q=80",
-      caption: "Volca Micro-roastery Baristabar",
-      credit: "Volca Coffee Roasters",
-    },
-  ],
-  "lykke": [
-    {
-      id: "venue-lykke-1",
-      placeId: 6,
-      url: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=400&q=80",
-      caption: "Lykke Kaffegårdar & Nytorget Espressobar",
-      credit: "Lykke Coffee Farms Nytorget",
-    },
-  ],
-  "savoj pizza": [
-    {
-      id: "venue-savoj-1",
-      placeId: 39,
-      url: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80",
-      caption: "Savoj Pizza Hantverkssurdeg & Vedugn (Vasastan)",
-      credit: "Savoj Pizza Stockholm",
-    },
-  ],
-
   "frantzén": [
     {
       id: "venue-frantzen-1",
@@ -225,14 +148,6 @@ const VENUE_SPECIFIC_PHOTOS: Record<string, PlacePhoto[]> = {
       thumbnailUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Frantzen_Stockholm.jpg/400px-Frantzen_Stockholm.jpg",
       caption: "Restaurang Frantzén Stadshus & Entré (Klara Norra Kyrkogata)",
       credit: "Wikimedia Commons / CC-BY-SA",
-    },
-    {
-      id: "venue-frantzen-2",
-      placeId: 10,
-      url: "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=400&q=80",
-      caption: "Frantzén Öppna Kockbänk & Gastronomi",
-      credit: "Anders Husa & Kaitlin Orr Guide",
     },
   ],
   "operakällaren": [
@@ -243,106 +158,6 @@ const VENUE_SPECIFIC_PHOTOS: Record<string, PlacePhoto[]> = {
       thumbnailUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Operak%C3%A4llaren_2011.jpg/400px-Operak%C3%A4llaren_2011.jpg",
       caption: "Operakällaren Historisk Fasad & Kungliga Operan",
       credit: "Wikimedia Commons / Public Domain",
-    },
-  ],
-  "restaurang ag": [
-    {
-      id: "venue-ag-1",
-      placeId: 12,
-      url: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80",
-      caption: "Restaurang AG Hängmörningskyl & Köttsommelier (Kronobergsgatan)",
-      credit: "Restaurang AG Stockholm",
-    },
-  ],
-  "miyakodori": [
-    {
-      id: "venue-miyakodori-1",
-      placeId: 13,
-      url: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=400&q=80",
-      caption: "Miyakodori Yakitori & Izakayaspettsar (Upplandsgatan)",
-      credit: "Miyakodori Izakaya",
-    },
-  ],
-  "la neta": [
-    {
-      id: "venue-laneta-1",
-      placeId: 14,
-      url: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=400&q=80",
-      caption: "La Neta Majstacos & Salsabar (Barnhusgatan)",
-      credit: "La Neta Taqueria",
-    },
-  ],
-  "svedjan bageri": [
-    {
-      id: "venue-svedjan-1",
-      placeId: 15,
-      url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80",
-      caption: "Svedjan Bageri Surdegsbröd & Bageridisk (Zinkensdamm)",
-      credit: "Svedjan Bageri",
-    },
-  ],
-  "lillebrors bageri": [
-    {
-      id: "venue-lillebror-1",
-      placeId: 16,
-      url: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=400&q=80",
-      caption: "Lillebrors Bageri Nystökta Kardemummabullar (Vasastan)",
-      credit: "Lillebrors Bageri",
-    },
-  ],
-  "pyza ii": [
-    {
-      id: "venue-pyza-1",
-      placeId: 17,
-      url: "https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=400&q=80",
-      caption: "Pyza II Handgjorda Pierogi & Dumplings (Gamla Stan)",
-      credit: "Pyza II Polish Dining",
-    },
-  ],
-  "pastis": [
-    {
-      id: "venue-pastis-1",
-      placeId: 18,
-      url: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=400&q=80",
-      caption: "Bistro Pastis Franska Bistrobord & Vin (Baggensgatan)",
-      credit: "Pastis Bistro Gamla Stan",
-    },
-  ],
-  "rolfs kök": [
-    {
-      id: "venue-rolfs-1",
-      placeId: 19,
-      url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80",
-      caption: "Rolfs Kök Klassisk Inredningsdesign & Matbar (Tegnérgatan)",
-      credit: "Rolfs Kök Stockholm",
-    },
-  ],
-  "lilla ego": [
-    {
-      id: "venue-lillaego-1",
-      placeId: 20,
-      url: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=400&q=80",
-      caption: "Lilla Ego Tegelväggsbistro & Säsongskök (Västmannagatan)",
-      credit: "Lilla Ego Vasastan",
-    },
-  ],
-  "oaxen": [
-    {
-      id: "venue-oaxen-1",
-      placeId: 21,
-      url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80",
-      caption: "Oaxen Slip Sjönära Bistro (Djurgården)",
-      credit: "Oaxen Krog & Slip",
     },
   ],
 };

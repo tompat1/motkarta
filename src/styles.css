@@ -7076,6 +7076,10 @@ footer {
   padding: 16px;
 }
 
+.mobile-photo-card-no-photo {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
 .mobile-photo-card-gradient {
   position: absolute;
   inset: 0;
