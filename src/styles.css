@@ -4450,6 +4450,7 @@ footer {
 }
 
 .autocomplete-item.selected,
+.autocomplete-item.active,
 .autocomplete-item:hover {
   background: rgba(43, 107, 115, 0.1);
   color: var(--color-water);

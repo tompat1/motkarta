@@ -774,6 +774,7 @@ export default function App() {
   });
 
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [autocompleteIndex, setAutocompleteIndex] = useState<number>(-1);
 
   const matchingSuggestions = useMemo(() => {
     const inputClean = concierge.trim().toLowerCase();
@@ -797,6 +798,7 @@ export default function App() {
       value: r.value,
       badge: "Stadsdel",
       icon: "📍",
+      placeId: undefined as number | undefined,
     }));
 
     const matchedCuisines = SEARCH_CUISINE_SUGGESTIONS.filter(
@@ -807,25 +809,117 @@ export default function App() {
       value: c.value,
       badge: c.badge,
       icon: "🍴",
+      placeId: undefined as number | undefined,
     }));
 
-    const matchedPlaces = places
-      .filter((p) => p.name.toLowerCase().includes(q) || p.area.toLowerCase().includes(q))
-      .slice(0, 5)
-      .map((p) => ({
+    if (!q) {
+      const defaultPlaces = places.slice(0, 5).map((p) => ({
         id: `place-${p.id}`,
         label: `${p.name} (${p.area})`,
         value: p.name,
         badge: p.kind,
-        icon: "🏢",
+        icon: p.kind === "Bakery" ? "🥐" : p.kind === "Café" ? "☕" : "🏢",
+        placeId: p.id,
       }));
-
-    if (!q) {
-      return [...matchedRegions.slice(0, 4), ...matchedCuisines.slice(0, 4), ...matchedPlaces.slice(0, 3)];
+      return [...matchedRegions.slice(0, 4), ...matchedCuisines.slice(0, 4), ...defaultPlaces];
     }
 
-    return [...matchedRegions, ...matchedCuisines, ...matchedPlaces].slice(0, 8);
+    const matchedPlaces = places
+      .map((p) => {
+        const nameLower = p.name.toLowerCase();
+        const areaLower = p.area.toLowerCase();
+        const kindLower = p.kind.toLowerCase();
+        const tagsStr = (p.tags || []).join(" ").toLowerCase();
+
+        let score = 0;
+        if (nameLower === q) score = 100;
+        else if (nameLower.startsWith(q)) score = 80;
+        else if (nameLower.includes(` ${q}`)) score = 65;
+        else if (nameLower.includes(q)) score = 50;
+        else if (areaLower.includes(q)) score = 30;
+        else if (kindLower.includes(q) || tagsStr.includes(q)) score = 15;
+
+        return { place: p, score };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score || a.place.name.localeCompare(b.place.name))
+      .map(({ place: p }) => ({
+        id: `place-${p.id}`,
+        label: `${p.name} (${p.area})`,
+        value: p.name,
+        badge: p.kind,
+        icon: p.kind === "Bakery" ? "🥐" : p.kind === "Café" ? "☕" : "🏢",
+        placeId: p.id,
+      }));
+
+    return [...matchedPlaces, ...matchedRegions, ...matchedCuisines];
   }, [places, query]);
+
+  const flatAutocompleteItems = useMemo(() => {
+    const list: Array<{ id: string; label: string; value: string; badge: string; icon?: string; placeId?: number; isPrompt?: boolean }> = [];
+    for (const item of searchAutocompleteSuggestions) {
+      list.push(item);
+    }
+    for (const prompt of matchingSuggestions) {
+      list.push({
+        id: `prompt-${prompt}`,
+        label: prompt,
+        value: prompt,
+        badge: lang === "sv" ? "Fråga" : "Ask",
+        isPrompt: true,
+      });
+    }
+    return list;
+  }, [searchAutocompleteSuggestions, matchingSuggestions, lang]);
+
+  const handleSelectAutocompleteItem = (item: { value: string; placeId?: number; isPrompt?: boolean }) => {
+    setQuery(item.value);
+    setConcierge(item.value);
+    setIsSearchFocused(false);
+    setAutocompleteIndex(-1);
+
+    if (item.placeId) {
+      setSelected(item.placeId);
+      document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+    } else if (item.isPrompt) {
+      void askWithQuery(item.value);
+    }
+  };
+
+  const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!isSearchFocused || flatAutocompleteItems.length === 0) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        void askFromSearch();
+      }
+      return;
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setAutocompleteIndex((prev) => (prev < flatAutocompleteItems.length - 1 ? prev + 1 : 0));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setAutocompleteIndex((prev) => (prev > 0 ? prev - 1 : flatAutocompleteItems.length - 1));
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      if (autocompleteIndex >= 0 && autocompleteIndex < flatAutocompleteItems.length) {
+        handleSelectAutocompleteItem(flatAutocompleteItems[autocompleteIndex]);
+      } else {
+        void askFromSearch();
+      }
+    } else if (event.key === "Tab") {
+      if (autocompleteIndex >= 0 && autocompleteIndex < flatAutocompleteItems.length) {
+        event.preventDefault();
+        const item = flatAutocompleteItems[autocompleteIndex];
+        setQuery(item.value);
+        setConcierge(item.value);
+      }
+    } else if (event.key === "Escape") {
+      setIsSearchFocused(false);
+      setAutocompleteIndex(-1);
+    }
+  };
 
   async function askWithQuery(queryText: string) {
     if (!queryText.trim()) return;
@@ -1175,12 +1269,17 @@ export default function App() {
           <input
             type="text"
             className="mobile-search-input"
+            list="concierge-places-datalist"
             value={query}
             onChange={(e) => {
               const val = e.target.value;
               setQuery(val);
               setConcierge(val);
+              setAutocompleteIndex(-1);
             }}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
+            onKeyDown={handleSearchKeyDown}
             placeholder={lang === "sv" ? "Vad vill du äta?" : "What do you want to eat?"}
           />
           {query.trim() ? (
@@ -1369,23 +1468,25 @@ export default function App() {
             <MagnifyingGlass size={18} weight="bold" style={{ color: "var(--color-ink)", flexShrink: 0 }} />
             <input
               aria-label={lang === "sv" ? "Sök ställen, kök, område eller fråga concierge" : "Search places, cuisine, area, or ask concierge"}
+              list="concierge-places-datalist"
               value={query}
               onChange={(event) => {
                 const val = event.target.value;
                 setQuery(val);
                 setConcierge(val);
+                setAutocompleteIndex(-1);
                 if (userLocation && DISTANCE_INTENT_REGEX.test(val)) setSortMode('Distance');
               }}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  void askFromSearch();
-                }
-              }}
+              onKeyDown={handleSearchKeyDown}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
               placeholder={lang === "sv" ? "Sök ställe, kök, stadsdel eller ställ en fråga till concierge..." : "Search place, cuisine, region or ask concierge..."}
             />
+            <datalist id="concierge-places-datalist">
+              {places.map((p) => (
+                <option key={`dl-${p.id}`} value={p.name} label={`${p.area} • ${p.kind}`} />
+              ))}
+            </datalist>
             {query.trim() ? (
               <button
                 type="button"
@@ -1393,6 +1494,7 @@ export default function App() {
                 onClick={() => {
                   setQuery("");
                   setConcierge("");
+                  setAutocompleteIndex(-1);
                 }}
                 aria-label="Clear search field"
                 title={lang === "sv" ? "Rensa fält" : "Clear field"}
@@ -1448,58 +1550,82 @@ export default function App() {
                 <>
                   <div className="autocomplete-category-header">
                     <Compass size={12} weight="bold" />
-                    <span>{lang === "sv" ? "STADSDELAR, STÄLLEN & KÖK" : "REGIONS, PLACES & CUISINES"}</span>
+                    <span>
+                      {query.trim()
+                        ? lang === "sv"
+                          ? `MATCHANDE STÄLLEN & STADSDELAR (${searchAutocompleteSuggestions.length})`
+                          : `MATCHING PLACES & REGIONS (${searchAutocompleteSuggestions.length})`
+                        : lang === "sv"
+                        ? "STADSDELAR, STÄLLEN & KÖK"
+                        : "REGIONS, PLACES & CUISINES"}
+                    </span>
                   </div>
-                  {searchAutocompleteSuggestions.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      className="autocomplete-item"
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        setQuery(item.value);
-                        setConcierge(item.value);
-                        setIsSearchFocused(false);
-                      }}
-                    >
-                      <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                        <span>{item.icon}</span>
-                        <span style={{ fontWeight: 600 }}>{item.label}</span>
-                      </span>
-                      <span className="autocomplete-type-badge">{item.badge}</span>
-                    </button>
-                  ))}
+                  {searchAutocompleteSuggestions.map((item) => {
+                    const itemIdx = flatAutocompleteItems.findIndex((f) => f.id === item.id);
+                    const isActive = itemIdx === autocompleteIndex;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={`autocomplete-item ${isActive ? "active" : ""}`}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          handleSelectAutocompleteItem(item);
+                        }}
+                        onMouseEnter={() => setAutocompleteIndex(itemIdx)}
+                      >
+                        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <span>{item.icon}</span>
+                          <span style={{ fontWeight: 600 }}>{item.label}</span>
+                        </span>
+                        <span className="autocomplete-type-badge">{item.badge}</span>
+                      </button>
+                    );
+                  })}
                 </>
               ) : null}
 
               {matchingSuggestions.length > 0 ? (
                 <>
-                  <div className="autocomplete-category-header" style={{ marginTop: searchAutocompleteSuggestions.length > 0 ? "8px" : "0", borderTop: searchAutocompleteSuggestions.length > 0 ? "1px solid var(--color-mist)" : "none", paddingTop: "8px" }}>
+                  <div
+                    className="autocomplete-category-header"
+                    style={{
+                      marginTop: searchAutocompleteSuggestions.length > 0 ? "8px" : "0",
+                      borderTop: searchAutocompleteSuggestions.length > 0 ? "1px solid var(--color-mist)" : "none",
+                      paddingTop: "8px",
+                    }}
+                  >
                     <Sparkle size={12} weight="bold" />
                     <span>{lang === "sv" ? "FRÅGA AI-CONCIERGE" : "ASK AI CONCIERGE"}</span>
                   </div>
-                  {matchingSuggestions.map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      className="autocomplete-item"
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        setQuery(item);
-                        setConcierge(item);
-                        setIsSearchFocused(false);
-                        void askWithQuery(item);
-                      }}
-                    >
-                      <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                        <Sparkle size={13} style={{ color: "var(--color-water)" }} />
-                        <span>{item}</span>
-                      </span>
-                      <span className="autocomplete-type-badge" style={{ background: "rgba(37, 99, 235, 0.1)", color: "var(--color-water)" }}>
-                        {lang === "sv" ? "Fråga" : "Ask"}
-                      </span>
-                    </button>
-                  ))}
+                  {matchingSuggestions.map((prompt) => {
+                    const promptId = `prompt-${prompt}`;
+                    const itemIdx = flatAutocompleteItems.findIndex((f) => f.id === promptId);
+                    const isActive = itemIdx === autocompleteIndex;
+                    return (
+                      <button
+                        key={promptId}
+                        type="button"
+                        className={`autocomplete-item ${isActive ? "active" : ""}`}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          handleSelectAutocompleteItem({ value: prompt, isPrompt: true });
+                        }}
+                        onMouseEnter={() => setAutocompleteIndex(itemIdx)}
+                      >
+                        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <Sparkle size={13} style={{ color: "var(--color-water)" }} />
+                          <span>{prompt}</span>
+                        </span>
+                        <span
+                          className="autocomplete-type-badge"
+                          style={{ background: "rgba(37, 99, 235, 0.1)", color: "var(--color-water)" }}
+                        >
+                          {lang === "sv" ? "Fråga" : "Ask"}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </>
               ) : null}
             </div>
