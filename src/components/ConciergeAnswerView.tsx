@@ -288,7 +288,33 @@ export function ConciergeAnswerView({
           <button
             type="button"
             className={`feedback-btn ${feedback === "up" ? "active-up" : ""}`}
-            onClick={() => setFeedback("up")}
+            onClick={() => {
+              setFeedback("up");
+              const topCard = response?.cards?.[0];
+              fetch("/api/recommendation-events", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                  events: [
+                    {
+                      eventType: "would_return",
+                      establishmentId: topCard?.id ?? 0,
+                      mode: "concierge",
+                      sortMode: "motkarta",
+                      queryContextJson: JSON.stringify({
+                        hasQuery: true,
+                        queryLengthBucket: answer.length > 50 ? "long" : "short",
+                        mode: "concierge",
+                        surface: "concierge_modal",
+                        resultCount: response?.cards?.length ?? 0,
+                      }),
+                      contextWindowSize: response?.cards?.length ?? 0,
+                      clientTimestampMs: Date.now(),
+                    },
+                  ],
+                }),
+              }).catch(() => {});
+            }}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -311,7 +337,33 @@ export function ConciergeAnswerView({
           <button
             type="button"
             className={`feedback-btn ${feedback === "down" ? "active-down" : ""}`}
-            onClick={() => setFeedback("down")}
+            onClick={() => {
+              setFeedback("down");
+              const topCard = response?.cards?.[0];
+              fetch("/api/recommendation-events", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                  events: [
+                    {
+                      eventType: "dismiss",
+                      establishmentId: topCard?.id ?? 0,
+                      mode: "concierge",
+                      sortMode: "motkarta",
+                      queryContextJson: JSON.stringify({
+                        hasQuery: true,
+                        queryLengthBucket: answer.length > 50 ? "long" : "short",
+                        mode: "concierge",
+                        surface: "concierge_modal",
+                        resultCount: response?.cards?.length ?? 0,
+                      }),
+                      contextWindowSize: response?.cards?.length ?? 0,
+                      clientTimestampMs: Date.now(),
+                    },
+                  ],
+                }),
+              }).catch(() => {});
+            }}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -332,6 +384,7 @@ export function ConciergeAnswerView({
             {lang === "sv" ? "Nej" : "No"}
           </button>
         </div>
+
 
         {feedback ? (
           <span

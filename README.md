@@ -350,6 +350,25 @@ python3 scripts/sync_curated_sources.py
 pipeline also runs this sync after regenerating the OSM baseline so curated
 open-source additions are not erased by a refresh.
 
+## Catalog Source-Fact Enrichment
+
+Motkarta uses a deterministic multi-source enrichment pipeline to populate structured `SourceFact` records (`dish`, `atmosphere`, `openingHours`, `priceSEK`, `dogFriendly`, `tags`) across the catalog:
+
+- **Phase 1 (Deterministic Local Extraction)**: Extracts facts from raw OSM tags, editorial ground-truth files (`husa_guide_ground_truth.json`, `white_guide_ground_truth.json`, `visit_stockholm_ground_truth.json`, `tasstipset_stockholm_ground_truth.csv`), open curated sources, and review texts.
+- **Phase 2 (Website Scraping)**: Scrapes venue homepages with strict `robots.txt` compliance, rate limiting (0.5s pause), local HTML caching, User-Agent `MotkartaBot/1.0 (+https://motkarta.se/bot)`, and `verification: "listed"`.
+
+```bash
+# Extract local deterministic facts (Phase 1)
+python3 execution/enrich_catalog.py --output data/enrichment_overlay.json
+
+# Scrape venue websites (Phase 2, optional --limit)
+python3 execution/enrich_catalog.py --output data/enrichment_overlay.json --scrape --limit 20
+
+# Apply overlay to public places dataset
+python3 execution/apply_enrichment.py
+```
+
+
 ## Score snapshots
 
 Scores can be recomputed into `score_snapshots` after importing OSM and evidence.

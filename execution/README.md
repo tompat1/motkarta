@@ -40,9 +40,12 @@ This directory houses **deterministic Python scripts** or CLI utilities. The age
 See [the RAG runbook](../docs/ml/concierge-rag.md).
 # Concierge preview
 
-`prepare_concierge_preview.mjs` packages a verified `dist/` build into a separate
+- `enrich_catalog.py`: Phase 1 deterministic local fact extraction (OSM raw, ground truths, curated sources, editorial reviews) + Phase 2 website scraping behind `--scrape` flag with `robots.txt` respect, rate limiting, and local HTML caching. Emits `data/enrichment_overlay.json`.
+- `apply_enrichment.py`: Injects `sourceFacts` from `data/enrichment_overlay.json` into `public/data/places.json` and backfills top-level `openingHours` and `website` fields without mutating non-enrichment properties.
+- `prepare_concierge_preview.mjs` packages a verified `dist/` build into a separate
 read-only Pages preview with a manifest; it does not deploy. The wrapper is
 `concierge-preview-worker.ts`. `smoke_concierge_preview.mjs [PREVIEW_URL]` performs
 fixed live catalog and API-isolation checks without AI. Follow
 [the preview runbook](../docs/ml/concierge-preview.md) for deployment, limits and
 the pending real-model trial.
+

@@ -311,3 +311,17 @@ evidence records retain URLs and capture dates without becoming field verificati
 Raw client venue corpora are rejected. No database/event migration is introduced.
 RAG scope uses the shared locality policy and conservatively declines coordinate-
 only records; the importer’s broader fallback is not sufficient RAG scope evidence.
+
+## Catalog Source-Fact Enrichment Contract (2026-09-07)
+
+`execution/enrich_catalog.py` and `execution/apply_enrichment.py` govern catalog fact enrichment:
+
+1. **Provenanced Fact Standard**: Every `SourceFact` must explicitly specify `placeId`, `field` (`dish`, `atmosphere`, `openingHours`, `priceSEK`, `dogFriendly`, `tags`), `value`, `source`, `verification` (`listed` vs `verified`), and `capturedAt`.
+2. **Phase 1 (Deterministic Extraction)**: Re-extracts facts from OSM raw JSON (`data/raw/osm_stockholm_food_places.json`), editorial ground-truth files (`data/husa_guide_ground_truth.json`, `data/white_guide_ground_truth.json`, `data/visit_stockholm_ground_truth.json`, `data/tasstipset_stockholm_ground_truth.csv`), and open curated sources (`data/curated_open_places.json`).
+3. **Phase 2 (Website Scraping)**: Scrapes venue homepages behind `--scrape` flag. Strict invariants:
+   - Must obey `robots.txt` using `urllib.robotparser`.
+   - Must use User-Agent `MotkartaBot/1.0 (+https://motkarta.se/bot)`.
+   - Rate limit of 0.5s pause per request; responses cached in `.tmp/scraped_html_cache/`.
+   - Facts extracted from venue websites are marked `verification: "listed"` (self-reported), never `verified`.
+4. **Core Values Protection**: No commercial platform ratings or popularity metrics are ever admitted. Unverified commercial claims or paid promotion are strictly rejected.
+
