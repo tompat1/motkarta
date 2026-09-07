@@ -22,13 +22,25 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
+import html
 import json
 import re
 import sys
+import time
 import unicodedata
+import urllib.parse
+import urllib.request
+import urllib.robotparser
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    BeautifulSoup = None  # type: ignore[assignment,misc]
+
 
 ROOT = Path(__file__).resolve().parents[1]
 OSM_RAW = ROOT / "data" / "raw" / "osm_stockholm_food_places.json"
@@ -593,6 +605,237 @@ def extract_curated_place_facts(
 
 
 # ---------------------------------------------------------------------------
+# Phase 2: Website scraping & HTML fact extraction
+# ---------------------------------------------------------------------------
+
+USER_AGENT = "MotkartaBot/1.0 (+https://motkarta.se/bot; open catalog project)"
+
+
+class WebsiteScraper:
+    """Website scraper respecting robots.txt, rate limits, and local HTML caching."""
+
+    def __init__(self, cache_dir: Path | None = None, delay_seconds: float = 0.5):
+        self.cache_dir = cache_dir or (ROOT / ".tmp" / "scraped_html_cache")
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self.delay_seconds = delay_seconds
+        self.robot_parsers: dict[str, urllib.robotparser.RobotFileParser] = {}
+        self.last_request_time: float = 0.0
+
+    def can_fetch(self, url: str) -> bool:
+        """Check robots.txt for the host."""
+        parsed = urllib.parse.urlparse(url)
+        domain = parsed.netloc.lower()
+        if not domain:
+            return False
+        if domain not in self.robot_parsers:
+            rp = urllib.robotparser.RobotFileParser()
+            robots_url = f"{parsed.scheme or 'https'}://{domain}/robots.txt"
+            try:
+                req = urllib.request.Request(robots_url, headers={"User-Agent": USER_AGENT})
+                with urllib.request.urlopen(req, timeout=3) as resp:
+                    rp.parse(resp.read().decode("utf-8", errors="ignore").splitlines())
+            except Exception:
+                rp.parse(["User-agent: *", "Allow: /"])
+            self.robot_parsers[domain] = rp
+        return self.robot_parsers[domain].can_fetch(USER_AGENT, url)
+
+    def fetch_url(self, url: str) -> str | None:
+        """Fetch URL content with local file caching and rate limiting."""
+        url_hash = hashlib.sha256(url.encode("utf-8")).hexdigest()[:16]
+        cache_file = self.cache_dir / f"{url_hash}.html"
+        if cache_file.exists():
+            return cache_file.read_text(encoding="utf-8", errors="ignore")
+
+        if not self.can_fetch(url):
+            print(f"  [Scraper] Disallowed by robots.txt: {url}")
+            return None
+
+        # Rate limit
+        elapsed = time.time() - self.last_request_time
+        if elapsed < self.delay_seconds:
+            time.sleep(self.delay_seconds - elapsed)
+
+        print(f"  [Scraper] Fetching: {url}")
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                self.last_request_time = time.time()
+                content = resp.read().decode("utf-8", errors="ignore")
+                cache_file.write_text(content, encoding="utf-8")
+                return content
+        except Exception as err:
+            print(f"  [Scraper] Failed to fetch {url}: {err}")
+            return None
+
+
+def extract_facts_from_html(
+    html_text: str,
+    url: str,
+    place_id: int,
+    timestamp: str,
+) -> list[dict[str, Any]]:
+    """Extract opening hours, dish, atmosphere, and price facts from raw HTML text."""
+    facts: list[dict[str, Any]] = []
+    if not html_text:
+        return facts
+
+    if BeautifulSoup:
+        soup = BeautifulSoup(html_text, "html.parser")
+        for tag in soup(["script", "style", "nav", "footer"]):
+            tag.decompose()
+        text = soup.get_text(separator=" ", strip=True)
+    else:
+        text = re.sub(r"<[^>]+>", " ", html_text)
+        text = html.unescape(text)
+
+    text_lower = text.lower()
+    parsed_url = urllib.parse.urlparse(url)
+    domain = parsed_url.netloc or "venue-website"
+
+    fact_base = {
+        "placeId": place_id,
+        "source": f"Venue Website ({domain})",
+        "url": url,
+        "verification": "listed",
+        "capturedAt": timestamp,
+    }
+
+    # 1. Opening Hours
+    hours_patterns = [
+        r"(?:öppettider|opening hours)[:\s]*([a-zåäö0-9\s:,\.-–]{5,60})",
+        r"\b(?:mån|tis|ons|tors|fre|lör|sön|mo|tu|we|th|fr|sa|su)[-–a-z\s]*\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}\b",
+    ]
+    for pattern in hours_patterns:
+        match = re.search(pattern, text_lower)
+        if match:
+            raw_hours = match.group(0).strip()
+            if 5 <= len(raw_hours) <= 80:
+                facts.append({
+                    **fact_base,
+                    "id": f"{place_id}:website:openingHours",
+                    "field": "openingHours",
+                    "value": raw_hours,
+                })
+                break
+
+    # 2. Dishes
+    DISH_KEYWORDS = {
+        "pierogi": "pierogi",
+        "bigos": "bigos",
+        "żurek": "żurek",
+        "zurek": "żurek",
+        "tacos": "tacos",
+        "tortillas": "corn tortillas",
+        "sushi": "sushi",
+        "sashimi": "sashimi",
+        "ramen": "ramen",
+        "yakitori": "yakitori",
+        "tsukune": "tsukune",
+        "cardamom bun": "cardamom bun",
+        "kardemummabulle": "cardamom bun",
+        "kanelbulle": "cinnamon bun",
+        "sourdough": "sourdough bread",
+        "surdegsbröd": "sourdough bread",
+        "pasta": "pasta",
+        "pizza": "pizza",
+        "falafel": "falafel",
+        "smårätter": "smårätter (small plates)",
+        "fika": "fika",
+    }
+    for kw, dish_val in DISH_KEYWORDS.items():
+        if kw in text_lower:
+            facts.append({
+                **fact_base,
+                "id": f"{place_id}:website:dish:{normalize_name(dish_val)}",
+                "field": "dish",
+                "value": dish_val,
+            })
+
+    # 3. Atmosphere
+    ATMOSPHERE_KEYWORDS = {
+        "mysig": "cozy",
+        "cozy": "cozy",
+        "intimate": "intimate",
+        "intim": "intimate",
+        "kvarterskrog": "neighborhood",
+        "uteservering": "outdoor seating",
+        "outdoor seating": "outdoor seating",
+        "bistro": "bistro",
+        "vinbar": "wine bar",
+        "lively": "lively",
+        "familjärt": "welcoming",
+        "hemtrevligt": "cozy",
+    }
+    for kw, atmo_val in ATMOSPHERE_KEYWORDS.items():
+        if kw in text_lower:
+            facts.append({
+                **fact_base,
+                "id": f"{place_id}:website:atmosphere:{normalize_name(atmo_val)}",
+                "field": "atmosphere",
+                "value": atmo_val,
+            })
+
+    # 4. Price pattern
+    price_matches = re.findall(r"\b(\d{2,3})\s*(?:kr|sek|:-)", text_lower)
+    if price_matches:
+        prices = [int(p) for p in price_matches if 40 <= int(p) <= 800]
+        if prices:
+            min_p, max_p = min(prices), max(prices)
+            price_val = f"{min_p} SEK" if min_p == max_p else f"{min_p} - {max_p} SEK"
+            facts.append({
+                **fact_base,
+                "id": f"{place_id}:website:price",
+                "field": "priceSEK",
+                "value": price_val,
+            })
+
+    return facts
+
+
+def scrape_venue_websites(
+    places: list[dict[str, Any]],
+    limit: int = 0,
+) -> dict[int, list[dict[str, Any]]]:
+    """Scrape venue websites for places with valid website URLs."""
+    facts_by_id: dict[int, list[dict[str, Any]]] = {}
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    candidates: list[dict[str, Any]] = []
+    for place in places:
+        url = place.get("website") or ""
+        if not url or not url.startswith("http"):
+            for sf in place.get("sourceFacts", []):
+                val = sf.get("value", "")
+                if val.startswith("Website: http"):
+                    url = val.replace("Website: ", "").strip()
+                    break
+        if url and url.startswith("http"):
+            candidates.append({"place": place, "url": url})
+
+    if limit > 0:
+        candidates = candidates[:limit]
+
+    print(f"Scraping {len(candidates)} venue websites...")
+    scraper = WebsiteScraper()
+
+    for item in candidates:
+        place = item["place"]
+        url = item["url"]
+        pid = place["id"]
+
+        html_content = scraper.fetch_url(url)
+        if not html_content:
+            continue
+
+        extracted = extract_facts_from_html(html_content, url, pid, timestamp)
+        if extracted:
+            facts_by_id[pid] = extracted
+
+    return facts_by_id
+
+
+
+# ---------------------------------------------------------------------------
 # Build place index for matching
 # ---------------------------------------------------------------------------
 
@@ -670,6 +913,12 @@ def main() -> None:
         action="store_true",
         help="Phase 2: also scrape venue websites (external HTTP calls).",
     )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=0,
+        help="Limit number of venue websites to scrape (0 = all).",
+    )
     args = parser.parse_args()
 
     # Load the public catalog
@@ -713,13 +962,16 @@ def main() -> None:
     curated_facts = extract_curated_place_facts(index)
     print(f"  Curated: {sum(len(v) for v in curated_facts.values())} facts for {len(curated_facts)} places")
 
-    # Merge all
+    # Merge all Phase 1
     all_facts = merge_facts(osm_facts, gt_facts, editorial_facts, curated_facts)
 
     # Phase 2: Website scraping (if enabled)
     if args.scrape:
-        print("Phase 2: Website scraping is not yet implemented.")
-        print("  (Use --scrape to enable once the scraper is built.)")
+        print(f"\nPhase 2: Scraping venue websites (limit={args.limit or 'unlimited'})...")
+        website_facts = scrape_venue_websites(places, limit=args.limit)
+        print(f"  Website scraper: {sum(len(v) for v in website_facts.values())} facts for {len(website_facts)} places")
+        all_facts = merge_facts(all_facts, website_facts)
+
 
     # Summary by field type
     field_counts: dict[str, int] = {}
