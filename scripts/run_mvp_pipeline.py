@@ -22,6 +22,8 @@ from motkarta.pipeline import (
     write_rag_corpus,
 )
 from scripts.sync_curated_sources import sync_curated_sources
+from execution.apply_enrichment import apply_overlay
+
 
 
 def run_pipeline(
@@ -62,6 +64,16 @@ def run_pipeline(
         public_places_path = public_data_dir / "places.json"
         write_place_inputs_json(scored, public_places_path)
         sync_curated_sources(public_places_path, quiet=True)
+        overlay_file = data_dir / "enrichment_overlay.json"
+        if not overlay_file.exists():
+            overlay_file = Path(__file__).resolve().parents[1] / "data" / "enrichment_overlay.json"
+        if overlay_file.exists():
+            overlay_data = json.loads(overlay_file.read_text(encoding="utf-8"))
+            catalog_data = json.loads(public_places_path.read_text(encoding="utf-8"))
+            places_list = catalog_data.get("places", catalog_data) if isinstance(catalog_data, dict) else catalog_data
+            apply_overlay(places_list, overlay_data.get("facts", {}))
+            public_places_path.write_text(json.dumps(catalog_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
 
     food_control_path = data_dir / "stockholm_food_control.csv"
     matches_path = data_dir / "stockholm_food_control_matches.csv"

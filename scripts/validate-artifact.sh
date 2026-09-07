@@ -39,7 +39,8 @@ node -e "
 const fs = require('node:fs');
 const payload = JSON.parse(fs.readFileSync('dist/data/places.json', 'utf8'));
 const first = payload.places?.[0];
-const allowedPayloadSources = new Set(['osm', 'osm_curated_open_sources']);
+const allowedPayloadSources = new Set(['osm', 'osm_curated_open_sources', 'osm_curated_open_sources+enrichment', 'osm+enrichment']);
+
 if (!allowedPayloadSources.has(payload.source) || !payload.places?.length || typeof first?.latitude !== 'number' || typeof first?.longitude !== 'number') {
   console.error('dist/data/places.json must contain OSM/open curated places with latitude/longitude.');
   process.exit(69);
