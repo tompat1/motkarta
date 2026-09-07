@@ -2351,6 +2351,7 @@ export default function App() {
         isOpen={showOnboarding}
         onClose={handleCloseOnboarding}
         onOpenConcierge={focusSearchInput}
+        onOpenSyncModal={() => setIsSyncModalOpen(true)}
         lang={lang}
       />
 
