@@ -344,6 +344,19 @@ export default function App() {
   useEffect(() => () => conciergeRequest.current?.abort(), []);
   const [asking, setAsking] = useState(false);
 
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const mobileSearchInputRef = useRef<HTMLInputElement>(null);
+
+  const focusSearchInput = useCallback(() => {
+    if (typeof window !== "undefined" && window.innerWidth <= 768 && mobileSearchInputRef.current) {
+      mobileSearchInputRef.current.focus();
+      mobileSearchInputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else if (searchInputRef.current) {
+      searchInputRef.current.focus();
+      searchInputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, []);
+
   const clearConciergeState = useCallback(() => {
     conciergeRequest.current?.abort();
     setAnswer(null);
@@ -1200,7 +1213,14 @@ export default function App() {
           <a href="#method" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <ShieldCheck size={14} weight="bold" /> {t.navMethod}
           </a>
-          <a href="#concierge" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+          <a
+            href="#concierge"
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+            onClick={(e) => {
+              e.preventDefault();
+              focusSearchInput();
+            }}
+          >
             <MagnifyingGlass size={14} weight="bold" /> {t.navConcierge}
           </a>
           <a href="#merch" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
@@ -1311,8 +1331,10 @@ export default function App() {
         <div className="mobile-search-input-wrapper">
           <MagnifyingGlass size={18} weight="bold" className="mobile-search-icon" />
           <input
+            ref={mobileSearchInputRef}
             type="text"
             className="mobile-search-input"
+            aria-label={lang === "sv" ? "Sök ställe, kök, område eller fråga" : "Search place, cuisine, region or ask"}
             list="concierge-places-datalist"
             value={query}
             onChange={(e) => {
@@ -1498,7 +1520,8 @@ export default function App() {
           <div className="unified-search-input-wrapper">
             <MagnifyingGlass size={18} weight="bold" style={{ color: "var(--color-ink)", flexShrink: 0 }} />
             <input
-              aria-label={lang === "sv" ? "Sök ställen, kök, område eller fråga concierge" : "Search places, cuisine, area, or ask concierge"}
+              ref={searchInputRef}
+              aria-label={lang === "sv" ? "Sök ställe, kök, område eller fråga" : "Search place, cuisine, region or ask"}
               list="concierge-places-datalist"
               value={query}
               onChange={(event) => {

@@ -158,3 +158,14 @@ test("extractStructuredFilters parses Swedish cuisine keywords", () => {
   assert.equal(filters.independent_preferred, true, "Should detect 'familjeägd' as independent");
   assert.equal(filters.price_max, 250, "Should detect 'rimligt pris' as affordable");
 });
+
+test("concierge search input has exact aria-label and top-nav CONCIERGE focuses input", async () => {
+  const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+
+  assert.equal(
+    appSource.includes('aria-label={lang === "sv" ? "Sök ställe, kök, område eller fråga" : "Search place, cuisine, region or ask"}'),
+    true,
+  );
+  assert.equal(appSource.includes("focusSearchInput()"), true);
+  assert.equal(appSource.includes('href="#concierge"'), true);
+});
