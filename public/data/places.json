@@ -12312,6 +12312,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/373451756",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "f462855b702e",
+          "placeId": 961905654,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "4f5eb1d7ff76",
+          "placeId": 961905654,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "bb8d01772390",
+          "placeId": 961905654,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "726a56350ea2",
+          "placeId": 961905654,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -21036,6 +21076,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/439226805",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "5bb29b57417e",
+          "placeId": 1803705085,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "c5ed6ac49047",
+          "placeId": 1803705085,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "ba7fd786b0f7",
+          "placeId": 1803705085,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "715e985b415a",
+          "placeId": 1803705085,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -31886,6 +31966,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/471122580",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3f3d0e21fa35",
+          "placeId": 1706693197,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "8d34dbe48160",
+          "placeId": 1706693197,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "aa34a8c5355a",
+          "placeId": 1706693197,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "fad2bb8d81eb",
+          "placeId": 1706693197,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -51392,6 +51512,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/670786476",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "95548c50aac1",
+          "placeId": 2441711193,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "8ab3bb03a5df",
+          "placeId": 2441711193,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "46a91f80224e",
+          "placeId": 2441711193,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "f7677dcc234a",
+          "placeId": 2441711193,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -75664,6 +75824,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/863526803",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3cdc81b71de0",
+          "placeId": 2504027470,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "d26057f30dea",
+          "placeId": 2504027470,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "384dd23b30b6",
+          "placeId": 2504027470,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "93812b8a80f4",
+          "placeId": 2504027470,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -76406,6 +76606,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/867361506",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "cdc6d3c6aba2",
+          "placeId": 2813547493,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "21ef6fee762c",
+          "placeId": 2813547493,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "c5d878c12b66",
+          "placeId": 2813547493,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "7a834040cd51",
+          "placeId": 2813547493,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -83232,6 +83472,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1040077735",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "015a5bb71832",
+          "placeId": 4013358530,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "a94ec33321f5",
+          "placeId": 4013358530,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "672b99ea2ff8",
+          "placeId": 4013358530,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "36dd1bdfe49d",
+          "placeId": 4013358530,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -84114,6 +84394,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1090501968",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "0d7212dd5fb1",
+          "placeId": 3136118686,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "7ef8f000fec6",
+          "placeId": 3136118686,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "77352a9a2374",
+          "placeId": 3136118686,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "8c763d25b7dc",
+          "placeId": 3136118686,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -85171,6 +85491,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1098148030",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "7e3b4ff6d7c1",
+          "placeId": 3865509213,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "cbcba4eedd4a",
+          "placeId": 3865509213,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "96e335c1cd41",
+          "placeId": 3865509213,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "85ee9d0326c0",
+          "placeId": 3865509213,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -114437,6 +114797,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1440775402",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "a0679d460416",
+          "placeId": 3000577220,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "713460b3adee",
+          "placeId": 3000577220,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "4635082a8099",
+          "placeId": 3000577220,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "c019f315510a",
+          "placeId": 3000577220,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -122002,6 +122402,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1509877876",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "c09ffcea6fbf",
+          "placeId": 2920915530,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "8cd51706b800",
+          "placeId": 2920915530,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "c685ee9ba142",
+          "placeId": 2920915530,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "caeee553e2e0",
+          "placeId": 2920915530,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -125766,6 +126206,46 @@
           "verification": "listed",
           "url": "https://tasstipset.se",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1ba8bb1ee832",
+          "placeId": 3279590126,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "379bd2c0d1d9",
+          "placeId": 3279590126,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "3a77b5056bbb",
+          "placeId": 3279590126,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "cd624cd8c447",
+          "placeId": 3279590126,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -148885,6 +149365,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1859029335",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "eb1d9cca6bbf",
+          "placeId": 585779720,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "ab67d39772b1",
+          "placeId": 585779720,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "8c3e2368ea39",
+          "placeId": 585779720,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "b837bd348d49",
+          "placeId": 585779720,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -149362,6 +149882,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1872294207",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1f45fd4b2cf3",
+          "placeId": 1851459984,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "01341cbd7631",
+          "placeId": 1851459984,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "67227f25f9bf",
+          "placeId": 1851459984,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "2b92e2b1799b",
+          "placeId": 1851459984,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -165197,6 +165757,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/2449452478",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "d5dc5da32aa6",
+          "placeId": 39957690,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "eb98a4d4f10c",
+          "placeId": 39957690,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "6bc2a490490c",
+          "placeId": 39957690,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "b50dd8c8800c",
+          "placeId": 39957690,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -166369,6 +166969,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/2488368169",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "a20dd38abebb",
+          "placeId": 2927018865,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "7d7568f1e51c",
+          "placeId": 2927018865,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "3bf7b00942f0",
+          "placeId": 2927018865,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "9d7841213a7e",
+          "placeId": 2927018865,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -167108,7 +167748,49 @@
       "y": 64.49,
       "address": "Central Stockholm, Stockholm",
       "osmIdentity": "node:2495482668",
-      "idNamespace": "public"
+      "idNamespace": "public",
+      "sourceFacts": [
+        {
+          "id": "0ecb03a51bba",
+          "placeId": 3167480449,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "6d7da8b113f5",
+          "placeId": 3167480449,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "cd3a443028e8",
+          "placeId": 3167480449,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "12342054c120",
+          "placeId": 3167480449,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        }
+      ]
     },
     {
       "id": 1366697086,
@@ -173256,6 +173938,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/2712660954",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "0bfbf6f8a67b",
+          "placeId": 3794959435,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "41498c48d2ab",
+          "placeId": 3794959435,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "077df136a107",
+          "placeId": 3794959435,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "10ef7d8a5684",
+          "placeId": 3794959435,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -194374,6 +195096,46 @@
           "verification": "listed",
           "url": "https://tasstipset.se",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "dc5cfd6bb1a5",
+          "placeId": 1250320859,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "f66bd53aee4a",
+          "placeId": 1250320859,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "1c1055be42f5",
+          "placeId": 1250320859,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "7d485210d32d",
+          "placeId": 1250320859,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -196450,6 +197212,46 @@
           "verification": "listed",
           "url": "https://tasstipset.se",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "b9e87928b75b",
+          "placeId": 1452503343,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "ba9f9218c5c7",
+          "placeId": 1452503343,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "127d91f250d8",
+          "placeId": 1452503343,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "0e7634b73d17",
+          "placeId": 1452503343,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -218415,6 +219217,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/5659015461",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "e9853e0991a6",
+          "placeId": 2447430225,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "30f3f704f1b9",
+          "placeId": 2447430225,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "099de440d5e1",
+          "placeId": 2447430225,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "d1fa0e8ee3e5",
+          "placeId": 2447430225,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -241954,7 +242796,49 @@
       "y": 59.35,
       "address": "Central Stockholm, Stockholm",
       "osmIdentity": "node:8246096480",
-      "idNamespace": "public"
+      "idNamespace": "public",
+      "sourceFacts": [
+        {
+          "id": "7c3c1e4ab958",
+          "placeId": 3360784813,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "2a019e8821b2",
+          "placeId": 3360784813,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "088bbc168655",
+          "placeId": 3360784813,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "2723d1a72788",
+          "placeId": 3360784813,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        }
+      ]
     },
     {
       "id": 3049616796,
@@ -257661,6 +258545,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/10031439977",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "474f534119f1",
+          "placeId": 3326396081,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "31cf3a422989",
+          "placeId": 3326396081,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "960505fb7811",
+          "placeId": 3326396081,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "83d8a91ff51b",
+          "placeId": 3326396081,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -268556,6 +269480,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/11180753770",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "f55d253ff729",
+          "placeId": 930312685,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "b8b784b35c15",
+          "placeId": 930312685,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "b2630b607107",
+          "placeId": 930312685,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "414a1191f5ab",
+          "placeId": 930312685,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -277959,6 +278923,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/11917614707",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "6d6c9ced32fa",
+          "placeId": 611170536,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "69ccdabd41a5",
+          "placeId": 611170536,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "9fc791225988",
+          "placeId": 611170536,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "f92b50a709f7",
+          "placeId": 611170536,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -284162,6 +285166,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/11993585704",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "50f766f1321b",
+          "placeId": 2851512654,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "352dfc99bdf5",
+          "placeId": 2851512654,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "e5f90f862c7e",
+          "placeId": 2851512654,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "3769a1d18da0",
+          "placeId": 2851512654,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -296948,7 +297992,49 @@
       "y": 66.83,
       "address": "South Stockholm, Stockholm",
       "osmIdentity": "node:12047709537",
-      "idNamespace": "public"
+      "idNamespace": "public",
+      "sourceFacts": [
+        {
+          "id": "af6a3e66264e",
+          "placeId": 132521649,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "9efdf90fb304",
+          "placeId": 132521649,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "afa3ea04e07a",
+          "placeId": 132521649,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "9a6afaa01e0f",
+          "placeId": 132521649,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        }
+      ]
     },
     {
       "id": 3720353199,
@@ -299698,6 +300784,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/12157951305",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "2fe4f54769d1",
+          "placeId": 717718238,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "d04de94d1e91",
+          "placeId": 717718238,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "154fd4e8b6b7",
+          "placeId": 717718238,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "4093964931bb",
+          "placeId": 717718238,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -308323,6 +309449,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/12881114781",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "0b9ba44542a9",
+          "placeId": 2550212156,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "1c4821e0baf7",
+          "placeId": 2550212156,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "08d8837ee8f2",
+          "placeId": 2550212156,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "f08eabe704b1",
+          "placeId": 2550212156,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -314213,6 +315379,46 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/13360391634",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "e4c185a75bb1",
+          "placeId": 2656147410,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "077aa226d355",
+          "placeId": 2656147410,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "cf86f15e76de",
+          "placeId": 2656147410,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "a0184cc3e6ed",
+          "placeId": 2656147410,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
         }
       ]
     },
@@ -323275,7 +324481,49 @@
       "y": 63.91,
       "address": "Central Stockholm, Stockholm",
       "osmIdentity": "way:123127586",
-      "idNamespace": "public"
+      "idNamespace": "public",
+      "sourceFacts": [
+        {
+          "id": "8d8dcf9daa9e",
+          "placeId": 1697491983,
+          "field": "dish",
+          "value": "pad thai",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "f74ff7a7aff8",
+          "placeId": 1697491983,
+          "field": "dish",
+          "value": "curry",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "591f1e9a247d",
+          "placeId": 1697491983,
+          "field": "dish",
+          "value": "tom yum",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "e1b532e42534",
+          "placeId": 1697491983,
+          "field": "dish",
+          "value": "soppa",
+          "source": "Editorial Guide (www.guidetostockholm.se)",
+          "verification": "listed",
+          "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
+          "capturedAt": "2026-09-07T11:45:54Z"
+        }
+      ]
     },
     {
       "id": 1427149634,

@@ -44,7 +44,7 @@ export type QueryContext = {
 
 ---
 
-## 3. On-Demand Web Search Enrichment for Unanswered Queries
+## 3. On-Demand Web Search Enrichment for Unanswered Queries [Implemented]
 
 ### Problem Statement
 When a user asks about a niche dish, specialty coffee process, or venue that is not yet fully populated in the local catalog, traditional search engines fallback to commercial sponsored ads or generic SEO text.
