@@ -32,7 +32,9 @@ for exposure concentration. It does not mean perfectly objective.
 | [Training and evaluation](training-and-evaluation.md) | Training procedure, leakage prevention, uncertainty and metrics |
 | [Operations runbook](operations-runbook.md) | Commands, artifacts, deployment prerequisites, rollback and troubleshooting |
 | [Maintenance policy](maintenance-and-change-policy.md) | Change control, reviews, compatibility, drift and agent handoff |
+| [Concierge Future Roadmap](concierge-future-roadmap.md) | Roadmap for multi-turn chat, telemetry learning loop, and web search enrichment |
 | [Underexposure model card](../discovery-model-card.md) | Formal intended-use and limitation statement for the current ML model |
+
 | [ML directive](../../directives/ml_recommendation_system.md) | Mandatory SOP for agents carrying out ML work |
 
 ## Current implementation status
