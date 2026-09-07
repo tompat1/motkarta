@@ -51,6 +51,7 @@ As of 2026-08-25:
 | Hidden-gem evidence gates | Implemented | `lib/scoring.ts` and admin lifecycle |
 | Event-level recommendation schema | Implemented | `recommendation_events` in `db/schema.ts` |
 | Event collection endpoint/UI instrumentation | Implemented in shadow mode | `functions/api/recommendation-events.ts`, `src/ml/recommendationInstrumentation.ts`, `src/App.tsx` wiring |
+| Concierge multi-turn conversation engine | Implemented | `lib/concierge/contracts.ts`, `functions/api/concierge.ts`, `lib/concierge/synthesis.ts`, `src/components/ConciergeAnswerView.tsx` |
 | Personalized learning-to-rank model | Not implemented | Requires real impression/outcome data |
 | Online experiment assignment | Not implemented | Requires event collection and privacy review |
 | Automated drift monitoring | Not implemented | Required before automatic retraining |

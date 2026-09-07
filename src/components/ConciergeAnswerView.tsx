@@ -15,6 +15,7 @@ export function ConciergeAnswerView({
   onRefineQuery,
   lang = "sv",
   onClose,
+  messages,
 }: {
   answer: string;
   response?: ConciergeResponse;
@@ -23,6 +24,7 @@ export function ConciergeAnswerView({
   onRefineQuery?: (extra: string) => void;
   lang?: Language;
   onClose?: () => void;
+  messages?: import("../../lib/concierge/contracts").ChatMessage[];
 }) {
   const parsed = useMemo(() => response ? {
     intro: response.intro, cards: response.cards, charter: [],
@@ -93,6 +95,21 @@ export function ConciergeAnswerView({
           >
             <X size={13} weight="bold" /> {lang === "sv" ? "Dölj svar" : "Dismiss"}
           </button>
+        </div>
+      ) : null}
+      {messages && messages.length > 0 ? (
+        <div className="concierge-chat-history" style={{ marginBottom: "16px", padding: "12px", background: "var(--color-paper)", border: "1px solid var(--color-mist)", borderRadius: "4px" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: 700, textTransform: "uppercase", color: "var(--color-stone)", marginBottom: "8px" }}>
+            💬 {lang === "sv" ? "Konversationshistorik" : "Conversation History"}
+          </div>
+          {messages.map((msg, idx) => (
+            <div key={idx} style={{ marginBottom: "6px", fontSize: "12px", fontFamily: "var(--font-body)" }}>
+              <strong style={{ textTransform: "uppercase", fontSize: "10px", fontFamily: "var(--font-mono)", color: msg.role === "user" ? "var(--color-water)" : "var(--color-ink)" }}>
+                {msg.role === "user" ? (lang === "sv" ? "Du" : "You") : "Concierge"}:
+              </strong>{" "}
+              {msg.content}
+            </div>
+          ))}
         </div>
       ) : null}
       {parsed.clarification ? (
@@ -404,6 +421,34 @@ export function ConciergeAnswerView({
                 : "Thanks! We'll improve our sources. 👎"}
           </span>
         ) : null}
+      </div>
+
+      <div style={{ marginTop: "16px", padding: "12px 16px", background: "var(--color-paper)", border: "1px solid var(--color-mist)" }}>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", marginBottom: "8px", color: "var(--color-water)" }}>
+          💬 {lang === "sv" ? "Ställ en följdfråga" : "Ask a follow-up question"}
+        </div>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const input = e.currentTarget.elements.namedItem("followUpQuery") as HTMLInputElement;
+            if (input && input.value.trim()) {
+              onRefineQuery?.(input.value.trim());
+              input.value = "";
+            }
+          }}
+          style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}
+        >
+          <input
+            name="followUpQuery"
+            type="text"
+            maxLength={1000}
+            placeholder={lang === "sv" ? "T.ex. Vilka av dessa har öppet på söndagar?" : "E.g. Which of these are open on Sundays?"}
+            style={{ flex: "1 1 220px", minWidth: 0, padding: "8px 12px", border: "1px solid var(--color-mist)", fontFamily: "var(--font-mono)", fontSize: "12px" }}
+          />
+          <button type="submit" className="concierge-btn primary" style={{ cursor: "pointer" }}>
+            {lang === "sv" ? "Skicka följdfråga" : "Send follow-up"}
+          </button>
+        </form>
       </div>
     </div>
   );

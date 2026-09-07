@@ -41,12 +41,35 @@ async function readBody(request: Request): Promise<unknown> {
 export function validateRequest(value: unknown): { query: string; context: QueryContext } {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('invalid_body');
   const body = value as Record<string, unknown>;
-  if (Object.keys(body).some((key) => !['query', 'language', 'location', 'radiusKm'].includes(key))) throw new Error('unsupported_field');
+  if (Object.keys(body).some((key) => !['query', 'language', 'location', 'radiusKm', 'messages'].includes(key))) throw new Error('unsupported_field');
   if (typeof body.query !== 'string' || !body.query.trim() || body.query.length > 1000) throw new Error('invalid_query');
   if (body.language !== undefined && !['sv', 'en'].includes(String(body.language))) throw new Error('invalid_language');
   if (body.location !== undefined && !coordinates(body.location)) throw new Error('invalid_location');
   if (body.radiusKm !== undefined && (typeof body.radiusKm !== 'number' || !Number.isFinite(body.radiusKm) || body.radiusKm <= 0 || body.radiusKm > 25)) throw new Error('invalid_radius');
-  return { query: body.query.trim(), context: { language: body.language as QueryContext['language'], location: body.location as QueryContext['location'], radiusKm: body.radiusKm as number | undefined } };
+  let validMessages: import('../../lib/concierge/contracts.ts').ChatMessage[] | undefined = undefined;
+  if (body.messages !== undefined) {
+    if (!Array.isArray(body.messages) || body.messages.length > 10) throw new Error('invalid_messages');
+    for (const msg of body.messages) {
+      if (!msg || typeof msg !== 'object' || Array.isArray(msg)) throw new Error('invalid_messages');
+      const m = msg as Record<string, unknown>;
+      if (!['user', 'assistant'].includes(String(m.role)) || typeof m.content !== 'string' || !m.content.trim() || m.content.length > 1000) {
+        throw new Error('invalid_messages');
+      }
+    }
+    validMessages = body.messages.map((msg) => {
+      const m = msg as { role: 'user' | 'assistant'; content: string };
+      return { role: m.role, content: m.content.trim() };
+    });
+  }
+  return {
+    query: body.query.trim(),
+    context: {
+      language: body.language as QueryContext['language'],
+      location: body.location as QueryContext['location'],
+      radiusKm: body.radiusKm as number | undefined,
+      messages: validMessages,
+    },
+  };
 }
 export async function processConciergeQuery(query: string, env: Env = {}, context: QueryContext = {}, allowAI = false) {
   const started = Date.now(), deadline = started + 4500;
@@ -81,7 +104,7 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
   if (hybrid) { result.modelVersion = VERSIONS.hybrid; result.retrievalMode = 'hybrid'; }
   if (allowAI && env.CONCIERGE_SYNTHESIS_MODE === 'constrained' && result.cards.length) {
     if (env.AI && deadline - Date.now() > 100) {
-      try { result = await synthesize(result, env.AI, intent.language, deadline); }
+      try { result = await synthesize(result, env.AI, intent.language, deadline, context); }
       catch { fallbacks.push('synthesis_rejected_or_unavailable'); }
     } else fallbacks.push('synthesis_not_available');
   }

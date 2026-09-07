@@ -921,6 +921,8 @@ export default function App() {
     }
   };
 
+  const [conciergeChatMessages, setConciergeChatMessages] = useState<import("../lib/concierge/contracts").ChatMessage[]>([]);
+
   async function askWithQuery(queryText: string) {
     if (!queryText.trim()) return;
 
@@ -943,12 +945,13 @@ export default function App() {
       return [queryText.trim(), ...filtered].slice(0, 100);
     });
 
+    const currentMessages = conciergeChatMessages;
     const timer = setTimeout(() => controller.abort(), 6000);
     try {
       const resp = await fetch("/api/concierge", {
         method: "POST", signal: controller.signal,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: queryText, language: lang, ...(queryLocation ? { location: queryLocation } : {}) }),
+        body: JSON.stringify({ query: queryText, language: lang, messages: currentMessages, ...(queryLocation ? { location: queryLocation } : {}) }),
       });
       const payload = await resp.json() as ConciergeResponse;
       if (payload.schemaVersion !== 'concierge-response-v1' || typeof payload.answer !== 'string' || !Array.isArray(payload.cards)) throw new Error('invalid_response');
@@ -956,6 +959,11 @@ export default function App() {
       setConciergeResponse(payload);
       setAnswer(payload.answer);
       if (payload.action) setSuperpowerMode(payload.action);
+      setConciergeChatMessages((prev) => [
+        ...prev,
+        { role: "user" as const, content: queryText.trim() },
+        { role: "assistant" as const, content: payload.intro || payload.answer },
+      ].slice(-10));
     } catch {
       if (conciergeRequest.current !== controller) return;
       if (import.meta.env.DEV && !controller.signal.aborted) {
@@ -963,10 +971,15 @@ export default function App() {
           // Use the published snapshot, never augmented/user-submitted records.
           const snapshot = await fetch('/data/places.json', { signal: controller.signal }).then((res) => res.json());
           if (conciergeRequest.current !== controller || controller.signal.aborted) return;
-          const result = retrieveAndSynthesize(queryText, snapshot.places ?? snapshot, { language: lang, ...(queryLocation ? { location: queryLocation } : {}) });
+          const result = retrieveAndSynthesize(queryText, snapshot.places ?? snapshot, { language: lang, messages: currentMessages, ...(queryLocation ? { location: queryLocation } : {}) });
           setConciergeResponse(result);
           setAnswer(result.answer);
           if (result.action) setSuperpowerMode(result.action);
+          setConciergeChatMessages((prev) => [
+            ...prev,
+            { role: "user" as const, content: queryText.trim() },
+            { role: "assistant" as const, content: result.intro || result.answer },
+          ].slice(-10));
         } catch {
           if (conciergeRequest.current === controller) setAnswer(lang === 'sv' ? 'Katalogen är inte tillgänglig just nu.' : 'The catalog is currently unavailable.');
         }
@@ -1717,7 +1730,8 @@ export default function App() {
             onSelectPlace={handleSelectPlace}
             onRefineQuery={handleRefineQuery}
             lang={lang}
-            onClose={() => { conciergeRequest.current?.abort(); setAnswer(null); setConciergeResponse(null); }}
+            onClose={() => { conciergeRequest.current?.abort(); setAnswer(null); setConciergeResponse(null); setConciergeChatMessages([]); }}
+            messages={conciergeChatMessages}
           />
         </section>
       ) : null}

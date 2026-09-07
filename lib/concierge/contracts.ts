@@ -10,7 +10,8 @@ export const EMBEDDING_DIMENSIONS = 1024;
 export const SYNTHESIS_MODEL = '@cf/google/gemma-4-26b-a4b-it';
 export type Locale = 'sv' | 'en';
 export type Coordinates = { latitude: number; longitude: number };
-export type QueryContext = { language?: Locale; location?: Coordinates; radiusKm?: number };
+export type ChatMessage = { role: 'user' | 'assistant'; content: string };
+export type QueryContext = { language?: Locale; location?: Coordinates; radiusKm?: number; messages?: ChatMessage[] };
 export type SourceFact = {
   id: string; placeId: number; field: string; value: string;
   source: string; url?: string; license?: string; capturedAt?: string;

@@ -18,7 +18,7 @@ The Concierge UI (`ConciergeAnswerView.tsx`) emits real-time user feedback direc
 
 ---
 
-## 2. Multi-Turn Conversation & Discussion Engine
+## 2. Multi-Turn Conversation & Discussion Engine [Implemented]
 
 ### Contract Expansion (`QueryContext`)
 Extend `lib/concierge/contracts.ts` to support multi-turn conversational turns:

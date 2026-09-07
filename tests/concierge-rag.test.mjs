@@ -192,3 +192,19 @@ test('generic venue names do not hijack cuisine requests', () => {
   assert.deepEqual(retrieveAndSynthesize('Mexican food', catalog).cards.map((p) => p.id), [2]);
   assert.deepEqual(retrieveAndSynthesize('food from Poland', catalog).cards.map((p) => p.id), [1]);
 });
+
+test('multi-turn conversation validation and synthesis input formatting', async () => {
+  const valid = validateRequest({ query: 'pierogi', language: 'sv', messages: [{ role: 'user', content: 'Kafé i Vasastan' }, { role: 'assistant', content: 'Pascal' }] });
+  assert.equal(valid.query, 'pierogi');
+  assert.deepEqual(valid.context.messages, [{ role: 'user', content: 'Kafé i Vasastan' }, { role: 'assistant', content: 'Pascal' }]);
+
+  assert.throws(() => validateRequest({ query: 'pierogi', messages: 'invalid' }), /invalid_messages/);
+  assert.throws(() => validateRequest({ query: 'pierogi', messages: [{ role: 'admin', content: 'hi' }] }), /invalid_messages/);
+
+  const res = retrieveAndSynthesize('pierogi', places);
+  const synthInput = buildSynthesisInput(res, 'sv', valid.context);
+  assert.ok(Array.isArray(synthInput.messages));
+  assert.equal(synthInput.messages.length, 4);
+  assert.equal(synthInput.messages[1].role, 'user');
+  assert.equal(synthInput.messages[1].content, 'Kafé i Vasastan');
+});
