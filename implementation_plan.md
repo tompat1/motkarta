@@ -4,8 +4,11 @@ Build/deployment repair completed and deployed to production as
 `d947add9-a120-4ec0-accf-66da3faffc8f`. Exact Node 22.16.0 build and all 203 JS tests
 pass; 74 Python tests pass. Live production checks confirm lexical/template D1
 responses, source exclusions, `dist` output and the 1,000 ms CPU limit.
-See [the repair record](docs/build-deployment-repair.md). The paid RAG trial remains
-paused at the user's build-first request, with one empty index and no inference.
+See [the repair record](docs/build-deployment-repair.md). The user has resumed the approved US$1 RAG trial. Refresh the D1 snapshot,
+verify and populate the existing isolated index, capture real query/model results,
+and replay the production gates. Extract shared hydration/prompt helpers only
+where needed to keep diagnostics faithful; validate with tests and full builds.
+No public AI activation or plan upgrade is included.
 
 Build/deployment repair takes priority per the user's correction and pasted log.
 Compile all Pages Functions into `dist/_worker.js` and generate routes during the

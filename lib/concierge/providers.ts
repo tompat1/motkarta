@@ -1,5 +1,5 @@
 import { scorePlace } from '../scoring.ts';
-import { EMBEDDING_MODEL, EMBEDDING_DIMENSIONS, VERSIONS, type AiBinding, type VectorBinding, type ConciergePlace, type QueryContext, type RankedCandidate } from './contracts.ts';
+import { EMBEDDING_MODEL, EMBEDDING_DIMENSIONS, VERSIONS, type AiBinding, type VectorBinding, type VectorMatch, type ConciergePlace, type QueryContext, type RankedCandidate } from './contracts.ts';
 import { documentHash, placeFacts } from './facts.ts';
 import { eligiblePlace } from './gates.ts';
 import { parseIntent } from './intent.ts';
@@ -24,7 +24,13 @@ export async function semanticCandidates(query: string, places: ConciergePlace[]
   if (intent.area) filter.area = intent.area;
   // Full current constraints are always checked below, independently of indexed metadata.
   const result = await withinDeadline(index.query(embedding, { topK: 50, returnMetadata: 'all', returnValues: false, filter }), Math.min(800, deadline - Date.now()));
+  return hydrateSemanticMatches(query, places, context, result, threshold);
+}
+
+// Shared by live retrieval and offline replay of real provider captures.
+export async function hydrateSemanticMatches(query: string, places: ConciergePlace[], context: QueryContext, result: { matches: VectorMatch[] }, threshold: number): Promise<RankedCandidate[]> {
   if (!Array.isArray(result.matches)) throw new Error('invalid_vector_result');
+  const intent = parseIntent(query, context);
   const catalog = new Map(places.map((place) => [String(place.id), place]));
   const candidates: RankedCandidate[] = [];
   const namedIds = exactNameIds(query, places);
