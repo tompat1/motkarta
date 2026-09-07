@@ -8,6 +8,7 @@ import { ConciergeSuperpowerModal } from "./components/ConciergeSuperpowerModal"
 import { CuratedSourcesPanel } from "./components/CuratedSourcesPanel";
 import { ExternalMapLinks } from "./components/ExternalMapLinks";
 import { FoodMap } from "./components/FoodMap";
+import { SyncDevicesModal } from "./components/SyncDevicesModal";
 import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
 import { VerificationBar } from "./components/VerificationBar";
 import { matchesEstablishmentFilter } from "./app/place-filtering";
@@ -99,6 +100,7 @@ import {
   List,
   Heart,
   PawPrint,
+  DeviceMobile,
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../lib/concierge/response";
@@ -196,6 +198,39 @@ export default function App() {
     }
     return [];
   });
+
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
+
+  const handleImportSavedPlaces = useCallback((newIds: number[]) => {
+    setSavedPlaceIds((prev) => {
+      const merged = Array.from(new Set([...prev, ...newIds]));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("motkarta_saved_places", JSON.stringify(merged));
+      }
+      return merged;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const syncCode = params.get("sync");
+      if (syncCode) {
+        const cleanCode = syncCode.trim().toUpperCase();
+        void fetch(`/api/sync?code=${encodeURIComponent(cleanCode)}`)
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data: { savedPlaceIds?: number[] } | null) => {
+            if (data?.savedPlaceIds && data.savedPlaceIds.length > 0) {
+              handleImportSavedPlaces(data.savedPlaceIds);
+              const newUrl = new URL(window.location.href);
+              newUrl.searchParams.delete("sync");
+              window.history.replaceState({}, "", newUrl.toString());
+            }
+          })
+          .catch(() => {});
+      }
+    }
+  }, [handleImportSavedPlaces]);
 
   const [cart, setCart] = useState<Record<string, number>>(() => {
     if (typeof window !== "undefined") {
@@ -1396,6 +1431,16 @@ export default function App() {
 
           <button
             type="button"
+            className="quick-filter-pill"
+            onClick={() => setIsSyncModalOpen(true)}
+            title={lang === "sv" ? "Synka alla dina enheter" : "Sync across devices"}
+          >
+            <DeviceMobile size={13} weight="bold" />
+            <span>{lang === "sv" ? "Synka enheter" : "Sync Devices"}</span>
+          </button>
+
+          <button
+            type="button"
             className={`quick-filter-pill ${mobileFilters.openOnly ? "is-active" : ""}`}
             onClick={() =>
               handleUpdateMobileFilters({
@@ -2305,10 +2350,7 @@ export default function App() {
       <OnboardingModal
         isOpen={showOnboarding}
         onClose={handleCloseOnboarding}
-        onOpenConcierge={() => {
-          const el = document.getElementById("concierge");
-          if (el) el.scrollIntoView({ behavior: "smooth" });
-        }}
+        onOpenConcierge={focusSearchInput}
         lang={lang}
       />
 
@@ -2349,6 +2391,14 @@ export default function App() {
           }}
         />
       ) : null}
+
+      <SyncDevicesModal
+        isOpen={isSyncModalOpen}
+        onClose={() => setIsSyncModalOpen(false)}
+        savedPlaceIds={savedPlaceIds}
+        onImportSavedPlaces={handleImportSavedPlaces}
+        lang={lang}
+      />
 
       <footer>
 

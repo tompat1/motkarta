@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Compass, ShieldCheck, Sparkle, MagnifyingGlass, CheckCircle, MapPin } from "@phosphor-icons/react";
+import { Compass, ShieldCheck, Sparkle, MagnifyingGlass, CheckCircle, MapPin, QrCode } from "@phosphor-icons/react";
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -60,6 +60,14 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
         ? "Kurerat urval över 3 190+ restauranger, caféer, bagerier och baristabarer i hela Stockholm."
         : "Curated directory of over 3,190+ restaurants, bakeries, cafes, and roasteries across Stockholm.",
       icon: Compass,
+    },
+    {
+      title: isSv ? "6. Privatsynk & QR-kod" : "6. Zero-Login QR Sync",
+      tagline: isSv ? "ENHETSSYNKRONISERING" : "CROSS-DEVICE SYNC",
+      description: isSv
+        ? "Synka dina sparade favoritställen sömlöst mellan alla dina enheter via QR-kod eller 6-ställig kod — helt utan konto eller e-post."
+        : "Seamlessly sync your saved favorite places across all your devices using a QR code or 6-character code — zero login or email required.",
+      icon: QrCode,
     },
   ];
 

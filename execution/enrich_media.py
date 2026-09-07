@@ -109,6 +109,7 @@ def main():
     sql_statements.append("-- MOTKARTA Open Data D1 Media & Review Import")
     sql_statements.append("CREATE TABLE IF NOT EXISTS place_reviews (id TEXT PRIMARY KEY, place_id INTEGER, author TEXT, rating REAL, date TEXT, source TEXT, content TEXT, verified INTEGER);")
     sql_statements.append("CREATE TABLE IF NOT EXISTS place_photos (id TEXT PRIMARY KEY, place_id INTEGER, url TEXT, thumbnail_url TEXT, caption TEXT, credit TEXT, width INTEGER, height INTEGER);")
+    sql_statements.append("CREATE TABLE IF NOT EXISTS sync_codes (code TEXT PRIMARY KEY, saved_ids TEXT, updated_at TEXT);")
 
     for place in places:
         p_id = place.get("id")

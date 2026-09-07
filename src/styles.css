@@ -3563,7 +3563,7 @@ footer {
   }
 
   .results {
-    padding: 20px 16px;
+    margin-top: 12px;
   }
 
   .concierge,
@@ -7248,3 +7248,240 @@ footer {
     display: none;
   }
 }
+
+/* Cross-Device Sync Modal Styles */
+.sync-modal-content {
+  max-width: 480px;
+  width: 90%;
+  border-radius: 20px;
+  background: var(--color-paper, #ffffff);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.sync-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sync-modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sync-modal-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+
+.sync-modal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-ink, #0f172a);
+}
+
+.sync-modal-subtitle {
+  font-size: 0.85rem;
+  color: var(--color-mist, #64748b);
+  margin: 2px 0 0 0;
+}
+
+.sync-modal-close {
+  background: none;
+  border: none;
+  color: var(--color-mist, #64748b);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+}
+
+.sync-modal-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  padding-bottom: 8px;
+}
+
+.sync-modal-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-mist, #64748b);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sync-modal-tab.is-active {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.sync-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+}
+
+.sync-code-box {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.sync-code-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.sync-code-display {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #38bdf8;
+  font-family: var(--font-mono, monospace);
+}
+
+.sync-code-hint {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+}
+
+.sync-qr-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  border-radius: 14px;
+  width: 100%;
+}
+
+.qr-box-caption {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.sync-action-row {
+  width: 100%;
+}
+
+.sync-copy-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.sync-copy-btn:hover {
+  background: #1d4ed8;
+}
+
+.sync-input-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.sync-input-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.sync-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.sync-code-input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sync-code-input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.sync-submit-btn {
+  padding: 12px 20px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sync-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sync-error-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+}
+
+.sync-success-banner {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+}
+

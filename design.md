@@ -135,6 +135,7 @@ Every design decision should reinforce these principles in order.
 5. **Evidence over popularity.** Star ratings and review counts never dominate a place profile.
 6. **Dense data, calm interface.** Progressive disclosure makes complexity understandable without pretending it is simple.
 7. **Accessible by default.** Contrast, keyboard use, motion preferences, touch size, and non-colour cues are core brand quality.
+8. **Zero-login privacy & cross-device QR sync.** Synchronising saved places across desktop and mobile operates strictly via lightweight 6-character sync codes and instant QR scanning without requiring user registration, email, or profile tracking.
 
 ### 4.1 The visual tension
 

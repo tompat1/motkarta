@@ -159,7 +159,7 @@ test("extractStructuredFilters parses Swedish cuisine keywords", () => {
   assert.equal(filters.price_max, 250, "Should detect 'rimligt pris' as affordable");
 });
 
-test("concierge search input has exact aria-label and top-nav CONCIERGE focuses input", async () => {
+test("concierge search input has exact aria-label and top-nav CONCIERGE and OnboardingModal focus input", async () => {
   const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
 
   assert.equal(
@@ -167,5 +167,6 @@ test("concierge search input has exact aria-label and top-nav CONCIERGE focuses 
     true,
   );
   assert.equal(appSource.includes("focusSearchInput()"), true);
+  assert.equal(appSource.includes('onOpenConcierge={focusSearchInput}'), true);
   assert.equal(appSource.includes('href="#concierge"'), true);
 });
