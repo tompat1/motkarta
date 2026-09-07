@@ -2,8 +2,8 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import { lexicalCandidates, fuseCandidates } from '../lib/concierge/retrieval.ts';
-import { semanticCandidates } from '../lib/concierge/providers.ts';
-import { EMBEDDING_MODEL, EMBEDDING_DIMENSIONS } from '../lib/concierge/contracts.ts';
+import { hydrateSemanticMatches } from '../lib/concierge/providers.ts';
+import { EMBEDDING_MODEL } from '../lib/concierge/contracts.ts';
 
 const [catalogPath, queryPath, outputPath, legacyPath, semanticPath] = process.argv.slice(2);
 const raw = await readFile(catalogPath, 'utf8');
@@ -21,9 +21,7 @@ for (const item of queries) {
   if (historical) row.legacy = historical.retrieveAndSynthesize(item.query, catalog).recommendedPlaces.map((p) => p.id);
   if (semantic) {
     if (!Array.isArray(semantic.results[item.id])) throw new Error(`Missing captured query ${item.id}`);
-    const vectors = await semanticCandidates(item.query, catalog, context,
-      { run: async () => ({ data: [Array(EMBEDDING_DIMENSIONS).fill(0.1)] }) },
-      { query: async () => ({ matches: semantic.results[item.id] }) }, semantic.threshold, Date.now() + 5000);
+    const vectors = await hydrateSemanticMatches(item.query, catalog, context, { matches: semantic.results[item.id] }, semantic.threshold);
     row.hybrid = fuseCandidates(lexical, vectors).slice(0, 50).map((c) => c.place.id);
   }
   results.push(row);

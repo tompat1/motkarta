@@ -1,5 +1,9 @@
 # Concierge preview — 2026-09-06
 
+Later status: the [real-model trial](concierge-real-model-trial.md) is complete in
+an isolated index. This public preview remains lexical-only; its original
+budget proposal below is historical, not a new approval request.
+
 Subsequent [build/deployment repair](../build-deployment-repair.md) adds complete
 Functions bundling to the regular build and prevents preview output-directory
 drift. The US$1 model trial was approved, then paused at the user's request to

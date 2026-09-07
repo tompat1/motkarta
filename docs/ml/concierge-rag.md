@@ -1,13 +1,11 @@
 # Concierge RAG: implementation and preview
 
-The [build/deployment repair](../build-deployment-repair.md) subsequently deployed
-the corrected lexical/template app to production. Real semantic retrieval and
-model synthesis remain disabled. The approved US$1 trial is paused with an empty
-preview index while the user prioritizes the deployment repair.
-
-The [2026-09-06 lexical preview](concierge-preview.md) is deployed and tested
-against live D1. It is read-only and hard-disables AI. Production activation,
-real embeddings and constrained model evaluation remain pending.
+The [build/deployment repair](../build-deployment-repair.md) deployed the corrected
+lexical/template app to production. The approved US$1
+[real-model trial](concierge-real-model-trial.md) completed in an isolated index:
+3,143 verified vectors, 128 query captures and 23/32 accepted synthesis outputs. Public
+semantic retrieval and model synthesis remain disabled. The
+[lexical preview](concierge-preview.md) remains read-only with AI disabled.
 
 The [live catalog audit](concierge-catalog-readiness.md) led to the
 [2026-09-06 reconciliation](concierge-reconciliation.md): guarded D1 data repairs
@@ -106,7 +104,7 @@ are unavailable or no current semantic matches survive.
 
 ## Constrained synthesis
 
-The initial Gemma adapter generates a JSON selection of 1–3 supplied fact IDs per
+The Gemma 4 adapter (`concierge-synthesis-v2`) generates a JSON selection of 1–3 supplied fact IDs per
 fixed result. Its role is query-sensitive explanation selection. The server
 renders the selected facts with localized connective text. Arbitrary generated
 prose is intentionally not accepted: schema-valid citations do not prove factual
@@ -152,7 +150,7 @@ hours, medium prices or recent verification.
 | Corpus | `concierge-facts-v1` |
 | Corrected lexical | `concierge-lexical-v2` |
 | Hybrid ranking | `concierge-hybrid-v2` |
-| Synthesis prompt | `concierge-synthesis-v1` |
+| Synthesis prompt | `concierge-synthesis-v2` |
 | Python offline ranking | `concierge-python-lexical-v2` |
 | Global scorer (unchanged) | `transparent-scorer-v1.1` |
 

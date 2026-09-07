@@ -3,11 +3,11 @@ import type { PlaceInput, ScoredPlace } from '../scoring.ts';
 export const VERSIONS = {
   schema: 'concierge-response-v1', corpus: 'concierge-facts-v1',
   lexical: 'concierge-lexical-v2', hybrid: 'concierge-hybrid-v2',
-  prompt: 'concierge-synthesis-v1', scorer: 'transparent-scorer-v1.1',
+  prompt: 'concierge-synthesis-v2', scorer: 'transparent-scorer-v1.1',
 } as const;
 export const EMBEDDING_MODEL = '@cf/baai/bge-m3';
 export const EMBEDDING_DIMENSIONS = 1024;
-export const SYNTHESIS_MODEL = '@cf/google/gemma-3-12b-it';
+export const SYNTHESIS_MODEL = '@cf/google/gemma-4-26b-a4b-it';
 export type Locale = 'sv' | 'en';
 export type Coordinates = { latitude: number; longitude: number };
 export type QueryContext = { language?: Locale; location?: Coordinates; radiusKm?: number };

@@ -263,3 +263,13 @@ validated with real collection metrics.
   validate the emitted module before publishing `_worker.js`. Keep preview and
   production `pages_build_output_dir` identical to avoid shared-project drift.
   Node 22.16 native TypeScript flags must also reach test CLI subprocesses.
+
+- The real Vectorize metadata-list response uses `String`/`Bool` enum values;
+  normalize these before checking required filter types. Preserve the approved
+  trial usage ledger across retries. Real-capture replay must share production
+  hydration and synthesis validation, retain input fingerprints, and never reuse
+  synthetic relevance IDs as D1 labels. See `docs/ml/concierge-real-model-trial.md`.
+- Live Vectorize `get_by_ids` rejects batches above 20. Use the trial `verify`
+  phase after completed writes instead of repeating embeddings/upserts. The
+  deprecated Gemma 3 prototype is replaced by Gemma 4 under synthesis v2; inspect
+  its chat-completion finish reason and apply the same strict fact-ID gate.

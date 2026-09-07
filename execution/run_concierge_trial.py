@@ -10,10 +10,10 @@ import time
 import urllib.error
 import urllib.request
 
-from execution.index_concierge import Cloudflare, build_plan, sync, write_json
+from execution.index_concierge import Cloudflare, build_plan, sync, verify_index, write_json
 
 EMBEDDING = '@cf/baai/bge-m3'
-SYNTHESIS = '@cf/google/gemma-3-12b-it'
+SYNTHESIS = '@cf/google/gemma-4-26b-a4b-it'
 
 
 class TrialClient(Cloudflare):
@@ -45,8 +45,9 @@ class TrialClient(Cloudflare):
             cost = (size + 128 * len(texts)) * 0.012 / 1_000_000
         elif path == '/ai/run/' + SYNTHESIS:
             kind = 'synthesisCalls'
-            if size > 16000 or body.get('max_tokens') != 500:
+            if size > 16000 or body.get('max_tokens') != 500 or body.get('max_completion_tokens', 500) != 500 or body.get('n', 1) != 1:
                 raise ValueError('Synthesis packet exceeds trial limits')
+            # Retain the approved, higher Gemma 3 reserve despite Gemma 4's lower prices.
             cost = (size + 1024) * 0.345 / 1_000_000 + 500 * 0.556 / 1_000_000
         elif path.startswith('/ai/'):
             raise ValueError('Trial model is not allowed')
@@ -97,7 +98,7 @@ class TrialClient(Cloudflare):
         return result
 
 
-def run_index(client, corpus):
+def run_index(client, corpus, verify_only=False):
     if corpus['model'] != EMBEDDING or corpus['dimensions'] != 1024:
         raise ValueError('Unexpected corpus model/dimensions')
     previous_path = client.directory / 'index-manifest.json'
@@ -105,7 +106,11 @@ def run_index(client, corpus):
     plan = build_plan(corpus, previous, client.ledger['index'])
     if plan['estimatedInputTokens'] > 150000 or plan['admittedCount'] > 3143:
         raise ValueError('Corpus exceeds approved scope')
-    result = sync(corpus, plan, client)
+    if verify_only:
+        client.check_configuration(corpus)
+        result = verify_index(plan, client)
+    else:
+        result = sync(corpus, plan, client)
     write_json(previous_path, result)
     print(json.dumps({'status': result['status'], 'vectors': len(result['hashes'])}), flush=True)
 
@@ -116,10 +121,13 @@ def run_cases(client, cases, phase):
         if not isinstance(row['id'], str) or not row['id'].replace('-', '').replace('_', '').isalnum():
             raise ValueError('Invalid diagnostic case ID')
         output = client.directory / phase / (row['id'] + '.json')
+        input_hash = hashlib.sha256(json.dumps(row, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
         if output.exists():
+            if json.loads(output.read_text()).get('inputHash') != input_hash:
+                raise ValueError('Diagnostic input changed; do not reuse the previous capture')
             continue
         started = time.monotonic()
-        result = {'id': row['id']}
+        result = {'id': row['id'], 'inputHash': input_hash}
         try:
             if phase == 'queries':
                 vector = client.embed([row['query']], EMBEDDING)[0]
@@ -142,7 +150,7 @@ def run_cases(client, cases, phase):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('phase', choices=['index', 'queries', 'synthesis'])
+    parser.add_argument('phase', choices=['index', 'verify', 'queries', 'synthesis'])
     parser.add_argument('--input', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--index', default='motkarta-concierge-preview-v1')
@@ -152,8 +160,8 @@ def main():
         raise ValueError('Only the approved preview index is allowed')
     client = TrialClient(os.environ['CLOUDFLARE_ACCOUNT_ID'], os.environ['CLOUDFLARE_API_TOKEN'], args.index, args.output)
     data = json.loads(args.input.read_text())
-    if args.phase == 'index':
-        run_index(client, data)
+    if args.phase in {'index', 'verify'}:
+        run_index(client, data, verify_only=args.phase == 'verify')
     else:
         run_cases(client, data, args.phase)
 

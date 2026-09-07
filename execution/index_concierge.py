@@ -92,7 +92,10 @@ class Cloudflare:
         if config.get('dimensions') != corpus['dimensions'] or config.get('metric') != corpus['metric']:
             raise ValueError('Index dimensions/metric mismatch')
         metadata = self.request(self.path + '/metadata_index/list', method='GET')
-        actual = {entry['propertyName']: entry['indexType'] for entry in metadata.get('metadataIndexes', [])}
+        # REST returns enum names (String/Bool), unlike Wrangler's input flags.
+        types = {'String': 'string', 'Bool': 'boolean', 'Number': 'number',
+                 'string': 'string', 'boolean': 'boolean', 'number': 'number'}
+        actual = {entry['propertyName']: types.get(entry['indexType']) for entry in metadata.get('metadataIndexes', [])}
         if any(actual.get(key) != kind for key, kind in {'corpusVersion': 'string', 'eligible': 'boolean', 'area': 'string'}.items()):
             raise ValueError('Create required metadata indexes before upserting')
 
@@ -115,13 +118,18 @@ def sync(corpus: dict, plan: dict, client, *, sleep=time.sleep, attempts=10) -> 
         mutations.append(client.upsert(vectors))
     for start in range(0, len(plan['deletedIds']), 100):
         mutations.append(client.delete(plan['deletedIds'][start:start + 100]))
+    return verify_index(plan, client, mutations=mutations, sleep=sleep, attempts=attempts)
+
+
+def verify_index(plan: dict, client, *, mutations=(), sleep=time.sleep, attempts=10) -> dict:
     # Verify every expected hash and every deleted ID; an accepted mutation is not completion.
     expected = plan['hashes']
     ids = list(expected) + plan['deletedIds']
     for attempt in range(attempts):
         observed = {}
-        for start in range(0, len(ids), 100):
-            for vector in client.get(ids[start:start + 100]):
+        # The live get_by_ids endpoint permits at most 20 IDs per request.
+        for start in range(0, len(ids), 20):
+            for vector in client.get(ids[start:start + 20]):
                 observed[vector['id']] = vector.get('metadata', {}).get('documentHash')
         info = client.info()
         if observed == expected and info.get('vectorCount') == len(expected):

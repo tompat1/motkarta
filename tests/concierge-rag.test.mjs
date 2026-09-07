@@ -5,8 +5,8 @@ import { retrieveAndSynthesize } from '../lib/concierge/response.ts';
 import { lexicalCandidates, fuseCandidates } from '../lib/concierge/retrieval.ts';
 import { placeFacts, documentHash } from '../lib/concierge/facts.ts';
 import { eligiblePlace, specialtyEligible } from '../lib/concierge/gates.ts';
-import { semanticCandidates, validateEmbedding, withinDeadline } from '../lib/concierge/providers.ts';
-import { validateSynthesis, synthesize } from '../lib/concierge/synthesis.ts';
+import { semanticCandidates, hydrateSemanticMatches, validateEmbedding, withinDeadline } from '../lib/concierge/providers.ts';
+import { validateSynthesis, synthesize, buildSynthesisInput, applySynthesisOutput } from '../lib/concierge/synthesis.ts';
 import { onRequestPost, onRequestGet, validateRequest } from '../functions/api/concierge.ts';
 import { rowsToPlaceInputs } from '../lib/place-records.ts';
 import { VERSIONS } from '../lib/concierge/contracts.ts';
@@ -83,6 +83,24 @@ test('embedding responses and deadlines fail closed', async () => {
   for (const data of [[], [Array(768).fill(1)], [Array(1024).fill(0)], [Array(1024).fill(NaN)]]) assert.throws(() => validateEmbedding({ data }));
   await assert.rejects(withinDeadline(new Promise(() => {}), 5), /deadline/);
 });
+test('offline capture replay uses the same hydration gates as live retrieval', async () => {
+  const capture = { matches: [await match(places[0]), { ...await match(places[1]), metadata: { documentHash: 'stale' } }] };
+  const live = await semanticCandidates('pierogi', places, {}, ai, { query: async () => capture }, 0.5, Date.now() + 1000);
+  assert.deepEqual(await hydrateSemanticMatches('pierogi', places, {}, capture, 0.5), live);
+  assert.deepEqual(await hydrateSemanticMatches('pierogi open now', places, {}, capture, 0.5), []);
+});
+test('diagnostic synthesis packets and rendering match the live provider path', async () => {
+  const original = response();
+  const output = { response: JSON.stringify({ places: [{ placeId: 1, factIds: ['1:cuisine'] }] }) };
+  const generated = await synthesize(original, { run: async (_, input) => {
+    assert.deepEqual(input, buildSynthesisInput(original, 'en'));
+    const packet = JSON.parse(input.messages[1].content);
+    assert.ok(packet.places.every(p => p.facts.every(f => ['kind', 'area', 'cuisine', 'dish', 'tags'].includes(f.field))));
+    return output;
+  } }, 'en', Date.now() + 1000);
+  assert.deepEqual(applySynthesisOutput(output, original, 'en'), generated);
+  assert.throws(() => applySynthesisOutput({ response: '{"places":[]}' }, original, 'en'));
+});
 test('fusion has deterministic ties and exact names precede semantic distractors', () => {
   const lex = lexicalCandidates('Pierogi House', places);
   const distractor = { ...lex[0], place: { ...lex[0].place, id: 80 }, exact: false, lexicalRank: undefined, vectorRank: 1 };
@@ -101,6 +119,15 @@ test('constrained synthesis renders only server fact values, preserving protecte
   assert.equal(generated.cards[0].whyItMatches, 'Listed attributes: polish.');
   assert.equal(generated.cards[0].hoursConfidence, 'Unknown');
   assert.deepEqual(generated.recommendedPlaces, r.recommendedPlaces);
+});
+test('Gemma 4 chat completions preserve citation validation and reject truncation or tools', () => {
+  const original = response();
+  const content = JSON.stringify({ places: [{ placeId: 1, factIds: ['1:cuisine'] }] });
+  const choice = { finish_reason: 'stop', message: { content } };
+  assert.equal(applySynthesisOutput({ choices: [choice] }, original, 'en').cards[0].whyItMatches, 'Listed attributes: polish.');
+  for (const choices of [[], [choice, choice], [{ ...choice, finish_reason: 'length' }], [{ ...choice, message: { content, refusal: 'Refused' } }], [{ ...choice, message: { content, tool_calls: [{}] } }], [{ ...choice, message: { content: '{"places":[{"placeId":1,"factIds":["invented"]}]}' } }]]) {
+    assert.throws(() => applySynthesisOutput({ choices }, original, 'en'));
+  }
 });
 test('schema rejects injected corpora, malformed coordinates, query types and unknown fields', () => {
   for (const value of [{ query: 'x', places }, { query: 1 }, { query: 'x', location: { latitude: 91, longitude: 0 } }, { query: 'x', radiusKm: Infinity }, { query: ' ' }, { query: 'x'.repeat(1001) }]) assert.throws(() => validateRequest(value));

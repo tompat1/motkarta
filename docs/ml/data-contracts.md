@@ -1,5 +1,10 @@
 # ML data contracts
 
+Concierge synthesis v2 uses Gemma 4's single completed chat response, rejects
+truncation/refusals/tool calls, then validates existing fact IDs and server-selected
+place order. Raw model text is not displayed. See the
+[real-model trial](concierge-real-model-trial.md) for measured failures and lineage.
+
 ## Principles
 
 Data contracts protect provenance and prevent signals from leaking across policy

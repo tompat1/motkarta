@@ -5,7 +5,9 @@ and route/auth validation part of `npm run build`, fixes Node 22.16 test executi
 and carries the validated catalog CPU limit in root Wrangler configuration.
 
 For the deployed read-only concierge preview, commands, CPU-limit finding and
-pending model-test budget, see [Concierge preview](concierge-preview.md).
+isolation, see [Concierge preview](concierge-preview.md). For the authorized bounded
+model trial, ledger preservation and capture replay, see
+[Real-model trial](concierge-real-model-trial.md).
 
 The [2026-09-06 catalog repair record](concierge-reconciliation.md) documents
 applied D1 repairs, guarded rollback and the validated local identity bridge.

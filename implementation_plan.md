@@ -1,89 +1,32 @@
-# Current proposal: multilingual, evidence-grounded RAG concierge
+# Current work: bounded real-model RAG Concierge trial
 
-Build/deployment repair completed and deployed to production as
-`d947add9-a120-4ec0-accf-66da3faffc8f`. Exact Node 22.16.0 build and all 203 JS tests
-pass; 74 Python tests pass. Live production checks confirm lexical/template D1
-responses, source exclusions, `dist` output and the 1,000 ms CPU limit.
-See [the repair record](docs/build-deployment-repair.md). The user has resumed the approved US$1 RAG trial. Refresh the D1 snapshot,
-verify and populate the existing isolated index, capture real query/model results,
-and replay the production gates. Extract shared hydration/prompt helpers only
-where needed to keep diagnostics faithful; validate with tests and full builds.
-No public AI activation or plan upgrade is included.
+Completed the approved one-time US$1 trial after the build/deployment
+repair: 3,143 verified vectors, 128 successful query captures, and 23/32 synthesis
+outputs accepted by strict validation. Nine outputs require template fallback.
+The remaining work is relevance labeling, source enrichment and schema/prompt
+hardening before any public activation. Production deployment `d947add9-a120-4ec0-accf-66da3faffc8f` is verified;
+public concierge remains lexical/template. See the
+[repair record](docs/build-deployment-repair.md) and
+[real-model trial record](docs/ml/concierge-real-model-trial.md).
 
-Build/deployment repair takes priority per the user's correction and pasted log.
-Compile all Pages Functions into `dist/_worker.js` and generate routes during the
-verified build using pinned Wrangler 4.92.0. Validate the server artifact and
-align GitHub CI with Node 22. Preserve source JSON imports and all API/admin
-handlers. Test the compiled worker and local runtime, then verify upload before
-restoring normal production deployment. The approved RAG trial is paused: the
-isolated index was created empty; no model calls or vector writes have started.
+Implement and run the approved diagnostic scope:
 
-Real-model trial authorized by “So yes go ahead” after the US$1 proposal.
-Create only the isolated preview index, cap corpus input at 150,000 estimated
-tokens, and run at most 128 diagnostic query embeddings/searches and 32 synthesis
-calls (500 output tokens each). Maintain a usage ledger including failed calls,
-verify current D1 hashes and all index records, and report genuine model results
-without treating diagnostic queries as an untouched holdout. Preserve production
-and the lexical-only public preview; no plan upgrade is authorized.
+1. Refresh D1 read-only, audit identity/fact consistency, and preserve all IDs.
+2. Populate only `motkarta-concierge-preview-v1` with up to 3,143 eligible records
+   and 150,000 estimated input tokens; verify every current document hash/count.
+3. Capture up to 128 real query embeddings/searches and 32 constrained Gemma
+   responses, capped at 500 output tokens each, with a persistent usage ledger.
+4. Share production hydration/prompt/render helpers with offline replay; test
+   parity, provider contracts, citation rejection and safe resumption.
+5. Report actual results, limitations and cost reserves. Run full JavaScript,
+   Python and production-build checks and update canonical documentation.
 
-Preview continuation completed: [tested deployment and findings](docs/ml/concierge-preview.md).
-203 JavaScript/70 Python tests, build and live browser/HTTP checks pass. Reduced
-unnecessary lexical computation with 256 unchanged ranking comparisons. The
-preview has an explicit 1,000 ms CPU limit after an initial resource-limit failure;
-production is unchanged. The next real-model trial has a concrete US$1 proposal,
-pending spending approval; no public AI activation or plan upgrade is included.
-
-2026-09-06 continuation: deploy and validate a lexical concierge preview on the
-`concierge-rag-preview` Pages branch. Build an advanced-mode preview worker that
-exposes only the existing concierge GET/POST handlers, allows only the three
-catalog SELECT statements, and strips AI bindings. Other APIs, admin paths and
-writes are disabled in this preview. Read the existing D1 catalog without
-mutations; preserve the production branch/configuration. Test isolation and
-live API/map behavior, record the deployment and prepare a concrete budgeted
-semantic-test proposal. Paid inference and production activation remain pending.
-
-2026-09-06 catalog repair authorized by “Pls run”:
-
-Completed: 454 guarded D1 updates applied and verified; all original IDs preserved.
-Local identity bridge, source locality gates, importer safeguards and validation
-pass. See [the repair record](docs/ml/concierge-reconciliation.md). Code remains
-undeployed; no paid inference or Vectorize mutation occurred.
-
-Follow-up to the reported repeated geolocation timeout: remove implicit mount,
-language-change and typing requests; share pending map/concierge requests; retain
-explicit nearby search and map actions with accurate timeout/retry feedback.
-Validate request sharing, late callbacks and successful retry in unit and browser
-tests, then run the full test/build gates. Completed locally: 198 JavaScript tests
-and build pass, including the browser regression. Actual positioning remains
-dependent on the browser and device location service.
-
-- Refresh D1, retain its IDs, and generate guarded updates only for corroborated
-  source street addresses, invalid coordinates and the existing closed label.
-- Rehearse updates and rollback locally; retain the before snapshot and inspect
-  exact field changes before executing any repair. Do not insert/delete venues,
-  replace evidence, promote labels or enable paid inference/deployment.
-- Add full OSM identity to public/server records and validate map joins by that
-  identity, name and location; preserve existing public IDs and saved/media keys.
-- Separate source locality evidence from derived region labels and reject
-  coordinates outside the established Stockholm bounding envelope.
-- Run identity, stale-update, rollback, lifecycle, geography, HTTP/map and full
-  test/build checks. Re-audit, documenting unmatched venues without guessing merges.
-
-Next-step audit authorized by “so continue pls”: read the configured D1 catalog,
-compare identity/eligibility/fact hashes with the public snapshot, and prepare a
-reproducible canonical D1 index input and reconciliation report. Do not apply ID
-mappings, database mutations, paid inference or deployment. Validate the audit
-against malformed snapshots, duplicate identities and mismatched venue records;
-run the repository test/build gates and document measured release blockers.
-
-Status: stages 1–4 approved and implemented locally on 2026-09-05.
-See the [implementation/runbook](docs/ml/concierge-rag.md) and
-[evaluation record](docs/ml/concierge-evaluation.md). Cloud resources, paid
-inference and deployment remain inactive.
-
-The review, architecture, implementation sequence, acceptance criteria and
-baseline results are in [the RAG implementation plan](docs/ml/rag-implementation-plan.md).
-The previously completed source-boundary plan is retained below.
+Risks: sparse source facts, uncalibrated similarity thresholds, provider latency,
+invalid model output and asynchronous index mutation. Keep existing gates and
+fallbacks. Captured fixture prompts are diagnostics, not an untouched D1 holdout.
+No public AI activation, D1 mutation or subscription upgrade is authorized by
+this trial. Existing stages 1–4, catalog repairs, identity bridge, geolocation
+fixes and lexical preview are complete; see the linked canonical records.
 
 ---
 

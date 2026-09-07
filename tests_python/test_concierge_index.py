@@ -2,7 +2,7 @@ import copy
 import json
 from pathlib import Path
 import pytest
-from execution.index_concierge import build_plan, sync, Cloudflare
+from execution.index_concierge import build_plan, sync, verify_index, Cloudflare
 from execution.evaluate_concierge import metrics, report
 from motkarta.rag import eligible_place, place_to_rag_document
 from motkarta.concierge import answer_query, synthesize_concierge_response
@@ -70,6 +70,21 @@ def test_unready_mutation_never_reports_verified():
         sync(data, build_plan(data, None, 'preview'), Index(ready=False), sleep=lambda _: None, attempts=2)
 
 
+def test_verify_existing_index_checks_every_hash_in_rest_sized_batches():
+    client = Index()
+    client.values = {str(i): {'id': str(i), 'metadata': {'documentHash': str(i)}} for i in range(45)}
+    plan = {'hashes': {str(i): str(i) for i in range(45)}, 'deletedIds': []}
+    batches = []
+    original = client.get
+    client.get = lambda ids: batches.append(ids) or original(ids)
+    assert verify_index(plan, client)['status'] == 'verified'
+    assert list(map(len, batches)) == [20, 20, 5]
+    assert client.embedded == 0
+    client.values['44']['metadata']['documentHash'] = 'stale'
+    with pytest.raises(RuntimeError, match='not ready'):
+        verify_index(plan, client, attempts=1)
+
+
 def test_index_requires_same_model_dimensions_corpus_and_manifest():
     data = corpus()
     old = {**build_plan(data, None, 'preview'), 'status': 'verified'}
@@ -95,6 +110,18 @@ def test_invalid_embeddings_do_not_upsert():
 def test_transport_identifiers_cannot_change_api_host_or_path():
     with pytest.raises(ValueError):
         Cloudflare('x', 'secret', '../another')
+
+
+def test_live_metadata_enum_names_and_wrong_types(monkeypatch):
+    client = Cloudflare('a' * 32, 'secret', 'preview')
+    entries = [{'propertyName': key, 'indexType': kind} for key, kind in
+               [('corpusVersion', 'String'), ('eligible', 'Bool'), ('area', 'String')]]
+    monkeypatch.setattr(client, 'request', lambda path, **_: {'metadataIndexes': entries}
+                        if path.endswith('/list') else {'config': {'dimensions': 2, 'metric': 'cosine'}})
+    client.check_configuration(corpus())
+    entries[1]['indexType'] = 'String'
+    with pytest.raises(ValueError, match='metadata indexes'):
+        client.check_configuration(corpus())
 
 
 def test_python_and_typescript_share_exclusion_policy_fixtures():

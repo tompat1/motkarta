@@ -1,5 +1,9 @@
 # Concierge local evaluation — 2026-09-05
 
+Later live-model diagnostics are tracked separately in the
+[2026-09-07 real-model trial](concierge-real-model-trial.md). The measurements below
+remain the original synthetic regression results.
+
 Stages 1–4 are implemented locally. This record is not approval to enable cloud
 AI. All provider integration tests used mocks. No paid inference or production
 traffic was used.

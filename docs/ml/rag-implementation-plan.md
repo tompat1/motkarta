@@ -1,3 +1,7 @@
+Current provider update: the [real-model trial](concierge-real-model-trial.md)
+replaces the now-deprecated Gemma 3 proposal below with available Gemma 4,
+within the same approved US$1 limits. The original planning record follows.
+
 # Multilingual, evidence-grounded RAG concierge
 
 Status: stages 1–4 approved and implemented locally on 2026-09-05.

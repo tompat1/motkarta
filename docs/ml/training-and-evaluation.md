@@ -1,5 +1,10 @@
 # ML training and evaluation
 
+The [real-model concierge trial](concierge-real-model-trial.md) captures live D1
+vector results and constrained fact selections. Its reused diagnostic prompts
+have no D1 relevance labels; synthetic fixture IDs are discarded. Sensitivity
+analysis does not calibrate a serving threshold or establish satisfaction.
+
 The [concierge preview record](concierge-preview.md) adds live HTTP/browser
 integration checks and 256 before/after ranking comparisons for a computation
 optimization. These are operational/parity checks, not new model-quality labels.

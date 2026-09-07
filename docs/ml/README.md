@@ -1,8 +1,9 @@
 # Motkarta ML system
 
 Latest concierge status: [production build repaired](../build-deployment-repair.md)
-with corrected lexical/template responses deployed. Semantic retrieval and model
-synthesis remain off; the approved trial has not made inference calls.
+and the [real-model trial completed](concierge-real-model-trial.md): 3,143 verified
+vectors, 128 real query captures and 23/32 accepted synthesis responses. Public
+retrieval/synthesis remain lexical and template-based pending quality improvements.
 
 This directory is the canonical documentation for machine learning, ranking,
 recommendation telemetry, evaluation and model maintenance in Motkarta.
@@ -168,4 +169,6 @@ now pass; code deployment and paid model evaluation remain separate steps.
 
 The [lexical concierge preview](concierge-preview.md) is now deployed with live D1
 reads, map/browser validation, an explicit preview CPU limit and write/AI isolation.
-Real embedding and synthesis quality remain unmeasured; production is unchanged.
+The later [real-model trial](concierge-real-model-trial.md) measures provider
+integration, retrieval changes and synthesis failures. Production now has the
+build repair while public AI remains disabled.
