@@ -1,4 +1,7 @@
 import L from "leaflet";
+import "leaflet.markercluster";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { useEffect, useRef, useState } from "react";
 import type { EstablishmentType, ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
@@ -26,6 +29,7 @@ export function FoodMap({
   const t = translations[lang];
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
+  const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const markersRef = useRef<Map<number, L.Marker>>(new Map());
   const userMarkerRef = useRef<L.Marker | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -94,13 +98,47 @@ export function FoodMap({
       scrollWheelZoom: true,
     });
 
-    const tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    const tileUrl = "https://tiles.openfreemap.org/styles/bright/{z}/{x}/{y}.png";
 
-    L.tileLayer(tileUrl, {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    const tileLayer = L.tileLayer(tileUrl, {
+      attribution: 'OpenFreeMap &copy; <a href="https://openmaptiles.org/" target="_blank" rel="noopener">OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
       maxZoom: 19,
-      subdomains: ["a", "b", "c"],
-    }).addTo(map);
+    });
+
+    tileLayer.on("tileerror", () => {
+      // Fallback tile URL if vector/raster tile service is unavailable
+      tileLayer.setUrl("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+    });
+
+    tileLayer.addTo(map);
+
+    const clusterGroup = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true,
+      spiderfyOnMaxZoom: true,
+      maxClusterRadius: 45,
+      iconCreateFunction: (cluster) => {
+        const count = cluster.getChildCount();
+        let size = 34;
+        let sizeClass = "cluster-small";
+        if (count >= 25) {
+          size = 46;
+          sizeClass = "cluster-large";
+        } else if (count >= 10) {
+          size = 40;
+          sizeClass = "cluster-medium";
+        }
+        return L.divIcon({
+          html: `<div class="motkarta-cluster-blob ${sizeClass}"><span>${count}</span></div>`,
+          className: "motkarta-cluster-container",
+          iconSize: [size, size],
+          iconAnchor: [size / 2, size / 2],
+        });
+      },
+    });
+
+    map.addLayer(clusterGroup);
+    clusterGroupRef.current = clusterGroup;
 
     mapRef.current = map;
     window.setTimeout(() => map.invalidateSize(), 0);
@@ -116,8 +154,10 @@ export function FoodMap({
     return () => {
       document.removeEventListener("fullscreenchange", handleFsChange);
       markersRef.current.clear();
+      clusterGroup.clearLayers();
       map.remove();
       mapRef.current = null;
+      clusterGroupRef.current = null;
     };
   }, []);
 
@@ -166,31 +206,41 @@ export function FoodMap({
 
   useEffect(() => {
     const map = mapRef.current;
+    const clusterGroup = clusterGroupRef.current;
     if (!map) {
       return;
     }
 
-    markersRef.current.forEach((marker) => marker.remove());
+    if (clusterGroup) {
+      clusterGroup.clearLayers();
+    }
     markersRef.current.clear();
 
     const bounds = L.latLngBounds([]);
-    places.filter(hasCoordinates).forEach((place, index) => {
+    const validPlaces = places.filter(hasCoordinates);
+
+    validPlaces.forEach((place, index) => {
+      const isActive = place.id === activePlace?.id;
       const marker = L.marker([place.latitude, place.longitude], {
-        icon: placeIcon(place, place.id === activePlace?.id),
+        icon: placeIcon(place, isActive),
         title: place.name,
-      })
-        .on("click", () => {
-          onSelect(place.id);
-          if (isMobileMapViewport()) {
-            marker.openPopup();
-          } else {
-            map.closePopup();
-          }
-        })
-        .addTo(map);
+      }).on("click", () => {
+        onSelect(place.id);
+        if (isMobileMapViewport()) {
+          marker.openPopup();
+        } else {
+          map.closePopup();
+        }
+      });
 
       if (isMobileMapViewport()) {
         marker.bindPopup(placePopupHtml(place, index + 1, lang), { maxWidth: 280 });
+      }
+
+      if (clusterGroup) {
+        clusterGroup.addLayer(marker);
+      } else {
+        marker.addTo(map);
       }
 
       markersRef.current.set(place.id, marker);
@@ -204,24 +254,34 @@ export function FoodMap({
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!activePlace) {
+    const clusterGroup = clusterGroupRef.current;
+    if (!activePlace || !map || !hasCoordinates(activePlace)) {
       return;
     }
 
     const activeMarker = markersRef.current.get(activePlace.id);
-    if (!map || !activeMarker || !hasCoordinates(activePlace)) {
-      return;
-    }
+    if (!activeMarker) return;
 
     places.filter(hasCoordinates).forEach((place) => {
       markersRef.current.get(place.id)?.setIcon(placeIcon(place, place.id === activePlace.id));
     });
-    if (isMobileMapViewport()) {
-      activeMarker.openPopup();
+
+    if (clusterGroup) {
+      clusterGroup.zoomToShowLayer(activeMarker, () => {
+        if (isMobileMapViewport()) {
+          activeMarker.openPopup();
+        } else {
+          map.closePopup();
+        }
+      });
     } else {
-      map.closePopup();
+      if (isMobileMapViewport()) {
+        activeMarker.openPopup();
+      } else {
+        map.closePopup();
+      }
+      map.flyTo([activePlace.latitude, activePlace.longitude], 15, { duration: 0.8 });
     }
-    map.flyTo([activePlace.latitude, activePlace.longitude], 15, { duration: 0.8 });
   }, [activePlace, places]);
 
   return (
@@ -325,14 +385,33 @@ function isMobileMapViewport() {
 }
 
 function placeIcon(place: ScoredPlace, active: boolean) {
+  const kind = place.kind;
+  let iconSvg = "";
+  if (kind === "Restaurant") {
+    // Fork & Knife SVG
+    iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M200,32a8,8,0,0,0-8,8V104a24,24,0,0,1-24,24H160a8,8,0,0,0-8,8v80a8,8,0,0,0,16,0V144h8a40,40,0,0,0,40-40V40A8,8,0,0,0,200,32ZM96,32a8,8,0,0,0-8,8V88H72V40a8,8,0,0,0-16,0V88H40V40a8,8,0,0,0-16,0V96a40,40,0,0,0,40,40v80a8,8,0,0,0,16,0V136a40,40,0,0,0,40-40V40A8,8,0,0,0,96,32Z"/></svg>`;
+  } else if (kind === "Bakery") {
+    // Bread SVG
+    iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M216,104H40a16,16,0,0,0-16,16v32a48.05,48.05,0,0,0,48,48H184a48.05,48.05,0,0,0,48-48V120A16,16,0,0,0,216,104ZM56,120H96v64H72a32,32,0,0,1-32-32V120ZM160,184H112V120h48V184Zm56-32a32,32,0,0,1-32,32H176V120h40V152Z"/></svg>`;
+  } else {
+    // Coffee Cup SVG (Café & Specialty Coffee)
+    iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M224,80H208V64a16,16,0,0,0-16-16H48A16,16,0,0,0,32,64V152a48.05,48.05,0,0,0,48,48h80a48.05,48.05,0,0,0,48-48V136h16a32.03,32.03,0,0,0,32-32V112A32.03,32.03,0,0,0,224,80Zm0,40H208V96h16a16,16,0,0,1,16,16V104A16,16,0,0,1,224,120Z"/></svg>`;
+  }
+
+  const iconSize: [number, number] = active ? [36, 36] : [28, 28];
+  const iconAnchor: [number, number] = active ? [18, 18] : [14, 14];
+
   return L.divIcon({
-    className: "custom-map-pin-container",
-    html: `<span class="leaflet-place-marker ${kindClass(place.kind)} ${active ? "active" : ""}"></span>`,
-    iconSize: active ? [24, 24] : [14, 14],
-    iconAnchor: active ? [12, 12] : [7, 7],
+    className: "motkarta-map-marker-container",
+    html: `<div class="motkarta-map-marker ${kindClass(kind)} ${active ? "active" : ""}">
+      <div class="marker-badge">
+        ${iconSvg}
+      </div>
+    </div>`,
+    iconSize,
+    iconAnchor,
   });
 }
-
 
 function placePopupHtml(place: ScoredPlace, rank: number, lang: Language = "sv") {
   const cuisines = cuisineParts(place).map((c) => cuisineLabel(c, lang)).join(" · ");

@@ -7150,34 +7150,88 @@ footer {
   color: var(--color-ink);
 }
 
-/* Sleek Leaflet Dot Markers for Mobile Dark Map */
-.custom-map-pin-container {
+/* OpenFreeMap / Motkarta Blue Category Map Pins & Cluster Blobs */
+.motkarta-map-marker-container {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.leaflet-place-marker {
+.motkarta-map-marker {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 14px;
-  height: 14px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.motkarta-map-marker .marker-badge {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: #38bdf8;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 8px rgba(56, 189, 248, 0.8), 0 2px 4px rgba(0, 0, 0, 0.4);
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background-color: var(--color-water, #326bff); /* Motkarta Primary Water Blue */
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  line-height: 1;
 }
 
-.leaflet-place-marker.active {
-  width: 24px;
-  height: 24px;
-  background: #ff4a2f;
-  border: 3px solid #ffffff;
-  box-shadow: 0 0 16px rgba(255, 74, 47, 0.95), 0 3px 8px rgba(0, 0, 0, 0.5);
-  transform: scale(1.2);
+.motkarta-map-marker:hover .marker-badge {
+  transform: scale(1.18);
+  background-color: #2555d9;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+}
+
+.motkarta-map-marker.active .marker-badge {
+  width: 36px;
+  height: 36px;
+  background-color: #FF4A2F; /* Signal Red active state */
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(50, 107, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.5);
+  transform: scale(1.1);
   z-index: 1000 !important;
+}
+
+/* Cluster Blob Icons */
+.motkarta-cluster-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.motkarta-cluster-blob {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--color-water, #326bff); /* Motkarta Primary Water Blue blob */
+  border: 2.5px solid #FFFFFF;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.motkarta-cluster-blob.cluster-medium {
+  font-size: 14px;
+}
+
+.motkarta-cluster-blob.cluster-large {
+  font-size: 15px;
+}
+
+.motkarta-cluster-container:hover .motkarta-cluster-blob {
+  transform: scale(1.12);
+  background-color: #2555d9;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.45);
 }
 
 @media (max-width: 768px) {

@@ -21,7 +21,6 @@
     "photos:fetch": ".venv/bin/python scripts/fetch_place_photos.py",
     "tasstipset:fetch": ".venv/bin/python scripts/fetch_tasstipset_dog_places.py",
     "food-control:match": ".venv/bin/python scripts/match_food_control.py",
-
     "permits:match": ".venv/bin/python scripts/match_serving_permits.py",
     "candidates:build": "python3 scripts/build_candidate_queue.py",
     "candidates:seed": "node scripts/generate_candidate_import_sql.mjs",
@@ -40,8 +39,10 @@
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
+    "@types/leaflet.markercluster": "^1.5.6",
     "drizzle-orm": "0.45.2",
     "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
