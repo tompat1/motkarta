@@ -23,6 +23,10 @@ export type ConciergePlace = PlaceInput & {
   sourceFacts?: SourceFact[]; evidenceSources?: EvidenceSource[];
   sourcePriceLevel?: number | null;
   sourceArea?: string;
+  openingHours?: string;
+  priceSEK?: string;
+  lastVerified?: string;
+  verifiedAt?: string;
 };
 export type ConciergePlaceFacts = {
   id: number; facts: SourceFact[]; document: string; chainStatus: string;

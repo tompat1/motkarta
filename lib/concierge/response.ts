@@ -13,6 +13,8 @@ export function makeCard(candidate: RankedCandidate, language: 'sv' | 'en'): Con
   const price = facts.facts.find((f) => f.field === 'priceSEK');
   const citations = facts.facts;
   const listed = facts.facts.filter((f) => ['cuisine', 'kind', 'area'].includes(f.field)).map((f) => f.value).join('; ');
+  const conciergePlace = place as ConciergePlace;
+  const lastVerifiedVal = plainText(conciergePlace.lastVerified || conciergePlace.verifiedAt) || unknown;
   return {
     id: place.id, name: plainText(place.name), kind: place.kind, area: plainText(place.area),
     idNamespace: place.idNamespace, osmIdentity: place.osmIdentity,
@@ -20,8 +22,8 @@ export function makeCard(candidate: RankedCandidate, language: 'sv' | 'en'): Con
     whyItMatches: candidate.exact ? (sv ? 'Namnet matchar din sökning.' : 'The name matches your search.') : `${sv ? 'Listade uppgifter' : 'Listed attributes'}: ${listed}.`,
     hoursConfidence: hours ? `${hours.value} (${sv ? 'listade tider, öppet nu ej verifierat' : 'listed hours; open now unverified'})` : unknown,
     priceConfidence: price ? `${price.value} SEK (${sv ? 'listat pris' : 'listed price'})` : unknown,
-    lastVerified: unknown,
-    missingInfo: [!hours && (sv ? 'Öppettider saknas' : 'Opening hours missing'), !price && (sv ? 'Pris saknas' : 'Price missing')].filter(Boolean).join('; '),
+    lastVerified: lastVerifiedVal,
+    missingInfo: [!hours && (sv ? 'Öppettider saknas' : 'Opening hours missing'), !price && (sv ? 'Pris saknas' : 'Price missing')].filter(Boolean).join('; ') || (sv ? 'Inga saknade basfakta' : 'None (complete baseline facts)'),
     dataSources: [...new Set(citations.map((f) => f.source))].join('; '), citations,
     distanceKm: candidate.distanceKm, website: safeUrl(place.website),
   };

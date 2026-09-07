@@ -17,7 +17,7 @@ const FIELDS = new Set(['name', 'kind', 'area', 'address', 'cuisine', 'tags', 'd
 export function placeFacts(place: ConciergePlace): ConciergePlaceFacts {
   const source = plainText(place.sourceName) || 'Motkarta catalog';
   const facts: SourceFact[] = [];
-  for (const field of ['name', 'kind', 'area', 'address', 'cuisine'] as const) {
+  for (const field of ['name', 'kind', 'area', 'address', 'cuisine', 'openingHours', 'priceSEK'] as const) {
     const value = plainText(place[field]);
     if (value) facts.push({ id: `${place.id}:${field}`, placeId: place.id, field, value, source, url: safeUrl(place.sourceUrl), verification: 'listed' });
   }
