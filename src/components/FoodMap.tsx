@@ -7,7 +7,7 @@ import type { EstablishmentType, ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
 import { cuisineLabel, cuisineParts, hasCoordinates, translations } from "../app/shared";
 import { requestPosition, locationFailureMessage, type LocationResult } from '../app/geolocation';
-import { ArrowsIn, ArrowsOut, Crosshair, List, MapTrifold, Minus, NavigationArrow, Plus } from "@phosphor-icons/react";
+import { ArrowsIn, ArrowsOut, Crosshair, MapTrifold, Minus, Plus } from "@phosphor-icons/react";
 
 export function FoodMap({
   places,
@@ -15,7 +15,6 @@ export function FoodMap({
   userLocation,
   onSelect,
   onUserLocated,
-  onToggleView,
   lang,
 }: {
   places: ScoredPlace[];
@@ -23,7 +22,6 @@ export function FoodMap({
   userLocation?: { latitude: number; longitude: number } | null;
   onSelect: (id: number) => void;
   onUserLocated?: (loc: { latitude: number; longitude: number }) => void;
-  onToggleView?: () => void;
   lang: Language;
 }) {
   const t = translations[lang];
@@ -348,32 +346,6 @@ export function FoodMap({
           <span className="map-btn-label">{lang === "sv" ? "Zooma ut" : "Zoom out"}</span>
         </button>
       </div>
-
-      {/* Floating Map Controls for Mobile */}
-      <button
-        type="button"
-        className="mobile-floating-control-btn floating-gps-btn"
-        onClick={handleLocateUser}
-        disabled={locating}
-        aria-busy={locating}
-        title={lang === "sv" ? "Min position" : "My location"}
-        aria-label={lang === "sv" ? "Min position" : "My location"}
-      >
-        <NavigationArrow size={22} weight="bold" />
-      </button>
-
-      {onToggleView ? (
-        <button
-          type="button"
-          className="mobile-floating-control-btn floating-view-toggle-btn"
-          onClick={onToggleView}
-          title={lang === "sv" ? "Visa lista" : "Show list"}
-          aria-label={lang === "sv" ? "Visa lista" : "Show list"}
-        >
-          <List size={20} weight="bold" />
-          <span>{lang === "sv" ? "Lista" : "List"}</span>
-        </button>
-      ) : null}
 
       <div ref={containerRef} className="leaflet-map" aria-label="Interactive Stockholm food map" />
     </div>

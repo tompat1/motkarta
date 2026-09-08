@@ -105,6 +105,7 @@ import {
   DeviceMobile,
   QrCode,
   ArrowRight,
+  ArrowUp,
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../lib/concierge/response";
@@ -140,6 +141,23 @@ export default function App() {
   const [isMapCardMinimized, setIsMapCardMinimized] = useState(false);
 
   const [mobileViewMode, setMobileViewMode] = useState<"map" | "list">("map");
+  const workspaceRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const mobileViewport = window.matchMedia("(max-width: 768px)");
+    const resetDesktopView = () => {
+      if (!mobileViewport.matches) setMobileViewMode("map");
+    };
+    mobileViewport.addEventListener("change", resetDesktopView);
+    return () => mobileViewport.removeEventListener("change", resetDesktopView);
+  }, []);
+
+  const toggleMobileView = () => {
+    setMobileViewMode((view) => view === "map" ? "list" : "map");
+    window.requestAnimationFrame(() => {
+      workspaceRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
+    });
+  };
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [isPlaceDetailOpen, setIsPlaceDetailOpen] = useState(false);
   const [mobileFilters, setMobileFilters] = useState<MobileFilterState>({
@@ -1792,7 +1810,7 @@ export default function App() {
         </section>
       ) : null}
 
-      <section className="workspace">
+      <section className="workspace" id="place-workspace" ref={workspaceRef}>
         {mobileViewMode === "list" ? (
           <MobilePlaceCardList
             places={visibleRanked}
@@ -1817,7 +1835,6 @@ export default function App() {
                 setUserLocation(loc);
                 setSortMode("Distance");
               }}
-              onToggleView={() => setMobileViewMode("list")}
               lang={lang}
             />
 
@@ -2465,6 +2482,32 @@ export default function App() {
           </div>
         </div>
       ) : null}
+
+      <div className="mobile-floating-controls" role="group" aria-label={lang === "sv" ? "Vynavigering" : "View navigation"}>
+        <button
+          type="button"
+          className="mobile-floating-control-btn floating-scroll-top-btn"
+          onClick={() => window.scrollTo({
+            top: 0,
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+          })}
+          title={lang === "sv" ? "Till toppen" : "Back to top"}
+          aria-label={lang === "sv" ? "Till toppen" : "Back to top"}
+        >
+          <ArrowUp size={20} weight="bold" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          className="mobile-floating-control-btn floating-view-toggle-btn"
+          onClick={toggleMobileView}
+          aria-controls="place-workspace"
+          title={mobileViewMode === "map" ? (lang === "sv" ? "Visa lista" : "Show list") : (lang === "sv" ? "Visa karta" : "Show map")}
+          aria-label={mobileViewMode === "map" ? (lang === "sv" ? "Visa lista" : "Show list") : (lang === "sv" ? "Visa karta" : "Show map")}
+        >
+          {mobileViewMode === "map" ? <List size={20} weight="bold" aria-hidden="true" /> : <MapTrifold size={20} weight="bold" aria-hidden="true" />}
+          <span>{mobileViewMode === "map" ? (lang === "sv" ? "Lista" : "List") : (lang === "sv" ? "Karta" : "Map")}</span>
+        </button>
+      </div>
 
       <footer>
 
