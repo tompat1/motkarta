@@ -1300,37 +1300,7 @@ export default function App() {
             </div>
           ) : null}
 
-          {/* Mobile view toggle (Map / List) - only visible on mobile */}
-          <button
-            type="button"
-            className="mobile-nav-toggle-btn"
-            onClick={() => setMobileViewMode(mobileViewMode === "map" ? "list" : "map")}
-            aria-label={mobileViewMode === "map" ? "Visa lista" : "Visa karta"}
-          >
-            {mobileViewMode === "map" ? (
-              <>
-                <List size={16} weight="bold" />
-                <span>{lang === "sv" ? "Lista" : "List"}</span>
-              </>
-            ) : (
-              <>
-                <MapTrifold size={16} weight="bold" />
-                <span>{lang === "sv" ? "Karta" : "Map"}</span>
-              </>
-            )}
-          </button>
-
-          {/* Mobile hamburger menu button */}
-          <button
-            type="button"
-            className="mobile-hamburger-btn"
-            onClick={() => setIsMobileMenuOpen(true)}
-            aria-label={lang === "sv" ? "Öppna meny" : "Open menu"}
-            title={lang === "sv" ? "Huvudmeny" : "Main menu"}
-          >
-            <ListDashes size={20} weight="bold" />
-          </button>
-
+          {/* Shopping Cart Button */}
           <button
             type="button"
             className={`topbar-cart-btn ${totalCartCount > 0 ? "has-items" : ""}`}
@@ -1342,22 +1312,27 @@ export default function App() {
             <span className="topbar-cart-badge">{totalCartCount}</span>
           </button>
 
-          <div className="lang-switcher" aria-label="Language selector">
-            <button
-              type="button"
-              className={`lang-btn ${lang === "sv" ? "active" : ""}`}
-              onClick={() => handleSetLang("sv")}
-            >
-              SV
-            </button>
-            <button
-              type="button"
-              className={`lang-btn ${lang === "en" ? "active" : ""}`}
-              onClick={() => handleSetLang("en")}
-            >
-              EN
-            </button>
-          </div>
+          {/* Compact Single Language Toggle Button */}
+          <button
+            type="button"
+            className="lang-toggle-btn"
+            onClick={() => handleSetLang(lang === "sv" ? "en" : "sv")}
+            title={lang === "sv" ? "Switch to English" : "Byt till svenska"}
+            aria-label={lang === "sv" ? "Switch to English" : "Byt till svenska"}
+          >
+            {lang === "sv" ? "EN" : "SV"}
+          </button>
+
+          {/* Mobile Hamburger Menu Button at Far Right */}
+          <button
+            type="button"
+            className="mobile-hamburger-btn"
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label={lang === "sv" ? "Öppna meny" : "Open menu"}
+            title={lang === "sv" ? "Huvudmeny" : "Main menu"}
+          >
+            <ListDashes size={20} weight="bold" />
+          </button>
 
           <a className="about" href="#method">
             <span className={`status-dot status-dot-${dataSource}`} />
@@ -2467,22 +2442,14 @@ export default function App() {
             <div className="mobile-menu-footer">
               <div className="mobile-menu-lang-row">
                 <span>{lang === "sv" ? "Språk:" : "Language:"}</span>
-                <div className="lang-switcher">
-                  <button
-                    type="button"
-                    className={`lang-btn ${lang === "sv" ? "active" : ""}`}
-                    onClick={() => handleSetLang("sv")}
-                  >
-                    SV
-                  </button>
-                  <button
-                    type="button"
-                    className={`lang-btn ${lang === "en" ? "active" : ""}`}
-                    onClick={() => handleSetLang("en")}
-                  >
-                    EN
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  className="lang-toggle-btn"
+                  onClick={() => handleSetLang(lang === "sv" ? "en" : "sv")}
+                  title={lang === "sv" ? "Switch to English" : "Byt till svenska"}
+                >
+                  {lang === "sv" ? "EN" : "SV"}
+                </button>
               </div>
               <div className="mobile-menu-status">
                 <span className={`status-dot status-dot-${dataSource}`} />

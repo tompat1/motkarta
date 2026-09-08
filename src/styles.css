@@ -7919,6 +7919,30 @@ footer {
   font-size: 0.85rem;
 }
 
+.lang-toggle-btn {
+  background: var(--color-paper, #f4f0e7);
+  border: 1.5px solid var(--color-ink, #111111);
+  border-radius: 6px;
+  color: var(--color-ink, #111111);
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: 700;
+  height: 36px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.lang-toggle-btn:hover,
+.lang-toggle-btn:active {
+  background: var(--color-ink, #111111);
+  color: var(--color-paper, #f4f0e7);
+}
+
 /* ==========================================================================
    MOBILE HAMBURGER MENU & DRAWER OVERLAY
    ========================================================================== */
@@ -7977,6 +8001,7 @@ footer {
   animation: mobileMenuSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   padding: 20px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 @keyframes mobileMenuSlideIn {
@@ -7988,12 +8013,15 @@ footer {
   }
 }
 
+/* White top header panel for mobile menu drawer so dark MOTKARTA logo is 100% visible */
 .mobile-menu-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  margin: -20px -20px 0 -20px;
 }
 
 .mobile-menu-brand {
@@ -8003,20 +8031,21 @@ footer {
 }
 
 .mobile-menu-close {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: #ffffff;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
   padding: 6px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .mobile-menu-close:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #e2e8f0;
+  color: #000000;
 }
 
 .mobile-menu-links {
