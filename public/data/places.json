@@ -13642,7 +13642,9 @@
         "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -13660,8 +13662,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -13764,6 +13766,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/408233436",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "4076500021:spotted-by-locals:hidden-gem",
+          "placeId": 4076500021,
+          "field": "curated_hidden_gem",
+          "value": "Rosendals Trädgård really has a lot to offer its visitors. It has a beautiful and cosy café and Rosendals Trädgård thems",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/rosendals-tradgard/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "45–145"
@@ -19607,7 +19619,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -19626,8 +19640,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -19740,6 +19754,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/426930512",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "2886441876:spotted-by-locals:hidden-gem",
+          "placeId": 2886441876,
+          "field": "curated_hidden_gem",
+          "value": "On a small street in a residential area lies Åsö Noodles, a tiny Chinese restaurant serving food from the Sichuan kitche",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/aso-noodles/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -28741,7 +28765,9 @@
         "Central Stockholm",
         "Korean",
         "Restaurant",
-        "Closed"
+        "Closed",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -28762,8 +28788,8 @@
         "recently_updated": true
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "2026-09-04T11:00:00Z",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -28845,6 +28871,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/461665547",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "4002637501:spotted-by-locals:hidden-gem",
+          "placeId": 4002637501,
+          "field": "curated_hidden_gem",
+          "value": "Arirang is probably the first Korean restaurant to have opened in town: this amazing team of Korean women have been runn",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/arirang/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "openingHours": "Mo-Sa 17:00-23:00",
@@ -41868,7 +41904,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -41886,8 +41924,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -41970,6 +42008,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/517814606",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "2974211859:spotted-by-locals:hidden-gem",
+          "placeId": 2974211859,
+          "field": "curated_hidden_gem",
+          "value": "One of Stockholm’s historical restaurants is Konstnärsbaren (KB for short), residing in one of Stockholm’s most magnific",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/konstnarsbaren/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -42413,7 +42461,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -42430,8 +42480,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -42504,6 +42554,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/534128497",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1303579106:spotted-by-locals:hidden-gem",
+          "placeId": 1303579106,
+          "field": "curated_hidden_gem",
+          "value": "Sometimes you just crave a good old pub, where you can get a heart-warming serving of mash and gravy, and maybe, if you'",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/tre-vanner/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -42738,7 +42798,9 @@
         "Opening hours",
         "Restaurant",
         "Tasstipset",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -42756,8 +42818,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -42840,6 +42902,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/534138281",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "2217134228:spotted-by-locals:hidden-gem",
+          "placeId": 2217134228,
+          "field": "curated_hidden_gem",
+          "value": "So, I’m going to let you in on a little secret. I’m generally not a big fan of pita-based food. I don’t know where this ",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/pita-i-parken/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -47669,7 +47741,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -47687,8 +47761,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -47761,6 +47835,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/617285155",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "2110617310:spotted-by-locals:hidden-gem",
+          "placeId": 2110617310,
+          "field": "curated_hidden_gem",
+          "value": "Recently opened Nya Carnegiebryggeriet is reachable by a short, free ferry ride from the neighborhood Södermalm in Stock",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/nya-carnegiebryggeriet/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -48409,7 +48493,9 @@
         "Local",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -48428,8 +48514,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -48522,6 +48608,16 @@
           "verification": "listed",
           "url": "https://www.visitstockholm.se/",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1453564510:spotted-by-locals:hidden-gem",
+          "placeId": 1453564510,
+          "field": "curated_hidden_gem",
+          "value": "There are some places that just give you a strong sensation of the tides of history, and the restaurant Pelikan is certa",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/pelikan/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -59010,7 +59106,9 @@
         "Opening hours",
         "Ramen",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -59029,8 +59127,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -59093,6 +59191,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/708032026",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "537990915:spotted-by-locals:hidden-gem",
+          "placeId": 537990915,
+          "field": "curated_hidden_gem",
+          "value": "I went to Totemo Ramen on a lazy sunny Saturday morning following a friend's tip. Wow, this place has definitely entered",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/totemo-ramen/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -61486,7 +61594,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -61504,8 +61614,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -61588,6 +61698,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/720866965",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "146697058:spotted-by-locals:hidden-gem",
+          "placeId": 146697058,
+          "field": "curated_hidden_gem",
+          "value": "Obvious enough from the name, Garlic & Shots is a bar, a restaurant and a club located in Folkungagatan, one of the main",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/broderna-olssons-garlic-shots/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -64896,7 +65016,9 @@
         "Greek",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -64915,8 +65037,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -65019,6 +65141,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/751969502",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "4128727421:spotted-by-locals:hidden-gem",
+          "placeId": 4128727421,
+          "field": "curated_hidden_gem",
+          "value": "The genuine feeling that Kamarina emits isn't imaginary: it's actually one of the first Greek restaurants that opened in",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/kamarina/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -65399,7 +65531,9 @@
         "Ethiopian",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -65418,8 +65552,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -65512,6 +65646,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/751969547",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3792785654:spotted-by-locals:hidden-gem",
+          "placeId": 3792785654,
+          "field": "curated_hidden_gem",
+          "value": "My friends and I ended up in Gojo by chance: everyone had heard \"rumors\" about an excellent Ethiopian restaurant somewhe",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/gojo/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -66292,7 +66436,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -66309,8 +66455,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -66403,6 +66549,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/764582251",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3563193176:spotted-by-locals:hidden-gem",
+          "placeId": 3563193176,
+          "field": "curated_hidden_gem",
+          "value": "Långholmen is a tiny island in the southern part of central Stockholm which housed a feared prison from the 18th Century",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/langholmen/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -76129,7 +76285,9 @@
         "Café",
         "Central Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -76147,8 +76305,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -76211,6 +76369,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/861743583",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "931709349:spotted-by-locals:hidden-gem",
+          "placeId": 931709349,
+          "field": "curated_hidden_gem",
+          "value": "Do you ever just dream of this perfect cup of hot chocolate? Well, if you’re like me and share a healthy obsession for c",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/vurma/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "45–145"
@@ -81328,7 +81496,9 @@
         "Middle Eastern",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -81347,8 +81517,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -81431,6 +81601,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/957962635",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1024159981:spotted-by-locals:hidden-gem",
+          "placeId": 1024159981,
+          "field": "curated_hidden_gem",
+          "value": "Reggev hummus has been one of the best discoveries in town when it comes to good food at a good price. I have to thank a",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/reggev-hummus/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -100966,7 +101146,9 @@
         "Herring",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -100985,8 +101167,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -101048,6 +101230,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1265785084",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1966960036:spotted-by-locals:hidden-gem",
+          "placeId": 1966960036,
+          "field": "curated_hidden_gem",
+          "value": "Fried Herring with mashed potatoes is a typical Swedish dish and something most locals have been served for lunch in sch",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/strommingsvagnen/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -103407,7 +103599,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Regional",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -103426,8 +103620,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -103500,6 +103694,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1309284819",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "714635918:spotted-by-locals:hidden-gem",
+          "placeId": 714635918,
+          "field": "curated_hidden_gem",
+          "value": "The island of Södermalm in Stockholm is one of 7 neighbourhoods in Stockholm. It is also my \"home island\". More than 100",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/sodermalm/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -104587,7 +104791,9 @@
         "Local",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -104606,8 +104812,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -104670,6 +104876,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1332583238",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1852110420:spotted-by-locals:hidden-gem",
+          "placeId": 1852110420,
+          "field": "curated_hidden_gem",
+          "value": "Entering the door to Söders Hjärta (\"The heart of the south\") is like a comforting hug when met by a warm interior and t",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/soders-hjarta/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -107221,7 +107437,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -107239,8 +107457,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -107303,6 +107521,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1350452937",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "672034043:spotted-by-locals:hidden-gem",
+          "placeId": 672034043,
+          "field": "curated_hidden_gem",
+          "value": "It took me a while to realize what the restaurant Bird was all about. I remember when looking at the menu for the very f",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/bird-soder/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -110810,7 +111038,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -110828,8 +111058,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -110912,6 +111142,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1397247497",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "2497054332:spotted-by-locals:hidden-gem",
+          "placeId": 2497054332,
+          "field": "curated_hidden_gem",
+          "value": "I love it when talented owners of bars and restaurants find the time to open new venues. A great example of this is Bist",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/bistro-bananas/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -121425,7 +121665,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Thai"
+        "Thai",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -121444,8 +121686,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -121558,6 +121800,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1501759418",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1313278286:spotted-by-locals:hidden-gem",
+          "placeId": 1313278286,
+          "field": "curated_hidden_gem",
+          "value": "As far as I know, this is the only Thai restaurant in Stockholm serving their food tapas style. Pat's Place is an intima",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/pats-place/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -123143,7 +123395,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -123161,8 +123415,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -123225,6 +123479,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1509877634",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "786770792:spotted-by-locals:hidden-gem",
+          "placeId": 786770792,
+          "field": "curated_hidden_gem",
+          "value": "Brickyard is a popular bar and restaurant in the exciting area of SOFO in Stockholm. This place is normally jam-packed o",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/brickyard/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -127509,7 +127773,9 @@
         "Restaurant",
         "Tasstipset",
         "Thai",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -127526,8 +127792,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -127669,6 +127935,16 @@
           "verification": "listed",
           "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
           "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "id": "3279590126:spotted-by-locals:hidden-gem",
+          "placeId": 3279590126,
+          "field": "curated_hidden_gem",
+          "value": "Although The Thaiboat isn't floating on turquoise water, but instead next to a non-swim-friendly city harbor quay – your",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/thaiboat/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "openingHours": "Mo-Sa 17:00-23:00",
@@ -131518,7 +131794,9 @@
         "Café",
         "Central Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -131536,8 +131814,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -131650,6 +131928,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1580943271",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "2013909627:spotted-by-locals:hidden-gem",
+          "placeId": 2013909627,
+          "field": "curated_hidden_gem",
+          "value": "In Sweden, we consume about 8,2 kg of coffee per person per year; we used to be number 2 in the world of coffee drinkers",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/aso-konditori/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "45–145"
@@ -131848,7 +132136,9 @@
         "Café",
         "Central Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -131866,8 +132156,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -131930,6 +132220,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/1589625348",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3856600657:spotted-by-locals:hidden-gem",
+          "placeId": 3856600657,
+          "field": "curated_hidden_gem",
+          "value": "Pärlans Konfektyr is a small and tiny shop where you can buy homemade fudge and candy. Everything is made on site. This ",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/parlans-konfektyr/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "45–145"
@@ -162928,7 +163228,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Restaurant",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -162944,8 +163246,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -163007,6 +163309,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/2298625908",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1773114211:spotted-by-locals:hidden-gem",
+          "placeId": 1773114211,
+          "field": "curated_hidden_gem",
+          "value": "At the bottom of the well-attended park Tantolunden, you'll find a piece of the tropics. Behind bamboo doors, Loopen wel",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/loopen/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "openingHours": "Mo-Sa 17:00-23:00",
@@ -164832,7 +165144,9 @@
         "Restaurant",
         "Sushi",
         "Tasstipset",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -164849,8 +165163,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -164953,6 +165267,16 @@
           "verification": "listed",
           "url": "https://tasstipset.se",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3585014731:spotted-by-locals:hidden-gem",
+          "placeId": 3585014731,
+          "field": "curated_hidden_gem",
+          "value": "So, you’re a group of people strolling around town and it’s now that time of day when you need to feed your howling bell",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/k25/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -166139,7 +166463,9 @@
         "East Stockholm",
         "OpenStreetMap",
         "Restaurant",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -166155,8 +166481,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -166208,6 +166534,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/2415157782",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "2402941603:spotted-by-locals:hidden-gem",
+          "placeId": 2402941603,
+          "field": "curated_hidden_gem",
+          "value": "Djurgårdsbrunnskanalen makes for a perfect stroll any time of the year, with the highlight in spring being the bird life",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/djurgardsbrunnskanalen/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "openingHours": "Mo-Sa 17:00-23:00",
@@ -167027,7 +167363,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -167044,8 +167382,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -167118,6 +167456,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/2441872776",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3648191128:spotted-by-locals:hidden-gem",
+          "placeId": 3648191128,
+          "field": "curated_hidden_gem",
+          "value": "On the famous city island Djurgården, where cultural experiences such as several museums, the outdoor zoo Skansen, as we",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/spritmuseum/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -182291,7 +182639,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -182308,8 +182658,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -182392,6 +182742,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/3105435493",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "4279813978:spotted-by-locals:hidden-gem",
+          "placeId": 4279813978,
+          "field": "curated_hidden_gem",
+          "value": "Två Små Svin (\"Two Little Pigs\") is a restaurant that will be worth that little effort of going a bit outside the city c",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/tva-sma-svin/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -189026,7 +189386,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -189044,8 +189406,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -189128,6 +189490,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/3487160843",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3803373905:spotted-by-locals:hidden-gem",
+          "placeId": 3803373905,
+          "field": "curated_hidden_gem",
+          "value": "Every now and then, I am craving a good burger. In the Swedish Capitol, burger places have popped up like crazy in the l",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/lilys-burger/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -190898,7 +191270,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Regional",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -190917,8 +191291,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -191001,6 +191375,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/3578674368",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3692514787:spotted-by-locals:hidden-gem",
+          "placeId": 3692514787,
+          "field": "curated_hidden_gem",
+          "value": "You can not have been to Sweden and not had lingonberry sauce (tart like cranberry) and pickled cucumbers and of course ",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/meatballs-for-the-people/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -192512,7 +192896,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Thai"
+        "Thai",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -192531,8 +192917,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -192654,6 +193040,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/3633917514",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1292789219:spotted-by-locals:hidden-gem",
+          "placeId": 1292789219,
+          "field": "curated_hidden_gem",
+          "value": "Chao Na is a family-run restaurant decorated in an eclectic Thai-inspired way. This little restaurant can seat about 20 ",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/chao-na/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -205626,7 +206022,9 @@
         "Restaurant",
         "Spanish",
         "Tapas",
-        "Tasstipset"
+        "Tasstipset",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -205645,8 +206043,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Tasstipset · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -205749,6 +206147,16 @@
           "verification": "listed",
           "url": "https://tasstipset.se",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1985878698:spotted-by-locals:hidden-gem",
+          "placeId": 1985878698,
+          "field": "curated_hidden_gem",
+          "value": "There is no shortage of places in Stockholm where to indulge in Spanish tapas.Since the early 90s, when the first tapas ",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/ole-ole/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -206901,7 +207309,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -206919,8 +207329,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -207003,6 +207413,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/4396148479",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1933878525:spotted-by-locals:hidden-gem",
+          "placeId": 1933878525,
+          "field": "curated_hidden_gem",
+          "value": "Right in the middle of the city, where swarms of tourists come and go, strolling in the streets looking for the perfect ",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/geronimos-fgt/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -207709,7 +208129,9 @@
         "Bakery",
         "Central Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -207727,8 +208149,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -207801,6 +208223,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/4453634342",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1324432386:spotted-by-locals:hidden-gem",
+          "placeId": 1324432386,
+          "field": "curated_hidden_gem",
+          "value": "In Sweden, we have been making candy canes since the 1840s. The most famous ones are from the city of Gränna in the sout",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/gamla-stans-polka/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "45–145"
@@ -211530,7 +211962,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -211548,8 +211982,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -211652,6 +212086,16 @@
           "verification": "listed",
           "url": "https://tasstipset.se",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3213473675:spotted-by-locals:hidden-gem",
+          "placeId": 3213473675,
+          "field": "curated_hidden_gem",
+          "value": "This outdoor bar called Boule & Berså is located just by the canal, allowing you to enjoy the sight of passing boats jus",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/boule-bersa/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -212489,7 +212933,9 @@
         "Coffee Shop",
         "OpenStreetMap",
         "Opening hours",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -212507,8 +212953,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -212591,6 +213037,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/4906433829",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3097817803:spotted-by-locals:hidden-gem",
+          "placeId": 3097817803,
+          "field": "curated_hidden_gem",
+          "value": "Fjällgatan is one of the most beautiful places in Stockholm. After you have left the subway station Slussen, which is fo",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/fjallgatan/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "45–145"
@@ -230384,7 +230840,9 @@
         "Opening hours",
         "Regional",
         "Restaurant",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -230402,8 +230860,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -230506,6 +230964,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/6597652104",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3661616899:spotted-by-locals:hidden-gem",
+          "placeId": 3661616899,
+          "field": "curated_hidden_gem",
+          "value": "This Art Nouveau spa, finished in 1904, is located right in the heart of Stockholm. If you are visiting during summer an",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/centralbadet/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -230521,7 +230989,9 @@
         "Café",
         "Central Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -230539,8 +231009,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -230653,6 +231123,16 @@
           "verification": "listed",
           "url": "https://tasstipset.se",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "2906187669:spotted-by-locals:hidden-gem",
+          "placeId": 2906187669,
+          "field": "curated_hidden_gem",
+          "value": "At one of the busier streets of Södermalm, you find this magnificent vegan hideaway called Mahalo. It's a vegan-only caf",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/mahalo/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "45–145"
@@ -232272,7 +232752,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -232290,8 +232772,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -232354,6 +232836,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/6829932012",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "2844388969:spotted-by-locals:hidden-gem",
+          "placeId": 2844388969,
+          "field": "curated_hidden_gem",
+          "value": "Along the busy street of Skeppsbron, close to the Royal Palace, is Matrosen. A restaurant only serving the Danish Smörre",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/matrosen/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -241158,7 +241650,9 @@
         "Mexican",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -241177,8 +241671,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -241271,6 +241765,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/7287797057",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1106825268:spotted-by-locals:hidden-gem",
+          "placeId": 1106825268,
+          "field": "curated_hidden_gem",
+          "value": "Maiz Mexican restaurant is one of the few Mexican restaurants in Stockholm. It is located in Vasastan, an area with resi",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/maiz/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -258255,7 +258759,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Restaurant",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -258271,8 +258777,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -258334,6 +258840,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/9794577911",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "2562915103:spotted-by-locals:hidden-gem",
+          "placeId": 2562915103,
+          "field": "curated_hidden_gem",
+          "value": "Reimersholme Hotel is definitely my after-swim go-to on a summery evening in Stockholm. I simply love this non-fancy spo",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/reimersholme-hotel/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "openingHours": "Mo-Sa 17:00-23:00",
@@ -264624,7 +265140,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -264642,8 +265160,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -264736,6 +265254,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/10247541652",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "1953440894:spotted-by-locals:hidden-gem",
+          "placeId": 1953440894,
+          "field": "curated_hidden_gem",
+          "value": "In 2025, Franky's Burger at the location in Södermalm, Stockholm, was voted the best burger in Sweden! As a burger fan m",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/frankys-burger/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -268421,7 +268949,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -268439,8 +268969,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -268503,6 +269033,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/11019492334",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "890202717:spotted-by-locals:hidden-gem",
+          "placeId": 890202717,
+          "field": "curated_hidden_gem",
+          "value": "I love to share places that not many people would discover on their own, or walk by them by chance. Aleks Y Filip is one",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/aleks-y-filip/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -271791,7 +272331,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -271810,8 +272352,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -271874,6 +272416,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/11166408334",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3159655931:spotted-by-locals:hidden-gem",
+          "placeId": 3159655931,
+          "field": "curated_hidden_gem",
+          "value": "Brisket & Friends is definitely a hidden pearl: a casual and cozy place located in the southern industrial area of Årsta",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/brisket-friends/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -273120,7 +273672,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -273137,8 +273691,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -273221,6 +273775,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/11216502745",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "347245931:spotted-by-locals:hidden-gem",
+          "placeId": 347245931,
+          "field": "curated_hidden_gem",
+          "value": "Some people call it the new Landmark of Stockholm, The brand new skyscraper in Hammarby Sjöstad.  At 102 meters above gr",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/sjostaden-skybar/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -302270,7 +302834,9 @@
         "Italian",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -302288,8 +302854,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -302382,6 +302948,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/12078264769",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3415070809:spotted-by-locals:hidden-gem",
+          "placeId": 3415070809,
+          "field": "curated_hidden_gem",
+          "value": "I came across the piadina for the first time when I was working in Rimini, Italy. This typical fast food can be found in",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/casa-piadina/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -305319,7 +305895,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Ramen",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -305338,8 +305916,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -305432,6 +306010,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/12217741026",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "957576512:spotted-by-locals:hidden-gem",
+          "placeId": 957576512,
+          "field": "curated_hidden_gem",
+          "value": "Despite the abundance of cafes and restaurants found in Stockholm's Old Town, there are only a select few that I frequen",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/stiernan-ramen/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -308638,7 +309226,9 @@
         "Café",
         "Central Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -308656,8 +309246,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -308730,6 +309320,16 @@
           "verification": "listed",
           "url": "https://tasstipset.se",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "3847741701:spotted-by-locals:hidden-gem",
+          "placeId": 3847741701,
+          "field": "curated_hidden_gem",
+          "value": "Whenever I feel that omelet and cheese is not the type of breakfast I'm craving, Petite France is the place: croissant w",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/petite-france/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "45–145"
@@ -314686,7 +315286,9 @@
         "Japanese",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -314705,8 +315307,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -314799,6 +315401,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/node/13129563958",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "197518506:spotted-by-locals:hidden-gem",
+          "placeId": 197518506,
+          "field": "curated_hidden_gem",
+          "value": "Washuko Tomo or \"Friend of Washoku\" is a high-end Japanese restaurant in Södermalm. This restaurant is very popular, and",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/washoku-tomo/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -328958,7 +329570,9 @@
         "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Website"
+        "Website",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -328976,8 +329590,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -329050,6 +329664,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/way/140046247",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "2969016170:spotted-by-locals:hidden-gem",
+          "placeId": 2969016170,
+          "field": "curated_hidden_gem",
+          "value": "Stockholm has a lot of brilliant lookouts, where Fåfängan is one of the most astonishing one according to me. It's locat",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/fafangan/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "45–145"
@@ -333693,7 +334317,9 @@
         "Fish",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -333712,8 +334338,8 @@
         "recently_updated": false
       },
       "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -333786,6 +334412,16 @@
           "verification": "listed",
           "url": "https://www.openstreetmap.org/way/1300101895",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "396764833:spotted-by-locals:hidden-gem",
+          "placeId": 396764833,
+          "field": "curated_hidden_gem",
+          "value": "No excuses: when visiting Scandinavia trying fish is a must, and Stockholm is no exception. Fish is a fundamental part o",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/kajsas-fisk/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "priceSEK": "160–350"
@@ -338205,11 +338841,13 @@
         "Curated",
         "Dog friendly",
         "Hundvänligt",
-        "Tasstipset"
+        "Tasstipset",
+        "Spotted by Locals",
+        "Hidden Gem"
       ],
       "sourceName": "Tasstipset",
       "sourceUrl": "https://tasstipset.se/plats/pet-sounds-bar",
-      "evidenceLabel": "Tasstipset (Hundvänliga ställen)",
+      "evidenceLabel": "Tasstipset (Hundvänliga ställen) · Spotted by Locals",
       "website": null,
       "latitude": 59.3133,
       "longitude": 18.0827,
@@ -338253,10 +338891,21 @@
           "verification": "listed",
           "url": "https://tasstipset.se",
           "capturedAt": "2026-09-07T09:02:10Z"
+        },
+        {
+          "id": "96981973:spotted-by-locals:hidden-gem",
+          "placeId": 96981973,
+          "field": "curated_hidden_gem",
+          "value": "As a young girl, reading Nick Hornby's book High Fidelity, I always dreamt of hanging around in a record store that held",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/pet-sounds/",
+          "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
       "openingHours": "Mo-Sa 17:00-23:00",
-      "priceSEK": "160–350"
+      "priceSEK": "160–350",
+      "lastUpdated": "2026-09-08"
     },
     {
       "id": 844541298,

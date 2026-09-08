@@ -27,7 +27,8 @@ INSERT OR IGNORE INTO curated_sources (id, name, url, type, description, license
 ('openstreetmap', 'OpenStreetMap Contributors', 'https://www.openstreetmap.org', 'Open Data', 'Geografiska koordinater, byggnadskonturer och oberoende POI-identiteter för Stockholms stad.', 'ODbL 1.0 (Open Database License)', 14500, 0),
 ('white-guide', 'White Guide Nordic', 'https://whiteguide.com', 'Editorial Review', 'Nordiska krog- och fikatillsynsbedömningar av oberoende gastronomiprofessionella.', 'Redaktionell granskning', 85, 0),
 ('specialty-coffee-se', 'Specialty Coffee Sweden Registry', 'https://specialtycoffee.se', 'Verified Guide', 'Kvalitetssäkrade kaffebönskällor, spårbarhetsbevis och rosteriverifieringar i Stockholm.', 'Öppen branschstandard', 15, 0),
-('visit-stockholm', 'Visit Stockholm (Officiella Stadsguiden)', 'https://www.visitstockholm.se', 'Official City Guide', 'Officiell besöks- och restaurangguide från Stockholms Stad. En opartisk och heltäckande resurs för Stockholms matkultur, krogar och caféer.', 'Officiell stadsportal (Stockholms Stad)', 240, 0);
+('visit-stockholm', 'Visit Stockholm (Officiella Stadsguiden)', 'https://www.visitstockholm.se', 'Official City Guide', 'Officiell besöks- och restaurangguide från Stockholms Stad. En opartisk och heltäckande resurs för Stockholms matkultur, krogar och caféer.', 'Officiell stadsportal (Stockholms Stad)', 240, 0),
+('spotted-by-locals', 'Spotted by Locals Stockholm', 'https://www.spottedbylocals.com/stockholm/', 'Verified Guide', 'Handplockade och uppdaterade dolda pärlor, krogtipps och lokala favoritställen i Stockholm skrivna av lokala invånare (Spotters).', 'Redaktionell stadsguide / Lokala spotters', 52, 0);
 
 -- Seed Concierge Prompts
 INSERT OR IGNORE INTO concierge_prompts (id, prompt, usage_count) VALUES

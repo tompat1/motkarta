@@ -2,8 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { DEFAULT_CURATED_SOURCES } from "../lib/db-sources-prompts.ts";
 
-test("DEFAULT_CURATED_SOURCES contains all 7 audited curated sources", () => {
-  assert.equal(DEFAULT_CURATED_SOURCES.length, 7);
+test("DEFAULT_CURATED_SOURCES contains all 8 audited curated sources", () => {
+  assert.equal(DEFAULT_CURATED_SOURCES.length, 8);
 
   const sourceIds = DEFAULT_CURATED_SOURCES.map((s) => s.id);
   assert.ok(sourceIds.includes("husa-guide"));
@@ -13,6 +13,7 @@ test("DEFAULT_CURATED_SOURCES contains all 7 audited curated sources", () => {
   assert.ok(sourceIds.includes("specialty-coffee-se"));
   assert.ok(sourceIds.includes("visit-stockholm"));
   assert.ok(sourceIds.includes("tasstipset"));
+  assert.ok(sourceIds.includes("spotted-by-locals"));
 
   for (const src of DEFAULT_CURATED_SOURCES) {
     assert.ok(src.id, "Source must have id");

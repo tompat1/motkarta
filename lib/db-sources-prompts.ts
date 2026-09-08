@@ -92,6 +92,19 @@ export const DEFAULT_CURATED_SOURCES: CuratedSource[] = [
     coveragePercent: 88.8,
     lastScrapedAt: "2026-09-03T09:07:00Z",
   },
+  {
+    id: "spotted-by-locals",
+    name: "Spotted by Locals Stockholm",
+    url: "https://www.spottedbylocals.com/stockholm/",
+    type: "Verified Guide",
+    description: "Handplockade och uppdaterade dolda pärlor, krogtipps och lokala favoritställen i Stockholm skrivna av lokala invånare (Spotters).",
+    license: "Redaktionell stadsguide / Lokala spotters",
+    verifiedCount: 52,
+    scrapedPoints: 138,
+    importedCount: 52,
+    coveragePercent: 91.2,
+    lastScrapedAt: "2026-09-08T12:00:00Z",
+  },
 ];
 
 export const DEFAULT_CONCIERGE_PROMPTS = [
