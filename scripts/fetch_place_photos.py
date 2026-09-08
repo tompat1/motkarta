@@ -3,7 +3,7 @@
 fetch_place_photos.py - Automated Image Search & Scraper for Motkarta Places
 
 Discovers, validates, and builds a comprehensive image dataset for places in Stockholm
-using Wikimedia Commons API, DuckDuckGo Image Search, and curated media sources.
+using official venue websites and curated city media sources.
 """
 
 import json
@@ -45,7 +45,7 @@ def scrape_place_website_photos(website_url: str, place_name: str, limit: int = 
         seen_urls = set()
         for img_src in og_matches:
             full_url = urllib.parse.urljoin(website_url, img_src)
-            if full_url not in seen_urls and not any(x in full_url.lower() for x in ["favicon", "logo", "icon", "1x1", "pixel", "badge"]):
+            if full_url not in seen_urls and not any(x in full_url.lower() for x in ["favicon", "logo", "icon", "1x1", "pixel", "badge", "placeholder"]):
                 seen_urls.add(full_url)
                 photos.append({
                     "url": full_url,
@@ -60,7 +60,7 @@ def scrape_place_website_photos(website_url: str, place_name: str, limit: int = 
         img_tags = re.findall(r'<img[^>]+src=["\']([^"\']+\.(?:jpg|jpeg|png|webp))["\']', html, re.I)
         for img_src in img_tags:
             full_url = urllib.parse.urljoin(website_url, img_src)
-            if full_url not in seen_urls and not any(x in full_url.lower() for x in ["favicon", "logo", "icon", "1x1", "pixel", "badge", "social", "avatar", "tracking"]):
+            if full_url not in seen_urls and not any(x in full_url.lower() for x in ["favicon", "logo", "icon", "1x1", "pixel", "badge", "social", "avatar", "tracking", "placeholder"]):
                 seen_urls.add(full_url)
                 photos.append({
                     "url": full_url,
@@ -88,48 +88,13 @@ def search_visit_stockholm_photos(place_name: str, limit: int = 2) -> list[dict]
             results = data.get("results", [])
             for r in results[:limit]:
                 img_url = r.get("image") or r.get("hero_image")
-                if img_url and not any(x in img_url.lower() for x in ["favicon", "logo", "icon"]):
+                if img_url and not any(x in img_url.lower() for x in ["favicon", "logo", "icon", "placeholder"]):
                     photos.append({
                         "url": img_url,
                         "thumbnailUrl": img_url,
                         "caption": f"{place_name} (Visit Stockholm)",
                         "credit": "Visit Stockholm / Official City Portal",
                     })
-    except Exception:
-        pass
-    return photos
-
-
-def search_wikimedia_commons(place_name: str, limit: int = 2) -> list[dict]:
-    """Query Wikimedia Commons API for open media photos of Stockholm venues."""
-    photos = []
-    try:
-        query = urllib.parse.quote(f"{place_name} Stockholm")
-        url = (
-            f"https://commons.wikimedia.org/w/api.php?action=query&generator=search"
-            f"&gsrsearch={query}&gsrnamespace=6&gsrlimit={limit}&prop=imageinfo"
-            f"&iiprop=url|extmetadata&format=json"
-        )
-        res = requests.get(url, headers=HEADERS, timeout=5)
-        if res.status_code == 200:
-            pages = res.json().get("query", {}).get("pages", {})
-            for page_id, page in pages.items():
-                imageinfo = page.get("imageinfo", [])
-                if imageinfo:
-                    info = imageinfo[0]
-                    img_url = info.get("url")
-                    thumb_url = info.get("thumburl") or img_url
-                    extmeta = info.get("extmetadata", {})
-                    artist = extmeta.get("Artist", {}).get("value", "Wikimedia Commons")
-                    # Clean up HTML tags in artist string
-                    clean_artist = re.sub(r"<[^>]+>", "", artist).strip() or "Wikimedia Commons"
-                    if img_url:
-                        photos.append({
-                            "url": img_url,
-                            "thumbnailUrl": thumb_url,
-                            "caption": f"{place_name} (Wikimedia Commons)",
-                            "credit": f"Wikimedia Commons / {clean_artist}",
-                        })
     except Exception:
         pass
     return photos
@@ -152,11 +117,6 @@ def fetch_photos_for_place(place: dict) -> tuple:
     if len(photos) < 2:
         visit_photos = search_visit_stockholm_photos(name, limit=2 - len(photos))
         photos.extend(visit_photos)
-
-    # Priority 3: Search Wikimedia Commons for open venue/place photos
-    if len(photos) < 2:
-        wiki_photos = search_wikimedia_commons(name, limit=2 - len(photos))
-        photos.extend(wiki_photos)
 
     # Format photo entries with unique IDs
     formatted = []

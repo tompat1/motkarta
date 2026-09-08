@@ -19,15 +19,11 @@ test("getFallbackReviews returns valid review objects with audit source tags", (
   assert.equal(reviews[0].verified, true);
 });
 
-test("getFallbackPhotos returns verified venue photos for verified places", () => {
+test("getFallbackPhotos does not return hard-coded external venue photos", () => {
   const photos = getFallbackPhotos({ id: 10, name: "Restaurang Frantzén" });
 
   assert.ok(Array.isArray(photos));
-  assert.ok(photos.length >= 1);
-  assert.equal(photos[0].placeId, 10);
-  assert.ok(photos[0].url.startsWith("http"));
-  assert.ok(photos[0].thumbnailUrl.startsWith("http"));
-  assert.ok(photos[0].caption);
+  assert.equal(photos.length, 0);
 });
 
 test("getFallbackPhotos returns empty array when no verified venue photo exists", () => {

@@ -6,6 +6,8 @@ verify_and_clean_photos.py - Strict Verification & Cleanup for Place Photos
 2. Performs HTTP validation to purge broken / dead image links.
 3. De-duplicates identical image URLs across the entire dataset.
 4. Enforces strict venue-specific matching (only keeping images belonging to the actual place).
+5. Removes Wikimedia Commons images so published photos come from Google Place enrichment or official websites.
+6. Removes empty placeholder image assets so the app can show its branded dummy image instead.
 """
 
 import json
@@ -36,6 +38,16 @@ def is_url_alive(url: str) -> bool:
         validated_urls[url] = False
         return False
 
+    # Exclude Wikimedia Commons images
+    if is_wikimedia_url(url):
+        validated_urls[url] = False
+        return False
+
+    # Exclude empty placeholder image assets
+    if is_placeholder_url(url):
+        validated_urls[url] = False
+        return False
+
     try:
         res = requests.head(url, headers=HEADERS, timeout=4, allow_redirects=True)
         if res.status_code == 200:
@@ -57,6 +69,25 @@ def is_url_alive(url: str) -> bool:
     return False
 
 
+def is_wikimedia_url(url: str) -> bool:
+    normalized = url.lower()
+    return "wikimedia" in normalized or "wikipedia/commons" in normalized or "commons.wikimedia.org" in normalized
+
+
+def is_wikimedia_photo(photo: dict) -> bool:
+    values = " ".join(str(photo.get(key, "")) for key in ("url", "thumbnailUrl", "caption", "credit")).lower()
+    return "wikimedia" in values or "wikipedia/commons" in values or "commons.wikimedia.org" in values
+
+
+def is_placeholder_url(url: str) -> bool:
+    return "placeholder" in url.lower()
+
+
+def is_placeholder_photo(photo: dict) -> bool:
+    values = " ".join(str(photo.get(key, "")) for key in ("url", "thumbnailUrl", "caption", "credit")).lower()
+    return "placeholder" in values
+
+
 def clean_place_photos():
     print("🧹 Starting Place Photo Verification & Cleanup...")
 
@@ -75,6 +106,8 @@ def clean_place_photos():
     cleaned_photos_by_place = {}
     total_valid = 0
     total_removed_unsplash = 0
+    total_removed_wikimedia = 0
+    total_removed_placeholders = 0
     total_removed_duplicates = 0
     total_removed_broken = 0
 
@@ -87,8 +120,12 @@ def clean_place_photos():
     print(f"🌐 Verifying {len(all_photo_items)} photo URLs concurrently...")
 
     url_validation_map = {}
-    unique_urls = list({p["url"] for _, p in all_photo_items if "images.unsplash.com" not in p["url"]})
-    print(f"🔍 Validating {len(unique_urls)} unique non-Unsplash URLs...")
+    unique_urls = list({
+        p["url"]
+        for _, p in all_photo_items
+        if "images.unsplash.com" not in p["url"] and not is_wikimedia_photo(p) and not is_placeholder_photo(p)
+    })
+    print(f"🔍 Validating {len(unique_urls)} unique non-Unsplash/non-Wikimedia/non-placeholder URLs...")
 
     with ThreadPoolExecutor(max_workers=16) as executor:
         future_to_url = {executor.submit(is_url_alive, url): url for url in unique_urls}
@@ -110,6 +147,16 @@ def clean_place_photos():
             # Rule 1: Remove Unsplash stock images
             if "images.unsplash.com" in url:
                 total_removed_unsplash += 1
+                continue
+
+            # Rule 1b: Remove Wikimedia Commons images
+            if is_wikimedia_photo(photo):
+                total_removed_wikimedia += 1
+                continue
+
+            # Rule 1c: Remove empty placeholder images
+            if is_placeholder_photo(photo):
+                total_removed_placeholders += 1
                 continue
 
             # Rule 2: Remove duplicates
@@ -141,6 +188,8 @@ def clean_place_photos():
     print(f"🎉 Verification Finished!")
     print(f"  - Valid Verified Photos Remaining: {total_valid}")
     print(f"  - Generic Unsplash Removed: {total_removed_unsplash}")
+    print(f"  - Wikimedia Commons Removed: {total_removed_wikimedia}")
+    print(f"  - Empty Placeholders Removed: {total_removed_placeholders}")
     print(f"  - Duplicates Removed: {total_removed_duplicates}")
     print(f"  - Broken Links Removed: {total_removed_broken}")
 

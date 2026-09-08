@@ -155,7 +155,7 @@ export default function App() {
   const toggleMobileView = () => {
     setMobileViewMode((view) => view === "map" ? "list" : "map");
     window.requestAnimationFrame(() => {
-      workspaceRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
+      workspaceRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
     });
   };
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
@@ -851,6 +851,17 @@ export default function App() {
     },
     [ranked, recordRecommendationEvents],
   );
+
+  const handleViewPlaceOnMap = useCallback((place: ScoredPlace) => {
+    setSelected(place.id);
+    setMobileViewMode("map");
+    setIsPlaceDetailOpen(false);
+    window.requestAnimationFrame(() => {
+      window.setTimeout(() => {
+        workspaceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 0);
+    });
+  }, []);
 
   const mapPlaces = useMemo(
     () => (active && !visibleRanked.some((p) => p.id === active.id) ? [active, ...visibleRanked] : visibleRanked),
@@ -2367,11 +2378,7 @@ export default function App() {
           onClose={() => setIsPlaceDetailOpen(false)}
           onToggleSave={handleToggleSavePlace}
           onRatePlace={handleRatePlace}
-          onViewOnMap={(p) => {
-            setSelected(p.id);
-            setMobileViewMode("map");
-            setIsPlaceDetailOpen(false);
-          }}
+          onViewOnMap={handleViewPlaceOnMap}
         />
       ) : null}
 

@@ -9,6 +9,8 @@ import {
 import type { Language } from "../app/shared";
 import { CaretLeft, CaretRight, ChatTeardropText, CircleNotch, Image } from "@phosphor-icons/react";
 
+const DUMMY_PLACE_IMAGE_URL = "/motkarta_drop_divided_black_red.svg";
+
 function ImageLightboxModal({
   photos,
   initialIndex = 0,
@@ -192,17 +194,24 @@ export function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput
         </div>
       ) : activeTab === "photos" ? (
         <div className="photo-grid">
-          {photos?.map((img, idx) => (
-            <div
-              key={img.id}
-              className="photo-card"
-              title={`${img.caption} (Klicka för fullskala)`}
-              onClick={() => setLightboxIndex(idx)}
-            >
-              <img src={img.thumbnailUrl} alt={img.caption} loading="lazy" />
-              <span className="photo-caption">{img.caption}</span>
+          {photos && photos.length > 0 ? (
+            photos.map((img, idx) => (
+              <div
+                key={img.id}
+                className="photo-card"
+                title={`${img.caption} (Klicka för fullskala)`}
+                onClick={() => setLightboxIndex(idx)}
+              >
+                <img src={img.thumbnailUrl} alt={img.caption} loading="lazy" />
+                <span className="photo-caption">{img.caption}</span>
+              </div>
+            ))
+          ) : (
+            <div className="photo-card photo-card-dummy" aria-label={lang === "sv" ? "Ingen platsbild ännu" : "No place photo yet"}>
+              <img src={DUMMY_PLACE_IMAGE_URL} alt="" loading="lazy" aria-hidden="true" />
+              <span className="photo-caption">MOTKARTA</span>
             </div>
-          ))}
+          )}
         </div>
       ) : (
         <div className="review-list">

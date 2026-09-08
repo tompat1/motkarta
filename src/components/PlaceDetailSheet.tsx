@@ -22,6 +22,8 @@ import { fetchPlacePhotos, type PlacePhoto } from "../../lib/lazy-media";
 import { formatDistance, distanceFromPoint } from "../app/shared";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 
+const DUMMY_PLACE_IMAGE_URL = "/motkarta_drop_divided_black_red.svg";
+
 interface PlaceDetailSheetProps {
   place: ScoredPlace;
   isOpen: boolean;
@@ -78,6 +80,7 @@ export function PlaceDetailSheet({
     userLocation && place.latitude && place.longitude
       ? distanceFromPoint(place, userLocation)
       : null;
+  const activePhoto = photos[activePhotoIndex] ?? null;
 
   return (
     <div className="place-detail-sheet-overlay" role="dialog" aria-modal="true" aria-label={place.name}>
@@ -157,35 +160,32 @@ export function PlaceDetailSheet({
 
           <hr className="place-detail-divider" />
 
-          {/* Photo Gallery (if available) */}
-          {photos.length > 0 ? (
-            <div className="place-detail-photo-container">
-              <img
-                src={photos[activePhotoIndex]?.url}
-                alt={photos[activePhotoIndex]?.caption || place.name}
-                className="place-detail-hero-photo"
-                loading="eager"
-              />
-              {photos.length > 1 ? (
-                <div className="place-detail-photo-dots">
-                  {photos.map((_: PlacePhoto, idx: number) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      className={`photo-dot ${idx === activePhotoIndex ? "is-active" : ""}`}
-                      onClick={() => setActivePhotoIndex(idx)}
-                      aria-label={`Photo ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-              ) : null}
-              {photos[activePhotoIndex]?.credit ? (
-                <span className="place-detail-photo-credit">
-                  📷 {photos[activePhotoIndex]?.credit}
-                </span>
-              ) : null}
-            </div>
-          ) : null}
+          <div className={`place-detail-photo-container ${!activePhoto ? "place-detail-photo-container-dummy" : ""}`}>
+            <img
+              src={activePhoto?.url ?? DUMMY_PLACE_IMAGE_URL}
+              alt={activePhoto?.caption || place.name}
+              className={`place-detail-hero-photo ${!activePhoto ? "place-detail-hero-photo-dummy" : ""}`}
+              loading="eager"
+            />
+            {photos.length > 1 ? (
+              <div className="place-detail-photo-dots">
+                {photos.map((_: PlacePhoto, idx: number) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`photo-dot ${idx === activePhotoIndex ? "is-active" : ""}`}
+                    onClick={() => setActivePhotoIndex(idx)}
+                    aria-label={`Photo ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            ) : null}
+            {activePhoto?.credit ? (
+              <span className="place-detail-photo-credit">
+                📷 {activePhoto.credit}
+              </span>
+            ) : null}
+          </div>
 
           {/* "Varför den syns här" (Why it appears here) Section */}
           <section className="place-detail-section">

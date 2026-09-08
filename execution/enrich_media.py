@@ -3,7 +3,6 @@ Enrichment script for MOTKARTA places, reviews, and media.
 Sources:
 - Anders Husa & Kaitlin Orr Stockholm Restaurant Guide (andershusa.com)
 - Stockholms Stad Livsmedelskontroll (CC0)
-- Wikimedia Commons Open Media Collection (CC-BY / Public Domain)
 - OpenStreetMap Metadata (ODbL)
 """
 
@@ -85,15 +84,6 @@ CURATED_GUIDE_REVIEWS = {
     },
 }
 
-OPEN_MEDIA_PHOTOS = {
-    "frantzén": {
-        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Frantzen_Stockholm.jpg/800px-Frantzen_Stockholm.jpg",
-        "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Frantzen_Stockholm.jpg/300px-Frantzen_Stockholm.jpg",
-        "caption": "Frantzén Three-Michelin Star Dining",
-        "credit": "Wikimedia Commons / CC-BY-SA",
-    },
-}
-
 def main():
     places_file = os.path.join(os.path.dirname(__file__), "..", "public", "data", "places.json")
     if not os.path.exists(places_file):
@@ -137,16 +127,6 @@ def main():
             f"INSERT OR REPLACE INTO place_reviews (id, place_id, author, rating, date, source, content, verified) VALUES "
             f"('{inspec_id}', {p_id}, 'Miljö & Hälsoskydd (Stockholms stad)', 5.0, '2026-06-15', 'Food Control Inspection', '{inspec_text.replace("'", "''")}', 1);"
         )
-
-        # 3. Open Media Photo
-        if p_name_lower in OPEN_MEDIA_PHOTOS:
-            ph = OPEN_MEDIA_PHOTOS[p_name_lower]
-            img_id = f"img-om-{p_id}-1"
-            clean_caption = ph['caption'].replace("'", "''")
-            sql_statements.append(
-                f"INSERT OR REPLACE INTO place_photos (id, place_id, url, thumbnail_url, caption, credit, width, height) VALUES "
-                f"('{img_id}', {p_id}, '{ph['url']}', '{ph['thumbnailUrl']}', '{clean_caption}', '{ph['credit']}', 800, 600);"
-            )
 
     # Write SQL seed output
     seed_sql_path = os.path.join(os.path.dirname(__file__), "d1_media_seed.sql")

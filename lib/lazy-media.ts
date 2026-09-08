@@ -74,6 +74,20 @@ export async function fetchPlaceReviews(input: PlaceContext | number): Promise<P
 
 let staticPhotosDatasetCache: Record<string, PlacePhoto[]> | null = null;
 
+function isWikimediaPhoto(photo: PlacePhoto): boolean {
+  const fields = [photo.url, photo.thumbnailUrl, photo.caption, photo.credit].join(" ").toLowerCase();
+  return fields.includes("wikimedia") || fields.includes("wikipedia/commons") || fields.includes("commons.wikimedia.org");
+}
+
+function isPlaceholderPhoto(photo: PlacePhoto): boolean {
+  const fields = [photo.url, photo.thumbnailUrl, photo.caption, photo.credit].join(" ").toLowerCase();
+  return fields.includes("placeholder");
+}
+
+function withoutDisallowedPhotos(photos: PlacePhoto[]): PlacePhoto[] {
+  return photos.filter((photo) => !isWikimediaPhoto(photo) && !isPlaceholderPhoto(photo));
+}
+
 async function loadStaticPhotosDataset(): Promise<Record<string, PlacePhoto[]>> {
   if (staticPhotosDatasetCache) return staticPhotosDatasetCache;
   try {
@@ -81,8 +95,10 @@ async function loadStaticPhotosDataset(): Promise<Record<string, PlacePhoto[]>> 
     if (res.ok) {
       const data = (await res.json()) as { photosByPlace?: Record<string, PlacePhoto[]> };
       if (data.photosByPlace) {
-        staticPhotosDatasetCache = data.photosByPlace;
-        return data.photosByPlace;
+        staticPhotosDatasetCache = Object.fromEntries(
+          Object.entries(data.photosByPlace).map(([placeId, photos]) => [placeId, withoutDisallowedPhotos(photos)]),
+        );
+        return staticPhotosDatasetCache;
       }
     }
   } catch {
@@ -124,7 +140,7 @@ export async function fetchPlacePhotos(input: PlaceContext | number): Promise<Pl
     const res = await fetch(`/api/photos?${params.toString()}`);
     if (res.ok) {
       const data = (await res.json()) as { photos?: PlacePhoto[] };
-      const photos = data.photos ?? [];
+      const photos = withoutDisallowedPhotos(data.photos ?? []);
       if (photos.length > 0) {
         photosCache.set(ctx.id, photos);
         return photos;
@@ -139,50 +155,8 @@ export async function fetchPlacePhotos(input: PlaceContext | number): Promise<Pl
   return fallbackPhotos;
 }
 
-const VENUE_SPECIFIC_PHOTOS: Record<string, PlacePhoto[]> = {
-  "frantzén": [
-    {
-      id: "venue-frantzen-1",
-      placeId: 10,
-      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Frantzen_Stockholm.jpg/1200px-Frantzen_Stockholm.jpg",
-      thumbnailUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Frantzen_Stockholm.jpg/400px-Frantzen_Stockholm.jpg",
-      caption: "Restaurang Frantzén Stadshus & Entré (Klara Norra Kyrkogata)",
-      credit: "Wikimedia Commons / CC-BY-SA",
-    },
-  ],
-  "operakällaren": [
-    {
-      id: "venue-operakallaren-1",
-      placeId: 11,
-      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Operak%C3%A4llaren_2011.jpg/1200px-Operak%C3%A4llaren_2011.jpg",
-      thumbnailUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Operak%C3%A4llaren_2011.jpg/400px-Operak%C3%A4llaren_2011.jpg",
-      caption: "Operakällaren Historisk Fasad & Kungliga Operan",
-      credit: "Wikimedia Commons / Public Domain",
-    },
-  ],
-};
-
 export function getFallbackPhotos(input: PlaceContext | number): PlacePhoto[] {
-  const ctx = parseContext(input);
-  const placeId = ctx.id;
-  const name = ctx.name || "";
-  const nameLower = name.toLowerCase().trim();
-
-  // 1. Direct venue-specific photo match (with strict word boundaries)
-  for (const [key, venuePhotos] of Object.entries(VENUE_SPECIFIC_PHOTOS)) {
-    const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const pattern = new RegExp(`(?:^|\\b)${escaped}(?:\\b|$)`, "i");
-    if (pattern.test(nameLower)) {
-      return venuePhotos
-        .filter((ph) => !ph.url.includes("images.unsplash.com"))
-        .map((ph, idx) => ({
-          ...ph,
-          id: `venue-${placeId}-${idx + 1}`,
-          placeId,
-        }));
-    }
-  }
-
+  parseContext(input);
   return [];
 }
 

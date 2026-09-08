@@ -4025,6 +4025,23 @@ footer {
   transform: scale(1.05);
 }
 
+.photo-card-dummy {
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+}
+
+.photo-card-dummy img {
+  width: 46%;
+  height: 46%;
+  object-fit: contain;
+  transform: none;
+}
+
+.photo-card-dummy:hover img {
+  transform: none;
+}
+
 .photo-caption {
   position: absolute;
   bottom: 0;
@@ -7211,6 +7228,17 @@ footer {
   overflow: hidden;
 }
 
+.place-detail-photo-container-dummy {
+  background: #ffffff;
+  border: 1px solid var(--color-mist);
+}
+
+.place-detail-hero-photo-dummy {
+  object-fit: contain;
+  padding: 54px;
+  background: #ffffff;
+}
+
 .place-detail-photo-dots {
   position: absolute;
   bottom: 12px;
@@ -7451,7 +7479,20 @@ footer {
 }
 
 .mobile-photo-card-no-photo {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background: #ffffff;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-photo-card-dummy-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(38%, 112px);
+  height: min(38%, 112px);
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+  z-index: 1;
 }
 
 .mobile-photo-card-gradient {
@@ -7464,6 +7505,15 @@ footer {
     rgba(0, 0, 0, 0.08) 100%
   );
   pointer-events: none;
+}
+
+.mobile-photo-card-no-photo .mobile-photo-card-gradient {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.52) 34%,
+    rgba(0, 0, 0, 0) 68%
+  );
 }
 
 .mobile-card-save-btn {

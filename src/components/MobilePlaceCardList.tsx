@@ -15,6 +15,8 @@ import { fetchPlacePhotos, type PlacePhoto } from "../../lib/lazy-media";
 import { formatDistance, distanceFromPoint, hasCoordinates } from "../app/shared";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 
+const DUMMY_PLACE_IMAGE_URL = "/motkarta_drop_divided_black_red.svg";
+
 interface MobilePlaceCardListProps {
   places: ScoredPlace[];
   activePlace: ScoredPlace | null;
@@ -90,6 +92,14 @@ export function MobilePlaceCardList({
               className={`mobile-photo-card-bg ${!photoUrl ? "mobile-photo-card-no-photo" : ""}`}
               style={photoUrl ? { backgroundImage: `url(${photoUrl})` } : undefined}
             >
+              {!photoUrl ? (
+                <img
+                  src={DUMMY_PLACE_IMAGE_URL}
+                  alt=""
+                  className="mobile-photo-card-dummy-logo"
+                  aria-hidden="true"
+                />
+              ) : null}
               <div className="mobile-photo-card-gradient" />
 
               {/* Action Buttons Top Right */}
