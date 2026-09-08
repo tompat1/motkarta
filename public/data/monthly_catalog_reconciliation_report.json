@@ -1,0 +1,76 @@
+{
+  "auditedAt": "2026-09-08T16:40:13Z",
+  "totalCatalogPlaces": 3246,
+  "activePlaces": 3244,
+  "closedPlacesCount": 2,
+  "closedPlaces": [
+    {
+      "id": 4002637501,
+      "name": "Arirang",
+      "area": "Vasastan",
+      "note": "Stängde permanent i december 2025 (Permanently closed in December 2025)."
+    },
+    {
+      "id": 2309889992,
+      "name": "Bistro Süd",
+      "area": "Södermalm",
+      "note": "Restaurant from OpenStreetMap."
+    }
+  ],
+  "missingAttributesCount": {
+    "address": 0,
+    "openingHours": 0,
+    "website": 1245
+  },
+  "missingAddressSample": [],
+  "missingHoursSample": [],
+  "missingWebsiteSample": [
+    {
+      "id": 2273478994,
+      "name": "Apotekskiosken"
+    },
+    {
+      "id": 2723724366,
+      "name": "Delantina"
+    },
+    {
+      "id": 3394211890,
+      "name": "Stekarna"
+    },
+    {
+      "id": 691367738,
+      "name": "Brokiosken"
+    },
+    {
+      "id": 2755332667,
+      "name": "Kafé Kruthuset"
+    },
+    {
+      "id": 2409245194,
+      "name": "Vapiano"
+    },
+    {
+      "id": 3954085297,
+      "name": "Ming"
+    },
+    {
+      "id": 3756839125,
+      "name": "Il Conte's bakficka"
+    },
+    {
+      "id": 98282612,
+      "name": "Café Portiken"
+    },
+    {
+      "id": 4102534076,
+      "name": "Wok & Sushi"
+    }
+  ],
+  "uncatalogedCandidatesAdded": [
+    "Soldaten Svejk"
+  ],
+  "closedPlacesUpdated": [
+    "Arirang",
+    "Bistro Süd"
+  ]
+}

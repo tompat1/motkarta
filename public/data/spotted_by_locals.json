@@ -2,9 +2,9 @@
   "sourceName": "Spotted by Locals Stockholm",
   "sourceUrl": "https://www.spottedbylocals.com/stockholm/",
   "license": "Editorial Guide / Local Spotters",
-  "scrapedAt": "2026-09-08T16:28:30Z",
+  "scrapedAt": "2026-09-08T16:41:56Z",
   "totalExtractedSpots": 135,
-  "verifiedCatalogMatches": 55,
+  "verifiedCatalogMatches": 56,
   "spots": [
     {
       "spotName": "AG",
@@ -1018,10 +1018,10 @@
       "spotName": "Soldaten Svejk",
       "url": "https://www.spottedbylocals.com/stockholm/soldaten-svejk/",
       "summary": "This is my place to go to for comfort food! Even if it is not typical Swedish. Soldaten Svejk (Soldier Svejk) is a pub and beer hall serving food from Czechia and neighbouring countries. So you'll find more than schnitzel. This pub takes beer and food seriously, and it has a nice homey feel to it in its simplicity. It is always busy, so try to get here when they open. Especially on Saturdays and Sundays.\r\n\nAlthough the restaurant is quite small and loud, there is also a huge basement that will surprise you, with more than 100 seats. I always struggle to choose between two of the schnitzels, the Praguer and Schnitzel Feldkurat Katz. The first one is a classic one served with potato salad. The Katz comes with pan-fried, thinly sliced potatoes. A very nice cabbage salad and a lemon wedge is also served. The schnitzel is huge, and covers almost the whole plate, it's freshly made and crispy when you cut through it. The service is great, casual and the pub has its wear and tear. I guess that is what makes it cozy and warm. You'll get Czech beer on tap, and there are also Czech spirits. When it comes to beer, I go for Prímator or the Pilsner Urquell. NB! You can't make any table reservations!",
-      "matchedPlaceId": null,
-      "matchedPlaceName": null,
-      "district": null,
-      "verifiedHiddenGem": false
+      "matchedPlaceId": 116240012,
+      "matchedPlaceName": "Soldaten Svejk",
+      "district": "Södermalm",
+      "verifiedHiddenGem": true
     },
     {
       "spotName": "Spritmuseum",

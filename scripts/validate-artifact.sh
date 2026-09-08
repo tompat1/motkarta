@@ -50,6 +50,7 @@ const allowedSourceNames = new Set([
   'openstreetmap',
   'openstreetmap contributors',
   'specialty coffee sweden registry',
+  'spotted by locals stockholm',
   'stockholms stad livsmedelskontroll',
   'tasstipset',
   'visit stockholm (officiella stadsguiden)',

@@ -28771,7 +28771,7 @@
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
-      "lifecycleState": "candidate",
+      "lifecycleState": "closed",
       "validationLabel": "closed_wrong_category",
       "validationNotes": "Stängde permanent i december 2025.",
       "discoveryReasons": [
@@ -64398,7 +64398,8 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Closed"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -64502,7 +64503,8 @@
           "capturedAt": "2026-09-07T09:02:10Z"
         }
       ],
-      "priceSEK": "160–350"
+      "priceSEK": "160–350",
+      "lifecycleState": "closed"
     },
     {
       "id": 3421669829,
@@ -339183,6 +339185,51 @@
       ],
       "openingHours": "Mo-Sa 17:00-23:00",
       "priceSEK": "160–350"
+    },
+    {
+      "id": 116240012,
+      "name": "Soldaten Svejk",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Södermalm",
+      "note": "Klasiskt tjeckiskt ölhus och kvarterskrog på Östgötagatan sedan 1970-talet.",
+      "tags": [
+        "Czech",
+        "Pub",
+        "Södermalm",
+        "Central Stockholm",
+        "Spotted by Locals",
+        "Hidden Gem",
+        "Curated"
+      ],
+      "lifecycleState": "verified",
+      "sourceName": "Spotted by Locals Stockholm",
+      "sourceUrl": "https://www.spottedbylocals.com/stockholm/soldaten-svejk/",
+      "lastUpdated": "2026-09-08",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
+      "mainstreamExposure": 30.0,
+      "ageDays": 1000,
+      "daysSinceFreshEvidence": 1,
+      "latitude": 59.3168,
+      "longitude": 18.0746,
+      "x": 38.8,
+      "y": 71.2,
+      "address": "Östgötagatan 12, 116 24 Stockholm",
+      "website": "https://svejk.se",
+      "openingHours": "Mo-Th 16:00-23:00; Fr-Sa 15:00-00:00; Su 16:00-23:00",
+      "priceSEK": "160–350",
+      "sourceFacts": [
+        {
+          "id": "116240012:spotted-by-locals:hidden-gem",
+          "placeId": 116240012,
+          "field": "curated_hidden_gem",
+          "value": "Soldaten Svejk is a famous local pub in Södermalm serving authentic Czech beer and hearty traditional food.",
+          "source": "Spotted by Locals Stockholm",
+          "verification": "listed",
+          "url": "https://www.spottedbylocals.com/stockholm/soldaten-svejk/",
+          "capturedAt": "2026-09-08T16:40:12Z"
+        }
+      ]
     }
   ],
   "totalPlaces": 3245
