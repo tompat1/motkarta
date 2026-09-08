@@ -1349,7 +1349,7 @@ export default function App() {
             </button>
           </div>
 
-          <a className="about" href="#sources">
+          <a className="about" href="#method">
             <span className={`status-dot status-dot-${dataSource}`} />
             {dataSource === "osm"
               ? t.dataSourceLiveOsm
@@ -2329,11 +2329,6 @@ export default function App() {
             <p>{t.method04Desc}</p>
           </article>
         </div>
-        <CuratedSourcesPanel
-          sources={curatedSources}
-          isLoading={isSourcesLoading}
-          lang={lang}
-        />
         <div className="disclaimer">
           {t.dataNoteLabel}
           <span>{t.dataNoteText}</span>
