@@ -101,6 +101,8 @@ import {
   Heart,
   PawPrint,
   DeviceMobile,
+  QrCode,
+  ArrowRight,
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../lib/concierge/response";
@@ -1557,7 +1559,26 @@ export default function App() {
           </h1>
           <p className="sub-lede">{t.subLede}</p>
         </div>
-        <p className="lede">{t.lede}</p>
+        <div className="intro-right-column">
+          <p className="lede">{t.lede}</p>
+
+          {/* Hero Cross-Device QR Sync CTA */}
+          <div className="hero-sync-cta-wrapper">
+            <button
+              type="button"
+              className="hero-sync-cta-btn"
+              onClick={() => setIsSyncModalOpen(true)}
+              title={lang === "sv" ? "Synka dina enheter utan konto eller inloggning" : "Sync devices without account or login"}
+            >
+              <QrCode size={22} weight="bold" style={{ color: "var(--color-water, #326bff)", flexShrink: 0 }} />
+              <div className="hero-sync-cta-text">
+                <strong>{lang === "sv" ? "Synka dina enheter (QR-kod)" : "Sync Your Devices (QR Code)"}</strong>
+                <span>{lang === "sv" ? "Privat enhetssynk av sparade ställen utan konto" : "Zero-login cross-device sync of saved places"}</span>
+              </div>
+              <ArrowRight size={16} weight="bold" className="hero-sync-cta-arrow" />
+            </button>
+          </div>
+        </div>
       </section>
 
       <section className="controls" id="map">

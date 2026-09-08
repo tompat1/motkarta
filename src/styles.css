@@ -200,7 +200,9 @@ a {
   gap: 28px;
 }
 
-.topbar nav a {
+.topbar nav a,
+.topbar nav button {
+  position: relative;
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
@@ -208,11 +210,33 @@ a {
   text-decoration: none;
   text-transform: uppercase;
   color: var(--color-ink);
+  padding-bottom: 4px;
   transition: color var(--motion-fast);
 }
 
-.topbar nav a:hover {
-  color: var(--color-water);
+.topbar nav a::after,
+.topbar nav button::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-water, #326bff);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform var(--motion-base) ease-in-out;
+}
+
+.topbar nav a:hover,
+.topbar nav button:hover {
+  color: var(--color-water, #326bff);
+}
+
+.topbar nav a:hover::after,
+.topbar nav button:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
 }
 
 .about {
@@ -483,6 +507,74 @@ h2 i {
   color: var(--color-stone);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+/* Hero Cross-Device QR Sync CTA */
+.intro-right-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.hero-sync-cta-wrapper {
+  margin-top: 8px;
+}
+
+.hero-sync-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #f0f5ff;
+  border: 1.5px solid var(--color-water, #326bff);
+  border-radius: 8px;
+  padding: 12px 18px;
+  text-align: left;
+  cursor: pointer;
+  color: var(--color-ink);
+  transition: all var(--motion-fast);
+  box-shadow: 0 2px 8px rgba(50, 107, 255, 0.08);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.hero-sync-cta-btn:hover {
+  background: #e5eeff;
+  border-color: #2555d9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(50, 107, 255, 0.16);
+}
+
+.hero-sync-cta-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hero-sync-cta-text strong {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1.2;
+}
+
+.hero-sync-cta-text span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-water, #326bff);
+  font-weight: 600;
+}
+
+.hero-sync-cta-arrow {
+  color: var(--color-water, #326bff);
+  margin-left: 4px;
+  flex-shrink: 0;
+  transition: transform var(--motion-fast);
+}
+
+.hero-sync-cta-btn:hover .hero-sync-cta-arrow {
+  transform: translateX(3px);
 }
 
 /* -------------------------------------------------------------------------- */
