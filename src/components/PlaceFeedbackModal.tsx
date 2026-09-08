@@ -150,11 +150,14 @@ export function PlaceFeedbackModal({
         inset: 0,
         backgroundColor: "rgba(15, 23, 42, 0.65)",
         backdropFilter: "blur(4px)",
-        zIndex: 9999,
+        zIndex: 10000,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "16px",
+        boxSizing: "border-box",
+        overflowY: "auto",
+        WebkitOverflowScrolling: "touch",
       }}
     >
       <div
@@ -166,9 +169,13 @@ export function PlaceFeedbackModal({
           borderRadius: "16px",
           maxWidth: "480px",
           width: "100%",
+          maxHeight: "calc(100dvh - 32px)",
+          overflowY: "auto",
           padding: "24px",
           boxShadow: "0 20px 40px rgba(0, 0, 0, 0.18)",
           position: "relative",
+          margin: "auto",
+          boxSizing: "border-box",
           animation: "modalFadeIn 0.2s ease-out",
         }}
       >
@@ -354,6 +361,8 @@ export function PlaceFeedbackModal({
                   padding: "10px",
                   borderRadius: "8px",
                   border: "1px solid #cbd5e1",
+                  background: "#ffffff",
+                  color: "#0f172a",
                   fontSize: "13px",
                   fontFamily: "inherit",
                   boxSizing: "border-box",
