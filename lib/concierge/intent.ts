@@ -3,7 +3,7 @@ import { includesPhrase, normalize } from './facts.ts';
 import type { QueryContext } from './contracts.ts';
 import policy from './policy.json' with { type: 'json' };
 
-const STOP = new Set(normalize('and the for with from some best good great find where what want like near place places food eat get have looking a an in on of to me i och den det ett att som har kan ska med bra för nära mig dig sin sina vara eller alla bästa hitta var deras här där ställe ställen mat äta vill på en i is please show recommend something och and or eller').split(' '));
+const STOP = new Set(normalize('and the for with from some best good great find where what want like near place places spot spots food eat get have looking a an in on of to me i och den det ett att som har kan ska med bra för nära mig dig sin sina vara eller alla bästa hitta var deras här där ställe ställen ställena stället restaurang restauranger krog krogar kafe kafeer cafe cafes bageri bagerier mat äta vill på en i is please show recommend something tips rekommendationer och and or eller').split(' '));
 const DESCRIPTORS = new Set(normalize('family owned run familjeägd familjeägt handmade handgjorda handgjord independent local authentic artisan hantverks cozy cosy quiet dinner middag lunch breakfast frukost cheap affordable budget billigt prisvärt filter hidden gems dolda pärlor').split(' '));
 const normalizedAliases = new Map(Object.entries(CUISINE_ALIASES).map(([key, values]) => [normalize(key), values.map(normalize)]));
 export function tokenAlternatives(token: string): string[] { return [token, ...(normalizedAliases.get(token) ?? [])]; }
@@ -21,7 +21,15 @@ export function parseIntent(query: string, context: QueryContext = {}) {
   const filters = extractStructuredFilters(positive);
   const explicitPrice = normalized.match(/(?:under|below|less than|max|hogst)\s+(\d{1,4})(?:\s*(?:kr|sek|kronor))?\b/);
   const priceMax = explicitPrice ? Number(explicitPrice[1]) : filters.price_max;
-  const area = policy.stockholmLocalities.filter((value) => value !== 'stockholm' && includesPhrase(positive, value)).sort((a, b) => b.length - a.length)[0];
+  let rawArea = policy.stockholmLocalities.filter((value) => value !== 'stockholm' && includesPhrase(positive, value)).sort((a, b) => b.length - a.length)[0];
+  if (!rawArea) {
+    if (/\b(soder|sodermalm|pa soder|pa sodermalm)\b/i.test(normalized)) rawArea = 'sodermalm';
+    else if (/\b(vasastan|vasan|pa vasastan)\b/i.test(normalized)) rawArea = 'vasastan';
+    else if (/\b(ostermalm|oster|pa ostermalm)\b/i.test(normalized)) rawArea = 'ostermalm';
+    else if (/\b(kungsholmen)\b/i.test(normalized)) rawArea = 'kungsholmen';
+    else if (/\b(gamla stan|stan)\b/i.test(normalized)) rawArea = 'gamla stan';
+  }
+  const area = rawArea;
   const excludedBrandRequested = policy.excludedChains.some((name) => includesPhrase(positive, name));
   const outsideStockholm = policy.excludedLocalities.some((value) => includesPhrase(positive, value));
   const dishes = [

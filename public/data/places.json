@@ -32,8 +32,8 @@
       "daysSinceFreshEvidence": 90,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 1,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
         "recentReviews": 0,
@@ -126,7 +126,8 @@
         }
       ],
       "openingHours": "Mo-Fr 07:30-18:00; Sa-Su 08:00-17:00",
-      "priceSEK": "45–145"
+      "priceSEK": "45–145",
+      "is_hidden_gem": true
     },
     {
       "id": 739596670,
@@ -155,8 +156,8 @@
       "daysSinceFreshEvidence": 90,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.6,
-        "independentEditorial": 1,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
         "recentReviews": 0,
@@ -164,7 +165,7 @@
         "inspectionStatus": 0,
         "verifiedAttributes": 35,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -232,7 +233,8 @@
         }
       ],
       "openingHours": "Mo-Sa 17:00-23:00",
-      "priceSEK": "160–350"
+      "priceSEK": "160–350",
+      "is_hidden_gem": true
     },
     {
       "id": 343955005,
@@ -259,8 +261,8 @@
       "daysSinceFreshEvidence": 90,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 1,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
         "recentReviews": 0,
@@ -268,7 +270,7 @@
         "inspectionStatus": 0,
         "verifiedAttributes": 30,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -346,7 +348,8 @@
         }
       ],
       "openingHours": "Mo-Sa 17:00-23:00",
-      "priceSEK": "160–350"
+      "priceSEK": "160–350",
+      "is_hidden_gem": true
     },
     {
       "id": 274060119,
@@ -13646,7 +13649,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": true,
       "discoveryReasons": [
         "it appears independent",
@@ -13675,8 +13678,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.75,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.6,
         "repeatVisits": 25,
         "recentReviews": 30,
@@ -19623,7 +19626,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -19653,8 +19656,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -19662,7 +19665,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -28769,7 +28772,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "lifecycleState": "closed",
       "validationLabel": "closed_wrong_category",
@@ -28801,8 +28804,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 270,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.0,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.0,
         "repeatVisits": 0,
         "recentReviews": 0,
@@ -28810,7 +28813,7 @@
         "inspectionStatus": 0.0,
         "verifiedAttributes": 0.0,
         "dataFreshness": 10,
-        "confidence": "Low"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -41908,7 +41911,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -41937,8 +41940,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -41946,7 +41949,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -42465,7 +42468,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -42493,8 +42496,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -42802,7 +42805,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -42831,8 +42834,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.5,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -45886,7 +45889,7 @@
         "Specialty Coffee Sweden Registry",
         "Specialty coffee"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -45915,8 +45918,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -47745,7 +47748,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -47774,8 +47777,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -48497,7 +48500,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -48527,8 +48530,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -48536,7 +48539,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -59110,7 +59113,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -59140,8 +59143,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.5,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -59149,7 +59152,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -61598,7 +61601,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -61627,8 +61630,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.5,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -61636,7 +61639,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -61817,13 +61820,17 @@
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: thai.",
       "tags": [
-        "Central Stockholm",
-        "OpenStreetMap",
-        "Opening hours",
+        "Spotted by Locals",
         "Restaurant",
-        "Thai"
+        "Opening hours",
+        "Södermalm",
+        "Curated",
+        "Thai",
+        "Central Stockholm",
+        "Hidden Gem",
+        "OpenStreetMap"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -61841,7 +61848,7 @@
       },
       "sourceName": "OpenStreetMap",
       "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
+      "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
       "ratingAverage": 0,
       "reliableRatingCount": 0,
       "reviewCount": 0,
@@ -61853,8 +61860,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -61862,7 +61869,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -61879,11 +61886,11 @@
       "longitude": 18.0787402,
       "x": 65.75,
       "y": 58.42,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Skånegatan 57, 116 37 Stockholm",
       "osmIdentity": "node:721011629",
       "idNamespace": "public",
-      "openingHours": "Mo-Th 16:00+; Fr 16:00-01:00; Sa 12:00-01:00; Su 12:00+",
-      "website": "https://kohphangan.se/sodermalm/",
+      "openingHours": "Mo-Th 16:00-23:00; Fr 16:00-00:00; Sa 13:00-00:00; Su 13:00-23:00",
+      "website": "https://www.kohphangan.se",
       "sourceFacts": [
         {
           "id": "200001536:osm:openingHours",
@@ -61966,7 +61973,8 @@
           "capturedAt": "2026-09-07T09:02:10Z"
         }
       ],
-      "priceSEK": "160–350"
+      "priceSEK": "160–350",
+      "lifecycleState": "verified"
     },
     {
       "id": 1481622602,
@@ -64693,7 +64701,7 @@
         "Specialty Coffee Sweden Registry",
         "Specialty coffee"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -64722,8 +64730,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -65022,7 +65030,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -65052,8 +65060,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -65061,7 +65069,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -65537,7 +65545,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -65567,8 +65575,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -66442,7 +66450,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -66470,8 +66478,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -76291,7 +76299,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -76320,8 +76328,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -76329,7 +76337,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -77490,14 +77498,17 @@
       "name": "Tjabba Thai",
       "kind": "Restaurant",
       "cuisine": "thai",
-      "area": "Kungsholmen",
+      "area": "Norrmalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: thai.",
       "tags": [
-        "Central Stockholm",
-        "OpenStreetMap",
-        "Opening hours",
         "Restaurant",
-        "Thai"
+        "Opening hours",
+        "Norrmalm",
+        "Curated",
+        "City",
+        "Thai",
+        "Central Stockholm",
+        "OpenStreetMap"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -77555,11 +77566,11 @@
       "longitude": 18.0577586,
       "x": 61.55,
       "y": 49.22,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Wallingatan 7, 111 60 Stockholm",
       "osmIdentity": "node:867361506",
       "idNamespace": "public",
-      "openingHours": "Mo-Fr 11:00-22:00;Sa-Su 14:00-22:00",
-      "website": "https://www.tjabbathai.se/",
+      "openingHours": "Mo-Fr 11:00-22:00; Sa-Su 13:00-22:00",
+      "website": "https://www.tjabbathai.se",
       "sourceFacts": [
         {
           "id": "2813547493:osm:openingHours",
@@ -77652,7 +77663,8 @@
           "capturedAt": "2026-09-07T11:45:54Z"
         }
       ],
-      "priceSEK": "160–350"
+      "priceSEK": "160–350",
+      "lifecycleState": "verified"
     },
     {
       "id": 1745296884,
@@ -81502,7 +81514,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -81532,8 +81544,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -81541,7 +81553,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -101152,7 +101164,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": true,
       "discoveryReasons": [
         "it appears independent",
@@ -101182,8 +101194,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.5,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -101191,7 +101203,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -103605,7 +103617,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -103635,8 +103647,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -103644,7 +103656,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -104797,7 +104809,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -104827,8 +104839,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -104836,7 +104848,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -107238,17 +107250,22 @@
       "id": 4097208149,
       "name": "Elefantpojken",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "thai",
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
-        "Central Stockholm",
-        "OpenStreetMap",
-        "Opening hours",
+        "Asian",
+        "Spotted by Locals",
         "Restaurant",
-        "Website"
+        "Opening hours",
+        "Södermalm",
+        "Website",
+        "Thai",
+        "Central Stockholm",
+        "Hidden Gem",
+        "OpenStreetMap"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -107276,8 +107293,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -107302,11 +107319,11 @@
       "longitude": 18.0836836,
       "x": 66.74,
       "y": 59.47,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Ringvägen 110, 116 61 Stockholm",
       "osmIdentity": "node:1350452915",
       "idNamespace": "public",
-      "openingHours": "Mo-Fr 11:00-14:00,16:00+; Sa 15:00+; Su 15:00-22:00",
-      "website": "https://www.elefantpojken.com",
+      "openingHours": "Mo-Th 17:00-23:00; Fr-Sa 17:00-01:00; Su 17:00-22:00",
+      "website": "https://elefantpojken.se",
       "sourceFacts": [
         {
           "id": "4097208149:osm:openingHours",
@@ -107329,7 +107346,8 @@
           "capturedAt": "2026-09-07T09:02:10Z"
         }
       ],
-      "priceSEK": "160–350"
+      "priceSEK": "160–350",
+      "lifecycleState": "verified"
     },
     {
       "id": 3321892311,
@@ -107443,7 +107461,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -107472,8 +107490,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -107481,7 +107499,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -111044,7 +111062,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -111073,8 +111091,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.5,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -118088,7 +118106,7 @@
         "Specialty Coffee Sweden Registry",
         "Specialty coffee"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -118117,8 +118135,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -121663,15 +121681,17 @@
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: thai.",
       "tags": [
-        "Central Stockholm",
-        "OpenStreetMap",
-        "Opening hours",
-        "Restaurant",
-        "Thai",
         "Spotted by Locals",
-        "Hidden Gem"
+        "Restaurant",
+        "Opening hours",
+        "Södermalm",
+        "Curated",
+        "Thai",
+        "Central Stockholm",
+        "Hidden Gem",
+        "OpenStreetMap"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -121701,8 +121721,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -121710,7 +121730,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -121727,10 +121747,10 @@
       "longitude": 18.0895811,
       "x": 67.92,
       "y": 57.23,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Folkungagatan 140, 116 30 Stockholm",
       "osmIdentity": "node:1501759418",
       "idNamespace": "public",
-      "openingHours": "Tu-Fr 11:00-14:00, Tu-Th 16:00-22:00, Fr 16:00-23:00, Sa 12:00-23:00, Su 12:00-22:00",
+      "openingHours": "Mo-Th 17:00-22:00; Fr-Sa 17:00-23:00; Su 16:00-21:30",
       "website": "https://www.patsplace.se",
       "sourceFacts": [
         {
@@ -121814,7 +121834,8 @@
           "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
-      "priceSEK": "160–350"
+      "priceSEK": "160–350",
+      "lifecycleState": "verified"
     },
     {
       "id": 1806815935,
@@ -123401,7 +123422,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -123430,8 +123451,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -123439,7 +123460,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -127768,18 +127789,20 @@
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: thai.",
       "tags": [
-        "Central Stockholm",
-        "Dog friendly",
         "Hundvänligt",
-        "OpenStreetMap",
-        "Restaurant",
-        "Tasstipset",
-        "Thai",
-        "Website",
         "Spotted by Locals",
-        "Hidden Gem"
+        "Restaurant",
+        "Södermalm",
+        "Curated",
+        "Website",
+        "Thai",
+        "Central Stockholm",
+        "Hidden Gem",
+        "Tasstipset",
+        "Dog friendly",
+        "OpenStreetMap"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -127807,8 +127830,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.5,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -127816,7 +127839,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -127833,10 +127856,10 @@
       "longitude": 18.0818893,
       "x": 66.38,
       "y": 61.34,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Östgötagatan 100, 116 64 Stockholm",
       "osmIdentity": "node:1541177439",
       "idNamespace": "public",
-      "website": "https://thaiboat.se/",
+      "website": "https://www.thaiboat.se",
       "sourceFacts": [
         {
           "id": "3279590126:osm:website",
@@ -127949,8 +127972,9 @@
           "capturedAt": "2026-09-08T16:28:30Z"
         }
       ],
-      "openingHours": "Mo-Sa 17:00-23:00",
-      "priceSEK": "160–350"
+      "openingHours": "Mo-Th 16:00-23:00; Fr-Sa 12:00-00:00; Su 12:00-22:00",
+      "priceSEK": "160–350",
+      "lifecycleState": "verified"
     },
     {
       "id": 3767489150,
@@ -131800,7 +131824,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -131829,8 +131853,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -131838,7 +131862,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -132142,7 +132166,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -132171,8 +132195,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -132180,7 +132204,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -150538,7 +150562,7 @@
         "Specialty Coffee Sweden Registry",
         "Specialty coffee"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -150566,8 +150590,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 0.0,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.0,
         "repeatVisits": 0,
         "recentReviews": 0,
@@ -163234,7 +163258,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent"
@@ -163261,8 +163285,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -163270,7 +163294,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -165150,7 +165174,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -165178,8 +165202,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.5,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -166469,7 +166493,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent"
@@ -166496,8 +166520,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -166505,7 +166529,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -167369,7 +167393,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -167397,8 +167421,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -167896,7 +167920,7 @@
         "Specialty Coffee Sweden Registry",
         "Specialty coffee"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -167925,8 +167949,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -175573,7 +175597,7 @@
         "Specialty coffee",
         "Tasstipset"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -175602,8 +175626,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -182645,7 +182669,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -182673,8 +182697,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -189392,7 +189416,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -189421,8 +189445,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -189430,7 +189454,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -191276,7 +191300,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -191306,8 +191330,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -191315,7 +191339,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -192902,7 +192926,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -192932,8 +192956,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -192941,7 +192965,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -206028,7 +206052,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -206058,8 +206082,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.5,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -206067,7 +206091,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -207315,7 +207339,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -207344,8 +207368,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -207353,7 +207377,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -208135,7 +208159,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": true,
       "discoveryReasons": [
         "it appears independent",
@@ -208164,8 +208188,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -208173,7 +208197,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -211968,7 +211992,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -211997,8 +212021,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.5,
-        "independentEditorial": 0.75,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.6,
         "repeatVisits": 25,
         "recentReviews": 30,
@@ -212939,7 +212963,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -212968,8 +212992,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.75,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.6,
         "repeatVisits": 25,
         "recentReviews": 30,
@@ -230846,7 +230870,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": true,
       "discoveryReasons": [
         "it appears independent",
@@ -230875,8 +230899,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -230995,7 +231019,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -231024,8 +231048,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -232758,7 +232782,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": true,
       "discoveryReasons": [
         "it appears independent",
@@ -232787,8 +232811,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -232796,7 +232820,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -241656,7 +241680,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -241686,8 +241710,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -241695,7 +241719,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -243987,7 +244011,7 @@
         "Specialty coffee",
         "Website"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -244016,8 +244040,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 0.75,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.6,
         "repeatVisits": 25,
         "recentReviews": 30,
@@ -258765,7 +258789,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent"
@@ -258792,8 +258816,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -258801,7 +258825,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -265146,7 +265170,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -265175,8 +265199,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -265184,7 +265208,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -268955,7 +268979,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -268984,8 +269008,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -268993,7 +269017,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -272337,7 +272361,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -272367,8 +272391,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -273678,7 +273702,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -273706,8 +273730,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -274570,7 +274594,7 @@
         "Specialty Coffee Sweden Registry",
         "Specialty coffee"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -274599,8 +274623,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -302840,7 +302864,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -302869,8 +302893,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -305901,7 +305925,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": true,
       "discoveryReasons": [
         "it appears independent",
@@ -305931,8 +305955,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -305940,7 +305964,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -309232,7 +309256,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": true,
       "discoveryReasons": [
         "it appears independent",
@@ -309261,8 +309285,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -309270,7 +309294,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -315292,7 +315316,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -315322,8 +315346,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -315331,7 +315355,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -316307,7 +316331,7 @@
         "Specialty Coffee Sweden Registry",
         "Specialty coffee"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -316335,8 +316359,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 0.0,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.0,
         "repeatVisits": 0,
         "recentReviews": 0,
@@ -317900,7 +317924,7 @@
         "Specialty Coffee Sweden Registry",
         "Specialty coffee"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -317929,8 +317953,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -323627,7 +323651,7 @@
         "Specialty coffee",
         "Website"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -323655,8 +323679,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -329576,7 +329600,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
@@ -329605,8 +329629,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.75,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.6,
         "repeatVisits": 25,
         "recentReviews": 30,
@@ -334323,7 +334347,7 @@
         "Spotted by Locals",
         "Hidden Gem"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": true,
       "discoveryReasons": [
         "it appears independent",
@@ -334353,8 +334377,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -334362,7 +334386,7 @@
         "inspectionStatus": 70.0,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -336146,8 +336170,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 1,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedAttributes": 90,
         "dataFreshness": 95,
         "confidence": "High"
@@ -336181,7 +336205,8 @@
         "verificationSources": 3
       },
       "openingHours": "Mo-Fr 07:30-18:00; Sa-Su 08:00-17:00",
-      "priceSEK": "45–145"
+      "priceSEK": "45–145",
+      "is_hidden_gem": true
     },
     {
       "id": 517376147,
@@ -336215,8 +336240,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 1,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedAttributes": 90,
         "dataFreshness": 95,
         "confidence": "High"
@@ -336250,7 +336275,8 @@
         "verificationSources": 3
       },
       "openingHours": "Mo-Fr 07:30-18:00; Sa-Su 08:00-17:00",
-      "priceSEK": "45–145"
+      "priceSEK": "45–145",
+      "is_hidden_gem": true
     },
     {
       "id": 319307765,
@@ -336285,8 +336311,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 1.0,
-        "independentEditorial": 1,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedAttributes": 90,
         "dataFreshness": 95,
         "confidence": "High"
@@ -336320,7 +336346,8 @@
         "verificationSources": 3
       },
       "openingHours": "Mo-Fr 07:30-18:00; Sa-Su 08:00-17:00",
-      "priceSEK": "45–145"
+      "priceSEK": "45–145",
+      "is_hidden_gem": true
     },
     {
       "id": 156585923,
@@ -338866,11 +338893,11 @@
       "daysSinceFreshEvidence": 30,
       "lifecycleState": "active",
       "evidence": {
-        "specialistGuide": 0.5,
-        "independentEditorial": 1,
+        "specialistGuide": 85.0,
+        "independentEditorial": 85.0,
         "verifiedAttributes": 35,
         "dataFreshness": 90,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -338907,7 +338934,8 @@
       ],
       "openingHours": "Mo-Sa 17:00-23:00",
       "priceSEK": "160–350",
-      "lastUpdated": "2026-09-08"
+      "lastUpdated": "2026-09-08",
+      "is_hidden_gem": true
     },
     {
       "id": 844541298,
@@ -339229,7 +339257,13 @@
           "url": "https://www.spottedbylocals.com/stockholm/soldaten-svejk/",
           "capturedAt": "2026-09-08T16:40:12Z"
         }
-      ]
+      ],
+      "evidence": {
+        "independentEditorial": 85.0,
+        "specialistGuide": 85.0,
+        "confidence": "High"
+      },
+      "is_hidden_gem": true
     }
   ],
   "totalPlaces": 3245

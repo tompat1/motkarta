@@ -93,6 +93,23 @@ test("RAG retrieveAndSynthesize ranks Thai places for 'Best thai place in Stockh
   assert.equal(recommendedNames.some((n) => n.includes("Pascal") || n.includes("Lykke") || n.includes("Drop Coffee")), false);
 });
 
+test("RAG retrieveAndSynthesize returns strictly Södermalm Thai landmark venues for 'bästa thai ställena på söder'", () => {
+  const result = retrieveAndSynthesize("bästa thai ställena på söder", livePlaces);
+  const recommendedPlaces = result.recommendedPlaces;
+
+  assert.ok(recommendedPlaces.length > 0, "Should return at least 1 Södermalm Thai restaurant");
+  assert.ok(
+    recommendedPlaces.every((p) => (p.area || "").toLowerCase().includes("södermalm") || (p.area || "").toLowerCase().includes("söder")),
+    "All returned places must be strictly in Södermalm",
+  );
+  const names = recommendedPlaces.map((p) => p.name);
+  assert.ok(
+    names.some((n) => ["Koh Phangan", "Pat's Place", "Thaiboat", "Elefantpojken", "Chao Na"].includes(n)),
+    `Expected landmark Södermalm Thai spot, got: ${names.join(", ")}`,
+  );
+});
+
+
 test("parseConciergeAnswer parses markdown output into structured cards and charter", () => {
   const markdown = `Based on our database:
 
