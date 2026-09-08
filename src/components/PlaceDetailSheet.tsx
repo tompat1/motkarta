@@ -13,11 +13,14 @@ import {
   NavigationArrow,
   Check,
   PawPrint,
+  ThumbsUp,
+  ThumbsDown,
 } from "@phosphor-icons/react";
 import type { ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
 import { fetchPlacePhotos, type PlacePhoto } from "../../lib/lazy-media";
 import { formatDistance, distanceFromPoint } from "../app/shared";
+import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 
 interface PlaceDetailSheetProps {
   place: ScoredPlace;
@@ -48,6 +51,7 @@ export function PlaceDetailSheet({
 }: PlaceDetailSheetProps) {
   const [photos, setPhotos] = useState<PlacePhoto[]>([]);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const [feedbackType, setFeedbackType] = useState<"up" | "down" | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -89,18 +93,58 @@ export function PlaceDetailSheet({
             <ArrowLeft size={22} weight="bold" />
           </button>
 
-          <button
-            type="button"
-            className={`place-detail-bookmark-btn ${isSaved ? "is-saved" : ""}`}
-            onClick={() => onToggleSave(place.id)}
-            aria-label={isSaved ? (lang === "sv" ? "Ta bort bokmärke" : "Remove bookmark") : (lang === "sv" ? "Spara ställe" : "Save place")}
-          >
-            <BookmarkSimple
-              size={24}
-              weight={isSaved ? "fill" : "bold"}
-              style={{ color: isSaved ? "var(--color-water)" : "var(--color-ink)" }}
-            />
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <button
+              type="button"
+              onClick={() => setFeedbackType("up")}
+              style={{
+                background: "var(--color-paper, #f8fafc)",
+                border: "1px solid var(--color-mist, #e2e8f0)",
+                borderRadius: "50%",
+                width: "40px",
+                height: "40px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+              }}
+              title={lang === "sv" ? "Hjälpsam / Bra ställe" : "Helpful / Good place"}
+            >
+              <ThumbsUp size={20} weight="bold" style={{ color: "#166534" }} />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setFeedbackType("down")}
+              style={{
+                background: "var(--color-paper, #f8fafc)",
+                border: "1px solid var(--color-mist, #e2e8f0)",
+                borderRadius: "50%",
+                width: "40px",
+                height: "40px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+              }}
+              title={lang === "sv" ? "Inte bra / Felaktig info" : "Not good / Wrong info"}
+            >
+              <ThumbsDown size={20} weight="bold" style={{ color: "#991b1b" }} />
+            </button>
+
+            <button
+              type="button"
+              className={`place-detail-bookmark-btn ${isSaved ? "is-saved" : ""}`}
+              onClick={() => onToggleSave(place.id)}
+              aria-label={isSaved ? (lang === "sv" ? "Ta bort bokmärke" : "Remove bookmark") : (lang === "sv" ? "Spara ställe" : "Save place")}
+            >
+              <BookmarkSimple
+                size={24}
+                weight={isSaved ? "fill" : "bold"}
+                style={{ color: isSaved ? "var(--color-water)" : "var(--color-ink)" }}
+              />
+            </button>
+          </div>
         </header>
 
         {/* Scrollable Editorial Content */}
@@ -124,7 +168,7 @@ export function PlaceDetailSheet({
               />
               {photos.length > 1 ? (
                 <div className="place-detail-photo-dots">
-                  {photos.map((_, idx) => (
+                  {photos.map((_: PlacePhoto, idx: number) => (
                     <button
                       key={idx}
                       type="button"
@@ -271,6 +315,15 @@ export function PlaceDetailSheet({
           </button>
         </footer>
       </article>
+
+      <PlaceFeedbackModal
+        isOpen={Boolean(feedbackType)}
+        targetId={place.id}
+        targetName={place.name}
+        initialType={feedbackType ?? "up"}
+        lang={lang}
+        onClose={() => setFeedbackType(null)}
+      />
     </div>
   );
 }

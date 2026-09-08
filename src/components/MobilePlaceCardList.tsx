@@ -6,11 +6,14 @@ import {
   Heart,
   Sparkle,
   Compass,
+  ThumbsUp,
+  ThumbsDown,
 } from "@phosphor-icons/react";
 import type { ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
 import { fetchPlacePhotos, type PlacePhoto } from "../../lib/lazy-media";
 import { formatDistance, distanceFromPoint, hasCoordinates } from "../app/shared";
+import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 
 interface MobilePlaceCardListProps {
   places: ScoredPlace[];
@@ -32,6 +35,7 @@ export function MobilePlaceCardList({
   onToggleSave,
 }: MobilePlaceCardListProps) {
   const [photoMap, setPhotoMap] = useState<Record<number, string>>({});
+  const [feedbackTarget, setFeedbackTarget] = useState<{ id: number; name: string; type: "up" | "down" } | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -88,22 +92,71 @@ export function MobilePlaceCardList({
             >
               <div className="mobile-photo-card-gradient" />
 
-              {/* Bookmark Button */}
-              <button
-                type="button"
-                className={`mobile-card-save-btn ${isSaved ? "is-saved" : ""}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleSave(place.id);
-                }}
-                aria-label={isSaved ? "Saved" : "Save"}
-              >
-                <BookmarkSimple
-                  size={20}
-                  weight={isSaved ? "fill" : "bold"}
-                  style={{ color: isSaved ? "#2563EB" : "#ffffff" }}
-                />
-              </button>
+              {/* Action Buttons Top Right */}
+              <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", alignItems: "center", gap: "8px", zIndex: 5 }}>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFeedbackTarget({ id: place.id, name: place.name, type: "up" });
+                  }}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.9)",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: "36px",
+                    height: "36px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                  }}
+                  title={lang === "sv" ? "Hjälpsam / Bra ställe" : "Helpful / Good place"}
+                >
+                  <ThumbsUp size={18} weight="bold" style={{ color: "#166534" }} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFeedbackTarget({ id: place.id, name: place.name, type: "down" });
+                  }}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.9)",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: "36px",
+                    height: "36px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                  }}
+                  title={lang === "sv" ? "Inte bra / Felaktig info" : "Not good / Wrong info"}
+                >
+                  <ThumbsDown size={18} weight="bold" style={{ color: "#991b1b" }} />
+                </button>
+
+                <button
+                  type="button"
+                  className={`mobile-card-save-btn ${isSaved ? "is-saved" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleSave(place.id);
+                  }}
+                  aria-label={isSaved ? "Saved" : "Save"}
+                  style={{ position: "relative", top: 0, right: 0 }}
+                >
+                  <BookmarkSimple
+                    size={20}
+                    weight={isSaved ? "fill" : "bold"}
+                    style={{ color: isSaved ? "#2563EB" : "#ffffff" }}
+                  />
+                </button>
+              </div>
 
               {/* Card Meta & Title */}
               <div className="mobile-photo-card-content">
@@ -121,6 +174,15 @@ export function MobilePlaceCardList({
           </article>
         );
       })}
+
+      <PlaceFeedbackModal
+        isOpen={Boolean(feedbackTarget)}
+        targetId={feedbackTarget?.id ?? 0}
+        targetName={feedbackTarget?.name ?? ""}
+        initialType={feedbackTarget?.type ?? "up"}
+        lang={lang}
+        onClose={() => setFeedbackTarget(null)}
+      />
     </div>
   );
 }

@@ -34,6 +34,26 @@ export function placeFacts(place: ConciergePlace): ConciergePlaceFacts {
   for (const evidence of place.evidenceSources ?? []) {
     facts.push({ id: `${place.id}:source:${evidence.id}`, placeId: place.id, field: 'evidenceRecord', value: plainText(evidence.name), source: plainText(evidence.name), url: safeUrl(evidence.url), capturedAt: evidence.capturedAt, verification: 'listed' });
   }
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      const rawFeedback = window.localStorage.getItem('motkarta_rag_learning_feedback');
+      if (rawFeedback) {
+        const feedbackList = JSON.parse(rawFeedback);
+        for (const [idx, fb] of feedbackList.entries()) {
+          if (fb && (fb.targetId === place.id || fb.targetName === place.name)) {
+            const reasonsText = (fb.selectedReasons ?? []).join(', ');
+            const commentText = fb.comment ? `: ${fb.comment}` : '';
+            const valueStr = plainText(`User feedback [${fb.isPositive ? 'Positive' : 'Negative'}]: ${reasonsText}${commentText}`);
+            if (valueStr) {
+              facts.push({ id: `${place.id}:user_feedback:${idx}`, placeId: place.id, field: 'user_feedback', value: valueStr, source: 'Community Fast Feedback Loop', verification: 'verified' });
+            }
+          }
+        }
+      }
+    } catch {
+      // Ignore localStorage read errors
+    }
+  }
   const document = facts.filter((fact) => fact.field !== 'evidenceRecord').map(({ field, value }) => `${field}: ${value}`).join('\n');
   return { id: place.id, facts, document, chainStatus: place.chainStatus ?? 'unknown' };
 }

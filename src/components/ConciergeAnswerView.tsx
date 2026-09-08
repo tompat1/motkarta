@@ -6,6 +6,7 @@ import { resolveConciergeMapPlace } from "../../lib/concierge/map-identity";
 import type { PlaceInput } from "../../lib/scoring";
 import type { Language } from "../app/shared";
 import { ArrowSquareOut, CheckCircle, Globe, MapPin, MapTrifold, Sliders, Sparkle, ThumbsDown, ThumbsUp, X } from "@phosphor-icons/react";
+import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 
 export function ConciergeAnswerView({
   answer,
@@ -31,6 +32,8 @@ export function ConciergeAnswerView({
     clarification: response.status === 'clarification' ? { queryTerm: response.query, question: response.intro } : undefined,
   } : parseConciergeAnswer(answer), [answer, response]);
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [feedbackType, setFeedbackType] = useState<"up" | "down">("up");
 
   const handleSelect = (placeName: string, explicitId?: number) => {
     if (explicitId) {
@@ -307,30 +310,8 @@ export function ConciergeAnswerView({
             className={`feedback-btn ${feedback === "up" ? "active-up" : ""}`}
             onClick={() => {
               setFeedback("up");
-              const topCard = response?.cards?.[0];
-              fetch("/api/recommendation-events", {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({
-                  events: [
-                    {
-                      eventType: "would_return",
-                      establishmentId: topCard?.id ?? 0,
-                      mode: "concierge",
-                      sortMode: "motkarta",
-                      queryContextJson: JSON.stringify({
-                        hasQuery: true,
-                        queryLengthBucket: answer.length > 50 ? "long" : "short",
-                        mode: "concierge",
-                        surface: "concierge_modal",
-                        resultCount: response?.cards?.length ?? 0,
-                      }),
-                      contextWindowSize: response?.cards?.length ?? 0,
-                      clientTimestampMs: Date.now(),
-                    },
-                  ],
-                }),
-              }).catch(() => {});
+              setFeedbackType("up");
+              setIsFeedbackModalOpen(true);
             }}
             style={{
               display: "inline-flex",
@@ -356,30 +337,8 @@ export function ConciergeAnswerView({
             className={`feedback-btn ${feedback === "down" ? "active-down" : ""}`}
             onClick={() => {
               setFeedback("down");
-              const topCard = response?.cards?.[0];
-              fetch("/api/recommendation-events", {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({
-                  events: [
-                    {
-                      eventType: "dismiss",
-                      establishmentId: topCard?.id ?? 0,
-                      mode: "concierge",
-                      sortMode: "motkarta",
-                      queryContextJson: JSON.stringify({
-                        hasQuery: true,
-                        queryLengthBucket: answer.length > 50 ? "long" : "short",
-                        mode: "concierge",
-                        surface: "concierge_modal",
-                        resultCount: response?.cards?.length ?? 0,
-                      }),
-                      contextWindowSize: response?.cards?.length ?? 0,
-                      clientTimestampMs: Date.now(),
-                    },
-                  ],
-                }),
-              }).catch(() => {});
+              setFeedbackType("down");
+              setIsFeedbackModalOpen(true);
             }}
             style={{
               display: "inline-flex",
@@ -402,7 +361,6 @@ export function ConciergeAnswerView({
           </button>
         </div>
 
-
         {feedback ? (
           <span
             style={{
@@ -422,6 +380,15 @@ export function ConciergeAnswerView({
           </span>
         ) : null}
       </div>
+
+      <PlaceFeedbackModal
+        isOpen={isFeedbackModalOpen}
+        targetId={response?.cards?.[0]?.id ?? 0}
+        targetName={response?.cards?.[0]?.name ?? (lang === "sv" ? "Concierge-rekommendation" : "Concierge Recommendation")}
+        initialType={feedbackType}
+        lang={lang}
+        onClose={() => setIsFeedbackModalOpen(false)}
+      />
 
       <div style={{ marginTop: "16px", padding: "12px 16px", background: "var(--color-paper)", border: "1px solid var(--color-mist)" }}>
         <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", marginBottom: "8px", color: "var(--color-water)" }}>
