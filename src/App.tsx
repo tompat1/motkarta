@@ -98,6 +98,8 @@ import {
   Star,
   Faders,
   List,
+  ListDashes,
+  X,
   Heart,
   PawPrint,
   DeviceMobile,
@@ -380,15 +382,12 @@ export default function App() {
   const conciergeRequest = useRef<AbortController | null>(null);
   useEffect(() => () => conciergeRequest.current?.abort(), []);
   const [asking, setAsking] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const mobileSearchInputRef = useRef<HTMLInputElement>(null);
 
   const focusSearchInput = useCallback(() => {
-    if (typeof window !== "undefined" && window.innerWidth <= 768 && mobileSearchInputRef.current) {
-      mobileSearchInputRef.current.focus();
-      mobileSearchInputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-    } else if (searchInputRef.current) {
+    if (searchInputRef.current) {
       searchInputRef.current.focus();
       searchInputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
@@ -1321,6 +1320,17 @@ export default function App() {
             )}
           </button>
 
+          {/* Mobile hamburger menu button */}
+          <button
+            type="button"
+            className="mobile-hamburger-btn"
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label={lang === "sv" ? "Öppna meny" : "Open menu"}
+            title={lang === "sv" ? "Huvudmeny" : "Main menu"}
+          >
+            <ListDashes size={20} weight="bold" />
+          </button>
+
           <button
             type="button"
             className={`topbar-cart-btn ${totalCartCount > 0 ? "has-items" : ""}`}
@@ -1364,42 +1374,6 @@ export default function App() {
 
       {/* Mobile-only Quick Search & Filter Controls */}
       <div className="mobile-controls-bar">
-        {/* Search Bar Input */}
-        <div className="mobile-search-input-wrapper">
-          <MagnifyingGlass size={18} weight="bold" className="mobile-search-icon" />
-          <input
-            ref={mobileSearchInputRef}
-            type="text"
-            className="mobile-search-input"
-            aria-label={lang === "sv" ? "Sök ställe, kök, område eller fråga" : "Search place, cuisine, region or ask"}
-            list="concierge-places-datalist"
-            value={query}
-            onChange={(e) => {
-              const val = e.target.value;
-              setQuery(val);
-              setConcierge(val);
-              setAutocompleteIndex(-1);
-            }}
-            onFocus={() => setIsSearchFocused(true)}
-            onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
-            onKeyDown={handleSearchKeyDown}
-            placeholder={lang === "sv" ? "Vad vill du äta?" : "What do you want to eat?"}
-          />
-          {query.trim() ? (
-            <button
-              type="button"
-              className="mobile-search-clear"
-              onClick={() => {
-                setQuery("");
-                setConcierge("");
-              }}
-              aria-label="Clear search"
-            >
-              ✕
-            </button>
-          ) : null}
-        </div>
-
         {/* Horizontal Quick Filter Carousel */}
         <div className="mobile-quick-filter-carousel" role="toolbar" aria-label="Quick filters">
           <button
@@ -2416,6 +2390,114 @@ export default function App() {
         onImportSavedPlaces={handleImportSavedPlaces}
         lang={lang}
       />
+
+      {/* Mobile Navigation Drawer (Hamburger Menu) */}
+      {isMobileMenuOpen ? (
+        <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)} role="dialog" aria-modal="true" aria-label="Meny">
+          <div className="mobile-menu-drawer" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-menu-header">
+              <div className="mobile-menu-brand">
+                <img src="/motkarta_drop_divided_black_red.svg" alt="MOTKARTA Pin" className="brand-counter-pin" style={{ height: "42px", width: "auto", marginRight: "-6px" }} />
+                <img src="/logo.webp" alt="MOTKARTA" className="brand-logo" style={{ height: "22px", width: "auto" }} />
+              </div>
+              <button
+                type="button"
+                className="mobile-menu-close"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label={lang === "sv" ? "Stäng meny" : "Close menu"}
+              >
+                <X size={20} weight="bold" />
+              </button>
+            </div>
+
+            <nav className="mobile-menu-links">
+              <a href="#map" onClick={() => setIsMobileMenuOpen(false)}>
+                <Compass size={18} weight="bold" />
+                <span>{t.navMap}</span>
+              </a>
+              <a href="#method" onClick={() => setIsMobileMenuOpen(false)}>
+                <ShieldCheck size={18} weight="bold" />
+                <span>{t.navMethod}</span>
+              </a>
+              <a
+                href="#concierge"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsMobileMenuOpen(false);
+                  focusSearchInput();
+                }}
+              >
+                <MagnifyingGlass size={18} weight="bold" />
+                <span>{t.navConcierge}</span>
+              </a>
+              <a href="#merch" onClick={() => setIsMobileMenuOpen(false)}>
+                <ShoppingBag size={18} weight="bold" />
+                <span>Merch & Store</span>
+              </a>
+              <button
+                type="button"
+                className="mobile-menu-action-btn"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setShowOnboarding(true);
+                }}
+              >
+                <Sparkle size={18} weight="bold" />
+                <span>{lang === "sv" ? "Principer & Charters" : "Principles & Charters"}</span>
+              </button>
+              <button
+                type="button"
+                className="mobile-menu-action-btn"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsSyncModalOpen(true);
+                }}
+              >
+                <DeviceMobile size={18} weight="bold" />
+                <span>{lang === "sv" ? "Synka dina enheter" : "Sync Across Devices"}</span>
+              </button>
+              {adminSession?.admin || isAdminRoute ? (
+                <a href="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                  <ShieldCheck size={18} weight="bold" />
+                  <span>{lang === "sv" ? "Admin Operationskö" : "Admin Operations"}</span>
+                </a>
+              ) : null}
+            </nav>
+
+            <div className="mobile-menu-footer">
+              <div className="mobile-menu-lang-row">
+                <span>{lang === "sv" ? "Språk:" : "Language:"}</span>
+                <div className="lang-switcher">
+                  <button
+                    type="button"
+                    className={`lang-btn ${lang === "sv" ? "active" : ""}`}
+                    onClick={() => handleSetLang("sv")}
+                  >
+                    SV
+                  </button>
+                  <button
+                    type="button"
+                    className={`lang-btn ${lang === "en" ? "active" : ""}`}
+                    onClick={() => handleSetLang("en")}
+                  >
+                    EN
+                  </button>
+                </div>
+              </div>
+              <div className="mobile-menu-status">
+                <span className={`status-dot status-dot-${dataSource}`} />
+                <span>
+                  {dataSource === "osm"
+                    ? t.dataSourceLiveOsm
+                    : dataSource === "d1"
+                      ? t.dataSourceLiveD1
+                      : t.dataSourceLoading}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <footer>
 
