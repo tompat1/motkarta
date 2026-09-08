@@ -114,7 +114,15 @@ function ImageLightboxModal({
           </>
         ) : null}
 
-        <img src={currentPhoto.url} alt={currentPhoto.caption} className="lightbox-img" />
+        <img
+          src={currentPhoto.url}
+          alt={currentPhoto.caption}
+          className="lightbox-img"
+          onError={(event) => {
+            event.currentTarget.src = DUMMY_PLACE_IMAGE_URL;
+            event.currentTarget.classList.add("lightbox-img-dummy");
+          }}
+        />
 
         <div className="lightbox-caption-bar">
           <div className="lightbox-caption-text">
@@ -202,7 +210,15 @@ export function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput
                 title={`${img.caption} (Klicka för fullskala)`}
                 onClick={() => setLightboxIndex(idx)}
               >
-                <img src={img.thumbnailUrl} alt={img.caption} loading="lazy" />
+                <img
+                  src={img.thumbnailUrl}
+                  alt={img.caption}
+                  loading="lazy"
+                  onError={(event) => {
+                    event.currentTarget.src = DUMMY_PLACE_IMAGE_URL;
+                    event.currentTarget.classList.add("photo-card-img-dummy");
+                  }}
+                />
                 <span className="photo-caption">{img.caption}</span>
               </div>
             ))

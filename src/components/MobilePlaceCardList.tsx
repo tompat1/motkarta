@@ -17,6 +17,15 @@ import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 
 const DUMMY_PLACE_IMAGE_URL = "/motkarta_drop_divided_black_red.svg";
 
+function canLoadImage(url: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => resolve(true);
+    image.onerror = () => resolve(false);
+    image.src = url;
+  });
+}
+
 interface MobilePlaceCardListProps {
   places: ScoredPlace[];
   activePlace: ScoredPlace | null;
@@ -44,9 +53,11 @@ export function MobilePlaceCardList({
     const placesToFetch = places.slice(0, 25);
     placesToFetch.forEach((p) => {
       if (!photoMap[p.id]) {
-        void fetchPlacePhotos(p).then((photos) => {
-          if (isMounted && photos.length > 0 && photos[0]?.url) {
-            setPhotoMap((prev) => ({ ...prev, [p.id]: photos[0].url }));
+        void fetchPlacePhotos(p).then(async (photos) => {
+          const url = photos[0]?.url;
+          const loaded = url ? await canLoadImage(url) : false;
+          if (isMounted && url && loaded) {
+            setPhotoMap((prev) => ({ ...prev, [p.id]: url }));
           }
         });
       }

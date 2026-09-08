@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-09-08T22:10:16Z",
-  "totalPlaces": 1462,
-  "totalPhotos": 3493,
+  "updatedAt": "2026-09-08T22:18:41Z",
+  "totalPlaces": 1434,
+  "totalPhotos": 3439,
   "photosByPlace": {
     "223603": [
       {
@@ -553,18 +553,6 @@
         "height": null
       }
     ],
-    "52266843": [
-      {
-        "id": "photo-52266843-1",
-        "placeId": 52266843,
-        "url": "https://scontent.cdninstagram.com/v/t51.75761-19/498707421_17846998554474571_2054215320189757481_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=101&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=wxHpeXmwB8EQ7kNvwETRJoq&amp;_nc_oc=AdpEJMTaDl0eGc8wL-6JRc0LBK0DSnxcqkNbmOXvRSbKdLm0-sgv4j2BKjrU6djraN4&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_gid=fEa2TRVKX4goC9pfNIJmlg&amp;_nc_ss=7b60f&amp;oh=00_AQKssp8FJilzmgxGGLSPwqWy6nbFj1E_hsv6IwBWL-Fgjg&amp;oe=6AA491E4",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.75761-19/498707421_17846998554474571_2054215320189757481_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=101&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=wxHpeXmwB8EQ7kNvwETRJoq&amp;_nc_oc=AdpEJMTaDl0eGc8wL-6JRc0LBK0DSnxcqkNbmOXvRSbKdLm0-sgv4j2BKjrU6djraN4&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_gid=fEa2TRVKX4goC9pfNIJmlg&amp;_nc_ss=7b60f&amp;oh=00_AQKssp8FJilzmgxGGLSPwqWy6nbFj1E_hsv6IwBWL-Fgjg&amp;oe=6AA491E4",
-        "caption": "Celine's Cafè (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
-        "width": null,
-        "height": null
-      }
-    ],
     "54679225": [
       {
         "id": "photo-54679225-1",
@@ -881,16 +869,6 @@
         "height": null
       },
       {
-        "id": "photo-102801050-2",
-        "placeId": 102801050,
-        "url": "https://static.wixstatic.com/media/81af6121f84c41a5b4391d7d37fce12a.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Instagram.png",
-        "thumbnailUrl": "https://static.wixstatic.com/media/81af6121f84c41a5b4391d7d37fce12a.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Instagram.png",
-        "caption": "Machi machi (www.machisweden.com)",
-        "credit": "Official Website (www.machisweden.com)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-102801050-3",
         "placeId": 102801050,
         "url": "https://static.wixstatic.com/media/23fd2a2be53141ed810f4d3dcdcd01fa.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Facebook.png",
@@ -907,16 +885,6 @@
         "placeId": 111423299,
         "url": "https://cdn42.gastrogate.com//templates/template1/img/facebook_circle.png",
         "thumbnailUrl": "https://cdn42.gastrogate.com//templates/template1/img/facebook_circle.png",
-        "caption": "Ciao Ciao Grande (www.ciaociaogrande.com)",
-        "credit": "Official Website (www.ciaociaogrande.com)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-111423299-2",
-        "placeId": 111423299,
-        "url": "https://cdn42.gastrogate.com//templates/template1/img/instagram_circle.png",
-        "thumbnailUrl": "https://cdn42.gastrogate.com//templates/template1/img/instagram_circle.png",
         "caption": "Ciao Ciao Grande (www.ciaociaogrande.com)",
         "credit": "Official Website (www.ciaociaogrande.com)",
         "width": null,
@@ -2203,16 +2171,6 @@
         "credit": "Official Website (www.texaslonghorn.se)",
         "width": null,
         "height": null
-      },
-      {
-        "id": "photo-233773649-3",
-        "placeId": 233773649,
-        "url": "https://www.texaslonghorn.se/wp-content/uploads/sb-instagram-feed-images/746503322_18610680010035008_6671563960952625014_nfull.webp",
-        "thumbnailUrl": "https://www.texaslonghorn.se/wp-content/uploads/sb-instagram-feed-images/746503322_18610680010035008_6671563960952625014_nfull.webp",
-        "caption": "Texas Longhorn (www.texaslonghorn.se)",
-        "credit": "Official Website (www.texaslonghorn.se)",
-        "width": null,
-        "height": null
       }
     ],
     "236329951": [
@@ -2447,16 +2405,6 @@
         "placeId": 256866506,
         "url": "https://www.texaslonghorn.se/wp-content/uploads/2020/11/texas-s.png",
         "thumbnailUrl": "https://www.texaslonghorn.se/wp-content/uploads/2020/11/texas-s.png",
-        "caption": "Texas Longhorn (www.texaslonghorn.se)",
-        "credit": "Official Website (www.texaslonghorn.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-256866506-3",
-        "placeId": 256866506,
-        "url": "https://www.texaslonghorn.se/wp-content/uploads/sb-instagram-feed-images/746503322_18610680010035008_6671563960952625014_nfull.webp",
-        "thumbnailUrl": "https://www.texaslonghorn.se/wp-content/uploads/sb-instagram-feed-images/746503322_18610680010035008_6671563960952625014_nfull.webp",
         "caption": "Texas Longhorn (www.texaslonghorn.se)",
         "credit": "Official Website (www.texaslonghorn.se)",
         "width": null,
@@ -3513,16 +3461,6 @@
         "credit": "Official Website (www.pongnybrogatan.se)",
         "width": null,
         "height": null
-      },
-      {
-        "id": "photo-376041652-3",
-        "placeId": 376041652,
-        "url": "https://cdn42.gastrogate.com//templates/template1/img/instagram_circle.png",
-        "thumbnailUrl": "https://cdn42.gastrogate.com//templates/template1/img/instagram_circle.png",
-        "caption": "Pong (www.pongnybrogatan.se)",
-        "credit": "Official Website (www.pongnybrogatan.se)",
-        "width": null,
-        "height": null
       }
     ],
     "380876209": [
@@ -4507,16 +4445,6 @@
         "credit": "Official Website (folii.se)",
         "width": null,
         "height": null
-      },
-      {
-        "id": "photo-473318496-2",
-        "placeId": 473318496,
-        "url": "https://folii.se/wp-content/uploads/sb-instagram-feed-images/folii_sthlm.webp",
-        "thumbnailUrl": "https://folii.se/wp-content/uploads/sb-instagram-feed-images/folii_sthlm.webp",
-        "caption": "Folii (folii.se)",
-        "credit": "Official Website (folii.se)",
-        "width": null,
-        "height": null
       }
     ],
     "478781455": [
@@ -5107,16 +5035,6 @@
     ],
     "556251590": [
       {
-        "id": "photo-556251590-1",
-        "placeId": 556251590,
-        "url": "http://static1.squarespace.com/static/58245f1e197aea06e0bc1ba3/t/5831a26ce3df28d681d65a27/1479647852767/Sensum_final_Instagram.jpg?format=1500w",
-        "thumbnailUrl": "http://static1.squarespace.com/static/58245f1e197aea06e0bc1ba3/t/5831a26ce3df28d681d65a27/1479647852767/Sensum_final_Instagram.jpg?format=1500w",
-        "caption": "Sensum (Officiell bild)",
-        "credit": "Official Website (www.restaurangsensum.se)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-556251590-2",
         "placeId": 556251590,
         "url": "https://images.squarespace-cdn.com/content/v1/58245f1e197aea06e0bc1ba3/1534258682614-HTCTP1Z4LZ4TH02JW1R0/Sensum_final.jpg",
@@ -5519,18 +5437,6 @@
         "thumbnailUrl": "https://www.stavrostaverna.se/images/stavros/index_3.jpg",
         "caption": "Stavros (www.stavrostaverna.se)",
         "credit": "Official Website (www.stavrostaverna.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "593812245": [
-      {
-        "id": "photo-593812245-1",
-        "placeId": 593812245,
-        "url": "https://scontent.cdninstagram.com/v/t51.2885-19/170161162_193709342347698_1621356700836951731_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=101&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=lpZHjWx24QkQ7kNvwF-3UdI&amp;_nc_oc=AdrDtqYecHg9qUjkFuD8ZhsUL-7sMcYE0kFw2EXu1ZEAXzBdc0hy5kpw7kJZhAv8_BE&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQJCXNzpt9Zh9ZIxo_FNaw-bJhVsUjQwLwfKD20v2uBvvA&amp;oe=6AA47C40",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.2885-19/170161162_193709342347698_1621356700836951731_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=101&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=lpZHjWx24QkQ7kNvwF-3UdI&amp;_nc_oc=AdrDtqYecHg9qUjkFuD8ZhsUL-7sMcYE0kFw2EXu1ZEAXzBdc0hy5kpw7kJZhAv8_BE&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQJCXNzpt9Zh9ZIxo_FNaw-bJhVsUjQwLwfKD20v2uBvvA&amp;oe=6AA47C40",
-        "caption": "Wattaw (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
         "width": null,
         "height": null
       }
@@ -6119,18 +6025,6 @@
         "thumbnailUrl": "https://www.triton.restaurant/assets/triton-staff.jpeg",
         "caption": "Restaurang Triton (www.triton.restaurant)",
         "credit": "Official Website (www.triton.restaurant)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "657583733": [
-      {
-        "id": "photo-657583733-1",
-        "placeId": 657583733,
-        "url": "https://scontent.cdninstagram.com/v/t51.2885-19/404902325_1837240446692079_6345535849299467955_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=107&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=_7CARHyvr8YQ7kNvwFPRsx_&amp;_nc_oc=AdpWwhCoM_VjYTOWjo31lhAV3mIOxRGoK1wyGDTF-KmWn1ujTJV7uhsI_enQ9T7Po7U&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQI4_xNBTkwBta4cc7lTmVfTkGYUvlZZpuh6jRGbix3lHQ&amp;oe=6AA47F26",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.2885-19/404902325_1837240446692079_6345535849299467955_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=107&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=_7CARHyvr8YQ7kNvwFPRsx_&amp;_nc_oc=AdpWwhCoM_VjYTOWjo31lhAV3mIOxRGoK1wyGDTF-KmWn1ujTJV7uhsI_enQ9T7Po7U&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQI4_xNBTkwBta4cc7lTmVfTkGYUvlZZpuh6jRGbix3lHQ&amp;oe=6AA47F26",
-        "caption": "Cafe Volta (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
         "width": null,
         "height": null
       }
@@ -7419,18 +7313,6 @@
         "thumbnailUrl": "https://www.pizzerialillaessingen.se/images/lilla-essingen-pizza-bild-2.png",
         "caption": "Pizzeria Lilla Essingen (www.pizzerialillaessingen.se)",
         "credit": "Official Website (www.pizzerialillaessingen.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "810417368": [
-      {
-        "id": "photo-810417368-1",
-        "placeId": 810417368,
-        "url": "https://scontent.cdninstagram.com/v/t51.82787-19/542268930_18519937915038282_4115902262794471766_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=102&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4zMjAuQzMifQ%3D%3D&amp;_nc_ohc=ucnhKU7UQFoQ7kNvwGdHQ16&amp;_nc_oc=AdrLaEMZnZHvgQeKH2G1OMxeBqv_mNAUZtY5Ga2LiJSsFj-NDzce5PCecmCaXm2PYkY&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_gid=ir0ul9NRbfxUMUct6cwwPQ&amp;_nc_ss=7b60f&amp;oh=00_AQLWa2cH2vH23noAWGF_80KXu5Mh4JNVB4oM3WKE_Fqmzw&amp;oe=6AA492E1",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.82787-19/542268930_18519937915038282_4115902262794471766_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=102&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4zMjAuQzMifQ%3D%3D&amp;_nc_ohc=ucnhKU7UQFoQ7kNvwGdHQ16&amp;_nc_oc=AdrLaEMZnZHvgQeKH2G1OMxeBqv_mNAUZtY5Ga2LiJSsFj-NDzce5PCecmCaXm2PYkY&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_gid=ir0ul9NRbfxUMUct6cwwPQ&amp;_nc_ss=7b60f&amp;oh=00_AQLWa2cH2vH23noAWGF_80KXu5Mh4JNVB4oM3WKE_Fqmzw&amp;oe=6AA492E1",
-        "caption": "Wild Flower Bakehouse Café (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
         "width": null,
         "height": null
       }
@@ -10117,18 +9999,6 @@
         "height": null
       }
     ],
-    "1122168556": [
-      {
-        "id": "photo-1122168556-1",
-        "placeId": 1122168556,
-        "url": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/359843636_748481453950764_5926958150185716182_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx1036x1045&amp;ctp=s720x720&amp;_nc_cat=108&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=zok0baM1G9EQ7kNvwGHe7q2&amp;_nc_oc=Ado9mE17nbPB63n5wl_W2C-kVKk-uHxns9swsI9rEdlucdYXF-ocWkEWu85VUClzZMo&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=uz_eOD0MQDaJ2EZv4bfECw&amp;_nc_ss=7b20f&amp;oh=00_AQIRDU-tphFiO6PYwHk72jJlW4KjdMp6-929azv7t4yuZQ&amp;oe=6AA46884",
-        "thumbnailUrl": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/359843636_748481453950764_5926958150185716182_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx1036x1045&amp;ctp=s720x720&amp;_nc_cat=108&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=zok0baM1G9EQ7kNvwGHe7q2&amp;_nc_oc=Ado9mE17nbPB63n5wl_W2C-kVKk-uHxns9swsI9rEdlucdYXF-ocWkEWu85VUClzZMo&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=uz_eOD0MQDaJ2EZv4bfECw&amp;_nc_ss=7b20f&amp;oh=00_AQIRDU-tphFiO6PYwHk72jJlW4KjdMp6-929azv7t4yuZQ&amp;oe=6AA46884",
-        "caption": "Lilla Mamsens Bageri (Officiell bild)",
-        "credit": "Official Website (www.facebook.com)",
-        "width": null,
-        "height": null
-      }
-    ],
     "1129319259": [
       {
         "id": "photo-1129319259-1",
@@ -10326,16 +10196,6 @@
       }
     ],
     "1144218372": [
-      {
-        "id": "photo-1144218372-1",
-        "placeId": 1144218372,
-        "url": "https://www.alskadetraditioner.se/wp-content/uploads/2022/08/screenshot-20220804-081829-cominstagramandroid-edit-146239130438622-150x150.jpg",
-        "thumbnailUrl": "https://www.alskadetraditioner.se/wp-content/uploads/2022/08/screenshot-20220804-081829-cominstagramandroid-edit-146239130438622-150x150.jpg",
-        "caption": "Älskade traditioner (www.alskadetraditioner.se)",
-        "credit": "Official Website (www.alskadetraditioner.se)",
-        "width": null,
-        "height": null
-      },
       {
         "id": "photo-1144218372-2",
         "placeId": 1144218372,
@@ -10601,18 +10461,6 @@
         "thumbnailUrl": "https://usercontent.one/wp/www.antukitchen.se/wp-content/uploads/2024/11/Peruansk-Tapas-i-Stockholm-scaled.webp?media=1756473223",
         "caption": "Antu Kitchen (Officiell bild)",
         "credit": "Official Website (www.antukitchen.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "1175395521": [
-      {
-        "id": "photo-1175395521-1",
-        "placeId": 1175395521,
-        "url": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/294405399_481872093939182_4853806844143874836_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx960x960&amp;ctp=s720x720&amp;_nc_cat=111&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=LrvaklAL_nUQ7kNvwEnkzFS&amp;_nc_oc=AdomSipFoHAiyw4vvYH4MrpCje3yHmlNlspLhWLEutDriUM7jsXZBgphIe3KyrBWbMY&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=z_inv57qFJQwvhcm0y3H1g&amp;_nc_ss=7b20f&amp;oh=00_AQJsu_lxwLhDerhA98iCwEEoSv5Ok897W6IUWOXnkt3OKQ&amp;oe=6AA46D84",
-        "thumbnailUrl": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/294405399_481872093939182_4853806844143874836_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx960x960&amp;ctp=s720x720&amp;_nc_cat=111&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=LrvaklAL_nUQ7kNvwEnkzFS&amp;_nc_oc=AdomSipFoHAiyw4vvYH4MrpCje3yHmlNlspLhWLEutDriUM7jsXZBgphIe3KyrBWbMY&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=z_inv57qFJQwvhcm0y3H1g&amp;_nc_ss=7b20f&amp;oh=00_AQJsu_lxwLhDerhA98iCwEEoSv5Ok897W6IUWOXnkt3OKQ&amp;oe=6AA46D84",
-        "caption": "Enskedeparkens bageri (Officiell bild)",
-        "credit": "Official Website (sv-se.facebook.com)",
         "width": null,
         "height": null
       }
@@ -10929,16 +10777,6 @@
         "placeId": 1216732120,
         "url": "https://www.texaslonghorn.se/wp-content/uploads/2020/11/texas-s.png",
         "thumbnailUrl": "https://www.texaslonghorn.se/wp-content/uploads/2020/11/texas-s.png",
-        "caption": "Texas Longhorn (www.texaslonghorn.se)",
-        "credit": "Official Website (www.texaslonghorn.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-1216732120-3",
-        "placeId": 1216732120,
-        "url": "https://www.texaslonghorn.se/wp-content/uploads/sb-instagram-feed-images/746503322_18610680010035008_6671563960952625014_nfull.webp",
-        "thumbnailUrl": "https://www.texaslonghorn.se/wp-content/uploads/sb-instagram-feed-images/746503322_18610680010035008_6671563960952625014_nfull.webp",
         "caption": "Texas Longhorn (www.texaslonghorn.se)",
         "credit": "Official Website (www.texaslonghorn.se)",
         "width": null,
@@ -11883,16 +11721,6 @@
     ],
     "1292966744": [
       {
-        "id": "photo-1292966744-1",
-        "placeId": 1292966744,
-        "url": "http://www.bunmeatbun.se/wp-content/uploads/sb-instagram-feed-images/bunmeatbun.webp",
-        "thumbnailUrl": "http://www.bunmeatbun.se/wp-content/uploads/sb-instagram-feed-images/bunmeatbun.webp",
-        "caption": "Bun Meat Bun (www.bunmeatbun.se)",
-        "credit": "Official Website (www.bunmeatbun.se)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-1292966744-3",
         "placeId": 1292966744,
         "url": "http://www.bunmeatbun.se/wp-content/themes/bmb/images/footer-photo.jpg",
@@ -12521,16 +12349,6 @@
         "placeId": 1353816060,
         "url": "https://cdn42.gastrogate.com//templates/template1/img/facebook_circle.png",
         "thumbnailUrl": "https://cdn42.gastrogate.com//templates/template1/img/facebook_circle.png",
-        "caption": "Asahi Fondue & Grill (www.asahifondue.se)",
-        "credit": "Official Website (www.asahifondue.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-1353816060-2",
-        "placeId": 1353816060,
-        "url": "https://cdn42.gastrogate.com//templates/template1/img/instagram_circle.png",
-        "thumbnailUrl": "https://cdn42.gastrogate.com//templates/template1/img/instagram_circle.png",
         "caption": "Asahi Fondue & Grill (www.asahifondue.se)",
         "credit": "Official Website (www.asahifondue.se)",
         "width": null,
@@ -14289,18 +14107,6 @@
         "height": null
       }
     ],
-    "1543074770": [
-      {
-        "id": "photo-1543074770-1",
-        "placeId": 1543074770,
-        "url": "https://scontent.cdninstagram.com/v/t51.2885-19/441438418_792340912848307_8261403175596404179_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=106&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=rJrDDKORCbwQ7kNvwE_x-Gs&amp;_nc_oc=AdpFwxajGOpCek1f6W3PMlg585MtCgC_Guk_Q032jYY1wqLpv6wb6xnONvQ3aQoZVZ0&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQIyrLJbtIvltdNX1JNonBF2yAeSLi6c8MA_ELGCHazdKA&amp;oe=6AA461B6",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.2885-19/441438418_792340912848307_8261403175596404179_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=106&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=rJrDDKORCbwQ7kNvwE_x-Gs&amp;_nc_oc=AdpFwxajGOpCek1f6W3PMlg585MtCgC_Guk_Q032jYY1wqLpv6wb6xnONvQ3aQoZVZ0&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQIyrLJbtIvltdNX1JNonBF2yAeSLi6c8MA_ELGCHazdKA&amp;oe=6AA461B6",
-        "caption": "Parklådan (Officiell bild)",
-        "credit": "Official Website (instagram.com)",
-        "width": null,
-        "height": null
-      }
-    ],
     "1545209059": [
       {
         "id": "photo-1545209059-1",
@@ -14351,18 +14157,6 @@
         "thumbnailUrl": "http://bapuji.se/assets/img/dish-1.jpeg",
         "caption": "Bapuji (bapuji.se)",
         "credit": "Official Website (bapuji.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "1557333103": [
-      {
-        "id": "photo-1557333103-1",
-        "placeId": 1557333103,
-        "url": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/381070137_651282907107366_5567089519251982679_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx640x640&amp;ctp=s640x640&amp;_nc_cat=100&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=Gu1QsPO0-hcQ7kNvwFzCBKx&amp;_nc_oc=AdoAyAbAbOY7xcsPvZh7luNAayFPMmAtF5muxC71ZBVbtCK9VBHWY7URWvy-MIPog8k&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=nFSybnPC8_PEziucIzdNeA&amp;_nc_ss=7b20f&amp;oh=00_AQKNK8-BlLngoHmRXIllFJAQkfMf4cgcX1hLu2qTC4mmgQ&amp;oe=6AA477A3",
-        "thumbnailUrl": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/381070137_651282907107366_5567089519251982679_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx640x640&amp;ctp=s640x640&amp;_nc_cat=100&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=Gu1QsPO0-hcQ7kNvwFzCBKx&amp;_nc_oc=AdoAyAbAbOY7xcsPvZh7luNAayFPMmAtF5muxC71ZBVbtCK9VBHWY7URWvy-MIPog8k&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=nFSybnPC8_PEziucIzdNeA&amp;_nc_ss=7b20f&amp;oh=00_AQKNK8-BlLngoHmRXIllFJAQkfMf4cgcX1hLu2qTC4mmgQ&amp;oe=6AA477A3",
-        "caption": "Sawadee Asian & Bar (Officiell bild)",
-        "credit": "Official Website (www.facebook.com)",
         "width": null,
         "height": null
       }
@@ -15621,28 +15415,6 @@
         "height": null
       }
     ],
-    "1713025742": [
-      {
-        "id": "photo-1713025742-1",
-        "placeId": 1713025742,
-        "url": "http://palomateacompany.com/cdn/shop/files/v1-PALOMA-portrait-posts-instagram-1600x200021_grande.jpg?v=1614252878",
-        "thumbnailUrl": "http://palomateacompany.com/cdn/shop/files/v1-PALOMA-portrait-posts-instagram-1600x200021_grande.jpg?v=1614252878",
-        "caption": "Paloma (Officiell bild)",
-        "credit": "Official Website (palomateacompany.com)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-1713025742-2",
-        "placeId": 1713025742,
-        "url": "https://palomateacompany.com/cdn/shop/files/v1-PALOMA-portrait-posts-instagram-1600x200021_600x600_crop_center.jpg?v=1614252878",
-        "thumbnailUrl": "https://palomateacompany.com/cdn/shop/files/v1-PALOMA-portrait-posts-instagram-1600x200021_600x600_crop_center.jpg?v=1614252878",
-        "caption": "Paloma (Officiell bild)",
-        "credit": "Official Website (palomateacompany.com)",
-        "width": null,
-        "height": null
-      }
-    ],
     "1715330950": [
       {
         "id": "photo-1715330950-1",
@@ -15747,16 +15519,6 @@
         "placeId": 1720479751,
         "url": "https://www.texaslonghorn.se/wp-content/uploads/2020/11/texas-s.png",
         "thumbnailUrl": "https://www.texaslonghorn.se/wp-content/uploads/2020/11/texas-s.png",
-        "caption": "Texas Longhorn (www.texaslonghorn.se)",
-        "credit": "Official Website (www.texaslonghorn.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-1720479751-3",
-        "placeId": 1720479751,
-        "url": "https://www.texaslonghorn.se/wp-content/uploads/sb-instagram-feed-images/746503322_18610680010035008_6671563960952625014_nfull.webp",
-        "thumbnailUrl": "https://www.texaslonghorn.se/wp-content/uploads/sb-instagram-feed-images/746503322_18610680010035008_6671563960952625014_nfull.webp",
         "caption": "Texas Longhorn (www.texaslonghorn.se)",
         "credit": "Official Website (www.texaslonghorn.se)",
         "width": null,
@@ -16009,18 +15771,6 @@
         "thumbnailUrl": "https://www.baras.se/wp-content/uploads/2021/11/Vasteras-1.jpg",
         "caption": "Bara Enkelt (baras.se)",
         "credit": "Official Website (baras.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "1746669667": [
-      {
-        "id": "photo-1746669667-1",
-        "placeId": 1746669667,
-        "url": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/311857643_528860632583198_3384333459464856330_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx2937x1426&amp;ctp=p720x720&amp;_nc_cat=105&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=3SLv3z-Bhc4Q7kNvwF1sILH&amp;_nc_oc=Adpa4UakQPOEGGGWSJYQOHZLphEDwmGKVpoVsHTN-q_dtnLu_d9LubpFAmlZmqUM5Iw&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=wtwaolGvcBWW7lf5AM6kYA&amp;_nc_ss=7b20f&amp;oh=00_AQIY8sD_W8Q1mqwSifmfvXl9DXEAqfgt-PeSlyO9zIyQkg&amp;oe=6AA47A79",
-        "thumbnailUrl": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/311857643_528860632583198_3384333459464856330_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx2937x1426&amp;ctp=p720x720&amp;_nc_cat=105&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=3SLv3z-Bhc4Q7kNvwF1sILH&amp;_nc_oc=Adpa4UakQPOEGGGWSJYQOHZLphEDwmGKVpoVsHTN-q_dtnLu_d9LubpFAmlZmqUM5Iw&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=wtwaolGvcBWW7lf5AM6kYA&amp;_nc_ss=7b20f&amp;oh=00_AQIY8sD_W8Q1mqwSifmfvXl9DXEAqfgt-PeSlyO9zIyQkg&amp;oe=6AA47A79",
-        "caption": "Daniels Burger & Grill (Officiell bild)",
-        "credit": "Official Website (www.facebook.com)",
         "width": null,
         "height": null
       }
@@ -16405,18 +16155,6 @@
         "thumbnailUrl": "https://v2cdn0.centralappstatic.com/image/resize/1827x1373_cover_c04290f427d14880a271e82e8cc5c2c2.webp?w=1200",
         "caption": "Kamuchas (Officiell bild)",
         "credit": "Official Website (kamuchas.com)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "1789531485": [
-      {
-        "id": "photo-1789531485-1",
-        "placeId": 1789531485,
-        "url": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/308504539_481087764036164_2518790719542831266_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx737x737&amp;ctp=s720x720&amp;_nc_cat=108&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=FzpTQFvY2AYQ7kNvwHjaUbc&amp;_nc_oc=AdqwKcH3XEbzqverpcJ21kU53AAHo1Omx58dOgiZALDQ3qQOozawJG9K48gbDBeEQ9E&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=XJAZT_737gJiPv860Z31dg&amp;_nc_ss=7b20f&amp;oh=00_AQKEVXNuZFnGS6gxshFSC4TyyqEkbxKmMBx4eBeDQHwtbQ&amp;oe=6AA479D2",
-        "thumbnailUrl": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/308504539_481087764036164_2518790719542831266_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx737x737&amp;ctp=s720x720&amp;_nc_cat=108&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=FzpTQFvY2AYQ7kNvwHjaUbc&amp;_nc_oc=AdqwKcH3XEbzqverpcJ21kU53AAHo1Omx58dOgiZALDQ3qQOozawJG9K48gbDBeEQ9E&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=XJAZT_737gJiPv860Z31dg&amp;_nc_ss=7b20f&amp;oh=00_AQKEVXNuZFnGS6gxshFSC4TyyqEkbxKmMBx4eBeDQHwtbQ&amp;oe=6AA479D2",
-        "caption": "Dizin (Officiell bild)",
-        "credit": "Official Website (www.facebook.com)",
         "width": null,
         "height": null
       }
@@ -16885,18 +16623,6 @@
         "thumbnailUrl": "https://mglsushi.se/assets/images/mgl-menu-odenplan-800px.jpg",
         "caption": "MGL Sushi (mglsushi.se)",
         "credit": "Official Website (mglsushi.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "1853134240": [
-      {
-        "id": "photo-1853134240-1",
-        "placeId": 1853134240,
-        "url": "https://scontent.cdninstagram.com/v/t51.75761-19/491460608_17844901326467771_1983141835755318574_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=109&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=Yfkiv0HHjHMQ7kNvwHA5Jfg&amp;_nc_oc=AdpEm-2yDoYZNcuC40v-cGfguLtudRi74pC97XjnRUSGBrnLTq_ZqwVcWj3c05-XPIs&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_gid=KLvOaafojmsEpzBlMjNpNA&amp;_nc_ss=7b60f&amp;oh=00_AQLgVD7yZrTMYbi5UZd5HDzOnN0_zpmv2luVHQ5Itq-8TA&amp;oe=6AA492BF",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.75761-19/491460608_17844901326467771_1983141835755318574_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=109&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=Yfkiv0HHjHMQ7kNvwHA5Jfg&amp;_nc_oc=AdpEm-2yDoYZNcuC40v-cGfguLtudRi74pC97XjnRUSGBrnLTq_ZqwVcWj3c05-XPIs&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_gid=KLvOaafojmsEpzBlMjNpNA&amp;_nc_ss=7b60f&amp;oh=00_AQLgVD7yZrTMYbi5UZd5HDzOnN0_zpmv2luVHQ5Itq-8TA&amp;oe=6AA492BF",
-        "caption": "Nabo Pontonen (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
         "width": null,
         "height": null
       }
@@ -17789,18 +17515,6 @@
         "height": null
       }
     ],
-    "1949453154": [
-      {
-        "id": "photo-1949453154-1",
-        "placeId": 1949453154,
-        "url": "https://scontent.cdninstagram.com/v/t51.2885-19/275874933_1345198345981924_8193777047067589160_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=106&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy41MDEuQzMifQ%3D%3D&amp;_nc_ohc=PodielIozmcQ7kNvwHRG6U_&amp;_nc_oc=AdpnbxvUQHcV_9hJf_0a54od_XV-iOzIPLMmO5a5kkr7RrQ9LalQhx59bA7s3CgfoX0&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQIIrVXuGPXg7z1atUsNz_vUgSU9s7JebbEyeeCOGJHNWg&amp;oe=6AA497C3",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.2885-19/275874933_1345198345981924_8193777047067589160_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=106&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy41MDEuQzMifQ%3D%3D&amp;_nc_ohc=PodielIozmcQ7kNvwHRG6U_&amp;_nc_oc=AdpnbxvUQHcV_9hJf_0a54od_XV-iOzIPLMmO5a5kkr7RrQ9LalQhx59bA7s3CgfoX0&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQIIrVXuGPXg7z1atUsNz_vUgSU9s7JebbEyeeCOGJHNWg&amp;oe=6AA497C3",
-        "caption": "Le Grand (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
-        "width": null,
-        "height": null
-      }
-    ],
     "1953440894": [
       {
         "id": "photo-1953440894-1",
@@ -17875,16 +17589,6 @@
         "placeId": 1975849613,
         "url": "https://static.wixstatic.com/media/23fd2a2be53141ed810f4d3dcdcd01fa.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Facebook.png",
         "thumbnailUrl": "https://static.wixstatic.com/media/23fd2a2be53141ed810f4d3dcdcd01fa.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Facebook.png",
-        "caption": "Mom's Kitchen (www.momskitchen.se)",
-        "credit": "Official Website (www.momskitchen.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-1975849613-2",
-        "placeId": 1975849613,
-        "url": "https://static.wixstatic.com/media/81af6121f84c41a5b4391d7d37fce12a.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Instagram.png",
-        "thumbnailUrl": "https://static.wixstatic.com/media/81af6121f84c41a5b4391d7d37fce12a.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Instagram.png",
         "caption": "Mom's Kitchen (www.momskitchen.se)",
         "credit": "Official Website (www.momskitchen.se)",
         "width": null,
@@ -18077,16 +17781,6 @@
         "height": null
       },
       {
-        "id": "photo-1995368822-2",
-        "placeId": 1995368822,
-        "url": "https://static.wixstatic.com/media/81af6121f84c41a5b4391d7d37fce12a.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Instagram.png",
-        "thumbnailUrl": "https://static.wixstatic.com/media/81af6121f84c41a5b4391d7d37fce12a.png/v1/fill/w_20,h_20,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Instagram.png",
-        "caption": "Casa Morelli, Italienaren i Gubbängen (www.italienarenigubbangen.se)",
-        "credit": "Official Website (www.italienarenigubbangen.se)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-1995368822-3",
         "placeId": 1995368822,
         "url": "https://static.wixstatic.com/media/152ec6_4343f5e3783f4820ac62835c1933ee01~mv2.jpg/v1/fill/w_280,h_149,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/152ec6_4343f5e3783f4820ac62835c1933ee01~mv2.jpg",
@@ -18179,18 +17873,6 @@
         "thumbnailUrl": "https://axelsgrill.se/wp-content/uploads/2016/02/slider-3-3.jpg",
         "caption": "Axel's Grill (axelsgrill.se)",
         "credit": "Official Website (axelsgrill.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "2009203695": [
-      {
-        "id": "photo-2009203695-1",
-        "placeId": 2009203695,
-        "url": "https://scontent.cdninstagram.com/v/t51.2885-19/67812531_399845927338969_9140546826661789696_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=100&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy41MDAuQzMifQ%3D%3D&amp;_nc_ohc=UHSw1MhpcA4Q7kNvwEM1qyv&amp;_nc_oc=Adqajb4nfeaO2BP937vrmggoGouA0i_tdSPgQRjgeQxfSW2AQzBzi3azEd6IAT6oRNo&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQJQttF5kkAp_94ln-epuAqMje1AcBWtsc8EjviCSFez2w&amp;oe=6AA49352",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.2885-19/67812531_399845927338969_9140546826661789696_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=100&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy41MDAuQzMifQ%3D%3D&amp;_nc_ohc=UHSw1MhpcA4Q7kNvwEM1qyv&amp;_nc_oc=Adqajb4nfeaO2BP937vrmggoGouA0i_tdSPgQRjgeQxfSW2AQzBzi3azEd6IAT6oRNo&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQJQttF5kkAp_94ln-epuAqMje1AcBWtsc8EjviCSFez2w&amp;oe=6AA49352",
-        "caption": "ONE MORE Vietnamesisk Smak (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
         "width": null,
         "height": null
       }
@@ -19725,16 +19407,6 @@
         "credit": "Official Website (www.bagarnhornstull.se)",
         "width": null,
         "height": null
-      },
-      {
-        "id": "photo-2224566079-3",
-        "placeId": 2224566079,
-        "url": "https://static.parastorage.com/services/instagram-blocks-app/1.462.0/assets/templates/New-IG/01.webp",
-        "thumbnailUrl": "https://static.parastorage.com/services/instagram-blocks-app/1.462.0/assets/templates/New-IG/01.webp",
-        "caption": "Bagar'n (www.bagarnhornstull.se)",
-        "credit": "Official Website (www.bagarnhornstull.se)",
-        "width": null,
-        "height": null
       }
     ],
     "2226709000": [
@@ -21009,16 +20681,6 @@
         "credit": "Official Website (djurgardsbrunn.com)",
         "width": null,
         "height": null
-      },
-      {
-        "id": "photo-2402941603-2",
-        "placeId": 2402941603,
-        "url": "http://djurgardsbrunn.com/instagram.png",
-        "thumbnailUrl": "http://djurgardsbrunn.com/instagram.png",
-        "caption": "Djurgårdsbrunn (djurgardsbrunn.com)",
-        "credit": "Official Website (djurgardsbrunn.com)",
-        "width": null,
-        "height": null
       }
     ],
     "2403384984": [
@@ -21197,16 +20859,6 @@
         "placeId": 2414922599,
         "url": "https://www.texaslonghorn.se/wp-content/uploads/2020/11/texas-s.png",
         "thumbnailUrl": "https://www.texaslonghorn.se/wp-content/uploads/2020/11/texas-s.png",
-        "caption": "Texas Longhorn (www.texaslonghorn.se)",
-        "credit": "Official Website (www.texaslonghorn.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-2414922599-3",
-        "placeId": 2414922599,
-        "url": "https://www.texaslonghorn.se/wp-content/uploads/sb-instagram-feed-images/746503322_18610680010035008_6671563960952625014_nfull.webp",
-        "thumbnailUrl": "https://www.texaslonghorn.se/wp-content/uploads/sb-instagram-feed-images/746503322_18610680010035008_6671563960952625014_nfull.webp",
         "caption": "Texas Longhorn (www.texaslonghorn.se)",
         "credit": "Official Website (www.texaslonghorn.se)",
         "width": null,
@@ -21739,16 +21391,6 @@
     ],
     "2476779516": [
       {
-        "id": "photo-2476779516-1",
-        "placeId": 2476779516,
-        "url": "http://www.bunmeatbun.se/wp-content/uploads/sb-instagram-feed-images/bunmeatbun.webp",
-        "thumbnailUrl": "http://www.bunmeatbun.se/wp-content/uploads/sb-instagram-feed-images/bunmeatbun.webp",
-        "caption": "Bun Meat Bun (www.bunmeatbun.se)",
-        "credit": "Official Website (www.bunmeatbun.se)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-2476779516-3",
         "placeId": 2476779516,
         "url": "http://www.bunmeatbun.se/wp-content/themes/bmb/images/footer-photo.jpg",
@@ -21823,18 +21465,6 @@
         "thumbnailUrl": "http://brodsalt.se/cdn/shop/files/bnswide.png?v=1777032584",
         "caption": "Bröd & Salt (Officiell bild)",
         "credit": "Official Website (www.brodsalt.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "2493194502": [
-      {
-        "id": "photo-2493194502-1",
-        "placeId": 2493194502,
-        "url": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/305472768_503919345072615_7213026691103350479_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx1536x2048&amp;ctp=s960x960&amp;_nc_cat=107&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=ybf8LmyJjpMQ7kNvwHipFId&amp;_nc_oc=AdrJ6PRR64VGYSaxvrfiFTI_-fx6VrlBOmfPGYDim3z8SGKHdb8-8BbIq-q-ZGrMksE&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=JWiNNs79ZEpkWedC_NpbkA&amp;_nc_ss=7b20f&amp;oh=00_AQI2k6O6VDpJ5-2HOv3lWxJgfAyk-MvtWqjnIaOVBg4iRg&amp;oe=6AA4879A",
-        "thumbnailUrl": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/305472768_503919345072615_7213026691103350479_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx1536x2048&amp;ctp=s960x960&amp;_nc_cat=107&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=ybf8LmyJjpMQ7kNvwHipFId&amp;_nc_oc=AdrJ6PRR64VGYSaxvrfiFTI_-fx6VrlBOmfPGYDim3z8SGKHdb8-8BbIq-q-ZGrMksE&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=JWiNNs79ZEpkWedC_NpbkA&amp;_nc_ss=7b20f&amp;oh=00_AQI2k6O6VDpJ5-2HOv3lWxJgfAyk-MvtWqjnIaOVBg4iRg&amp;oe=6AA4879A",
-        "caption": "Sushibar Satzuma (Officiell bild)",
-        "credit": "Official Website (www.facebook.com)",
         "width": null,
         "height": null
       }
@@ -22547,18 +22177,6 @@
         "height": null
       }
     ],
-    "2596082244": [
-      {
-        "id": "photo-2596082244-1",
-        "placeId": 2596082244,
-        "url": "https://scontent.cdninstagram.com/v/t51.2885-19/11267865_379972278867813_263606218_a.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=110&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xNTAuQzMifQ%3D%3D&amp;_nc_ohc=16LpKrlKSOgQ7kNvwF6Ppl7&amp;_nc_oc=AdobG1GDXfPtzp32G-JmoDT9C8k1hGIO_W4ldca9TjBVvbaBHzldXXnhMjRoL5NAH38&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQKirYeEBjFDVBfjlxuFa2zqD2vSOXC-NoX6_ImtsHai_g&amp;oe=6AA47124",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.2885-19/11267865_379972278867813_263606218_a.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=110&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xNTAuQzMifQ%3D%3D&amp;_nc_ohc=16LpKrlKSOgQ7kNvwF6Ppl7&amp;_nc_oc=AdobG1GDXfPtzp32G-JmoDT9C8k1hGIO_W4ldca9TjBVvbaBHzldXXnhMjRoL5NAH38&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQKirYeEBjFDVBfjlxuFa2zqD2vSOXC-NoX6_ImtsHai_g&amp;oe=6AA47124",
-        "caption": "A.B.Café (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
-        "width": null,
-        "height": null
-      }
-    ],
     "2605685747": [
       {
         "id": "photo-2605685747-1",
@@ -22599,18 +22217,6 @@
         "thumbnailUrl": "https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/1FYpgqYgXr6SzFnCzKew/media/67d2d48b22c81042cb223b98.png",
         "caption": "Southside Burgers (southsideburgers.se)",
         "credit": "Official Website (southsideburgers.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "2608947617": [
-      {
-        "id": "photo-2608947617-1",
-        "placeId": 2608947617,
-        "url": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/445014175_981108494022351_3063118756839022720_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx1440x1440&amp;ctp=s720x720&amp;_nc_cat=106&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=O0b9MzfgS1wQ7kNvwHLy2J0&amp;_nc_oc=AdqDhOh3A8nrb5Ea34UnhP3Ps4Vyl1uWgbed4B9vOKw3UgPOEr7eUD537BRw2rwlYXM&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=N7VhqbJIrhqTt8OUo4TU-w&amp;_nc_ss=7b20f&amp;oh=00_AQI8MO8bdrxkx3vLwOhcL8AIFmlBrq0LgcjrJ9so-YTE5A&amp;oe=6AA4686C",
-        "thumbnailUrl": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/445014175_981108494022351_3063118756839022720_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx1440x1440&amp;ctp=s720x720&amp;_nc_cat=106&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=O0b9MzfgS1wQ7kNvwHLy2J0&amp;_nc_oc=AdqDhOh3A8nrb5Ea34UnhP3Ps4Vyl1uWgbed4B9vOKw3UgPOEr7eUD537BRw2rwlYXM&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=N7VhqbJIrhqTt8OUo4TU-w&amp;_nc_ss=7b20f&amp;oh=00_AQI8MO8bdrxkx3vLwOhcL8AIFmlBrq0LgcjrJ9so-YTE5A&amp;oe=6AA4686C",
-        "caption": "Badcafét (Officiell bild)",
-        "credit": "Official Website (facebook.com)",
         "width": null,
         "height": null
       }
@@ -23399,18 +23005,6 @@
         "thumbnailUrl": "https://maninthemoon.se/wp-content/uploads/elementor/thumbs/IMG_3984-qk6kra73gh3awqm8d2fgou6lxhx5sjnxc6at5xwecg.webp",
         "caption": "Man in the Moon (maninthemoon.se)",
         "credit": "Official Website (maninthemoon.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "2676574974": [
-      {
-        "id": "photo-2676574974-1",
-        "placeId": 2676574974,
-        "url": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/298638958_565482275274171_4328216428532470561_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx812x556&amp;ctp=s812x556&amp;_nc_cat=100&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=aIpRdJGIoCcQ7kNvwGUQpMK&amp;_nc_oc=Adqx1MqAtMCOH3q35jfxjUFM3zQjdfTtGCAe9ZoCkBonCeLdcQDETQ8fn5eLKXZ_dH4&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=qJAQ9Iq7uO-aEIAuyR34Eg&amp;_nc_ss=7b20f&amp;oh=00_AQIe-qVvQj3Oo0DJMqnR0PDkHHGsRhS8-x4OVXQDoNli3Q&amp;oe=6AA47196",
-        "thumbnailUrl": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/298638958_565482275274171_4328216428532470561_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx812x556&amp;ctp=s812x556&amp;_nc_cat=100&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=aIpRdJGIoCcQ7kNvwGUQpMK&amp;_nc_oc=Adqx1MqAtMCOH3q35jfxjUFM3zQjdfTtGCAe9ZoCkBonCeLdcQDETQ8fn5eLKXZ_dH4&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=qJAQ9Iq7uO-aEIAuyR34Eg&amp;_nc_ss=7b20f&amp;oh=00_AQIe-qVvQj3Oo0DJMqnR0PDkHHGsRhS8-x4OVXQDoNli3Q&amp;oe=6AA47196",
-        "caption": "Robert E:S Choklad (Officiell bild)",
-        "credit": "Official Website (sv-se.facebook.com)",
         "width": null,
         "height": null
       }
@@ -24357,18 +23951,6 @@
         "height": null
       }
     ],
-    "2782062351": [
-      {
-        "id": "photo-2782062351-1",
-        "placeId": 2782062351,
-        "url": "https://scontent.cdninstagram.com/v/t51.2885-19/418024290_348128161516017_1735689263127692947_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=105&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy40ODAuQzMifQ%3D%3D&amp;_nc_ohc=U416vollORsQ7kNvwFHDFs9&amp;_nc_oc=AdoG6kR-ur0uqYLknbilEJnRoHGa5uaT1s58UVZLAIE4rTfYSDUSw60Q1i7cv86KCE4&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQLTsZSl9iwNJuei_78k17xJFp1BN2xtxghR-60jDjLSBQ&amp;oe=6AA47325",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.2885-19/418024290_348128161516017_1735689263127692947_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=105&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy40ODAuQzMifQ%3D%3D&amp;_nc_ohc=U416vollORsQ7kNvwFHDFs9&amp;_nc_oc=AdoG6kR-ur0uqYLknbilEJnRoHGa5uaT1s58UVZLAIE4rTfYSDUSw60Q1i7cv86KCE4&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQLTsZSl9iwNJuei_78k17xJFp1BN2xtxghR-60jDjLSBQ&amp;oe=6AA47325",
-        "caption": "Sospeso Stockholm (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
-        "width": null,
-        "height": null
-      }
-    ],
     "2782595390": [
       {
         "id": "photo-2782595390-1",
@@ -24987,18 +24569,6 @@
         "height": null
       }
     ],
-    "2849443552": [
-      {
-        "id": "photo-2849443552-1",
-        "placeId": 2849443552,
-        "url": "https://scontent.cdninstagram.com/v/t51.2885-19/275345399_446597463920922_7347843282065843242_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=110&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=AQ9sUlYNoiUQ7kNvwGcfUfm&amp;_nc_oc=Adrwi7eWyMtdlSaxk9BN7UmtVofRoPxg6u9nKOF1YXf3-No7Q14OG9S1SHkJPZJRWgA&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQILhDlMW2tO4Mgtu_IqpZ_IU38peVPpyuFRGURdv78WFA&amp;oe=6AA4912C",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.2885-19/275345399_446597463920922_7347843282065843242_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=110&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=AQ9sUlYNoiUQ7kNvwGcfUfm&amp;_nc_oc=Adrwi7eWyMtdlSaxk9BN7UmtVofRoPxg6u9nKOF1YXf3-No7Q14OG9S1SHkJPZJRWgA&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQILhDlMW2tO4Mgtu_IqpZ_IU38peVPpyuFRGURdv78WFA&amp;oe=6AA4912C",
-        "caption": "Posto (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
-        "width": null,
-        "height": null
-      }
-    ],
     "2850860072": [
       {
         "id": "photo-2850860072-1",
@@ -25078,16 +24648,6 @@
       }
     ],
     "2867023307": [
-      {
-        "id": "photo-2867023307-1",
-        "placeId": 2867023307,
-        "url": "https://wedholmsfisk.se/wp-content/uploads/sb-instagram-feed-images/wedholmsfisk.webp",
-        "thumbnailUrl": "https://wedholmsfisk.se/wp-content/uploads/sb-instagram-feed-images/wedholmsfisk.webp",
-        "caption": "Wedholms fisk (Officiell bild)",
-        "credit": "Official Website (wedholmsfisk.se)",
-        "width": null,
-        "height": null
-      },
       {
         "id": "photo-2867023307-3",
         "placeId": 2867023307,
@@ -25183,18 +24743,6 @@
         "thumbnailUrl": "https://psmatsal.com/wp-content/uploads/2022/07/vin-mat-topp-1024x684.jpg",
         "caption": "Vinfoajén (psmatsal.com)",
         "credit": "Official Website (psmatsal.com)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "2874948478": [
-      {
-        "id": "photo-2874948478-1",
-        "placeId": 2874948478,
-        "url": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/556181679_1410480114415256_7411586518815622994_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx1008x1012&amp;ctp=s720x720&amp;_nc_cat=111&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=E2sRQR7jAwUQ7kNvwHfKRPR&amp;_nc_oc=AdrHDBD5IsZ_xZ4LtKt0edRo6hujOCnN4hDOaZ0xQT6GSgWJEBTUoDLwSxS3f9c7Sjo&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=CnmCQVrRDG0Oe63n5LPuJw&amp;_nc_ss=7b20f&amp;oh=00_AQLNqt-wYhnqOgMibcnLjahRC57oZDYYsFJaOu-qCNxvig&amp;oe=6AA48385",
-        "thumbnailUrl": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/556181679_1410480114415256_7411586518815622994_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx1008x1012&amp;ctp=s720x720&amp;_nc_cat=111&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=E2sRQR7jAwUQ7kNvwHfKRPR&amp;_nc_oc=AdrHDBD5IsZ_xZ4LtKt0edRo6hujOCnN4hDOaZ0xQT6GSgWJEBTUoDLwSxS3f9c7Sjo&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=CnmCQVrRDG0Oe63n5LPuJw&amp;_nc_ss=7b20f&amp;oh=00_AQLNqt-wYhnqOgMibcnLjahRC57oZDYYsFJaOu-qCNxvig&amp;oe=6AA48385",
-        "caption": "Weindels Konditori (Officiell bild)",
-        "credit": "Official Website (www.facebook.com)",
         "width": null,
         "height": null
       }
@@ -26439,16 +25987,6 @@
         "credit": "Official Website (www.dalanisse.se)",
         "width": null,
         "height": null
-      },
-      {
-        "id": "photo-2981661028-3",
-        "placeId": 2981661028,
-        "url": "https://cdn42.gastrogate.com//templates/template1/img/instagram_circle.png",
-        "thumbnailUrl": "https://cdn42.gastrogate.com//templates/template1/img/instagram_circle.png",
-        "caption": "DalaNisse (www.dalanisse.se)",
-        "credit": "Official Website (www.dalanisse.se)",
-        "width": null,
-        "height": null
       }
     ],
     "2983055889": [
@@ -26979,18 +26517,6 @@
         "thumbnailUrl": "https://shanti.se/images/loggor/150-Soft-Corner.png",
         "caption": "Shanti - Touch of Bengal (shanti.se)",
         "credit": "Official Website (shanti.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "3055179723": [
-      {
-        "id": "photo-3055179723-1",
-        "placeId": 3055179723,
-        "url": "https://static.xx.fbcdn.net/rsrc.php/yN/r/Gjnonzr2XE5.webp",
-        "thumbnailUrl": "https://static.xx.fbcdn.net/rsrc.php/yN/r/Gjnonzr2XE5.webp",
-        "caption": "Matsu Sushi (m.facebook.com)",
-        "credit": "Official Website (m.facebook.com)",
         "width": null,
         "height": null
       }
@@ -27667,16 +27193,6 @@
         "credit": "Official Website (www.gladastinsen.se)",
         "width": null,
         "height": null
-      },
-      {
-        "id": "photo-3157782399-2",
-        "placeId": 3157782399,
-        "url": "https://cdn42.gastrogate.com//templates/template1/img/instagram_circle.png",
-        "thumbnailUrl": "https://cdn42.gastrogate.com//templates/template1/img/instagram_circle.png",
-        "caption": "Glada Stinsen (www.gladastinsen.se)",
-        "credit": "Official Website (www.gladastinsen.se)",
-        "width": null,
-        "height": null
       }
     ],
     "3159655931": [
@@ -28339,18 +27855,6 @@
         "thumbnailUrl": "https://cdn.prod.website-files.com/646336cad0288c711843fd48/691d9abc72d7cc7d69df37ba_logga%20orange%20utan%20bakgrund.png",
         "caption": "Sue Ellen (sue-ellen.se)",
         "credit": "Official Website (sue-ellen.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "3229102684": [
-      {
-        "id": "photo-3229102684-1",
-        "placeId": 3229102684,
-        "url": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/280232259_304121081910403_7352555658674881624_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx800x561&amp;ctp=s800x561&amp;_nc_cat=105&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=GBuRuGst28UQ7kNvwHr-mrK&amp;_nc_oc=AdrrShjWh8zOUhdiqTSAOgmm2CPsWI0eqdKTLIF07Clu2atA3gsCMTOx7TdNWd8H0kE&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=1WeZljuNOhKFLUaYt2o7xA&amp;_nc_ss=7b20f&amp;oh=00_AQL6sys668aESf97uTTxkyUb6FDs3GhtbGESb-swqfHymw&amp;oe=6AA49672",
-        "thumbnailUrl": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/280232259_304121081910403_7352555658674881624_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx800x561&amp;ctp=s800x561&amp;_nc_cat=105&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=GBuRuGst28UQ7kNvwHr-mrK&amp;_nc_oc=AdrrShjWh8zOUhdiqTSAOgmm2CPsWI0eqdKTLIF07Clu2atA3gsCMTOx7TdNWd8H0kE&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=1WeZljuNOhKFLUaYt2o7xA&amp;_nc_ss=7b20f&amp;oh=00_AQL6sys668aESf97uTTxkyUb6FDs3GhtbGESb-swqfHymw&amp;oe=6AA49672",
-        "caption": "Mariedals trädgårdscafé (Officiell bild)",
-        "credit": "Official Website (www.facebook.com)",
         "width": null,
         "height": null
       }
@@ -31135,18 +30639,6 @@
         "height": null
       }
     ],
-    "3566273436": [
-      {
-        "id": "photo-3566273436-1",
-        "placeId": 3566273436,
-        "url": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/223806384_183491513760442_4665417979244781264_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx1385x1385&amp;ctp=s720x720&amp;_nc_cat=101&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=svTrv2tJnUkQ7kNvwHpuUKo&amp;_nc_oc=Ado_XP_qz10ZOHyZr0xgZ9cvlP5AYqZMQ_Gf20cTfLUQtp2bgImhlFYfFtLDjpWNR5E&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=Wi8nmEJNUuKnQBmjB9urxw&amp;_nc_ss=7b20f&amp;oh=00_AQJ3UBk_ZDLp8I7_GgAg3QVzF1W5XJh535ggQcjzoTiy3A&amp;oe=6AA48E00",
-        "thumbnailUrl": "https://scontent.fpoz4-1.fna.fbcdn.net/v/t39.30808-1/223806384_183491513760442_4665417979244781264_n.jpg?stp=dst-jpg_tt6&amp;cstp=mx1385x1385&amp;ctp=s720x720&amp;_nc_cat=101&amp;ccb=1-7&amp;_nc_sid=3ab345&amp;_nc_ohc=svTrv2tJnUkQ7kNvwHpuUKo&amp;_nc_oc=Ado_XP_qz10ZOHyZr0xgZ9cvlP5AYqZMQ_Gf20cTfLUQtp2bgImhlFYfFtLDjpWNR5E&amp;_nc_zt=24&amp;_nc_ht=scontent.fpoz4-1.fna&amp;_nc_gid=Wi8nmEJNUuKnQBmjB9urxw&amp;_nc_ss=7b20f&amp;oh=00_AQJ3UBk_ZDLp8I7_GgAg3QVzF1W5XJh535ggQcjzoTiy3A&amp;oe=6AA48E00",
-        "caption": "Rådhusbaren (Officiell bild)",
-        "credit": "Official Website (www.facebook.com)",
-        "width": null,
-        "height": null
-      }
-    ],
     "3569537381": [
       {
         "id": "photo-3569537381-1",
@@ -31947,18 +31439,6 @@
         "height": null
       }
     ],
-    "3644649514": [
-      {
-        "id": "photo-3644649514-1",
-        "placeId": 3644649514,
-        "url": "https://scontent.cdninstagram.com/v/t51.75761-19/500765004_18281296678255007_3134123884376015985_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=104&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=qXjZCz5LIn0Q7kNvwEV05Db&amp;_nc_oc=Ado9BGhw1FYKjtoryxSjL2a5wLyZS04LJFXYK07ij4g1lt3kszHpjKVAGcOgmxDuCtE&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_gid=sNruSYkKcchL55uwYFXPFw&amp;_nc_ss=7b60f&amp;oh=00_AQIVm5BQJAKo43UEulaliK-x2Zczr948lCYlyYwyIQvDcg&amp;oe=6AA49843",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.75761-19/500765004_18281296678255007_3134123884376015985_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=104&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=qXjZCz5LIn0Q7kNvwEV05Db&amp;_nc_oc=Ado9BGhw1FYKjtoryxSjL2a5wLyZS04LJFXYK07ij4g1lt3kszHpjKVAGcOgmxDuCtE&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_gid=sNruSYkKcchL55uwYFXPFw&amp;_nc_ss=7b60f&amp;oh=00_AQIVm5BQJAKo43UEulaliK-x2Zczr948lCYlyYwyIQvDcg&amp;oe=6AA49843",
-        "caption": "Sjöcafé Lövstabadet (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
-        "width": null,
-        "height": null
-      }
-    ],
     "3645083256": [
       {
         "id": "photo-3645083256-1",
@@ -32133,16 +31613,6 @@
     ],
     "3661849954": [
       {
-        "id": "photo-3661849954-1",
-        "placeId": 3661849954,
-        "url": "https://www.facebook.com/plugins/like.php?appId=140657239330701&amp;href=https%3A%2F%2Fwww.bunbohue.se%2F&amp;ref=&amp;width=358&amp;show_faces=1&amp;layout=box_count&amp;action=like&amp;colorscheme=light&amp;locale=en_US",
-        "thumbnailUrl": "https://www.facebook.com/plugins/like.php?appId=140657239330701&amp;href=https%3A%2F%2Fwww.bunbohue.se%2F&amp;ref=&amp;width=358&amp;show_faces=1&amp;layout=box_count&amp;action=like&amp;colorscheme=light&amp;locale=en_US",
-        "caption": "Bún Bò Huê (Officiell bild)",
-        "credit": "Official Website (www.bunbohue.se)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-3661849954-2",
         "placeId": 3661849954,
         "url": "https://files.builder.misssite.com/96/3f/963f0bc8-5d0c-4d28-9bd8-c164aa158fbc.png",
@@ -32159,18 +31629,6 @@
         "thumbnailUrl": "https://files.builder.misssite.com/72/52/72522c4d-c3cc-4167-a6ff-fa96e986f066.jpg",
         "caption": "Bún Bò Huê (www.bunbohue.se)",
         "credit": "Official Website (www.bunbohue.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "3662449460": [
-      {
-        "id": "photo-3662449460-1",
-        "placeId": 3662449460,
-        "url": "https://scontent.cdninstagram.com/v/t51.2885-19/71766567_2541401586105265_7720817087429476352_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=109&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=omKLvDxY2HQQ7kNvwHLdShR&amp;_nc_oc=AdogmkkrCKCWOHdNvqg4OAz7ngzkfeuOIk_Yd4iy4acyV-2_QbLMNbqmmytzONVqDJ8&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQI_n4ZYUHe4HrR4VFR0ZU4veNW9m7yTlaZzCkQI5RddHw&amp;oe=6AA48E1E",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.2885-19/71766567_2541401586105265_7720817087429476352_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=109&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=omKLvDxY2HQQ7kNvwHLdShR&amp;_nc_oc=AdogmkkrCKCWOHdNvqg4OAz7ngzkfeuOIk_Yd4iy4acyV-2_QbLMNbqmmytzONVqDJ8&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQI_n4ZYUHe4HrR4VFR0ZU4veNW9m7yTlaZzCkQI5RddHw&amp;oe=6AA48E1E",
-        "caption": "Thelins Grand Café (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
         "width": null,
         "height": null
       }
@@ -34471,18 +33929,6 @@
         "height": null
       }
     ],
-    "3893004592": [
-      {
-        "id": "photo-3893004592-1",
-        "placeId": 3893004592,
-        "url": "https://scontent.cdninstagram.com/v/t51.2885-19/228987258_600957661309989_4852712064677213676_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=108&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=L7R2Iui2kK4Q7kNvwGCvTfm&amp;_nc_oc=Adqb3wJUBTXSgbO-PtLHMJ1Nwsm4kXTxK6JM0Q284xwhCgGgbvSAUAWq3s-iUOpZhGA&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQJUL1_bQKfFESj1-iPsDyHaLEB89sKifGHXd2Z5oRDIgw&amp;oe=6AA4999A",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.2885-19/228987258_600957661309989_4852712064677213676_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=108&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=L7R2Iui2kK4Q7kNvwGCvTfm&amp;_nc_oc=Adqb3wJUBTXSgbO-PtLHMJ1Nwsm4kXTxK6JM0Q284xwhCgGgbvSAUAWq3s-iUOpZhGA&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQJUL1_bQKfFESj1-iPsDyHaLEB89sKifGHXd2Z5oRDIgw&amp;oe=6AA4999A",
-        "caption": "Slow Hands (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
-        "width": null,
-        "height": null
-      }
-    ],
     "3899939300": [
       {
         "id": "photo-3899939300-1",
@@ -34964,26 +34410,6 @@
       }
     ],
     "3972299470": [
-      {
-        "id": "photo-3972299470-1",
-        "placeId": 3972299470,
-        "url": "https://static.xx.fbcdn.net/images/emoji.php/v9/tec/1/16/1f334.png",
-        "thumbnailUrl": "https://static.xx.fbcdn.net/images/emoji.php/v9/tec/1/16/1f334.png",
-        "caption": "Paladar de Cuba (www.paladar.se)",
-        "credit": "Official Website (www.paladar.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-3972299470-2",
-        "placeId": 3972299470,
-        "url": "https://static.xx.fbcdn.net/images/emoji.php/v9/t6d/1/16/2600.png",
-        "thumbnailUrl": "https://static.xx.fbcdn.net/images/emoji.php/v9/t6d/1/16/2600.png",
-        "caption": "Paladar de Cuba (www.paladar.se)",
-        "credit": "Official Website (www.paladar.se)",
-        "width": null,
-        "height": null
-      },
       {
         "id": "photo-3972299470-3",
         "placeId": 3972299470,
@@ -36599,18 +36025,6 @@
         "height": null
       }
     ],
-    "4157664935": [
-      {
-        "id": "photo-4157664935-1",
-        "placeId": 4157664935,
-        "url": "https://scontent.cdninstagram.com/v/t51.2885-19/131850268_1307521836286687_449417626715045700_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=102&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy43MzYuQzMifQ%3D%3D&amp;_nc_ohc=HHiDeyT2bXgQ7kNvwFspVVD&amp;_nc_oc=AdqxZUN4vyUndTDbgiYhlv10kc_a7yLyT8d5iAHGl1yz6AQHHc0-fZbIMqFNRtNUpaM&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQIc1cJe5pc-KVoMOlWKrNIeglBnvofHQsMATZvFTejDmA&amp;oe=6AA47CF1",
-        "thumbnailUrl": "https://scontent.cdninstagram.com/v/t51.2885-19/131850268_1307521836286687_449417626715045700_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=102&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy43MzYuQzMifQ%3D%3D&amp;_nc_ohc=HHiDeyT2bXgQ7kNvwFspVVD&amp;_nc_oc=AdqxZUN4vyUndTDbgiYhlv10kc_a7yLyT8d5iAHGl1yz6AQHHc0-fZbIMqFNRtNUpaM&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7b60f&amp;oh=00_AQIc1cJe5pc-KVoMOlWKrNIeglBnvofHQsMATZvFTejDmA&amp;oe=6AA47CF1",
-        "caption": "Ferm (Officiell bild)",
-        "credit": "Official Website (www.instagram.com)",
-        "width": null,
-        "height": null
-      }
-    ],
     "4158251925": [
       {
         "id": "photo-4158251925-1",
@@ -37043,16 +36457,6 @@
         "placeId": 4218300996,
         "url": "https://caffeine--cravings.com/wp-content/uploads/2024/11/caffeine_cravings.jpg",
         "thumbnailUrl": "https://caffeine--cravings.com/wp-content/uploads/2024/11/caffeine_cravings.jpg",
-        "caption": "Caffeine & Cravings (caffeine--cravings.com)",
-        "credit": "Official Website (caffeine--cravings.com)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-4218300996-2",
-        "placeId": 4218300996,
-        "url": "https://caffeine--cravings.com/wp-content/uploads/sb-instagram-feed-images/caffeine_and_cravings.webp",
-        "thumbnailUrl": "https://caffeine--cravings.com/wp-content/uploads/sb-instagram-feed-images/caffeine_and_cravings.webp",
         "caption": "Caffeine & Cravings (caffeine--cravings.com)",
         "credit": "Official Website (caffeine--cravings.com)",
         "width": null,

@@ -30,6 +30,8 @@ export type PlaceContext = {
   note?: string;
 };
 
+const DUMMY_PLACE_IMAGE_URL = "/motkarta_drop_divided_black_red.svg";
+
 const reviewsCache = new Map<number, PlaceReview[]>();
 const photosCache = new Map<number, PlacePhoto[]>();
 
@@ -84,8 +86,29 @@ function isPlaceholderPhoto(photo: PlacePhoto): boolean {
   return fields.includes("placeholder");
 }
 
+function isSocialMediaPhoto(photo: PlacePhoto): boolean {
+  const fields = [photo.url, photo.thumbnailUrl, photo.caption, photo.credit].join(" ").toLowerCase();
+  return (
+    fields.includes("instagram") ||
+    fields.includes("cdninstagram") ||
+    fields.includes("fbcdn.net") ||
+    fields.includes("facebook.com")
+  );
+}
+
 function withoutDisallowedPhotos(photos: PlacePhoto[]): PlacePhoto[] {
-  return photos.filter((photo) => !isWikimediaPhoto(photo) && !isPlaceholderPhoto(photo));
+  return photos.filter((photo) => !isWikimediaPhoto(photo) && !isPlaceholderPhoto(photo) && !isSocialMediaPhoto(photo));
+}
+
+function placeholderPhoto(placeId: number, caption?: string): PlacePhoto {
+  return {
+    id: `placeholder-img-${placeId}-${Date.now()}`,
+    placeId,
+    url: DUMMY_PLACE_IMAGE_URL,
+    thumbnailUrl: DUMMY_PLACE_IMAGE_URL,
+    caption: caption || "MOTKARTA",
+    credit: "MOTKARTA",
+  };
 }
 
 async function loadStaticPhotosDataset(): Promise<Record<string, PlacePhoto[]>> {
@@ -243,11 +266,8 @@ export function addUserReview(placeId: number, review: Omit<PlaceReview, "id" | 
 }
 
 export function addUserPhoto(placeId: number, photo: Omit<PlacePhoto, "id" | "placeId">): PlacePhoto {
-  const newPhoto: PlacePhoto = {
-    ...photo,
-    placeId,
-    id: `user-img-${placeId}-${Date.now()}`,
-  };
+  const submittedPhoto: PlacePhoto = { ...photo, placeId, id: `user-img-${placeId}-${Date.now()}` };
+  const newPhoto = withoutDisallowedPhotos([submittedPhoto])[0] ?? placeholderPhoto(placeId, photo.caption);
 
   const existing = photosCache.get(placeId) || [];
   const updated = [newPhoto, ...existing];
@@ -278,6 +298,9 @@ export function loadUserStoredMedia() {
     const storedPhotos: PlacePhoto[] = JSON.parse(localStorage.getItem("motkarta_user_photos") || "[]");
     storedPhotos.forEach((ph) => {
       const current = photosCache.get(ph.placeId) || [];
+      if (!withoutDisallowedPhotos([ph]).length) {
+        return;
+      }
       if (!current.some((p) => p.id === ph.id)) {
         photosCache.set(ph.placeId, [ph, ...current]);
       }

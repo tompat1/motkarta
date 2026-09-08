@@ -4038,6 +4038,12 @@ footer {
   transform: none;
 }
 
+.photo-card img.photo-card-img-dummy {
+  object-fit: contain;
+  padding: 28px;
+  background: #ffffff;
+}
+
 .photo-card-dummy:hover img {
   transform: none;
 }
@@ -7234,6 +7240,12 @@ footer {
 }
 
 .place-detail-hero-photo-dummy {
+  object-fit: contain;
+  padding: 54px;
+  background: #ffffff;
+}
+
+.lightbox-img-dummy {
   object-fit: contain;
   padding: 54px;
   background: #ffffff;

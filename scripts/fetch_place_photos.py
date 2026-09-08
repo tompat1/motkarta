@@ -23,6 +23,24 @@ HEADERS = {
     "User-Agent": "MotkartaFoodMap/1.0 (Stockholm Independent Food Map; contact@motkarta.se)"
 }
 
+DISALLOWED_IMAGE_URL_PARTS = [
+    "cdninstagram",
+    "facebook.com",
+    "favicon",
+    "fbcdn.net",
+    "icon",
+    "instagram",
+    "placeholder",
+    "pixel",
+    "tracking",
+]
+
+
+def is_disallowed_image_url(url: str) -> bool:
+    normalized = url.lower()
+    return any(part in normalized for part in DISALLOWED_IMAGE_URL_PARTS)
+
+
 def scrape_place_website_photos(website_url: str, place_name: str, limit: int = 3) -> list[dict]:
     """Scrape real venue photos directly from the place's official website."""
     photos = []
@@ -45,7 +63,7 @@ def scrape_place_website_photos(website_url: str, place_name: str, limit: int = 
         seen_urls = set()
         for img_src in og_matches:
             full_url = urllib.parse.urljoin(website_url, img_src)
-            if full_url not in seen_urls and not any(x in full_url.lower() for x in ["favicon", "logo", "icon", "1x1", "pixel", "badge", "placeholder"]):
+            if full_url not in seen_urls and not is_disallowed_image_url(full_url):
                 seen_urls.add(full_url)
                 photos.append({
                     "url": full_url,
@@ -60,7 +78,7 @@ def scrape_place_website_photos(website_url: str, place_name: str, limit: int = 
         img_tags = re.findall(r'<img[^>]+src=["\']([^"\']+\.(?:jpg|jpeg|png|webp))["\']', html, re.I)
         for img_src in img_tags:
             full_url = urllib.parse.urljoin(website_url, img_src)
-            if full_url not in seen_urls and not any(x in full_url.lower() for x in ["favicon", "logo", "icon", "1x1", "pixel", "badge", "social", "avatar", "tracking", "placeholder"]):
+            if full_url not in seen_urls and not is_disallowed_image_url(full_url):
                 seen_urls.add(full_url)
                 photos.append({
                     "url": full_url,
@@ -88,7 +106,7 @@ def search_visit_stockholm_photos(place_name: str, limit: int = 2) -> list[dict]
             results = data.get("results", [])
             for r in results[:limit]:
                 img_url = r.get("image") or r.get("hero_image")
-                if img_url and not any(x in img_url.lower() for x in ["favicon", "logo", "icon", "placeholder"]):
+                if img_url and not is_disallowed_image_url(img_url):
                     photos.append({
                         "url": img_url,
                         "thumbnailUrl": img_url,

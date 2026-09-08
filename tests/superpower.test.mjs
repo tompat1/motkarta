@@ -107,6 +107,24 @@ test("addUserReview and addUserPhoto dynamically enrich place media", async () =
   assert.ok(photos.some((p) => p.caption.includes("Djurgården")));
 });
 
+test("addUserPhoto turns Instagram submissions into the Motkarta dummy image", async () => {
+  const newPhoto = addUserPhoto(202, {
+    url: "https://scontent.cdninstagram.com/v/t51.2885-19/example.jpg",
+    thumbnailUrl: "https://scontent.cdninstagram.com/v/t51.2885-19/example.jpg",
+    caption: "Instagram image",
+    credit: "Official Website (www.instagram.com)",
+  });
+
+  assert.equal(newPhoto.placeId, 202);
+  assert.equal(newPhoto.url, "/motkarta_drop_divided_black_red.svg");
+  assert.equal(newPhoto.thumbnailUrl, "/motkarta_drop_divided_black_red.svg");
+  assert.equal(newPhoto.credit, "MOTKARTA");
+
+  const photos = await fetchPlacePhotos({ ...mockPlaces[0], id: 202, name: "A.B.Café" });
+  assert.ok(photos.every((photo) => !photo.url.includes("instagram")));
+  assert.ok(photos.some((photo) => photo.url === "/motkarta_drop_divided_black_red.svg"));
+});
+
 test("duplicate place check matches existing names case-insensitively", () => {
   const existingName = "oaxen slip";
   const match = mockPlaces.find((p) => p.name.toLowerCase() === existingName.trim().toLowerCase());

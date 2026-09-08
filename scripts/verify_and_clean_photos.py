@@ -8,6 +8,7 @@ verify_and_clean_photos.py - Strict Verification & Cleanup for Place Photos
 4. Enforces strict venue-specific matching (only keeping images belonging to the actual place).
 5. Removes Wikimedia Commons images so published photos come from Google Place enrichment or official websites.
 6. Removes empty placeholder image assets so the app can show its branded dummy image instead.
+7. Removes Instagram/Facebook image URLs because their CDN links expire or render tiny social assets.
 """
 
 import json
@@ -45,6 +46,11 @@ def is_url_alive(url: str) -> bool:
 
     # Exclude empty placeholder image assets
     if is_placeholder_url(url):
+        validated_urls[url] = False
+        return False
+
+    # Exclude expiring social media CDN images
+    if is_social_media_url(url):
         validated_urls[url] = False
         return False
 
@@ -88,6 +94,26 @@ def is_placeholder_photo(photo: dict) -> bool:
     return "placeholder" in values
 
 
+def is_social_media_url(url: str) -> bool:
+    normalized = url.lower()
+    return (
+        "instagram" in normalized
+        or "cdninstagram" in normalized
+        or "fbcdn.net" in normalized
+        or "facebook.com" in normalized
+    )
+
+
+def is_social_media_photo(photo: dict) -> bool:
+    values = " ".join(str(photo.get(key, "")) for key in ("url", "thumbnailUrl", "caption", "credit")).lower()
+    return (
+        "instagram" in values
+        or "cdninstagram" in values
+        or "fbcdn.net" in values
+        or "facebook.com" in values
+    )
+
+
 def clean_place_photos():
     print("🧹 Starting Place Photo Verification & Cleanup...")
 
@@ -108,6 +134,7 @@ def clean_place_photos():
     total_removed_unsplash = 0
     total_removed_wikimedia = 0
     total_removed_placeholders = 0
+    total_removed_social = 0
     total_removed_duplicates = 0
     total_removed_broken = 0
 
@@ -123,7 +150,12 @@ def clean_place_photos():
     unique_urls = list({
         p["url"]
         for _, p in all_photo_items
-        if "images.unsplash.com" not in p["url"] and not is_wikimedia_photo(p) and not is_placeholder_photo(p)
+        if (
+            "images.unsplash.com" not in p["url"]
+            and not is_wikimedia_photo(p)
+            and not is_placeholder_photo(p)
+            and not is_social_media_photo(p)
+        )
     })
     print(f"🔍 Validating {len(unique_urls)} unique non-Unsplash/non-Wikimedia/non-placeholder URLs...")
 
@@ -159,6 +191,11 @@ def clean_place_photos():
                 total_removed_placeholders += 1
                 continue
 
+            # Rule 1d: Remove expiring social media CDN images
+            if is_social_media_photo(photo):
+                total_removed_social += 1
+                continue
+
             # Rule 2: Remove duplicates
             if url in seen_urls:
                 total_removed_duplicates += 1
@@ -190,6 +227,7 @@ def clean_place_photos():
     print(f"  - Generic Unsplash Removed: {total_removed_unsplash}")
     print(f"  - Wikimedia Commons Removed: {total_removed_wikimedia}")
     print(f"  - Empty Placeholders Removed: {total_removed_placeholders}")
+    print(f"  - Instagram/Facebook Media Removed: {total_removed_social}")
     print(f"  - Duplicates Removed: {total_removed_duplicates}")
     print(f"  - Broken Links Removed: {total_removed_broken}")
 

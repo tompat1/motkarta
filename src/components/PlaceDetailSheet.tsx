@@ -166,6 +166,10 @@ export function PlaceDetailSheet({
               alt={activePhoto?.caption || place.name}
               className={`place-detail-hero-photo ${!activePhoto ? "place-detail-hero-photo-dummy" : ""}`}
               loading="eager"
+              onError={(event) => {
+                event.currentTarget.src = DUMMY_PLACE_IMAGE_URL;
+                event.currentTarget.classList.add("place-detail-hero-photo-dummy");
+              }}
             />
             {photos.length > 1 ? (
               <div className="place-detail-photo-dots">
