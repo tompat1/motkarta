@@ -10,6 +10,7 @@ type Env = {
         first: <T>() => Promise<T | null>;
         run: () => Promise<unknown>;
       };
+      run: () => Promise<unknown>;
     };
   };
 };
@@ -31,6 +32,18 @@ function generateSyncCode(): string {
   return code;
 }
 
+async function ensureSyncTable(db: NonNullable<Env["DB"]>) {
+  try {
+    await db
+      .prepare(
+        "CREATE TABLE IF NOT EXISTS sync_codes (code TEXT PRIMARY KEY, saved_ids TEXT NOT NULL, updated_at TEXT NOT NULL)",
+      )
+      .run();
+  } catch {
+    // Ignore table exists or D1 lock error
+  }
+}
+
 export async function onRequestGet(context: EventContext<Env>) {
   try {
     const url = new URL(context.request.url);
@@ -47,6 +60,7 @@ export async function onRequestGet(context: EventContext<Env>) {
     const db = context.env.DB;
     if (db) {
       try {
+        await ensureSyncTable(db);
         const row = await db
           .prepare("SELECT saved_ids, updated_at FROM sync_codes WHERE code = ?")
           .bind(cleanCode)
@@ -95,6 +109,7 @@ export async function onRequestPost(context: EventContext<Env>) {
     const db = context.env.DB;
     if (db) {
       try {
+        await ensureSyncTable(db);
         await db
           .prepare(
             "INSERT INTO sync_codes (code, saved_ids, updated_at) VALUES (?, ?, ?) ON CONFLICT(code) DO UPDATE SET saved_ids=excluded.saved_ids, updated_at=excluded.updated_at",
