@@ -10,6 +10,8 @@ import {
   CaretDown,
   CaretUp,
   ArrowRight,
+  Question,
+  Star,
 } from "@phosphor-icons/react";
 
 interface OnboardingModalProps {
@@ -29,6 +31,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 }) => {
   // Panel 0 (Motström) and Panel 5 (Zero-Login QR Sync) expanded by default
   const [expandedIndices, setExpandedIndices] = useState<Set<number>>(new Set([0, 5]));
+  const [showHowItWorks, setShowHowItWorks] = useState<boolean>(true);
 
   if (!isOpen) return null;
 
@@ -109,14 +112,30 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
         ? "Synka dina sparade favoritställen sömlöst mellan alla dina enheter via QR-kod eller 6-ställig kod — helt utan konto eller e-post."
         : "Seamlessly sync your saved favorite places across all your devices using a QR code or 6-character code — zero login or email required.",
       icon: QrCode,
-      action: {
-        label: isSv ? "Visa QR-kod & Synka Enheter" : "Show QR Code & Sync Devices",
-        icon: QrCode,
-        onClick: () => {
-          onClose();
-          onOpenSyncModal?.();
+      stepsTitle: isSv ? "💡 Hur funkar det? (3 enkla steg)" : "💡 How does it work? (3 simple steps)",
+      steps: [
+        {
+          step: "1",
+          title: isSv ? "Spara dina favoritställen" : "Save your favorite places",
+          desc: isSv
+            ? "Tryck på stjärnknappen (★ Sparade) på dina favoritställen på kartan eller i listan."
+            : "Tap the star button (★ Saved) on your favorite places on the map or in the list.",
         },
-      },
+        {
+          step: "2",
+          title: isSv ? "Öppna 'Synka enheter'" : "Open 'Sync Devices'",
+          desc: isSv
+            ? "Klicka på 'Synka enheter' i snabbfiltret eller knappen nedan för din QR-kod."
+            : "Click 'Sync Devices' in the filter bar or the button below for your QR code.",
+        },
+        {
+          step: "3",
+          title: isSv ? "Skanna med mobilkameran" : "Scan with your phone camera",
+          desc: isSv
+            ? "Rikta mobilkameran mot QR-koden (eller knappa in koden) för direktsynkning helt utan konto."
+            : "Point your camera at the QR code (or type the code) for instant sync without an account.",
+        },
+      ],
     },
   ];
 
@@ -207,10 +226,56 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                 {isExpanded ? (
                   <div className="principle-card-body">
                     <p>{p.description}</p>
-                    {p.action ? (
+
+                    {isSync ? (
+                      <div className="sync-how-it-works-container" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          className="sync-how-it-works-toggle-btn"
+                          onClick={() => setShowHowItWorks((prev) => !prev)}
+                        >
+                          <Question size={15} weight="bold" />
+                          <span>{isSv ? "Hur funkar det?" : "How does it work?"}</span>
+                          {showHowItWorks ? <CaretUp size={13} weight="bold" /> : <CaretDown size={13} weight="bold" />}
+                        </button>
+
+                        {showHowItWorks && p.steps ? (
+                          <div className="sync-how-it-works-box">
+                            <span className="sync-how-it-works-title">{p.stepsTitle}</span>
+                            <div className="sync-steps-list">
+                              {p.steps.map((st) => (
+                                <div key={st.step} className="sync-step-item">
+                                  <span className="sync-step-badge">{st.step}</span>
+                                  <div className="sync-step-content">
+                                    <strong>{st.title}</strong>
+                                    <span>{st.desc}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {onOpenSyncModal ? (
+                              <button
+                                type="button"
+                                className="principle-action-btn sync-action-btn"
+                                style={{ marginTop: "8px", width: "100%", justifyContent: "center" }}
+                                onClick={() => {
+                                  onClose();
+                                  onOpenSyncModal();
+                                }}
+                              >
+                                <QrCode size={15} weight="bold" />
+                                <span>{isSv ? "Starta synk & visa QR-kod" : "Start sync & show QR code"}</span>
+                                <ArrowRight size={14} weight="bold" />
+                              </button>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : p.action ? (
                       <button
                         type="button"
-                        className={`principle-action-btn ${isSync ? "sync-action-btn" : ""}`}
+                        className="principle-action-btn"
                         onClick={(e) => {
                           e.stopPropagation();
                           p.action?.onClick();
