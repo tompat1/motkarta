@@ -79,7 +79,6 @@ import {
   CaretUp,
   CaretDown,
   CircleNotch,
-  Clock,
   Coffee,
   Compass,
   ForkKnife,
@@ -100,7 +99,6 @@ import {
   List,
   ListDashes,
   X,
-  Heart,
   PawPrint,
   DeviceMobile,
   QrCode,
@@ -113,7 +111,6 @@ import type { ConciergeResponse } from "../lib/concierge/contracts";
 import { CartDrawer } from "./components/CartDrawer";
 import {
   MobileFilterBottomSheet,
-  type MobileFilterState,
 } from "./components/MobileFilterBottomSheet";
 import { PlaceDetailSheet } from "./components/PlaceDetailSheet";
 import { MobilePlaceCardList } from "./components/MobilePlaceCardList";
@@ -160,23 +157,9 @@ export default function App() {
   };
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [isPlaceDetailOpen, setIsPlaceDetailOpen] = useState(false);
-  const [mobileFilters, setMobileFilters] = useState<MobileFilterState>({
-    savedOnly: false,
-    openOnly: false,
-    kind: "All places",
-    cuisine: allCuisines,
-    selectedTags: [],
-  });
-
-  const activeFilterCount = useMemo(() => {
-    let count = 0;
-    if (mobileFilters.savedOnly) count++;
-    if (mobileFilters.openOnly) count++;
-    if (kind !== "All places") count++;
-    if (cuisine !== allCuisines) count++;
-    count += mobileFilters.selectedTags.length;
-    return count;
-  }, [mobileFilters, kind, cuisine]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const activeFilterCount = Number(kind !== "All places") +
+    Number(cuisine !== allCuisines) + selectedTags.length;
 
   useEffect(() => {
     setIsMapCardMinimized(false);
@@ -420,25 +403,10 @@ export default function App() {
     setQuery("");
   }, []);
 
-  const handleUpdateMobileFilters = useCallback(
-    (newFilters: MobileFilterState) => {
-      clearConciergeState();
-      setMobileFilters(newFilters);
-      if (newFilters.kind !== kind) {
-        setKind(newFilters.kind);
-      }
-      if (newFilters.cuisine !== cuisine) {
-        setCuisine(newFilters.cuisine);
-      }
-    },
-    [clearConciergeState, cuisine, kind],
-  );
-
   const selectKindFilter = useCallback(
     (newKind: EstablishmentFilter) => {
       clearConciergeState();
       setKind(newKind);
-      setMobileFilters((prev) => ({ ...prev, kind: newKind }));
     },
     [clearConciergeState],
   );
@@ -447,20 +415,13 @@ export default function App() {
     (newCuisine: CuisineFilter) => {
       clearConciergeState();
       setCuisine(newCuisine);
-      setMobileFilters((prev) => ({ ...prev, cuisine: newCuisine }));
     },
     [clearConciergeState],
   );
 
   const handleResetMobileFilters = useCallback(() => {
     clearConciergeState();
-    setMobileFilters({
-      savedOnly: false,
-      openOnly: false,
-      kind: "All places",
-      cuisine: allCuisines,
-      selectedTags: [],
-    });
+    setSelectedTags([]);
     setKind("All places");
     setCuisine(allCuisines);
   }, [clearConciergeState]);
@@ -602,15 +563,10 @@ export default function App() {
 
   const ranked = useMemo(() => {
     const baseFilteredPlaces = scoredPlaces
-      .filter((place) => {
-        if (mobileFilters.savedOnly && !savedPlaceIds.includes(place.id)) {
-          return false;
-        }
-        return matchesEstablishmentFilter(place, kind, savedPlaceIds);
-      })
+      .filter((place) => matchesEstablishmentFilter(place, kind, savedPlaceIds))
       .filter((place) => cuisine === allCuisines || cuisineParts(place).includes(cuisine))
       .filter((place) => {
-        if (mobileFilters.selectedTags.length === 0) return true;
+        if (selectedTags.length === 0) return true;
         const searchStr = [
           ...place.tags,
           place.kind,
@@ -623,7 +579,7 @@ export default function App() {
           .join(" ")
           .toLowerCase();
 
-        return mobileFilters.selectedTags.every((t) => {
+        return selectedTags.every((t) => {
           const tLower = t.toLowerCase();
           const noteLower = (place.note ?? "").toLowerCase();
           const nameLower = (place.name ?? "").toLowerCase();
@@ -690,8 +646,7 @@ export default function App() {
     [
       cuisine,
       kind,
-      mobileFilters.savedOnly,
-      mobileFilters.selectedTags,
+      selectedTags,
       mode,
       query,
       randomSeed,
@@ -1378,152 +1333,35 @@ export default function App() {
 
       {/* Mobile-only Quick Search & Filter Controls */}
       <div className="mobile-controls-bar">
-        {/* Horizontal Quick Filter Carousel */}
-        <div className="mobile-quick-filter-carousel" role="toolbar" aria-label="Quick filters">
+        <div className="mobile-filter-actions">
           <button
             type="button"
             className={`quick-filter-pill ${activeFilterCount > 0 ? "is-primary-active" : ""}`}
             onClick={() => setIsFilterSheetOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={isFilterSheetOpen}
           >
             <Faders size={14} weight="bold" />
-            {activeFilterCount > 0 ? (
-              <span className="quick-filter-badge">{activeFilterCount}</span>
-            ) : null}
             <span>{lang === "sv" ? "Filter" : "Filters"}</span>
+            {activeFilterCount > 0 ? <span className="quick-filter-badge">{activeFilterCount}</span> : null}
           </button>
-
-          <button
-            type="button"
-            className={`quick-filter-pill ${mobileFilters.savedOnly ? "is-active" : ""}`}
-            onClick={() =>
-              handleUpdateMobileFilters({
-                ...mobileFilters,
-                savedOnly: !mobileFilters.savedOnly,
-              })
-            }
-          >
-            <Heart
-              size={13}
-              weight={mobileFilters.savedOnly ? "fill" : "bold"}
-            />
-            <span>{lang === "sv" ? "Sparade" : "Saved"}</span>
-          </button>
-
-          <button
-            type="button"
-            className="quick-filter-pill"
-            onClick={() => setIsSyncModalOpen(true)}
-            title={lang === "sv" ? "Synka alla dina enheter" : "Sync across devices"}
-          >
+          <button type="button" className="quick-filter-pill" onClick={() => setIsSyncModalOpen(true)}>
             <DeviceMobile size={13} weight="bold" />
             <span>{lang === "sv" ? "Synka enheter" : "Sync Devices"}</span>
           </button>
-
-          <button
-            type="button"
-            className={`quick-filter-pill ${mobileFilters.openOnly ? "is-active" : ""}`}
-            onClick={() =>
-              handleUpdateMobileFilters({
-                ...mobileFilters,
-                openOnly: !mobileFilters.openOnly,
-              })
-            }
-          >
-            <Clock size={13} weight="bold" />
-            <span>{lang === "sv" ? "Öppet nu" : "Open now"}</span>
-          </button>
-
-          <button
-            type="button"
-            className={`quick-filter-pill ${mobileFilters.selectedTags.includes("Dog friendly") ? "is-active" : ""}`}
-            onClick={() => {
-              const exists = mobileFilters.selectedTags.includes("Dog friendly");
-              const updated = exists
-                ? mobileFilters.selectedTags.filter((t) => t !== "Dog friendly")
-                : [...mobileFilters.selectedTags, "Dog friendly"];
-              handleUpdateMobileFilters({
-                ...mobileFilters,
-                selectedTags: updated,
-              });
-            }}
-          >
-            <PawPrint
-              size={13}
-              weight={mobileFilters.selectedTags.includes("Dog friendly") ? "fill" : "bold"}
-            />
-            <span>{lang === "sv" ? "Hundvänligt" : "Dog friendly"}</span>
-          </button>
-
-          <button
-            type="button"
-            className={`quick-filter-pill ${kind === "Specialty coffee" ? "is-active" : ""}`}
-            onClick={() => selectKindFilter(kind === "Specialty coffee" ? "All places" : "Specialty coffee")}
-          >
-            <span>Specialty Coffee</span>
-          </button>
-
-          <button
-            type="button"
-            className={`quick-filter-pill ${cuisine === "pizza" ? "is-active" : ""}`}
-            onClick={() => selectCuisineFilter(cuisine === "pizza" ? allCuisines : "pizza")}
-          >
-            <span>Pizza</span>
-          </button>
-
-          <button
-            type="button"
-            className={`quick-filter-pill ${kind === "Bakery" ? "is-active" : ""}`}
-            onClick={() => selectKindFilter(kind === "Bakery" ? "All places" : "Bakery")}
-          >
-            <span>{lang === "sv" ? "Bageri" : "Bakery"}</span>
-          </button>
-
-          <button
-            type="button"
-            className={`quick-filter-pill ${kind === "Restaurant" ? "is-active" : ""}`}
-            onClick={() => selectKindFilter(kind === "Restaurant" ? "All places" : "Restaurant")}
-          >
-            <span>{lang === "sv" ? "Restaurang" : "Restaurant"}</span>
-          </button>
-
-          <button
-            type="button"
-            className={`quick-filter-pill ${query.toLowerCase() === "vasastan" ? "is-active" : ""}`}
-            onClick={() => {
-              clearConciergeState();
-              const nextQuery = query.toLowerCase() === "vasastan" ? "" : "Vasastan";
-              setQuery(nextQuery);
-              setConcierge(nextQuery);
-            }}
-          >
-            <span>Vasastan</span>
-          </button>
-
-          <button
-            type="button"
-            className={`quick-filter-pill ${query.toLowerCase() === "södermalm" ? "is-active" : ""}`}
-            onClick={() => {
-              clearConciergeState();
-              const nextQuery = query.toLowerCase() === "södermalm" ? "" : "Södermalm";
-              setQuery(nextQuery);
-              setConcierge(nextQuery);
-            }}
-          >
-            <span>Södermalm</span>
-          </button>
-
-          <button
-            type="button"
-            className={`quick-filter-pill ${query.toLowerCase() === "östermalm" ? "is-active" : ""}`}
-            onClick={() => {
-              clearConciergeState();
-              const nextQuery = query.toLowerCase() === "östermalm" ? "" : "Östermalm";
-              setQuery(nextQuery);
-              setConcierge(nextQuery);
-            }}
-          >
-            <span>Östermalm</span>
-          </button>
+        </div>
+        <div className="mobile-type-filters" role="group" aria-label={t.typeFilterLabel}>
+          {visibleEstablishmentTypes.map((item) => (
+            <button
+              key={item}
+              type="button"
+              className={`quick-filter-pill ${kind === item ? "is-active" : ""}`}
+              aria-pressed={kind === item}
+              onClick={() => selectKindFilter(item)}
+            >
+              {kindFilterLabel(item, lang)}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -1629,7 +1467,7 @@ export default function App() {
             <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("rate_place")}>
               <Star size={13} weight="bold" /> {lang === "sv" ? "⭐ Betygsätt" : "⭐ Rate"}
             </button>
-            {(query.trim() || kind !== "All places" || cuisine !== allCuisines || mobileFilters.selectedTags.length > 0) ? (
+            {(query.trim() || kind !== "All places" || cuisine !== allCuisines || selectedTags.length > 0) ? (
               <button
                 type="button"
                 className="superpower-chip-btn"
@@ -1729,34 +1567,13 @@ export default function App() {
             </div>
           ) : null}
         </div>
-        <div className="mobile-filter-selects" aria-label={lang === "sv" ? "Mobil platsfiltrering" : "Mobile place filters"}>
-          <label>
-            <span>{t.typeFilterLabel}</span>
-            <select value={kind} onChange={(event) => selectKindFilter(event.target.value as EstablishmentFilter)}>
-              {visibleEstablishmentTypes.map((item) => (
-                <option key={item} value={item}>
-                  {kindFilterLabel(item, lang)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>{t.cuisineFilterLabel}</span>
-            <select value={cuisine} onChange={(event) => selectCuisineFilter(event.target.value)}>
-              {[allCuisines, ...cuisineOptions].map((item) => (
-                <option key={item} value={item}>
-                  {item === allCuisines ? t.allCuisines : cuisineLabel(item, lang)}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
         <div className="chips" aria-label="Filter typ">
           <span className="filter-label">{t.typeFilterLabel}</span>
           <div className="chip-row">
             {visibleEstablishmentTypes.map((item) => (
               <button
                 key={item}
+                aria-pressed={kind === item}
                 className={kind === item ? "active" : ""}
                 onClick={() => selectKindFilter(item)}
                 type="button"
@@ -1772,6 +1589,7 @@ export default function App() {
             {[allCuisines, ...cuisineOptions].map((item) => (
               <button
                 key={item}
+                aria-pressed={cuisine === item}
                 className={cuisine === item ? "active" : ""}
                 onClick={() => selectCuisineFilter(item)}
                 type="button"
@@ -1785,21 +1603,19 @@ export default function App() {
           <span className="filter-label">{lang === "sv" ? "Egenskaper" : "Features"}</span>
           <div className="chip-row">
             <button
-              className={mobileFilters.selectedTags.includes("Dog friendly") ? "active" : ""}
+              className={selectedTags.includes("Dog friendly") ? "active" : ""}
               onClick={() => {
-                const exists = mobileFilters.selectedTags.includes("Dog friendly");
+                const exists = selectedTags.includes("Dog friendly");
                 const updated = exists
-                  ? mobileFilters.selectedTags.filter((t) => t !== "Dog friendly")
-                  : [...mobileFilters.selectedTags, "Dog friendly"];
-                handleUpdateMobileFilters({
-                  ...mobileFilters,
-                  selectedTags: updated,
-                });
+                  ? selectedTags.filter((t) => t !== "Dog friendly")
+                  : [...selectedTags, "Dog friendly"];
+                clearConciergeState();
+                setSelectedTags(updated);
               }}
               type="button"
               style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}
             >
-              <PawPrint size={13} weight={mobileFilters.selectedTags.includes("Dog friendly") ? "fill" : "bold"} />
+              <PawPrint size={13} weight={selectedTags.includes("Dog friendly") ? "fill" : "bold"} />
               <span>{lang === "sv" ? "Hundvänligt" : "Dog Friendly"}</span>
             </button>
           </div>
@@ -2360,8 +2176,10 @@ export default function App() {
       <MobileFilterBottomSheet
         isOpen={isFilterSheetOpen}
         onClose={() => setIsFilterSheetOpen(false)}
-        filters={mobileFilters}
-        onUpdateFilters={handleUpdateMobileFilters}
+        cuisine={cuisine}
+        cuisineOptions={cuisineOptions}
+        onSelectCuisine={selectCuisineFilter}
+        hasActiveFilters={activeFilterCount > 0 || Boolean(query.trim())}
         onResetFilters={handleResetMobileFilters}
         matchingCount={ranked.length}
         lang={lang}

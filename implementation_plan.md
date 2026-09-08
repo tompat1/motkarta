@@ -1,3 +1,19 @@
+# Mobile filter parity
+
+Implement the requested desktop filter parity on mobile:
+
+- Render the shared seven type options in the black mobile panel, with the same labels and selection handlers as desktop.
+- Replace the four obsolete tag sections with the shared, data-driven cuisine options in the popup.
+- Use canonical type/cuisine state across both layouts; Saved uses the existing desktop type filter.
+- Remove the nonfunctional Open now control (it has no hours evaluator), obsolete mobile tag definitions, and duplicate mobile select controls. Preserve the existing desktop dog-friendly filter.
+- Keep cuisine selection, result count, active indicator, and reset synchronized. Add dialog keyboard/focus handling and responsive layout.
+
+Risks: stale duplicated filter state, hidden saved restrictions, narrow-screen overflow, and losing selections on language/viewport changes. Scoring, taxonomy, telemetry contracts, data, and deployment are outside this UI change.
+
+Verification: filter regression tests, full `npm test`, `npm run build`, diff checks, and local browser checks of type/cuisine selection, reset, localization, and mobile/desktop parity.
+
+---
+
 # Current work: bounded real-model RAG Concierge trial
 
 Completed the approved one-time US$1 trial after the build/deployment

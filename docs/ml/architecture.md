@@ -86,6 +86,15 @@ so an old selection is not presented as the new result. Controls without backing
 public data are hidden until their data source exists. These controls do not
 change stored score outputs or authorize a learned ranker.
 
+Mobile and desktop share the same canonical venue-type and cuisine selections.
+The mobile black panel renders the desktop type options, including Saved and
+Latest added; its popup uses the same data-derived cuisine options as desktop.
+Saved is a single type selection, so it cannot leave a hidden saved-only
+restriction after selecting another type. The legacy mobile tag sections and
+the nonfunctional Open now toggle were removed in September 2026. No live-hours
+evaluator is implemented. This UI parity change does not change scorer versions,
+ranking formulas, stored venue data, or recommendation event contracts.
+
 ### 3. Python scoring counterpart
 
 - Owner: `motkarta/scoring.py`

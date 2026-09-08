@@ -1,23 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { FILTER_SECTIONS, formatDistance, distanceFromPoint } from "../lib/mobile-filters.ts";
+import { formatDistance, distanceFromPoint } from "../lib/mobile-filters.ts";
 
 const rawPlacesData = JSON.parse(await readFile(new URL("../public/data/places.json", import.meta.url), "utf8"));
 const livePlaces = rawPlacesData.places ?? rawPlacesData;
-
-test("FILTER_SECTIONS contains the 4 core categorized mobile filter sections", () => {
-  const sectionIds = FILTER_SECTIONS.map((s) => s.id);
-  assert.deepEqual(sectionIds, ["coffee", "drinks", "food", "services"]);
-
-  const coffeeSection = FILTER_SECTIONS.find((s) => s.id === "coffee");
-  assert.ok(coffeeSection);
-  const coffeeTags = coffeeSection.items.map((i) => i.tag);
-  assert.ok(coffeeTags.includes("Filter"));
-  assert.ok(coffeeTags.includes("Hand brew"));
-  assert.ok(coffeeTags.includes("Own roastery"));
-  assert.ok(coffeeTags.includes("Single origin"));
-});
 
 test("formatDistance formats meters and kilometers cleanly for mobile UI", () => {
   assert.equal(formatDistance(0.45, "sv"), "450 m");
@@ -40,23 +27,6 @@ test("Savoj is present in live places with correct attributes", () => {
   assert.ok(savoj, "Savoj should be in live places");
   assert.equal(savoj.kind, "Restaurant");
   assert.ok(savoj.cuisine?.includes("pizza"));
-});
-
-test("Dog friendly filter item exists with localized labels", () => {
-  const servicesSection = FILTER_SECTIONS.find((s) => s.id === "services");
-  assert.ok(servicesSection);
-  const dogItem = servicesSection.items.find((i) => i.id === "dog");
-  assert.ok(dogItem, "Dog item must exist in services section");
-  assert.equal(dogItem.tag, "Dog friendly");
-  assert.equal(dogItem.labelSv, "Hundvänligt");
-  assert.equal(dogItem.labelEn, "Dog Friendly");
-});
-
-test("empty feature filters are not exposed", () => {
-  const tags = FILTER_SECTIONS.flatMap((section) => section.items.map((item) => item.tag));
-  assert.equal(tags.includes("Outdoor seating"), false);
-  assert.equal(tags.includes("Wi-Fi"), false);
-  assert.equal(tags.includes("Vegan options"), false);
 });
 
 test("unified search query matches places by name, cuisine, region or tags", () => {
