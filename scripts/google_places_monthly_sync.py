@@ -35,6 +35,8 @@ ENV_FILE = ROOT / ".env"
 
 GOOGLE_TEXT_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/textsearch/json"
 GOOGLE_DETAILS_URL = "https://maps.googleapis.com/maps/api/place/details/json"
+GOOGLE_PLACES_NEW_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
+GOOGLE_PLACES_NEW_DETAILS_URL = "https://places.googleapis.com/v1/places"
 
 DEFAULT_QUERIES = [
     "new independent restaurants Stockholm",
@@ -132,21 +134,48 @@ def fetch_google_places(api_key: str, queries: list[str]) -> list[dict[str, Any]
     seen_place_ids: set[str] = set()
     results: list[dict[str, Any]] = []
     for query in queries:
+        places: list[dict[str, Any]] = []
         try:
-            payload = http_get_json(
-                GOOGLE_TEXT_SEARCH_URL,
-                {
-                    "query": query,
-                    "location": "59.3293,18.0686",
-                    "radius": "12000",
-                    "key": api_key,
+            req_data = json.dumps({
+                "textQuery": query,
+                "locationBias": {
+                    "circle": {
+                        "center": {"latitude": 59.3293, "longitude": 18.0686},
+                        "radius": 12000.0,
+                    }
+                },
+            }).encode("utf-8")
+            request = urllib.request.Request(
+                GOOGLE_PLACES_NEW_SEARCH_URL,
+                data=req_data,
+                headers={
+                    "Content-Type": "application/json",
+                    "X-Goog-Api-Key": api_key,
+                    "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.location,places.websiteUri,places.businessStatus",
+                    "User-Agent": "Motkarta/1.0 metadata-only Google Places enrichment",
                 },
             )
-        except Exception as error:
-            print(f"Google Places query failed for {query!r}: {error}")
-            continue
-        for item in payload.get("results", []):
-            place_id = str(item.get("place_id") or "")
+            with urllib.request.urlopen(request, timeout=15) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+                places = payload.get("places", [])
+        except Exception as error_new:
+            try:
+                payload = http_get_json(
+                    GOOGLE_TEXT_SEARCH_URL,
+                    {
+                        "query": query,
+                        "location": "59.3293,18.0686",
+                        "radius": "12000",
+                        "key": api_key,
+                    },
+                )
+                places = payload.get("results", [])
+            except Exception as error_legacy:
+                print(f"Google Places query failed for {query!r}: new={error_new}, legacy={error_legacy}")
+                continue
+
+        for item in places:
+            place_id = str(item.get("id") or item.get("place_id") or "")
             if not place_id or place_id in seen_place_ids:
                 continue
             seen_place_ids.add(place_id)
@@ -159,21 +188,38 @@ def fetch_place_details(api_key: str, place_id: str) -> dict[str, Any]:
     if not api_key or not place_id:
         return {}
     try:
-        payload = http_get_json(
-            GOOGLE_DETAILS_URL,
-            {
-                "place_id": place_id,
-                "fields": "place_id,name,formatted_address,geometry,website",
-                "key": api_key,
+        url = f"{GOOGLE_PLACES_NEW_DETAILS_URL}/{place_id}"
+        request = urllib.request.Request(
+            url,
+            headers={
+                "X-Goog-Api-Key": api_key,
+                "X-Goog-FieldMask": "id,displayName,formattedAddress,location,websiteUri,businessStatus",
+                "User-Agent": "Motkarta/1.0 metadata-only Google Places enrichment",
             },
         )
-    except Exception as error:
-        print(f"Google Places details lookup failed for {place_id}: {error}")
-        return {}
-    return payload.get("result", {}) if isinstance(payload, dict) else {}
+        with urllib.request.urlopen(request, timeout=12) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except Exception:
+        try:
+            payload = http_get_json(
+                GOOGLE_DETAILS_URL,
+                {
+                    "place_id": place_id,
+                    "fields": "place_id,name,formatted_address,geometry,website",
+                    "key": api_key,
+                },
+            )
+            return payload.get("result", {}) if isinstance(payload, dict) else {}
+        except Exception as error:
+            print(f"Google Places details lookup failed for {place_id}: {error}")
+            return {}
 
 
-def metadata_from_google_payload(raw_result: dict[str, Any], details: dict[str, Any] | None = None) -> PlaceMetadata:
+def metadata_from_google_payload(
+    raw_result: dict[str, Any],
+    details: dict[str, Any] | None = None,
+    scrape_photo: bool = True,
+) -> PlaceMetadata:
     """Extract allowed fact fields only.
 
     This intentionally ignores Google rating, review, price, prominence, and status fields
@@ -181,16 +227,48 @@ def metadata_from_google_payload(raw_result: dict[str, Any], details: dict[str, 
     """
     details = details or {}
     source = {**raw_result, **details}
-    geometry = source.get("geometry") or {}
-    location = geometry.get("location") or {}
-    website = normalize_url(str(source.get("website") or ""))
-    official_photo = scrape_website_og_image(website) if website else None
+
+    name_val = source.get("displayName")
+    if isinstance(name_val, dict):
+        name_str = name_val.get("text") or ""
+    else:
+        name_str = str(source.get("name") or raw_result.get("name") or "")
+
+    address_str = (
+        source.get("formattedAddress")
+        or source.get("formatted_address")
+        or raw_result.get("formattedAddress")
+        or raw_result.get("formatted_address")
+        or ""
+    )
+    place_id_str = str(
+        source.get("id")
+        or source.get("place_id")
+        or raw_result.get("id")
+        or raw_result.get("place_id")
+        or ""
+    )
+
+    lat: float | None = None
+    lng: float | None = None
+    if "location" in source and isinstance(source["location"], dict):
+        lat = optional_float(source["location"].get("latitude") or source["location"].get("lat"))
+        lng = optional_float(source["location"].get("longitude") or source["location"].get("lng"))
+    if lat is None or lng is None:
+        geometry = source.get("geometry") or {}
+        location = geometry.get("location") or {}
+        lat = optional_float(location.get("lat"))
+        lng = optional_float(location.get("lng"))
+
+    website = normalize_url(str(source.get("websiteUri") or source.get("website") or ""))
+    official_photo = scrape_website_og_image(website) if (website and scrape_photo) else None
+
     return PlaceMetadata(
-        google_place_id=str(source.get("place_id") or raw_result.get("place_id") or ""),
-        name=clean_text(source.get("name") or raw_result.get("name") or ""),
-        address=clean_text(source.get("formatted_address") or raw_result.get("formatted_address") or ""),
-        latitude=optional_float(location.get("lat")),
-        longitude=optional_float(location.get("lng")),
+        google_place_id=place_id_str,
+        name=clean_text(name_str),
+        address=clean_text(address_str),
+        latitude=lat,
+        longitude=lng,
         website=website,
         official_photo=official_photo,
     )
@@ -399,6 +477,7 @@ def sync_metadata(
     candidates_path: Path = DEFAULT_CANDIDATES_FILE,
     queries: list[str] | None = None,
     dry_run: bool = False,
+    scrape_photos: bool = True,
 ) -> dict[str, int]:
     places_payload, places = load_places(places_path)
     photos_payload = load_photos(photos_path)
@@ -417,12 +496,17 @@ def sync_metadata(
 
     for raw_result in fetch_google_places(api_key, queries or DEFAULT_QUERIES):
         stats["google_results"] += 1
-        if is_excluded_chain(raw_result.get("name")):
+        name_val = raw_result.get("displayName")
+        name_str = name_val.get("text") if isinstance(name_val, dict) else (raw_result.get("name") or "")
+        if is_excluded_chain(name_str):
             stats["chains_skipped"] += 1
             continue
 
-        details = fetch_place_details(api_key, str(raw_result.get("place_id") or ""))
-        metadata = metadata_from_google_payload(raw_result, details)
+        place_id_str = str(raw_result.get("id") or raw_result.get("place_id") or "")
+        details = None
+        if not raw_result.get("formattedAddress") or not raw_result.get("websiteUri"):
+            details = fetch_place_details(api_key, place_id_str)
+        metadata = metadata_from_google_payload(raw_result, details, scrape_photo=scrape_photos)
         if not metadata.name or not metadata.google_place_id:
             continue
         assert_no_forbidden_value_fields(asdict(metadata))
@@ -567,6 +651,7 @@ def main() -> None:
     parser.add_argument("--candidates", type=Path, default=DEFAULT_CANDIDATES_FILE)
     parser.add_argument("--query", action="append", dest="queries", help="Google text-search query. Repeatable.")
     parser.add_argument("--check-existence", action="store_true", help="Run monthly existence check against Google Places businessStatus.")
+    parser.add_argument("--skip-photos", action="store_true", help="Skip website og:image scraping for faster metadata-only sync.")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -593,6 +678,7 @@ def main() -> None:
         candidates_path=args.candidates,
         queries=args.queries,
         dry_run=args.dry_run,
+        scrape_photos=not args.skip_photos,
     )
 
     print("Metadata-only Google sync complete:")
