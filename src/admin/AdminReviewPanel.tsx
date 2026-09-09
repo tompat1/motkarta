@@ -314,7 +314,15 @@ export function AdminReviewPanel({
       try {
         const response = await fetch("/api/admin/session", {
           headers: adminHeaders(token),
+          redirect: "manual",
         });
+        if (response.type === "opaqueredirect" || response.status === 0) {
+          const payload: AdminSessionStatus = { admin: false, reason: lang === "sv" ? "Admin-konto krävs." : "Admin account required." };
+          setAdminSession(payload);
+          onSessionChange?.(payload);
+          setStatus(payload.reason ?? "");
+          return payload;
+        }
         const payload = (await response.json().catch(() => ({}))) as AdminSessionStatus;
         setAdminSession(payload);
         onSessionChange?.(payload);

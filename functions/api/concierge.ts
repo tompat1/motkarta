@@ -15,6 +15,7 @@ export type Env = {
   CONCIERGE_MIN_SIMILARITY?: string;
   CONCIERGE_RATE_LIMITER?: { limit(input: { key: string }): Promise<{ success: boolean }> };
   CONCIERGE_RATE_GATE?: { fetch(request: Request): Promise<Response> };
+  ASSETS?: { fetch(input: Request | string, init?: RequestInit): Promise<Response> };
 };
 type EventContext = { request: Request; env: Env };
 const headers = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -89,11 +90,27 @@ export async function requestAiPermit(env: Env, key: string, units: number) {
     return body.success === true;
   } catch { return false; }
 }
-export async function processConciergeQuery(query: string, env: Env = {}, context: QueryContext = {}, allowAI = false) {
+export async function processConciergeQuery(query: string, env: Env = {}, context: QueryContext = {}, allowAI = false, requestUrl?: string) {
   const started = Date.now(), deadline = started + 4500;
   let places: ConciergePlace[] = [];
+  let sourceNamespace = 'd1';
   if (parseAction(query)) return Response.json(buildResponse(query, [], 0, context, 'action'), { headers });
   try { if (env.DB) places = await withinDeadline(loadPlacesFromD1(env.DB), 1200); } catch { /* bounded unavailable response below */ }
+  if (!places.length && env.ASSETS && requestUrl) {
+    try {
+      const assetRes = await env.ASSETS.fetch(new URL('/data/places.json', requestUrl).toString());
+      if (assetRes.ok) {
+        const json = await assetRes.json() as ConciergePlace[] | { places?: ConciergePlace[] };
+        const assetPlaces = Array.isArray(json) ? json : json.places;
+        if (Array.isArray(assetPlaces) && assetPlaces.length > 0) {
+          places = assetPlaces;
+          sourceNamespace = 'published_dataset';
+        }
+      }
+    } catch {
+      // bounded unavailable response below
+    }
+  }
   if (!places.length) {
     const result = buildResponse(query, [], 0, context, 'unavailable');
     result.status = 'unavailable';
@@ -118,7 +135,7 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
       } catch { fallbacks.push('semantic_unavailable'); }
     } else fallbacks.push('semantic_not_configured');
   }
-  let result = buildResponse(query, candidates, places.length, context, 'd1');
+  let result = buildResponse(query, candidates, places.length, context, sourceNamespace);
   if (hybrid) { result.modelVersion = VERSIONS.hybrid; result.retrievalMode = 'hybrid'; }
   if (allowAI && env.CONCIERGE_SYNTHESIS_MODE === 'constrained' && result.cards.length) {
     if (env.AI && deadline - Date.now() > 100) {
@@ -140,7 +157,7 @@ export async function onRequestPost({ request, env }: EventContext) {
   let allowAI = false;
   const aiUnits = (env.CONCIERGE_RETRIEVAL_MODE === 'hybrid' ? 1 : 0) + (env.CONCIERGE_SYNTHESIS_MODE === 'constrained' ? 1 : 0);
   if (aiRequested) allowAI = await requestAiPermit(env, request.headers.get('cf-connecting-ip') ?? 'unknown', aiUnits);
-  const response = await processConciergeQuery(input.query, env, input.context, allowAI);
+  const response = await processConciergeQuery(input.query, env, input.context, allowAI, request.url);
   if (!allowAI && aiRequested && response.ok) {
     const body = await response.json() as { diagnostics: { fallbackReasons: string[] } };
     body.diagnostics.fallbackReasons.push('ai_rate_gate_closed');
@@ -150,6 +167,6 @@ export async function onRequestPost({ request, env }: EventContext) {
 }
 export async function onRequestGet({ request, env }: EventContext) {
   const url = new URL(request.url);
-  try { const input = validateRequest({ query: url.searchParams.get('q') ?? url.searchParams.get('query') ?? '' }); return processConciergeQuery(input.query, env, input.context, false); }
+  try { const input = validateRequest({ query: url.searchParams.get('q') ?? url.searchParams.get('query') ?? '' }); return processConciergeQuery(input.query, env, input.context, false, request.url); }
   catch { return Response.json({ error: 'invalid_query' }, { headers, status: 400 }); }
 }

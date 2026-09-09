@@ -122,6 +122,70 @@ const CUISINE_TAGS = new Map([
   ["vietnamese", "vietnamese"],
 ]);
 
+export const legacyPlaceQuery = `
+  SELECT
+    e.id,
+    e.osm_type,
+    e.osm_id,
+    e.name,
+    e.type,
+    e.district,
+    e.description,
+    e.address,
+    e.website,
+    e.price_level,
+    e.latitude,
+    e.longitude,
+    e.chain_status,
+    e.lifecycle_state,
+    e.validation_label,
+    e.validation_notes,
+    r.rating_average,
+    r.reliable_rating_count,
+    r.review_count,
+    r.category_mean_rating,
+    r.captured_at AS latest_rating_at,
+    g.search_impressions,
+    g.profile_views,
+    g.map_marker_clicks,
+    g.saves,
+    g.direction_requests,
+    g.confirmed_visits,
+    g.repeat_visits,
+    g.recommendations,
+    g.recent_saves,
+    g.window_ended_at AS latest_engagement_at,
+    s.specialty_verified,
+    s.own_roastery,
+    s.traceable_coffee,
+    s.filter_coffee,
+    s.espresso_based,
+    s.rotating_roasters,
+    s.single_origin,
+    s.manual_brew_methods_json,
+    s.decaf_available,
+    s.beans_for_sale,
+    s.verification_sources
+  FROM establishments e
+  LEFT JOIN rating_snapshots r
+    ON r.id = (
+      SELECT id FROM rating_snapshots
+      WHERE establishment_id = e.id
+      ORDER BY captured_at DESC, id DESC
+      LIMIT 1
+    )
+  LEFT JOIN engagement_snapshots g
+    ON g.id = (
+      SELECT id FROM engagement_snapshots
+      WHERE establishment_id = e.id
+      ORDER BY window_ended_at DESC, id DESC
+      LIMIT 1
+    )
+  LEFT JOIN specialty_coffee_attributes s
+    ON s.establishment_id = e.id
+  ORDER BY e.name ASC
+`;
+
 export const placeQuery = `
   SELECT
     e.id,
@@ -200,9 +264,17 @@ export const tagQuery = `
   ORDER BY tag ASC
 `;
 
+async function fetchPlaceRows(db: D1Database): Promise<{ results?: PlaceRow[] }> {
+  try {
+    return await db.prepare(placeQuery).all<PlaceRow>();
+  } catch {
+    return await db.prepare(legacyPlaceQuery).all<PlaceRow>();
+  }
+}
+
 export async function loadPlacesFromD1(db: D1Database): Promise<ConciergePlace[]> {
   const [placeResult, evidenceResult, tagResult] = await Promise.all([
-    db.prepare(placeQuery).all<PlaceRow>(),
+    fetchPlaceRows(db),
     db.prepare(evidenceQuery).all<EvidenceRow>(),
     db.prepare(tagQuery).all<TagRow>(),
   ]);

@@ -173,6 +173,50 @@ const basePlaceRow = {
   verification_sources: null,
 };
 
+test("D1 loader falls back to legacyPlaceQuery when placeQuery fails", async () => {
+  let queryUsed = "";
+  const db = {
+    prepare(query) {
+      return {
+        all() {
+          if (query.includes("FROM establishments")) {
+            if (query.includes("e.opening_hours")) {
+              return Promise.reject(new Error("no such column: e.opening_hours"));
+            }
+            queryUsed = query;
+            return Promise.resolve({
+              results: [
+                {
+                  ...basePlaceRow,
+                  id: 99,
+                  name: "Legacy Cafe",
+                  type: "Specialty coffee",
+                  district: "Södermalm",
+                },
+              ],
+            });
+          }
+
+          if (query.includes("FROM evidence_sources")) {
+            return Promise.resolve({ results: [] });
+          }
+
+          if (query.includes("FROM establishment_tags")) {
+            return Promise.resolve({ results: [] });
+          }
+
+          return Promise.resolve({ results: [] });
+        },
+      };
+    },
+  };
+
+  const places = await loadPlacesFromD1(db);
+  assert.equal(places.length, 1);
+  assert.equal(places[0].name, "Legacy Cafe");
+  assert.ok(!queryUsed.includes("e.opening_hours"));
+});
+
 function fakeD1({ places, evidence, tags }) {
   return {
     prepare(query) {

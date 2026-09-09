@@ -1,11 +1,13 @@
 import { loadPlacesFromD1 } from "../../lib/place-records.ts";
 
 type EventContext<Env> = {
+  request?: Request;
   env: Env;
 };
 
 type Env = {
   DB?: unknown;
+  ASSETS?: { fetch(input: Request | string, init?: RequestInit): Promise<Response> };
 };
 
 const jsonHeaders = {
@@ -13,10 +15,34 @@ const jsonHeaders = {
   "cache-control": "public, max-age=60",
 };
 
+async function loadFallbackPlaces(context: EventContext<Env>) {
+  if (!context.env.ASSETS || !context.request) return null;
+  try {
+    const assetRes = await context.env.ASSETS.fetch(new URL("/data/places.json", context.request.url).toString());
+    if (assetRes.ok) {
+      const json = await assetRes.json();
+      const places = Array.isArray(json) ? json : (json as { places?: unknown[] }).places;
+      if (Array.isArray(places) && places.length > 0) {
+        return places;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
 export async function onRequestGet(context: EventContext<Env>) {
   const db = context.env.DB;
 
   if (!db) {
+    const fallbackPlaces = await loadFallbackPlaces(context);
+    if (fallbackPlaces) {
+      return Response.json(
+        { source: "published_dataset", places: fallbackPlaces },
+        { headers: jsonHeaders },
+      );
+    }
     return Response.json(
       { source: "unavailable", places: [], error: "No production dataset is bound." },
       { headers: jsonHeaders, status: 503 },
@@ -25,15 +51,32 @@ export async function onRequestGet(context: EventContext<Env>) {
 
   try {
     const places = await loadPlacesFromD1(db as Parameters<typeof loadPlacesFromD1>[0]);
+    if (!places.length) {
+      const fallbackPlaces = await loadFallbackPlaces(context);
+      if (fallbackPlaces) {
+        return Response.json(
+          { source: "published_dataset", places: fallbackPlaces },
+          { headers: jsonHeaders },
+        );
+      }
+    }
     return Response.json(
       { source: "d1", places },
       { headers: jsonHeaders },
     );
   } catch (error) {
     console.error("Failed to load places from D1", error);
+    const fallbackPlaces = await loadFallbackPlaces(context);
+    if (fallbackPlaces) {
+      return Response.json(
+        { source: "published_dataset", places: fallbackPlaces },
+        { headers: jsonHeaders },
+      );
+    }
     return Response.json(
       { source: "unavailable", places: [], error: "Failed to load production dataset." },
       { headers: jsonHeaders, status: 503 },
     );
   }
 }
+

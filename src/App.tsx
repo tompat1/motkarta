@@ -468,8 +468,16 @@ export default function App() {
     const token = (tokenOverride ?? readStoredAdminToken()).trim();
     try {
       const res = await fetch("/api/admin/session", {
-        headers: token ? { "x-motkarta-admin-token": token } : {},
+        headers: {
+          Accept: "application/json",
+          ...(token ? { "x-motkarta-admin-token": token } : {}),
+        },
+        redirect: "manual",
       });
+      if (!res.ok || res.type === "opaqueredirect" || res.status === 0) {
+        setAdminSession(null);
+        return;
+      }
       const data = (await res.json().catch(() => null)) as AdminSessionStatus | null;
       if (res.ok && data?.admin) {
         setAdminSession(data);
@@ -1174,7 +1182,9 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: queryText, language: lang, messages: currentMessages, ...(queryLocation ? { location: queryLocation } : {}) }),
       });
+      if (!resp.ok) throw new Error(`HTTP error ${resp.status}`);
       const payload = await resp.json() as ConciergeResponse;
+      if (payload.status === 'unavailable') throw new Error('catalog_unavailable');
       if (payload.schemaVersion !== 'concierge-response-v1' || typeof payload.answer !== 'string' || !Array.isArray(payload.cards)) throw new Error('invalid_response');
       if (conciergeRequest.current !== controller || controller.signal.aborted) return;
       setConciergeResponse(payload);
@@ -1187,12 +1197,16 @@ export default function App() {
       ].slice(-10));
     } catch {
       if (conciergeRequest.current !== controller) return;
-      if (import.meta.env.DEV && !controller.signal.aborted) {
+      if (!controller.signal.aborted) {
         try {
-          // Use the published snapshot, never augmented/user-submitted records.
-          const snapshot = await fetch('/data/places.json', { signal: controller.signal }).then((res) => res.json());
+          // Use loaded places or fetch published places snapshot
+          let catalog = places;
+          if (!catalog.length) {
+            const snapshot = await fetch('/data/places.json', { signal: controller.signal }).then((res) => res.json());
+            catalog = Array.isArray(snapshot) ? snapshot : (snapshot.places ?? []);
+          }
           if (conciergeRequest.current !== controller || controller.signal.aborted) return;
-          const result = retrieveAndSynthesize(queryText, snapshot.places ?? snapshot, { language: lang, messages: currentMessages, ...(queryLocation ? { location: queryLocation } : {}) });
+          const result = retrieveAndSynthesize(queryText, catalog, { language: lang, messages: currentMessages, ...(queryLocation ? { location: queryLocation } : {}) });
           setConciergeResponse(result);
           setAnswer(result.answer);
           if (result.action) setSuperpowerMode(result.action);
