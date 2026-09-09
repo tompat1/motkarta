@@ -11,9 +11,14 @@ import os
 import re
 import sys
 import time
+import urllib.request
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import requests
+
+try:
+    import requests
+except ImportError:
+    requests = None
 
 PLACES_FILE = os.path.join(os.path.dirname(__file__), "..", "public", "data", "places.json")
 OUTPUT_JSON_FILE = os.path.join(os.path.dirname(__file__), "..", "public", "data", "place_photos.json")
@@ -41,6 +46,25 @@ def is_disallowed_image_url(url: str) -> bool:
     return any(part in normalized for part in DISALLOWED_IMAGE_URL_PARTS)
 
 
+def http_get_text(url: str, headers: dict = HEADERS, timeout: int = 5) -> str | None:
+    if requests is not None:
+        try:
+            res = requests.get(url, headers=headers, timeout=timeout)
+            if res.status_code == 200:
+                return res.text
+        except Exception:
+            return None
+        return None
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            if resp.status == 200:
+                return resp.read().decode("utf-8", errors="ignore")
+    except Exception:
+        return None
+    return None
+
+
 def scrape_place_website_photos(website_url: str, place_name: str, limit: int = 3) -> list[dict]:
     """Scrape real venue photos directly from the place's official website."""
     photos = []
@@ -49,11 +73,9 @@ def scrape_place_website_photos(website_url: str, place_name: str, limit: int = 
 
     try:
         domain = urllib.parse.urlparse(website_url).netloc
-        res = requests.get(website_url, headers=HEADERS, timeout=5)
-        if res.status_code != 200:
+        html = http_get_text(website_url, headers=HEADERS, timeout=5)
+        if not html:
             return photos
-
-        html = res.text
 
         # 1. OpenGraph / Twitter meta image tags
         og_matches = re.findall(r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', html, re.I)
@@ -100,9 +122,9 @@ def search_visit_stockholm_photos(place_name: str, limit: int = 2) -> list[dict]
     try:
         query = urllib.parse.quote(f"{place_name} Stockholm")
         url = f"https://www.visitstockholm.com/api/v1/search/?q={query}"
-        res = requests.get(url, headers=HEADERS, timeout=5)
-        if res.status_code == 200:
-            data = res.json()
+        raw_text = http_get_text(url, headers=HEADERS, timeout=5)
+        if raw_text:
+            data = json.loads(raw_text)
             results = data.get("results", [])
             for r in results[:limit]:
                 img_url = r.get("image") or r.get("hero_image")

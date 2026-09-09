@@ -1,25 +1,25 @@
 {
-  "generatedAt": "2026-09-03T09:07:41Z",
-  "totalPlaces": 3961,
+  "generatedAt": "2026-09-09T06:24:32Z",
+  "totalPlaces": 3246,
   "address": {
-    "count": 3961,
+    "count": 3246,
     "percentage": 100.0,
     "target": 100.0,
     "status": "PASS"
   },
   "photos": {
-    "count": 3961,
-    "totalPhotos": 7513,
+    "count": 3246,
+    "totalPhotos": 6083,
     "percentage": 100.0,
     "target": 100.0,
     "status": "PASS"
   },
   "websites": {
-    "count": 672,
-    "percentage": 17.0
+    "count": 2001,
+    "percentage": 61.6
   },
   "coordinates": {
-    "count": 3961,
+    "count": 3246,
     "percentage": 100.0,
     "status": "PASS"
   },

@@ -14,9 +14,14 @@ verify_and_clean_photos.py - Strict Verification & Cleanup for Place Photos
 import json
 import os
 import re
-import sys
+import urllib.request
+import urllib.parse
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import requests
+
+try:
+    import requests
+except ImportError:
+    requests = None
 
 DATA_SET_FILE = os.path.join(os.path.dirname(__file__), "..", "public", "data", "place_photos.json")
 PLACES_FILE = os.path.join(os.path.dirname(__file__), "..", "public", "data", "places.json")
@@ -54,22 +59,33 @@ def is_url_alive(url: str) -> bool:
         validated_urls[url] = False
         return False
 
-    try:
-        res = requests.head(url, headers=HEADERS, timeout=4, allow_redirects=True)
-        if res.status_code == 200:
-            content_type = res.headers.get("Content-Type", "").lower()
-            if "image" in content_type or "octet-stream" in content_type or content_type == "":
-                validated_urls[url] = True
-                return True
-        # Try GET request if HEAD returns 405 or non-200
-        res_get = requests.get(url, headers=HEADERS, timeout=4, stream=True)
-        if res_get.status_code == 200:
-            content_type = res_get.headers.get("Content-Type", "").lower()
-            if "image" in content_type or "octet-stream" in content_type:
-                validated_urls[url] = True
-                return True
-    except Exception:
-        pass
+    if requests is not None:
+        try:
+            res = requests.head(url, headers=HEADERS, timeout=4, allow_redirects=True)
+            if res.status_code == 200:
+                content_type = res.headers.get("Content-Type", "").lower()
+                if "image" in content_type or "octet-stream" in content_type or content_type == "":
+                    validated_urls[url] = True
+                    return True
+            res_get = requests.get(url, headers=HEADERS, timeout=4, stream=True)
+            if res_get.status_code == 200:
+                content_type = res_get.headers.get("Content-Type", "").lower()
+                if "image" in content_type or "octet-stream" in content_type:
+                    validated_urls[url] = True
+                    return True
+        except Exception:
+            pass
+    else:
+        try:
+            req = urllib.request.Request(url, headers=HEADERS)
+            with urllib.request.urlopen(req, timeout=4) as resp:
+                if resp.status == 200:
+                    content_type = resp.headers.get("Content-Type", "").lower()
+                    if "image" in content_type or "octet-stream" in content_type or content_type == "":
+                        validated_urls[url] = True
+                        return True
+        except Exception:
+            pass
 
     validated_urls[url] = False
     return False
