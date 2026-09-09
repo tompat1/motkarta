@@ -1,7 +1,7 @@
 {
   "updatedAt": "2026-09-09T06:36:04Z",
-  "totalPlaces": 1231,
-  "totalPhotos": 2995,
+  "totalPlaces": 1227,
+  "totalPhotos": 2963,
   "photosByPlace": {
     "3046923730": [
       {
@@ -1993,16 +1993,6 @@
         "credit": "Official Website (malarpaviljongen.se)",
         "width": null,
         "height": null
-      },
-      {
-        "id": "photo-3852786077-2",
-        "placeId": 3852786077,
-        "url": "https://ny.malarpaviljongen.se/wp-content/uploads/2021/03/Namnlöst-4-1024x157.png",
-        "thumbnailUrl": "https://ny.malarpaviljongen.se/wp-content/uploads/2021/03/Namnlöst-4-1024x157.png",
-        "caption": "Mälarpaviljongen (malarpaviljongen.se)",
-        "credit": "Official Website (malarpaviljongen.se)",
-        "width": null,
-        "height": null
       }
     ],
     "887943746": [
@@ -2146,16 +2136,6 @@
       }
     ],
     "795743166": [
-      {
-        "id": "photo-795743166-1",
-        "placeId": 795743166,
-        "url": "https://static.thatsup.website/481/51165/Namnlös-13.jpg?v=1738661406",
-        "thumbnailUrl": "https://static.thatsup.website/481/51165/Namnlös-13.jpg?v=1738661406",
-        "caption": "Bistro V (Officiell bild)",
-        "credit": "Official Website (www.bistrobestick.se)",
-        "width": null,
-        "height": null
-      },
       {
         "id": "photo-795743166-2",
         "placeId": 795743166,
@@ -3685,16 +3665,6 @@
     ],
     "340049772": [
       {
-        "id": "photo-340049772-1",
-        "placeId": 340049772,
-        "url": "https://static.thatsup.website/385/37599/Namnlöst-3.jpg?v=1718365218",
-        "thumbnailUrl": "https://static.thatsup.website/385/37599/Namnlöst-3.jpg?v=1718365218",
-        "caption": "Ruben (Officiell bild)",
-        "credit": "Official Website (rubenrestaurang.se)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-340049772-2",
         "placeId": 340049772,
         "url": "https://static.thatsup.website/385/57753/responsive-images/FUJI8040___media_library_original_4160_6240.jpeg?v=1745586381",
@@ -4052,16 +4022,6 @@
       }
     ],
     "1310155243": [
-      {
-        "id": "photo-1310155243-1",
-        "placeId": 1310155243,
-        "url": "https://tabbouli.eu/wp-content/uploads/2019/09/Meze-sällskap.jpg",
-        "thumbnailUrl": "https://tabbouli.eu/wp-content/uploads/2019/09/Meze-sällskap.jpg",
-        "caption": "Tabbouli (Officiell bild)",
-        "credit": "Official Website (tabbouli.eu)",
-        "width": null,
-        "height": null
-      },
       {
         "id": "photo-1310155243-2",
         "placeId": 1310155243,
@@ -4958,26 +4918,6 @@
       }
     ],
     "829267978": [
-      {
-        "id": "photo-829267978-1",
-        "placeId": 829267978,
-        "url": "https://tehrangrill.se/wp-content/uploads/2022/04/Tehran-Grill-soder-vasa-header-fb.jpg",
-        "thumbnailUrl": "https://tehrangrill.se/wp-content/uploads/2022/04/Tehran-Grill-soder-vasa-header-fb.jpg",
-        "caption": "Tehran Grill (Officiell bild)",
-        "credit": "Official Website (tehrangrill.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-829267978-2",
-        "placeId": 829267978,
-        "url": "https://tehrangrill.se/wp-content/uploads/elementor/thumbs/logo5-of40ig650jgi4hqfsp7gk8yg75xdds3nf41j1w1aj6.png",
-        "thumbnailUrl": "https://tehrangrill.se/wp-content/uploads/elementor/thumbs/logo5-of40ig650jgi4hqfsp7gk8yg75xdds3nf41j1w1aj6.png",
-        "caption": "Tehran Grill (tehrangrill.se)",
-        "credit": "Official Website (tehrangrill.se)",
-        "width": null,
-        "height": null
-      },
       {
         "id": "photo-829267978-3",
         "placeId": 829267978,
@@ -6378,16 +6318,6 @@
       }
     ],
     "1246724115": [
-      {
-        "id": "photo-1246724115-1",
-        "placeId": 1246724115,
-        "url": "http://cafeblabar.se/wp-content/uploads/2019/04/logga-95-blå.png",
-        "thumbnailUrl": "http://cafeblabar.se/wp-content/uploads/2019/04/logga-95-blå.png",
-        "caption": "Café Blåbär (cafeblabar.se)",
-        "credit": "Official Website (cafeblabar.se)",
-        "width": null,
-        "height": null
-      },
       {
         "id": "photo-1246724115-2",
         "placeId": 1246724115,
@@ -9373,16 +9303,6 @@
         "placeId": 3064068632,
         "url": "https://www.pizzeriasoder.nu/wp-content/uploads/revslider/video-media/Pizza-Yapimi_1-scaled.jpeg",
         "thumbnailUrl": "https://www.pizzeriasoder.nu/wp-content/uploads/revslider/video-media/Pizza-Yapimi_1-scaled.jpeg",
-        "caption": "Pizzeria Söder (www.pizzeriasoder.nu)",
-        "credit": "Official Website (www.pizzeriasoder.nu)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-3064068632-2",
-        "placeId": 3064068632,
-        "url": "https://www.pizzeriasoder.nu/wp-content/uploads/2018/05/cropped-pizzeria-söder-logo.png",
-        "thumbnailUrl": "https://www.pizzeriasoder.nu/wp-content/uploads/2018/05/cropped-pizzeria-söder-logo.png",
         "caption": "Pizzeria Söder (www.pizzeriasoder.nu)",
         "credit": "Official Website (www.pizzeriasoder.nu)",
         "width": null,
@@ -13399,16 +13319,6 @@
     ],
     "3314267190": [
       {
-        "id": "photo-3314267190-1",
-        "placeId": 3314267190,
-        "url": "https://www-static.cykelcafe.se/wp-content/uploads/2019/03/Le-Mond-röd.png",
-        "thumbnailUrl": "https://www-static.cykelcafe.se/wp-content/uploads/2019/03/Le-Mond-röd.png",
-        "caption": "Cykelcafé Le Mond (cykelcafe.se)",
-        "credit": "Official Website (cykelcafe.se)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-3314267190-2",
         "placeId": 3314267190,
         "url": "https://www-static.cykelcafe.se/wp-content/uploads/2020/08/TC_2020_LL_GREEN_BG.png",
@@ -15137,18 +15047,6 @@
         "height": null
       }
     ],
-    "2247711505": [
-      {
-        "id": "photo-2247711505-1",
-        "placeId": 2247711505,
-        "url": "http://media1.spicegarden.se/2021/08/Skärmavbild-2021-08-07-kl.-14.28.23-585x535.png",
-        "thumbnailUrl": "http://media1.spicegarden.se/2021/08/Skärmavbild-2021-08-07-kl.-14.28.23-585x535.png",
-        "caption": "Spice Garden (spicegarden.se)",
-        "credit": "Official Website (spicegarden.se)",
-        "width": null,
-        "height": null
-      }
-    ],
     "323966410": [
       {
         "id": "photo-323966410-1",
@@ -16325,38 +16223,6 @@
         "thumbnailUrl": "https://ardbegembassy.se/wp-content/uploads/elementor/thumbs/20-scaled-1-rkym93cyj2gdrl7dh8rdcmomarnzt5pel4sqptausw.jpg",
         "caption": "Ardbeg Embassy (www.ardbegembassy.se)",
         "credit": "Official Website (www.ardbegembassy.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "1549629132": [
-      {
-        "id": "photo-1549629132-1",
-        "placeId": 1549629132,
-        "url": "http://bapuji.se/assets/img/bapuji white logo.png",
-        "thumbnailUrl": "http://bapuji.se/assets/img/bapuji white logo.png",
-        "caption": "Bapuji (bapuji.se)",
-        "credit": "Official Website (bapuji.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-1549629132-2",
-        "placeId": 1549629132,
-        "url": "http://bapuji.se/assets/img/Website Header Image.jpeg",
-        "thumbnailUrl": "http://bapuji.se/assets/img/Website Header Image.jpeg",
-        "caption": "Bapuji (bapuji.se)",
-        "credit": "Official Website (bapuji.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-1549629132-3",
-        "placeId": 1549629132,
-        "url": "http://bapuji.se/assets/img/Website Background (final).png",
-        "thumbnailUrl": "http://bapuji.se/assets/img/Website Background (final).png",
-        "caption": "Bapuji (bapuji.se)",
-        "credit": "Official Website (bapuji.se)",
         "width": null,
         "height": null
       }
@@ -21129,30 +20995,10 @@
     ],
     "2498403218": [
       {
-        "id": "photo-2498403218-1",
-        "placeId": 2498403218,
-        "url": "https://www.sushinet.se/Imagetoimage_enhancement_using_the_provided_refere_delpmaspu (2).png",
-        "thumbnailUrl": "https://www.sushinet.se/Imagetoimage_enhancement_using_the_provided_refere_delpmaspu (2).png",
-        "caption": "Yours Sushi (www.sushinet.se)",
-        "credit": "Official Website (www.sushinet.se)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-2498403218-2",
         "placeId": 2498403218,
         "url": "https://www.sushinet.se/pokebowl.png",
         "thumbnailUrl": "https://www.sushinet.se/pokebowl.png",
-        "caption": "Yours Sushi (www.sushinet.se)",
-        "credit": "Official Website (www.sushinet.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-2498403218-3",
-        "placeId": 2498403218,
-        "url": "https://www.sushinet.se/__prompt_professional_highend_food_photography_of__delpmaspu (1).png",
-        "thumbnailUrl": "https://www.sushinet.se/__prompt_professional_highend_food_photography_of__delpmaspu (1).png",
         "caption": "Yours Sushi (www.sushinet.se)",
         "credit": "Official Website (www.sushinet.se)",
         "width": null,
@@ -21333,30 +21179,10 @@
     ],
     "1076795293": [
       {
-        "id": "photo-1076795293-1",
-        "placeId": 1076795293,
-        "url": "https://hinodesushi.se/wp-content/uploads/2023/12/square-sushi-bålsta5.webp",
-        "thumbnailUrl": "https://hinodesushi.se/wp-content/uploads/2023/12/square-sushi-bålsta5.webp",
-        "caption": "Hinode Wok (www.asahisushi.se)",
-        "credit": "Official Website (www.asahisushi.se)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-1076795293-2",
         "placeId": 1076795293,
         "url": "https://hinodesushi.se/wp-content/uploads/2023/11/erbjudande.webp",
         "thumbnailUrl": "https://hinodesushi.se/wp-content/uploads/2023/11/erbjudande.webp",
-        "caption": "Hinode Wok (www.asahisushi.se)",
-        "credit": "Official Website (www.asahisushi.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-1076795293-3",
-        "placeId": 1076795293,
-        "url": "https://hinodesushi.se/wp-content/uploads/2023/12/square-hinodesushi-älvsjö.webp",
-        "thumbnailUrl": "https://hinodesushi.se/wp-content/uploads/2023/12/square-hinodesushi-älvsjö.webp",
         "caption": "Hinode Wok (www.asahisushi.se)",
         "credit": "Official Website (www.asahisushi.se)",
         "width": null,
@@ -21720,16 +21546,6 @@
       }
     ],
     "814665251": [
-      {
-        "id": "photo-814665251-1",
-        "placeId": 814665251,
-        "url": "https://vinovento.se/VinoVento logo png-01.png",
-        "thumbnailUrl": "https://vinovento.se/VinoVento logo png-01.png",
-        "caption": "Vino Vento (vinovento.se)",
-        "credit": "Official Website (vinovento.se)",
-        "width": null,
-        "height": null
-      },
       {
         "id": "photo-814665251-2",
         "placeId": 814665251,
@@ -24037,26 +23853,6 @@
     ],
     "3443639558": [
       {
-        "id": "photo-3443639558-1",
-        "placeId": 3443639558,
-        "url": "https://sultancafe.se/wp-content/uploads/2019/07/Sultan-Sköndal_logo.jpg",
-        "thumbnailUrl": "https://sultancafe.se/wp-content/uploads/2019/07/Sultan-Sköndal_logo.jpg",
-        "caption": "Sultan Café & Bar (sultancafe.se)",
-        "credit": "Official Website (sultancafe.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-3443639558-2",
-        "placeId": 3443639558,
-        "url": "https://sultancafe.se/wp-content/uploads/2019/07/Sultan-Sköndal_logo.png",
-        "thumbnailUrl": "https://sultancafe.se/wp-content/uploads/2019/07/Sultan-Sköndal_logo.png",
-        "caption": "Sultan Café & Bar (sultancafe.se)",
-        "credit": "Official Website (sultancafe.se)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-3443639558-3",
         "placeId": 3443639558,
         "url": "https://sultancafe.se/wp-content/uploads/2021/03/GREKISK-SALLAD.jpg",
@@ -24161,28 +23957,6 @@
         "thumbnailUrl": "https://sushiyama.se/wp-content/uploads/2021/06/googleplay-black.png",
         "caption": "Sushi Yama (sushiyama.se)",
         "credit": "Official Website (sushiyama.se)",
-        "width": null,
-        "height": null
-      }
-    ],
-    "749136886": [
-      {
-        "id": "photo-749136886-1",
-        "placeId": 749136886,
-        "url": "https://media.ladansthlm.se/2020/12/Lådan_CMYK_Genomskinlig.png",
-        "thumbnailUrl": "https://media.ladansthlm.se/2020/12/Lådan_CMYK_Genomskinlig.png",
-        "caption": "Lådan (www.ladansthlm.se)",
-        "credit": "Official Website (www.ladansthlm.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-749136886-2",
-        "placeId": 749136886,
-        "url": "https://media.ladansthlm.se/2021/01/Å-217x300.png",
-        "thumbnailUrl": "https://media.ladansthlm.se/2021/01/Å-217x300.png",
-        "caption": "Lådan (www.ladansthlm.se)",
-        "credit": "Official Website (www.ladansthlm.se)",
         "width": null,
         "height": null
       }
@@ -25591,16 +25365,6 @@
     ],
     "2692176703": [
       {
-        "id": "photo-2692176703-1",
-        "placeId": 2692176703,
-        "url": "https://www.bistrobromma.com/wp-content/uploads/Skärmklippt-loga-stor-300x119.jpg",
-        "thumbnailUrl": "https://www.bistrobromma.com/wp-content/uploads/Skärmklippt-loga-stor-300x119.jpg",
-        "caption": "Bistro Bromma (www.bistrobromma.com)",
-        "credit": "Official Website (www.bistrobromma.com)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-2692176703-2",
         "placeId": 2692176703,
         "url": "https://www.bistrobromma.com/wp-content/uploads/till-webb-scaled-e1768810815856-1024x215.jpg",
@@ -25739,16 +25503,6 @@
         "placeId": 3987543711,
         "url": "https://kafeplattan.se/wp-content/uploads/2025/10/KP_Lunch_WEB-1.jpg",
         "thumbnailUrl": "https://kafeplattan.se/wp-content/uploads/2025/10/KP_Lunch_WEB-1.jpg",
-        "caption": "Kafé Plattan (kafeplattan.se)",
-        "credit": "Official Website (kafeplattan.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-3987543711-3",
-        "placeId": 3987543711,
-        "url": "https://kafeplattan.se/wp-content/uploads/2021/03/Skärmavbild-2021-03-28-kl.-11.10.13.png",
-        "thumbnailUrl": "https://kafeplattan.se/wp-content/uploads/2021/03/Skärmavbild-2021-03-28-kl.-11.10.13.png",
         "caption": "Kafé Plattan (kafeplattan.se)",
         "credit": "Official Website (kafeplattan.se)",
         "width": null,
@@ -26448,16 +26202,6 @@
       }
     ],
     "1924309807": [
-      {
-        "id": "photo-1924309807-1",
-        "placeId": 1924309807,
-        "url": "https://schmaltz.se/wp-content/uploads/2019/02/Skärmklipp-2019-02-11-15.54.39.png",
-        "thumbnailUrl": "https://schmaltz.se/wp-content/uploads/2019/02/Skärmklipp-2019-02-11-15.54.39.png",
-        "caption": "Schmaltz (Officiell bild)",
-        "credit": "Official Website (schmaltz.se)",
-        "width": null,
-        "height": null
-      },
       {
         "id": "photo-1924309807-2",
         "placeId": 1924309807,
@@ -29345,26 +29089,6 @@
         "credit": "Official Website (grilloversten.se)",
         "width": null,
         "height": null
-      },
-      {
-        "id": "photo-2338675361-2",
-        "placeId": 2338675361,
-        "url": "https://www.grilloversten.se/wp-content/uploads/2026/04/Artboard-–-11.png",
-        "thumbnailUrl": "https://www.grilloversten.se/wp-content/uploads/2026/04/Artboard-–-11.png",
-        "caption": "Grillöversten (grilloversten.se)",
-        "credit": "Official Website (grilloversten.se)",
-        "width": null,
-        "height": null
-      },
-      {
-        "id": "photo-2338675361-3",
-        "placeId": 2338675361,
-        "url": "https://www.grilloversten.se/wp-content/uploads/2026/04/Artboard-–-12.png",
-        "thumbnailUrl": "https://www.grilloversten.se/wp-content/uploads/2026/04/Artboard-–-12.png",
-        "caption": "Grillöversten (grilloversten.se)",
-        "credit": "Official Website (grilloversten.se)",
-        "width": null,
-        "height": null
       }
     ],
     "824172643": [
@@ -29793,16 +29517,6 @@
     ],
     "2167835524": [
       {
-        "id": "photo-2167835524-1",
-        "placeId": 2167835524,
-        "url": "https://restaurangponti.se/meta/",
-        "thumbnailUrl": "https://restaurangponti.se/meta/",
-        "caption": "Ponti (Officiell bild)",
-        "credit": "Official Website (restaurangponti.se)",
-        "width": null,
-        "height": null
-      },
-      {
         "id": "photo-2167835524-2",
         "placeId": 2167835524,
         "url": "https://media.restaurangponti.se/uploads/2025/12/ponti-logo-320x320-1-628x.png",
@@ -30147,16 +29861,6 @@
         "credit": "Official Website (www.restaurangaerla.se)",
         "width": null,
         "height": null
-      },
-      {
-        "id": "photo-2656147410-3",
-        "placeId": 2656147410,
-        "url": "https://www.restaurangaerla.se/assets/img/MICHELIN 2025_Bibl_White.png",
-        "thumbnailUrl": "https://www.restaurangaerla.se/assets/img/MICHELIN 2025_Bibl_White.png",
-        "caption": "Ärla (www.restaurangaerla.se)",
-        "credit": "Official Website (www.restaurangaerla.se)",
-        "width": null,
-        "height": null
       }
     ],
     "2535410277": [
@@ -30428,16 +30132,6 @@
       }
     ],
     "856156462": [
-      {
-        "id": "photo-856156462-1",
-        "placeId": 856156462,
-        "url": "https://static.thatsup.website/566/69619/Namnlös-1.jpg?v=1760713271",
-        "thumbnailUrl": "https://static.thatsup.website/566/69619/Namnlös-1.jpg?v=1760713271",
-        "caption": "OSO Omakase (Officiell bild)",
-        "credit": "Official Website (osomakase.com)",
-        "width": null,
-        "height": null
-      },
       {
         "id": "photo-856156462-2",
         "placeId": 856156462,
@@ -31125,18 +30819,6 @@
         "height": null
       }
     ],
-    "576347597": [
-      {
-        "id": "photo-576347597-1",
-        "placeId": 576347597,
-        "url": "https://bistromirabelle.se/wp-content/uploads/2021/09/logo_nummer_grön-1-1-300x300.png",
-        "thumbnailUrl": "https://bistromirabelle.se/wp-content/uploads/2021/09/logo_nummer_grön-1-1-300x300.png",
-        "caption": "Bistro Mirabelle (bistromirabelle.se)",
-        "credit": "Official Website (bistromirabelle.se)",
-        "width": null,
-        "height": null
-      }
-    ],
     "1032185095": [
       {
         "id": "photo-1032185095-1",
@@ -31646,16 +31328,6 @@
       }
     ],
     "396764833": [
-      {
-        "id": "photo-396764833-1",
-        "placeId": 396764833,
-        "url": "https://kajsasfisk.se/wp-content/uploads/2022/10/Namnlos-280-×-280-px-280-×-120-px-1.png",
-        "thumbnailUrl": "https://kajsasfisk.se/wp-content/uploads/2022/10/Namnlos-280-×-280-px-280-×-120-px-1.png",
-        "caption": "Kajsas Fisk (kajsasfisk.se)",
-        "credit": "Official Website (kajsasfisk.se)",
-        "width": null,
-        "height": null
-      },
       {
         "id": "photo-396764833-2",
         "placeId": 396764833,
