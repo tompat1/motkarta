@@ -108,7 +108,9 @@ import {
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../lib/concierge/response";
-import type { ConciergeResponse } from "../lib/concierge/contracts";
+import type { ConciergeCard, ConciergeResponse } from "../lib/concierge/contracts";
+import { resolveConciergeMapPlace } from "../lib/concierge/map-identity";
+import { normalize } from "../lib/concierge/facts";
 import { CartDrawer } from "./components/CartDrawer";
 import {
   MobileFilterBottomSheet,
@@ -593,7 +595,112 @@ export default function App() {
     [lang],
   );
 
+  const conciergeCards = useMemo<Array<ConciergeCard | import("../lib/concierge-parser").ParsedConciergeCard>>(() => {
+    if (!answer) return [];
+    if (conciergeResponse && Array.isArray(conciergeResponse.cards) && conciergeResponse.cards.length > 0) {
+      return conciergeResponse.cards;
+    }
+    const parsed = parseConciergeAnswer(answer);
+    return parsed.cards || [];
+  }, [answer, conciergeResponse]);
+
+  const conciergePlaces = useMemo<ScoredPlace[]>(() => {
+    if (!conciergeCards.length) return [];
+
+    const resolved: ScoredPlace[] = [];
+    for (let idx = 0; idx < conciergeCards.length; idx++) {
+      const card = conciergeCards[idx];
+      let match: ScoredPlace | undefined;
+
+      const cardOsmIdentity = "osmIdentity" in card ? card.osmIdentity : undefined;
+      const cardLat = "latitude" in card ? card.latitude : undefined;
+      const cardLon = "longitude" in card ? card.longitude : undefined;
+
+      // 1. Strict reconciliation bridge if response is available
+      if (conciergeResponse) {
+        match = resolveConciergeMapPlace(card as ConciergeCard, scoredPlaces) as ScoredPlace | undefined;
+      }
+
+      // 2. Direct ID match
+      if (!match && card.id !== undefined) {
+        match = scoredPlaces.find((p) => p.id === card.id);
+      }
+
+      // 3. OSM identity / alias match
+      if (!match && cardOsmIdentity) {
+        match = scoredPlaces.find(
+          (p) => p.osmIdentity === cardOsmIdentity || p.osmAliases?.includes(cardOsmIdentity)
+        );
+      }
+
+      // 4. Normalized name match
+      if (!match) {
+        const normCardName = normalize(card.name);
+        match = scoredPlaces.find((p) => normalize(p.name) === normCardName);
+      }
+
+      // 5. Cleaned name match (stripping parentheses)
+      const cardNameClean = card.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
+      if (!match) {
+        match = scoredPlaces.find(
+          (p) => p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase() === cardNameClean
+        );
+      }
+
+      // 6. Substring / prefix match
+      if (!match) {
+        match =
+          scoredPlaces.find((p) => {
+            const pClean = p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
+            return pClean.startsWith(cardNameClean) || cardNameClean.startsWith(pClean);
+          }) ||
+          scoredPlaces.find((p) =>
+            p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase().includes(cardNameClean)
+          ) ||
+          scoredPlaces.find((p) => {
+            const pClean = p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
+            return cardNameClean.includes(pClean) && pClean.length > 4;
+          });
+      }
+
+      // 7. If card has valid coordinates, synthesize a ScoredPlace so it is guaranteed to show on the map!
+      if (
+        !match &&
+        typeof cardLat === "number" &&
+        typeof cardLon === "number" &&
+        cardLat !== 0 &&
+        cardLon !== 0 &&
+        scoredPlaces.length > 0
+      ) {
+        const cardKind = ("kind" in card && typeof card.kind === "string" ? card.kind : "Restaurant") as import("../lib/scoring").EstablishmentType;
+        const template = scoredPlaces[0];
+        const syntheticPlace: PlaceInput = {
+          ...template,
+          id: typeof card.id === "number" ? card.id : 980000 + idx,
+          name: card.name,
+          kind: cardKind,
+          area: card.area || "Stockholm",
+          latitude: cardLat,
+          longitude: cardLon,
+          tags: [],
+          website: card.website,
+          osmIdentity: cardOsmIdentity,
+        };
+        match = scorePlace(syntheticPlace, preferences);
+      }
+
+      if (match && !resolved.some((r) => r.id === match!.id)) {
+        resolved.push(match);
+      }
+    }
+
+    return resolved;
+  }, [conciergeCards, conciergeResponse, preferences, scoredPlaces]);
+
   const ranked = useMemo(() => {
+    if (conciergePlaces.length > 0) {
+      return conciergePlaces;
+    }
     const baseFilteredPlaces = scoredPlaces
       .filter((place) => matchesEstablishmentFilter(place, kind, savedPlaceIds))
       .filter((place) => cuisine === allCuisines || cuisineParts(place).includes(cuisine))
@@ -836,6 +943,7 @@ export default function App() {
   const handleSelectPlace = useCallback(
     (id: number) => {
       setSelected(id);
+      setMobileViewMode("map");
       recordRecommendationEvents([{ establishmentId: id, eventType: "profile_view", queryContext: { surface: "map" } }]);
       const isVisibleInRanked = ranked.some((p) => p.id === id);
       if (!isVisibleInRanked) {
@@ -844,7 +952,7 @@ export default function App() {
         setQuery("");
       }
     },
-    [ranked, recordRecommendationEvents],
+    [allCuisines, ranked, recordRecommendationEvents],
   );
 
   const handleViewPlaceOnMap = useCallback((place: ScoredPlace) => {
@@ -859,8 +967,15 @@ export default function App() {
   }, []);
 
   const mapPlaces = useMemo(
-    () => (active && !visibleRanked.some((p) => p.id === active.id) ? [active, ...visibleRanked] : visibleRanked),
-    [active, visibleRanked],
+    () => {
+      if (conciergePlaces.length > 0) {
+        return active && !conciergePlaces.some((p) => p.id === active.id)
+          ? [active, ...conciergePlaces]
+          : conciergePlaces;
+      }
+      return active && !visibleRanked.some((p) => p.id === active.id) ? [active, ...visibleRanked] : visibleRanked;
+    },
+    [active, conciergePlaces, visibleRanked],
   );
 
   const [isConciergeFocused, setIsConciergeFocused] = useState(false);
@@ -1577,8 +1692,7 @@ export default function App() {
                 type="button"
                 className="search-clear-btn"
                 onClick={() => {
-                  setQuery("");
-                  setConcierge("");
+                  clearConciergeState();
                   setAutocompleteIndex(-1);
                 }}
                 aria-label="Clear search field"

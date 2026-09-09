@@ -36,9 +36,10 @@ export function ConciergeAnswerView({
   const [feedbackType, setFeedbackType] = useState<"up" | "down">("up");
 
   const handleSelect = (placeName: string, explicitId?: number) => {
-    if (explicitId) {
+    if (explicitId !== undefined) {
       onSelectPlace(explicitId);
-      document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+      const target = document.getElementById("place-workspace") || document.getElementById("map");
+      target?.scrollIntoView({ behavior: "smooth" });
       return;
     }
 
@@ -67,7 +68,8 @@ export function ConciergeAnswerView({
 
     if (match) {
       onSelectPlace(match.id);
-      document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+      const target = document.getElementById("place-workspace") || document.getElementById("map");
+      target?.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -123,9 +125,10 @@ export function ConciergeAnswerView({
 
       {parsed.cards.map((card, idx) => {
         const cardNameClean = card.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
-        const matchedPlace = response ? resolveConciergeMapPlace(response.cards[idx], places) :
+        const matchedPlace =
+          (response && response.cards[idx] ? resolveConciergeMapPlace(response.cards[idx], places) : undefined) ||
           (card.id !== undefined ? places.find((p) => p.id === card.id) : undefined) ||
-          (!response ? places.find((p) => p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase() === cardNameClean) ||
+          places.find((p) => p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase() === cardNameClean) ||
           places.find((p) => {
             const pClean = p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
             return pClean.startsWith(cardNameClean) || cardNameClean.startsWith(pClean);
@@ -134,7 +137,7 @@ export function ConciergeAnswerView({
           places.find((p) => {
             const pClean = p.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
             return cardNameClean.includes(pClean) && pClean.length > 4;
-          }) : undefined);
+          });
 
         const areaStr = card.area ?? matchedPlace?.area ?? "Stockholm";
         const hoursConf = card.hoursConfidence ?? (lang === "sv" ? "Uppgift saknas" : "Unknown");
@@ -151,7 +154,7 @@ export function ConciergeAnswerView({
               <h3 className="concierge-card-title">
                 <button
                   type="button"
-                  disabled={Boolean(response && !matchedPlace)}
+                  disabled={!matchedPlace && card.id === undefined}
                   onClick={() => handleSelect(card.name, matchedPlace?.id ?? card.id)}
                   title="Click to view and highlight on map"
                 >
@@ -221,8 +224,8 @@ export function ConciergeAnswerView({
               <button
                 type="button"
                 className="concierge-btn primary"
-                disabled={Boolean(response && !matchedPlace)}
-                  onClick={() => handleSelect(card.name, matchedPlace?.id ?? card.id)}
+                disabled={!matchedPlace && card.id === undefined}
+                onClick={() => handleSelect(card.name, matchedPlace?.id ?? card.id)}
               >
                 <MapPin size={14} weight="fill" /> {lang === 'sv' ? 'Visa på kartan' : 'Select on Map'}
               </button>

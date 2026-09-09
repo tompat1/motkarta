@@ -11,6 +11,7 @@ import { onRequestPost, onRequestGet, validateRequest } from '../functions/api/c
 import { rowsToPlaceInputs } from '../lib/place-records.ts';
 import { VERSIONS } from '../lib/concierge/contracts.ts';
 import { parseIntent } from '../lib/concierge/intent.ts';
+import { resolveConciergeMapPlace } from '../lib/concierge/map-identity.ts';
 const places = JSON.parse(await readFile(new URL('./fixtures/concierge/places.json', import.meta.url), 'utf8')).places;
 const fixture = (overrides = {}) => ({ ...places[0], ...overrides });
 const ai = { run: async () => ({ data: [Array(1024).fill(0.1)] }) };
@@ -311,4 +312,24 @@ test('D1 loader maps opening_hours and price_sek when present', () => {
   assert.equal(loaded.openingHours, 'Mo-Su 11:00-22:00');
   assert.equal(loaded.priceSEK, '135-240');
 });
+
+test('all concierge result cards have valid map coordinates and resolve to places for map display', () => {
+  const thaiCatalog = [
+    fixture({ id: 801, name: 'Elefant Thai', area: 'Södermalm', tags: ['thai'], cuisine: 'thai', latitude: 59.31, longitude: 18.08, osmIdentity: 'node:801' }),
+    fixture({ id: 802, name: 'Koh Samui', area: 'Norrmalm', tags: ['thai'], cuisine: 'thai', latitude: 59.33, longitude: 18.06, osmIdentity: 'node:802' }),
+    fixture({ id: 803, name: 'Chao Praya', area: 'Kungsholmen', tags: ['thai'], cuisine: 'thai', latitude: 59.32, longitude: 18.04, osmIdentity: 'node:803' }),
+  ];
+  const res = retrieveAndSynthesize('bästa thai', thaiCatalog, { language: 'sv' });
+  assert.equal(res.cards.length, 3, 'Should return all 3 thai candidates');
+  for (const card of res.cards) {
+    assert.equal(typeof card.latitude, 'number', `${card.name} must have numeric latitude`);
+    assert.equal(typeof card.longitude, 'number', `${card.name} must have numeric longitude`);
+    assert.ok(card.latitude > 59 && card.latitude < 60, `${card.name} latitude must be in Stockholm range`);
+    assert.ok(card.longitude > 17 && card.longitude < 19, `${card.name} longitude must be in Stockholm range`);
+    const resolved = resolveConciergeMapPlace(card, thaiCatalog);
+    assert.ok(resolved, `Card ${card.name} must resolve to a map place`);
+    assert.equal(resolved.id, card.id);
+  }
+});
+
 
