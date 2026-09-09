@@ -23,6 +23,8 @@ export type PlaceRow = {
   address: string | null;
   website: string | null;
   price_level: number | null;
+  opening_hours?: string | null;
+  price_sek?: string | null;
   latitude: number | null;
   longitude: number | null;
   chain_status: string;
@@ -132,6 +134,8 @@ export const placeQuery = `
     e.address,
     e.website,
     e.price_level,
+    e.opening_hours,
+    e.price_sek,
     e.latitude,
     e.longitude,
     e.chain_status,
@@ -259,6 +263,8 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
     cuisine: cuisines.length ? cuisines.join(";") : undefined,
     area,
     address: row.address ?? undefined,
+    openingHours: row.opening_hours ?? undefined,
+    priceSEK: row.price_sek ?? undefined,
     note: row.description,
     tags: tags.length ? tags : fallbackTags(row),
     evidenceLabel: evidenceRows.length

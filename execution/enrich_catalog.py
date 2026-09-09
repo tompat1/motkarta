@@ -702,8 +702,10 @@ def extract_facts_from_html(
 
     # 1. Opening Hours
     hours_patterns = [
-        r"(?:öppettider|opening hours)[:\s]*([a-zåäö0-9\s:,\.-–]{5,60})",
-        r"\b(?:mån|tis|ons|tors|fre|lör|sön|mo|tu|we|th|fr|sa|su)[-–a-z\s]*\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}\b",
+        r"(?:öppettider|opening hours)[:\s]*([a-zåäö0-9\s:,\.-–]{5,80})",
+        r"\b(?:mån(?:dag)?|tis(?:dag)?|ons(?:dag)?|tors(?:dag)?|fre(?:dag)?|lör(?:dag)?|sön(?:dag)?|mo|tu|we|th|fr|sa|su)[-–a-z\s]*\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}\b",
+        r"\b(?:vardagar|helger|alla dagar)[:\s]*\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}\b",
+        r"\b(?:mån|tis|ons|tors|fre|lör|sön)[-–a-z\s]*\d{1,2}\s*[-–]\s*\d{1,2}\b",
     ]
     for pattern in hours_patterns:
         match = re.search(pattern, text_lower)
@@ -776,9 +778,11 @@ def extract_facts_from_html(
             })
 
     # 4. Price pattern
-    price_matches = re.findall(r"\b(\d{2,3})\s*(?:kr|sek|:-)", text_lower)
+    price_matches = re.findall(r"\b(\d{2,4})\s*(?:kr|sek|:-)", text_lower)
+    if not price_matches:
+        price_matches = re.findall(r"(?:lunch|dagens|meny|pris|från)[:\s]*(\d{2,4})\s*(?:kr|sek|:-)?", text_lower)
     if price_matches:
-        prices = [int(p) for p in price_matches if 40 <= int(p) <= 800]
+        prices = [int(p) for p in price_matches if 40 <= int(p) <= 1200]
         if prices:
             min_p, max_p = min(prices), max(prices)
             price_val = f"{min_p} SEK" if min_p == max_p else f"{min_p} - {max_p} SEK"
@@ -792,11 +796,33 @@ def extract_facts_from_html(
     return facts
 
 
+def venue_enrichment_priority(place: dict[str, Any]) -> int:
+    """Prioritize venues for website enrichment.
+    0: Missing both openingHours and priceSEK (must-have priority)
+    1: Missing openingHours
+    2: Missing priceSEK
+    3: Generic fallback hours/prices
+    4: Already enriched
+    """
+    has_custom_hours = bool(place.get("openingHours") and not place.get("openingHours", "").startswith("Mo-Sa 17:00-23:00") and not place.get("openingHours", "").startswith("Mo-Fr 07:30-18:00"))
+    has_custom_price = bool(place.get("priceSEK") and place.get("priceSEK") not in ["45–145", "160–350"])
+
+    if not place.get("openingHours") and not place.get("priceSEK"):
+        return 0
+    if not place.get("openingHours"):
+        return 1
+    if not place.get("priceSEK"):
+        return 2
+    if not has_custom_hours or not has_custom_price:
+        return 3
+    return 4
+
+
 def scrape_venue_websites(
     places: list[dict[str, Any]],
     limit: int = 0,
 ) -> dict[int, list[dict[str, Any]]]:
-    """Scrape venue websites for places with valid website URLs."""
+    """Scrape venue websites for places with valid website URLs, prioritizing missing must-have data."""
     facts_by_id: dict[int, list[dict[str, Any]]] = {}
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -812,10 +838,13 @@ def scrape_venue_websites(
         if url and url.startswith("http"):
             candidates.append({"place": place, "url": url})
 
+    # Prioritize places missing must-have data (openingHours & priceSEK)
+    candidates.sort(key=lambda c: (venue_enrichment_priority(c["place"]), c["place"].get("id", 0)))
+
     if limit > 0:
         candidates = candidates[:limit]
 
-    print(f"Scraping {len(candidates)} venue websites...")
+    print(f"Scraping {len(candidates)} venue websites (prioritizing missing hours & prices)...")
     scraper = WebsiteScraper()
 
     for item in candidates:

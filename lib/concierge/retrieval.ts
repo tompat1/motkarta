@@ -43,7 +43,7 @@ export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent,
   if (intent.cuisineKinds.length && !intent.cuisineKinds.some((cuisine) => tokenAlternatives(normalize(cuisine)).some((term) => includesPhrase(attributes, term)))) return false;
   if (intent.dishes.some((dish) => !(DISH_TERMS[dish] ?? [dish]).some((term) => includesPhrase(attributes, term)))) return false;
   if (intent.filters.dog_friendly && !facts.facts.some((f) => (f.field === 'dogFriendly' && f.value === 'true') || (f.field === 'tags' && ['dog friendly', 'hundvanlig', 'hundvanligt'].some((t) => includesPhrase(f.value, t))))) return false;
-  if (intent.priceMax !== null && !facts.facts.some((f) => f.field === 'priceSEK' && /^\d+(\.\d+)?$/.test(f.value) && Number(f.value) <= intent.priceMax!)) return false;
+  if (intent.priceMax !== null && !facts.facts.some((f) => f.field === 'priceSEK' && parsePriceMaxMatch(f.value, intent.priceMax!))) return false;
   if (intent.filters.near_public_transport && !facts.facts.some((f) => f.field === 'transit')) return false;
   if (intent.near || context.radiusKm !== undefined) {
     if (!coordinates(context.location) || !coordinates(place)) return false;
@@ -52,6 +52,23 @@ export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent,
   }
   return true;
 }
+
+function parsePriceMaxMatch(value: string, maxPrice: number): boolean {
+  const match = value.match(/\b\d+(\.\d+)?\b/);
+  if (!match) return false;
+  const num = Number(match[0]);
+  return Number.isFinite(num) && num <= maxPrice;
+}
+
+export function dataCompletenessBonus(candidate: RankedCandidate): number {
+  const conciergePlace = candidate.place as ConciergePlace;
+  const hasHours = Boolean(conciergePlace.openingHours || candidate.facts.facts.some((f) => f.field === 'openingHours' && f.value));
+  const hasPrice = Boolean(conciergePlace.priceSEK || candidate.facts.facts.some((f) => f.field === 'priceSEK' && f.value));
+  if (hasHours && hasPrice) return 15;
+  if (hasHours || hasPrice) return 8;
+  return 0;
+}
+
 export function lexicalCandidates(query: string, places: ConciergePlace[], context: QueryContext = {}): RankedCandidate[] {
   const intent = parseIntent(query, context);
   if (intent.outsideStockholm || intent.excludedBrandRequested || intent.openNow || ((intent.near || context.radiusKm !== undefined) && !coordinates(context.location))) return [];
@@ -94,8 +111,8 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     const aPrestige = ((a.place.tags ?? []).some((t) => ['curated', 'spotted by locals'].includes(t.toLowerCase())) ? 10 : 0) + (a.place.is_hidden_gem ? 5 : 0);
     const bPrestige = ((b.place.tags ?? []).some((t) => ['curated', 'spotted by locals'].includes(t.toLowerCase())) ? 10 : 0) + (b.place.is_hidden_gem ? 5 : 0);
 
-    const aScore = a.place.scores.recommendation + aPrestige;
-    const bScore = b.place.scores.recommendation + bPrestige;
+    const aScore = a.place.scores.recommendation + aPrestige + dataCompletenessBonus(a);
+    const bScore = b.place.scores.recommendation + bPrestige + dataCompletenessBonus(b);
     if (bScore !== aScore) return bScore - aScore;
 
     return a.place.id - b.place.id;
@@ -110,7 +127,7 @@ export function fuseCandidates(lexical: RankedCandidate[], semantic: RankedCandi
     merged.set(candidate.place.id, { ...(old ?? candidate), vectorRank: candidate.vectorRank });
   }
   return [...merged.values()].map((c) => ({ ...c, fusionScore: (c.lexicalRank ? 1 / (60 + c.lexicalRank) : 0) + (c.vectorRank ? 1 / (60 + c.vectorRank) : 0) }))
-    .sort((a, b) => Number(b.exact) - Number(a.exact) || b.fusionScore - a.fusionScore || b.place.scores.recommendation - a.place.scores.recommendation || a.place.id - b.place.id);
+    .sort((a, b) => Number(b.exact) - Number(a.exact) || b.fusionScore - a.fusionScore || (b.place.scores.recommendation + dataCompletenessBonus(b)) - (a.place.scores.recommendation + dataCompletenessBonus(a)) || a.place.id - b.place.id);
 }
 
 export function exactNameIds(query: string, places: ConciergePlace[]): Set<number> {

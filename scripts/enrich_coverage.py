@@ -301,6 +301,8 @@ def enrich_addresses_and_photos(
     addr_count = sum(1 for p in places if p.get("address") and "missing address" not in str(p.get("tags", [])).lower())
     web_count = sum(1 for p in places if p.get("website"))
     coord_count = sum(1 for p in places if p.get("latitude") and p.get("longitude"))
+    hours_count = sum(1 for p in places if p.get("openingHours"))
+    price_count = sum(1 for p in places if p.get("priceSEK"))
     photo_place_count = len(photos_by_place)
 
     stats = {
@@ -318,6 +320,18 @@ def enrich_addresses_and_photos(
             "percentage": round((photo_place_count / total_places * 100), 1) if total_places else 0,
             "target": 100.0,
             "status": "PASS",
+        },
+        "openingHours": {
+            "count": hours_count,
+            "percentage": round((hours_count / total_places * 100), 1) if total_places else 0,
+            "target": 100.0,
+            "status": "PASS" if hours_count >= total_places * 0.95 else "PROGRESSING",
+        },
+        "priceInfo": {
+            "count": price_count,
+            "percentage": round((price_count / total_places * 100), 1) if total_places else 0,
+            "target": 100.0,
+            "status": "PASS" if price_count >= total_places * 0.95 else "PROGRESSING",
         },
         "websites": {
             "count": web_count,
@@ -345,6 +359,8 @@ def enrich_addresses_and_photos(
         print("=" * 80)
         print(f"🏠 Street Addresses:     {addr_count}/{total_places} ({stats['address']['percentage']}%)")
         print(f"📸 Venue Photo Media:    {photo_place_count}/{total_places} ({stats['photos']['percentage']}%) - {total_photos} photos")
+        print(f"🕒 Opening Hours:        {hours_count}/{total_places} ({stats['openingHours']['percentage']}%)")
+        print(f"💳 Price Info:           {price_count}/{total_places} ({stats['priceInfo']['percentage']}%)")
         print(f"🌐 Official Websites:    {web_count}/{total_places} ({stats['websites']['percentage']}%)")
         print(f"📍 Geographic Coords:    {coord_count}/{total_places} ({stats['coordinates']['percentage']}%)")
         print(f"📜 Curated Open Sources: 7/7 Verified Guides (100.0%)")

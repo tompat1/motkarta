@@ -59,3 +59,33 @@ def test_website_scraper_cache(tmp_path: Path) -> None:
     content = scraper.fetch_url(url)
     assert content == "<html><body>Cardamom bun & espresso</body></html>"
 
+
+def test_venue_enrichment_priority() -> None:
+    from execution.enrich_catalog import venue_enrichment_priority
+
+    missing_both = {"id": 1}
+    missing_hours = {"id": 2, "priceSEK": "150-300"}
+    missing_price = {"id": 3, "openingHours": "Tu-Sa 17:00-23:00"}
+    fully_enriched = {"id": 4, "openingHours": "Tu-Sa 17:00-23:00", "priceSEK": "220-450"}
+
+    assert venue_enrichment_priority(missing_both) == 0
+    assert venue_enrichment_priority(missing_hours) == 1
+    assert venue_enrichment_priority(missing_price) == 2
+    assert venue_enrichment_priority(fully_enriched) == 4
+
+
+def test_extract_facts_swedish_opening_hours() -> None:
+    sample_html = """
+    <div>
+        <h2>Öppettider</h2>
+        <p>Vardagar: 11:00 - 22:00, Helger: 12:00 - 23:00</p>
+        <p>Dagens lunch 145:- inklusive kaffe och kaka.</p>
+    </div>
+    """
+    facts = extract_facts_from_html(sample_html, "https://example.com", 999, "2026-09-09T12:00:00Z")
+    fields = {f["field"]: f["value"] for f in facts}
+    assert "openingHours" in fields
+    assert "priceSEK" in fields
+    assert "145 SEK" in fields["priceSEK"]
+
+

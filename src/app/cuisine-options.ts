@@ -19,12 +19,15 @@ const FEATURED_CUISINES = [
   "chinese",
 ];
 
-const NON_CUISINE_OPTION_VALUES = new Set(["restaurant"]);
+const NON_CUISINE_OPTION_VALUES = new Set(["restaurant", "hotel"]);
 
 export function cuisineParts(place: Pick<PlaceInput, "cuisine" | "tags">) {
   return (place.cuisine ?? "")
     .split(";")
-    .map((item) => item.trim())
+    .map((item) => {
+      const trimmed = item.trim().toLowerCase();
+      return trimmed === "regional" ? "swedish" : trimmed;
+    })
     .filter(Boolean);
 }
 
@@ -33,7 +36,7 @@ export function cuisineOptionsFromPlaces(places: PlaceInput[]) {
 
   places.forEach((place) => {
     cuisineParts(place).forEach((item) => {
-      if (NON_CUISINE_OPTION_VALUES.has(item.trim().toLowerCase())) {
+      if (NON_CUISINE_OPTION_VALUES.has(item)) {
         return;
       }
       counts.set(item, (counts.get(item) ?? 0) + 1);

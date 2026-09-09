@@ -138,8 +138,7 @@ export function ConciergeAnswerView({
 
         const areaStr = card.area ?? matchedPlace?.area ?? "Stockholm";
         const hoursConf = card.hoursConfidence ?? (lang === "sv" ? "Uppgift saknas" : "Unknown");
-        const isHigh = hoursConf.toLowerCase().includes("high");
-        const isMed = hoursConf.toLowerCase().includes("medium");
+        const hasHours = Boolean(card.hoursConfidence && !card.hoursConfidence.toLowerCase().includes("saknas") && !card.hoursConfidence.toLowerCase().includes("unknown"));
 
         const queryStr = `${card.name} ${areaStr} Stockholm`;
         const osmUrl = `https://www.openstreetmap.org/search?query=${encodeURIComponent(queryStr)}`;
@@ -161,8 +160,8 @@ export function ConciergeAnswerView({
               </h3>
               <div className="concierge-badges">
                 <span className="concierge-badge area">{areaStr}</span>
-                <span className={`concierge-badge ${isHigh ? "high" : isMed ? "medium" : "low"}`}>
-                  {hoursConf}
+                <span className={`concierge-badge ${hasHours ? "high" : "low"}`}>
+                  {hasHours ? `🕒 ${lang === "sv" ? "Listade tider" : "Listed hours"}` : (lang === "sv" ? "⚠️ Öppettider saknas" : "⚠️ Hours missing")}
                 </span>
               </div>
             </div>
@@ -174,9 +173,16 @@ export function ConciergeAnswerView({
             ) : null}
 
             <div className="concierge-details">
+              {card.hoursConfidence ? (
+                <div className="concierge-detail-row">
+                  <span className="concierge-label">{lang === 'sv' ? 'Öppettider:' : 'Opening Hours:'}</span>
+                  <span>{card.hoursConfidence}</span>
+                </div>
+              ) : null}
+
               {card.priceConfidence ? (
                 <div className="concierge-detail-row">
-                  <span className="concierge-label">{lang === 'sv' ? 'Prisuppgift:' : 'Price Confidence:'}</span>
+                  <span className="concierge-label">{lang === 'sv' ? 'Prisuppgift:' : 'Price Info:'}</span>
                   <span>{card.priceConfidence}</span>
                 </div>
               ) : null}

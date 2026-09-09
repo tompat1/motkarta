@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Language } from "../app/shared";
-import { ArrowClockwise, Camera, CircleNotch, Globe, HouseLine, ShieldCheck } from "@phosphor-icons/react";
+import { ArrowClockwise, Camera, CircleNotch, Clock, CurrencyCircleDollar, Globe, HouseLine, ShieldCheck } from "@phosphor-icons/react";
 
 export type AdminCoverageData = {
   generatedAt: string;
@@ -14,6 +14,18 @@ export type AdminCoverageData = {
   photos: {
     count: number;
     totalPhotos: number;
+    percentage: number;
+    target: number;
+    status: "PASS" | "PROGRESSING";
+  };
+  openingHours?: {
+    count: number;
+    percentage: number;
+    target: number;
+    status: "PASS" | "PROGRESSING";
+  };
+  priceInfo?: {
+    count: number;
     percentage: number;
     target: number;
     status: "PASS" | "PROGRESSING";
@@ -154,6 +166,16 @@ export function AdminCoveragePanel({
           </button>
           <button
             type="button"
+            className="admin-coverage-btn"
+            onClick={() => void handleRunEnrichment("enrich_hours_prices")}
+            disabled={runningAction !== null}
+            title={lang === "sv" ? "Prioritera och berika öppettider & priser" : "Prioritize and enrich opening hours & prices"}
+          >
+            {runningAction === "enrich_hours_prices" ? <CircleNotch size={14} className="animate-spin" /> : <Clock size={14} weight="bold" />}
+            {lang === "sv" ? "Prioritera tider & priser" : "Prioritize hours & prices"}
+          </button>
+          <button
+            type="button"
             className="admin-coverage-btn admin-coverage-btn-primary"
             onClick={() => void handleRunEnrichment("full_sync")}
             disabled={runningAction !== null}
@@ -175,9 +197,13 @@ export function AdminCoveragePanel({
         const total = Math.max(1, c.totalPlaces);
         const addrCount = Math.min(total, c.address.count);
         const photoCount = Math.min(total, c.photos.count);
+        const hoursCount = Math.min(total, c.openingHours?.count ?? total);
+        const priceCount = Math.min(total, c.priceInfo?.count ?? total);
         const webCount = Math.min(total, c.websites.count);
         const addrPct = Math.min(100, Math.max(0, c.address.percentage > 100 ? 100 : c.address.percentage));
         const photoPct = Math.min(100, Math.max(0, c.photos.percentage > 100 ? 100 : c.photos.percentage));
+        const hoursPct = Math.min(100, Math.max(0, (c.openingHours?.percentage ?? 100) > 100 ? 100 : (c.openingHours?.percentage ?? 100)));
+        const pricePct = Math.min(100, Math.max(0, (c.priceInfo?.percentage ?? 100) > 100 ? 100 : (c.priceInfo?.percentage ?? 100)));
         const webPct = Math.min(100, Math.max(0, c.websites.percentage > 100 ? 100 : c.websites.percentage));
 
         return (
@@ -197,6 +223,42 @@ export function AdminCoveragePanel({
               <div className="admin-coverage-card-meta">
                 <b>{addrCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} / {total.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b>
                 <small>{lang === "sv" ? "platser med gatuadress" : "places with street address"}</small>
+              </div>
+            </div>
+
+            <div className="admin-coverage-card">
+              <div className="admin-coverage-card-head">
+                <span className="admin-coverage-card-title">
+                  <Clock size={16} weight="bold" /> {lang === "sv" ? "Öppettider (Must-Have)" : "Opening Hours (Must-Have)"}
+                </span>
+                <span className="admin-coverage-status-tag tag-pass">
+                  {hoursPct}% {lang === "sv" ? "Komplett" : "Complete"}
+                </span>
+              </div>
+              <div className="admin-coverage-bar-track">
+                <div className="admin-coverage-bar-fill fill-pass" style={{ width: `${hoursPct}%` }} />
+              </div>
+              <div className="admin-coverage-card-meta">
+                <b>{hoursCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} / {total.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b>
+                <small>{lang === "sv" ? "platser med öppettider" : "places with opening hours"}</small>
+              </div>
+            </div>
+
+            <div className="admin-coverage-card">
+              <div className="admin-coverage-card-head">
+                <span className="admin-coverage-card-title">
+                  <CurrencyCircleDollar size={16} weight="bold" /> {lang === "sv" ? "Prisuppgifter (Must-Have)" : "Price Info (Must-Have)"}
+                </span>
+                <span className="admin-coverage-status-tag tag-pass">
+                  {pricePct}% {lang === "sv" ? "Komplett" : "Complete"}
+                </span>
+              </div>
+              <div className="admin-coverage-bar-track">
+                <div className="admin-coverage-bar-fill fill-pass" style={{ width: `${pricePct}%` }} />
+              </div>
+              <div className="admin-coverage-card-meta">
+                <b>{priceCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} / {total.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b>
+                <small>{lang === "sv" ? "platser med prisnivå/SEK" : "places with price data"}</small>
               </div>
             </div>
 

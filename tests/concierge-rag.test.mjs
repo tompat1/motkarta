@@ -287,3 +287,28 @@ test('multi-turn conversation handles follow-up pagination and refinements', () 
   assert.ok(turn3.cards.length > 0, 'Should return places for contextual area refinement');
   assert.ok(turn3.cards.every((c) => c.area === 'Södermalm'), 'All places in Turn 3 must be in Södermalm');
 });
+
+test('concierge prioritizes candidates with verified opening hours and price data', () => {
+  const completePlace = fixture({ id: 501, name: 'Complete Thai', tags: ['thai'], cuisine: 'thai', openingHours: 'Mo-Sa 17:00-23:00', priceSEK: '160-280' });
+  const missingPlace = fixture({ id: 502, name: 'Missing Facts Thai', tags: ['thai'], cuisine: 'thai' });
+  const res = retrieveAndSynthesize('thai', [missingPlace, completePlace]);
+  assert.equal(res.cards[0].id, 501, 'Place with complete hours and price must be prioritized');
+  assert.equal(res.cards[0].hoursConfidence.includes('Mo-Sa'), true);
+  assert.equal(res.cards[0].priceConfidence.includes('160-280 SEK'), true);
+});
+
+test('price filter matches price ranges accurately', () => {
+  const budgetPlace = fixture({ id: 601, name: 'Budget Noodle', tags: ['thai'], cuisine: 'thai', priceSEK: '85–140' });
+  const expensivePlace = fixture({ id: 602, name: 'Fine Thai', tags: ['thai'], cuisine: 'thai', priceSEK: '350–650' });
+  const res = retrieveAndSynthesize('thai under 150', [budgetPlace, expensivePlace]);
+  assert.equal(res.cards.length, 1);
+  assert.equal(res.cards[0].id, 601);
+});
+
+test('D1 loader maps opening_hours and price_sek when present', () => {
+  const row = { id: 701, name: 'D1 Sourced Place', type: 'Restaurant', district: 'Södermalm', description: '', price_level: 2, chain_status: 'independent', opening_hours: 'Mo-Su 11:00-22:00', price_sek: '135-240' };
+  const loaded = rowsToPlaceInputs([row])[0];
+  assert.equal(loaded.openingHours, 'Mo-Su 11:00-22:00');
+  assert.equal(loaded.priceSEK, '135-240');
+});
+

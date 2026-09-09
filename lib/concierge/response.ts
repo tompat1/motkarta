@@ -21,7 +21,7 @@ export function makeCard(candidate: RankedCandidate, language: 'sv' | 'en'): Con
     latitude: place.latitude, longitude: place.longitude,
     whyItMatches: candidate.exact ? (sv ? 'Namnet matchar din sökning.' : 'The name matches your search.') : `${sv ? 'Listade uppgifter' : 'Listed attributes'}: ${listed}.`,
     hoursConfidence: hours ? `${hours.value} (${sv ? 'listade tider, öppet nu ej verifierat' : 'listed hours; open now unverified'})` : unknown,
-    priceConfidence: price ? `${price.value} SEK (${sv ? 'listat pris' : 'listed price'})` : unknown,
+    priceConfidence: price ? (price.value.includes('SEK') ? `${price.value} (${sv ? 'listat pris' : 'listed price'})` : `${price.value} SEK (${sv ? 'listat pris' : 'listed price'})`) : unknown,
     lastVerified: lastVerifiedVal,
     missingInfo: [!hours && (sv ? 'Öppettider saknas' : 'Opening hours missing'), !price && (sv ? 'Pris saknas' : 'Price missing')].filter(Boolean).join('; ') || (sv ? 'Inga saknade basfakta' : 'None (complete baseline facts)'),
     dataSources: [...new Set(citations.map((f) => f.source))].join('; '), citations,

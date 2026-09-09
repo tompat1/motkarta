@@ -21,7 +21,7 @@ const lines = [
 
 for (const place of places) {
   lines.push(
-    `INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website) VALUES (${[
+    `INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website, opening_hours, price_sek) VALUES (${[
       place.id,
       sql(place.name),
       sql(place.kind),
@@ -37,6 +37,8 @@ for (const place of places) {
       sql(now),
       sql(place.address || null),
       sql(place.website || null),
+      sql(place.openingHours || null),
+      sql(place.priceSEK || null),
     ].join(", ")});`,
   );
 

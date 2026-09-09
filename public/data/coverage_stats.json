@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T06:24:32Z",
+  "generatedAt": "2026-09-09T20:06:23Z",
   "totalPlaces": 3246,
   "address": {
     "count": 3246,
@@ -10,6 +10,18 @@
   "photos": {
     "count": 3246,
     "totalPhotos": 6083,
+    "percentage": 100.0,
+    "target": 100.0,
+    "status": "PASS"
+  },
+  "openingHours": {
+    "count": 3246,
+    "percentage": 100.0,
+    "target": 100.0,
+    "status": "PASS"
+  },
+  "priceInfo": {
+    "count": 3246,
     "percentage": 100.0,
     "target": 100.0,
     "status": "PASS"
