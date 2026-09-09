@@ -104,6 +104,7 @@ import {
   QrCode,
   ArrowRight,
   ArrowUp,
+  Info,
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../lib/concierge/response";
@@ -112,6 +113,7 @@ import { CartDrawer } from "./components/CartDrawer";
 import {
   MobileFilterBottomSheet,
 } from "./components/MobileFilterBottomSheet";
+import { MobileRankControlSheet, type RankSheetType } from "./components/MobileRankControlSheet";
 import { PlaceDetailSheet } from "./components/PlaceDetailSheet";
 import { MobilePlaceCardList } from "./components/MobilePlaceCardList";
 import {
@@ -156,6 +158,7 @@ export default function App() {
     });
   };
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
+  const [mobileRankSheet, setMobileRankSheet] = useState<RankSheetType>(null);
   const [isPlaceDetailOpen, setIsPlaceDetailOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const activeFilterCount = Number(kind !== "All places") +
@@ -1638,6 +1641,63 @@ export default function App() {
       ) : null}
 
       <section className="workspace" id="place-workspace" ref={workspaceRef}>
+        <div className="mobile-results-header-bar">
+          <div className="mobile-results-header-top">
+            <div className="mobile-results-title-group">
+              <span className="mobile-results-eyebrow">{t.eyebrow}</span>
+              <h2 className="mobile-results-count">
+                <span>{ranked.length}</span> <span>{t.placesInView}</span>
+              </h2>
+            </div>
+            <button
+              type="button"
+              className="mobile-formula-trigger-btn"
+              onClick={() => setMobileRankSheet("formula")}
+              title={lang === "sv" ? "Visa formel & principer" : "Show formula & principles"}
+            >
+              <Info size={14} weight="bold" />
+              <span>{lang === "sv" ? "Formel" : "Formula"}</span>
+            </button>
+          </div>
+
+          <div className="mobile-rank-ddl-row">
+            <button
+              type="button"
+              className={`mobile-ddl-pill ${mode !== "All recommendations" ? "is-active" : ""}`}
+              onClick={() => setMobileRankSheet("visa")}
+            >
+              <div className="mobile-ddl-text">
+                <span className="mobile-ddl-label">VISA</span>
+                <span className="mobile-ddl-value">{modeLabel(mode, lang)}</span>
+              </div>
+              <CaretDown size={14} weight="bold" className="mobile-ddl-caret" />
+            </button>
+
+            <button
+              type="button"
+              className={`mobile-ddl-pill ${sortMode !== "Motkarta score" ? "is-active" : ""}`}
+              onClick={() => setMobileRankSheet("sortera")}
+            >
+              <div className="mobile-ddl-text">
+                <span className="mobile-ddl-label">SORTERA</span>
+                <span className="mobile-ddl-value">{sortModeLabel(sortMode, lang)}</span>
+              </div>
+              <CaretDown size={14} weight="bold" className="mobile-ddl-caret" />
+            </button>
+
+            {sortMode === "Surprise me" ? (
+              <button
+                type="button"
+                className="mobile-shuffle-icon-btn"
+                onClick={() => setRandomSeed((value) => value + 1)}
+                title={t.shuffle}
+              >
+                <Shuffle size={15} weight="bold" />
+              </button>
+            ) : null}
+          </div>
+        </div>
+
         {mobileViewMode === "list" ? (
           <MobilePlaceCardList
             places={visibleRanked}
@@ -2182,6 +2242,17 @@ export default function App() {
         hasActiveFilters={activeFilterCount > 0 || Boolean(query.trim())}
         onResetFilters={handleResetMobileFilters}
         matchingCount={ranked.length}
+        lang={lang}
+      />
+
+      <MobileRankControlSheet
+        sheetType={mobileRankSheet}
+        onClose={() => setMobileRankSheet(null)}
+        mode={mode}
+        onSelectMode={setMode}
+        sortMode={sortMode}
+        onSelectSortMode={setSortMode}
+        onShuffle={() => setRandomSeed((val) => val + 1)}
         lang={lang}
       />
 

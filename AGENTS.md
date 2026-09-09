@@ -16,3 +16,6 @@ anomaly detection, recommendation telemetry, evaluation, experiments or drift:
 
 For Specialty Coffee work, also read
 [`directives/specialty_coffee_gold_standard.md`](directives/specialty_coffee_gold_standard.md).
+
+For testing, build, deployment, or dataset syncing, all AI agents MUST follow [`directives/testing_and_deployment.md`](directives/testing_and_deployment.md) and execute the 4-tier full test coverage gate before declaring completion or executing `npm run build` / `deploy:cloudflare` / `git push`:
+`npm run test:gate` (runs `npm run typecheck && npm test && npm run test:python && npm run test:e2e`)

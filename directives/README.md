@@ -8,6 +8,7 @@ This directory contains **Directives** — Standard Operating Procedures (SOPs) 
 | --- | --- |
 | [ML recommendation system](ml_recommendation_system.md) | ML, scoring, ranking, personalization, events, evaluation and model maintenance |
 | [Specialty Coffee gold standard](specialty_coffee_gold_standard.md) | Stockholm specialty-coffee curation and normalization |
+| [Testing & Deployment verification gate](testing_and_deployment.md) | Mandatory 4-tier test coverage gate before task completion, push, deploy, or sync |
 
 The ML directive is mandatory for any change to model or recommendation
 behavior. Its canonical technical documentation starts at

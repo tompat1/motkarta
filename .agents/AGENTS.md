@@ -124,15 +124,25 @@ chains (`Nespresso`, `Kahls`, `Wayne's Coffee`, `Espresso House`, `Starbucks`,
 
 ---
 
-## 🛡️ PR Approval & Sourcery Quality Directive
+## 🛡️ PR Approval & Mandatory Full Test Coverage Directive
 
-From now on, to eliminate technical debt and prevent regression or unnecessary bugs:
+From now on, to eliminate technical debt, prevent regressions, and enforce 100% reliability across all AI agents and contributors:
 
 1. **Mandatory PR Approval & Planning**:
    - For non-trivial code changes, refactors, or new features, generate an `implementation_plan.md` artifact detailing proposed modifications, risks, and verification steps.
    - Seek user PR approval before executing code changes.
 
-2. **Sourcery & Automated Quality Gates**:
+2. **Mandatory 4-Tier Full Test Coverage Gate (Before Push / Deploy / Sync / Completion)**:
+   All AI agents and developers MUST follow [`directives/testing_and_deployment.md`](../directives/testing_and_deployment.md) and verify 100% pass across all 4 test tiers with zero failures before declaring any task complete, pushing code, or running deployments (`npm run build`, `npm run deploy:cloudflare`, `git push`, dataset syncs):
+
+   - **Tier 1 (TypeScript & Static Types):** `npm run typecheck`
+   - **Tier 2 (React / JS Unit Test Suite):** `npm test`
+   - **Tier 3 (Python ML & Pipeline Suite):** `npm run test:python`
+   - **Tier 4 (Playwright E2E Mobile & Desktop Suite):** `npm run test:e2e`
+
+   - **One-Line Combined Full Verification Gate:**
+     `npm run test:gate` (runs `npm run typecheck && npm test && npm run test:python && npm run test:e2e`)
+
+3. **Sourcery Quality Standards**:
    - All code must comply with `.sourcery.yaml` quality standards.
    - Eliminate code duplication, overly complex routines, and anti-patterns across Python and TypeScript.
-   - Always run `npm run build` and `npm test` to ensure 100% clean builds with zero test failures before declaring any task complete.

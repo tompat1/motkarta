@@ -25,13 +25,22 @@ npm run dev
 
 The visible dataset is still illustrative. The important change is that the UI scores are now computed from auditable inputs instead of hard-coded final numbers.
 
-## Checks
+## Mandatory Quality & Verification Gate
+
+All agents and contributors must pass the 4-tier test gate before completing tasks, pushing code, or deploying. See [`directives/testing_and_deployment.md`](directives/testing_and_deployment.md).
 
 ```bash
-npm run typecheck
-npm test
+# Run the combined 4-tier verification gate (Types, Vitest, Pytest, Playwright E2E)
+npm run test:gate
+
+# Or run individual verification tiers:
+npm run typecheck      # Tier 1: Static TypeScript checking
+npm test               # Tier 2: React component & unit tests
+npm run test:python    # Tier 3: Python ML & pipeline tests
+npm run test:e2e       # Tier 4: Playwright mobile & desktop E2E tests
+
+# Verified production build (automatically runs 4-tier gate first):
 npm run build
-npm run validate:artifact
 ```
 
 ## Cloudflare deployment
