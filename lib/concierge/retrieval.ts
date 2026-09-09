@@ -2,7 +2,7 @@ import { scorePlace } from '../scoring.ts';
 import type { ConciergePlace, QueryContext, RankedCandidate } from './contracts.ts';
 import { includesPhrase, normalize, placeFacts } from './facts.ts';
 import { coordinates, distanceKm, eligiblePlace, specialtyEligible } from './gates.ts';
-import { type Intent, parseIntent, queryTerms, tokenAlternatives } from './intent.ts';
+import { isCuisineTerm, type Intent, parseIntent, queryTerms, tokenAlternatives } from './intent.ts';
 
 function oneEdit(a: string, b: string): boolean {
   if (a.length < 5 || Math.abs(a.length - b.length) > 1) return false;
@@ -83,6 +83,6 @@ export function exactNameIds(query: string, places: ConciergePlace[]): Set<numbe
 }
 
 function isExactPlaceMatch(query: string, name: string): boolean {
-  const distinctive = queryTerms(name).some((term) => !['cafe', 'coffee', 'bakery', 'restaurant', 'restaurang', 'stockholm', 'bar'].includes(term));
+  const distinctive = queryTerms(name).some((term) => !isCuisineTerm(term) && !['cafe', 'coffee', 'bakery', 'restaurant', 'restaurang', 'stockholm', 'bar'].includes(term));
   return distinctive && normalize(name).length >= 3 && includesPhrase(query, name);
 }

@@ -10,6 +10,7 @@ import { validateSynthesis, synthesize, buildSynthesisInput, applySynthesisOutpu
 import { onRequestPost, onRequestGet, validateRequest } from '../functions/api/concierge.ts';
 import { rowsToPlaceInputs } from '../lib/place-records.ts';
 import { VERSIONS } from '../lib/concierge/contracts.ts';
+import { parseIntent } from '../lib/concierge/intent.ts';
 const places = JSON.parse(await readFile(new URL('./fixtures/concierge/places.json', import.meta.url), 'utf8')).places;
 const fixture = (overrides = {}) => ({ ...places[0], ...overrides });
 const ai = { run: async () => ({ data: [Array(1024).fill(0.1)] }) };
@@ -96,6 +97,7 @@ test('diagnostic synthesis packets and rendering match the live provider path', 
     assert.deepEqual(input, buildSynthesisInput(original, 'en'));
     const packet = JSON.parse(input.messages[1].content);
     assert.ok(packet.places.every(p => p.facts.every(f => ['kind', 'area', 'cuisine', 'dish', 'tags'].includes(f.field))));
+    assert.deepEqual(packet.requiredOutput, original.cards.map((card) => ({ placeId: card.id, factIds: [] })));
     return output;
   } }, 'en', Date.now() + 1000);
   assert.deepEqual(applySynthesisOutput(output, original, 'en'), generated);
@@ -111,6 +113,23 @@ test('synthesis rejects added facts, fabricated citations and changes to result 
   const r = response();
   for (const output of [{ places: [{ placeId: 999, factIds: ['1:kind'] }] }, { places: [{ placeId: 1, factIds: ['invented'] }] }, { places: [{ placeId: 1, factIds: ['1:kind'], text: 'open 24 hours' }] }, { places: [{ placeId: 1, factIds: ['1:kind', '1:kind'] }] }, { places: [], action: 'add_place' }]) assert.throws(() => validateSynthesis(output, r));
   assert.deepEqual(validateSynthesis({ places: [{ placeId: 1, factIds: ['1:cuisine'] }] }, r), [{ placeId: 1, factIds: ['1:cuisine'] }]);
+});
+test('synthesis allows per-card abstention but requires at least one supported selection overall', () => {
+  const r = retrieveAndSynthesize('thai', [
+    fixture({ id: 301, name: 'Thai One', cuisine: 'thai', tags: ['Thai'] }),
+    fixture({ id: 302, name: 'Thai Two', cuisine: 'thai', tags: ['Thai'] }),
+  ]);
+  const partial = applySynthesisOutput({ response: JSON.stringify({ places: [
+    { placeId: 301, factIds: ['301:cuisine'] },
+    { placeId: 302, factIds: [] },
+  ] }) }, r, 'en');
+  assert.equal(partial.synthesisMode, 'constrained');
+  assert.equal(partial.cards[0].whyItMatches, 'Listed attributes: thai.');
+  assert.equal(partial.cards[1].whyItMatches, r.cards[1].whyItMatches);
+  assert.throws(() => applySynthesisOutput({ response: JSON.stringify({ places: [
+    { placeId: 301, factIds: [] },
+    { placeId: 302, factIds: [] },
+  ] }) }, r, 'en'), /unsupported_synthesis/);
 });
 test('constrained synthesis renders only server fact values, preserving protected fields', async () => {
   const r = response();
@@ -191,6 +210,21 @@ test('generic venue names do not hijack cuisine requests', () => {
   const catalog = [...places, fixture({ id: 101, name: '&food', cuisine: 'swedish', tags: [] })];
   assert.deepEqual(retrieveAndSynthesize('Mexican food', catalog).cards.map((p) => p.id), [2]);
   assert.deepEqual(retrieveAndSynthesize('food from Poland', catalog).cards.map((p) => p.id), [1]);
+});
+
+test('Swedish pizza inflections and conversational stan resolve to broad pizza discovery', () => {
+  const catalog = [
+    fixture({ id: 201, name: 'Pizza', kind: 'Restaurant', area: 'Södermalm', cuisine: '', tags: [] }),
+    fixture({ id: 202, name: 'Magari Pizza Karlaplan', kind: 'Restaurant', area: 'Östermalm', cuisine: 'pizza', tags: ['Pizza'] }),
+    fixture({ id: 203, name: 'Nockeby Pizzeria', kind: 'Restaurant', area: 'Västerort', cuisine: 'pizza', tags: ['Pizza'] }),
+    fixture({ id: 204, name: 'Gamla Stans Pizzeria', kind: 'Restaurant', area: 'Gamla Stan', cuisine: 'pizza', tags: ['Pizza'] }),
+  ];
+  const broadIntent = parseIntent('bästa pizzeriorna i stan', { language: 'sv' });
+  assert.equal(broadIntent.area, undefined);
+  assert.deepEqual(broadIntent.cuisineKinds, ['pizza']);
+  assert.deepEqual(retrieveAndSynthesize('bästa pizzeriorna i stan', catalog, { language: 'sv' }).cards.map((p) => p.id), [202, 203, 204]);
+  assert.deepEqual(retrieveAndSynthesize('pizza i Stockholm', catalog, { language: 'sv' }).cards.map((p) => p.id), [202, 203, 204]);
+  assert.deepEqual(retrieveAndSynthesize('pizza i Gamla Stan', catalog, { language: 'sv' }).cards.map((p) => p.id), [204]);
 });
 
 test('multi-turn conversation validation and synthesis input formatting', async () => {

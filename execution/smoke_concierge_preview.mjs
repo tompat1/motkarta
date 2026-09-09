@@ -21,7 +21,7 @@ for (const { first, empty, ...body } of queries) {
   assert.equal(response.headers.get('x-motkarta-preview'), 'lexical-readonly-v1');
   const result = await response.json();
   assert.equal(result.source, 'd1');
-  assert.equal(result.modelVersion, 'concierge-lexical-v2');
+  assert.equal(result.modelVersion, 'concierge-lexical-v3');
   assert.equal(result.retrievalMode, 'lexical');
   assert.equal(result.synthesisMode, 'template');
   if (first) assert.equal(result.cards[0]?.id, first, body.query);

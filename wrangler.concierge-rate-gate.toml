@@ -1,0 +1,21 @@
+name = "motkarta-concierge-ai-gate"
+main = "workers/concierge-ai-rate-gate.mjs"
+compatibility_date = "2026-08-13"
+workers_dev = false
+preview_urls = false
+
+[[durable_objects.bindings]]
+name = "CONCIERGE_DAILY_BUDGET"
+class_name = "ConciergeDailyBudget"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ConciergeDailyBudget"]
+
+[[ratelimits]]
+name = "CONCIERGE_CLIENT_LIMITER"
+namespace_id = "20260909"
+simple = { limit = 5, period = 60 }
+
+[vars]
+CONCIERGE_DAILY_AI_UNIT_LIMIT = "200"

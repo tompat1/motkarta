@@ -1,3 +1,69 @@
+# Concierge production v1
+
+Status: approved on 2026-09-09. Implementation and controlled Cloudflare
+activation are in progress on `codex/concierge-production-v1`, with a maximum
+new provider-test allowance of US$1.
+
+## Goal and subsystem boundary
+
+Fix the confirmed Swedish pizza-query failures and productionize the existing
+evidence-grounded Gemma 4 concierge without weakening D1 authority, lifecycle,
+chain, geography, evidence, or protected-fact gates. The primary owner is
+concierge intent/retrieval/synthesis. Global scorer weights, hidden-gem policy,
+personalization, recommendation-event learning, and D1 schema are unchanged.
+
+## Implementation stages
+
+1. Release `concierge-lexical-v3`: normalize Swedish pizza inflections, treat
+   conversational “stan” as broad Stockholm rather than Gamla Stan, and prevent
+   generic venue names such as “Pizza” from capturing category searches. Add
+   catalog-backed regression coverage for Swedish category and area phrasing.
+2. Harden `concierge-synthesis-v3` against the nine trial failure modes while
+   preserving strict fact-ID validation, fixed venue order, protected server
+   rendering, and deterministic template fallback.
+3. Add a supported Cloudflare rate gate and configuration for Workers AI,
+   Vectorize, an explicit minimum similarity, and independently switchable
+   retrieval/synthesis modes. Keep AI off when the limiter is absent or fails.
+4. Refresh the read-only D1/catalog audit and verify the existing trial index.
+   Do not bind stale hashes or repeat the exhausted trial calls. Any new model
+   calls must use a new persistent ledger capped by the approved US$1 allowance.
+5. Deploy an isolated AI-enabled preview, run production-shaped HTTP/browser
+   smoke tests and inspect fallback, latency, constraint, and cost behavior.
+6. Activate production in two reversible steps: constrained Gemma synthesis over
+   corrected lexical retrieval first; hybrid retrieval only after a fresh,
+   independently reviewed holdout establishes a serving threshold. If that
+   quality gate is not met, leave hybrid disabled and report the blocker rather
+   than promoting an uncalibrated index.
+
+## Risks and rollback
+
+- Swedish normalization can overmatch venue names; category aliases must remain
+  separate from distinctive exact-name intent.
+- “Stan” is colloquial and ambiguous; broad Stockholm must not silently claim a
+  narrower district.
+- Gemma can return empty, malformed, extra, reordered, or truncated selections;
+  strict validation and template fallback remain mandatory.
+- Rate limiting is not an account-wide billing cap. Bound calls, preserve the
+  usage ledger, configure Cloudflare spending controls, and fail to lexical/
+  template when the gate or provider is unavailable.
+- A stale Vectorize document must fail current D1 hash hydration. Roll synthesis
+  back to template first and retrieval to lexical second without reverting the
+  language and safety fixes.
+
+## Verification
+
+- Baseline and final TypeScript, JavaScript, Python, and Playwright suites.
+- Focused intent, exact-name, retrieval, provider, synthesis, compiled-worker,
+  and production-shaped API tests.
+- Fresh D1/index hash/count audit before any binding promotion.
+- Preview checks for Swedish pizza queries, excluded chains, unsupported facts,
+  latency deadlines, rate denial, malformed model output, and deterministic
+  fallback.
+- `git diff --check` and the mandatory `npm run test:gate` before build, deploy,
+  push, or completion.
+
+---
+
 # Desktop hero redesign 3
 
 Status: direction 1, **The Living Counter-Map**, completed and verified.

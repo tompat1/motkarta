@@ -14,6 +14,7 @@ export type Env = {
   CONCIERGE_RETRIEVAL_MODE?: string; CONCIERGE_SYNTHESIS_MODE?: string;
   CONCIERGE_MIN_SIMILARITY?: string;
   CONCIERGE_RATE_LIMITER?: { limit(input: { key: string }): Promise<{ success: boolean }> };
+  CONCIERGE_RATE_GATE?: { fetch(request: Request): Promise<Response> };
 };
 type EventContext = { request: Request; env: Env };
 const headers = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -71,6 +72,23 @@ export function validateRequest(value: unknown): { query: string; context: Query
     },
   };
 }
+export async function requestAiPermit(env: Env, key: string, units: number) {
+  if (env.CONCIERGE_RATE_LIMITER) {
+    try { return (await withinDeadline(env.CONCIERGE_RATE_LIMITER.limit({ key }), 150)).success; }
+    catch { return false; }
+  }
+  if (!env.CONCIERGE_RATE_GATE) return false;
+  try {
+    const response = await withinDeadline(env.CONCIERGE_RATE_GATE.fetch(new Request('https://concierge-rate-gate.internal/limit', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ key, units }),
+    })), 500);
+    if (!response.ok) return false;
+    const body = await response.json() as { success?: unknown };
+    return body.success === true;
+  } catch { return false; }
+}
 export async function processConciergeQuery(query: string, env: Env = {}, context: QueryContext = {}, allowAI = false) {
   const started = Date.now(), deadline = started + 4500;
   let places: ConciergePlace[] = [];
@@ -120,9 +138,8 @@ export async function onRequestPost({ request, env }: EventContext) {
   catch { return Response.json({ error: 'invalid_request', answer: 'Send a query (1–1000 characters) and optional language/location. Venue data is not accepted.' }, { headers, status: 400 }); }
   const aiRequested = env.CONCIERGE_RETRIEVAL_MODE === 'hybrid' || env.CONCIERGE_SYNTHESIS_MODE === 'constrained';
   let allowAI = false;
-  if (aiRequested && env.CONCIERGE_RATE_LIMITER) {
-    try { allowAI = (await withinDeadline(env.CONCIERGE_RATE_LIMITER.limit({ key: request.headers.get('cf-connecting-ip') ?? 'unknown' }), 100)).success; } catch { /* fail to lexical */ }
-  }
+  const aiUnits = (env.CONCIERGE_RETRIEVAL_MODE === 'hybrid' ? 1 : 0) + (env.CONCIERGE_SYNTHESIS_MODE === 'constrained' ? 1 : 0);
+  if (aiRequested) allowAI = await requestAiPermit(env, request.headers.get('cf-connecting-ip') ?? 'unknown', aiUnits);
   const response = await processConciergeQuery(input.query, env, input.context, allowAI);
   if (!allowAI && aiRequested && response.ok) {
     const body = await response.json() as { diagnostics: { fallbackReasons: string[] } };

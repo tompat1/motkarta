@@ -39,7 +39,10 @@
     "db:seed:evidence": "node scripts/generate_evidence_seed_sql.mjs",
     "db:scores:combine": "node scripts/combine_score_export.mjs",
     "db:scores": "node scripts/generate_score_snapshot_sql.mjs",
-    "deploy:cloudflare": "npm run build && wrangler pages deploy dist --project-name motkarta"
+    "deploy:cloudflare": "npm run build && wrangler pages deploy dist --project-name motkarta",
+    "deploy:concierge-rate-gate": "wrangler deploy --config wrangler.concierge-rate-gate.toml",
+    "preview:concierge-ai:prepare": "node execution/prepare_concierge_ai_preview.mjs",
+    "preview:concierge-ai:smoke": "node execution/smoke_concierge_ai_preview.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
