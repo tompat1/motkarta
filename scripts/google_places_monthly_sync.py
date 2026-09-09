@@ -568,7 +568,7 @@ def normalized_name(value: object) -> str:
     return re.sub(r"[^a-z0-9åäöé]+", "", text)
 
 
-def optional_float(value: object) -> float | None:
+def optional_float(value: Any) -> float | None:
     if value is None:
         return None
     try:
@@ -583,15 +583,15 @@ def distance_meters(
     lat_b: float | None,
     lon_b: float | None,
 ) -> float | None:
-    if None in (lat_a, lon_a, lat_b, lon_b):
+    if lat_a is None or lon_a is None or lat_b is None or lon_b is None:
         return None
     from math import asin, cos, radians, sin, sqrt
 
     earth_radius_m = 6_371_000
-    lat1 = radians(float(lat_a))
-    lon1 = radians(float(lon_a))
-    lat2 = radians(float(lat_b))
-    lon2 = radians(float(lon_b))
+    lat1 = radians(lat_a)
+    lon1 = radians(lon_a)
+    lat2 = radians(lat_b)
+    lon2 = radians(lon_b)
     delta_lat = lat2 - lat1
     delta_lon = lon2 - lon1
     haversine = sin(delta_lat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(delta_lon / 2) ** 2
