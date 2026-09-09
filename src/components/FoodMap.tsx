@@ -225,16 +225,10 @@ export function FoodMap({
         title: place.name,
       }).on("click", () => {
         onSelect(place.id);
-        if (isMobileMapViewport()) {
-          marker.openPopup();
-        } else {
-          map.closePopup();
-        }
+        marker.openPopup();
       });
 
-      if (isMobileMapViewport()) {
-        marker.bindPopup(placePopupHtml(place, index + 1, lang), { maxWidth: 280 });
-      }
+      marker.bindPopup(placePopupHtml(place, index + 1, lang), { maxWidth: 280 });
 
       if (clusterGroup) {
         clusterGroup.addLayer(marker);
@@ -268,18 +262,10 @@ export function FoodMap({
 
     if (clusterGroup) {
       clusterGroup.zoomToShowLayer(activeMarker, () => {
-        if (isMobileMapViewport()) {
-          activeMarker.openPopup();
-        } else {
-          map.closePopup();
-        }
+        activeMarker.openPopup();
       });
     } else {
-      if (isMobileMapViewport()) {
-        activeMarker.openPopup();
-      } else {
-        map.closePopup();
-      }
+      activeMarker.openPopup();
       map.flyTo([activePlace.latitude, activePlace.longitude], 15, { duration: 0.8 });
     }
   }, [activePlace, places]);
@@ -374,6 +360,7 @@ function placeIcon(place: ScoredPlace, active: boolean) {
 
   const iconSize: [number, number] = active ? [36, 36] : [28, 28];
   const iconAnchor: [number, number] = active ? [18, 18] : [14, 14];
+  const popupAnchor: [number, number] = active ? [0, -20] : [0, -14];
 
   return L.divIcon({
     className: "motkarta-map-marker-container",
@@ -384,6 +371,7 @@ function placeIcon(place: ScoredPlace, active: boolean) {
     </div>`,
     iconSize,
     iconAnchor,
+    popupAnchor,
   });
 }
 

@@ -51,13 +51,20 @@ export async function onRequestGet(context: EventContext<Env>) {
 
   try {
     const places = await loadPlacesFromD1(db as Parameters<typeof loadPlacesFromD1>[0]);
-    if (!places.length) {
-      const fallbackPlaces = await loadFallbackPlaces(context);
-      if (fallbackPlaces) {
-        return Response.json(
-          { source: "published_dataset", places: fallbackPlaces },
-          { headers: jsonHeaders },
-        );
+    const fallbackPlaces = await loadFallbackPlaces(context);
+    if (!places.length && fallbackPlaces) {
+      return Response.json(
+        { source: "published_dataset", places: fallbackPlaces },
+        { headers: jsonHeaders },
+      );
+    }
+    if (places.length && Array.isArray(fallbackPlaces)) {
+      const existingIds = new Set(places.map((p) => p.id));
+      for (const fp of fallbackPlaces as Array<{ id: number }>) {
+        if (fp && typeof fp.id === "number" && !existingIds.has(fp.id)) {
+          places.push(fp as any);
+          existingIds.add(fp.id);
+        }
       }
     }
     return Response.json(

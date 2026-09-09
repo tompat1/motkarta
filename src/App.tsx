@@ -768,11 +768,14 @@ export default function App() {
           );
         });
       })
-      .filter((place) =>
-        `${place.name} ${place.area} ${place.cuisine ?? ""} ${place.tags.join(" ")}`
-          .toLowerCase()
-          .includes(query.toLowerCase())
-      );
+      .filter((place) => {
+        const qClean = query.trim().toLowerCase();
+        if (!qClean) return true;
+        const placeSearchText = `${place.name} ${place.area} ${place.address ?? ""} ${place.cuisine ?? ""} ${place.tags.join(" ")}`.toLowerCase();
+        if (placeSearchText.includes(qClean)) return true;
+        const queryTokens = qClean.split(/[,\s]+/).filter(Boolean);
+        return queryTokens.length > 0 && queryTokens.every((token) => placeSearchText.includes(token));
+      });
 
     const modeFilteredPlaces = filterPlacesByRankingMode(
       baseFilteredPlaces,
@@ -1054,20 +1057,26 @@ export default function App() {
       return [...matchedRegions.slice(0, 4), ...matchedCuisines.slice(0, 4), ...defaultPlaces];
     }
 
+    const qClean = q.replace(/[,\s]+/g, " ").trim();
+    const qTokens = qClean.split(" ").filter(Boolean);
+
     const matchedPlaces = places
       .map((p) => {
         const nameLower = p.name.toLowerCase();
         const areaLower = p.area.toLowerCase();
+        const addressLower = (p.address || "").toLowerCase();
         const kindLower = p.kind.toLowerCase();
         const tagsStr = (p.tags || []).join(" ").toLowerCase();
+        const fullPlaceText = `${nameLower} ${areaLower} ${addressLower} ${kindLower} ${tagsStr}`;
 
         let score = 0;
-        if (nameLower === q) score = 100;
-        else if (nameLower.startsWith(q)) score = 80;
-        else if (nameLower.includes(` ${q}`)) score = 65;
-        else if (nameLower.includes(q)) score = 50;
-        else if (areaLower.includes(q)) score = 30;
-        else if (kindLower.includes(q) || tagsStr.includes(q)) score = 15;
+        if (nameLower === q || nameLower === qClean) score = 100;
+        else if (nameLower.startsWith(q) || nameLower.startsWith(qClean)) score = 80;
+        else if (qTokens.length > 1 && qTokens.every((token) => fullPlaceText.includes(token))) score = 75;
+        else if (nameLower.includes(` ${qClean}`)) score = 65;
+        else if (nameLower.includes(qClean)) score = 50;
+        else if (areaLower.includes(qClean)) score = 30;
+        else if (kindLower.includes(qClean) || tagsStr.includes(qClean)) score = 15;
 
         return { place: p, score };
       })

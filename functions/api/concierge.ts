@@ -184,15 +184,25 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
   let sourceNamespace = 'd1';
   if (parseAction(query)) return Response.json(buildResponse(query, [], 0, context, 'action'), { headers });
   try { if (env.DB) places = await withinDeadline(loadPlacesFromD1(env.DB), 1200); } catch { /* bounded unavailable response below */ }
-  if (!places.length && env.ASSETS && requestUrl) {
+  if (env.ASSETS && requestUrl) {
     try {
       const assetRes = await env.ASSETS.fetch(new URL('/data/places.json', requestUrl).toString());
       if (assetRes.ok) {
         const json = await assetRes.json() as ConciergePlace[] | { places?: ConciergePlace[] };
         const assetPlaces = Array.isArray(json) ? json : json.places;
         if (Array.isArray(assetPlaces) && assetPlaces.length > 0) {
-          places = assetPlaces;
-          sourceNamespace = 'published_dataset';
+          if (!places.length) {
+            places = assetPlaces;
+            sourceNamespace = 'published_dataset';
+          } else {
+            const existingIds = new Set(places.map((p) => p.id));
+            for (const ap of assetPlaces) {
+              if (!existingIds.has(ap.id)) {
+                places.push(ap);
+                existingIds.add(ap.id);
+              }
+            }
+          }
         }
       }
     } catch {
