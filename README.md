@@ -198,6 +198,34 @@ them directly into ranked results. It must not request or store Google ratings,
 reviews, review counts, price level, prominence, ranking, editorial summaries, or
 engagement/value signals.
 
+### Venue photo media pipeline & policy
+
+Motkarta maintains a verified dataset of venue media stored in
+`public/data/place_photos.json` and `drizzle/seed-photos.sql`. Per Google API
+Terms of Service, Google Place Photos are **never cached or stored directly**.
+Instead, Google Places discovery provides official `websiteUri` metadata, which
+our OpenGraph scraper uses to extract official venue photos directly from the
+business's own site.
+
+Run the 3-step media enrichment and verification pipeline:
+
+```bash
+# 1. Discover street addresses & venue website URLs
+python3 scripts/enrich_coverage.py --max-google-queries 500
+
+# 2. Scrape official website photos & OpenGraph image tags
+python3 scripts/fetch_place_photos.py
+
+# 3. Perform concurrent HTTP validation & purge dead links / duplicates / stock photos
+python3 scripts/verify_and_clean_photos.py
+```
+
+The pipeline enforces strict quality rules (purging generic stock photos, Wikimedia
+commons non-venue imagery, short-lived Instagram/Facebook CDN links, and empty
+placeholders). Venues without verified photos fall back gracefully to Motkarta's
+branded SVG badge. For full technical details and policy guidelines, see
+[`docs/media_enrichment_and_photo_policy.md`](docs/media_enrichment_and_photo_policy.md).
+
 Build a unified lifecycle queue after OSM, municipal, Google-metadata, and
 curated-source imports:
 
