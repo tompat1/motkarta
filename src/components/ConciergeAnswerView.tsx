@@ -5,7 +5,7 @@ import { safeUrl } from "../../lib/concierge/facts";
 import { resolveConciergeMapPlace } from "../../lib/concierge/map-identity";
 import type { PlaceInput } from "../../lib/scoring";
 import type { Language } from "../app/shared";
-import { ArrowSquareOut, CheckCircle, Globe, MapPin, MapTrifold, Sliders, Sparkle, ThumbsDown, ThumbsUp, X } from "@phosphor-icons/react";
+import { ArrowSquareOut, CheckCircle, Globe, MagnifyingGlass, MapPin, MapTrifold, PlusCircle, Sliders, Sparkle, ThumbsDown, ThumbsUp, X } from "@phosphor-icons/react";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 
 export function ConciergeAnswerView({
@@ -14,6 +14,7 @@ export function ConciergeAnswerView({
   places,
   onSelectPlace,
   onRefineQuery,
+  onTriggerAction,
   lang = "sv",
   onClose,
   messages,
@@ -23,6 +24,7 @@ export function ConciergeAnswerView({
   places: PlaceInput[];
   onSelectPlace: (id: number) => void;
   onRefineQuery?: (extra: string) => void;
+  onTriggerAction?: (action: 'add_place', prefillName?: string) => void;
   lang?: Language;
   onClose?: () => void;
   messages?: import("../../lib/concierge/contracts").ChatMessage[];
@@ -122,6 +124,84 @@ export function ConciergeAnswerView({
           </form>
         </div>
       ) : parsed.intro ? <p className="concierge-intro">{parsed.intro}</p> : null}
+
+      {parsed.cards.length === 0 && (response?.query || answer) ? (
+        <div className="concierge-web-fallback">
+          <div className="concierge-web-fallback-header">
+            <Globe size={16} weight="bold" />
+            <span>{lang === "sv" ? "Hittar du inte det du söker i katalogen?" : "Can't find what you're looking for in the catalog?"}</span>
+          </div>
+          <p className="concierge-web-fallback-desc">
+            {lang === "sv"
+              ? "Sök på öppna webben eller tipsa oss om ett oberoende ställe i Stockholm så lägger vi till det!"
+              : "Search the open web or suggest an independent Stockholm place to have it added to Motkarta!"}
+          </p>
+          <div className="concierge-web-fallback-actions">
+            {response?.webSearch?.links ? (
+              response.webSearch.links.map((link) => (
+                <a
+                  key={link.provider}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`concierge-web-btn ${link.provider}`}
+                >
+                  <MagnifyingGlass size={13} weight="bold" /> {link.title} <ArrowSquareOut size={12} />
+                </a>
+              ))
+            ) : (
+              <>
+                <a
+                  href={`https://www.google.com/search?q=${encodeURIComponent(`${response?.query || answer} Stockholm café restaurang mat`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="concierge-web-btn google"
+                >
+                  <MagnifyingGlass size={13} weight="bold" /> {lang === "sv" ? "Sök på Google" : "Search on Google"} <ArrowSquareOut size={12} />
+                </a>
+                <a
+                  href={`https://duckduckgo.com/?q=${encodeURIComponent(`${response?.query || answer} Stockholm mat café`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="concierge-web-btn duckduckgo"
+                >
+                  <Globe size={13} weight="bold" /> {lang === "sv" ? "Sök på DuckDuckGo" : "Search on DuckDuckGo"} <ArrowSquareOut size={12} />
+                </a>
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => onTriggerAction?.('add_place', response?.query || undefined)}
+              className="concierge-web-btn add-place"
+            >
+              <PlusCircle size={14} weight="bold" /> {lang === "sv" ? "Tipsa / Lägg till ställe" : "Suggest / Add place"}
+            </button>
+          </div>
+
+          {response?.webSearch?.externalResults && response.webSearch.externalResults.length > 0 ? (
+            <div className="concierge-external-results">
+              <div className="concierge-external-results-title">
+                🌐 {lang === "sv" ? "Externa webbträffar (ej verifierade i Motkarta än):" : "External web results (unverified in Motkarta):"}
+              </div>
+              <div className="concierge-external-results-list">
+                {response.webSearch.externalResults.map((ext, extIdx) => (
+                  <a
+                    key={extIdx}
+                    href={ext.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="concierge-external-result-card"
+                  >
+                    <div className="concierge-external-result-domain">{ext.domain}</div>
+                    <div className="concierge-external-result-title">{ext.title} <ArrowSquareOut size={12} /></div>
+                    {ext.snippet ? <div className="concierge-external-result-snippet">{ext.snippet}</div> : null}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       {parsed.cards.map((card, idx) => {
         const cardNameClean = card.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();

@@ -200,6 +200,7 @@ export default function App() {
   }, [selected]);
 
   const [superpowerMode, setSuperpowerMode] = useState<SuperpowerMode | null>(null);
+  const [superpowerInitialPlaceName, setSuperpowerInitialPlaceName] = useState<string | undefined>(undefined);
   const [lang, setLang] = useState<Language>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("motkarta_lang");
@@ -1829,6 +1830,10 @@ export default function App() {
                 places={places}
                 onSelectPlace={handleSelectPlace}
                 onRefineQuery={handleRefineQuery}
+                onTriggerAction={(action, prefillName) => {
+                  setSuperpowerInitialPlaceName(prefillName);
+                  setSuperpowerMode(action);
+                }}
                 lang={lang}
                 onClose={() => { conciergeRequest.current?.abort(); setAnswer(null); setConciergeResponse(null); setConciergeChatMessages([]); }}
                 messages={conciergeChatMessages}
@@ -2516,7 +2521,11 @@ export default function App() {
           mode={superpowerMode}
           places={places}
           activePlace={active}
-          onClose={() => setSuperpowerMode(null)}
+          initialPlaceName={superpowerInitialPlaceName}
+          onClose={() => {
+            setSuperpowerMode(null);
+            setSuperpowerInitialPlaceName(undefined);
+          }}
           onAddPlace={handleAddPlaceSuperpower}
           onAddReview={handleAddReviewSuperpower}
           onAddPhoto={handleAddPhotoSuperpower}

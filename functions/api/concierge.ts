@@ -16,7 +16,95 @@ export type Env = {
   CONCIERGE_RATE_LIMITER?: { limit(input: { key: string }): Promise<{ success: boolean }> };
   CONCIERGE_RATE_GATE?: { fetch(request: Request): Promise<Response> };
   ASSETS?: { fetch(input: Request | string, init?: RequestInit): Promise<Response> };
+  BRAVE_SEARCH_API_KEY?: string;
+  TAVILY_API_KEY?: string;
 };
+const PROHIBITED_DOMAINS = ['yelp.com', 'tripadvisor.com', 'google.com', 'facebook.com', 'instagram.com', 'zomato.com', 'foursquare.com', 'trustpilot.com'];
+
+export function isProhibitedDomain(url: string): boolean {
+  try {
+    const hostname = new URL(url).hostname.toLowerCase();
+    return PROHIBITED_DOMAINS.some((p) => hostname === p || hostname.endsWith('.' + p));
+  } catch {
+    return true;
+  }
+}
+
+export async function fetchExternalWebResults(query: string, env: Env, deadline: number): Promise<import('../../lib/concierge/contracts.ts').ExternalWebResult[]> {
+  const timeoutMs = Math.max(50, Math.min(1200, deadline - Date.now()));
+  if (timeoutMs <= 100) return [];
+
+  if (env.BRAVE_SEARCH_API_KEY?.trim()) {
+    try {
+      const searchUrl = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query + ' Stockholm café restaurang mat')}&count=5`;
+      const res = await withinDeadline(
+        fetch(searchUrl, {
+          headers: {
+            'Accept': 'application/json',
+            'X-Subscription-Token': env.BRAVE_SEARCH_API_KEY.trim(),
+          },
+        }),
+        timeoutMs,
+      );
+      if (res.ok) {
+        const data = await res.json() as { web?: { results?: Array<{ title?: string; url?: string; description?: string }> } };
+        const results = data.web?.results ?? [];
+        return results
+          .filter((r) => r.url && !isProhibitedDomain(r.url))
+          .slice(0, 3)
+          .map((r) => {
+            const domain = new URL(r.url!).hostname.replace(/^www\./, '');
+            return {
+              title: r.title || domain,
+              url: r.url!,
+              snippet: r.description || '',
+              domain,
+            };
+          });
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  if (env.TAVILY_API_KEY?.trim()) {
+    try {
+      const res = await withinDeadline(
+        fetch('https://api.tavily.com/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            api_key: env.TAVILY_API_KEY.trim(),
+            query: `${query} Stockholm café restaurang`,
+            max_results: 5,
+            exclude_domains: PROHIBITED_DOMAINS,
+          }),
+        }),
+        timeoutMs,
+      );
+      if (res.ok) {
+        const data = await res.json() as { results?: Array<{ title?: string; url?: string; content?: string }> };
+        const results = data.results ?? [];
+        return results
+          .filter((r) => r.url && !isProhibitedDomain(r.url))
+          .slice(0, 3)
+          .map((r) => {
+            const domain = new URL(r.url!).hostname.replace(/^www\./, '');
+            return {
+              title: r.title || domain,
+              url: r.url!,
+              snippet: r.content || '',
+              domain,
+            };
+          });
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return [];
+}
 type EventContext = { request: Request; env: Env };
 const headers = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
 const MAX_BODY = 8192;
@@ -136,6 +224,16 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
     } else fallbacks.push('semantic_not_configured');
   }
   let result = buildResponse(query, candidates, places.length, context, sourceNamespace);
+  if (!result.cards.length && result.webSearch && (env.BRAVE_SEARCH_API_KEY || env.TAVILY_API_KEY) && deadline - Date.now() > 150) {
+    try {
+      const externalResults = await fetchExternalWebResults(query, env, deadline);
+      if (externalResults.length) {
+        result.webSearch.externalResults = externalResults;
+      }
+    } catch {
+      fallbacks.push('external_search_failed');
+    }
+  }
   if (hybrid) { result.modelVersion = VERSIONS.hybrid; result.retrievalMode = 'hybrid'; }
   if (allowAI && env.CONCIERGE_SYNTHESIS_MODE === 'constrained' && result.cards.length) {
     if (env.AI && deadline - Date.now() > 100) {

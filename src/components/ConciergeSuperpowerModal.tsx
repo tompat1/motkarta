@@ -15,6 +15,7 @@ export function ConciergeSuperpowerModal({
   onRatePlace,
   onAddSource,
   lang = "sv",
+  initialPlaceName,
 }: {
   mode: SuperpowerMode;
   places: PlaceInput[];
@@ -26,11 +27,12 @@ export function ConciergeSuperpowerModal({
   onRatePlace: (placeId: number, rating: number) => void;
   onAddSource?: (source: CuratedSource) => void;
   lang?: Language;
+  initialPlaceName?: string;
 }) {
   const [selectedPlaceId, setSelectedPlaceId] = useState<number>(activePlace ? activePlace.id : (places[0]?.id ?? 1));
 
   // Place form fields
-  const [name, setName] = useState("");
+  const [name, setName] = useState(initialPlaceName ?? "");
   const [kind, setKind] = useState("Restaurant");
   const [cuisine, setCuisine] = useState("swedish");
   const [area, setArea] = useState("Vasastan");

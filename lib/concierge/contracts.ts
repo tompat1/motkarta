@@ -44,11 +44,28 @@ export type RankedCandidate = {
   exact: boolean; lexicalRank?: number; vectorRank?: number; fusionScore: number;
   distanceKm?: number;
 };
+export type WebSearchLink = {
+  title: string;
+  url: string;
+  provider: 'google' | 'duckduckgo' | 'osm';
+};
+export type ExternalWebResult = {
+  title: string;
+  url: string;
+  snippet: string;
+  domain: string;
+};
+export type WebSearchFallback = {
+  query: string;
+  links: WebSearchLink[];
+  externalResults?: ExternalWebResult[];
+};
 export type ConciergeResponse = {
   query: string; answer: string; intro: string; cards: ConciergeCard[];
   recommendedPlaces: Array<Pick<ScoredPlace, 'id' | 'name' | 'kind' | 'area' | 'scores' | 'hiddenGem' | 'discoveryReasons'>>;
   source: string; totalSearchSpace: number; status: 'ok' | 'partial' | 'clarification' | 'unavailable';
   action?: 'add_place' | 'add_review' | 'add_photo' | 'rate_place';
+  webSearch?: WebSearchFallback;
   structuredFilters: import('./filters.ts').StructuredFilters;
   schemaVersion: string; corpusVersion: string; modelVersion: string; promptVersion: string;
   retrievalMode: 'lexical' | 'hybrid'; synthesisMode: 'template' | 'constrained';

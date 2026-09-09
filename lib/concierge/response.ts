@@ -1,9 +1,36 @@
-import { VERSIONS, type ConciergeResponse, type ConciergeCard, type QueryContext, type RankedCandidate } from './contracts.ts';
+import { VERSIONS, type ConciergeResponse, type ConciergeCard, type QueryContext, type RankedCandidate, type WebSearchFallback } from './contracts.ts';
 import { extractStructuredFilters } from './filters.ts';
 import { parseAction, parseIntent } from './intent.ts';
 import { plainText, safeUrl } from './facts.ts';
 import { lexicalCandidates } from './retrieval.ts';
 import type { ConciergePlace } from './contracts.ts';
+
+export function buildWebSearchFallback(query: string, language: 'sv' | 'en'): WebSearchFallback {
+  const cleanQuery = query.trim();
+  const searchPrompt = `${cleanQuery} Stockholm café restaurang mat`;
+  const osmQuery = `${cleanQuery} Stockholm`;
+  const sv = language === 'sv';
+  return {
+    query: cleanQuery,
+    links: [
+      {
+        title: sv ? 'Sök på Google' : 'Search on Google',
+        url: `https://www.google.com/search?q=${encodeURIComponent(searchPrompt)}`,
+        provider: 'google',
+      },
+      {
+        title: sv ? 'Sök på DuckDuckGo' : 'Search on DuckDuckGo',
+        url: `https://duckduckgo.com/?q=${encodeURIComponent(searchPrompt)}`,
+        provider: 'duckduckgo',
+      },
+      {
+        title: sv ? 'Sök på OpenStreetMap' : 'Search on OpenStreetMap',
+        url: `https://www.openstreetmap.org/search?query=${encodeURIComponent(osmQuery)}`,
+        provider: 'osm',
+      },
+    ],
+  };
+}
 
 export function makeCard(candidate: RankedCandidate, language: 'sv' | 'en'): ConciergeCard {
   const sv = language === 'sv';
@@ -64,6 +91,9 @@ export function buildResponse(query: string, candidates: RankedCandidate[], tota
       ranking: picks.map((pick) => ({ id: pick.place.id, exact: pick.exact, lexicalScore: pick.lexicalScore, lexicalRank: pick.lexicalRank, vectorRank: pick.vectorRank, fusionScore: pick.fusionScore, recommendationScore: pick.place.scores.recommendation })),
     },
   };
+  if (!picks.length && !action && query.trim()) {
+    response.webSearch = buildWebSearchFallback(query, intent.language);
+  }
   response.answer = action ? `SUPERPOWER_ACTION: ${action}\n\n${intro}` : renderAnswer(response);
   return response;
 }
