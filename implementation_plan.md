@@ -1,3 +1,90 @@
+# Desktop hero redesign 3
+
+Status: direction 1, **The Living Counter-Map**, completed and verified.
+
+## Goal
+
+Redesign the desktop hero, concierge search, and filter region into a single
+appetizing, high-craft discovery surface while preserving MOTKARTA's existing
+search, concierge, filtering, QR sync, localization, and map behavior.
+
+## Product and brand invariants
+
+- Keep Stockholm and the discovery map—not generic food glamour—as the hero.
+- Use only existing brand tokens: Ink, Paper, Water Blue, Signal Red; square
+  editorial geometry; Archivo Condensed, Inter, and IBM Plex Mono.
+- Use real catalog/venue imagery with honest attribution where photography is
+  presented as evidence. Any generated image must be clearly illustrative.
+- Keep the existing Swedish and English product claims. Do not add invented
+  metrics, superlatives, live-data claims, or paid-ranking ambiguity.
+- Preserve native button/input semantics, keyboard access, visible focus,
+  44-pixel targets, 200% zoom support, and a deliberate reduced-motion path.
+- Limit the redesign to the desktop hero/concierge/filter composition; retain
+  the established mobile control and bottom-sheet flows.
+
+## Candidate directions
+
+1. **The Living Counter-Map (recommended).** A cartographic editorial stage
+   with a real Stockholm street-grid fragment, blue evidence points, one red
+   moving crosshair, and a small contact sheet of real venue/craft imagery.
+   Search becomes a prominent concierge dispatch line; type and cuisine
+   filters become an indexed evidence rail. Motion responds to focus and filter
+   changes rather than looping decoratively. Moderate implementation cost,
+   strong brand fit, and graceful CSS/SVG fallbacks.
+2. **Stockholm Market Table.** A photo-led, newspaper-market composition built
+   around three documentary venue images, crop labels, and an editorial search
+   ticket. Filters behave like movable market slips and selected cuisine
+   changes the featured image. Most appetizing and immediately emotional, with
+   a higher image-loading budget and more dependency on photo quality.
+3. **Concierge After Dark.** An Ink-led command surface where query text
+   activates a luminous-but-flat evidence route through neighborhoods, followed
+   by compact image shutters and a kinetic filter index. Most dramatic and
+   technically ambitious, but darker, less immediately food-forward, and more
+   sensitive to motion/performance tuning.
+
+## Planned implementation after approval
+
+1. Refactor the desktop-only hero and controls markup in `src/App.tsx` into a
+   coherent discovery stage while retaining the existing state and handlers.
+2. Add focused, reusable CSS for composition, responsive reflow, interaction
+   states, authored motion, reduced motion, and image loading fallbacks in
+   `src/styles.css`.
+3. Reuse verified local/data-backed assets where possible; add only the minimal
+   optimized image assets needed by the selected direction.
+4. Extend focused React/source tests for preserved search, concierge, filter,
+   localization, and accessibility contracts if markup changes require them.
+5. Run the Impeccable detector once over changed UI targets, perform one batched
+   browser QA pass at mobile/tablet/desktop/wide widths plus keyboard and reduced
+   motion, fix findings in one batch, and confirm once.
+6. Run `git diff --check` and the mandatory four-tier `npm run test:gate` before
+   declaring completion.
+
+## Risks
+
+- Remote catalog images can be slow or unavailable; the design needs resilient
+  placeholders and should avoid layout shift.
+- A visually dense filter panel can become harder to scan; hierarchy and
+  progressive disclosure must preserve direct access to common filters.
+- Hero motion can distract from map discovery or cause discomfort; it must be
+  bounded, state-driven, paused when hidden, and reduced when requested.
+- Desktop-specific composition can regress intermediate widths; 768, 1200, and
+  wide desktop layouts require explicit verification while mobile behavior stays
+  unchanged.
+
+## Result
+
+- Rebuilt the desktop hero as an editorial counter-map with a bounded animated
+  route, responsive evidence markers, and three verified venue photo stories.
+- Unified the concierge and filters into a high-contrast discovery deck while
+  preserving existing search, prompt, filter, QR sync, and selection behavior.
+- Preserved the established mobile UI below 768 pixels and added explicit
+  reduced-motion, focus, image-fallback, and intermediate-width handling.
+- Verified at 320, 768, 900, 1440, and 1800 pixel widths, then passed the full
+  repository gate: typecheck, 216 JavaScript tests, 83 Python tests, and 27
+  Playwright end-to-end flows.
+
+---
+
 # Mobile filter parity
 
 Implement the requested desktop filter parity on mobile:

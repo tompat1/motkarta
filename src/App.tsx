@@ -127,6 +127,35 @@ import {
 } from "../lib/scoring";
 import { fetchPlacesPayload, type DataSource } from "../lib/place-payload";
 
+const DESKTOP_HERO_STORIES = [
+  {
+    id: 39957690,
+    kind: "Specialty coffee",
+    area: "Kungsholmen",
+    name: "Gast",
+    imageUrl:
+      "https://images.squarespace-cdn.com/content/v1/5faed46a7a45fa2d872db5ae/512f5511-3b0f-492b-b7fd-b2c1f7771ff1/Gast-Marta-Vargas-6938-VSCO.jpeg",
+    credit: "Official Website (gastcafe.se)",
+  },
+  {
+    id: 337511044,
+    kind: "Bakery",
+    area: "Södermalm",
+    name: "Söderbergs bageri",
+    imageUrl:
+      "https://www.soderbergsbageri.se/assets/soderbergsbageri/img/Butiken/bakverk-soderbergs-bageri-cedergrensvagen.webp",
+    credit: "Official Website (soderbergsbageri.se)",
+  },
+  {
+    id: 1053351911,
+    kind: "Restaurant",
+    area: "Norrort",
+    name: "Gamla Orangeriet",
+    imageUrl: "https://gamlaorangeriet.se/wp-content/uploads/2025/09/IMG_6017-scaled.jpg",
+    credit: "Official Website (gamlaorangeriet.se)",
+  },
+] as const;
+
 export default function App() {
   const [places, setPlaces] = useState<PlaceInput[]>([]);
   const [dataSource, setDataSource] = useState<DataSource>("loading");
@@ -661,6 +690,14 @@ export default function App() {
   );
   const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
   const hasSearchQuery = Boolean(query.trim());
+  const activeHeroStoryId =
+    kind === "Restaurant"
+      ? 1053351911
+      : kind === "Bakery"
+        ? 337511044
+        : kind === "Café" || kind === "Specialty coffee"
+          ? 39957690
+          : DESKTOP_HERO_STORIES[0].id;
 
   const recommendationQueryContext = useMemo<QueryContext>(
     () => ({
@@ -1368,43 +1405,134 @@ export default function App() {
         </div>
       </div>
 
-      <section className="intro">
-        <div>
-          <p className="eyebrow">{t.eyebrow}</p>
-          <h1>
-            {t.titleMain}
-            <br />
-            <i>{t.titleSub}</i>
+      <section
+        className="intro countermap-hero"
+        aria-labelledby="countermap-hero-heading"
+        data-story={activeHeroStoryId}
+      >
+        <div className="countermap-hero-copy">
+          <h1 id="countermap-hero-heading">
+            <span>{t.titleMain}</span>
+            <span>{t.titleSub}</span>
           </h1>
-          <p className="sub-lede">{t.subLede}</p>
+          <div className="countermap-hero-copy-foot">
+            <p className="lede">{t.lede}</p>
+            <a className="countermap-hero-jump" href="#map">
+              <span>{lang === "sv" ? "Börja upptäcka" : "Start discovering"}</span>
+              <ArrowRight size={18} weight="bold" aria-hidden="true" />
+            </a>
+          </div>
         </div>
-        <div className="intro-right-column">
-          <p className="lede">{t.lede}</p>
 
-          {/* Hero Cross-Device QR Sync CTA */}
-          <div className="hero-sync-cta-wrapper">
+        <div className="countermap-stage" aria-label={lang === "sv" ? "Levande motkarta med katalogbilder" : "Living counter-map with catalog photography"}>
+          <div className="countermap-stage-head">
+            <span>{lang === "sv" ? "Illustrativ kartvy · livekatalog nedan" : "Illustrative map view · live catalog below"}</span>
+            <span>{places.length.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")} {lang === "sv" ? "platser" : "places"}</span>
+          </div>
+
+          <svg key={activeHeroStoryId} className="countermap-linework" viewBox="0 0 720 500" aria-hidden="true" focusable="false">
+            <path d="M-20 82 C92 74 151 111 246 92 S422 31 744 70" />
+            <path d="M38 -10 C75 118 84 211 52 515" />
+            <path d="M127 -12 C151 115 182 231 148 518" />
+            <path d="M246 -14 C223 105 238 226 271 515" />
+            <path d="M352 -18 C323 118 351 264 326 520" />
+            <path d="M480 -20 C444 123 455 306 508 524" />
+            <path d="M614 -22 C576 132 618 300 590 522" />
+            <path d="M-18 174 C145 149 273 187 402 148 S608 112 742 155" />
+            <path d="M-15 284 C129 255 224 302 360 273 S584 220 742 254" />
+            <path d="M-18 410 C116 364 249 418 386 387 S612 335 746 374" />
+            <path className="countermap-water-line" d="M-28 348 C93 311 175 332 243 373 S409 456 754 424" />
+            <path className="countermap-active-route" pathLength="1" d="M102 404 C154 329 236 327 294 271 S398 160 519 177 S612 207 650 133" />
+          </svg>
+
+          <div className="countermap-evidence-markers" aria-hidden="true">
+            <span className="countermap-marker countermap-marker-a" />
+            <span className="countermap-marker countermap-marker-b" />
+            <span className="countermap-marker countermap-marker-c" />
+            <span className="countermap-marker countermap-marker-d" />
+            <span className="countermap-crosshair"><i /></span>
+          </div>
+
+          <div className="countermap-photo-index">
+            {DESKTOP_HERO_STORIES.map((story, index) => {
+              const isActiveStory = story.id === activeHeroStoryId;
+              const isAvailable = places.some((place) => place.id === story.id);
+              return (
+                <button
+                  key={story.id}
+                  type="button"
+                  className={`countermap-photo-card countermap-photo-card-${index + 1} ${isActiveStory ? "is-active" : ""}`}
+                  onClick={() => {
+                    if (!isAvailable) return;
+                    handleSelectPlace(story.id);
+                    document.getElementById("place-workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                  disabled={!isAvailable}
+                  aria-label={lang === "sv" ? `Visa ${story.name} på kartan` : `Show ${story.name} on the map`}
+                  title={`${story.name} · ${story.credit}`}
+                >
+                  <span className="countermap-photo-fallback" aria-hidden="true">{story.name}</span>
+                  <img
+                    src={story.imageUrl}
+                    alt=""
+                    loading={index === 0 ? "eager" : "lazy"}
+                    referrerPolicy="no-referrer"
+                    onError={(event) => event.currentTarget.classList.add("is-missing")}
+                  />
+                  <span className="countermap-photo-caption">
+                    <span>{story.name}</span>
+                    <small>{story.area} · {kindFilterLabel(story.kind, lang)}</small>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="countermap-stage-foot">
+            <p>{t.subLede}</p>
             <button
               type="button"
-              className="hero-sync-cta-btn"
+              className="countermap-sync-button"
               onClick={() => setIsSyncModalOpen(true)}
               title={lang === "sv" ? "Synka dina enheter utan konto eller inloggning" : "Sync devices without account or login"}
             >
-              <QrCode size={22} weight="bold" style={{ color: "var(--color-water, #326bff)", flexShrink: 0 }} />
-              <div className="hero-sync-cta-text">
-                <strong>{lang === "sv" ? "Synka dina enheter (QR-kod)" : "Sync Your Devices (QR Code)"}</strong>
-                <span>{lang === "sv" ? "Privat enhetssynk av sparade ställen utan konto" : "Zero-login cross-device sync of saved places"}</span>
-              </div>
-              <ArrowRight size={16} weight="bold" className="hero-sync-cta-arrow" />
+              <QrCode size={18} weight="bold" aria-hidden="true" />
+              <span>{lang === "sv" ? "Synka sparade ställen" : "Sync saved places"}</span>
+              <ArrowRight size={15} weight="bold" aria-hidden="true" />
             </button>
           </div>
         </div>
       </section>
 
-      <section className="controls" id="map">
-        <div className="search-container-relative">
+      <section className="controls countermap-controls" id="map" aria-labelledby="countermap-controls-title">
+        <header className="countermap-controls-head">
+          <div>
+            <h2 id="countermap-controls-title">{lang === "sv" ? "Vad är du sugen på?" : "What are you craving?"}</h2>
+            <p>{lang === "sv" ? "Fråga fritt eller bygg ditt urval med transparenta filter." : "Ask freely or build your selection with transparent filters."}</p>
+          </div>
+          <div className="countermap-selection-readout" aria-live="polite">
+            <strong>{ranked.length.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</strong>
+            <span>{lang === "sv" ? "ställen i urvalet" : "places in selection"}</span>
+          </div>
+        </header>
+
+        <div className="countermap-concierge-panel">
+          <div className="countermap-panel-heading">
+            <span className="countermap-panel-icon"><Sparkle size={16} weight="fill" aria-hidden="true" /></span>
+            <div>
+              <strong>{lang === "sv" ? "Concierge" : "Concierge"}</strong>
+              <small>{lang === "sv" ? "Söker först i verifierade signaler" : "Searches verified signals first"}</small>
+            </div>
+          </div>
+
+          <div className="search-container-relative">
+          <label className="countermap-search-label" htmlFor="desktop-discovery-search">
+            {lang === "sv" ? "Plats, kök, stadsdel eller fråga" : "Place, cuisine, neighborhood or question"}
+          </label>
           <div className="unified-search-input-wrapper">
             <MagnifyingGlass size={18} weight="bold" style={{ color: "var(--color-ink)", flexShrink: 0 }} />
             <input
+              id="desktop-discovery-search"
               ref={searchInputRef}
               aria-label={lang === "sv" ? "Sök ställe, kök, område eller fråga" : "Search place, cuisine, region or ask"}
               list="concierge-places-datalist"
@@ -1438,7 +1566,7 @@ export default function App() {
                 aria-label="Clear search field"
                 title={lang === "sv" ? "Rensa fält" : "Clear field"}
               >
-                ✕
+                <X size={15} weight="bold" aria-hidden="true" />
               </button>
             ) : null}
             <button
@@ -1457,30 +1585,39 @@ export default function App() {
             </button>
           </div>
 
+          <div className="countermap-starter-row" aria-label={lang === "sv" ? "Förslag till concierge" : "Concierge starters"}>
+            <span>{lang === "sv" ? "Prova" : "Try"}</span>
+            <div>
+              {getPopularConciergePrompts(lang).slice(0, 3).map((promptText) => (
+                <button
+                  key={promptText}
+                  type="button"
+                  onClick={() => {
+                    setQuery(promptText);
+                    setConcierge(promptText);
+                    window.requestAnimationFrame(() => searchInputRef.current?.focus());
+                  }}
+                >
+                  {promptText}
+                  <ArrowRight size={13} weight="bold" aria-hidden="true" />
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="unified-superpower-row" aria-label="Concierge superpowers">
             <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_place")}>
-              <PlusCircle size={13} weight="bold" /> {lang === "sv" ? "➕ Nytt ställe" : "➕ Add place"}
+              <PlusCircle size={13} weight="bold" /> {lang === "sv" ? "Nytt ställe" : "Add place"}
             </button>
             <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_review")}>
-              <Sparkle size={13} weight="bold" /> {lang === "sv" ? "✍️ Recension" : "✍️ Review"}
+              <Sparkle size={13} weight="bold" /> {lang === "sv" ? "Recension" : "Review"}
             </button>
             <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_photo")}>
-              <Image size={13} weight="bold" /> {lang === "sv" ? "📷 Foto" : "📷 Photo"}
+              <Image size={13} weight="bold" /> {lang === "sv" ? "Foto" : "Photo"}
             </button>
             <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("rate_place")}>
-              <Star size={13} weight="bold" /> {lang === "sv" ? "⭐ Betygsätt" : "⭐ Rate"}
+              <Star size={13} weight="bold" /> {lang === "sv" ? "Betygsätt" : "Rate"}
             </button>
-            {(query.trim() || kind !== "All places" || cuisine !== allCuisines || selectedTags.length > 0) ? (
-              <button
-                type="button"
-                className="superpower-chip-btn"
-                style={{ marginLeft: "auto", background: "transparent", borderColor: "var(--color-mist)", color: "var(--color-stone)" }}
-                onClick={handleResetMobileFilters}
-                title={lang === "sv" ? "Återställ alla filter och sökning" : "Reset all filters"}
-              >
-                ✕ {lang === "sv" ? "Rensa allt" : "Reset all"}
-              </button>
-            ) : null}
           </div>
 
           {isSearchFocused && (searchAutocompleteSuggestions.length > 0 || matchingSuggestions.length > 0) ? (
@@ -1514,7 +1651,7 @@ export default function App() {
                         onMouseEnter={() => setAutocompleteIndex(itemIdx)}
                       >
                         <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          <span>{item.icon}</span>
+                          {item.placeId ? <MapTrifold size={14} weight="bold" aria-hidden="true" /> : <Compass size={14} weight="bold" aria-hidden="true" />}
                           <span style={{ fontWeight: 600 }}>{item.label}</span>
                         </span>
                         <span className="autocomplete-type-badge">{item.badge}</span>
@@ -1569,8 +1706,31 @@ export default function App() {
               ) : null}
             </div>
           ) : null}
+          </div>
         </div>
-        <div className="chips" aria-label="Filter typ">
+
+        <div className="countermap-filter-panel">
+          <div className="countermap-filter-head">
+            <div>
+              <strong>{lang === "sv" ? "Smakindex" : "Taste index"}</strong>
+              <small>{lang === "sv" ? "Urvalet uppdateras direkt" : "Selection updates instantly"}</small>
+            </div>
+            {(query.trim() || kind !== "All places" || cuisine !== allCuisines || selectedTags.length > 0) ? (
+              <button
+                type="button"
+                className="countermap-reset-button"
+                onClick={handleResetMobileFilters}
+                title={lang === "sv" ? "Återställ alla filter och sökning" : "Reset all filters"}
+              >
+                <X size={14} weight="bold" aria-hidden="true" />
+                {lang === "sv" ? "Rensa allt" : "Reset all"}
+              </button>
+            ) : (
+              <span className="countermap-filter-status">{lang === "sv" ? "OFILTRERAT" : "UNFILTERED"}</span>
+            )}
+          </div>
+
+        <div className="chips countermap-type-chips" aria-label="Filter typ">
           <span className="filter-label">{t.typeFilterLabel}</span>
           <div className="chip-row">
             {visibleEstablishmentTypes.map((item) => (
@@ -1581,6 +1741,12 @@ export default function App() {
                 onClick={() => selectKindFilter(item)}
                 type="button"
               >
+                {item === "Restaurant" ? <ForkKnife size={14} weight="bold" aria-hidden="true" /> : null}
+                {item === "Bakery" ? <Bread size={14} weight="bold" aria-hidden="true" /> : null}
+                {item === "Café" || item === "Specialty coffee" ? <Coffee size={14} weight="bold" aria-hidden="true" /> : null}
+                {item === "All places" ? <MapTrifold size={14} weight="bold" aria-hidden="true" /> : null}
+                {item === "Saved" ? <Star size={14} weight="bold" aria-hidden="true" /> : null}
+                {item === "Latest" ? <Sparkle size={14} weight="bold" aria-hidden="true" /> : null}
                 {kindFilterLabel(item, lang)}
               </button>
             ))}
@@ -1616,12 +1782,12 @@ export default function App() {
                 setSelectedTags(updated);
               }}
               type="button"
-              style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}
             >
               <PawPrint size={13} weight={selectedTags.includes("Dog friendly") ? "fill" : "bold"} />
               <span>{lang === "sv" ? "Hundvänligt" : "Dog Friendly"}</span>
             </button>
           </div>
+        </div>
         </div>
       </section>
 
