@@ -40,9 +40,16 @@ export function buildResponse(query: string, candidates: RankedCandidate[], tota
   const intent = parseIntent(query, context);
   const action = parseAction(query);
   const sv = intent.language === 'sv';
-  const picks = action ? [] : candidates.slice(0, 3);
+  const picks = action ? [] : candidates.slice(0, 5);
   let intro = sv ? 'Här är träffar från Motkartas katalog. Saknade uppgifter är markerade.' : 'Based on our auditable open dataset, here are catalog matches. Missing facts are marked.';
-  if (!picks.length) intro = sv ? 'Inga ställen kunde bekräftas för alla dina krav. Försök med ett annat kök eller område.' : 'No places could be confirmed for all your requirements. Try another cuisine or area.';
+  if (intent.isPagination) {
+    intro = sv ? 'Här är fler rekommenderade ställen från Motkartas katalog.' : 'Here are more recommended places from the Motkarta catalog.';
+  }
+  if (!picks.length) {
+    intro = intent.isPagination
+      ? (sv ? 'Det finns inga fler ställen som matchar dina kriterier i katalogen.' : 'There are no more places matching your criteria in the catalog.')
+      : (sv ? 'Inga ställen kunde bekräftas för alla dina krav. Försök med ett annat kök eller område.' : 'No places could be confirmed for all your requirements. Try another cuisine or area.');
+  }
   if (intent.near && !context.location) intro = sv ? 'Dela din position eller ange ett område för att hitta ställen nära dig.' : 'Share your location or specify an area to find places near you.';
   if (intent.openNow) intro = sv ? 'Aktuella öppettider är inte verifierade. Kontrollera med stället.' : 'Current opening hours are unverified. Check with the venue.';
   if (action) intro = sv ? 'Öppnar formuläret för ditt val.' : 'Opening the form for your action.';

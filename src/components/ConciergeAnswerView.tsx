@@ -74,26 +74,14 @@ export function ConciergeAnswerView({
   return (
     <div className="concierge-results">
       {onClose ? (
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", paddingBottom: "10px", borderBottom: "1px solid var(--color-mist)" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "var(--font-mono)", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--color-water)" }}>
+        <div className="concierge-results-header">
+          <span className="concierge-results-title-badge">
             <Sparkle size={15} weight="bold" /> {lang === "sv" ? "AI-Concierge Svar" : "AI Concierge Result"}
           </span>
           <button
             type="button"
             onClick={onClose}
-            style={{
-              background: "var(--color-white)",
-              border: "1px solid var(--color-ink)",
-              padding: "4px 10px",
-              fontFamily: "var(--font-mono)",
-              fontSize: "11px",
-              fontWeight: 600,
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "4px",
-              textTransform: "uppercase",
-            }}
+            className="concierge-results-dismiss-btn"
             title={lang === "sv" ? "Dölj svar" : "Dismiss"}
           >
             <X size={13} weight="bold" /> {lang === "sv" ? "Dölj svar" : "Dismiss"}
@@ -101,33 +89,33 @@ export function ConciergeAnswerView({
         </div>
       ) : null}
       {messages && messages.length > 0 ? (
-        <div className="concierge-chat-history" style={{ marginBottom: "16px", padding: "12px", background: "var(--color-paper)", border: "1px solid var(--color-mist)", borderRadius: "4px" }}>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: 700, textTransform: "uppercase", color: "var(--color-stone)", marginBottom: "8px" }}>
+        <div className="concierge-chat-history">
+          <div className="concierge-chat-history-title">
             💬 {lang === "sv" ? "Konversationshistorik" : "Conversation History"}
           </div>
           {messages.map((msg, idx) => (
-            <div key={idx} style={{ marginBottom: "6px", fontSize: "12px", fontFamily: "var(--font-body)" }}>
-              <strong style={{ textTransform: "uppercase", fontSize: "10px", fontFamily: "var(--font-mono)", color: msg.role === "user" ? "var(--color-water)" : "var(--color-ink)" }}>
+            <div key={idx} className="concierge-chat-bubble">
+              <strong className={`concierge-chat-role ${msg.role}`}>
                 {msg.role === "user" ? (lang === "sv" ? "Du" : "You") : "Concierge"}:
               </strong>{" "}
-              {msg.content}
+              <span>{msg.content}</span>
             </div>
           ))}
         </div>
       ) : null}
       {parsed.clarification ? (
-        <div className="concierge-clarification-box" style={{ background: 'var(--color-paper)', border: '2px solid var(--color-signal)', padding: '16px 20px', marginBottom: 20 }}>
-          <p style={{ fontWeight: 700 }}><Sliders size={16} /> {lang === 'sv' ? 'Förtydliga sökningen' : 'Refine your search'}</p>
-          <p>{parsed.clarification.question}</p>
+        <div className="concierge-clarification-box">
+          <p className="concierge-clarification-title"><Sliders size={16} /> {lang === 'sv' ? 'Förtydliga sökningen' : 'Refine your search'}</p>
+          <p className="concierge-clarification-question">{parsed.clarification.question}</p>
           <form onSubmit={(event) => {
             event.preventDefault();
             const input = event.currentTarget.elements.namedItem('refinedQuery') as HTMLInputElement;
             if (input.value.trim()) onRefineQuery?.(input.value.trim());
-          }} style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          }} className="concierge-clarification-form">
             <input name="refinedQuery" type="text" maxLength={1000}
               aria-label={lang === 'sv' ? 'Ny sökning' : 'New search'}
               placeholder={lang === 'sv' ? 'T.ex. pierogi på Södermalm' : 'E.g. pierogi in Södermalm'}
-              style={{ flex: '1 1 180px', minWidth: 0, padding: '10px 12px', border: '1px solid var(--color-mist)' }} />
+              className="concierge-clarification-input" />
             <button type="submit" className="concierge-btn primary">{lang === 'sv' ? 'Sök igen' : 'Search again'}</button>
           </form>
         </div>
@@ -277,34 +265,12 @@ export function ConciergeAnswerView({
         </div>
       ) : null}
 
-      <div
-        className="concierge-feedback-bar"
-        style={{
-          marginTop: "16px",
-          padding: "12px 16px",
-          background: "var(--color-paper)",
-          border: "1px solid var(--color-mist)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "12px",
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "11px",
-            fontWeight: 600,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-            color: "var(--color-ink)",
-          }}
-        >
+      <div className="concierge-feedback-bar">
+        <span className="concierge-feedback-label">
           {lang === "sv" ? "Var svaret hjälpsamt?" : "Was this recommendation helpful?"}
         </span>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div className="concierge-feedback-actions">
           <button
             type="button"
             className={`feedback-btn ${feedback === "up" ? "active-up" : ""}`}
@@ -312,20 +278,6 @@ export function ConciergeAnswerView({
               setFeedback("up");
               setFeedbackType("up");
               setIsFeedbackModalOpen(true);
-            }}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "6px 12px",
-              background: feedback === "up" ? "var(--color-water)" : "var(--color-white)",
-              color: feedback === "up" ? "var(--color-white)" : "var(--color-ink)",
-              border: "1px solid var(--color-mist)",
-              fontFamily: "var(--font-mono)",
-              fontSize: "11px",
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all var(--motion-fast)",
             }}
             title={lang === "sv" ? "Hjälpsamt (Tummen upp)" : "Helpful (Thumbs up)"}
           >
@@ -340,20 +292,6 @@ export function ConciergeAnswerView({
               setFeedbackType("down");
               setIsFeedbackModalOpen(true);
             }}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "6px 12px",
-              background: feedback === "down" ? "var(--color-signal)" : "var(--color-white)",
-              color: feedback === "down" ? "var(--color-white)" : "var(--color-ink)",
-              border: "1px solid var(--color-mist)",
-              fontFamily: "var(--font-mono)",
-              fontSize: "11px",
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all var(--motion-fast)",
-            }}
             title={lang === "sv" ? "Inte hjälpsamt (Tummen ner)" : "Not helpful (Thumbs down)"}
           >
             <ThumbsDown size={14} weight={feedback === "down" ? "fill" : "bold"} />
@@ -362,14 +300,7 @@ export function ConciergeAnswerView({
         </div>
 
         {feedback ? (
-          <span
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "11px",
-              color: feedback === "up" ? "var(--color-water)" : "var(--color-signal)",
-              fontWeight: 600,
-            }}
-          >
+          <span className={`concierge-feedback-thanks ${feedback}`}>
             {feedback === "up"
               ? lang === "sv"
                 ? "Tack för din feedback! 👍"
@@ -390,9 +321,32 @@ export function ConciergeAnswerView({
         onClose={() => setIsFeedbackModalOpen(false)}
       />
 
-      <div style={{ marginTop: "16px", padding: "12px 16px", background: "var(--color-paper)", border: "1px solid var(--color-mist)" }}>
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", marginBottom: "8px", color: "var(--color-water)" }}>
+      <div className="concierge-follow-up-box">
+        <div className="concierge-follow-up-title">
           💬 {lang === "sv" ? "Ställ en följdfråga" : "Ask a follow-up question"}
+        </div>
+        <div className="concierge-follow-up-chips">
+          <button
+            type="button"
+            className="concierge-btn"
+            onClick={() => onRefineQuery?.(lang === "sv" ? "Ge mig fler ställen" : "Show more places")}
+          >
+            ➕ {lang === "sv" ? "Fler förslag" : "More places"}
+          </button>
+          <button
+            type="button"
+            className="concierge-btn"
+            onClick={() => onRefineQuery?.(lang === "sv" ? "På Södermalm då?" : "In Södermalm?")}
+          >
+            📍 {lang === "sv" ? "På Söder då?" : "In Södermalm?"}
+          </button>
+          <button
+            type="button"
+            className="concierge-btn"
+            onClick={() => onRefineQuery?.(lang === "sv" ? "Något billigare alternativ?" : "More affordable options?")}
+          >
+            🏷️ {lang === "sv" ? "Billigare alternativ" : "Budget friendly"}
+          </button>
         </div>
         <form
           onSubmit={(e) => {
@@ -403,16 +357,16 @@ export function ConciergeAnswerView({
               input.value = "";
             }
           }}
-          style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}
+          className="concierge-follow-up-form"
         >
           <input
             name="followUpQuery"
             type="text"
             maxLength={1000}
             placeholder={lang === "sv" ? "T.ex. Vilka av dessa har öppet på söndagar?" : "E.g. Which of these are open on Sundays?"}
-            style={{ flex: "1 1 220px", minWidth: 0, padding: "8px 12px", border: "1px solid var(--color-mist)", fontFamily: "var(--font-mono)", fontSize: "12px" }}
+            className="concierge-follow-up-input"
           />
-          <button type="submit" className="concierge-btn primary" style={{ cursor: "pointer" }}>
+          <button type="submit" className="concierge-btn primary">
             {lang === "sv" ? "Skicka följdfråga" : "Send follow-up"}
           </button>
         </form>

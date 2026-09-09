@@ -1119,6 +1119,7 @@ button.search-clear-btn:hover {
 
 /* Concierge and filter deck */
 .countermap-controls {
+  align-items: stretch;
   background: var(--color-paper);
   display: grid;
   gap: 0;
@@ -1177,19 +1178,48 @@ button.search-clear-btn:hover {
 
 .countermap-concierge-panel,
 .countermap-filter-panel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   min-width: 0;
   padding: 24px;
 }
 
 .countermap-concierge-panel {
   background: var(--color-ink);
+  border: 1px solid var(--color-ink);
   color: var(--color-paper);
+  position: relative;
 }
 
 .countermap-filter-panel {
   background: var(--color-white);
   border: 1px solid var(--color-ink);
   border-left: 0;
+}
+
+.countermap-concierge-close {
+  align-items: center;
+  background: transparent;
+  border: 1px solid #444;
+  color: #c5c0b6;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  gap: 5px;
+  margin-left: auto;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  transition: all var(--motion-fast);
+}
+
+.countermap-concierge-close:hover {
+  background: #282828;
+  border-color: #666;
+  color: var(--color-white);
 }
 
 .countermap-panel-heading,
@@ -1348,7 +1378,8 @@ button.search-clear-btn:hover {
 
 .countermap-concierge-panel .unified-superpower-row {
   gap: 8px;
-  margin-top: 16px;
+  margin-top: auto;
+  padding-top: 16px;
 }
 
 .countermap-concierge-panel .superpower-chip-btn {
@@ -1580,6 +1611,18 @@ button.search-clear-btn:hover {
     background: var(--color-white);
     border-color: var(--color-ink);
     color: var(--color-ink);
+  }
+
+  .concierge-panel-chat {
+    background: var(--color-ink);
+    border: 1px solid var(--color-ink);
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: var(--color-paper);
+    margin: 10px 0 16px;
+    max-height: 70vh;
+    padding: 16px;
+    width: 100%;
   }
 }
 
@@ -4831,6 +4874,464 @@ footer {
   font-size: 12px;
   line-height: 1.5;
   color: var(--color-mist);
+}
+
+/* Embedded Concierge Chat in Black Panel */
+.concierge-panel-chat {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  margin-top: 14px;
+  max-height: 520px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 6px;
+  scrollbar-color: #444 transparent;
+  scrollbar-width: thin;
+}
+
+.concierge-panel-chat::-webkit-scrollbar {
+  width: 6px;
+}
+
+.concierge-panel-chat::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.concierge-panel-chat::-webkit-scrollbar-thumb {
+  background: #3e3e3e;
+  border-radius: 3px;
+}
+
+.concierge-panel-chat::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.countermap-concierge-panel .concierge-results {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 0;
+  width: 100%;
+}
+
+.countermap-concierge-panel .concierge-results-header {
+  align-items: center;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  padding-bottom: 10px;
+}
+
+.countermap-concierge-panel .concierge-results-title-badge {
+  align-items: center;
+  color: var(--color-signal);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 6px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.countermap-concierge-panel .concierge-results-dismiss-btn {
+  align-items: center;
+  background: transparent;
+  border: 1px solid #444;
+  color: #c5c0b6;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  gap: 4px;
+  padding: 4px 10px;
+  text-transform: uppercase;
+  transition: all var(--motion-fast);
+}
+
+.countermap-concierge-panel .concierge-results-dismiss-btn:hover {
+  background: #282828;
+  border-color: #666;
+  color: var(--color-white);
+}
+
+.countermap-concierge-panel .concierge-chat-history {
+  background: #181818;
+  border: 1px solid #303030;
+  border-radius: 4px;
+  padding: 12px 14px;
+}
+
+.countermap-concierge-panel .concierge-chat-history-title {
+  color: #999;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.countermap-concierge-panel .concierge-chat-bubble {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.45;
+  margin-bottom: 6px;
+}
+
+.countermap-concierge-panel .concierge-chat-role.user {
+  color: #60a5fa;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.countermap-concierge-panel .concierge-chat-role.assistant {
+  color: var(--color-signal);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.countermap-concierge-panel .concierge-clarification-box {
+  background: #1c1815;
+  border: 2px solid var(--color-signal);
+  padding: 14px 16px;
+}
+
+.countermap-concierge-panel .concierge-clarification-title {
+  align-items: center;
+  color: var(--color-signal);
+  display: flex;
+  font-weight: 700;
+  gap: 6px;
+  margin: 0 0 6px;
+}
+
+.countermap-concierge-panel .concierge-clarification-question {
+  color: var(--color-paper);
+  font-size: 13px;
+  margin: 0 0 10px;
+}
+
+.countermap-concierge-panel .concierge-clarification-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.countermap-concierge-panel .concierge-clarification-input {
+  background: #111;
+  border: 1px solid #444;
+  color: var(--color-paper);
+  flex: 1 1 180px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  min-width: 0;
+  padding: 8px 12px;
+}
+
+.countermap-concierge-panel .concierge-intro {
+  border-bottom: 1px solid #333;
+  color: var(--color-paper);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  margin-bottom: 4px;
+  padding-bottom: 10px;
+}
+
+.countermap-concierge-panel .concierge-card {
+  background: #1c1c1c;
+  border: 1px solid #333;
+  border-left: 4px solid var(--color-signal);
+  color: var(--color-paper);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  transition: border-color var(--motion-fast), background var(--motion-fast);
+}
+
+.countermap-concierge-panel .concierge-card:hover {
+  background: #212121;
+  border-color: #484848;
+}
+
+.countermap-concierge-panel .concierge-card-title {
+  color: var(--color-paper);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.countermap-concierge-panel .concierge-card-title button {
+  background: none;
+  border: none;
+  color: var(--color-paper);
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-align: left;
+  transition: color var(--motion-fast);
+}
+
+.countermap-concierge-panel .concierge-card-title button:hover {
+  color: #60a5fa;
+}
+
+.countermap-concierge-panel .concierge-badge {
+  background: #272727;
+  border: 1px solid #404040;
+  color: #e5e5e5;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  text-transform: uppercase;
+}
+
+.countermap-concierge-panel .concierge-badge.area {
+  background: #222;
+  border-color: #383838;
+  color: #bbb;
+}
+
+.countermap-concierge-panel .concierge-badge.high {
+  background: rgba(43, 107, 115, 0.45);
+  border-color: var(--color-water);
+  color: #a5f3fc;
+}
+
+.countermap-concierge-panel .concierge-badge.medium {
+  background: #272727;
+  border-color: #444;
+  color: #ccc;
+}
+
+.countermap-concierge-panel .concierge-match-box {
+  background: #141414;
+  border-left: 3px solid #60a5fa;
+  color: #ddd;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.45;
+  padding: 10px 14px;
+}
+
+.countermap-concierge-panel .concierge-details {
+  color: #aaa;
+  display: grid;
+  font-family: var(--font-body);
+  font-size: 12px;
+  gap: 5px;
+  line-height: 1.45;
+}
+
+.countermap-concierge-panel .concierge-label {
+  color: #ddd;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.countermap-concierge-panel .concierge-actions {
+  border-top: 1px solid #303030;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 10px;
+}
+
+.countermap-concierge-panel .concierge-btn {
+  align-items: center;
+  background: #252525;
+  border: 1px solid #404040;
+  color: var(--color-paper);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  gap: 6px;
+  padding: 7px 12px;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all var(--motion-fast);
+}
+
+.countermap-concierge-panel .concierge-btn:hover {
+  background: #333;
+  border-color: #666;
+  color: var(--color-white);
+}
+
+.countermap-concierge-panel .concierge-btn.primary {
+  background: var(--color-signal);
+  border-color: var(--color-signal);
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.countermap-concierge-panel .concierge-btn.primary:hover {
+  background: #ff684d;
+  border-color: #ff684d;
+  color: var(--color-ink);
+}
+
+.countermap-concierge-panel .concierge-feedback-bar {
+  align-items: center;
+  background: #181818;
+  border: 1px solid #303030;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 12px 14px;
+}
+
+.countermap-concierge-panel .concierge-feedback-label {
+  color: #ddd;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.countermap-concierge-panel .concierge-feedback-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.countermap-concierge-panel .concierge-feedback-actions .feedback-btn {
+  align-items: center;
+  background: #252525;
+  border: 1px solid #404040;
+  color: var(--color-paper);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  gap: 6px;
+  padding: 5px 12px;
+  transition: all var(--motion-fast);
+}
+
+.countermap-concierge-panel .concierge-feedback-actions .feedback-btn:hover {
+  background: #333;
+  border-color: #666;
+}
+
+.countermap-concierge-panel .concierge-feedback-actions .feedback-btn.active-up {
+  background: var(--color-water);
+  border-color: var(--color-water);
+  color: var(--color-white);
+}
+
+.countermap-concierge-panel .concierge-feedback-actions .feedback-btn.active-down {
+  background: var(--color-signal);
+  border-color: var(--color-signal);
+  color: var(--color-white);
+}
+
+.countermap-concierge-panel .concierge-feedback-thanks {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.countermap-concierge-panel .concierge-feedback-thanks.up {
+  color: #60a5fa;
+}
+
+.countermap-concierge-panel .concierge-feedback-thanks.down {
+  color: var(--color-signal);
+}
+
+.countermap-concierge-panel .concierge-follow-up-box {
+  background: #181818;
+  border: 1px solid #303030;
+  margin-top: 12px;
+  padding: 12px 14px;
+}
+
+.countermap-concierge-panel .concierge-follow-up-title {
+  color: #60a5fa;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.countermap-concierge-panel .concierge-follow-up-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.countermap-concierge-panel .concierge-follow-up-chips .concierge-btn {
+  background: #252525;
+  border: 1px solid #404040;
+  color: var(--color-paper);
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+.countermap-concierge-panel .concierge-follow-up-chips .concierge-btn:hover {
+  background: #333;
+  border-color: #666;
+}
+
+.countermap-concierge-panel .concierge-follow-up-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.countermap-concierge-panel .concierge-follow-up-input {
+  background: #111;
+  border: 1px solid #444;
+  color: var(--color-paper);
+  flex: 1 1 200px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  min-width: 0;
+  padding: 8px 12px;
+}
+
+.countermap-concierge-panel .concierge-follow-up-input:focus {
+  border-color: #60a5fa;
+  outline: none;
+}
+
+.countermap-concierge-panel .concierge-charter-box {
+  background: #161616;
+  border: 1px solid #303030;
+  color: var(--color-paper);
+  margin-top: 12px;
+  padding: 16px 18px;
 }
 
 /* -------------------------------------------------------------------------- */

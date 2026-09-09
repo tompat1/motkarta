@@ -1143,7 +1143,7 @@ export default function App() {
 
     if (typeof window !== "undefined") {
       setTimeout(() => {
-        document.getElementById("concierge-answer")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("concierge-answer")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }, 100);
     }
   }
@@ -1518,11 +1518,29 @@ export default function App() {
 
         <div className="countermap-concierge-panel">
           <div className="countermap-panel-heading">
-            <span className="countermap-panel-icon"><Sparkle size={16} weight="fill" aria-hidden="true" /></span>
-            <div>
-              <strong>{lang === "sv" ? "Concierge" : "Concierge"}</strong>
-              <small>{lang === "sv" ? "Söker först i verifierade signaler" : "Searches verified signals first"}</small>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <span className="countermap-panel-icon"><Sparkle size={16} weight="fill" aria-hidden="true" /></span>
+              <div>
+                <strong>{lang === "sv" ? "Concierge" : "Concierge"}</strong>
+                <small>{lang === "sv" ? "Söker först i verifierade signaler" : "Searches verified signals first"}</small>
+              </div>
             </div>
+            {answer ? (
+              <button
+                type="button"
+                className="countermap-concierge-close"
+                onClick={() => {
+                  conciergeRequest.current?.abort();
+                  setAnswer(null);
+                  setConciergeResponse(null);
+                  setConciergeChatMessages([]);
+                }}
+                title={lang === "sv" ? "Stäng svar" : "Dismiss answer"}
+              >
+                <X size={13} weight="bold" />
+                <span>{lang === "sv" ? "Stäng" : "Close"}</span>
+              </button>
+            ) : null}
           </div>
 
           <div className="search-container-relative">
@@ -1582,41 +1600,6 @@ export default function App() {
                 <Sparkle size={15} weight="bold" />
               )}
               <span>{lang === "sv" ? "Fråga concierge" : "Ask concierge"}</span>
-            </button>
-          </div>
-
-          <div className="countermap-starter-row" aria-label={lang === "sv" ? "Förslag till concierge" : "Concierge starters"}>
-            <span>{lang === "sv" ? "Prova" : "Try"}</span>
-            <div>
-              {getPopularConciergePrompts(lang).slice(0, 3).map((promptText) => (
-                <button
-                  key={promptText}
-                  type="button"
-                  onClick={() => {
-                    setQuery(promptText);
-                    setConcierge(promptText);
-                    window.requestAnimationFrame(() => searchInputRef.current?.focus());
-                  }}
-                >
-                  {promptText}
-                  <ArrowRight size={13} weight="bold" aria-hidden="true" />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="unified-superpower-row" aria-label="Concierge superpowers">
-            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_place")}>
-              <PlusCircle size={13} weight="bold" /> {lang === "sv" ? "Nytt ställe" : "Add place"}
-            </button>
-            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_review")}>
-              <Sparkle size={13} weight="bold" /> {lang === "sv" ? "Recension" : "Review"}
-            </button>
-            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_photo")}>
-              <Image size={13} weight="bold" /> {lang === "sv" ? "Foto" : "Photo"}
-            </button>
-            <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("rate_place")}>
-              <Star size={13} weight="bold" /> {lang === "sv" ? "Betygsätt" : "Rate"}
             </button>
           </div>
 
@@ -1707,6 +1690,58 @@ export default function App() {
             </div>
           ) : null}
           </div>
+
+          {answer ? (
+            <div className="concierge-panel-chat" id="concierge-answer" aria-label="Concierge answer">
+              <ConciergeAnswerView
+                answer={answer}
+                response={conciergeResponse?.answer === answer ? conciergeResponse : undefined}
+                places={places}
+                onSelectPlace={handleSelectPlace}
+                onRefineQuery={handleRefineQuery}
+                lang={lang}
+                onClose={() => { conciergeRequest.current?.abort(); setAnswer(null); setConciergeResponse(null); setConciergeChatMessages([]); }}
+                messages={conciergeChatMessages}
+              />
+            </div>
+          ) : (
+            <>
+              <div className="countermap-starter-row" aria-label={lang === "sv" ? "Förslag till concierge" : "Concierge starters"}>
+                <span>{lang === "sv" ? "Prova" : "Try"}</span>
+                <div>
+                  {getPopularConciergePrompts(lang).slice(0, 3).map((promptText) => (
+                    <button
+                      key={promptText}
+                      type="button"
+                      onClick={() => {
+                        setQuery(promptText);
+                        setConcierge(promptText);
+                        window.requestAnimationFrame(() => searchInputRef.current?.focus());
+                      }}
+                    >
+                      {promptText}
+                      <ArrowRight size={13} weight="bold" aria-hidden="true" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="unified-superpower-row" aria-label="Concierge superpowers">
+                <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_place")}>
+                  <PlusCircle size={13} weight="bold" /> {lang === "sv" ? "Nytt ställe" : "Add place"}
+                </button>
+                <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_review")}>
+                  <Sparkle size={13} weight="bold" /> {lang === "sv" ? "Recension" : "Review"}
+                </button>
+                <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_photo")}>
+                  <Image size={13} weight="bold" /> {lang === "sv" ? "Foto" : "Photo"}
+                </button>
+                <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("rate_place")}>
+                  <Star size={13} weight="bold" /> {lang === "sv" ? "Betygsätt" : "Rate"}
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="countermap-filter-panel">
@@ -1790,21 +1825,6 @@ export default function App() {
         </div>
         </div>
       </section>
-
-      {answer ? (
-        <section className="concierge-answer-section" id="concierge-answer" aria-label="Concierge answer">
-          <ConciergeAnswerView
-            answer={answer}
-            response={conciergeResponse?.answer === answer ? conciergeResponse : undefined}
-            places={places}
-            onSelectPlace={handleSelectPlace}
-            onRefineQuery={handleRefineQuery}
-            lang={lang}
-            onClose={() => { conciergeRequest.current?.abort(); setAnswer(null); setConciergeResponse(null); setConciergeChatMessages([]); }}
-            messages={conciergeChatMessages}
-          />
-        </section>
-      ) : null}
 
       <section className="workspace" id="place-workspace" ref={workspaceRef}>
         <div className="mobile-results-header-bar">

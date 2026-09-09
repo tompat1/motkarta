@@ -242,3 +242,48 @@ test('multi-turn conversation validation and synthesis input formatting', async 
   assert.equal(synthInput.messages[1].role, 'user');
   assert.equal(synthInput.messages[1].content, 'Kafé i Vasastan');
 });
+
+test('multi-turn conversation handles follow-up pagination and refinements', () => {
+  const thaiCatalog = [
+    fixture({ id: 301, name: 'Koh Phangan', kind: 'Restaurant', area: 'Södermalm', cuisine: 'thai', tags: ['Thai', 'Curated'] }),
+    fixture({ id: 302, name: 'Pat\'s Place', kind: 'Restaurant', area: 'Södermalm', cuisine: 'thai', tags: ['Thai', 'Curated'] }),
+    fixture({ id: 303, name: 'Thaiboat', kind: 'Restaurant', area: 'Södermalm', cuisine: 'thai', tags: ['Thai', 'Curated'] }),
+    fixture({ id: 304, name: 'Elefantpojken', kind: 'Restaurant', area: 'Södermalm', cuisine: 'thai', tags: ['Thai'] }),
+    fixture({ id: 305, name: 'Chao Na', kind: 'Restaurant', area: 'Södermalm', cuisine: 'thai', tags: ['Thai'] }),
+    fixture({ id: 306, name: 'Tjabba Thai', kind: 'Restaurant', area: 'Norrmalm', cuisine: 'thai', tags: ['Thai', 'Curated'] }),
+    fixture({ id: 307, name: 'Sunshine Wok', kind: 'Restaurant', area: 'Kungsholmen', cuisine: 'thai', tags: ['Thai'] }),
+    fixture({ id: 308, name: 'Gast', kind: 'Specialty coffee', area: 'Kungsholmen', cuisine: '', sourceFacts: [{ id: 'fake-pad-thai', placeId: 308, field: 'dish', value: 'pad thai', source: 'blog', verification: 'listed' }] }),
+  ];
+
+  // Turn 1: Initial query
+  const turn1 = retrieveAndSynthesize('bästa thai i stan', thaiCatalog, { language: 'sv' });
+  assert.ok(turn1.cards.length > 0);
+  assert.equal(turn1.cards.some((c) => c.name === 'Gast'), false, 'Specialty coffee Gast must not match Thai meal cuisine');
+  const turn1Ids = turn1.cards.map((c) => c.id);
+  assert.ok(turn1Ids.includes(301), 'Koh Phangan should be in top recommendations');
+  assert.ok(turn1Ids.includes(306), 'Tjabba Thai should be in top recommendations');
+
+  // Turn 2: Follow-up pagination ("Ge mig fler ställen")
+  const messagesTurn2 = [
+    { role: 'user', content: 'bästa thai i stan' },
+    { role: 'assistant', content: turn1.answer },
+  ];
+  const turn2 = retrieveAndSynthesize('Ge mig fler ställen', thaiCatalog, { language: 'sv', messages: messagesTurn2 });
+  assert.ok(turn2.cards.length > 0, 'Should return more places for follow-up pagination');
+  assert.ok(turn2.intro.includes('fler'), 'Intro should acknowledge more recommendations');
+  // Must not repeat places already shown in Turn 1
+  for (const card of turn2.cards) {
+    assert.equal(turn1Ids.includes(card.id), false, `Turn 2 place ${card.name} was already returned in Turn 1`);
+  }
+  assert.ok(turn2.cards.some((c) => c.name === 'Chao Na'), 'Chao Na should appear in the subsequent batch');
+
+  // Turn 3: Contextual refinement ("på söder då?")
+  const messagesTurn3 = [
+    ...messagesTurn2,
+    { role: 'user', content: 'Ge mig fler ställen' },
+    { role: 'assistant', content: turn2.answer },
+  ];
+  const turn3 = retrieveAndSynthesize('på söder då?', thaiCatalog, { language: 'sv', messages: messagesTurn3 });
+  assert.ok(turn3.cards.length > 0, 'Should return places for contextual area refinement');
+  assert.ok(turn3.cards.every((c) => c.area === 'Södermalm'), 'All places in Turn 3 must be in Södermalm');
+});

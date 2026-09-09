@@ -19,6 +19,8 @@ function matchesTerm(term: string, text: string): boolean {
   return tokenAlternatives(term).some((alternative) => includesPhrase(text, alternative)) || text.split(' ').some((word) => oneEdit(term, word));
 }
 const DISH_TERMS: Record<string, string[]> = { cardamom: ['cardamom', 'kardemumma', 'kardemummabulle'], sourdough: ['sourdough', 'surdeg', 'surdegsbrod'] };
+const MEAL_CUISINES = new Set(['thai', 'polish', 'italian', 'french', 'japanese', 'chinese', 'korean', 'indian', 'mexican', 'vietnamese', 'spanish', 'greek', 'german', 'austrian', 'hungarian', 'middle eastern', 'lebanese', 'burger', 'pizza', 'sushi', 'ramen']);
+
 export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent, context: QueryContext): boolean {
   const { place, facts } = candidate;
   const attributes = facts.facts.filter((fact) => ['dish', 'tags', 'cuisine'].includes(fact.field)).map((fact) => fact.value).join(' ');
@@ -29,6 +31,15 @@ export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent,
   if (intent.bakery && !intent.specialty && !['Bakery', 'Café'].includes(place.kind)) return false;
   if (intent.dinner && place.kind !== 'Restaurant') return false;
   if (intent.hiddenGem && !place.hiddenGem.eligible) return false;
+
+  const isMealCuisine = intent.cuisineKinds.some((c) => MEAL_CUISINES.has(normalize(c)));
+  if (isMealCuisine && ['Specialty coffee', 'Café'].includes(place.kind)) {
+    const primaryCuisine = normalize(`${place.cuisine ?? ''} ${(place.tags ?? []).join(' ')}`);
+    if (!intent.cuisineKinds.some((c) => includesPhrase(primaryCuisine, c))) {
+      return false;
+    }
+  }
+
   if (intent.cuisineKinds.length && !intent.cuisineKinds.some((cuisine) => tokenAlternatives(normalize(cuisine)).some((term) => includesPhrase(attributes, term)))) return false;
   if (intent.dishes.some((dish) => !(DISH_TERMS[dish] ?? [dish]).some((term) => includesPhrase(attributes, term)))) return false;
   if (intent.filters.dog_friendly && !facts.facts.some((f) => (f.field === 'dogFriendly' && f.value === 'true') || (f.field === 'tags' && ['dog friendly', 'hundvanlig', 'hundvanligt'].some((t) => includesPhrase(f.value, t))))) return false;
@@ -46,10 +57,13 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
   if (intent.outsideStockholm || intent.excludedBrandRequested || intent.openNow || ((intent.near || context.radiusKm !== undefined) && !coordinates(context.location))) return [];
   const normalizedQuery = normalize(intent.positive);
   const namedIds = exactNameIds(query, places);
+  const isMealCuisine = intent.cuisineKinds.some((c) => MEAL_CUISINES.has(normalize(c)));
+  const excludedNames = new Set((intent.excludedPlaceNames ?? []).map(normalize));
   const candidates: RankedCandidate[] = [];
   const seen = new Set<number>();
   for (const place of places) {
     if (seen.has(place.id) || (namedIds.size && !namedIds.has(place.id)) || !eligiblePlace(place)) continue;
+    if (intent.isPagination && excludedNames.has(normalize(place.name))) continue;
     seen.add(place.id);
     const facts = placeFacts(place);
     const text = normalize(facts.document);
@@ -59,11 +73,33 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     const lexicalScore = matchingTerms.length / Math.max(1, intent.terms.length);
     const relevant = exact || lexicalScore > 0 || (!intent.terms.length && (intent.area || intent.dinner || intent.hiddenGem || intent.near || intent.exclusions.length || intent.priceMax !== null || intent.filters.near_public_transport));
     if (!relevant) continue;
-    const candidate: RankedCandidate = { place: scorePlace(place), facts, exact, lexicalScore, fusionScore: 0 };
+    const preferences: import('../scoring.ts').UserPreferences = {
+      kind: intent.dinner || isMealCuisine ? 'Restaurant' : intent.specialty ? 'Specialty coffee' : intent.bakery ? 'Bakery' : undefined,
+      district: intent.area,
+      tags: [...intent.cuisineKinds, ...intent.dishes],
+      independentOnly: true,
+    };
+    const candidate: RankedCandidate = { place: scorePlace(place, preferences), facts, exact, lexicalScore, fusionScore: 0 };
     if (!satisfiesConstraints(candidate, intent, context)) continue;
     candidates.push(candidate);
   }
-  candidates.sort((a, b) => Number(b.exact) - Number(a.exact) || b.lexicalScore - a.lexicalScore || b.place.scores.recommendation - a.place.scores.recommendation || a.place.id - b.place.id);
+  candidates.sort((a, b) => {
+    if (Number(b.exact) !== Number(a.exact)) return Number(b.exact) - Number(a.exact);
+    if (b.lexicalScore !== a.lexicalScore) return b.lexicalScore - a.lexicalScore;
+
+    const aPrimary = intent.cuisineKinds.some((c) => includesPhrase(`${a.place.cuisine ?? ''} ${(a.place.tags ?? []).join(' ')}`, c));
+    const bPrimary = intent.cuisineKinds.some((c) => includesPhrase(`${b.place.cuisine ?? ''} ${(b.place.tags ?? []).join(' ')}`, c));
+    if (bPrimary !== aPrimary) return Number(bPrimary) - Number(aPrimary);
+
+    const aPrestige = ((a.place.tags ?? []).some((t) => ['curated', 'spotted by locals'].includes(t.toLowerCase())) ? 10 : 0) + (a.place.is_hidden_gem ? 5 : 0);
+    const bPrestige = ((b.place.tags ?? []).some((t) => ['curated', 'spotted by locals'].includes(t.toLowerCase())) ? 10 : 0) + (b.place.is_hidden_gem ? 5 : 0);
+
+    const aScore = a.place.scores.recommendation + aPrestige;
+    const bScore = b.place.scores.recommendation + bPrestige;
+    if (bScore !== aScore) return bScore - aScore;
+
+    return a.place.id - b.place.id;
+  });
   return candidates.map((candidate, index) => ({ ...candidate, lexicalRank: index + 1, fusionScore: 1 / (60 + index + 1) }));
 }
 export function fuseCandidates(lexical: RankedCandidate[], semantic: RankedCandidate[]): RankedCandidate[] {

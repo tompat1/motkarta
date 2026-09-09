@@ -24,7 +24,7 @@ test("RAG retrieveAndSynthesize ranks relevant places and synthesizes grounded a
 
   assert.ok(result.answer.toLowerCase().includes("based on our auditable open dataset"));
   assert.ok(result.recommendedPlaces.length > 0);
-  assert.ok(result.recommendedPlaces.length <= 3);
+  assert.ok(result.recommendedPlaces.length <= 5);
   assert.ok(result.recommendedPlaces[0].id);
   assert.ok(result.recommendedPlaces[0].name);
 });

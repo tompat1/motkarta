@@ -239,7 +239,8 @@ export function bayesianRating(
   categoryMean = 4.1,
   minimumEvidence = 30,
 ) {
-  const safeCategoryMean = finiteNumber(categoryMean, 4.1);
+  const parsedCategoryMean = finiteNumber(categoryMean, 4.1);
+  const safeCategoryMean = parsedCategoryMean > 0 ? parsedCategoryMean : 4.1;
   const safeRatingCount = Math.max(0, finiteNumber(ratingCount));
   const safeMinimumEvidence = Math.max(0, finiteNumber(minimumEvidence, 30));
 
