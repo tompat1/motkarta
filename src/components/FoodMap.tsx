@@ -228,7 +228,11 @@ export function FoodMap({
         marker.openPopup();
       });
 
-      marker.bindPopup(placePopupHtml(place, index + 1, lang), { maxWidth: 280 });
+      marker.bindPopup(placePopupHtml(place, index + 1, lang), {
+        maxWidth: 280,
+        autoPan: true,
+        autoPanPadding: [50, 50],
+      });
 
       if (clusterGroup) {
         clusterGroup.addLayer(marker);

@@ -69,6 +69,7 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     ["ölhus", "pub"],
     ["ölhall", "pub"],
     ["kvarterskrog", "pub"],
+    ["thai", "thai"],
     ["thailand", "thai"],
     ["thailändsk", "thai"],
     ["thailändskt", "thai"],
@@ -122,7 +123,10 @@ export function extractStructuredFilters(query: string): StructuredFilters {
   ];
 
   for (const [term, norm] of knownCuisines) {
-    if (qLower.includes(term)) {
+    const matched = term === "pub"
+      ? (/(?:^|[^a-zåäö])pub(s|ar|en)?(?:[^a-zåäö]|$)/i.test(qLower))
+      : qLower.includes(term);
+    if (matched) {
       cuisines.push(norm);
     }
   }
