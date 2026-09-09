@@ -783,6 +783,8 @@ export default function App() {
     });
   },
     [
+      allCuisines,
+      conciergePlaces,
       cuisine,
       kind,
       selectedTags,

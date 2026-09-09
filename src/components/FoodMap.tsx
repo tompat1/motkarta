@@ -115,6 +115,7 @@ export function FoodMap({
       zoomToBoundsOnClick: true,
       spiderfyOnMaxZoom: true,
       maxClusterRadius: 45,
+      disableClusteringAtZoom: 15,
       iconCreateFunction: (cluster) => {
         const count = cluster.getChildCount();
         let size = 34;
@@ -246,7 +247,8 @@ export function FoodMap({
     });
 
     if (bounds.isValid()) {
-      map.fitBounds(bounds, { padding: [42, 42], maxZoom: 13 });
+      const maxZoom = validPlaces.length <= 10 ? 15 : 13;
+      map.fitBounds(bounds, { padding: [42, 42], maxZoom });
     }
   }, [lang, onSelect, places]);
 
