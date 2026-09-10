@@ -227,27 +227,43 @@ export function PlaceDetailSheet({
               )}
 
               {/* Price Tier Badge */}
-              {place.priceLevel > 0 || place.priceSEK ? (
-                <span
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "5px",
-                    background: "var(--color-paper, #f8fafc)",
-                    color: "var(--color-ink, #0f172a)",
-                    border: "1px solid var(--color-mist, #e2e8f0)",
-                    padding: "4px 10px",
-                    borderRadius: "999px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                  }}
-                  title={lang === "sv" ? `Prisnivå ${"$".repeat(place.priceLevel || 2)} (${place.priceSEK ? `${place.priceSEK} kr` : ""})` : `Price tier ${"$".repeat(place.priceLevel || 2)} (${place.priceSEK ? `${place.priceSEK} SEK` : ""})`}
-                >
-                  <CurrencyCircleDollar size={15} weight="bold" style={{ color: "var(--color-water, #2563eb)" }} />
-                  <strong>{"$".repeat(place.priceLevel > 0 ? place.priceLevel : 2)}</strong>
-                  {place.priceSEK ? <span style={{ color: "var(--color-slate, #64748b)" }}>· {place.priceSEK} SEK</span> : null}
-                </span>
-              ) : null}
+              {(() => {
+                const sek = place.priceSEK;
+                let lvl = place.priceLevel && place.priceLevel > 0 ? place.priceLevel : null;
+                if (!lvl && sek) {
+                  const numMatch = sek.match(/\d+/);
+                  if (numMatch) {
+                    const num = parseInt(numMatch[0], 10);
+                    if (num < 150) lvl = 1;
+                    else if (num <= 350) lvl = 2;
+                    else if (num <= 750) lvl = 3;
+                    else lvl = 4;
+                  }
+                }
+                if (!lvl && !sek) return null;
+                const tier = lvl || 2;
+                return (
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "5px",
+                      background: "var(--color-paper, #f8fafc)",
+                      color: "var(--color-ink, #0f172a)",
+                      border: "1px solid var(--color-mist, #e2e8f0)",
+                      padding: "4px 10px",
+                      borderRadius: "999px",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                    }}
+                    title={lang === "sv" ? `Prisnivå ${"$".repeat(tier)} (${sek ? `${sek} kr` : ""})` : `Price tier ${"$".repeat(tier)} (${sek ? `${sek} SEK` : ""})`}
+                  >
+                    <CurrencyCircleDollar size={15} weight="bold" style={{ color: "var(--color-water, #2563eb)" }} />
+                    <strong>{"$".repeat(tier)}</strong>
+                    {sek ? <span style={{ color: "var(--color-slate, #64748b)" }}>· {sek} SEK</span> : null}
+                  </span>
+                );
+              })()}
             </div>
           </div>
 

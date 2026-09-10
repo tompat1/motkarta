@@ -19,6 +19,21 @@ const lines = [
   "DELETE FROM establishments;",
 ];
 
+function derivePriceLevel(place) {
+  if (place.priceLevel && place.priceLevel > 0) return place.priceLevel;
+  if (place.priceSEK) {
+    const match = place.priceSEK.match(/\d+/);
+    if (match) {
+      const num = parseInt(match[0], 10);
+      if (num < 150) return 1;
+      if (num <= 350) return 2;
+      if (num <= 750) return 3;
+      return 4;
+    }
+  }
+  return 2;
+}
+
 for (const place of places) {
   lines.push(
     `INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website, opening_hours, price_sek) VALUES (${[
@@ -27,7 +42,7 @@ for (const place of places) {
       sql(place.kind),
       sql(place.area || "Stockholm"),
       sql(place.note || place.description || null),
-      place.priceLevel ?? "NULL",
+      derivePriceLevel(place),
       place.latitude ?? "NULL",
       place.longitude ?? "NULL",
       sql(place.tags?.includes("Independent") ? "independent" : "unknown"),

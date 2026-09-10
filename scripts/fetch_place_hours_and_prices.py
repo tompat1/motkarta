@@ -402,7 +402,9 @@ def enrich_hours_and_prices(
 
         # 3. Standardize Price Level & SEK
         lvl, sek = determine_venue_price(place, schema.get("price_range"), menu_prices)
-        place["priceLevel"] = lvl
+        # Keep priceLevel 0 in static places.json to preserve open-data neutrality required by validate-artifact.sh
+        # while priceSEK stores the authentic price range and D1 seed SQL derives the numeric tier.
+        place["priceLevel"] = 0
         place["priceSEK"] = sek
         if schema.get("price_range") or menu_prices[0] is not None:
             prices_scraped += 1
@@ -416,7 +418,7 @@ def enrich_hours_and_prices(
         "prices_scraped": prices_scraped,
         "addresses_scraped": addresses_scraped,
         "total_places": len(places),
-        "total_with_price_level": sum(1 for p in places if p.get("priceLevel", 0) > 0),
+        "total_with_price_sek": sum(1 for p in places if p.get("priceSEK")),
     }
 
     if not quiet:

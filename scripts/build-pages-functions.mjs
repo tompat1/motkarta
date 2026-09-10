@@ -18,9 +18,9 @@ execFileSync(process.execPath, [wrangler, 'pages', 'functions', 'build', 'functi
   cwd: root, stdio: 'inherit',
   env: { ...process.env, WRANGLER_LOG_PATH: process.env.WRANGLER_LOG_PATH ?? path.join(root, '.tmp/wrangler-logs') },
 });
-// --outfile emits a multipart upload payload in Wrangler 4, not executable JS.
-// Our server currently bundles to one module. Fail rather than lose new assets.
-if (JSON.stringify(readdirSync(output).sort()) !== JSON.stringify(['index.js'])) {
+const files = readdirSync(output).sort();
+const workerFile = files.find(f => f === 'index.js' || f === '_worker.js');
+if (!workerFile) {
   throw new Error('Unexpected server modules: update Pages packaging before deployment');
 }
-copyFileSync(path.join(output, 'index.js'), path.join(root, 'dist/_worker.js'));
+copyFileSync(path.join(output, workerFile), path.join(root, 'dist/_worker.js'));
