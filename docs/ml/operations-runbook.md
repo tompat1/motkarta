@@ -346,3 +346,91 @@ metadata-index prerequisites, verified manifests, timeouts and rollback.
 AI/index/rate-gate resources and live D1 coverage have not been validated.
 Ordinary tests use mocks and need no provider credentials. Never run indexing
 `--apply` or enable AI flags as part of routine validation.
+
+---
+
+## Admin Operations Playbook & Recurring Cadence SOP
+
+The web application provides an interactive **Admin Playbook & SOP** drawer directly inside `/admin` via the `📖 Guide & Rutiner (SOP)` toolbar button, as well as an animated, informative **Toast Notification System** detailing downstream ML and gate impacts for every manual operation.
+
+### 1. Recurring Cadence & Checklist
+
+#### Daily / As-Needed Tasks
+1. **Candidate Triage**:
+   - Access the `Kandidater` state tab.
+   - Inspect newly imported candidate rows from OSM, municipal food inspections, and curated submissions.
+   - Prioritize rows marked with `✨ X användartips`: these represent venues actively nominated by community visitors.
+   - Verify that candidates are independent businesses and comply with Stockholm municipality boundaries (`is_stockholm_municipality_place`). Commercial chains are strictly excluded.
+   - Check the evidence count: if the candidate satisfies the 2-signal independent threshold, promote to `verified` (`known_hidden_gem` or `known_mainstream`).
+
+2. **Duplicate Deduplication**:
+   - Review cards flagged with yellow duplicate boxes (`Möjlig dubblett`).
+   - If the candidate represents an existing venue already in the catalog: click `Slå ihop` (`merge_duplicate`). Evidence sources are transferred to the target venue, and a positive merge pair is logged in `admin_review_events` for ML deduplication model training.
+   - If the candidate is a distinct business (e.g. sister venue or shared building): click `Behåll separat` (`keep_separate`). This logs a negative match pair for model training and dismisses the duplicate alert.
+
+#### Weekly Tasks
+1. **Geographical District Resolution**:
+   - Access the `Saknar region` (`unresolved_region`) tab.
+   - Click `Lös saknade regioner` to batch-resolve broad Stockholm labels (`Stockholm`, `Stockholms län`, etc.) into specific districts (`Södermalm`, `Vasastan`, `Djurgården`, etc.) using coordinate boundary polygons.
+   - For remaining ambiguous coordinates, manually select the district from the dropdown.
+   - *Downstream ML Impact*: District attribution directly feeds the 30% outer-city representation gate in `motkarta.drift` and enables regional filtering in Concierge RAG.
+
+2. **Venue Enrichment & Photo Scraping**:
+   - Access the `Behöver input` (`needs_input`) tab for places lacking official websites or addresses.
+   - Enter the venue's official homepage and click `Spara & hämta bild`.
+   - The system validates the URL, extracts OpenGraph metadata (`og:image`), and inserts the website and photo as an official source signal with confidence `0.9`.
+
+#### Monthly Catalog Maintenance
+1. **Monthly Google Places Metadata Sync**:
+   - Run dry-run first to inspect changes:
+     ```bash
+     python scripts/google_places_monthly_sync.py --dry-run
+     ```
+   - Run live sync to refresh opening hours, coordinates, and store quarantined commercial platform metadata for residual modeling:
+     ```bash
+     python scripts/google_places_monthly_sync.py
+     ```
+2. **Specialty Coffee & Curated Guide Sync**:
+   - Run the curated source synchronization script:
+     ```bash
+     node scripts/sync-curated-sources.mjs
+     ```
+   - Confirms adherence to the Specialty Coffee Gold Standard list (15 curated venues, zero commercial chains).
+3. **Dataset Drift & Fairness Monitoring**:
+   - Run the automated drift audit against the verified baseline:
+     ```bash
+     python -m motkarta.drift --baseline public/data/places.json --current public/data/places.json
+     ```
+   - Verifies PSI < 0.10, outer-city ratio $\ge 30\%$, independent ratio $\ge 90\%$, and cuisine Shannon entropy $\ge 2.5$.
+4. **Export Review Labels**:
+   - In `/admin`, click `Exportera` to download latest D1 review decisions and duplicate resolutions as JSON.
+   - These human validation labels serve as ground-truth for offline Learning-to-Rank (LTR) retraining and candidate classifier validation.
+5. **Mandatory 4-Tier Full Test Coverage Gate**:
+   - Before committing or deploying any changes:
+     ```bash
+     npm run test:gate
+     ```
+   - All 4 tiers (TypeScript static typecheck, JS unit tests, Python pytest suite, and Playwright E2E suite) must pass with zero failures.
+
+---
+
+### 2. Hidden Gem Promotion: The Double-Lock Policy
+
+Motkarta enforces a strict **Double-Lock Policy** for hidden-gem elevation to prevent marketing manipulation, review spam, and false positives:
+
+- **Lock 1 (Community Discovery)**: Visitors nominate beloved craft spots by clicking `✨ Tipsa som dold pärla` in the place sheet. This provides immediate personal gratification (saved locally to `motkarta_user_nominated_gems`) and emits an anonymous telemetry event (`recommendation_mode: "hidden_gems"`). These are aggregated in admin review as `✨ X användartips`.
+- **Lock 2 (Independent Evidence Gate)**: Admin promotion buttons for `known_hidden_gem` are conditionally enabled *only* when `candidate.evidenceGate.canPromoteHiddenGem` evaluates to true (at least 2 independent verified signals such as OSM, municipal inspection, official website, or curated guide). Commercial reviews (Google, TripAdvisor, Yelp) are quarantined and strictly prohibited from satisfying this requirement.
+- **Dynamic Runtime Guard**: Even after admin approval, `evaluateHiddenGemGates` in `lib/scoring.ts` continuously monitors catalog entries. If an establishment becomes a commercial chain or loses active independent verification, the hidden-gem badge is automatically stripped at runtime.
+
+---
+
+### 3. In-App Admin Transparency & ML Toasts
+
+To ensure that administrative operations are never opaque, the admin interface surfaces:
+- **Contextual State Banners**: A guidance strip beneath the state filters explaining what entries belong in each view and what action to take.
+- **Transparent Toasts**: Every state change, duplicate resolution, district update, and export displays a rich toast notification explaining both the administrative result and the exact downstream ML and ranking consequence:
+  - *Hidden Gem*: Details ranking boosts in hidden gems mode and Concierge RAG while confirming commercial quarantine.
+  - *Mainstream*: Details verified publishing and standard Bayesian quality score computation.
+  - *Duplicate Merge*: Explains evidence migration into the master entity and recording of training labels for the deduplication model.
+  - *District Update*: Details contribution to outer-city representation in the drift monitor.
+

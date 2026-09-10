@@ -56,6 +56,8 @@ As of 2026-08-25:
 | Position-debiased learning-to-rank model | Implemented for offline research | `motkarta/ltr.py` |
 | Online experiment assignment | Not implemented | Requires event collection and privacy review |
 | Automated drift and fairness monitoring | Implemented | `motkarta/drift.py` |
+| Admin Operations Playbook & ML Transparency | Implemented | `src/admin/AdminGuidePanel.tsx`, `src/admin/AdminToastContainer.tsx`, `src/admin/AdminReviewPanel.tsx` |
+| Community Hidden Gem Nomination & Double-Lock | Implemented | `src/components/PlaceDetailSheet.tsx`, `src/components/PlaceFeedbackModal.tsx`, `functions/api/admin/candidates.ts` |
 
 Frontend ML/recommendation code is intentionally split from the app shell:
 `src/app/place-ranking.ts` owns user-facing mode/sort ranking controls for

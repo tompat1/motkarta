@@ -5,7 +5,9 @@ import type { Language } from "../app/shared";
 import { formatUpdatedDate } from "../app/shared";
 import { AdminCoveragePanel } from "./AdminCoveragePanel";
 import { AdminMlDashboard } from "./AdminMlDashboard";
-import { ArrowClockwise, ArrowRight, ArrowSquareOut, CheckCircle, CircleNotch, DownloadSimple, Globe, MapPin, PlusCircle, Scales, ShieldCheck, Sliders, Sparkle, X } from "@phosphor-icons/react";
+import { AdminGuidePanel } from "./AdminGuidePanel";
+import { AdminToastContainer, type AdminToast } from "./AdminToastContainer";
+import { ArrowClockwise, ArrowRight, ArrowSquareOut, BookOpen, CheckCircle, CircleNotch, DownloadSimple, Globe, Info, MapPin, PlusCircle, Scales, ShieldCheck, Sliders, Sparkle, X } from "@phosphor-icons/react";
 
 type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all";
 type AdminValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
@@ -146,7 +148,20 @@ export function AdminReviewPanel({
   const [schemaStatus, setSchemaStatus] = useState<AdminSchemaStatus | null>(null);
   const [adminSession, setAdminSession] = useState<AdminSessionStatus | null>(propAdminSession ?? null);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [showGuide, setShowGuide] = useState(false);
+  const [toasts, setToasts] = useState<AdminToast[]>([]);
   const hasAdminAuth = adminSession?.admin === true;
+
+  const addToast = useCallback((toast: Omit<AdminToast, "id" | "timestamp">) => {
+    const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    const now = new Date();
+    const timestamp = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    setToasts((prev) => [...prev.slice(-4), { ...toast, id, timestamp }]);
+  }, []);
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const adminHeaders = useCallback(
     (tokenOverride?: string, extraHeaders?: Record<string, string>) => {
@@ -292,6 +307,14 @@ export function AdminReviewPanel({
         setSchemaStatus(payload);
         if (payload.ready) {
           setStatus(lang === "sv" ? "Runtime-check klar. DB och adminschema är redo." : "Runtime check complete. DB and admin schema are ready.");
+          addToast({
+            type: "success",
+            title: lang === "sv" ? "🛡️ Runtime-check godkänd" : "🛡️ Runtime Check Passed",
+            message: lang === "sv" ? "D1-databas och adminschema är synkroniserade." : "D1 database and admin schema are synchronized.",
+            detail: lang === "sv"
+              ? "Samtliga tabeller (establishments, evidence_sources, admin_review_events, recommendation_events) är aktiva."
+              : "All tables (establishments, evidence_sources, admin_review_events, recommendation_events) are verified.",
+          });
           await Promise.all([loadDashboard(token), loadCandidates(token)]);
         }
         return payload;
@@ -304,7 +327,7 @@ export function AdminReviewPanel({
         setSchemaBusy(false);
       }
     },
-    [adminHeaders, adminSession?.admin, adminToken, lang, loadCandidates, loadDashboard],
+    [addToast, adminHeaders, adminSession?.admin, adminToken, lang, loadCandidates, loadDashboard],
   );
 
   const checkAdminSession = useCallback(
@@ -490,6 +513,45 @@ export function AdminReviewPanel({
           ? `${candidate.name} uppdaterades till ${lifecycleStateLabel(lifecycleState, lang)}.`
           : `${candidate.name} updated to ${lifecycleStateLabel(lifecycleState, lang)}.`,
       );
+
+      if (validationLabel === "known_hidden_gem") {
+        addToast({
+          type: "ml_event",
+          title: lang === "sv" ? "✨ Promoverad: Dold Pärla" : "✨ Promoted: Hidden Gem",
+          message: `${candidate.name} (#${candidate.id}) ➔ ${lifecycleStateLabel(lifecycleState, lang)}`,
+          detail: lang === "sv"
+            ? "Dubbellås godkänt (2+ oberoende källor). Platsen rankas upp i 'Dolda pärlor'-läget och Concierge RAG. Kommersiella betyg förblir i strikt karantän."
+            : "Double-lock approved (2+ independent sources). Venue boosted in Hidden Gems mode and Concierge RAG. Commercial platform ratings remain quarantined.",
+        });
+      } else if (lifecycleState === "featured") {
+        addToast({
+          type: "ml_event",
+          title: lang === "sv" ? "🌟 Promoverad: Featured" : "🌟 Promoted: Featured",
+          message: `${candidate.name} (#${candidate.id}) ➔ Featured`,
+          detail: lang === "sv"
+            ? "Högsta synlighet i kuraterade filter, startsidans kartsnabbval och concierge-rekommendationer."
+            : "Highest visibility across curated filters, hero shortcuts, and concierge recommendations.",
+        });
+      } else if (lifecycleState === "verified") {
+        addToast({
+          type: "success",
+          title: lang === "sv" ? "✅ Promoverad: Mainstream" : "✅ Promoted: Mainstream",
+          message: `${candidate.name} (#${candidate.id}) ➔ ${lifecycleStateLabel(lifecycleState, lang)}`,
+          detail: lang === "sv"
+            ? "Verifierad för publik karta och sökning. Dolda pärlor-flaggan är inaktiv, standard Bayesian kvalitetspoäng beräknas."
+            : "Verified for public map and search. Hidden gem flag is inactive, Bayesian quality score computed normally.",
+        });
+      } else {
+        addToast({
+          type: "warning",
+          title: lang === "sv" ? "⚠️ Kandidat avvisad" : "⚠️ Candidate Rejected",
+          message: `${candidate.name} (#${candidate.id}) markerades som ${validationLabelText(validationLabel, lang)}.`,
+          detail: lang === "sv"
+            ? "Exkluderas från publicering. Sparas som negativt träningsbevis för kandidatklassificeraren."
+            : "Excluded from publishing. Preserved as negative training evidence for candidate classifiers.",
+        });
+      }
+
       void loadDashboard();
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : String(saveError));
@@ -537,6 +599,14 @@ export function AdminReviewPanel({
             ? `${candidate.name} slogs ihop med #${payload.targetEstablishmentId ?? targetId}.`
             : `${candidate.name} merged into #${payload.targetEstablishmentId ?? targetId}.`,
         );
+        addToast({
+          type: "info",
+          title: lang === "sv" ? "🔗 Dubblett sammanslagen" : "🔗 Duplicate Merged",
+          message: `${candidate.name} (#${candidate.id}) slogs ihop med #${payload.targetEstablishmentId ?? targetId}.`,
+          detail: lang === "sv"
+            ? "Källor och bevis migrerades till huvudposten. Sammanslagningen loggas i D1 audit-events för ML-träningsunderlag."
+            : "Sources and evidence migrated to target place. Merge logged in D1 audit events for ML training sets.",
+        });
       } else {
         setCandidates((current) =>
           current.map((row) =>
@@ -558,6 +628,14 @@ export function AdminReviewPanel({
             ? `${candidate.name} markerades som separat plats.`
             : `${candidate.name} marked as a separate place.`,
         );
+        addToast({
+          type: "info",
+          title: lang === "sv" ? "🛡️ Separat post bekräftad" : "🛡️ Kept Separate",
+          message: `${candidate.name} (#${candidate.id}) markerades som distinkt verksamhet.`,
+          detail: lang === "sv"
+            ? "Sparat som negativt matchpar för dedupliceringsmodellen."
+            : "Recorded as a negative match pair for deduplication training.",
+        });
       }
       void loadDashboard();
     } catch (saveError) {
@@ -609,6 +687,14 @@ export function AdminReviewPanel({
           ? `${candidate.name} uppdaterades till region ${district}.`
           : `${candidate.name} updated to region ${district}.`,
       );
+      addToast({
+        type: "success",
+        title: lang === "sv" ? "📍 Region uppdaterad" : "📍 Region Updated",
+        message: `${candidate.name} (#${candidate.id}) ➔ ${district}`,
+        detail: lang === "sv"
+          ? "Stadsdel sparad i D1. Bidrar till geografisk representation i drift- och rättvisegrinden (ytterstad vs innerstad)."
+          : "District saved to D1. Supports geographic representation in drift and fairness gates.",
+      });
       void loadDashboard();
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : String(saveError));
@@ -668,6 +754,18 @@ export function AdminReviewPanel({
             ? `Webbplats sparad för ${candidate.name}.`
             : `Saved website for ${candidate.name}.`,
       );
+      addToast({
+        type: "info",
+        title: lang === "sv" ? "🌐 Webb & bild sparad" : "🌐 Website & Photo Saved",
+        message: `${candidate.name} (#${candidate.id}) ➔ ${updatedWebsite}`,
+        detail: payload.scrapedPhotoUrl
+          ? lang === "sv"
+            ? `Officiell webbsida och og:image (${payload.scrapedPhotoUrl}) registrerade som verifierad källa (konfidens 0.9).`
+            : `Official website and og:image (${payload.scrapedPhotoUrl}) recorded as verified source (confidence 0.9).`
+          : lang === "sv"
+            ? "Officiell webbsida sparad som verifierad källa (konfidens 0.9)."
+            : "Official website saved as verified source (confidence 0.9).",
+      });
       void loadDashboard();
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : String(saveError));
@@ -720,6 +818,16 @@ export function AdminReviewPanel({
           ? `Exporterade ${filePayload.labels.length} labels och ${filePayload.duplicateResolutions.length} dubblettbeslut.`
           : `Exported ${filePayload.labels.length} labels and ${filePayload.duplicateResolutions.length} duplicate decisions.`,
       );
+      addToast({
+        type: "info",
+        title: lang === "sv" ? "📦 Träningsetiketter exporterade" : "📦 Training Labels Exported",
+        message: lang === "sv"
+          ? `Exporterade ${filePayload.labels.length} labels och ${filePayload.duplicateResolutions.length} dubblettbeslut.`
+          : `Exported ${filePayload.labels.length} labels and ${filePayload.duplicateResolutions.length} duplicate decisions.`,
+        detail: lang === "sv"
+          ? "Besluten är klara för offline LTR-träning och utvärdering av kandidatklassificeraren."
+          : "Decisions ready for offline LTR training and candidate classifier evaluation.",
+      });
       await loadDashboard(token);
       await loadSchemaStatus(token);
     } catch (exportError) {
@@ -768,6 +876,20 @@ export function AdminReviewPanel({
             ? "Alla platser har redan giltiga regioner."
             : "All places already have specific regions.",
       );
+      addToast({
+        type: "success",
+        title: lang === "sv" ? "🗺️ Saknade regioner lösta" : "🗺️ Missing Regions Resolved",
+        message: count > 0
+          ? lang === "sv"
+            ? `Löste regioner för ${count} platser${examples ? ` (${examples})` : ""}.`
+            : `Resolved regions for ${count} places${examples ? ` (${examples})` : ""}.`
+          : lang === "sv"
+            ? "Alla platser har redan giltiga regioner."
+            : "All places already have specific regions.",
+        detail: lang === "sv"
+          ? "Säkerställer korrekt distriktstillhörighet för filtrering och LTR-funktionsmatriser."
+          : "Ensures proper district attribution for filtering and LTR feature matrices.",
+      });
 
       await Promise.all([loadCandidates(token), loadDashboard(token)]);
     } catch (resolveErr) {
@@ -859,8 +981,26 @@ export function AdminReviewPanel({
             {loading ? <CircleNotch size={14} className="animate-spin" /> : <ArrowClockwise size={14} weight="bold" />}
             {lang === "sv" ? "Ladda om" : "Reload"}
           </button>
+          <button
+            type="button"
+            className={`admin-guide-toggle-btn ${showGuide ? "active" : ""}`}
+            onClick={() => setShowGuide((prev) => !prev)}
+            title={lang === "sv" ? "Öppna adminhandbok & ML-rutiner (SOP)" : "Open Admin Playbook & ML SOP"}
+          >
+            <BookOpen size={14} weight="bold" />
+            {lang === "sv" ? "Guide & Rutiner (SOP)" : "Playbook & SOP"}
+          </button>
         </div>
       </div>
+
+      <div className="admin-filter-guide-banner" role="note">
+        <Info size={14} weight="bold" className="filter-guide-icon" />
+        <span>{stateFilterHelpText(stateFilter, lang)}</span>
+      </div>
+
+      {showGuide ? (
+        <AdminGuidePanel lang={lang} onClose={() => setShowGuide(false)} />
+      ) : null}
 
       {hasAdminAuth ? (
         <div className={`admin-schema-panel ${schemaStatus?.ready ? "ready" : "needs-setup"}`}>
@@ -1233,6 +1373,7 @@ export function AdminReviewPanel({
           <span>{lang === "sv" ? "Inga poster i valt läge." : "No records in selected state."}</span>
         </div>
       )}
+      <AdminToastContainer toasts={toasts} onDismiss={dismissToast} />
     </section>
   );
 }
@@ -1451,3 +1592,38 @@ function duplicateResolutionLabel(resolution: "merged" | "keep_separate", lang: 
   };
   return labels[resolution][lang];
 }
+
+function stateFilterHelpText(filter: AdminStateFilter, lang: Language): string {
+  switch (filter) {
+    case "candidate":
+      return lang === "sv"
+        ? "Kandidater: Nya förslag från OSM, livsmedelskontroll och guider. Prioritera rader med '✨ X användartips' och kontrollera att platsen har minst 2 oberoende källor för dolda pärlor."
+        : "Candidates: New proposals from OSM, inspections, and guides. Prioritize rows with '✨ X user tips' and check for 2 independent sources for hidden gems.";
+    case "unresolved_region":
+      return lang === "sv"
+        ? "Saknar region: Platser med generiska Stockholm-etiketter. Klicka 'Lös saknade regioner' för polygon-batch eller välj stadsdel manuellt i dropdownen."
+        : "Needs region: Places with broad Stockholm labels. Click 'Resolve missing regions' for polygon batch or select district manually.";
+    case "needs_input":
+      return lang === "sv"
+        ? "Behöver input: Platser som saknar webbadress, gatuadress eller stadsdel. Använd 'Spara & hämta bild' för att auto-berika."
+        : "Needs input: Places missing website, address, or district. Use 'Save & scrape photo' to enrich.";
+    case "ml_dashboard":
+      return lang === "sv"
+        ? "ML-Dashboard: Live-telemetri för rekommendationshändelser, positionsbias (IPS gamma), modellversioner och representativa rättvisegrinder."
+        : "ML Dashboard: Live recommendation telemetry, position bias (IPS gamma), model versions, and representation gates.";
+    case "verified":
+      return lang === "sv"
+        ? "Verifierade: Granskade och godkända verksamheter som är aktiva och publicerade i Motkartas öppna katalog."
+        : "Verified: Reviewed and approved venues published in Motkarta's active catalog.";
+    case "featured":
+      return lang === "sv"
+        ? "Featured: Särskilt utvalda ställen med högsta synlighet i filter, startsidans kartsnabbval och concierge."
+        : "Featured: Curated standout venues with highest visibility in filters, hero shortcuts, and concierge.";
+    case "all":
+    default:
+      return lang === "sv"
+        ? "Alla platser: Samtliga poster i D1 oavsett gransknings- och livscykelstatus."
+        : "All places: Every establishment in D1 regardless of review or lifecycle state.";
+  }
+}
+
