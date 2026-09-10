@@ -16,6 +16,8 @@ import {
   ThumbsUp,
   ThumbsDown,
   Sparkle,
+  Clock,
+  CurrencyCircleDollar,
 } from "@phosphor-icons/react";
 import type { ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
@@ -223,6 +225,29 @@ export function PlaceDetailSheet({
                     : (lang === "sv" ? "Tipsa som dold pärla" : "Nominate as hidden gem")}
                 </button>
               )}
+
+              {/* Price Tier Badge */}
+              {place.priceLevel > 0 || place.priceSEK ? (
+                <span
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    background: "var(--color-paper, #f8fafc)",
+                    color: "var(--color-ink, #0f172a)",
+                    border: "1px solid var(--color-mist, #e2e8f0)",
+                    padding: "4px 10px",
+                    borderRadius: "999px",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                  }}
+                  title={lang === "sv" ? `Prisnivå ${"$".repeat(place.priceLevel || 2)} (${place.priceSEK ? `${place.priceSEK} kr` : ""})` : `Price tier ${"$".repeat(place.priceLevel || 2)} (${place.priceSEK ? `${place.priceSEK} SEK` : ""})`}
+                >
+                  <CurrencyCircleDollar size={15} weight="bold" style={{ color: "var(--color-water, #2563eb)" }} />
+                  <strong>{"$".repeat(place.priceLevel > 0 ? place.priceLevel : 2)}</strong>
+                  {place.priceSEK ? <span style={{ color: "var(--color-slate, #64748b)" }}>· {place.priceSEK} SEK</span> : null}
+                </span>
+              ) : null}
             </div>
           </div>
 
@@ -313,6 +338,19 @@ export function PlaceDetailSheet({
               <MapPin size={18} weight="bold" style={{ color: "var(--color-water)", flexShrink: 0 }} />
               <span>{place.address ? `${place.address}, ${place.area}` : `${place.area}, Stockholm`}</span>
             </div>
+            {place.openingHours ? (
+              <div className="meta-row" style={{ alignItems: "flex-start" }}>
+                <Clock size={18} weight="bold" style={{ color: "var(--color-water)", flexShrink: 0, marginTop: "2px" }} />
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: "13px" }}>
+                    {lang === "sv" ? "Öppettider" : "Opening Hours"}
+                  </div>
+                  <div style={{ fontSize: "12px", color: "var(--color-slate, #475569)", marginTop: "2px", lineHeight: "1.4" }}>
+                    {place.openingHours}
+                  </div>
+                </div>
+              </div>
+            ) : null}
             {distanceMeters !== null ? (
               <div className="meta-row">
                 <NavigationArrow size={18} weight="bold" style={{ color: "var(--color-signal)", flexShrink: 0 }} />

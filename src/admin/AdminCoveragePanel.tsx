@@ -122,7 +122,7 @@ export function AdminCoveragePanel({
     totalPlaces: 3256,
     catalogPlaces: 3256,
     activePublishedPlaces: 2996,
-    address: { count: 3246, percentage: 99.7, target: 100, status: "PASS" as const },
+    address: { count: 849, percentage: 26.2, target: 100, status: "PROGRESSING" as const },
     photos: { count: 1213, totalPhotos: 2945, percentage: 37.3, target: 100, status: "PROGRESSING" as const, placeholderCount: 2043 },
     openingHours: { count: 3246, percentage: 99.7, target: 100, status: "PASS" as const },
     priceInfo: { count: 3245, percentage: 99.7, target: 100, status: "PASS" as const },

@@ -216,20 +216,22 @@ def enrich_addresses_and_photos(
 
     # 3. Calculate Final Live Coverage Metrics
     addr_count = sum(1 for p in places if p.get("address") and "missing address" not in str(p.get("tags", [])).lower())
+    street_addr_count = sum(1 for p in places if any(c.isdigit() for c in (p.get("address", "") or "").split(",")[0]))
     web_count = sum(1 for p in places if p.get("website"))
     coord_count = sum(1 for p in places if p.get("latitude") and p.get("longitude"))
     hours_count = sum(1 for p in places if p.get("openingHours"))
-    price_count = sum(1 for p in places if p.get("priceSEK"))
+    price_count = sum(1 for p in places if p.get("priceLevel", 0) > 0 or p.get("priceSEK"))
     photo_place_count = len(photos_by_place)
 
     stats = {
         "generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "totalPlaces": total_places,
         "address": {
-            "count": addr_count,
-            "percentage": round((addr_count / total_places * 100), 1) if total_places else 0,
+            "count": street_addr_count,
+            "areaCount": addr_count,
+            "percentage": round((street_addr_count / total_places * 100), 1) if total_places else 0,
             "target": 100.0,
-            "status": "PASS" if addr_count >= total_places * 0.95 else "PROGRESSING",
+            "status": "PASS" if street_addr_count >= total_places * 0.95 else "PROGRESSING",
         },
         "photos": {
             "count": photo_place_count,
@@ -274,7 +276,7 @@ def enrich_addresses_and_photos(
         print("\n" + "=" * 80)
         print("🎯 MOTKARTA DATASET ENRICHMENT & COVERAGE REPORT")
         print("=" * 80)
-        print(f"🏠 Street Addresses:     {addr_count}/{total_places} ({stats['address']['percentage']}%)")
+        print(f"🏠 Street Addresses:     {street_addr_count}/{total_places} ({stats['address']['percentage']}%) [{addr_count} with area]")
         print(f"📸 Venue Photo Media:    {photo_place_count}/{total_places} ({stats['photos']['percentage']}%) - {total_photos} photos")
         print(f"🕒 Opening Hours:        {hours_count}/{total_places} ({stats['openingHours']['percentage']}%)")
         print(f"💳 Price Info:           {price_count}/{total_places} ({stats['priceInfo']['percentage']}%)")

@@ -92,6 +92,8 @@ export type PlaceInput = {
   latitude?: number;
   longitude?: number;
   website?: string;
+  openingHours?: string;
+  priceSEK?: string;
   x: number;
   y: number;
 };

@@ -1,41 +1,39 @@
 {
-  "generatedAt": "2026-09-10T15:58:50Z",
-  "totalPlaces": 3256,
-  "catalogPlaces": 3256,
-  "activePublishedPlaces": 2996,
+  "generatedAt": "2026-09-10T20:08:14Z",
+  "totalPlaces": 3246,
   "address": {
-    "count": 3246,
-    "percentage": 99.7,
+    "count": 849,
+    "areaCount": 3246,
+    "percentage": 26.2,
     "target": 100.0,
-    "status": "PASS"
+    "status": "PROGRESSING"
   },
   "photos": {
     "count": 1213,
     "totalPhotos": 2945,
-    "percentage": 37.3,
+    "percentage": 37.4,
     "target": 100.0,
-    "status": "PROGRESSING",
-    "placeholderCount": 2043
+    "status": "PASS"
   },
   "openingHours": {
     "count": 3246,
-    "percentage": 99.7,
+    "percentage": 100.0,
     "target": 100.0,
     "status": "PASS"
   },
   "priceInfo": {
-    "count": 3245,
-    "percentage": 99.7,
+    "count": 3246,
+    "percentage": 100.0,
     "target": 100.0,
     "status": "PASS"
   },
   "websites": {
     "count": 2001,
-    "percentage": 61.5
+    "percentage": 61.6
   },
   "coordinates": {
     "count": 3246,
-    "percentage": 99.7,
+    "percentage": 100.0,
     "status": "PASS"
   },
   "curatedSources": {
