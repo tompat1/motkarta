@@ -42,74 +42,8 @@ if ENV_FILE.exists():
 
 API_KEY = os.environ.get("GOOGLE_PLACES_API_KEY", "")
 
-CUISINE_PHOTO_PRESETS = {
-    "specialty coffee": [
-        {
-            "url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80",
-            "caption": "Handbryggt Specialty Coffee & Espressobar",
-            "credit": "Unsplash / Specialty Coffee Collection",
-        },
-        {
-            "url": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80",
-            "caption": "Spårbart V60 Filterkaffe Single-Origin",
-            "credit": "Unsplash / Barista Craft",
-        },
-    ],
-    "bakery": [
-        {
-            "url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80",
-            "caption": "Färskt Surdegsbröd & Kardemummabullar",
-            "credit": "Unsplash / Swedish Bakery Collection",
-        },
-        {
-            "url": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=400&q=80",
-            "caption": "Hantverksbageri & Frasiga Croissanter",
-            "credit": "Unsplash / Artisanal Bakery",
-        },
-    ],
-    "restaurant": [
-        {
-            "url": "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=400&q=80",
-            "caption": "Restaurangmiljö & Gastronomiska Rätter",
-            "credit": "Unsplash / Nordic Dining",
-        },
-        {
-            "url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80",
-            "caption": "Stämningsfull Servering & Kvarterskrog",
-            "credit": "Unsplash / Restaurant Interior",
-        },
-    ],
-    "mexican": [
-        {
-            "url": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=400&q=80",
-            "caption": "Autentiska Tacos på Majstortilla & Salsa",
-            "credit": "Unsplash / Taqueria Craft",
-        },
-    ],
-    "italian": [
-        {
-            "url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80",
-            "caption": "Färsk Handgjord Pasta & Italienska Viner",
-            "credit": "Unsplash / Trattoria Collection",
-        },
-    ],
-    "pizza": [
-        {
-            "url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80",
-            "thumbnailUrl": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80",
-            "caption": "Vedugnsbakad Napolitansk Pizza",
-            "credit": "Unsplash / Pizzeria Collection",
-        },
-    ],
-}
+# Strictly forbid generic stock / Unsplash / Wikimedia photos in Motkarta
+FORBIDDEN_PHOTO_DOMAINS = ["unsplash.com", "wikimedia.org", "wikipedia.org", "shutterstock", "gettyimages", "istockphoto"]
 
 
 def fetch_google_place_address(place_name: str, area: str, api_key: str) -> dict[str, str] | None:
@@ -228,65 +162,48 @@ def enrich_addresses_and_photos(
     payload["totalPlaces"] = len(places)
     places_file.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    # 2. Build 100% Photo Coverage
+    # 2. Verified Photo Coverage (Real Venue-Specific Web Media Only - No Unsplash, No Wikimedia)
     photos_by_place: dict[str, list[dict[str, Any]]] = {}
-    total_photos = 0
+    if photos_file.exists():
+        try:
+            existing_data = json.loads(photos_file.read_text(encoding="utf-8"))
+            raw_photos = existing_data.get("photosByPlace", {})
+            for pid_str, p_list in raw_photos.items():
+                clean_p_list = []
+                for p in p_list:
+                    u = p.get("url", "").lower()
+                    if any(bad in u for bad in FORBIDDEN_PHOTO_DOMAINS) or "placeholder" in u or "pixel" in u:
+                        continue
+                    clean_p_list.append(p)
+                if clean_p_list:
+                    photos_by_place[pid_str] = clean_p_list
+        except Exception:
+            photos_by_place = {}
+
+    total_photos = sum(len(plist) for plist in photos_by_place.values())
     sql_lines = [
         "BEGIN TRANSACTION;",
         "DELETE FROM place_photos;",
     ]
 
-    for p in places:
-        p_id = p.get("id")
-        p_name = p.get("name", "")
-        p_area = p.get("area", "Stockholm")
-        p_kind = str(p.get("kind", "")).lower()
-        p_tags = [str(t).lower() for t in p.get("tags", [])]
-
-        matched_preset = None
-        if "specialty coffee" in p_kind or "specialty coffee" in p_tags:
-            matched_preset = CUISINE_PHOTO_PRESETS.get("specialty coffee")
-        elif "bakery" in p_kind or "bakery" in p_tags:
-            matched_preset = CUISINE_PHOTO_PRESETS.get("bakery")
-        elif "mexican" in p_tags or "taco" in p_tags:
-            matched_preset = CUISINE_PHOTO_PRESETS.get("mexican")
-        elif "italian" in p_tags or "pasta" in p_tags:
-            matched_preset = CUISINE_PHOTO_PRESETS.get("italian")
-        elif "pizza" in p_tags:
-            matched_preset = CUISINE_PHOTO_PRESETS.get("pizza")
-        else:
-            matched_preset = CUISINE_PHOTO_PRESETS.get("restaurant")
-
-        place_photos = []
-        for idx, preset in enumerate(matched_preset or CUISINE_PHOTO_PRESETS["restaurant"]):
-            photo_id = f"photo-{p_id}-{idx + 1}"
-            photo_obj = {
-                "id": photo_id,
-                "placeId": p_id,
-                "url": preset["url"],
-                "thumbnailUrl": preset["thumbnailUrl"],
-                "caption": f"{p_name} — {preset['caption']}",
-                "credit": preset["credit"],
-            }
-            place_photos.append(photo_obj)
-            total_photos += 1
-
-            clean_name = p_name.replace("'", "''")
-            clean_credit = preset["credit"].replace("'", "''")
-            clean_url = preset["url"]
-            clean_thumb = preset["thumbnailUrl"]
+    for pid_str, p_list in photos_by_place.items():
+        for p in p_list:
+            clean_id = str(p.get("id", f"photo-{pid_str}")).replace("'", "''")
+            clean_url = str(p.get("url", "")).replace("'", "''")
+            clean_thumb = str(p.get("thumbnailUrl", clean_url)).replace("'", "''")
+            clean_cap = str(p.get("caption", "")).replace("'", "''")
+            clean_credit = str(p.get("credit", "Official Website")).replace("'", "''")
             sql_lines.append(
                 f"INSERT INTO place_photos (id, place_id, url, thumbnail_url, caption, credit, created_at) VALUES ("
-                f"'{photo_id}', {p_id}, '{clean_url}', '{clean_thumb}', '{clean_name}', '{clean_credit}', datetime('now'));"
+                f"'{clean_id}', {pid_str}, '{clean_url}', '{clean_thumb}', '{clean_cap}', '{clean_credit}', datetime('now'));"
             )
-
-        photos_by_place[str(p_id)] = place_photos
 
     sql_lines.append("COMMIT;\n")
 
     photos_payload = {
         "updatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "totalPlaces": len(photos_by_place),
+        "totalPlaces": len(places),
+        "verifiedPhotoPlaces": len(photos_by_place),
         "totalPhotos": total_photos,
         "photosByPlace": photos_by_place,
     }

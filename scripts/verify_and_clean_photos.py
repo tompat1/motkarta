@@ -91,14 +91,24 @@ def is_url_alive(url: str) -> bool:
     return False
 
 
+def is_stock_url(url: str) -> bool:
+    normalized = url.lower()
+    return any(p in normalized for p in ("unsplash.com", "images.unsplash", "shutterstock", "gettyimages", "istockphoto"))
+
+
+def is_stock_photo(photo: dict) -> bool:
+    values = " ".join(str(photo.get(key, "")) for key in ("url", "thumbnailUrl", "caption", "credit")).lower()
+    return any(p in values for p in ("unsplash", "shutterstock", "gettyimages", "istockphoto"))
+
+
 def is_wikimedia_url(url: str) -> bool:
     normalized = url.lower()
-    return "wikimedia" in normalized or "wikipedia/commons" in normalized or "commons.wikimedia.org" in normalized
+    return "wikimedia" in normalized or "wikipedia" in normalized or "commons.wikimedia.org" in normalized
 
 
 def is_wikimedia_photo(photo: dict) -> bool:
     values = " ".join(str(photo.get(key, "")) for key in ("url", "thumbnailUrl", "caption", "credit")).lower()
-    return "wikimedia" in values or "wikipedia/commons" in values or "commons.wikimedia.org" in values
+    return "wikimedia" in values or "wikipedia" in values or "commons.wikimedia.org" in values
 
 
 def is_placeholder_url(url: str) -> bool:
@@ -167,7 +177,7 @@ def clean_place_photos():
         p["url"]
         for _, p in all_photo_items
         if (
-            "images.unsplash.com" not in p["url"]
+            not is_stock_photo(p)
             and not is_wikimedia_photo(p)
             and not is_placeholder_photo(p)
             and not is_social_media_photo(p)
@@ -192,8 +202,8 @@ def clean_place_photos():
         for photo in photo_list:
             url = photo.get("url", "")
             
-            # Rule 1: Remove Unsplash stock images
-            if "images.unsplash.com" in url:
+            # Rule 1: Remove Unsplash / stock images
+            if is_stock_photo(photo) or is_stock_url(url):
                 total_removed_unsplash += 1
                 continue
 

@@ -92,6 +92,8 @@ test("admin schema POST is idempotent when runtime is already ready", async () =
       "validation_notes",
       "address",
       "website",
+      "opening_hours",
+      "price_sek",
       "candidate_source_type",
       "candidate_source_id",
       "candidate_review_status",

@@ -73,6 +73,16 @@ const establishmentColumns = [
   },
   {
     table: "establishments",
+    column: "opening_hours",
+    sql: "ALTER TABLE establishments ADD COLUMN opening_hours text",
+  },
+  {
+    table: "establishments",
+    column: "price_sek",
+    sql: "ALTER TABLE establishments ADD COLUMN price_sek text",
+  },
+  {
+    table: "establishments",
     column: "candidate_source_type",
     sql: "ALTER TABLE establishments ADD COLUMN candidate_source_type text",
   },

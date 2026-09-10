@@ -33,11 +33,18 @@ DISALLOWED_IMAGE_URL_PARTS = [
     "facebook.com",
     "favicon",
     "fbcdn.net",
+    "gettyimages",
     "icon",
     "instagram",
-    "placeholder",
+    "istockphoto",
     "pixel",
+    "placeholder",
+    "shutterstock",
+    "stock",
     "tracking",
+    "unsplash",
+    "wikimedia",
+    "wikipedia",
 ]
 
 
@@ -153,11 +160,6 @@ def fetch_photos_for_place(place: dict) -> tuple:
         site_photos = scrape_place_website_photos(website, name, limit=3)
         photos.extend(site_photos)
 
-    # Priority 2: Search Visit Stockholm official city portal
-    if len(photos) < 2:
-        visit_photos = search_visit_stockholm_photos(name, limit=2 - len(photos))
-        photos.extend(visit_photos)
-
     # Format photo entries with unique IDs
     formatted = []
     for idx, p in enumerate(photos[:3]):
@@ -167,7 +169,7 @@ def fetch_photos_for_place(place: dict) -> tuple:
             "url": p["url"],
             "thumbnailUrl": p.get("thumbnailUrl") or p["url"],
             "caption": p.get("caption") or f"{name} ({area})",
-            "credit": p.get("credit") or "Verified Web Media",
+            "credit": p.get("credit") or "Official Website",
             "width": p.get("width"),
             "height": p.get("height"),
         })
@@ -176,7 +178,13 @@ def fetch_photos_for_place(place: dict) -> tuple:
 
 
 def main():
-    print("🚀 Starting Motkarta Place Image Scraper & Search Pipeline...", flush=True)
+    import argparse
+    parser = argparse.ArgumentParser(description="Scrape official venue website images for Motkarta places.")
+    parser.add_argument("--workers", type=int, default=20, help="Number of concurrent worker threads")
+    parser.add_argument("--limit", type=int, default=None, help="Limit number of places to process (for testing)")
+    args = parser.parse_args()
+
+    print("🚀 Starting Motkarta Real Venue Image Scraper...", flush=True)
 
     if not os.path.exists(PLACES_FILE):
         print(f"❌ Places file not found: {PLACES_FILE}", flush=True)
@@ -186,14 +194,15 @@ def main():
         data = json.load(f)
 
     places = data.get("places", []) if isinstance(data, dict) else data
+    if args.limit:
+        places = places[:args.limit]
     print(f"📦 Loaded {len(places)} places from places.json", flush=True)
 
     photos_by_place = {}
     total_photos = 0
 
-    # Process places concurrently using ThreadPoolExecutor
-    max_workers = 12
-    print(f"🌐 Searching images concurrently across {max_workers} threads...", flush=True)
+    max_workers = args.workers
+    print(f"🌐 Scraping real website images concurrently across {max_workers} threads...", flush=True)
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [executor.submit(fetch_photos_for_place, place) for place in places]
@@ -204,7 +213,7 @@ def main():
                     photos_by_place[str(place_id)] = place_photos
                     total_photos += len(place_photos)
                 if idx % 100 == 0 or idx == len(places):
-                    print(f"  Processed {idx}/{len(places)} places ({total_photos} total photos acquired)", flush=True)
+                    print(f"  Processed {idx}/{len(places)} places ({total_photos} real photos acquired across {len(photos_by_place)} venues)", flush=True)
             except Exception as e:
                 print(f"⚠️ Error processing place: {e}", flush=True)
 
@@ -212,6 +221,7 @@ def main():
     output_payload = {
         "updatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "totalPlaces": len(places),
+        "verifiedPhotoPlaces": len(photos_by_place),
         "totalPhotos": total_photos,
         "photosByPlace": photos_by_place,
     }

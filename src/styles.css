@@ -3572,6 +3572,34 @@ button.concierge-clear-btn:hover {
   font-size: 12px;
 }
 
+.admin-coverage-scope-pill {
+  align-items: center;
+  background: var(--color-sand);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 4px 10px;
+}
+
+.admin-coverage-subhint {
+  color: var(--color-stone);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.admin-coverage-status-tag.tag-progressing {
+  background: var(--color-sand);
+  border-color: var(--color-mist);
+  color: var(--color-ink);
+}
+
 .admin-export-panel {
   align-items: center;
   background: var(--color-white);

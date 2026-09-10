@@ -78,7 +78,18 @@ let staticPhotosDatasetCache: Record<string, PlacePhoto[]> | null = null;
 
 function isWikimediaPhoto(photo: PlacePhoto): boolean {
   const fields = [photo.url, photo.thumbnailUrl, photo.caption, photo.credit].join(" ").toLowerCase();
-  return fields.includes("wikimedia") || fields.includes("wikipedia/commons") || fields.includes("commons.wikimedia.org");
+  return fields.includes("wikimedia") || fields.includes("wikipedia") || fields.includes("commons.wikimedia.org");
+}
+
+function isStockPhoto(photo: PlacePhoto): boolean {
+  const fields = [photo.url, photo.thumbnailUrl, photo.caption, photo.credit].join(" ").toLowerCase();
+  return (
+    fields.includes("unsplash.com") ||
+    fields.includes("images.unsplash.com") ||
+    fields.includes("shutterstock") ||
+    fields.includes("gettyimages") ||
+    fields.includes("istockphoto")
+  );
 }
 
 function isPlaceholderPhoto(photo: PlacePhoto): boolean {
@@ -97,7 +108,13 @@ function isSocialMediaPhoto(photo: PlacePhoto): boolean {
 }
 
 function withoutDisallowedPhotos(photos: PlacePhoto[]): PlacePhoto[] {
-  return photos.filter((photo) => !isWikimediaPhoto(photo) && !isPlaceholderPhoto(photo) && !isSocialMediaPhoto(photo));
+  return photos.filter(
+    (photo) =>
+      !isWikimediaPhoto(photo) &&
+      !isStockPhoto(photo) &&
+      !isPlaceholderPhoto(photo) &&
+      !isSocialMediaPhoto(photo),
+  );
 }
 
 function placeholderPhoto(placeId: number, caption?: string): PlacePhoto {
