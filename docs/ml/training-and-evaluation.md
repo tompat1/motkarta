@@ -293,3 +293,32 @@ type/chain/metadata slices. Satisfaction remains null. See the
 [evaluation record](concierge-evaluation.md); synthetic regression results and
 provider mocks do not establish real-world quality. The original holdout was used
 in safety debugging and must be replaced before any production promotion decision.
+
+## Hybrid search and Reciprocal Rank Fusion (2026-09-10)
+
+`lib/concierge/hybrid_search.ts` implements Reciprocal Rank Fusion:
+
+$$RRF(d) = \sum_{m \in \{\text{lexical}, \text{dense}\}} \frac{1}{k + r_m(d)}$$
+
+with standard rank smoothing constant $k = 60$. Exact name matches are given priority ahead of vector similarity. Ties are broken deterministically by Motkarta recommendation score, data completeness bonus, and venue ID.
+
+## Position-Debiased LTR and Inverse Propensity Scoring (2026-09-10)
+
+`motkarta/ltr.py` implements counterfactual learning-to-rank to de-bias historical recommendation impressions collected in `recommendation_events`.
+
+1. **Position Examination Model**:
+   $$P(\text{Examine} \mid k) = \max\left(0.05, \frac{1}{(1 + k)^\gamma}\right)$$
+   with position decay exponent $\gamma = 0.75$. Inverse propensity weights are clipped to $20\times$ to prevent high variance on deep positions.
+2. **Outcome Reward Mapping**:
+   Observed user actions are mapped to rewards: `would_return` = 3.0, `visit` = 2.0, `save` = 1.5, `click` = 1.0, `impression` = 0.0, `dismiss` = -1.0.
+3. **Counterfactual NDCG**:
+   Evaluates ranking performance using weighted DCG:
+   $$DCG_{\text{IPS}} = \sum_{i=1}^k \frac{w_i \cdot y_i}{\log_2(i + 1)}$$
+
+## Dataset Drift & Stability Monitoring (2026-09-10)
+
+`motkarta/drift.py` evaluates feature and representation shifts:
+- **Population Stability Index (PSI)** on continuous scores: $<0.10$ (stable), $0.10 \le \text{PSI} < 0.25$ (moderate drift), $\ge 0.25$ (critical drift).
+- **Jensen-Shannon Divergence (JSD)** on categorical distributions (districts, cuisines).
+- **Fairness & Diversity Invariants**: outer-city ratio $\ge 0.30$, independent business ratio $\ge 0.90$, cuisine Shannon entropy $\ge 2.5$.
+

@@ -3,6 +3,7 @@ import type { ConciergePlace, QueryContext, RankedCandidate } from './contracts.
 import { includesPhrase, normalize, placeFacts } from './facts.ts';
 import { coordinates, distanceKm, eligiblePlace, specialtyEligible } from './gates.ts';
 import { isCuisineTerm, type Intent, parseIntent, queryTerms, tokenAlternatives } from './intent.ts';
+import { reciprocalRankFusion } from './hybrid_search.ts';
 
 function oneEdit(a: string, b: string): boolean {
   if (a.length < 5 || Math.abs(a.length - b.length) > 1) return false;
@@ -120,15 +121,10 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
   return candidates.map((candidate, index) => ({ ...candidate, lexicalRank: index + 1, fusionScore: 1 / (60 + index + 1) }));
 }
 export function fuseCandidates(lexical: RankedCandidate[], semantic: RankedCandidate[]): RankedCandidate[] {
-  const merged = new Map<number, RankedCandidate>();
-  for (const candidate of lexical.slice(0, 50).concat(lexical.filter((c) => c.exact))) merged.set(candidate.place.id, { ...candidate });
-  for (const candidate of semantic) {
-    const old = merged.get(candidate.place.id);
-    merged.set(candidate.place.id, { ...(old ?? candidate), vectorRank: candidate.vectorRank });
-  }
-  return [...merged.values()].map((c) => ({ ...c, fusionScore: (c.lexicalRank ? 1 / (60 + c.lexicalRank) : 0) + (c.vectorRank ? 1 / (60 + c.vectorRank) : 0) }))
-    .sort((a, b) => Number(b.exact) - Number(a.exact) || b.fusionScore - a.fusionScore || (b.place.scores.recommendation + dataCompletenessBonus(b)) - (a.place.scores.recommendation + dataCompletenessBonus(a)) || a.place.id - b.place.id);
+  return reciprocalRankFusion(lexical, semantic);
 }
+
+export { reciprocalRankFusion } from './hybrid_search.ts';
 
 export function exactNameIds(query: string, places: ConciergePlace[]): Set<number> {
   const positive = parseIntent(query).positive;

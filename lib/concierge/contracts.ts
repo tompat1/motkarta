@@ -41,7 +41,8 @@ export type ConciergeCard = {
 };
 export type RankedCandidate = {
   place: ScoredPlace; facts: ConciergePlaceFacts; lexicalScore: number;
-  exact: boolean; lexicalRank?: number; vectorRank?: number; fusionScore: number;
+  exact: boolean; lexicalRank?: number; vectorRank?: number; vectorScore?: number;
+  fusionScore: number; fusionRank?: number;
   distanceKm?: number;
 };
 export type WebSearchLink = {

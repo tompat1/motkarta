@@ -202,6 +202,39 @@ Current contract decisions:
   arbitrary display labels and unrestricted strings under allowlisted keys are
   rejected.
 
+### 9. Reciprocal Rank Fusion & Hybrid Retrieval
+
+- Owner: `lib/concierge/hybrid_search.ts`
+- Entry point: `reciprocalRankFusion(lexical, semantic, options)`
+- Type: Rank fusion algorithm with $k=60$ smoothing
+- Purpose: Merges lexical candidate rankings with dense semantic vector rankings
+- Guarantees:
+  1. Exact name matches retain top priority over semantic similarity.
+  2. Candidates appearing in both channels receive reinforced fusion scores.
+  3. Ties broken deterministically by Motkarta recommendation score, data completeness, and ID.
+
+### 10. Position-Debiased Learning-to-Rank (LTR)
+
+- Owner: `motkarta/ltr.py`
+- Entry point: `MotkartaDebiasedRanker`, `compute_counterfactual_ndcg`
+- Type: Supervised gradient-boosted ranker with Inverse Propensity Scoring (IPS)
+- Status: Offline research and telemetry benchmarking
+- Target: Observed outcome rewards (`would_return` = 3.0, `visit` = 2.0, `save` = 1.5, `click` = 1.0, `dismiss` = -1.0)
+- Allowed inputs: Open data, municipal inspections, alcohol permits, independent verification, structural scores
+- Forbidden inputs: Quarantined commercial ratings, review counts, commercial price ranks
+- Allowed use: Counterfactual offline evaluation, candidate ranking research
+- Prohibited use: Direct production client-facing rank replacement without telemetry attribution review
+
+### 11. Automated Dataset Drift & Fairness Monitoring
+
+- Owner: `motkarta/drift.py`
+- Entry point: `evaluate_dataset_drift(baseline, current)`
+- Metrics:
+  - Population Stability Index (PSI) on numeric scoring dimensions (`quality`, `discovery`, `freshness`, `recommendation`).
+  - Categorical Jensen-Shannon Divergence (JSD) on district and cuisine distributions.
+  - Representation invariant gates (outer-city ratio $\ge 0.30$, independent ratio $\ge 0.90$, cuisine Shannon entropy $\ge 2.5$).
+- Status: Production operations and CI monitoring gate.
+
 ## Data flow and trust boundaries
 
 ```mermaid

@@ -52,9 +52,10 @@ As of 2026-08-25:
 | Event-level recommendation schema | Implemented | `recommendation_events` in `db/schema.ts` |
 | Event collection endpoint/UI instrumentation | Implemented in shadow mode | `functions/api/recommendation-events.ts`, `src/ml/recommendationInstrumentation.ts`, `src/App.tsx` wiring |
 | Concierge multi-turn conversation engine | Implemented | `lib/concierge/contracts.ts`, `functions/api/concierge.ts`, `lib/concierge/synthesis.ts`, `src/components/ConciergeAnswerView.tsx` |
-| Personalized learning-to-rank model | Not implemented | Requires real impression/outcome data |
+| Hybrid semantic retrieval (RRF) | Implemented | `lib/concierge/hybrid_search.ts`, `lib/concierge/retrieval.ts` |
+| Position-debiased learning-to-rank model | Implemented for offline research | `motkarta/ltr.py` |
 | Online experiment assignment | Not implemented | Requires event collection and privacy review |
-| Automated drift monitoring | Not implemented | Required before automatic retraining |
+| Automated drift and fairness monitoring | Implemented | `motkarta/drift.py` |
 
 Frontend ML/recommendation code is intentionally split from the app shell:
 `src/app/place-ranking.ts` owns user-facing mode/sort ranking controls for

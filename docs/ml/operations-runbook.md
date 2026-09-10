@@ -141,6 +141,35 @@ PYTHONPATH=. .venv/bin/python scripts/evaluate_ranking_experiment.py
 If no independent outcome column exists, `hypothesis_confirmed` must be null.
 Representation metrics remain descriptive, not proof of satisfaction.
 
+## Running dataset drift & fairness evaluation
+
+Compare monthly catalog updates or pipeline exports against the verified baseline:
+
+```bash
+PYTHONPATH=. .venv/bin/python -m motkarta.drift \
+  --baseline public/data/places.json \
+  --current .tmp/new_places.json \
+  --output .tmp/drift_report.json
+```
+
+The script exits with code 0 if status is `PASS` or `WARNING`, and code 1 if `FAIL` (due to critical PSI drift > 0.25 or representation gate violation).
+
+Drift gates enforced:
+- **PSI (Population Stability Index)**: `< 0.10` (STABLE), `0.10–0.25` (MODERATE_DRIFT), `> 0.25` (CRITICAL_DRIFT).
+- **Outer-City Ratio**: $\ge 30\%$ of venues must reside outside the central inner-city core.
+- **Independent Ratio**: $\ge 90\%$ of venues must be verified independent businesses.
+- **Cuisine Diversity**: Shannon entropy across cuisine tags must be $\ge 2.5$.
+
+## Running offline LTR training & benchmarking
+
+To test, train, and evaluate the debiased learning-to-rank pipeline offline:
+
+```bash
+.venv/bin/pytest tests_python/test_ltr.py -v
+```
+
+This runs the simulation benchmark, verifies feature safety quarantine, evaluates Inverse Propensity Scoring (IPS) weights, and validates counterfactual NDCG.
+
 ## Structural anomaly operation
 
 `process_motkarta_gems()` runs inside the pipeline. Treat its flagged rows as a
