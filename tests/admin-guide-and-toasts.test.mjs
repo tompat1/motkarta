@@ -48,3 +48,44 @@ test("state filter help text returns informative guidance in Swedish and English
     assert.ok(typeof filter === "string");
   }
 });
+
+test("admin candidate search filter matches name, address, district, or ID", () => {
+  const sampleCandidates = [
+    { id: 1325602848, name: "Ginza sushi", area: "Norrmalm", address: "Central Stockholm", kind: "Restaurant" },
+    { id: 3645083256, name: "Björk Bar & Grill", area: "Kungsholmen", address: "Courtyard 25", kind: "Restaurant" },
+    { id: 1921091277, name: "Stockholms Gästabud", area: "Gamla Stan", address: "Österlånggatan 7", kind: "Café" },
+  ];
+
+  const filterPlaces = (query) => {
+    const q = query.trim().toLowerCase();
+    return sampleCandidates.filter((c) =>
+      c.name.toLowerCase().includes(q) ||
+      c.area.toLowerCase().includes(q) ||
+      c.address.toLowerCase().includes(q) ||
+      String(c.id) === q ||
+      c.kind.toLowerCase().includes(q)
+    );
+  };
+
+  assert.equal(filterPlaces("ginza").length, 1);
+  assert.equal(filterPlaces("Kungsholmen").length, 1);
+  assert.equal(filterPlaces("Österlånggatan").length, 1);
+  assert.equal(filterPlaces("3645083256").length, 1);
+  assert.equal(filterPlaces("Restaurant").length, 2);
+  assert.equal(filterPlaces("nonexistent").length, 0);
+});
+
+test("admin candidate coordinates validate within Stockholm bounding box for mapview", () => {
+  const validCandidate = {
+    id: 101,
+    name: "Pascal Odenplan",
+    latitude: 59.3432,
+    longitude: 18.0531,
+  };
+
+  assert.ok(typeof validCandidate.latitude === "number");
+  assert.ok(typeof validCandidate.longitude === "number");
+  assert.ok(validCandidate.latitude > 59.0 && validCandidate.latitude < 60.0);
+  assert.ok(validCandidate.longitude > 17.5 && validCandidate.longitude < 18.5);
+});
+

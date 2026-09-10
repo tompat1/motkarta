@@ -7,18 +7,45 @@ import { AdminCoveragePanel } from "./AdminCoveragePanel";
 import { AdminMlDashboard } from "./AdminMlDashboard";
 import { AdminGuidePanel } from "./AdminGuidePanel";
 import { AdminToastContainer, type AdminToast } from "./AdminToastContainer";
-import { ArrowClockwise, ArrowRight, ArrowSquareOut, BookOpen, CheckCircle, CircleNotch, DownloadSimple, Globe, Info, MapPin, PlusCircle, Scales, ShieldCheck, Sliders, Sparkle, X } from "@phosphor-icons/react";
+import { AdminMapView, type AdminMapCandidate } from "./AdminMapView";
+import {
+  ArrowClockwise,
+  ArrowRight,
+  ArrowSquareOut,
+  BookOpen,
+  CheckCircle,
+  CircleNotch,
+  DownloadSimple,
+  Globe,
+  Info,
+  ListBullets,
+  MagnifyingGlass,
+  MapPin,
+  MapTrifold,
+  PlusCircle,
+  Scales,
+  ShieldCheck,
+  Sliders,
+  Sparkle,
+  WarningCircle,
+  X,
+} from "@phosphor-icons/react";
 
 type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all";
 type AdminValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
 
-type AdminCandidate = {
+export type AdminCandidate = {
   id: number;
   name: string;
   kind: string;
   area: string;
   address: string | null;
   website: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  openingHours?: string | null;
+  priceSEK?: string | null;
+  priceLevel?: number | null;
   note: string;
   lifecycleState: PlaceLifecycleState;
   validationLabel: AdminValidationLabel | null;
@@ -132,6 +159,9 @@ export function AdminReviewPanel({
   const [tokenInput, setTokenInput] = useState(readStoredAdminToken);
   const [adminToken, setAdminToken] = useState(readStoredAdminToken);
   const [stateFilter, setStateFilter] = useState<AdminStateFilter>("candidate");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"list" | "map">("list");
+  const [selectedCandidateId, setSelectedCandidateId] = useState<number | null>(null);
   const [candidates, setCandidates] = useState<AdminCandidate[]>([]);
   const [reviewNotes, setReviewNotes] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(false);
@@ -174,7 +204,7 @@ export function AdminReviewPanel({
   );
 
   const loadCandidates = useCallback(
-    async (tokenOverride?: string) => {
+    async (tokenOverride?: string, queryOverride?: string) => {
       const token = (tokenOverride ?? adminToken).trim();
       if (!token && !adminSession?.admin) {
         setCandidates([]);
@@ -192,7 +222,9 @@ export function AdminReviewPanel({
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/admin/candidates?state=${stateFilter}&limit=100`, {
+        const q = (queryOverride !== undefined ? queryOverride : searchQuery).trim();
+        const url = `/api/admin/candidates?state=${stateFilter}&limit=100${q ? `&q=${encodeURIComponent(q)}` : ""}`;
+        const response = await fetch(url, {
           headers: adminHeaders(token),
         });
         const payload = (await response.json().catch(() => ({}))) as {
@@ -218,13 +250,35 @@ export function AdminReviewPanel({
         );
       } catch (loadError) {
         setCandidates([]);
-        setError(loadError instanceof Error ? loadError.message : String(loadError));
+        const errMsg = loadError instanceof Error ? loadError.message : String(loadError);
+        setError(errMsg);
+        addToast({
+          type: "warning",
+          title: lang === "sv" ? "⚠️ Laddningsfel" : "⚠️ Load Error",
+          message: errMsg,
+        });
       } finally {
         setLoading(false);
       }
     },
-    [adminHeaders, adminSession?.admin, adminToken, lang, stateFilter],
+    [addToast, adminHeaders, adminSession?.admin, adminToken, lang, searchQuery, stateFilter],
   );
+
+  const filteredCandidates = React.useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return candidates;
+    return candidates.filter((c) => {
+      return (
+        c.name.toLowerCase().includes(q) ||
+        c.area.toLowerCase().includes(q) ||
+        (c.address && c.address.toLowerCase().includes(q)) ||
+        (c.website && c.website.toLowerCase().includes(q)) ||
+        c.kind.toLowerCase().includes(q) ||
+        String(c.id) === q ||
+        (c.note && c.note.toLowerCase().includes(q))
+      );
+    });
+  }, [candidates, searchQuery]);
 
   const loadDashboard = useCallback(
     async (tokenOverride?: string) => {
@@ -993,6 +1047,71 @@ export function AdminReviewPanel({
         </div>
       </div>
 
+      <div className="admin-search-and-view-row">
+        <div className="admin-search-box">
+          <MagnifyingGlass size={16} weight="bold" className="admin-search-icon" />
+          <input
+            type="search"
+            className="admin-search-input"
+            placeholder={
+              lang === "sv"
+                ? "Sök ställe (namn, gatuadress, stadsdel, id, typ)..."
+                : "Search place (name, street address, district, id, type)..."
+            }
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                void loadCandidates(undefined, searchQuery);
+              }
+            }}
+          />
+          {searchQuery ? (
+            <button
+              type="button"
+              className="admin-search-clear"
+              onClick={() => {
+                setSearchQuery("");
+                void loadCandidates(undefined, "");
+              }}
+              title={lang === "sv" ? "Rensa sökning" : "Clear search"}
+              aria-label="Clear search"
+            >
+              <X size={14} weight="bold" />
+            </button>
+          ) : null}
+        </div>
+
+        <div className="admin-view-switcher" role="tablist" aria-label={lang === "sv" ? "Växla vy" : "Switch view"}>
+          <button
+            type="button"
+            className={`admin-view-btn ${viewMode === "list" ? "active" : ""}`}
+            onClick={() => setViewMode("list")}
+            role="tab"
+            aria-selected={viewMode === "list"}
+            title={lang === "sv" ? "Lista med granskningskort" : "Card list"}
+          >
+            <ListBullets size={16} weight="bold" />
+            <span>{lang === "sv" ? "Lista" : "List"}</span>
+            <span className="admin-view-count">{filteredCandidates.length}</span>
+          </button>
+          <button
+            type="button"
+            className={`admin-view-btn ${viewMode === "map" ? "active" : ""}`}
+            onClick={() => setViewMode("map")}
+            role="tab"
+            aria-selected={viewMode === "map"}
+            title={lang === "sv" ? "Interaktiv kartvy över ställen" : "Interactive map view"}
+          >
+            <MapTrifold size={16} weight="bold" />
+            <span>{lang === "sv" ? "Karta" : "Map"}</span>
+            <span className="admin-view-count">
+              {filteredCandidates.filter((c) => typeof c.latitude === "number" && typeof c.longitude === "number").length}
+            </span>
+          </button>
+        </div>
+      </div>
+
       <div className="admin-filter-guide-banner" role="note">
         <Info size={14} weight="bold" className="filter-guide-icon" />
         <span>{stateFilterHelpText(stateFilter, lang)}</span>
@@ -1069,9 +1188,44 @@ export function AdminReviewPanel({
         </div>
       ) : null}
 
-      <div className="admin-review-status" aria-live="polite">
-        {error ? <span className="admin-review-error">{error}</span> : status}
-      </div>
+      {error || status ? (
+        <div
+          className={`admin-status-toast-banner ${error ? "is-error" : "is-status"}`}
+          role="status"
+          aria-live="polite"
+        >
+          <div className="status-toast-main">
+            {error ? (
+              <WarningCircle size={20} weight="bold" className="status-toast-icon error" />
+            ) : (
+              <CheckCircle size={20} weight="bold" className="status-toast-icon success" />
+            )}
+            <div className="status-toast-text">
+              <span className="status-toast-title">
+                {error
+                  ? lang === "sv"
+                    ? "Åtgärdsfel"
+                    : "Action Error"
+                  : lang === "sv"
+                    ? "Statusuppdatering"
+                    : "Status Update"}
+              </span>
+              <p className="status-toast-msg">{error ?? status}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="status-toast-dismiss"
+            onClick={() => {
+              setError(null);
+              setStatus("");
+            }}
+            aria-label={lang === "sv" ? "Stäng notis" : "Dismiss notice"}
+          >
+            <X size={16} weight="bold" />
+          </button>
+        </div>
+      ) : null}
 
       {!hasAdminAuth ? (
         <div className="admin-review-empty">
@@ -1104,9 +1258,26 @@ export function AdminReviewPanel({
           <CircleNotch size={18} className="animate-spin" />
           <span>{lang === "sv" ? "Laddar kandidater..." : "Loading candidates..."}</span>
         </div>
-      ) : candidates.length ? (
+      ) : viewMode === "map" ? (
+        <AdminMapView
+          candidates={filteredCandidates}
+          selectedCandidateId={selectedCandidateId}
+          onSelectCandidate={(id) => {
+            setSelectedCandidateId(id);
+          }}
+          onUpdateDistrict={(candidate, district) => {
+            const found = candidates.find((c) => c.id === candidate.id);
+            if (found) void updateCandidateRegion(found, district);
+          }}
+          onMarkClosed={(candidate) => {
+            const found = candidates.find((c) => c.id === candidate.id);
+            if (found) void promoteCandidate(found, "candidate", "closed_wrong_category");
+          }}
+          lang={lang}
+        />
+      ) : filteredCandidates.length ? (
         <div className="admin-candidate-list">
-          {candidates.map((candidate) => (
+          {filteredCandidates.map((candidate) => (
             <article key={candidate.id} className="admin-candidate-row" aria-busy={busyId === candidate.id}>
               <div className="admin-candidate-main">
                 <div className="admin-candidate-meta">
@@ -1370,7 +1541,28 @@ export function AdminReviewPanel({
       ) : (
         <div className="admin-review-empty">
           <CheckCircle size={18} weight="bold" />
-          <span>{lang === "sv" ? "Inga poster i valt läge." : "No records in selected state."}</span>
+          <span>
+            {searchQuery
+              ? lang === "sv"
+                ? `Inga ställen matchade "${searchQuery}".`
+                : `No places matched "${searchQuery}".`
+              : lang === "sv"
+                ? "Inga poster i valt läge."
+                : "No records in selected state."}
+          </span>
+          {searchQuery ? (
+            <button
+              type="button"
+              className="admin-review-ghost-btn"
+              style={{ marginTop: "8px", textDecoration: "underline" }}
+              onClick={() => {
+                setSearchQuery("");
+                void loadCandidates(undefined, "");
+              }}
+            >
+              {lang === "sv" ? "Rensa sökning" : "Clear search"}
+            </button>
+          ) : null}
         </div>
       )}
       <AdminToastContainer toasts={toasts} onDismiss={dismissToast} />

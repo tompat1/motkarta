@@ -1,10 +1,12 @@
 {
-  "generatedAt": "2026-09-10T20:08:14Z",
+  "generatedAt": "2026-09-10T20:38:00Z",
   "totalPlaces": 3246,
+  "catalogPlaces": 3256,
+  "activePublishedPlaces": 2996,
   "address": {
-    "count": 849,
+    "count": 854,
     "areaCount": 3246,
-    "percentage": 26.2,
+    "percentage": 26.3,
     "target": 100.0,
     "status": "PROGRESSING"
   },
@@ -13,7 +15,8 @@
     "totalPhotos": 2945,
     "percentage": 37.4,
     "target": 100.0,
-    "status": "PASS"
+    "status": "PASS",
+    "placeholderCount": 2033
   },
   "openingHours": {
     "count": 3246,

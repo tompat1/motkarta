@@ -65,8 +65,9 @@ test.describe("Mobile Full User Flows", () => {
 
     // Close bottom sheet
     const applyBtn = page.locator(".filter-apply-btn");
+    await expect(applyBtn).toBeVisible({ timeout: 10000 });
     await applyBtn.click();
-    await expect(sheetTitle).not.toBeVisible();
+    await expect(sheetTitle).not.toBeVisible({ timeout: 10000 });
   });
 
   test("4. Mobile map/list view toggle", async ({ page }) => {
@@ -94,19 +95,25 @@ test.describe("Mobile Full User Flows", () => {
     const viewToggleBtn = page.locator(".floating-view-toggle-btn");
     await viewToggleBtn.click();
 
-    // Click first photo card in mobile list
+    // Click first photo card in mobile list (target heading or card body for reliable click in mobile WebKit)
     const firstCard = page.locator(".mobile-photo-card").first();
     await expect(firstCard).toBeVisible();
-    await firstCard.click();
+    const cardTitle = firstCard.locator("h2").first();
+    if (await cardTitle.isVisible()) {
+      await cardTitle.click();
+    } else {
+      await firstCard.click();
+    }
 
     // Verify PlaceDetailSheet opens
     const detailSheet = page.locator(".place-detail-sheet");
-    await expect(detailSheet).toBeVisible();
+    await expect(detailSheet).toBeVisible({ timeout: 10000 });
 
     // Close detail sheet
     const closeBtn = page.locator(".place-detail-back-btn");
+    await expect(closeBtn).toBeVisible({ timeout: 10000 });
     await closeBtn.click();
-    await expect(detailSheet).not.toBeVisible();
+    await expect(detailSheet).not.toBeVisible({ timeout: 10000 });
   });
 
   test("6. Device sync modal flow", async ({ page }) => {

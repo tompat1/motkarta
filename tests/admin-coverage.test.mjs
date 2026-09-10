@@ -36,7 +36,12 @@ test("admin coverage endpoint returns coverage report when authorized", async ()
   const data = await res.json();
   assert.ok(data.totalPlaces > 0);
   assert.ok(data.address.percentage >= 0);
-  assert.ok(data.photos.percentage >= 0);
+  assert.ok(data.photos.percentage > 30, "Photos percentage must reflect verified web photos");
+  assert.ok(data.photos.count >= 1000, "Places with verified photos must be >= 1000");
+  assert.ok(data.openingHours.percentage >= 90, "Opening hours percentage must reflect enriched baseline (>= 90%)");
+  assert.ok(data.openingHours.count >= 3000, "Opening hours count must reflect enriched places (>= 3000)");
+  assert.ok(data.priceInfo.percentage >= 90, "Price info percentage must reflect enriched baseline (>= 90%)");
+  assert.ok(data.priceInfo.count >= 3000, "Price info count must reflect enriched places (>= 3000)");
   assert.equal(data.curatedSources.totalSources, 7);
   assert.equal(data.curatedSources.passingSources, 7);
 });

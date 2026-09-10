@@ -38,6 +38,8 @@ type CandidateRow = {
   area: string;
   address: string | null;
   website: string | null;
+  latitude: number | null;
+  longitude: number | null;
   note: string;
   lifecycleState: PlaceLifecycleState;
   validationLabel: ValidationLabel | null;
@@ -412,6 +414,8 @@ async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit
       e.district AS area,
       e.address,
       e.website,
+      e.latitude,
+      e.longitude,
       e.description AS note,
       e.lifecycle_state AS lifecycleState,
       e.validation_label AS validationLabel,
@@ -978,6 +982,8 @@ function candidateFromRow(row: CandidateRow) {
     area: row.area,
     address: row.address,
     website: row.website,
+    latitude: typeof row.latitude === "number" ? row.latitude : null,
+    longitude: typeof row.longitude === "number" ? row.longitude : null,
     note: row.note,
     lifecycleState: row.lifecycleState,
     validationLabel: row.validationLabel ?? null,
