@@ -11,11 +11,12 @@ export interface FeedbackData {
   timestampMs: number;
 }
 
-interface PlaceFeedbackModalProps {
+export interface PlaceFeedbackModalProps {
   isOpen: boolean;
   targetId: number | string;
   targetName: string;
   initialType?: "up" | "down";
+  mode?: "standard" | "nominate_gem";
   lang: Language;
   onClose: () => void;
   onSubmitFeedback?: (data: FeedbackData) => void;
@@ -53,15 +54,33 @@ const NEGATIVE_REASONS_EN = [
   "Incorrect location or address on map",
 ];
 
+const GEM_REASONS_SV = [
+  "Hantverk / Eget bageri eller rosteri",
+  "Lokal doldis utan marknadsföring",
+  "Unikt koncept & exceptionell kvalitet",
+  "Familjeägt / Liten lokal eldsjäl",
+  "Prisvärt & genuint smultronställe",
+];
+
+const GEM_REASONS_EN = [
+  "Craft / In-house baking or roasting",
+  "Local favorite with minimal marketing",
+  "Unique concept & exceptional quality",
+  "Family-owned / Passionate local team",
+  "Great value & authentic neighborhood gem",
+];
+
 export function PlaceFeedbackModal({
   isOpen,
   targetId,
   targetName,
   initialType = "up",
+  mode = "standard",
   lang,
   onClose,
   onSubmitFeedback,
 }: PlaceFeedbackModalProps) {
+  const isNominateGem = mode === "nominate_gem";
   const [feedbackType, setFeedbackType] = useState<"up" | "down">(initialType);
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
   const [comment, setComment] = useState("");
@@ -69,14 +88,17 @@ export function PlaceFeedbackModal({
 
   if (!isOpen) return null;
 
-  const reasons =
-    feedbackType === "up"
-      ? lang === "sv"
-        ? POSITIVE_REASONS_SV
-        : POSITIVE_REASONS_EN
-      : lang === "sv"
-      ? NEGATIVE_REASONS_SV
-      : NEGATIVE_REASONS_EN;
+  const reasons = isNominateGem
+    ? lang === "sv"
+      ? GEM_REASONS_SV
+      : GEM_REASONS_EN
+    : feedbackType === "up"
+    ? lang === "sv"
+      ? POSITIVE_REASONS_SV
+      : POSITIVE_REASONS_EN
+    : lang === "sv"
+    ? NEGATIVE_REASONS_SV
+    : NEGATIVE_REASONS_EN;
 
   const toggleReason = (reason: string) => {
     setSelectedReasons((prev) =>
@@ -90,45 +112,86 @@ export function PlaceFeedbackModal({
     const data: FeedbackData = {
       targetId,
       targetName,
-      isPositive: feedbackType === "up",
+      isPositive: isNominateGem ? true : feedbackType === "up",
       selectedReasons,
       comment: comment.trim(),
       timestampMs: Date.now(),
     };
 
-    // 1. Save to RAG learning memory in localStorage
-    try {
-      const existingRaw = localStorage.getItem("motkarta_rag_learning_feedback");
-      const existing: FeedbackData[] = existingRaw ? JSON.parse(existingRaw) : [];
-      existing.push(data);
-      localStorage.setItem("motkarta_rag_learning_feedback", JSON.stringify(existing.slice(-100)));
-    } catch {
-      // Ignore storage errors
-    }
+    if (isNominateGem) {
+      // 1. Save to user nominated gems in localStorage
+      try {
+        const existingRaw = localStorage.getItem("motkarta_user_nominated_gems");
+        const existing: Record<string, unknown>[] = existingRaw ? JSON.parse(existingRaw) : [];
+        existing.push({
+          targetId,
+          targetName,
+          selectedReasons,
+          comment: comment.trim(),
+          timestampMs: Date.now(),
+        });
+        localStorage.setItem("motkarta_user_nominated_gems", JSON.stringify(existing.slice(-100)));
+      } catch {
+        // Ignore storage errors
+      }
 
-    // 2. Post to recommendation telemetry backend API
-    void fetch("/api/recommendation-events", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        events: [
-          {
-            eventType: feedbackType === "up" ? "would_return" : "rejected",
-            establishmentId: typeof targetId === "number" ? targetId : 0,
-            mode: "fast_feedback",
-            sortMode: "motkarta",
-            queryContextJson: JSON.stringify({
-              targetName,
-              feedbackType,
-              selectedReasons,
-              comment: comment.trim(),
-            }),
-            contextWindowSize: 1,
-            clientTimestampMs: Date.now(),
-          },
-        ],
-      }),
-    }).catch(() => {});
+      // 2. Post nomination event to recommendation telemetry backend API
+      void fetch("/api/recommendation-events", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          events: [
+            {
+              eventType: "would_return",
+              establishmentId: typeof targetId === "number" ? targetId : 0,
+              mode: "hidden_gems",
+              sortMode: "motkarta",
+              queryContextJson: JSON.stringify({
+                action: "nominate_hidden_gem",
+                targetName,
+                selectedReasons,
+                comment: comment.trim(),
+              }),
+              contextWindowSize: 1,
+              clientTimestampMs: Date.now(),
+            },
+          ],
+        }),
+      }).catch(() => {});
+    } else {
+      // Standard feedback logic
+      try {
+        const existingRaw = localStorage.getItem("motkarta_rag_learning_feedback");
+        const existing: FeedbackData[] = existingRaw ? JSON.parse(existingRaw) : [];
+        existing.push(data);
+        localStorage.setItem("motkarta_rag_learning_feedback", JSON.stringify(existing.slice(-100)));
+      } catch {
+        // Ignore storage errors
+      }
+
+      void fetch("/api/recommendation-events", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          events: [
+            {
+              eventType: feedbackType === "up" ? "would_return" : "rejected",
+              establishmentId: typeof targetId === "number" ? targetId : 0,
+              mode: "fast_feedback",
+              sortMode: "motkarta",
+              queryContextJson: JSON.stringify({
+                targetName,
+                feedbackType,
+                selectedReasons,
+                comment: comment.trim(),
+              }),
+              contextWindowSize: 1,
+              clientTimestampMs: Date.now(),
+            },
+          ],
+        }),
+      }).catch(() => {});
+    }
 
     if (onSubmitFeedback) {
       onSubmitFeedback(data);
@@ -215,102 +278,155 @@ export function PlaceFeedbackModal({
                 width: "52px",
                 height: "52px",
                 borderRadius: "50%",
-                background: "#dcfce7",
-                color: "#166534",
+                background: isNominateGem ? "#fef3c7" : "#dcfce7",
+                color: isNominateGem ? "#b45309" : "#166534",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Check size={28} weight="bold" />
+              {isNominateGem ? <Sparkle size={28} weight="fill" /> : <Check size={28} weight="bold" />}
             </div>
             <h3 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "var(--color-ink)" }}>
-              {lang === "sv" ? "Tack för din feedback!" : "Thank you for your feedback!"}
+              {isNominateGem
+                ? (lang === "sv" ? "Tack för din nominering!" : "Thank you for your nomination!")
+                : (lang === "sv" ? "Tack för din feedback!" : "Thank you for your feedback!")}
             </h3>
             <p style={{ margin: 0, fontSize: "13px", color: "#475569" }}>
-              {lang === "sv"
-                ? "Dina synpunkter förbättrar RAG-modellen och rekommendationerna."
-                : "Your insights continuously train our RAG engine and recommendations."}
+              {isNominateGem
+                ? (lang === "sv"
+                    ? "Sparad som din personliga pärla och skickad till redaktionens granskning."
+                    : "Saved as your personal gem and forwarded for editorial review.")
+                : (lang === "sv"
+                    ? "Dina synpunkter förbättrar RAG-modellen och rekommendationerna."
+                    : "Your insights continuously train our RAG engine and recommendations.")}
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
             {/* Header */}
             <div style={{ marginBottom: "16px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--color-water, #2563eb)", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                <Sparkle size={14} weight="bold" />
-                {lang === "sv" ? "Feedback loop" : "Feedback loop"}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  color: isNominateGem ? "#d97706" : "var(--color-water, #2563eb)",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                <Sparkle size={14} weight={isNominateGem ? "fill" : "bold"} />
+                {isNominateGem
+                  ? (lang === "sv" ? "Dold pärla nominering" : "Hidden gem nomination")
+                  : (lang === "sv" ? "Feedback loop" : "Feedback loop")}
               </div>
               <h3 style={{ margin: "4px 0 0 0", fontSize: "18px", fontWeight: 700, color: "var(--color-ink)" }}>
                 {targetName}
               </h3>
             </div>
 
-            {/* Up / Down Selection */}
-            <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
-              <button
-                type="button"
-                onClick={() => {
-                  setFeedbackType("up");
-                  setSelectedReasons([]);
-                }}
+            {/* Banner or Up / Down Selection */}
+            {isNominateGem ? (
+              <div
                 style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px",
-                  padding: "10px 14px",
+                  background: "#fffbeb",
+                  border: "1px solid #fde68a",
                   borderRadius: "10px",
-                  border: `2px solid ${feedbackType === "up" ? "#2563eb" : "#e2e8f0"}`,
-                  background: feedbackType === "up" ? "#eff6ff" : "#ffffff",
-                  color: feedbackType === "up" ? "#1e40af" : "#475569",
-                  fontWeight: 600,
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  transition: "all 0.15s ease",
+                  padding: "12px",
+                  marginBottom: "16px",
+                  fontSize: "13px",
+                  color: "#92400e",
+                  lineHeight: 1.4,
                 }}
               >
-                <ThumbsUp size={18} weight={feedbackType === "up" ? "fill" : "bold"} />
-                {lang === "sv" ? "Hjälpsam / Bra" : "Helpful / Good"}
-              </button>
+                {lang === "sv"
+                  ? "Vad gör denna plats till en sann dold pärla? Ditt tips sparas som din personliga pärla och granskas för officiell märkning."
+                  : "What makes this place a true hidden gem? Your tip is saved as your personal gem and reviewed for official badge promotion."}
+              </div>
+            ) : (
+              <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFeedbackType("up");
+                    setSelectedReasons([]);
+                  }}
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    padding: "10px 14px",
+                    borderRadius: "10px",
+                    border: `2px solid ${feedbackType === "up" ? "#2563eb" : "#e2e8f0"}`,
+                    background: feedbackType === "up" ? "#eff6ff" : "#ffffff",
+                    color: feedbackType === "up" ? "#1e40af" : "#475569",
+                    fontWeight: 600,
+                    fontSize: "14px",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  <ThumbsUp size={18} weight={feedbackType === "up" ? "fill" : "bold"} />
+                  {lang === "sv" ? "Hjälpsam / Bra" : "Helpful / Good"}
+                </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setFeedbackType("down");
-                  setSelectedReasons([]);
-                }}
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px",
-                  padding: "10px 14px",
-                  borderRadius: "10px",
-                  border: `2px solid ${feedbackType === "down" ? "#dc2626" : "#e2e8f0"}`,
-                  background: feedbackType === "down" ? "#fef2f2" : "#ffffff",
-                  color: feedbackType === "down" ? "#991b1b" : "#475569",
-                  fontWeight: 600,
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                <ThumbsDown size={18} weight={feedbackType === "down" ? "fill" : "bold"} />
-                {lang === "sv" ? "Inte hjälpsam" : "Not helpful"}
-              </button>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFeedbackType("down");
+                    setSelectedReasons([]);
+                  }}
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    padding: "10px 14px",
+                    borderRadius: "10px",
+                    border: `2px solid ${feedbackType === "down" ? "#dc2626" : "#e2e8f0"}`,
+                    background: feedbackType === "down" ? "#fef2f2" : "#ffffff",
+                    color: feedbackType === "down" ? "#991b1b" : "#475569",
+                    fontWeight: 600,
+                    fontSize: "14px",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  <ThumbsDown size={18} weight={feedbackType === "down" ? "fill" : "bold"} />
+                  {lang === "sv" ? "Inte hjälpsam" : "Not helpful"}
+                </button>
+              </div>
+            )}
 
             {/* Checkmark Statements */}
             <div style={{ marginBottom: "16px" }}>
-              <label style={{ display: "block", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "#475569", marginBottom: "8px" }}>
-                {lang === "sv" ? "Vad beror det på? (välj en eller flera)" : "Why specifically? (select one or more)"}
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.04em",
+                  color: "#475569",
+                  marginBottom: "8px",
+                }}
+              >
+                {isNominateGem
+                  ? (lang === "sv" ? "Hantverk & unika egenskaper" : "Craft & unique attributes")
+                  : (lang === "sv" ? "Vad beror det på? (välj en eller flera)" : "Why specifically? (select one or more)")}
               </label>
               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                 {reasons.map((reason) => {
                   const isChecked = selectedReasons.includes(reason);
+                  const activeBorder = isNominateGem ? "#d97706" : "#2563eb";
+                  const activeBg = isNominateGem ? "#fef3c7" : "#f0f9ff";
+                  const activeColor = isNominateGem ? "#92400e" : "#0369a1";
                   return (
                     <label
                       key={reason}
@@ -320,10 +436,10 @@ export function PlaceFeedbackModal({
                         gap: "10px",
                         padding: "8px 12px",
                         borderRadius: "8px",
-                        border: `1px solid ${isChecked ? "#2563eb" : "#f1f5f9"}`,
-                        background: isChecked ? "#f0f9ff" : "#f8fafc",
+                        border: `1px solid ${isChecked ? activeBorder : "#f1f5f9"}`,
+                        background: isChecked ? activeBg : "#f8fafc",
                         fontSize: "13px",
-                        color: isChecked ? "#0369a1" : "#334155",
+                        color: isChecked ? activeColor : "#334155",
                         cursor: "pointer",
                         fontWeight: isChecked ? 600 : 400,
                       }}
@@ -332,7 +448,7 @@ export function PlaceFeedbackModal({
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleReason(reason)}
-                        style={{ accentColor: "#2563eb", width: "16px", height: "16px", cursor: "pointer" }}
+                        style={{ accentColor: isNominateGem ? "#d97706" : "#2563eb", width: "16px", height: "16px", cursor: "pointer" }}
                       />
                       <span>{reason}</span>
                     </label>
@@ -343,7 +459,19 @@ export function PlaceFeedbackModal({
 
             {/* Textarea Input */}
             <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "#475569", marginBottom: "6px" }}>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.04em",
+                  color: "#475569",
+                  marginBottom: "6px",
+                }}
+              >
                 <ChatText size={14} weight="bold" />
                 {lang === "sv" ? "Övriga synpunkter (valfritt)" : "Additional notes (optional)"}
               </label>
@@ -351,9 +479,13 @@ export function PlaceFeedbackModal({
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder={
-                  lang === "sv"
-                    ? "Berätta mer för att hjälpa RAG-modellen..."
-                    : "Tell us more to train the RAG engine..."
+                  isNominateGem
+                    ? (lang === "sv"
+                        ? "T.ex. deras surdegsbröd bakas i stenugn, eller de rostar bönorna själva..."
+                        : "E.g. their sourdough is stone-baked, or they roast their own beans...")
+                    : (lang === "sv"
+                        ? "Berätta mer för att hjälpa RAG-modellen..."
+                        : "Tell us more to train the RAG engine...")
                 }
                 rows={2}
                 style={{
@@ -378,21 +510,25 @@ export function PlaceFeedbackModal({
                 width: "100%",
                 padding: "12px",
                 borderRadius: "10px",
-                background: "var(--color-water, #2563eb)",
+                background: isNominateGem ? "#b45309" : "var(--color-water, #2563eb)",
                 color: "#ffffff",
                 fontWeight: 700,
                 fontSize: "14px",
                 border: "none",
                 cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(37, 99, 235, 0.25)",
+                boxShadow: isNominateGem
+                  ? "0 4px 12px rgba(180, 83, 9, 0.25)"
+                  : "0 4px 12px rgba(37, 99, 235, 0.25)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "8px",
               }}
             >
-              <Check size={18} weight="bold" />
-              {lang === "sv" ? "Skicka feedback & lär RAG" : "Submit Feedback & Train RAG"}
+              {isNominateGem ? <Sparkle size={18} weight="fill" /> : <Check size={18} weight="bold" />}
+              {isNominateGem
+                ? (lang === "sv" ? "Tipsa & spara som din pärla" : "Nominate & save as your gem")
+                : (lang === "sv" ? "Skicka feedback & lär RAG" : "Submit Feedback & Train RAG")}
             </button>
           </form>
         )}

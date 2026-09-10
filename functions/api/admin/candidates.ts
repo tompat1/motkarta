@@ -55,6 +55,7 @@ type CandidateRow = {
   latestEvidenceAt: string | null;
   possibleDuplicateCount: number | null;
   possibleDuplicates: string | null;
+  communityNominationCount?: number | null;
 };
 
 type EstablishmentLookupRow = {
@@ -427,7 +428,8 @@ async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit
       GROUP_CONCAT(DISTINCT ev.source_type) AS evidenceSourceTypes,
       MAX(ev.captured_at) AS latestEvidenceAt,
       ${duplicateCountSubquery()} AS possibleDuplicateCount,
-      ${duplicateMatchesSubquery()} AS possibleDuplicates
+      ${duplicateMatchesSubquery()} AS possibleDuplicates,
+      ${nominationCountSubquery()} AS communityNominationCount
     FROM establishments e
     LEFT JOIN evidence_sources ev ON ev.establishment_id = e.id
   `;
@@ -994,7 +996,15 @@ function candidateFromRow(row: CandidateRow) {
     evidenceGate: evidenceGateProfile(row),
     possibleDuplicateCount: Number(row.possibleDuplicateCount ?? 0),
     possibleDuplicates: parsePossibleDuplicates(row.possibleDuplicates),
+    communityNominationCount: Number(row.communityNominationCount ?? 0),
   };
+}
+
+function nominationCountSubquery() {
+  return `(SELECT COUNT(*)
+      FROM recommendation_events re
+      WHERE re.establishment_id = e.id
+        AND re.recommendation_mode = 'hidden_gems')`;
 }
 
 function duplicateCountSubquery() {

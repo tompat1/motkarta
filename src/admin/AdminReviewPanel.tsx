@@ -41,6 +41,7 @@ type AdminCandidate = {
   };
   possibleDuplicateCount: number;
   possibleDuplicates: AdminDuplicateMatch[];
+  communityNominationCount?: number;
 };
 
 type AdminDuplicateMatch = {
@@ -1006,6 +1007,14 @@ export function AdminReviewPanel({
                   <span className={candidate.evidenceGate.canPromoteHiddenGem ? "admin-gate-pass" : "admin-gate-warn"}>
                     {candidate.evidenceGate.independentEvidenceCount}/2 {lang === "sv" ? "oberoende" : "independent"}
                   </span>
+                  {(candidate.communityNominationCount ?? 0) > 0 ? (
+                    <span
+                      className="admin-gate-pass"
+                      title={lang === "sv" ? "Tipsad av besökare som dold pärla" : "Nominated by visitors as a hidden gem"}
+                    >
+                      ✨ {candidate.communityNominationCount} {lang === "sv" ? "användartips" : "user tips"}
+                    </span>
+                  ) : null}
                   {candidate.evidenceSourceTypes.slice(0, 4).map((sourceType) => (
                     <span key={sourceType}>{sourceType}</span>
                   ))}

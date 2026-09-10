@@ -63,6 +63,28 @@ test("admin candidates endpoint lists candidate records only by default", async 
   assert.equal(payload.candidates[0].possibleDuplicateCount, 1);
   assert.equal(payload.candidates[0].possibleDuplicates[0].id, 11);
   assert.equal(payload.candidates[0].possibleDuplicates[0].reason, "name_area");
+  assert.equal(payload.candidates[0].communityNominationCount, 0);
+});
+
+test("admin candidates endpoint returns community nomination count when present", async () => {
+  const db = fakeAdminD1([
+    candidateRow({
+      id: 25,
+      name: "Beloved Secret Spot",
+      communityNominationCount: 7,
+    }),
+  ]);
+
+  const response = await getAdminCandidates({
+    request: new Request("https://motkarta.test/api/admin/candidates", {
+      headers: { authorization: `Bearer ${adminToken}` },
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.candidates[0].communityNominationCount, 7);
 });
 
 test("admin candidate promotion updates lifecycle state and writes audit event", async () => {
@@ -348,6 +370,7 @@ function candidateRow(overrides) {
     latestEvidenceAt: now,
     possibleDuplicateCount: 0,
     possibleDuplicates: null,
+    communityNominationCount: 0,
     ...overrides,
   };
 }

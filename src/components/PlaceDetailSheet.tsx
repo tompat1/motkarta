@@ -15,6 +15,7 @@ import {
   PawPrint,
   ThumbsUp,
   ThumbsDown,
+  Sparkle,
 } from "@phosphor-icons/react";
 import type { ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
@@ -54,6 +55,24 @@ export function PlaceDetailSheet({
   const [photos, setPhotos] = useState<PlacePhoto[]>([]);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [feedbackType, setFeedbackType] = useState<"up" | "down" | null>(null);
+  const [isNominateModalOpen, setIsNominateModalOpen] = useState(false);
+  const [isUserNominated, setIsUserNominated] = useState(false);
+
+  useEffect(() => {
+    if (!place) return;
+    try {
+      const raw = localStorage.getItem("motkarta_user_nominated_gems");
+      if (raw) {
+        const list = JSON.parse(raw);
+        const found = Array.isArray(list) && list.some((item: { targetId: number | string }) => item.targetId === place.id);
+        setIsUserNominated(found);
+      } else {
+        setIsUserNominated(false);
+      }
+    } catch {
+      setIsUserNominated(false);
+    }
+  }, [place?.id]);
 
   useEffect(() => {
     let isMounted = true;
@@ -156,6 +175,55 @@ export function PlaceDetailSheet({
           <div className="place-detail-identity">
             <h1 className="place-detail-title">{place.name}</h1>
             <p className="place-detail-subtitle">{subtitle}</p>
+
+            {/* Hidden Gem Status Badge / Community Nomination */}
+            <div style={{ marginTop: "10px", display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
+              {place.is_hidden_gem ? (
+                <span
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    background: "#fef3c7",
+                    color: "#92400e",
+                    border: "1px solid #fde68a",
+                    padding: "4px 10px",
+                    borderRadius: "999px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                  }}
+                  title={lang === "sv" ? "Officiellt verifierad dold pärla enligt Motkartas 5 beviskrav" : "Officially verified hidden gem passing Motkarta's 5 evidence gates"}
+                >
+                  <Sparkle size={14} weight="fill" style={{ color: "#d97706" }} />
+                  {lang === "sv" ? "Verifierad dold pärla" : "Verified hidden gem"}
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsNominateModalOpen(true)}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    background: isUserNominated ? "#fef3c7" : "var(--color-paper, #f8fafc)",
+                    color: isUserNominated ? "#92400e" : "var(--color-ink, #0f172a)",
+                    border: isUserNominated ? "1px solid #fde68a" : "1px solid var(--color-mist, #e2e8f0)",
+                    padding: "5px 12px",
+                    borderRadius: "999px",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                  }}
+                  title={lang === "sv" ? "Tipsa redaktionen om att denna plats är en dold pärla" : "Nominate this place as a hidden gem"}
+                >
+                  <Sparkle size={14} weight={isUserNominated ? "fill" : "bold"} style={{ color: isUserNominated ? "#d97706" : "var(--color-water, #2563eb)" }} />
+                  {isUserNominated
+                    ? (lang === "sv" ? "Nominerad av dig" : "Nominated by you")
+                    : (lang === "sv" ? "Tipsa som dold pärla" : "Nominate as hidden gem")}
+                </button>
+              )}
+            </div>
           </div>
 
           <hr className="place-detail-divider" />
@@ -327,6 +395,16 @@ export function PlaceDetailSheet({
         initialType={feedbackType ?? "up"}
         lang={lang}
         onClose={() => setFeedbackType(null)}
+      />
+
+      <PlaceFeedbackModal
+        isOpen={isNominateModalOpen}
+        targetId={place.id}
+        targetName={place.name}
+        mode="nominate_gem"
+        lang={lang}
+        onClose={() => setIsNominateModalOpen(false)}
+        onSubmitFeedback={() => setIsUserNominated(true)}
       />
     </div>
   );

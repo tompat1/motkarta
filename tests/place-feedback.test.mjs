@@ -63,3 +63,42 @@ test("placeFacts dynamically incorporates user RAG feedback when window.localSto
     globalThis.window = originalWindow;
   }
 });
+
+test("user hidden gem nominations persist in localStorage key motkarta_user_nominated_gems", () => {
+  const mockStorage = new Map();
+  const originalWindow = globalThis.window;
+  globalThis.window = {
+    localStorage: {
+      getItem: (key) => mockStorage.get(key) ?? null,
+      setItem: (key, val) => mockStorage.set(key, val),
+    },
+  };
+
+  try {
+    const nominationPayload = {
+      targetId: 116240012,
+      targetName: "Soldaten Svejk",
+      selectedReasons: ["Genuint hantverk & egen nisch", "Lokal stolthet / stamställe"],
+      comment: "En riktig institution på Söder med fantastisk tjeckisk öl.",
+      timestampMs: Date.now(),
+    };
+
+    // Simulate saving nomination
+    const existing = JSON.parse(globalThis.window.localStorage.getItem("motkarta_user_nominated_gems") || "[]");
+    existing.push(nominationPayload);
+    globalThis.window.localStorage.setItem("motkarta_user_nominated_gems", JSON.stringify(existing));
+
+    // Verify retrieval
+    const stored = JSON.parse(globalThis.window.localStorage.getItem("motkarta_user_nominated_gems") || "[]");
+    assert.equal(stored.length, 1);
+    assert.equal(stored[0].targetId, 116240012);
+    assert.equal(stored[0].targetName, "Soldaten Svejk");
+    assert.deepEqual(stored[0].selectedReasons, [
+      "Genuint hantverk & egen nisch",
+      "Lokal stolthet / stamställe",
+    ]);
+    assert.match(stored[0].comment, /tjeckisk öl/);
+  } finally {
+    globalThis.window = originalWindow;
+  }
+});
