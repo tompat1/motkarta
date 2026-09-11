@@ -1666,14 +1666,14 @@ export default function App() {
 
       <section className="controls countermap-controls" id="map" aria-labelledby="countermap-controls-title">
         <header className="countermap-controls-head">
-          <div>
-            <h2 id="countermap-controls-title">{lang === "sv" ? "Vad är du sugen på?" : "What are you craving?"}</h2>
-            <p>{lang === "sv" ? "Fråga fritt eller bygg ditt urval med transparenta filter." : "Ask freely or build your selection with transparent filters."}</p>
+          <div className="countermap-controls-head-title-row">
+            <h2 id="countermap-controls-title">{lang === "sv" ? "Vad låter gott?" : "What sounds good?"}</h2>
+            <div className="countermap-selection-readout" aria-live="polite">
+              <strong>{ranked.length.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</strong>
+              <span>{lang === "sv" ? "ställen i urvalet" : "places in selection"}</span>
+            </div>
           </div>
-          <div className="countermap-selection-readout" aria-live="polite">
-            <strong>{ranked.length.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</strong>
-            <span>{lang === "sv" ? "ställen i urvalet" : "places in selection"}</span>
-          </div>
+          <p>{lang === "sv" ? "Fråga fritt eller bygg ditt urval med transparenta filter." : "Ask freely or build your selection with transparent filters."}</p>
         </header>
 
         <div className="countermap-concierge-panel">

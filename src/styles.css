@@ -1163,12 +1163,18 @@ button.search-clear-btn:hover {
 }
 
 .countermap-controls-head {
-  align-items: end;
   border-bottom: 2px solid var(--color-ink);
   display: flex;
+  flex-direction: column;
   grid-column: 1 / -1;
-  justify-content: space-between;
   padding: 34px 0 18px;
+}
+
+.countermap-controls-head-title-row {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .countermap-controls-head h2 {
@@ -1188,8 +1194,8 @@ button.search-clear-btn:hover {
 }
 
 .countermap-selection-readout {
-  align-items: baseline;
-  display: flex;
+  align-items: center;
+  display: inline-flex;
   gap: 10px;
   text-align: right;
 }
@@ -1207,6 +1213,7 @@ button.search-clear-btn:hover {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
+  line-height: 1.2;
   max-width: 12ch;
   text-transform: uppercase;
 }
