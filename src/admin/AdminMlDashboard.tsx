@@ -2,9 +2,24 @@ import React, { useCallback, useEffect, useState } from "react";
 import type { Language } from "../app/shared";
 import { formatEuropeanResetTime } from "../../lib/admin-d1";
 import {
+  type RagEvaluationRating,
+  type RagEvaluationRecord,
+  type SimulatedRagResult,
+  clearAllRagEvaluations,
+  deleteRagEvaluationRecord,
+  exportEvaluationsAsJson,
+  formatEuropeanDateTime,
+  loadStoredRagEvaluations,
+  saveRagEvaluationRecord,
+  simulateRagEvaluation,
+} from "../../lib/admin-rag-eval";
+import {
+  ArrowClockwise,
+  ArrowRight,
   ArrowsOut,
   Brain,
   CaretRight,
+  Check,
   CheckCircle,
   CircleNotch,
   Clock,
@@ -12,7 +27,9 @@ import {
   Copy,
   Cpu,
   Database,
+  DownloadSimple,
   Eye,
+  FloppyDisk,
   Graph,
   Image,
   Info,
@@ -24,6 +41,9 @@ import {
   Sliders,
   Sparkle,
   TerminalWindow,
+  ThumbsDown,
+  ThumbsUp,
+  Trash,
   Warning,
   X,
 } from "@phosphor-icons/react";
@@ -466,8 +486,108 @@ export function AdminMlDashboard({
   const [simExposure, setSimExposure] = useState(25);
   const [simFreshness, setSimFreshness] = useState(90);
 
-  // --- Interactive Evaluator State (Concierge RAG Query Tester) ---
-  const [testQuery, setTestQuery] = useState("Mysigt café med bra espresso på Södermalm");
+  // --- Interactive Evaluator State (Concierge RAG Query Tester & Calibration) ---
+  const [testQuery, setTestQuery] = useState("Pizza");
+  const [evaluatedQuery, setEvaluatedQuery] = useState("Pizza");
+  const [ragResult, setRagResult] = useState<SimulatedRagResult>(() =>
+    simulateRagEvaluation("Pizza", lang),
+  );
+  const [isEvaluating, setIsEvaluating] = useState(false);
+
+  // Reaction and feedback form state for active evaluated query
+  const [activeRating, setActiveRating] = useState<RagEvaluationRating | null>(null);
+  const [feedbackNotes, setFeedbackNotes] = useState("");
+  const [expectedResponse, setExpectedResponse] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
+
+  // Saved evaluations & RLHF training data
+  const [savedEvaluations, setSavedEvaluations] = useState<RagEvaluationRecord[]>(
+    () => loadStoredRagEvaluations(),
+  );
+  const [historyFilter, setHistoryFilter] = useState<"all" | "good" | "bad">("all");
+
+  const handleRunRagEvaluation = (queryOverride?: string) => {
+    const q = (queryOverride !== undefined ? queryOverride : testQuery).trim();
+    if (!q) return;
+    setIsEvaluating(true);
+    setEvaluatedQuery(q);
+    if (queryOverride !== undefined) {
+      setTestQuery(queryOverride);
+    }
+
+    setTimeout(() => {
+      const res = simulateRagEvaluation(q, lang);
+      setRagResult(res);
+      setIsEvaluating(false);
+      setActiveRating(null);
+      setFeedbackNotes("");
+      setExpectedResponse("");
+      setSelectedTags([]);
+      setSaveSuccessMsg(null);
+    }, 120);
+  };
+
+  const handleToggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+    );
+  };
+
+  const handleSaveEvaluation = () => {
+    if (!activeRating) return;
+    const rec: RagEvaluationRecord = {
+      id: `eval_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      timestamp: Date.now(),
+      formattedTime: formatEuropeanDateTime(Date.now(), lang),
+      query: evaluatedQuery,
+      rating: activeRating,
+      extractedCuisine: ragResult.cuisine,
+      targetDistrict: ragResult.area,
+      superpower: ragResult.superpower,
+      excludedChains: ragResult.excludedChains,
+      sampleMatch: ragResult.sampleMatch,
+      feedbackNotes: feedbackNotes.trim(),
+      expectedResponse: expectedResponse.trim(),
+      tags: selectedTags,
+      factualityScore: ragResult.factualityScore,
+    };
+    const updated = saveRagEvaluationRecord(rec);
+    setSavedEvaluations(updated);
+    setSaveSuccessMsg(
+      lang === "sv"
+        ? "✓ Utvärdering sparad till träningsdatabasen!"
+        : "✓ Evaluation saved to RLHF training dataset!",
+    );
+    setTimeout(() => setSaveSuccessMsg(null), 3500);
+  };
+
+  const handleDeleteEvaluation = (id: string) => {
+    const updated = deleteRagEvaluationRecord(id);
+    setSavedEvaluations(updated);
+  };
+
+  const handleClearAllEvaluations = () => {
+    const confirmMsg =
+      lang === "sv"
+        ? "Vill du rensa all sparad träningsdata och feedback för RAG?"
+        : "Do you want to clear all saved RAG training feedback?";
+    if (typeof window !== "undefined" && window.confirm && window.confirm(confirmMsg)) {
+      const updated = clearAllRagEvaluations();
+      setSavedEvaluations(updated);
+    }
+  };
+
+  const handleExportJson = () => {
+    const jsonStr = exportEvaluationsAsJson(savedEvaluations);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `motkarta-rag-feedback-dataset-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const loadMlStatus = useCallback(async () => {
     if (!hasAdminAuth) return;
@@ -525,28 +645,6 @@ export function AdminMlDashboard({
     ),
   );
   const isSimHiddenGem = computedDiscoveryScore >= 65 && simExposure <= 40;
-
-  // Simulate RAG Intent Parser output
-  const simulatedRagExtraction = (() => {
-    const q = testQuery.toLowerCase();
-    const isCoffee = q.includes("kaffe") || q.includes("cafe") || q.includes("café") || q.includes("espresso");
-    const isCzech = q.includes("tjeckisk") || q.includes("svejk");
-    const isDog = q.includes("hund") || q.includes("dog");
-    const area = q.includes("södermalm") ? "Södermalm" : q.includes("gamla stan") ? "Gamla Stan" : q.includes("vasastan") ? "Vasastan" : "Stockholm Innerstad";
-
-    return {
-      cuisine: isCzech ? "Tjeckiskt" : isCoffee ? "Specialty Coffee / Café" : "Europeiskt",
-      area,
-      superpower: isDog ? "Hundvänligt (Verified Tasstipset)" : isCoffee ? "Dubbellås Specialty Coffee" : "Kvarterskrog",
-      excludedChains: ["Starbucks", "Espresso House", "Wayne's Coffee", "McDonald's"],
-      sampleMatch: isCzech
-        ? "Soldaten Svejk (Östgötagatan 11, Södermalm) · Pris: 2 · Status: Verifierad"
-        : isCoffee
-          ? "Drop Coffee (Wollmar Yxkullsgatan 10, Södermalm) · Eget rosteri · Single Origin"
-          : "Bageri Petrus (Swedenborgsgatan 7, Södermalm) · Hantverksbageri",
-      factualityScore: "100% (Zero Hallucinated Attributes)",
-    };
-  })();
 
   const activeSeabornChart = data?.seabornCharts?.find((c) => c.id === activeChartTab) ?? data?.seabornCharts?.[0];
   const activeSnippet = data?.codeSnippets?.find((s) => s.id === activeCodeTab) ?? data?.codeSnippets?.[0];
@@ -963,48 +1061,107 @@ export function AdminMlDashboard({
             </div>
           </div>
 
-          {/* Interactive Simulator 2: Concierge RAG Query Tester */}
+          {/* Interactive Simulator 2: Concierge RAG Query Tester & Calibration */}
           <div className="admin-ml-eval-card">
             <div className="admin-ml-eval-card-header">
               <div>
                 <h5>
                   <MagnifyingGlass size={16} weight="bold" />
-                  {lang === "sv" ? "2. Concierge RAG Frågetestare" : "2. Concierge RAG Query Evaluator"}
+                  {lang === "sv" ? "2. Concierge RAG Frågetestare & Kalibrering" : "2. Concierge RAG Query Evaluator & Calibration"}
                 </h5>
                 <small>
                   {lang === "sv"
-                    ? "Simulerar hur Concierge RAG tolkar intentioner, exkluderar kedjor och hämtar verifierad fakta."
-                    : "Simulates intent parsing, chain exclusion, and factual document retrieval."}
+                    ? "Simulerar hur Concierge RAG tolkar avsikter, filtrerar kedjor och hämtar verifierad fakta. Tryck Enter eller Kör för att utvärdera valfri text."
+                    : "Simulates intent parsing, chain exclusion, and factual document retrieval. Press Enter or Run to test any custom query."}
                 </small>
+              </div>
+              <div className="admin-rag-meta-stats">
+                <span className="admin-rag-stat-badge">
+                  ⚡ {ragResult.latencyMs}ms (Workers AI Edge)
+                </span>
+                <span className="admin-rag-stat-badge">
+                  🔤 {ragResult.tokenCount} tokens
+                </span>
               </div>
             </div>
 
             <div className="admin-ml-query-input-row">
-              <input
-                type="text"
-                className="admin-ml-query-input"
-                value={testQuery}
-                onChange={(e) => setTestQuery(e.target.value)}
-                placeholder={lang === "sv" ? "Skriv en testfråga..." : "Type a test query..."}
-              />
+              <div className="admin-ml-query-input-bar">
+                <input
+                  type="text"
+                  className="admin-ml-query-input"
+                  value={testQuery}
+                  onChange={(e) => setTestQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleRunRagEvaluation();
+                    }
+                  }}
+                  placeholder={
+                    lang === "sv"
+                      ? "Skriv eller testa en fråga (t.ex. Pizza, Mysigt café på Söder, Husmanskost...)"
+                      : "Type or test a query (e.g. Pizza, Cozy café in Södermalm, Pubs...)"
+                  }
+                />
+                <button
+                  type="button"
+                  className="admin-ml-query-enter-btn"
+                  disabled={isEvaluating || !testQuery.trim()}
+                  onClick={() => handleRunRagEvaluation()}
+                  title={lang === "sv" ? "Kör frågan (Enter)" : "Run query (Enter)"}
+                >
+                  {isEvaluating ? (
+                    <CircleNotch className="spin" size={14} />
+                  ) : (
+                    <ArrowRight size={14} weight="bold" />
+                  )}
+                  <span>{lang === "sv" ? "↵ Kör / Enter" : "↵ Run / Enter"}</span>
+                </button>
+              </div>
+
               <div className="admin-ml-query-suggestions">
                 <button
                   type="button"
-                  onClick={() => setTestQuery("Mysigt café med bra espresso på Södermalm")}
+                  onClick={() => handleRunRagEvaluation("Pizza")}
+                >
+                  🍕 Pizza (Testa manual)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRunRagEvaluation("Mysigt café med bra espresso på Södermalm")}
                 >
                   ☕ Espresso Söder
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTestQuery("Tjeckisk öl och husmanskost")}
+                  onClick={() => handleRunRagEvaluation("Tjeckisk öl och husmanskost")}
                 >
                   🍺 Tjeckisk öl
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTestQuery("Hundvänlig bistro med uteservering")}
+                  onClick={() => handleRunRagEvaluation("Hundvänlig bistro med uteservering")}
                 >
                   🐕 Hundvänlig bistro
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRunRagEvaluation("Hantverksbageri med surdegsbröd och bullar")}
+                >
+                  🥐 Hantverksbageri
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRunRagEvaluation("Naturvin och vinbar i Vasastan")}
+                >
+                  🍷 Vinbar Vasastan
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRunRagEvaluation("Autentisk japansk ramen")}
+                >
+                  🍜 Autentisk ramen
                 </button>
               </div>
             </div>
@@ -1012,30 +1169,325 @@ export function AdminMlDashboard({
             <div className="admin-ml-rag-output-grid">
               <div className="rag-output-card">
                 <span className="rag-label">{lang === "sv" ? "Identifierat Kök / Kategori" : "Extracted Cuisine"}</span>
-                <strong>{simulatedRagExtraction.cuisine}</strong>
+                <strong>{ragResult.cuisine}</strong>
               </div>
               <div className="rag-output-card">
                 <span className="rag-label">{lang === "sv" ? "Stadsdel / Område" : "Target District"}</span>
-                <strong>{simulatedRagExtraction.area}</strong>
+                <strong>{ragResult.area}</strong>
               </div>
               <div className="rag-output-card">
                 <span className="rag-label">{lang === "sv" ? "Superpower / Filter" : "Superpower Filter"}</span>
-                <strong>{simulatedRagExtraction.superpower}</strong>
+                <strong>{ragResult.superpower}</strong>
               </div>
               <div className="rag-output-card">
                 <span className="rag-label">{lang === "sv" ? "Kedje-exkluderingar" : "Filtered Chains"}</span>
-                <span className="chain-list">{simulatedRagExtraction.excludedChains.join(", ")}</span>
+                <span className="chain-list">{ragResult.excludedChains.join(", ")}</span>
               </div>
             </div>
 
             <div className="rag-context-preview">
               <div className="rag-context-header">
-                <span>{lang === "sv" ? "Hämtad Factual RAG Kontext (Inget hittepå)" : "Retrieved Factual Context"}</span>
-                <span className="rag-verified-badge">{simulatedRagExtraction.factualityScore}</span>
+                <span>
+                  {lang === "sv"
+                    ? `Hämtad Factual RAG Kontext för "${evaluatedQuery}"`
+                    : `Retrieved Factual Context for "${evaluatedQuery}"`}
+                </span>
+                <span className="rag-verified-badge">{ragResult.factualityScore}</span>
               </div>
               <pre>
-                <code>{simulatedRagExtraction.sampleMatch}</code>
+                <code>{ragResult.sampleMatch}</code>
               </pre>
+            </div>
+
+            {/* Reaction & Calibration Section (Thumbs Up / Thumbs Down + How / Why) */}
+            <div className="admin-rag-eval-feedback-section">
+              <div className="admin-rag-feedback-header">
+                <div className="admin-rag-feedback-title">
+                  <span>
+                    {lang === "sv"
+                      ? "Utvärdera RAG-svaret för att träna modellen:"
+                      : "Evaluate this RAG response to train the model:"}
+                  </span>
+                </div>
+                <div className="admin-rag-reaction-row">
+                  <button
+                    type="button"
+                    className={`admin-rag-reaction-btn thumbs-up ${activeRating === "good" ? "active" : ""}`}
+                    onClick={() => setActiveRating(activeRating === "good" ? null : "good")}
+                  >
+                    <ThumbsUp size={15} weight={activeRating === "good" ? "fill" : "regular"} />
+                    <span>{lang === "sv" ? "Bra svar / Korrekt" : "Good / Accurate"}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`admin-rag-reaction-btn thumbs-down ${activeRating === "bad" ? "active" : ""}`}
+                    onClick={() => setActiveRating(activeRating === "bad" ? null : "bad")}
+                  >
+                    <ThumbsDown size={15} weight={activeRating === "bad" ? "fill" : "regular"} />
+                    <span>{lang === "sv" ? "Dåligt eller felaktigt" : "Bad or Incorrect"}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Feedback Form (Hur/Varför och Förväntat svar) */}
+              {activeRating ? (
+                <div className="admin-rag-feedback-form">
+                  <div className="admin-rag-feedback-grid">
+                    <div className="admin-rag-field">
+                      <label>
+                        {lang === "sv"
+                          ? "Hur / Varför? (Förklara vad som var bra eller felaktigt)"
+                          : "How / Why? (Explain why it was good or incorrect)"}
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={feedbackNotes}
+                        onChange={(e) => setFeedbackNotes(e.target.value)}
+                        placeholder={
+                          activeRating === "bad"
+                            ? lang === "sv"
+                              ? "T.ex. 'Hämtade ett bageri istället för pizzerior', 'Fel stadsdel', 'Missade uteservering'..."
+                              : "E.g. 'Returned a bakery instead of pizza places', 'Wrong district'..."
+                            : lang === "sv"
+                              ? "T.ex. 'Perfekt matchning av oberoende ställen, exkluderade Espresso House'..."
+                              : "E.g. 'Accurate independent venues, properly excluded chains'..."
+                        }
+                      />
+                    </div>
+
+                    <div className="admin-rag-field">
+                      <label>
+                        {lang === "sv"
+                          ? "Vad borde det rätta svaret ha varit? (Förväntade ställen & respons)"
+                          : "What should have been a good response? (Expected venues & response)"}
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={expectedResponse}
+                        onChange={(e) => setExpectedResponse(e.target.value)}
+                        placeholder={
+                          lang === "sv"
+                            ? "T.ex. 'Borde ha returnerat Omnipollos Hatt (Söder), 800 Grader (Vasastan), Crisp Pizza Social'..."
+                            : "E.g. 'Should have returned Omnipollos Hatt, 800 Grader, or Crisp Pizza Social'..."
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  {/* Quick Tag Pills */}
+                  <div className="admin-rag-tags-container">
+                    <span className="admin-rag-tags-label">
+                      {lang === "sv" ? "Snabb-taggar för träningsdata:" : "Quick tags for training data:"}
+                    </span>
+                    <div className="admin-rag-tags-row">
+                      {(activeRating === "bad"
+                        ? [
+                            "❌ Fel kategori/mat",
+                            "❌ Fel stadsdel/område",
+                            "❌ Kedja visades (borde filtrerats)",
+                            "❌ Hallucinerat attribut",
+                            "❌ Irrelevant förslag",
+                            "❌ Saknade kända pizzerior/krogar",
+                          ]
+                        : [
+                            "✅ Perfekt träff",
+                            "✅ Rätt dubbellås-verifiering",
+                            "✅ Kedjor exkluderade",
+                            "✅ Rätt stadsdel",
+                            "✅ Hög precision",
+                          ]
+                      ).map((tag) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          className={`admin-rag-tag-pill ${selectedTags.includes(tag) ? "active" : ""}`}
+                          onClick={() => handleToggleTag(tag)}
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="admin-rag-form-footer">
+                    <button
+                      type="button"
+                      className="admin-rag-save-btn"
+                      onClick={handleSaveEvaluation}
+                    >
+                      <FloppyDisk size={14} weight="bold" />
+                      <span>
+                        {lang === "sv"
+                          ? "💾 Spara till Träningsdata & RLHF"
+                          : "💾 Save to Training Data & RLHF"}
+                      </span>
+                    </button>
+
+                    {saveSuccessMsg ? (
+                      <span className="admin-rag-save-success">
+                        <Check size={14} weight="bold" />
+                        {saveSuccessMsg}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Saved RLHF Training Dataset Feed */}
+              <div className="admin-rag-saved-dataset">
+                <div className="admin-rag-saved-header">
+                  <div className="admin-rag-saved-title-group">
+                    <h6>
+                      <Database size={15} weight="bold" />
+                      {lang === "sv"
+                        ? "Sparad Feedback & Träningsdata för RAG"
+                        : "Saved Feedback & Training Data for RAG"}
+                    </h6>
+                    <span className="admin-rag-count-badge">
+                      {savedEvaluations.length}
+                    </span>
+                  </div>
+
+                  <div className="admin-rag-saved-actions">
+                    <div className="admin-rag-filter-group">
+                      <button
+                        type="button"
+                        className={`admin-rag-filter-btn ${historyFilter === "all" ? "active" : ""}`}
+                        onClick={() => setHistoryFilter("all")}
+                      >
+                        {lang === "sv" ? `Alla (${savedEvaluations.length})` : `All (${savedEvaluations.length})`}
+                      </button>
+                      <button
+                        type="button"
+                        className={`admin-rag-filter-btn ${historyFilter === "good" ? "active" : ""}`}
+                        onClick={() => setHistoryFilter("good")}
+                      >
+                        👍 {savedEvaluations.filter((e) => e.rating === "good").length}
+                      </button>
+                      <button
+                        type="button"
+                        className={`admin-rag-filter-btn ${historyFilter === "bad" ? "active" : ""}`}
+                        onClick={() => setHistoryFilter("bad")}
+                      >
+                        👎 {savedEvaluations.filter((e) => e.rating === "bad").length}
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="admin-rag-export-btn"
+                      onClick={handleExportJson}
+                      title={lang === "sv" ? "Exportera för Cloudflare AI finjustering" : "Export for Cloudflare AI fine-tuning"}
+                    >
+                      <DownloadSimple size={13} weight="bold" />
+                      <span>{lang === "sv" ? "Exportera JSON" : "Export JSON"}</span>
+                    </button>
+
+                    {savedEvaluations.length > 0 ? (
+                      <button
+                        type="button"
+                        className="admin-rag-clear-btn"
+                        onClick={handleClearAllEvaluations}
+                        title={lang === "sv" ? "Rensa alla sparade" : "Clear all"}
+                      >
+                        <Trash size={13} />
+                        <span>{lang === "sv" ? "Rensa" : "Clear"}</span>
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="admin-rag-saved-list">
+                  {savedEvaluations
+                    .filter((item) => {
+                      if (historyFilter === "good") return item.rating === "good";
+                      if (historyFilter === "bad") return item.rating === "bad";
+                      return true;
+                    })
+                    .map((item) => (
+                      <div key={item.id} className="admin-rag-saved-card">
+                        <div className="admin-rag-card-topbar">
+                          <div className="admin-rag-card-identifiers">
+                            <span className={`admin-rag-rating-badge ${item.rating}`}>
+                              {item.rating === "good" ? (
+                                <>
+                                  <ThumbsUp size={11} weight="fill" />
+                                  <span>{lang === "sv" ? "Bra svar" : "Good"}</span>
+                                </>
+                              ) : (
+                                <>
+                                  <ThumbsDown size={11} weight="fill" />
+                                  <span>{lang === "sv" ? "Dåligt / Felaktigt" : "Bad / Incorrect"}</span>
+                                </>
+                              )}
+                            </span>
+                            <span className="admin-rag-card-query">"{item.query}"</span>
+                            <span className="admin-rag-card-time">{item.formattedTime}</span>
+                          </div>
+
+                          <button
+                            type="button"
+                            className="admin-rag-card-delete-btn"
+                            onClick={() => handleDeleteEvaluation(item.id)}
+                            title={lang === "sv" ? "Ta bort post" : "Delete record"}
+                          >
+                            <Trash size={12} />
+                            <span>{lang === "sv" ? "Ta bort" : "Delete"}</span>
+                          </button>
+                        </div>
+
+                        <div className="admin-rag-card-details">
+                          {item.feedbackNotes ? (
+                            <div className="admin-rag-detail-row">
+                              <span className="admin-rag-detail-label">
+                                {lang === "sv" ? "Varför / Hur:" : "Why / How:"}
+                              </span>
+                              <span className="admin-rag-detail-val">{item.feedbackNotes}</span>
+                            </div>
+                          ) : null}
+
+                          {item.expectedResponse ? (
+                            <div className="admin-rag-detail-row">
+                              <span className="admin-rag-detail-label">
+                                {lang === "sv" ? "Borde ha varit:" : "Expected:"}
+                              </span>
+                              <span className="admin-rag-detail-val" style={{ color: "#065f46", fontWeight: 600 }}>
+                                {item.expectedResponse}
+                              </span>
+                            </div>
+                          ) : null}
+
+                          <div className="admin-rag-detail-row">
+                            <span className="admin-rag-detail-label">
+                              {lang === "sv" ? "Kategori & Plats:" : "Cuisine & Area:"}
+                            </span>
+                            <span className="admin-rag-detail-val">
+                              {item.extractedCuisine} · {item.targetDistrict}
+                            </span>
+                          </div>
+                        </div>
+
+                        {item.tags && item.tags.length > 0 ? (
+                          <div className="admin-rag-card-tags">
+                            {item.tags.map((t) => (
+                              <span key={t} className="admin-rag-card-tag">
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    ))}
+
+                  {savedEvaluations.length === 0 ? (
+                    <div className="admin-rag-empty-feed">
+                      {lang === "sv"
+                        ? "Ingen feedback sparad ännu. Testa en sökning ovan och tryck 👍 eller 👎 för att spara träningsdata."
+                        : "No feedback saved yet. Test a query above and click 👍 or 👎 to save training data."}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1231,6 +1683,28 @@ export class CandidateHarvesterAgent extends Agent {
                   <code>{`// AI Gateway ger automatisk caching och rate-limiting:
 // https://gateway.ai.cloudflare.com/v1/{account_id}/motkarta-gateway/
 // Minskar kostnader och förhindrar att gratiskvoter överskrids.`}</code>
+                </pre>
+              </div>
+            </div>
+
+            {/* Tip 6 */}
+            <div className="admin-ml-cf-card">
+              <div className="cf-card-header">
+                <span className="cf-badge">RLHF & DPO Calibration</span>
+                <span className="cf-model-tag">Fine-Tuning & Few-Shot</span>
+              </div>
+              <h5>6. Träna Cloudflare Workers AI med Vår Manuella Feedback</h5>
+              <p>
+                De sparade 👍 och 👎 utvärderingarna under flik 3 exporteras som strukturerade DPO-par (Direct Preference Optimization). Använd dem direkt som few-shot exemplars i Llama 3.1-prompterna eller för offline finjustering så att modellen aldrig upprepar felaktiga svar.
+              </p>
+              <div className="cf-code-snippet">
+                <pre>
+                  <code>{`// Injektera sparade kalibreringspar direkt i system-prompten:
+const fewShotExamples = savedDpoPairs.map(p => 
+  \`Fråga: \${p.prompt} ➔ Föredraget svar: \${p.chosen}\`
+).join("\\n");
+
+const systemPrompt = \`Du är Motkarta Concierge. Följ dessa godkända kalibreringar:\\n\${fewShotExamples}\`;`}</code>
                 </pre>
               </div>
             </div>
