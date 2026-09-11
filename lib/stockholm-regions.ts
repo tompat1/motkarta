@@ -9,6 +9,8 @@ type RegionPlace = {
 export const STOCKHOLM_REGIONS = [
   "Djurgården",
   "Gamla Stan",
+  "Gärdet",
+  "Kransen",
   "Kungsholmen",
   "Västermalm",
   "Norrmalm",
@@ -36,15 +38,17 @@ const BROAD_STOCKHOLM_AREAS = new Set([
 ]);
 
 const AREA_ALIASES: Array<{ region: string; aliases: string[] }> = [
+  { region: "Gärdet", aliases: ["gärdet", "gardet", "frihamnen", "sandhamnsgatan", "sehlstedtsgatan", "furusundsgatan", "smedsbacksgatan", "östhammarsgatan", "rökubbsgatan", "värtahamnen", "vartahamnen", "tessinparken", "brantingsgatan"] },
+  { region: "Kransen", aliases: ["kransen", "midsommarkransen", "svandammsplan", "svandammsparken", "tellusborg", "tellusborgsvägen", "tegelbruksvägen", "vattenledningsvägen", "bäckvägen", "backvagen", "klockargatan", "nymilsgatan"] },
   { region: "Södermalm", aliases: ["södermalm", "soder", "söder", "mariatorget", "hornstull", "sofo", "nytorget", "östgöta", "ostgota", "zinkensdamm", "skanstull", "götgatan", "gotgatan", "folkungagatan", "bondegatan", "kocksgatan", "skånegatan", "renstiernas"] },
   { region: "Djurgården", aliases: ["djurgården", "djurgarden", "biskopsudden", "skansen", "grona lund", "gröna lund", "djurgårdsbrunn"] },
   { region: "Vasastan", aliases: ["vasastan", "vasastaden", "odenplan", "birkastan", "st eriksplan", "rörstrandsgatan", "rorstrandsgatan", "sankt eriksplan"] },
   { region: "Norrmalm", aliases: ["norrmalm", "city", "hötorget", "hotorget", "t-centralen", "drottninggatan", "sergels torg", "hamngatan", "klarabergsgatan", "bryggargatan", "tegelbacken"] },
-  { region: "Östermalm", aliases: ["östermalm", "ostermalm", "stureplan", "karlaplan", "humlegården", "humlegarden", "strandvägen", "gärdet", "gardet", "styrmansgatan", "linnégatan"] },
+  { region: "Östermalm", aliases: ["östermalm", "ostermalm", "stureplan", "karlaplan", "humlegården", "humlegarden", "strandvägen", "styrmansgatan", "linnégatan"] },
   { region: "Västermalm", aliases: ["västermalm", "vastermalm"] },
   { region: "Kungsholmen", aliases: ["kungsholmen", "fridhemsplan", "norr mälarstrand", "norr malarstrand", "hornsberg", "hantverkargatan", "stadshuset"] },
   { region: "Gamla Stan", aliases: ["gamla stan", "gamlastan", "stortorget", "västerlånggatan", "vasterlanggatan", "österlånggatan"] },
-  { region: "Söderort", aliases: ["söderort", "soderort", "årsta", "arsta", "liljeholmen", "midsommarkransen", "aspudden", "hägersten", "hagersten", "älvsjö", "alvsjo", "enskede", "gullmarsplan", "globen", "hammarbyhöjden", "hammarbyhojden", "björkhagen", "bjorkhagen", "kärrtorp", "karrtorp", "bagarmossen", "skarpnäck", "skarpnack", "farsta", "bandhagen", "högdalen", "hogdalen", "rågsved", "ragsved", "skärholmen", "skarholmen", "bredäng", "bredang", "mälarhöjden", "malarhojden", "sätra", "satra", "telefonplan", "hammarby sjöstad", "hammarby sjostad", "klubbacken"] },
+  { region: "Söderort", aliases: ["söderort", "soderort", "årsta", "arsta", "liljeholmen", "aspudden", "hägersten", "hagersten", "älvsjö", "alvsjo", "enskede", "gullmarsplan", "globen", "hammarbyhöjden", "hammarbyhojden", "björkhagen", "bjorkhagen", "kärrtorp", "karrtorp", "bagarmossen", "skarpnäck", "skarpnack", "farsta", "bandhagen", "högdalen", "hogdalen", "rågsved", "ragsved", "skärholmen", "skarholmen", "bredäng", "bredang", "mälarhöjden", "malarhojden", "sätra", "satra", "telefonplan", "hammarby sjöstad", "hammarby sjostad", "klubbacken"] },
   { region: "Västerort", aliases: ["västerort", "vasterort", "bromma", "alvik", "traneberg", "ulvsunda", "mariehäll", "mariehall", "annedal", "riksby", "blackeberg", "åkeshov", "akeshov", "vällingby", "vallingby", "hässelby", "hasselby", "spånga", "spanga", "tensta", "rinkeby", "kista", "akalla", "husby", "nockeby"] },
   { region: "Norrort", aliases: ["norrort", "solna", "sundbyberg", "danderyd", "täby", "taby", "sollentuna", "upplands väsby", "upplands vasby", "järfälla", "jarfalla"] },
 ];
@@ -79,6 +83,8 @@ const REGION_BOXES: Array<{
   { region: "Gamla Stan", latMin: 59.3210, latMax: 59.3288, lonMin: 18.0610, lonMax: 18.0820 },
   { region: "Södermalm", latMin: 59.3000, latMax: 59.3210, lonMin: 18.0150, lonMax: 18.1050 },
   { region: "Djurgården", latMin: 59.3180, latMax: 59.3370, lonMin: 18.0850, lonMax: 18.1600 },
+  { region: "Gärdet", latMin: 59.3400, latMax: 59.3560, lonMin: 18.0920, lonMax: 18.1350 },
+  { region: "Kransen", latMin: 59.2970, latMax: 59.3075, lonMin: 18.0000, lonMax: 18.0200 },
   { region: "Kungsholmen", latMin: 59.3230, latMax: 59.3440, lonMin: 17.9850, lonMax: 18.0600 },
   { region: "Vasastan", latMin: 59.3375, latMax: 59.3620, lonMin: 18.0200, lonMax: 18.0660 },
   { region: "Norrmalm", latMin: 59.3260, latMax: 59.3375, lonMin: 18.0440, lonMax: 18.0720 },

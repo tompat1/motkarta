@@ -5,7 +5,19 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import React, { useEffect, useRef, useState } from "react";
 import type { Language } from "../app/shared";
 import { STOCKHOLM_REGIONS as STOCKHOLM_REGION_NAMES, isBroadStockholmArea } from "../../lib/stockholm-regions";
-import { ArrowsIn, Crosshair, Eye, Globe, MapPin, Minus, Plus, Warning } from "@phosphor-icons/react";
+import {
+  ArrowsIn,
+  CheckCircle,
+  CheckSquareOffset,
+  CircleNotch,
+  Crosshair,
+  Eye,
+  Globe,
+  MapPin,
+  Minus,
+  Plus,
+  Warning,
+} from "@phosphor-icons/react";
 
 export type AdminMapCandidate = {
   id: number;
@@ -29,6 +41,7 @@ interface AdminMapViewProps {
   selectedCandidateId: number | null;
   onSelectCandidate: (id: number) => void;
   onUpdateDistrict?: (candidate: AdminMapCandidate, district: string) => void;
+  onBatchUpdateDistrict?: (candidates: AdminMapCandidate[], district: string) => Promise<void> | void;
   onMarkClosed?: (candidate: AdminMapCandidate) => void;
   lang?: Language;
 }
@@ -38,6 +51,7 @@ export function AdminMapView({
   selectedCandidateId,
   onSelectCandidate,
   onUpdateDistrict,
+  onBatchUpdateDistrict,
   onMarkClosed,
   lang = "sv",
 }: AdminMapViewProps) {
@@ -46,6 +60,11 @@ export function AdminMapView({
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const markersRef = useRef<Map<number, L.Marker>>(new Map());
   const [selectedPlace, setSelectedPlace] = useState<AdminMapCandidate | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [multiSelectMode, setMultiSelectMode] = useState<boolean>(false);
+  const [batchDistrict, setBatchDistrict] = useState<string>("Gärdet");
+  const [isApplyingBatch, setIsApplyingBatch] = useState<boolean>(false);
+  const lastFitKeyRef = useRef<string>("");
 
   // Filter candidates with valid coordinates
   const validCandidates = candidates.filter(
@@ -99,7 +118,7 @@ export function AdminMapView({
     };
   }, []);
 
-  // Update Markers when candidates change
+  // Update Markers when candidates, selectedCandidateId, or selectedIds change
   useEffect(() => {
     const map = mapRef.current;
     const clusterGroup = clusterGroupRef.current;
@@ -119,11 +138,15 @@ export function AdminMapView({
         ? "state-closed"
         : `state-${candidate.lifecycleState}`;
 
+      const isMultiSelected = selectedIds.has(candidate.id);
+      const isSingleSelected = candidate.id === selectedCandidateId;
+
       const icon = L.divIcon({
         className: "admin-map-pin-container",
         html: `
-          <div class="admin-map-pin ${stateClass} ${candidate.id === selectedCandidateId ? "is-selected" : ""}" title="${candidate.name}">
+          <div class="admin-map-pin ${stateClass} ${isSingleSelected ? "is-selected" : ""} ${isMultiSelected ? "is-multi-selected" : ""}" title="${candidate.name} (${candidate.area})">
             <span class="admin-pin-dot"></span>
+            ${isMultiSelected ? '<span class="admin-pin-check">✓</span>' : ""}
           </div>
         `,
         iconSize: [22, 22],
@@ -132,20 +155,36 @@ export function AdminMapView({
 
       const marker = L.marker([lat, lng], { icon });
 
-      marker.on("click", () => {
-        setSelectedPlace(candidate);
-        onSelectCandidate(candidate.id);
-        map.panTo([lat, lng]);
+      marker.on("click", (e) => {
+        if (multiSelectMode) {
+          L.DomEvent.stopPropagation(e);
+          setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(candidate.id)) {
+              next.delete(candidate.id);
+            } else {
+              next.add(candidate.id);
+            }
+            return next;
+          });
+          setSelectedPlace(candidate);
+        } else {
+          setSelectedPlace(candidate);
+          onSelectCandidate(candidate.id);
+          map.panTo([lat, lng]);
+        }
       });
 
       clusterGroup.addLayer(marker);
       markersRef.current.set(candidate.id, marker);
     });
 
-    if (validCandidates.length > 0 && bounds.isValid()) {
+    const currentKey = validCandidates.map((c) => c.id).join(",");
+    if (validCandidates.length > 0 && bounds.isValid() && lastFitKeyRef.current !== currentKey) {
+      lastFitKeyRef.current = currentKey;
       map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
     }
-  }, [validCandidates, selectedCandidateId, onSelectCandidate]);
+  }, [validCandidates, selectedCandidateId, selectedIds, multiSelectMode, onSelectCandidate]);
 
   // Synchronize external selection
   useEffect(() => {
@@ -158,6 +197,40 @@ export function AdminMapView({
       }
     }
   }, [selectedCandidateId, candidates]);
+
+  const toggleCandidateSelection = (id: number) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const handleSelectAllVisible = () => {
+    setSelectedIds(new Set(validCandidates.map((c) => c.id)));
+  };
+
+  const handleClearSelection = () => {
+    setSelectedIds(new Set());
+  };
+
+  const handleApplyBatchDistrict = async () => {
+    if (!onBatchUpdateDistrict || selectedIds.size === 0 || !batchDistrict) return;
+    const candidatesToUpdate = validCandidates.filter((c) => selectedIds.has(c.id));
+    if (candidatesToUpdate.length === 0) return;
+
+    setIsApplyingBatch(true);
+    try {
+      await onBatchUpdateDistrict(candidatesToUpdate, batchDistrict);
+      setSelectedIds(new Set());
+    } finally {
+      setIsApplyingBatch(false);
+    }
+  };
 
   const handleZoomIn = () => mapRef.current?.zoomIn();
   const handleZoomOut = () => mapRef.current?.zoomOut();
@@ -196,8 +269,24 @@ export function AdminMapView({
         </div>
         <div className="legend-meta">
           <span>
-            <b>{validCandidates.length}</b> {lang === "sv" ? "ställen med koordinater på kartan" : "places mapped"}
+            <b>{validCandidates.length}</b> {lang === "sv" ? "ställen på kartan" : "places mapped"}
           </span>
+          <button
+            type="button"
+            className={`admin-multi-select-toggle-btn ${multiSelectMode ? "is-active" : ""}`}
+            onClick={() => setMultiSelectMode((prev) => !prev)}
+            title={lang === "sv" ? "Aktivera flerval för att markera flera ställen på kartan" : "Toggle multi-select mode on the map"}
+          >
+            <CheckSquareOffset size={15} weight="bold" />
+            <span>
+              {multiSelectMode
+                ? (lang === "sv" ? "Flerval: På" : "Multi-select: ON")
+                : (lang === "sv" ? "Flerval: Av" : "Multi-select: OFF")}
+            </span>
+            {selectedIds.size > 0 && (
+              <span className="multi-select-count-badge">{selectedIds.size}</span>
+            )}
+          </button>
         </div>
       </div>
 
@@ -242,6 +331,74 @@ export function AdminMapView({
             <Crosshair size={16} weight="bold" />
           </button>
         </div>
+
+        {selectedIds.size > 0 && (
+          <aside className="admin-map-batch-bar" role="region" aria-label={lang === "sv" ? "Batch-åtgärder" : "Batch actions"}>
+            <div className="batch-bar-info">
+              <span className="batch-bar-count">
+                <CheckSquareOffset size={16} weight="bold" />
+                <span className="batch-count-pill">{selectedIds.size}</span>
+                <span>{lang === "sv" ? "valda" : "selected"}</span>
+              </span>
+              <button
+                type="button"
+                className="batch-bar-btn-subtle"
+                onClick={handleSelectAllVisible}
+                title={lang === "sv" ? "Markera alla synliga ställen" : "Select all visible places"}
+              >
+                {lang === "sv" ? `Välj alla synliga (${validCandidates.length})` : `Select all visible (${validCandidates.length})`}
+              </button>
+              <button
+                type="button"
+                className="batch-bar-btn-subtle"
+                onClick={handleClearSelection}
+                title={lang === "sv" ? "Rensa alla valda ställen" : "Clear selection"}
+              >
+                {lang === "sv" ? "Rensa val" : "Clear"}
+              </button>
+            </div>
+
+            <div className="batch-bar-action">
+              <label htmlFor="batch-district-select" className="batch-bar-label">
+                {lang === "sv" ? "Stadsdel:" : "District:"}
+              </label>
+              <select
+                id="batch-district-select"
+                value={batchDistrict}
+                onChange={(e) => setBatchDistrict(e.target.value)}
+                className="admin-batch-district-select"
+              >
+                {STOCKHOLM_REGION_NAMES.map((region) => (
+                  <option key={region} value={region}>
+                    {region}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="admin-batch-apply-btn"
+                disabled={isApplyingBatch || !onBatchUpdateDistrict}
+                onClick={handleApplyBatchDistrict}
+              >
+                {isApplyingBatch ? (
+                  <>
+                    <CircleNotch size={15} className="animate-spin" />
+                    <span>{lang === "sv" ? "Tilldelar..." : "Assigning..."}</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle size={15} weight="bold" />
+                    <span>
+                      {lang === "sv"
+                        ? `Tilldela till ${batchDistrict} (${selectedIds.size})`
+                        : `Assign to ${batchDistrict} (${selectedIds.size})`}
+                    </span>
+                  </>
+                )}
+              </button>
+            </div>
+          </aside>
+        )}
 
         {selectedPlace ? (
           <aside className="admin-map-inspector" aria-label={lang === "sv" ? "Inspektera ställe" : "Inspect place"}>
@@ -336,11 +493,22 @@ export function AdminMapView({
               <div className="inspector-actions">
                 <button
                   type="button"
+                  className={`inspector-btn ${selectedIds.has(selectedPlace.id) ? "inspector-btn-selected" : "inspector-btn-secondary"}`}
+                  onClick={() => toggleCandidateSelection(selectedPlace.id)}
+                  title={selectedIds.has(selectedPlace.id) ? (lang === "sv" ? "Ta bort från flerval" : "Remove from selection") : (lang === "sv" ? "Lägg till i flerval" : "Add to selection")}
+                >
+                  <CheckSquareOffset size={14} weight="bold" />
+                  {selectedIds.has(selectedPlace.id)
+                    ? (lang === "sv" ? "Avmarkera" : "Deselect")
+                    : (lang === "sv" ? "Markera" : "Select")}
+                </button>
+                <button
+                  type="button"
                   className="inspector-btn inspector-btn-primary"
                   onClick={() => onSelectCandidate(selectedPlace.id)}
                 >
                   <Eye size={14} weight="bold" />
-                  {lang === "sv" ? "Fokusera granskningskort" : "Focus review card"}
+                  {lang === "sv" ? "Fokusera" : "Focus"}
                 </button>
                 {onMarkClosed && selectedPlace.validationLabel !== "closed_wrong_category" ? (
                   <button
@@ -348,7 +516,7 @@ export function AdminMapView({
                     className="inspector-btn inspector-btn-danger"
                     onClick={() => onMarkClosed(selectedPlace)}
                   >
-                    {lang === "sv" ? "Markera stängd" : "Mark closed"}
+                    {lang === "sv" ? "Stängd" : "Closed"}
                   </button>
                 ) : null}
               </div>
@@ -359,3 +527,4 @@ export function AdminMapView({
     </div>
   );
 }
+

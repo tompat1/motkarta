@@ -3379,9 +3379,51 @@ button.concierge-clear-btn:hover {
 .dot.dot-closed { background: #eb5a46; }
 
 .legend-meta {
+  align-items: center;
   color: var(--color-stone);
+  display: flex;
+  flex-wrap: wrap;
   font-family: var(--font-mono);
   font-size: 11px;
+  gap: 12px;
+}
+
+.admin-multi-select-toggle-btn {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  border-radius: 4px;
+  color: var(--color-ink);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 6px;
+  padding: 4px 10px;
+  transition: all var(--motion-fast);
+}
+
+.admin-multi-select-toggle-btn:hover {
+  background: var(--color-paper);
+  border-color: var(--color-ink);
+}
+
+.admin-multi-select-toggle-btn.is-active {
+  background: rgba(30, 130, 80, 0.12);
+  border-color: #1e8250;
+  box-shadow: 0 0 0 1px #1e8250;
+  color: #1e8250;
+}
+
+.multi-select-count-badge {
+  background: #1e8250;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  padding: 2px 6px;
 }
 
 .admin-map-viewport {
@@ -3412,6 +3454,7 @@ button.concierge-clear-btn:hover {
   display: flex;
   height: 20px;
   justify-content: center;
+  position: relative;
   transition: transform var(--motion-fast), box-shadow var(--motion-fast);
   width: 20px;
 }
@@ -3427,6 +3470,32 @@ button.concierge-clear-btn:hover {
   z-index: 1001;
 }
 
+.admin-map-pin.is-multi-selected {
+  border-color: #1e8250;
+  box-shadow: 0 0 0 3px rgba(30, 130, 80, 0.45), 0 3px 10px rgba(0, 0, 0, 0.35);
+  transform: scale(1.35);
+  z-index: 1002;
+}
+
+.admin-pin-check {
+  align-items: center;
+  background: #1e8250;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 900;
+  height: 14px;
+  justify-content: center;
+  line-height: 1;
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  width: 14px;
+}
+
 .admin-pin-dot {
   border-radius: 50%;
   display: block;
@@ -3439,6 +3508,167 @@ button.concierge-clear-btn:hover {
 .admin-map-pin.state-featured .admin-pin-dot { background: #d4af37; }
 .admin-map-pin.state-baseline .admin-pin-dot { background: #606f7b; }
 .admin-map-pin.state-closed .admin-pin-dot { background: #eb5a46; }
+
+/* Floating Batch Action Bar */
+.admin-map-batch-bar {
+  align-items: center;
+  animation: batchBarSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(22, 20, 18, 0.94);
+  border: 1.5px solid #3c3832;
+  border-radius: 8px;
+  bottom: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+  color: #f7f6f2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  left: 50%;
+  max-width: calc(100% - 40px);
+  padding: 10px 16px;
+  position: absolute;
+  transform: translateX(-50%);
+  width: max-content;
+  z-index: 960;
+}
+
+@keyframes batchBarSlideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.batch-bar-info {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.batch-bar-count {
+  align-items: center;
+  color: #fff;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  gap: 6px;
+}
+
+.batch-count-pill {
+  background: #1e8250;
+  border-radius: 12px;
+  color: #fff;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  padding: 3px 8px;
+}
+
+.batch-bar-btn-subtle {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #e5e2dc;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  transition: all var(--motion-fast);
+}
+
+.batch-bar-btn-subtle:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
+.batch-bar-action {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.batch-bar-label {
+  color: #b0aaa0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-batch-district-select {
+  background: #2a2723;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 10px;
+  transition: border-color var(--motion-fast);
+}
+
+.admin-batch-district-select:focus {
+  border-color: #1e8250;
+  outline: none;
+}
+
+.admin-batch-apply-btn {
+  align-items: center;
+  background: #1e8250;
+  border: 1px solid #28a745;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(30, 130, 80, 0.4);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  gap: 6px;
+  padding: 7px 14px;
+  text-transform: uppercase;
+  transition: all var(--motion-fast);
+}
+
+.admin-batch-apply-btn:hover:not(:disabled) {
+  background: #176940;
+  box-shadow: 0 4px 12px rgba(30, 130, 80, 0.6);
+  transform: translateY(-1px);
+}
+
+.admin-batch-apply-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 768px) {
+  .admin-map-batch-bar {
+    border-radius: 6px;
+    bottom: 12px;
+    flex-direction: column;
+    left: 12px;
+    right: 12px;
+    transform: none;
+    width: calc(100% - 24px);
+  }
+  .batch-bar-info,
+  .batch-bar-action {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
 
 .admin-cluster-container {
   background: transparent !important;
@@ -3656,6 +3886,27 @@ button.concierge-clear-btn:hover {
 
 .inspector-btn-primary:hover {
   background: #2a2824;
+}
+
+.inspector-btn-selected {
+  background: #1e8250;
+  border-color: #1e8250;
+  color: #fff;
+}
+
+.inspector-btn-selected:hover {
+  background: #176940;
+}
+
+.inspector-btn-secondary {
+  background: transparent;
+  border-color: var(--color-mist);
+  color: var(--color-ink);
+}
+
+.inspector-btn-secondary:hover {
+  background: var(--color-paper);
+  border-color: var(--color-ink);
 }
 
 .inspector-btn-danger {

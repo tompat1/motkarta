@@ -224,7 +224,7 @@ export function AdminReviewPanel({
       setError(null);
       try {
         const q = (queryOverride !== undefined ? queryOverride : searchQuery).trim();
-        const url = `/api/admin/candidates?state=${stateFilter}&limit=100${q ? `&q=${encodeURIComponent(q)}` : ""}`;
+        const url = `/api/admin/candidates?state=${stateFilter}&limit=200${q ? `&q=${encodeURIComponent(q)}` : ""}`;
         const response = await fetch(url, {
           headers: adminHeaders(token),
         });
@@ -755,6 +755,85 @@ export function AdminReviewPanel({
       setError(saveError instanceof Error ? saveError.message : String(saveError));
     } finally {
       setBusyId(null);
+    }
+  };
+
+  const batchUpdateCandidateRegion = async (candidatesToUpdate: AdminMapCandidate[], district: string) => {
+    if (!hasAdminAuth || !district || candidatesToUpdate.length === 0) return;
+
+    setError(null);
+    let successCount = 0;
+    const errors: string[] = [];
+
+    // Process in concurrent chunks of 4 to be fast and safe with D1
+    const chunkSize = 4;
+    for (let i = 0; i < candidatesToUpdate.length; i += chunkSize) {
+      const chunk = candidatesToUpdate.slice(i, i + chunkSize);
+      await Promise.all(
+        chunk.map(async (candidate) => {
+          const validationNotes = (reviewNotes[candidate.id] ?? candidate.validationNotes ?? "").trim();
+          try {
+            const response = await fetch("/api/admin/candidates", {
+              method: "POST",
+              headers: adminHeaders(undefined, { "content-type": "application/json" }),
+              body: JSON.stringify({
+                id: candidate.id,
+                action: "update_district",
+                district,
+                validationNotes,
+              }),
+            });
+            if (response.ok) {
+              successCount++;
+            } else {
+              const payload = (await response.json().catch(() => ({}))) as { error?: string };
+              errors.push(`${candidate.name}: ${payload.error || "Fel"}`);
+            }
+          } catch (err) {
+            errors.push(`${candidate.name}: ${err instanceof Error ? err.message : String(err)}`);
+          }
+        })
+      );
+    }
+
+    const updatedIds = new Set(candidatesToUpdate.map((c) => c.id));
+    const nowIso = new Date().toISOString();
+
+    setCandidates((current) =>
+      current.flatMap((row) => {
+        if (!updatedIds.has(row.id)) return [row];
+        if (stateFilter === "unresolved_region" && !isBroadStockholmArea(district)) {
+          return [];
+        }
+        return [{ ...row, area: district, updatedAt: nowIso }];
+      })
+    );
+
+    if (successCount > 0) {
+      setStatus(
+        lang === "sv"
+          ? `${successCount} ställen uppdaterades till region ${district}.`
+          : `${successCount} places updated to region ${district}.`,
+      );
+      addToast({
+        type: "success",
+        title: lang === "sv" ? `📍 Flerval: ${successCount} ställen tilldelade` : `📍 Batch: ${successCount} places assigned`,
+        message: lang === "sv"
+          ? `${successCount} ställen tilldelades stadsdel ${district}`
+          : `${successCount} places assigned to district ${district}`,
+        detail: lang === "sv"
+          ? "Sparat direkt i D1. Kartan och driftmåtten uppdaterade i realtid."
+          : "Persisted directly to D1. Map and drift metrics updated live.",
+      });
+      void loadDashboard();
+    }
+
+    if (errors.length > 0) {
+      addToast({
+        type: "warning",
+        title: lang === "sv" ? "Vissa uppdateringar misslyckades" : "Some updates failed",
+        message: errors.slice(0, 3).join(", "),
+      });
     }
   };
 
@@ -1369,6 +1448,7 @@ export function AdminReviewPanel({
             const found = candidates.find((c) => c.id === candidate.id);
             if (found) void updateCandidateRegion(found, district);
           }}
+          onBatchUpdateDistrict={batchUpdateCandidateRegion}
           onMarkClosed={(candidate) => {
             const found = candidates.find((c) => c.id === candidate.id);
             if (found) void promoteCandidate(found, "candidate", "closed_wrong_category");
@@ -1893,8 +1973,8 @@ function stateFilterHelpText(filter: AdminStateFilter, lang: Language): string {
         : "Candidates: New proposals from OSM, inspections, and guides. Prioritize rows with '✨ X user tips' and check for 2 independent sources for hidden gems.";
     case "unresolved_region":
       return lang === "sv"
-        ? "Saknar region: Platser med generiska Stockholm-etiketter. Klicka 'Lös saknade regioner' för polygon-batch eller välj stadsdel manuellt i dropdownen."
-        : "Needs region: Places with broad Stockholm labels. Click 'Resolve missing regions' for polygon batch or select district manually.";
+        ? "Saknar region: Platser med generiska etiketter ('Stockholm'). Växla till [ 🗺️ Karta ] för att se deras positioner, använd [ ☑️ Flerval ] för att markera kluster och tilldela rätt stadsdel (t.ex. Gärdet, Kransen)."
+        : "Needs region: Places with generic Stockholm labels. Switch to [ 🗺️ Map ] to see coordinates, use [ ☑️ Multi-select ] to select clusters, and batch-assign the right district.";
     case "needs_input":
       return lang === "sv"
         ? "Behöver input: Platser som saknar webbadress, gatuadress eller stadsdel. Använd 'Spara & hämta bild' för att auto-berika."

@@ -88,4 +88,57 @@ test("detects broad Stockholm area labels", () => {
   assert.equal(isBroadStockholmArea("Central Stockholm"), true);
   assert.equal(isBroadStockholmArea("South Stockholm"), true);
   assert.equal(isBroadStockholmArea("Södermalm"), false);
+  assert.equal(isBroadStockholmArea("Gärdet"), false);
+  assert.equal(isBroadStockholmArea("Kransen"), false);
+});
+
+test("resolves Gärdet and Kransen by aliases and coordinates", () => {
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Gärdets Pizzeria",
+      area: "Stockholm",
+      address: "Erik Dahlbergsgatan 41, Gärdet",
+    }),
+    "Gärdet",
+  );
+
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Restaurant Kransen",
+      area: "Stockholm",
+      address: "Svandammsplan 2, Kransen",
+    }),
+    "Kransen",
+  );
+
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Svenska Sushiköket",
+      area: "Stockholm",
+      address: "Tellusborgsvägen 76, Södermalm",
+      latitude: 59.3003552,
+      longitude: 18.0040262,
+    }),
+    "Kransen",
+  );
+
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Tessin Café",
+      area: "Stockholm",
+      latitude: 59.345,
+      longitude: 18.098,
+    }),
+    "Gärdet",
+  );
+
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Kransen Spot",
+      area: "Stockholm",
+      latitude: 59.302,
+      longitude: 18.012,
+    }),
+    "Kransen",
+  );
 });

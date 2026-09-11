@@ -112,3 +112,78 @@ test("automated review labels sync creates valid human_validation_labels schema"
   } catch {}
 });
 
+test("admin map multi-select state management toggles, selects all visible, and clears", () => {
+  const candidates = [
+    { id: 101, name: "Ställe 1", area: "Stockholm" },
+    { id: 102, name: "Ställe 2", area: "Stockholm" },
+    { id: 103, name: "Ställe 3", area: "Stockholm" },
+  ];
+
+  let selectedIds = new Set();
+
+  const toggleCandidateSelection = (id) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
+    selectedIds = next;
+  };
+
+  // Toggle single place
+  toggleCandidateSelection(101);
+  assert.equal(selectedIds.size, 1);
+  assert.ok(selectedIds.has(101));
+
+  // Toggle another place
+  toggleCandidateSelection(102);
+  assert.equal(selectedIds.size, 2);
+  assert.ok(selectedIds.has(102));
+
+  // Toggle first place off
+  toggleCandidateSelection(101);
+  assert.equal(selectedIds.size, 1);
+  assert.ok(!selectedIds.has(101));
+  assert.ok(selectedIds.has(102));
+
+  // Select all visible
+  selectedIds = new Set(candidates.map((c) => c.id));
+  assert.equal(selectedIds.size, 3);
+  assert.ok(selectedIds.has(101));
+  assert.ok(selectedIds.has(102));
+  assert.ok(selectedIds.has(103));
+
+  // Clear selection
+  selectedIds = new Set();
+  assert.equal(selectedIds.size, 0);
+});
+
+test("admin batch district assignment updates multiple candidates and persists region correctly", () => {
+  const initialCandidates = [
+    { id: 1, name: "Kafé A", area: "Stockholm" },
+    { id: 2, name: "Restaurang B", area: "Stockholm" },
+    { id: 3, name: "Bageri C", area: "Södermalm" },
+  ];
+
+  const selectedIds = new Set([1, 2]);
+  const targetDistrict = "Gärdet";
+
+  const updatedCandidates = initialCandidates.map((c) => {
+    if (selectedIds.has(c.id)) {
+      return { ...c, area: targetDistrict };
+    }
+    return c;
+  });
+
+  assert.equal(updatedCandidates.find((c) => c.id === 1)?.area, "Gärdet");
+  assert.equal(updatedCandidates.find((c) => c.id === 2)?.area, "Gärdet");
+  assert.equal(updatedCandidates.find((c) => c.id === 3)?.area, "Södermalm");
+});
+
+test("canonical districts include Gärdet and Kransen for batch selection", async () => {
+  const { STOCKHOLM_REGIONS } = await import("../lib/stockholm-regions.ts");
+  assert.ok(STOCKHOLM_REGIONS.includes("Gärdet"));
+  assert.ok(STOCKHOLM_REGIONS.includes("Kransen"));
+});
+
