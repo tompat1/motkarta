@@ -162,8 +162,8 @@ export function AdminGuidePanel({ lang, onClose }: AdminGuidePanelProps) {
                   </li>
                   <li>
                     {lang === "sv"
-                      ? "Klicka 'Exportera' i admin för att ladda ner D1-granskningsetiketter för framtida offline-träning."
-                      : "Click 'Export' in admin to download D1 review labels for future offline training."}
+                      ? "Granskningar sparas automatiskt i D1 i realtid. Du behöver inte exportera manuellt; synkning sker med ett klick via 'Synka pipeline direkt' eller CLI: npm run sync:labels."
+                      : "Reviews are auto-saved to D1 in real-time. No manual downloads needed; sync happens with 1 click via 'Sync pipeline directly' or CLI: npm run sync:labels."}
                   </li>
                 </ul>
               </div>

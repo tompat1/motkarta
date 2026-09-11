@@ -167,6 +167,7 @@ export function AdminReviewPanel({
   const [loading, setLoading] = useState(false);
   const [loadingDashboard, setLoadingDashboard] = useState(false);
   const [exportingLabels, setExportingLabels] = useState(false);
+  const [syncingPipeline, setSyncingPipeline] = useState(false);
   const [resolvingRegions, setResolvingRegions] = useState(false);
   const [websiteInputs, setWebsiteInputs] = useState<Record<number, string>>({});
   const [schemaBusy, setSchemaBusy] = useState(false);
@@ -828,6 +829,59 @@ export function AdminReviewPanel({
     }
   };
 
+  const syncPipelineDirectly = async () => {
+    const token = adminToken.trim();
+    if (!hasAdminAuth) return;
+
+    setSyncingPipeline(true);
+    setError(null);
+    setLabelExportStatus("");
+
+    try {
+      const response = await fetch("/api/admin/review-labels", {
+        method: "POST",
+        headers: adminHeaders(token),
+      });
+      const payload = (await response.json().catch(() => ({}))) as AdminReviewLabelExport;
+
+      if (!response.ok) {
+        throw new Error(
+          payload.error ??
+            (lang === "sv" ? "Kunde inte synka labels till pipeline." : "Could not sync labels to pipeline."),
+        );
+      }
+
+      const labelCount = payload.labels?.length ?? 0;
+      const dupCount = payload.duplicateResolutions?.length ?? 0;
+
+      setLabelExportStatus(
+        lang === "sv"
+          ? `✅ Synkade ${labelCount} träningsetiketter och ${dupCount} dubblettbeslut i D1. Pipelinen är uppdaterad.`
+          : `✅ Synced ${labelCount} training labels and ${dupCount} duplicate decisions in D1. Pipeline is updated.`,
+      );
+
+      addToast({
+        type: "success",
+        title: lang === "sv" ? "⚡ Pipeline synkad i D1" : "⚡ Pipeline Synced in D1",
+        message:
+          lang === "sv"
+            ? `Sparade checkpoint för ${labelCount} labels och ${dupCount} dubblettbeslut.`
+            : `Saved checkpoint for ${labelCount} labels and ${dupCount} duplicate decisions.`,
+        detail:
+          lang === "sv"
+            ? "Inga filer behöver laddas ner manuellt. Pipelinen är i fas och 0 oexporterade beslut återstår."
+            : "No manual file downloads needed. Pipeline is up to date with 0 unexported decisions remaining.",
+      });
+
+      await loadDashboard(token);
+      await loadSchemaStatus(token);
+    } catch (syncError) {
+      setError(syncError instanceof Error ? syncError.message : String(syncError));
+    } finally {
+      setSyncingPipeline(false);
+    }
+  };
+
   const exportReviewLabels = async () => {
     const token = adminToken.trim();
     if (!hasAdminAuth || typeof document === "undefined") return;
@@ -1165,28 +1219,74 @@ export function AdminReviewPanel({
         <AdminCoveragePanel lang={lang} adminToken={adminToken} />
       ) : null}
 
-      <div className="admin-export-panel">
-        <div className="admin-export-copy">
-          <span>{lang === "sv" ? "Efter granskning: exportera labels." : "After review: export labels."}</span>
-          <small>{lang === "sv" ? "ML-labels och dubblettbeslut sparas separat." : "ML labels and duplicate decisions stay separate."}</small>
+      <div className="admin-sync-card">
+        <div className="admin-sync-header">
+          <div className="admin-sync-title-group">
+            <ShieldCheck size={20} weight="bold" className="admin-sync-icon" />
+            <div>
+              <h5 className="admin-sync-title">
+                {lang === "sv" ? "Automatiskt sparad & Pipeline-synk" : "Auto-Saved & Pipeline Sync"}
+              </h5>
+              <p className="admin-sync-desc">
+                {lang === "sv"
+                  ? "Alla granskningsbeslut sparas direkt i Cloudflare D1 i realtid. Du behöver inte exportera manuellt för att ändringar ska synas på sajten; ML-pipelinen synkar automatiskt via npm run sync:labels vid modellträning."
+                  : "All review decisions are saved directly to Cloudflare D1 in real-time. You don't need to manually export for changes to appear live; the ML pipeline auto-syncs via npm run sync:labels during model training."}
+              </p>
+            </div>
+          </div>
+          <div className="admin-sync-status-pill">
+            {(dashboard?.counts?.unexportedReviewCount ?? 0) === 0 ? (
+              <span className="sync-pill-tag synced">
+                <CheckCircle size={14} weight="bold" />
+                {lang === "sv" ? "Allt synkat med pipeline" : "All synced with pipeline"}
+              </span>
+            ) : (
+              <span className="sync-pill-tag pending">
+                <ArrowClockwise size={14} weight="bold" />
+                {lang === "sv"
+                  ? `${dashboard?.counts?.unexportedReviewCount} nya beslut redo för ML`
+                  : `${dashboard?.counts?.unexportedReviewCount} new decisions ready for ML`}
+              </span>
+            )}
+          </div>
         </div>
-        <button
-          type="button"
-          className="admin-export-btn"
-          onClick={() => void exportReviewLabels()}
-          disabled={!hasAdminAuth || exportingLabels || schemaStatus?.ready !== true}
-          title={lang === "sv" ? "Ladda ner label-export från D1" : "Download label export from D1"}
-        >
-          {exportingLabels ? <CircleNotch size={14} className="animate-spin" /> : <DownloadSimple size={14} weight="bold" />}
-          {lang === "sv" ? "Exportera" : "Export"}
-        </button>
-      </div>
 
-      {labelExportStatus ? (
-        <div className="admin-export-meta" aria-live="polite">
-          {labelExportStatus}
+        <div className="admin-sync-actions">
+          <button
+            type="button"
+            className="admin-sync-btn-primary"
+            onClick={() => void syncPipelineDirectly()}
+            disabled={!hasAdminAuth || syncingPipeline || schemaStatus?.ready !== true}
+            title={lang === "sv" ? "Synka D1-checkpoint direkt utan filnedladdning" : "Sync D1 checkpoint directly without file download"}
+          >
+            {syncingPipeline ? <CircleNotch size={15} className="animate-spin" /> : <ArrowClockwise size={15} weight="bold" />}
+            <span>{lang === "sv" ? "Synka pipeline direkt" : "Sync pipeline directly"}</span>
+          </button>
+
+          <button
+            type="button"
+            className="admin-sync-btn-secondary"
+            onClick={() => void exportReviewLabels()}
+            disabled={!hasAdminAuth || exportingLabels || schemaStatus?.ready !== true}
+            title={lang === "sv" ? "Valfritt: Ladda ner manuell JSON-backup" : "Optional: Download manual JSON backup"}
+          >
+            {exportingLabels ? <CircleNotch size={15} className="animate-spin" /> : <DownloadSimple size={15} weight="bold" />}
+            <span>{lang === "sv" ? "Ladda ner backup (JSON)" : "Download backup (JSON)"}</span>
+          </button>
+
+          <div className="admin-sync-cli-hint">
+            <span className="cli-hint-label">{lang === "sv" ? "Terminal:" : "Terminal:"}</span>
+            <code className="cli-hint-code">npm run sync:labels</code>
+          </div>
         </div>
-      ) : null}
+
+        {labelExportStatus ? (
+          <div className="admin-sync-status-msg" aria-live="polite">
+            <CheckCircle size={14} weight="bold" />
+            <span>{labelExportStatus}</span>
+          </div>
+        ) : null}
+      </div>
 
       {error || status ? (
         <div

@@ -402,9 +402,13 @@ The web application provides an interactive **Admin Playbook & SOP** drawer dire
      python -m motkarta.drift --baseline public/data/places.json --current public/data/places.json
      ```
    - Verifies PSI < 0.10, outer-city ratio $\ge 30\%$, independent ratio $\ge 90\%$, and cuisine Shannon entropy $\ge 2.5$.
-4. **Export Review Labels**:
-   - In `/admin`, click `Exportera` to download latest D1 review decisions and duplicate resolutions as JSON.
-   - These human validation labels serve as ground-truth for offline Learning-to-Rank (LTR) retraining and candidate classifier validation.
+4. **Sync Review Labels (Automated)**:
+   - Run the automated CLI sync command to pull unexported review decisions directly from D1 into the ML training corpus without manual file movement:
+     ```bash
+     npm run sync:labels
+     ```
+   - Alternatively, in `/admin`, click `Synka pipeline direkt` (1-click checkpoint sync without desktop downloads) or `Ladda ner backup (JSON)`.
+   - These human validation labels in `outputs/human_validation_labels.json` serve as ground-truth for offline Learning-to-Rank (LTR) retraining and candidate classifier validation.
 5. **Mandatory 4-Tier Full Test Coverage Gate**:
    - Before committing or deploying any changes:
      ```bash

@@ -89,3 +89,26 @@ test("admin candidate coordinates validate within Stockholm bounding box for map
   assert.ok(validCandidate.longitude > 17.5 && validCandidate.longitude < 18.5);
 });
 
+test("automated review labels sync creates valid human_validation_labels schema", async () => {
+  const { execSync } = await import("node:child_process");
+  const { readFileSync, existsSync } = await import("node:fs");
+  const { resolve } = await import("node:path");
+
+  // Run the sync script targeting a temp output file
+  const tempOutput = "outputs/test_sync_labels.json";
+  execSync(`node scripts/sync_review_labels.mjs "${tempOutput}"`, { encoding: "utf8" });
+
+  assert.ok(existsSync(tempOutput));
+  const parsed = JSON.parse(readFileSync(tempOutput, "utf8"));
+  assert.ok(typeof parsed.updatedAt === "string");
+  assert.ok(typeof parsed.policy === "string");
+  assert.ok(Array.isArray(parsed.labels));
+  assert.ok(Array.isArray(parsed.duplicateResolutions));
+
+  // Clean up test file
+  const { unlinkSync } = await import("node:fs");
+  try {
+    unlinkSync(resolve(tempOutput));
+  } catch {}
+});
+
