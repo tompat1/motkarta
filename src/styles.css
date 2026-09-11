@@ -1456,14 +1456,20 @@ button.search-clear-btn:hover {
   border-color: var(--color-mist);
   display: inline-flex;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
-  gap: 7px;
+  gap: 10px;
   justify-content: flex-start;
-  min-height: 44px;
-  padding: 9px 10px;
+  min-height: 48px;
+  padding: 10px 14px;
   text-align: left;
   text-transform: uppercase;
+}
+
+.countermap-controls .chips button svg {
+  flex-shrink: 0;
+  height: 18px;
+  width: 18px;
 }
 
 .countermap-controls .chips button:hover {
@@ -1490,18 +1496,27 @@ button.search-clear-btn:hover {
 }
 
 .countermap-controls .cuisine-chips .chip-row button {
-  font-size: 9.5px;
+  font-size: 11px;
+  font-weight: 600;
   justify-content: flex-start;
-  min-height: 36px;
-  padding: 6px 9px;
+  min-height: 42px;
+  padding: 8px 10px;
   text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  word-break: break-word;
 }
 
 .countermap-controls .feature-chips .chip-row {
-  grid-template-columns: minmax(140px, 0.35fr);
+  grid-template-columns: minmax(160px, 0.4fr);
+}
+
+.countermap-controls .feature-chips .chip-row button {
+  font-size: 13px;
+  min-height: 48px;
+  padding: 10px 14px;
+  gap: 10px;
 }
 
 @media (max-width: 1280px) {

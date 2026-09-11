@@ -1920,12 +1920,12 @@ export default function App() {
                 onClick={() => selectKindFilter(item)}
                 type="button"
               >
-                {item === "Restaurant" ? <ForkKnife size={14} weight="bold" aria-hidden="true" /> : null}
-                {item === "Bakery" ? <Bread size={14} weight="bold" aria-hidden="true" /> : null}
-                {item === "Café" || item === "Specialty coffee" ? <Coffee size={14} weight="bold" aria-hidden="true" /> : null}
-                {item === "All places" ? <MapTrifold size={14} weight="bold" aria-hidden="true" /> : null}
-                {item === "Saved" ? <Star size={14} weight="bold" aria-hidden="true" /> : null}
-                {item === "Latest" ? <Sparkle size={14} weight="bold" aria-hidden="true" /> : null}
+                {item === "Restaurant" ? <ForkKnife size={18} weight="bold" aria-hidden="true" /> : null}
+                {item === "Bakery" ? <Bread size={18} weight="bold" aria-hidden="true" /> : null}
+                {item === "Café" || item === "Specialty coffee" ? <Coffee size={18} weight="bold" aria-hidden="true" /> : null}
+                {item === "All places" ? <MapTrifold size={18} weight="bold" aria-hidden="true" /> : null}
+                {item === "Saved" ? <Star size={18} weight="bold" aria-hidden="true" /> : null}
+                {item === "Latest" ? <Sparkle size={18} weight="bold" aria-hidden="true" /> : null}
                 {kindFilterLabel(item, lang)}
               </button>
             ))}
@@ -1962,7 +1962,7 @@ export default function App() {
               }}
               type="button"
             >
-              <PawPrint size={13} weight={selectedTags.includes("Dog friendly") ? "fill" : "bold"} />
+              <PawPrint size={18} weight={selectedTags.includes("Dog friendly") ? "fill" : "bold"} />
               <span>{lang === "sv" ? "Hundvänligt" : "Dog Friendly"}</span>
             </button>
           </div>
