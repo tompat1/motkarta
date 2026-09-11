@@ -11183,7 +11183,11 @@ footer {
 
 @media (min-width: 769px) {
   .mobile-controls-bar,
-  .mobile-nav-toggle-btn {
+  .mobile-nav-toggle-btn,
+  .intro.countermap-hero,
+  .controls.countermap-controls,
+  .workspace#place-workspace,
+  .concierge#legacy-concierge {
     display: none !important;
   }
 }

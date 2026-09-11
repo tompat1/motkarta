@@ -31,11 +31,7 @@ export function EditorialHero({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (cravingInput.trim()) {
-      onAskMotkarta(cravingInput.trim());
-    } else {
-      onExploreMap();
-    }
+    onAskMotkarta(cravingInput.trim() || (lang === "sv" ? "Specialkaffe och en kardemummabulle på Södermalm" : "Specialty coffee and a cardamom bun in Södermalm"));
   };
 
   const starterSuggestions = lang === "sv"
@@ -111,10 +107,20 @@ export function EditorialHero({
             </div>
           </div>
 
-          <div className="editorial-hero-nav-link">
+          <div className="editorial-hero-nav-link" style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
             <button type="button" className="editorial-explore-map-btn" onClick={onExploreMap}>
               <Compass size={18} weight="bold" />
               <span>{lang === "sv" ? "UTFORSKA KARTAN" : "EXPLORE THE MAP"}</span>
+              <ArrowRight size={16} weight="bold" />
+            </button>
+            <button
+              type="button"
+              className="editorial-explore-map-btn"
+              onClick={() => onAskMotkarta(cravingInput.trim() || "Specialty coffee, something sweet, and a quiet corner in Södermalm.")}
+              style={{ background: "#121418", color: "#ffffff", borderColor: "rgba(255,255,255,0.2)" }}
+            >
+              <Sparkle size={18} weight="fill" style={{ color: "#ff4a2f" }} />
+              <span>{lang === "sv" ? "CONCIERGE WORKSPACE" : "CONCIERGE WORKSPACE"}</span>
               <ArrowRight size={16} weight="bold" />
             </button>
           </div>

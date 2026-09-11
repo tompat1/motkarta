@@ -186,11 +186,14 @@ export default function App() {
 
   const switchView = useCallback((newView: ActiveView, updateHash: boolean = true) => {
     setActiveView(newView);
-    if (updateHash && typeof window !== "undefined") {
-      if (newView === "hero") {
-        history.replaceState(null, "", " ");
-      } else {
-        window.location.hash = newView;
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      if (updateHash) {
+        if (newView === "hero") {
+          history.replaceState(null, "", " ");
+        } else {
+          window.location.hash = newView;
+        }
       }
     }
   }, []);
@@ -198,9 +201,15 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.toLowerCase();
-      if (hash === "#map") setActiveView("map");
-      else if (hash === "#concierge") setActiveView("concierge");
-      else if (hash === "#hero" || !hash || hash === "#") setActiveView("hero");
+      if (hash === "#map") {
+        setActiveView("map");
+        window.scrollTo({ top: 0, behavior: "instant" });
+      } else if (hash === "#concierge") {
+        setActiveView("concierge");
+        window.scrollTo({ top: 0, behavior: "instant" });
+      } else if (hash === "#hero" || !hash || hash === "#") {
+        setActiveView("hero");
+      }
     };
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
@@ -460,9 +469,8 @@ export default function App() {
 
   const focusSearchInput = useCallback(() => {
     switchView("concierge");
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-      searchInputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "instant" });
     }
   }, [switchView]);
 
@@ -1156,8 +1164,9 @@ export default function App() {
 
     if (item.placeId) {
       setSelected(item.placeId);
-      document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+      switchView("map");
     } else if (item.isPrompt) {
+      switchView("concierge");
       void askWithQuery(item.value);
     }
   };
@@ -1317,19 +1326,15 @@ export default function App() {
     if (!searchText) return;
 
     setConcierge(searchText);
+    switchView("concierge");
     await askWithQuery(searchText);
-
-    if (typeof window !== "undefined") {
-      setTimeout(() => {
-        document.getElementById("concierge-answer")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }, 100);
-    }
   }
 
   const handleRefineQuery = (extra: string) => {
     const updated = extra.trim();
     setConcierge(updated);
     setQuery(updated);
+    switchView("concierge");
     void askWithQuery(updated);
   };
 
@@ -1656,7 +1661,7 @@ export default function App() {
           onSortChange={setSortMode}
         />
       ) : activeView === "map" ? (
-        <div className="dark-map-workspace" id="place-workspace">
+        <div className="dark-map-workspace" id="map">
           <div className="dark-map-container-col">
             {/* Floating Top Search Bar */}
             <div className="dark-map-floating-search-bar">
@@ -1990,7 +1995,7 @@ export default function App() {
         </div>
       </section>
 
-      <section className="controls countermap-controls" id="map" aria-labelledby="countermap-controls-title">
+      <section className="controls countermap-controls" id="legacy-map" aria-labelledby="countermap-controls-title">
         <header className="countermap-controls-head">
           <div>
             <h2 id="countermap-controls-title">{lang === "sv" ? "Vad är du sugen på?" : "What are you craving?"}</h2>
@@ -2764,7 +2769,7 @@ export default function App() {
         </aside>
       </section>
 
-      <section className="concierge" id="concierge">
+      <section className="concierge" id="legacy-concierge">
         <div>
           <p className="eyebrow">{t.conciergeEyebrow}</p>
           <h2>

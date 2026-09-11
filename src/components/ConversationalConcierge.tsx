@@ -124,7 +124,7 @@ export function ConversationalConcierge({
       : `Nice. We've found ${rankedPlaces.length || 18} places in Södermalm with great coffee, something sweet, and a calm atmosphere — all ranked by transparent signals, not paid placement. Here are our top matches.`);
 
   return (
-    <div className={`concierge-workspace-container ${!isFiltersOpen ? "filters-collapsed" : ""}`} aria-label="Motkarta Conversational Concierge">
+    <div className={`concierge-workspace-container ${!isFiltersOpen ? "filters-collapsed" : ""}`} id="concierge" aria-label="Motkarta Conversational Concierge">
       {/* ========================================================================= */}
       {/* ZONE 1: Left Dark Slate Column (#121418)                                  */}
       {/* ========================================================================= */}
