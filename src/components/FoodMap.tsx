@@ -96,16 +96,17 @@ export function FoodMap({
       scrollWheelZoom: true,
     });
 
-    const tileUrl = "https://tiles.openfreemap.org/styles/bright/{z}/{x}/{y}.png";
+    const tileUrl = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 
     const tileLayer = L.tileLayer(tileUrl, {
-      attribution: 'OpenFreeMap &copy; <a href="https://openmaptiles.org/" target="_blank" rel="noopener">OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+      subdomains: "abcd",
       maxZoom: 19,
     });
 
     tileLayer.on("tileerror", () => {
-      // Fallback tile URL if vector/raster tile service is unavailable
-      tileLayer.setUrl("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+      // Fallback to OpenFreeMap dark or OSM
+      tileLayer.setUrl("https://tiles.openfreemap.org/styles/dark/{z}/{x}/{y}.png");
     });
 
     tileLayer.addTo(map);

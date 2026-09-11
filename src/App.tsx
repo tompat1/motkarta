@@ -8,6 +8,9 @@ import { ConciergeSuperpowerModal } from "./components/ConciergeSuperpowerModal"
 import { CuratedSourcesPanel } from "./components/CuratedSourcesPanel";
 import { ExternalMapLinks } from "./components/ExternalMapLinks";
 import { FoodMap } from "./components/FoodMap";
+import { EditorialHero } from "./components/EditorialHero";
+import { TransparentScoreCard } from "./components/TransparentScoreCard";
+import { ConversationalConcierge } from "./components/ConversationalConcierge";
 import { SyncDevicesModal } from "./components/SyncDevicesModal";
 import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
 import { VerificationBar } from "./components/VerificationBar";
@@ -169,6 +172,39 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number | null>(null);
   const [isMapCardMinimized, setIsMapCardMinimized] = useState(false);
+
+  type ActiveView = "hero" | "map" | "concierge";
+  const [activeView, setActiveView] = useState<ActiveView>(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === "#map") return "map";
+      if (hash === "#concierge") return "concierge";
+      if (hash === "#hero") return "hero";
+    }
+    return "hero";
+  });
+
+  const switchView = useCallback((newView: ActiveView, updateHash: boolean = true) => {
+    setActiveView(newView);
+    if (updateHash && typeof window !== "undefined") {
+      if (newView === "hero") {
+        history.replaceState(null, "", " ");
+      } else {
+        window.location.hash = newView;
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === "#map") setActiveView("map");
+      else if (hash === "#concierge") setActiveView("concierge");
+      else if (hash === "#hero" || !hash || hash === "#") setActiveView("hero");
+    };
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
 
   const [mobileViewMode, setMobileViewMode] = useState<"map" | "list">("map");
   const workspaceRef = useRef<HTMLElement | null>(null);
@@ -423,11 +459,12 @@ export default function App() {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const focusSearchInput = useCallback(() => {
+    switchView("concierge");
     if (searchInputRef.current) {
       searchInputRef.current.focus();
       searchInputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }, []);
+  }, [switchView]);
 
   const clearConciergeState = useCallback(() => {
     conciergeRequest.current?.abort();
@@ -1400,6 +1437,7 @@ export default function App() {
           aria-label="MOTKARTA"
           onClick={(e) => {
             e.preventDefault();
+            switchView("hero");
             handleResetMobileFilters();
           }}
         >
@@ -1408,14 +1446,34 @@ export default function App() {
           <span className="brand-descriptor">{t.brandDescriptor}</span>
         </a>
         <nav>
-          <a href="#map" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+          <a
+            href="#map"
+            className={activeView === "map" ? "is-nav-active" : ""}
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+            onClick={(e) => {
+              e.preventDefault();
+              switchView("map");
+            }}
+          >
             <Compass size={14} weight="bold" /> {t.navMap}
           </a>
-          <a href="#method" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+          <a
+            href="#method"
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+            onClick={(e) => {
+              if (activeView !== "hero") {
+                switchView("hero", false);
+                window.requestAnimationFrame(() => {
+                  document.getElementById("method")?.scrollIntoView({ behavior: "smooth" });
+                });
+              }
+            }}
+          >
             <ShieldCheck size={14} weight="bold" /> {t.navMethod}
           </a>
           <a
             href="#concierge"
+            className={activeView === "concierge" ? "is-nav-active" : ""}
             style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
             onClick={(e) => {
               e.preventDefault();
@@ -1424,7 +1482,18 @@ export default function App() {
           >
             <MagnifyingGlass size={14} weight="bold" /> {t.navConcierge}
           </a>
-          <a href="#merch" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+          <a
+            href="#merch"
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+            onClick={(e) => {
+              if (activeView !== "hero") {
+                switchView("hero", false);
+                window.requestAnimationFrame(() => {
+                  document.getElementById("merch")?.scrollIntoView({ behavior: "smooth" });
+                });
+              }
+            }}
+          >
             <ShoppingBag size={14} weight="bold" /> Merch
           </a>
           <button
@@ -1546,11 +1615,287 @@ export default function App() {
         </div>
       </div>
 
-      <section
-        className="intro countermap-hero"
-        aria-labelledby="countermap-hero-heading"
-        data-story={activeHeroStoryId}
-      >
+      {activeView === "concierge" ? (
+        <ConversationalConcierge
+          query={query}
+          onQueryChange={(val) => {
+            setQuery(val);
+            setConcierge(val);
+          }}
+          onAskConcierge={(q) => {
+            const targetQ = q || query;
+            if (targetQ.trim()) void askWithQuery(targetQ);
+          }}
+          asking={asking}
+          answer={answer}
+          rankedPlaces={ranked}
+          lang={lang}
+          onSelectPlace={(id) => {
+            handleSelectPlace(id);
+            switchView("map");
+          }}
+          onToggleSave={handleToggleSavePlace}
+          savedPlaceIds={savedPlaceIds}
+          kind={kind}
+          onKindChange={selectKindFilter}
+          cuisine={cuisine}
+          onCuisineChange={selectCuisineFilter}
+          cuisineOptions={cuisineOptions}
+          selectedTags={selectedTags}
+          onToggleTag={(tag) => {
+            const exists = selectedTags.includes(tag);
+            const updated = exists ? selectedTags.filter((t) => t !== tag) : [...selectedTags, tag];
+            setSelectedTags(updated);
+          }}
+          onResetFilters={handleResetMobileFilters}
+          onSwitchToMap={(placeId) => {
+            if (placeId) handleSelectPlace(placeId);
+            switchView("map");
+          }}
+          sortMode={sortMode}
+          onSortChange={setSortMode}
+        />
+      ) : activeView === "map" ? (
+        <div className="dark-map-workspace" id="place-workspace">
+          <div className="dark-map-container-col">
+            {/* Floating Top Search Bar */}
+            <div className="dark-map-floating-search-bar">
+              <div className="dark-map-search-input-wrap">
+                <MagnifyingGlass size={16} weight="bold" style={{ color: "rgba(255,255,255,0.7)" }} />
+                <input
+                  type="text"
+                  className="dark-map-search-input"
+                  placeholder={lang === "sv" ? "Sök ställe, kök, område eller fråga..." : "Search place, cuisine, area or ask..."}
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setConcierge(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && query.trim()) {
+                      switchView("concierge");
+                      void askWithQuery(query.trim());
+                    }
+                  }}
+                />
+                {query ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuery("");
+                      setConcierge("");
+                    }}
+                    style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", padding: "2px" }}
+                  >
+                    <X size={14} weight="bold" />
+                  </button>
+                ) : null}
+              </div>
+
+              <button
+                type="button"
+                className="dark-map-control-btn"
+                onClick={() => {
+                  switchView("concierge");
+                  if (query.trim()) void askWithQuery(query.trim());
+                }}
+                title={lang === "sv" ? "Öppna AI Concierge" : "Open AI Concierge"}
+              >
+                <Sparkle size={14} weight="fill" />
+                <span>CONCIERGE</span>
+              </button>
+
+              <button
+                type="button"
+                className={`dark-map-control-btn ${activeFilterCount > 0 ? "is-active" : ""}`}
+                onClick={() => setIsFilterSheetOpen(true)}
+              >
+                <Faders size={14} weight="bold" />
+                <span>{lang === "sv" ? "FILTER" : "FILTERS"}</span>
+                {activeFilterCount > 0 ? (
+                  <span className="dark-map-filter-badge">{activeFilterCount}</span>
+                ) : null}
+              </button>
+            </div>
+
+            {/* Dark Map Canvas */}
+            <FoodMap
+              places={mapPlaces}
+              activePlace={active}
+              userLocation={userLocation}
+              onSelect={handleSelectPlace}
+              onUserLocated={(loc) => {
+                setUserLocation(loc);
+                setSortMode("Distance");
+              }}
+              lang={lang}
+            />
+
+            {/* Floating Bottom Category Filter Dock */}
+            <div className="dark-map-bottom-dock">
+              <button
+                type="button"
+                className={`dark-map-dock-pill ${kind === "Restaurant" ? "is-active" : ""}`}
+                onClick={() => selectKindFilter(kind === "Restaurant" ? "All places" : "Restaurant")}
+              >
+                <ForkKnife size={13} weight="bold" />
+                <span>RESTAURANT</span>
+              </button>
+
+              <button
+                type="button"
+                className={`dark-map-dock-pill ${kind === "Bakery" ? "is-active" : ""}`}
+                onClick={() => selectKindFilter(kind === "Bakery" ? "All places" : "Bakery")}
+              >
+                <Bread size={13} weight="bold" />
+                <span>BAKERY</span>
+              </button>
+
+              <button
+                type="button"
+                className={`dark-map-dock-pill ${kind === "Café" ? "is-active" : ""}`}
+                onClick={() => selectKindFilter(kind === "Café" ? "All places" : "Café")}
+              >
+                <Coffee size={13} weight="bold" />
+                <span>CAFÉ</span>
+              </button>
+
+              <button
+                type="button"
+                className={`dark-map-dock-pill ${kind === "Specialty coffee" ? "is-active" : ""}`}
+                onClick={() => selectKindFilter(kind === "Specialty coffee" ? "All places" : "Specialty coffee")}
+              >
+                <Coffee size={13} weight="fill" />
+                <span>SPECIALTY COFFEE</span>
+              </button>
+
+              <div className="dark-map-dock-divider" />
+
+              <button
+                type="button"
+                className="dark-map-dock-toggle-btn"
+                onClick={() => {
+                  setMode((prev) => (prev === "Hidden gems" ? "All recommendations" : "Hidden gems"));
+                }}
+                title="Toggle Discovery Mode"
+              >
+                <Sparkle size={13} weight={mode === "Hidden gems" ? "fill" : "bold"} />
+                <span>DISCOVERY MODE</span>
+                <div className={`dark-map-toggle-switch ${mode === "Hidden gems" ? "is-on" : ""}`}>
+                  <div className="dark-map-toggle-knob" />
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <aside className="dark-map-right-panel">
+            {active ?? visibleRanked[0] ? (
+              <TransparentScoreCard
+                place={(active ?? visibleRanked[0])!}
+                lang={lang}
+                isFeatured={true}
+                isSaved={savedPlaceIds.includes((active ?? visibleRanked[0])!.id)}
+                onToggleSave={handleToggleSavePlace}
+                onSelectOnMap={handleSelectPlace}
+                badgeLabel="#1 MATCH"
+                badgeSublabel="HIGHEST COMPATIBILITY"
+              />
+            ) : (
+              <div style={{ padding: "32px 24px", textAlign: "center" }}>
+                <p style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "#666" }}>
+                  {lang === "sv" ? "Välj ett ställe på kartan för att se transparenta poäng" : "Select a place on the map to inspect transparent score breakdown"}
+                </p>
+              </div>
+            )}
+
+            <div className="dark-map-places-head">
+              <div className="dark-map-head-title-col">
+                <h2>{lang === "sv" ? "FLER REKOMMENDATIONER" : "MORE RECOMMENDATIONS"}</h2>
+                <span className="dark-map-no-paid-label">
+                  {lang === "sv" ? "INGEN BETALD RANKING · 100% TRANSPARENT" : "NO PAID RANKING · 100% TRANSPARENT"}
+                </span>
+              </div>
+              <div className="dark-map-sort-col">
+                <span className="dark-map-sort-label">{lang === "sv" ? "SORTERING" : "SORT BY"}</span>
+                <select
+                  className="dark-map-sort-select"
+                  value={sortMode}
+                  onChange={(e) => setSortMode(e.target.value as SortMode)}
+                >
+                  {sortModes.map((item) => (
+                    <option key={item} value={item}>{sortModeLabel(item, lang)}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="dark-map-secondary-list">
+              {visibleRanked
+                .filter((p) => p.id !== (active?.id ?? visibleRanked[0]?.id))
+                .slice(0, 10)
+                .map((p, idx) => (
+                  <div
+                    key={p.id}
+                    className="dark-map-secondary-item"
+                    onClick={() => {
+                      handleSelectPlace(p.id);
+                      recordRecommendationEvents([
+                        {
+                          establishmentId: p.id,
+                          eventType: "profile_view",
+                          resultPosition: idx + 1,
+                          queryContext: { surface: "map" },
+                        },
+                      ]);
+                    }}
+                  >
+                    <span className="dark-map-secondary-rank">{String(idx + 2).padStart(2, "0")}</span>
+                    <div className="dark-map-secondary-img-wrap">
+                      <img
+                        src={(p as any).photos?.[0]?.url || (p as any).imageUrl || "/hero_bakery_window.jpg"}
+                        alt={p.name}
+                        className="dark-map-secondary-img"
+                        onError={(e) => { e.currentTarget.src = "/hero_bakery_window.jpg"; }}
+                      />
+                    </div>
+                    <div className="dark-map-secondary-info">
+                      <strong>{p.name}</strong>
+                      <small>{p.area} · {kindFilterLabel(p.kind, lang)}</small>
+                      <p>{p.note || p.tags.slice(0, 2).join(" · ")}</p>
+                    </div>
+                    <div className="dark-map-secondary-score-wrap">
+                      <strong>{Math.round(p.scores.recommendation || modeScore(p, mode))}</strong>
+                      <small>SCORE</small>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </aside>
+        </div>
+      ) : (
+        <>
+          <EditorialHero
+            lang={lang}
+            totalPlaces={places.length}
+            onAskMotkarta={(prompt) => {
+              setQuery(prompt);
+              setConcierge(prompt);
+              switchView("concierge");
+              void askWithQuery(prompt);
+            }}
+            onExploreMap={() => switchView("map")}
+            onSelectPlace={(id) => {
+              handleSelectPlace(id);
+              switchView("map");
+            }}
+            featuredPlaces={DESKTOP_HERO_STORIES}
+          />
+
+          <section
+            className="intro countermap-hero"
+            aria-labelledby="countermap-hero-heading"
+            data-story={activeHeroStoryId}
+          >
         <div className="countermap-hero-copy">
           <h1 id="countermap-hero-heading">
             <span>{t.titleMain}</span>
@@ -2468,6 +2813,8 @@ export default function App() {
           </div>
         </div>
       </section>
+        </>
+      )}
 
       <section className="method" id="method">
         <div>
@@ -2633,11 +2980,15 @@ export default function App() {
             </div>
 
             <nav className="mobile-menu-links">
-              <a href="#map" onClick={() => setIsMobileMenuOpen(false)}>
+              <a href="#map" onClick={() => { setIsMobileMenuOpen(false); switchView("map"); }}>
                 <Compass size={18} weight="bold" />
                 <span>{t.navMap}</span>
               </a>
-              <a href="#method" onClick={() => setIsMobileMenuOpen(false)}>
+              <a href="#method" onClick={() => {
+                setIsMobileMenuOpen(false);
+                if (activeView !== "hero") switchView("hero", false);
+                window.requestAnimationFrame(() => document.getElementById("method")?.scrollIntoView({ behavior: "smooth" }));
+              }}>
                 <ShieldCheck size={18} weight="bold" />
                 <span>{t.navMethod}</span>
               </a>
@@ -2646,13 +2997,18 @@ export default function App() {
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMobileMenuOpen(false);
+                  switchView("concierge");
                   focusSearchInput();
                 }}
               >
                 <MagnifyingGlass size={18} weight="bold" />
                 <span>{t.navConcierge}</span>
               </a>
-              <a href="#merch" onClick={() => setIsMobileMenuOpen(false)}>
+              <a href="#merch" onClick={() => {
+                setIsMobileMenuOpen(false);
+                if (activeView !== "hero") switchView("hero", false);
+                window.requestAnimationFrame(() => document.getElementById("merch")?.scrollIntoView({ behavior: "smooth" }));
+              }}>
                 <ShoppingBag size={18} weight="bold" />
                 <span>Merch & Store</span>
               </a>
