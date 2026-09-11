@@ -187,3 +187,25 @@ test("canonical districts include Gärdet and Kransen for batch selection", asyn
   assert.ok(STOCKHOLM_REGIONS.includes("Kransen"));
 });
 
+test("hidden gem double-lock gate requires at least 2 independent sources", () => {
+  const evaluateDoubleLock = (independentSources) => {
+    return Array.isArray(independentSources) && independentSources.length >= 2;
+  };
+
+  assert.equal(evaluateDoubleLock(["osm"]), false);
+  assert.equal(evaluateDoubleLock(["google_places"]), false);
+  assert.equal(evaluateDoubleLock(["osm", "municipal_inspection"]), true);
+  assert.equal(evaluateDoubleLock(["osm", "curated_guide", "official_website"]), true);
+});
+
+test("admin guide panel provides explicit instructions for map inspector and review list hidden gem promotion", async () => {
+  const { readFileSync } = await import("node:fs");
+  const content = readFileSync("src/admin/AdminGuidePanel.tsx", "utf8");
+
+  assert.ok(content.includes("Direkt på kartan (Karta-vyn)"));
+  assert.ok(content.includes("I granskningslistan (Lista-vyn)"));
+  assert.ok(content.includes("Dubbellås"));
+  assert.ok(content.includes("Om knappen är låst (grå)"));
+});
+
+

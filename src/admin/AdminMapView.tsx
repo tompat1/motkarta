@@ -16,6 +16,7 @@ import {
   MapPin,
   Minus,
   Plus,
+  Sparkle,
   Warning,
 } from "@phosphor-icons/react";
 
@@ -34,6 +35,12 @@ export type AdminMapCandidate = {
   openingHours?: string | null;
   priceSEK?: string | null;
   priceLevel?: number | null;
+  canPromoteHiddenGem?: boolean;
+  communityNominationCount?: number;
+  evidenceGate?: {
+    independentEvidenceCount?: number;
+    canPromoteHiddenGem?: boolean;
+  };
 };
 
 interface AdminMapViewProps {
@@ -42,6 +49,7 @@ interface AdminMapViewProps {
   onSelectCandidate: (id: number) => void;
   onUpdateDistrict?: (candidate: AdminMapCandidate, district: string) => void;
   onBatchUpdateDistrict?: (candidates: AdminMapCandidate[], district: string) => Promise<void> | void;
+  onPromoteHiddenGem?: (candidate: AdminMapCandidate) => void;
   onMarkClosed?: (candidate: AdminMapCandidate) => void;
   lang?: Language;
 }
@@ -52,6 +60,7 @@ export function AdminMapView({
   onSelectCandidate,
   onUpdateDistrict,
   onBatchUpdateDistrict,
+  onPromoteHiddenGem,
   onMarkClosed,
   lang = "sv",
 }: AdminMapViewProps) {
@@ -404,9 +413,22 @@ export function AdminMapView({
           <aside className="admin-map-inspector" aria-label={lang === "sv" ? "Inspektera ställe" : "Inspect place"}>
             <div className="inspector-head">
               <div>
-                <span className={`inspector-lifecycle-badge state-${selectedPlace.lifecycleState}`}>
-                  {selectedPlace.lifecycleState}
-                </span>
+                <div className="inspector-badge-row">
+                  <span className={`inspector-lifecycle-badge state-${selectedPlace.lifecycleState}`}>
+                    {selectedPlace.lifecycleState}
+                  </span>
+                  {selectedPlace.validationLabel === "known_hidden_gem" ? (
+                    <span className="inspector-gem-badge" title={lang === "sv" ? "Officiellt verifierad dold pärla" : "Verified hidden gem"}>
+                      <Sparkle size={10} weight="fill" />
+                      {lang === "sv" ? "Dold pärla" : "Hidden gem"}
+                    </span>
+                  ) : null}
+                  {(selectedPlace.communityNominationCount ?? 0) > 0 ? (
+                    <span className="inspector-nomination-badge" title={lang === "sv" ? "Tipsad av besökare som dold pärla" : "Nominated by visitors as hidden gem"}>
+                      ✨ {selectedPlace.communityNominationCount} {lang === "sv" ? "tips" : "tips"}
+                    </span>
+                  ) : null}
+                </div>
                 <h4>{selectedPlace.name}</h4>
                 <div className="inspector-subtitle">
                   <span>{selectedPlace.kind}</span>
@@ -491,6 +513,28 @@ export function AdminMapView({
               ) : null}
 
               <div className="inspector-actions">
+                {onPromoteHiddenGem && selectedPlace.validationLabel !== "known_hidden_gem" ? (
+                  <button
+                    type="button"
+                    className={`inspector-btn inspector-btn-gem ${
+                      selectedPlace.evidenceGate?.canPromoteHiddenGem === false || selectedPlace.canPromoteHiddenGem === false ? "disabled" : ""
+                    }`}
+                    disabled={selectedPlace.evidenceGate?.canPromoteHiddenGem === false || selectedPlace.canPromoteHiddenGem === false}
+                    onClick={() => onPromoteHiddenGem(selectedPlace)}
+                    title={
+                      selectedPlace.evidenceGate?.canPromoteHiddenGem === false || selectedPlace.canPromoteHiddenGem === false
+                        ? (lang === "sv"
+                            ? "Kräver minst 2 oberoende icke-Google-källor (Dubbellås)"
+                            : "Requires at least 2 independent non-Google sources (Double-Lock)")
+                        : (lang === "sv"
+                            ? "Promovera plats till verifierad dold pärla (Dubbellås uppfyllt)"
+                            : "Promote place to verified hidden gem (Double-Lock satisfied)")
+                    }
+                  >
+                    <Sparkle size={14} weight="fill" />
+                    {lang === "sv" ? "Dold pärla" : "Hidden gem"}
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   className={`inspector-btn ${selectedIds.has(selectedPlace.id) ? "inspector-btn-selected" : "inspector-btn-secondary"}`}
@@ -500,7 +544,7 @@ export function AdminMapView({
                   <CheckSquareOffset size={14} weight="bold" />
                   {selectedIds.has(selectedPlace.id)
                     ? (lang === "sv" ? "Avmarkera" : "Deselect")
-                    : (lang === "sv" ? "Markera" : "Select")}
+                    : (lang === "sv" ? "Flerval" : "Select")}
                 </button>
                 <button
                   type="button"

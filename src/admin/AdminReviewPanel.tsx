@@ -1449,6 +1449,10 @@ export function AdminReviewPanel({
             if (found) void updateCandidateRegion(found, district);
           }}
           onBatchUpdateDistrict={batchUpdateCandidateRegion}
+          onPromoteHiddenGem={(candidate) => {
+            const found = candidates.find((c) => c.id === candidate.id);
+            if (found) void promoteCandidate(found, "verified", "known_hidden_gem");
+          }}
           onMarkClosed={(candidate) => {
             const found = candidates.find((c) => c.id === candidate.id);
             if (found) void promoteCandidate(found, "candidate", "closed_wrong_category");

@@ -222,6 +222,30 @@ export function AdminGuidePanel({ lang, onClose }: AdminGuidePanelProps) {
                 </p>
               </div>
             </div>
+
+            <div className="admin-guide-card" style={{ marginTop: 14 }}>
+              <h6>{lang === "sv" ? "Var markerar du en dold pärla som admin?" : "Where to mark a Hidden Gem as admin?"}</h6>
+              <ul style={{ paddingLeft: 16, margin: "6px 0", lineHeight: 1.5 }}>
+                <li>
+                  <strong>{lang === "sv" ? "Direkt på kartan (Karta-vyn):" : "Directly on the Map (Map view):"}</strong>{" "}
+                  {lang === "sv"
+                    ? "Klicka på valfri pinne för att öppna inspektören till höger. Om dubbellåset (2+ oberoende källor) är uppfyllt klickar du direkt på [ ✨ Dold pärla ]."
+                    : "Click any pin to open the inspector panel on the right. If the double-lock (2+ independent sources) is met, click [ ✨ Hidden gem ] directly."}
+                </li>
+                <li>
+                  <strong>{lang === "sv" ? "I granskningslistan (Lista-vyn):" : "In the Review List (List view):"}</strong>{" "}
+                  {lang === "sv"
+                    ? "På kandidatkortet finns [ ✨ Dold pärla ]. Kortet visar även evidensremsan (t.ex. '2/2 oberoende' och ev. '✨ X användartips')."
+                    : "On the candidate card, click [ ✨ Hidden gem ]. The card displays the evidence strip (e.g. '2/2 independent' and any '✨ X user tips')."}
+                </li>
+                <li>
+                  <strong>{lang === "sv" ? "Om knappen är låst (grå):" : "If the button is locked (gray):"}</strong>{" "}
+                  {lang === "sv"
+                    ? "Platsen saknar en andra oberoende signal. Klicka [ 🔍 Hämta adress/info ] eller skriv in officiell webbadress för att hämta oberoende bevis och låsa upp knappen."
+                    : "The venue lacks a second independent signal. Click [ 🔍 Scrape info ] or enter its official website to gather independent proof and unlock the button."}
+                </li>
+              </ul>
+            </div>
           </div>
         )}
 
