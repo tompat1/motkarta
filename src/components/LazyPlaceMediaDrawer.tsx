@@ -14,10 +14,12 @@ const DUMMY_PLACE_IMAGE_URL = "/motkarta_drop_divided_black_red.svg";
 function ImageLightboxModal({
   photos,
   initialIndex = 0,
+  lang = "sv",
   onClose,
 }: {
   photos: PlacePhoto[] | null;
   initialIndex?: number;
+  lang?: Language;
   onClose: () => void;
 }) {
   const [index, setIndex] = useState(initialIndex);
@@ -82,34 +84,45 @@ function ImageLightboxModal({
   if (!currentPhoto) return null;
 
   return (
-    <div className="lightbox-overlay" onClick={onClose}>
-      <button type="button" className="lightbox-close-btn" onClick={onClose} aria-label="Close lightbox">
-        ✕
-      </button>
-
+    <div
+      className="lightbox-overlay place-lightbox-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={lang === "sv" ? "Platsbildsförstoring" : "Place photo lightbox"}
+    >
       <div
-        className="lightbox-content"
+        className="lightbox-content place-lightbox-content"
         onClick={(e) => e.stopPropagation()}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
+        <button
+          type="button"
+          className="lightbox-close-btn place-lightbox-close-btn"
+          onClick={onClose}
+          aria-label={lang === "sv" ? "Stäng bildvisare" : "Close photo viewer"}
+        >
+          ✕
+        </button>
+
         {total > 1 ? (
           <>
             <button
               type="button"
               className="lightbox-nav-btn lightbox-prev-btn"
               onClick={handlePrev}
-              aria-label="Previous photo"
+              aria-label={lang === "sv" ? "Föregående bild" : "Previous photo"}
             >
-              <CaretLeft size={22} weight="bold" />
+              <CaretLeft size={20} weight="bold" />
             </button>
             <button
               type="button"
               className="lightbox-nav-btn lightbox-next-btn"
               onClick={handleNext}
-              aria-label="Next photo"
+              aria-label={lang === "sv" ? "Nästa bild" : "Next photo"}
             >
-              <CaretRight size={22} weight="bold" />
+              <CaretRight size={20} weight="bold" />
             </button>
           </>
         ) : null}
@@ -117,14 +130,14 @@ function ImageLightboxModal({
         <img
           src={currentPhoto.url}
           alt={currentPhoto.caption}
-          className="lightbox-img"
+          className="lightbox-img place-lightbox-img"
           onError={(event) => {
             event.currentTarget.src = DUMMY_PLACE_IMAGE_URL;
             event.currentTarget.classList.add("lightbox-img-dummy");
           }}
         />
 
-        <div className="lightbox-caption-bar">
+        <div className="lightbox-caption-bar place-lightbox-caption-bar">
           <div className="lightbox-caption-text">
             <b>{currentPhoto.caption}</b>
             {total > 1 ? <span className="lightbox-counter">({index + 1} / {total})</span> : null}
@@ -173,6 +186,7 @@ export function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput
         <ImageLightboxModal
           photos={photos}
           initialIndex={lightboxIndex}
+          lang={lang}
           onClose={() => setLightboxIndex(null)}
         />
       ) : null}

@@ -8695,6 +8695,181 @@ footer {
   font-weight: 600;
 }
 
+/* Card Place Image Lightbox (Adapted to Panel Width & Compact Proportions) */
+.place-lightbox-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: 100%;
+  background: rgba(10, 14, 20, 0.76);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 500;
+  padding: 16px 14px;
+  box-sizing: border-box;
+  touch-action: pan-y;
+  animation: placeLightboxFadeIn 0.2s ease-out;
+}
+
+@keyframes placeLightboxFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.place-lightbox-content {
+  position: sticky;
+  top: 16px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  max-height: none;
+  background: #0d1117;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  box-sizing: border-box;
+  animation: placeLightboxZoomIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes placeLightboxZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.place-lightbox-img {
+  width: 100%;
+  height: 220px;
+  max-height: 220px;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  display: block;
+  background: #090d13;
+}
+
+.place-lightbox-img.lightbox-img-dummy {
+  object-fit: contain;
+  padding: 24px;
+  background: #111827;
+}
+
+.place-lightbox-close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 25;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all var(--motion-fast);
+}
+
+.place-lightbox-close-btn:hover {
+  background: var(--color-water);
+  border-color: var(--color-water);
+  transform: scale(1.08);
+}
+
+.place-lightbox-content .lightbox-nav-btn {
+  width: 32px;
+  height: 32px;
+  top: 40%;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.place-lightbox-content .lightbox-nav-btn:hover {
+  background: var(--color-water);
+  border-color: var(--color-water);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.place-lightbox-content .lightbox-prev-btn {
+  left: 8px;
+}
+
+.place-lightbox-content .lightbox-next-btn {
+  right: 8px;
+}
+
+.place-lightbox-caption-bar {
+  width: 100%;
+  padding: 10px 14px;
+  background: #0d1117;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+}
+
+.place-lightbox-caption-bar .lightbox-caption-text {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.place-lightbox-caption-bar .lightbox-caption-text b {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #f3f4f6;
+  max-width: 180px;
+}
+
+.place-lightbox-caption-bar .lightbox-credit {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-stone);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.place-lightbox-caption-bar .lightbox-counter {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-water);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
 /* Tablet & Mobile Layout Adjustments for Lightbox */
 @media (max-width: 768px) {
   .lightbox-overlay {
@@ -8716,6 +8891,15 @@ footer {
 
   .lightbox-img {
     max-height: 65vh;
+  }
+
+  .place-lightbox-img {
+    height: 195px;
+    max-height: 195px;
+  }
+
+  .place-lightbox-caption-bar .lightbox-caption-text b {
+    max-width: 130px;
   }
 
   .lightbox-nav-btn {
