@@ -2411,16 +2411,48 @@ export default function App() {
               <button type="button" onClick={() => setLocationToast(null)}>✕</button>
             </div>
           ) : null}
-          <div className="legend map-legend">
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <Coffee size={14} weight="bold" style={{ color: "var(--color-water)" }} /> {t.legendSpecialty}
-            </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <Bread size={14} weight="bold" style={{ color: "var(--color-water)" }} /> {t.legendBakery}
-            </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <ForkKnife size={14} weight="bold" style={{ color: "var(--color-water)" }} /> {t.legendRestaurant}
-            </span>
+          <div className="legend map-legend" role="toolbar" aria-label={lang === "sv" ? "Platsfilter på kartan" : "Place filters on map"}>
+            <button
+              type="button"
+              className={`map-legend-btn ${kind === "Specialty coffee" ? "is-active" : ""}`}
+              aria-pressed={kind === "Specialty coffee"}
+              onClick={() => selectKindFilter(kind === "Specialty coffee" ? "All places" : "Specialty coffee")}
+              title={lang === "sv" ? "Filtrera specialkaffe (klicka för att växla)" : "Filter specialty coffee (click to toggle)"}
+            >
+              <Coffee size={14} weight="bold" style={{ color: kind === "Specialty coffee" ? "currentColor" : "var(--color-water)" }} />
+              <span>{t.legendSpecialty}</span>
+            </button>
+            <button
+              type="button"
+              className={`map-legend-btn ${kind === "Bakery" ? "is-active" : ""}`}
+              aria-pressed={kind === "Bakery"}
+              onClick={() => selectKindFilter(kind === "Bakery" ? "All places" : "Bakery")}
+              title={lang === "sv" ? "Filtrera bagerier (klicka för att växla)" : "Filter bakeries (click to toggle)"}
+            >
+              <Bread size={14} weight="bold" style={{ color: kind === "Bakery" ? "currentColor" : "var(--color-water)" }} />
+              <span>{t.legendBakery}</span>
+            </button>
+            <button
+              type="button"
+              className={`map-legend-btn ${kind === "Restaurant" ? "is-active" : ""}`}
+              aria-pressed={kind === "Restaurant"}
+              onClick={() => selectKindFilter(kind === "Restaurant" ? "All places" : "Restaurant")}
+              title={lang === "sv" ? "Filtrera restauranger (klicka för att växla)" : "Filter restaurants (click to toggle)"}
+            >
+              <ForkKnife size={14} weight="bold" style={{ color: kind === "Restaurant" ? "currentColor" : "var(--color-water)" }} />
+              <span>{t.legendRestaurant}</span>
+            </button>
+            {kind !== "All places" && (kind === "Specialty coffee" || kind === "Bakery" || kind === "Restaurant") ? (
+              <button
+                type="button"
+                className="map-legend-clear-btn"
+                onClick={() => selectKindFilter("All places")}
+                title={lang === "sv" ? "Rensa filter (visa alla)" : "Clear filter (show all)"}
+                aria-label={lang === "sv" ? "Rensa filter" : "Clear filter"}
+              >
+                <X size={12} weight="bold" />
+              </button>
+            ) : null}
           </div>
 
           {active ? (
