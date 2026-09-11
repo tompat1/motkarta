@@ -1552,12 +1552,31 @@ export default function App() {
         data-story={activeHeroStoryId}
       >
         <div className="countermap-hero-copy">
+          <div className="countermap-hero-eyebrow">
+            <span className="countermap-hero-badge-square" aria-hidden="true" />
+            <span className="countermap-hero-badge-text">{t.heroBadge}</span>
+          </div>
           <h1 id="countermap-hero-heading">
-            <span>{t.titleMain}</span>
-            <span>{t.titleSub}</span>
+            <span className="countermap-hero-line">{t.titleMain}</span>
+            <span className="countermap-hero-line">
+              {t.titleSubPrefix ? <span>{t.titleSubPrefix}</span> : null}
+              <span className="countermap-hero-highlight">{t.titleSubHighlight}</span>
+            </span>
+            <span className="countermap-hero-line countermap-hero-highlight">{t.titleSubEnd}</span>
           </h1>
           <div className="countermap-hero-copy-foot">
-            <p className="lede">{t.lede}</p>
+            <p className="lede">
+              {t.ledeLines ? (
+                t.ledeLines.map((line, idx) => (
+                  <span key={idx} className="lede-line">
+                    {line}
+                    {idx < t.ledeLines.length - 1 ? <br className="lede-desktop-br" /> : null}
+                  </span>
+                ))
+              ) : (
+                t.lede
+              )}
+            </p>
             <a className="countermap-hero-jump" href="#map">
               <span>{lang === "sv" ? "Börja upptäcka" : "Start discovering"}</span>
               <ArrowRight size={18} weight="bold" aria-hidden="true" />
