@@ -118,6 +118,7 @@ import {
 import { MobileRankControlSheet, type RankSheetType } from "./components/MobileRankControlSheet";
 import { PlaceDetailSheet } from "./components/PlaceDetailSheet";
 import { MobilePlaceCardList } from "./components/MobilePlaceCardList";
+import { MotkartaScoreWidget } from "./components/MotkartaScoreWidget";
 import {
   addUserReview,
   addUserPhoto,
@@ -2176,24 +2177,11 @@ export default function App() {
                     <span key={tag}>{tag}</span>
                   ))}
                 </div>
-                <div className="score-row">
-                  <div>
-                    <b>{rounded(active.scores.quality)}</b>
-                    <span>{t.quality}</span>
-                  </div>
-                  <div>
-                    <b>{rounded(active.scores.popularity)}</b>
-                    <span>{t.popularity}</span>
-                  </div>
-                  <div>
-                    <b>{rounded(active.scores.discovery)}</b>
-                    <span>{t.discovery}</span>
-                  </div>
-                  <div>
-                    <b>{rounded(active.scores.relevance)}</b>
-                    <span>{t.relevance}</span>
-                  </div>
-                </div>
+                <MotkartaScoreWidget
+                  scores={active.scores}
+                  overallScore={modeScore(active, mode)}
+                  lang={lang}
+                />
                 <div
                   className="user-rating-bar"
                   style={{

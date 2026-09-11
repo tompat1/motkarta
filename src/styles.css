@@ -2239,6 +2239,192 @@ button.search-clear-btn:hover {
   color: var(--color-stone);
 }
 
+/* Stylish Motkarta Score Widget */
+.motkarta-score-widget {
+  background: #fbf9f4;
+  border: 1px solid var(--color-mist, #e2e8f0);
+  border-radius: 8px;
+  padding: 16px 18px 14px;
+  margin: 16px 0 14px;
+  box-sizing: border-box;
+  container-type: inline-size;
+}
+
+.motkarta-score-widget-header {
+  margin-bottom: 12px;
+}
+
+.motkarta-score-widget-title {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--color-ink, #0f172a);
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.motkarta-score-widget-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.motkarta-score-bars {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.motkarta-score-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.motkarta-score-bar-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-slate, #64748b);
+  text-transform: uppercase;
+  width: 86px;
+  flex-shrink: 0;
+}
+
+.motkarta-score-bar-track {
+  flex: 1;
+  min-width: 32px;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.motkarta-score-bar-fill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 4px;
+  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.motkarta-score-bar-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-ink, #0f172a);
+  width: 24px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.motkarta-score-gauge {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.motkarta-score-gauge-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.motkarta-score-gauge-track {
+  stroke: #e2e8f0;
+}
+
+.motkarta-score-gauge-fill {
+  stroke: #2563eb;
+  transition: stroke-dasharray 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.motkarta-score-gauge-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  text-align: center;
+}
+
+.motkarta-score-gauge-num {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--color-ink, #0f172a);
+  letter-spacing: -0.02em;
+}
+
+.motkarta-score-gauge-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-slate, #64748b);
+  margin-top: 2px;
+}
+
+@container (max-width: 360px) {
+  .motkarta-score-widget {
+    padding: 12px 10px;
+  }
+  .motkarta-score-widget-body {
+    gap: 10px;
+  }
+  .motkarta-score-bar-label {
+    width: 72px;
+    font-size: 10px;
+  }
+  .motkarta-score-gauge {
+    width: 86px;
+    height: 86px;
+  }
+  .motkarta-score-gauge-num {
+    font-size: 28px;
+  }
+  .motkarta-score-gauge-sub {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  .motkarta-score-widget {
+    padding: 12px 10px;
+  }
+  .motkarta-score-widget-body {
+    gap: 10px;
+  }
+  .motkarta-score-bar-label {
+    width: 72px;
+    font-size: 10px;
+  }
+  .motkarta-score-gauge {
+    width: 86px;
+    height: 86px;
+  }
+  .motkarta-score-gauge-num {
+    font-size: 28px;
+  }
+  .motkarta-score-gauge-sub {
+    font-size: 8px;
+  }
+}
+
 .reason-list {
   border-bottom: 1px solid var(--color-mist);
   display: grid;

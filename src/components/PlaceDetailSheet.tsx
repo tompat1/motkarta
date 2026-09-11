@@ -24,6 +24,7 @@ import type { Language } from "../app/shared";
 import { fetchPlacePhotos, type PlacePhoto } from "../../lib/lazy-media";
 import { formatDistance, distanceFromPoint } from "../app/shared";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
+import { MotkartaScoreWidget } from "./MotkartaScoreWidget";
 
 const DUMMY_PLACE_IMAGE_URL = "/motkarta_drop_divided_black_red.svg";
 
@@ -299,6 +300,15 @@ export function PlaceDetailSheet({
               </span>
             ) : null}
           </div>
+
+          {/* Motkarta Score Breakdown */}
+          {place.scores ? (
+            <MotkartaScoreWidget
+              scores={place.scores}
+              overallScore={place.scores.recommendation}
+              lang={lang}
+            />
+          ) : null}
 
           {/* "Varför den syns här" (Why it appears here) Section */}
           <section className="place-detail-section">
