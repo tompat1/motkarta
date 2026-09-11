@@ -5852,6 +5852,545 @@ button.concierge-clear-btn:hover {
   white-space: pre;
 }
 
+/* Admin ML Dashboard Tabs & Subsections */
+.admin-ml-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-ml-updated-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-stone);
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  padding: 6px 10px;
+}
+
+.admin-ml-nav-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  padding: 4px;
+}
+
+.admin-ml-nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-ink);
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.admin-ml-nav-tab:hover {
+  background: var(--color-white);
+  border-color: var(--color-mist);
+}
+
+.admin-ml-nav-tab.active {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+}
+
+.admin-ml-nav-tab.highlight {
+  color: #b45309;
+}
+
+.admin-ml-nav-tab.highlight.active {
+  background: #b45309;
+  color: #fff;
+  border-color: #b45309;
+}
+
+.admin-ml-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-ml-section-intro {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  padding: 16px 20px;
+}
+
+.admin-ml-section-intro h4 {
+  margin: 0 0 6px;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.admin-ml-section-intro p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-stone);
+  line-height: 1.5;
+}
+
+/* Math Card */
+.admin-ml-math-card {
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-left: 4px solid #f59e0b;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-ml-math-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #b45309;
+  text-transform: uppercase;
+}
+
+.admin-ml-formula {
+  background: #fef3c7;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: #92400e;
+  overflow-x: auto;
+}
+
+.admin-ml-math-card p {
+  margin: 0;
+  font-size: 13px;
+  color: #78350f;
+  line-height: 1.5;
+}
+
+/* Evaluator Cards & Simulators */
+.admin-ml-eval-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-ml-eval-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-ml-eval-card-header h5 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.admin-ml-eval-card-header small {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-stone);
+}
+
+.admin-ml-score-display {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 8px 16px;
+  border: 2px solid;
+  border-radius: 4px;
+}
+
+.admin-ml-score-display.gem-passed {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.08);
+  color: #047857;
+}
+
+.admin-ml-score-display.gem-failed {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+  color: #b45309;
+}
+
+.admin-ml-score-display .score-number {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.admin-ml-score-display .score-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.admin-ml-slider-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  padding: 16px;
+}
+
+.admin-ml-slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-ml-slider-group label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-ink);
+}
+
+.admin-ml-slider-group input[type="range"] {
+  width: 100%;
+  accent-color: var(--color-ink);
+}
+
+.admin-ml-eval-result {
+  margin-top: 4px;
+}
+
+.eval-status-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid;
+  border-radius: 4px;
+}
+
+.eval-status-box.success {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+
+.eval-status-box.warning {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+.eval-status-box strong {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.eval-status-box p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+/* Query Tester */
+.admin-ml-query-input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-ml-query-input {
+  width: 100%;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  border: 1px solid var(--color-mist);
+  background: var(--color-white);
+  color: var(--color-ink);
+  outline: none;
+}
+
+.admin-ml-query-input:focus {
+  border-color: var(--color-ink);
+}
+
+.admin-ml-query-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-ml-query-suggestions button {
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.admin-ml-query-suggestions button:hover {
+  border-color: var(--color-ink);
+  background: var(--color-white);
+}
+
+.admin-ml-rag-output-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.rag-output-card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rag-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--color-stone);
+}
+
+.rag-output-card strong {
+  font-size: 13px;
+  color: var(--color-ink);
+}
+
+.chain-list {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #dc2626;
+}
+
+.rag-context-preview {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+}
+
+.rag-context-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #2d2d2d;
+  border-bottom: 1px solid #444;
+  color: #bbb;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.rag-verified-badge {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  padding: 2px 6px;
+  font-weight: 700;
+}
+
+.rag-context-preview pre {
+  margin: 0;
+  padding: 12px;
+  color: #9cdcfe;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  overflow-x: auto;
+}
+
+/* Cloudflare AI Cards */
+.admin-ml-cloudflare-hero {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-left: 4px solid #f97316;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cloudflare-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  color: #c2410c;
+  letter-spacing: 0.05em;
+}
+
+.admin-ml-cloudflare-hero h4 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.admin-ml-cloudflare-hero p {
+  margin: 0;
+  font-size: 13px;
+  color: #7c2d12;
+  line-height: 1.5;
+}
+
+.admin-ml-cf-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.admin-ml-cf-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cf-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.cf-badge {
+  background: #ffedd5;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  text-transform: uppercase;
+}
+
+.cf-model-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-stone);
+}
+
+.admin-ml-cf-card h5 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.admin-ml-cf-card p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-stone);
+  line-height: 1.5;
+}
+
+.cf-code-snippet {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  margin-top: 4px;
+}
+
+.cf-code-snippet pre {
+  margin: 0;
+  padding: 10px 12px;
+  overflow-x: auto;
+}
+
+.cf-code-snippet code {
+  color: #9cdcfe;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: pre;
+}
+
+/* Telemetry Summary Panel */
+.admin-ml-telemetry-panel {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-ml-telemetry-panel h4 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.admin-ml-telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.admin-ml-telemetry-card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.telemetry-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-stone);
+  text-transform: uppercase;
+}
+
+.telemetry-value {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
 .admin-candidate-list {
   display: grid;
   gap: 12px;

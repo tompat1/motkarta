@@ -1605,7 +1605,9 @@ export function AdminReviewPanel({
         </div>
       ) : null}
 
-      {!hasAdminAuth ? (
+      {stateFilter === "ml_dashboard" ? (
+        <AdminMlDashboard lang={lang} adminHeaders={adminHeaders} hasAdminAuth={hasAdminAuth} />
+      ) : !hasAdminAuth ? (
         <div className="admin-review-empty">
           {checkingSession ? <CircleNotch size={18} className="animate-spin" /> : <ShieldCheck size={18} weight="bold" />}
           <span>
@@ -1629,8 +1631,6 @@ export function AdminReviewPanel({
           <ShieldCheck size={18} weight="bold" />
           <span>{schemaStatusText(schemaStatus, lang)}</span>
         </div>
-      ) : stateFilter === "ml_dashboard" ? (
-        <AdminMlDashboard lang={lang} adminHeaders={adminHeaders} hasAdminAuth={hasAdminAuth} />
       ) : loading ? (
         <div className="admin-review-empty">
           <CircleNotch size={18} className="animate-spin" />
