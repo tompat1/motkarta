@@ -1,5 +1,4 @@
-import L from "leaflet";
-import "leaflet.markercluster";
+import L from "../lib/leafletSetup";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { useEffect, useRef, useState } from "react";
@@ -33,6 +32,9 @@ export function FoodMap({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [locating, setLocating] = useState(false);
   const [locationFailure, setLocationFailure] = useState<Exclude<LocationResult['status'], 'acquired'> | null>(null);
+  const lastFitKeyRef = useRef<string>("");
+  const fitBoundsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevActivePlaceIdRef = useRef<number | null>(null);
 
   const handleLocateUser = async () => {
     if (locating) return;
@@ -151,6 +153,10 @@ export function FoodMap({
     document.addEventListener("fullscreenchange", handleFsChange);
 
     return () => {
+      if (fitBoundsTimeoutRef.current) {
+        clearTimeout(fitBoundsTimeoutRef.current);
+        fitBoundsTimeoutRef.current = null;
+      }
       document.removeEventListener("fullscreenchange", handleFsChange);
       markersRef.current.clear();
       clusterGroup.clearLayers();
@@ -210,6 +216,9 @@ export function FoodMap({
       return;
     }
 
+    // Halt any running map animations before updating layers to prevent race conditions
+    map.stop();
+
     if (clusterGroup) {
       clusterGroup.clearLayers();
     }
@@ -244,33 +253,66 @@ export function FoodMap({
       bounds.extend(marker.getLatLng());
     });
 
-    if (bounds.isValid()) {
-      const maxZoom = validPlaces.length <= 10 ? 15 : 13;
-      map.fitBounds(bounds, { padding: [42, 42], maxZoom });
+    const currentKey = validPlaces.map((p) => p.id).join(",");
+    if (fitBoundsTimeoutRef.current) {
+      clearTimeout(fitBoundsTimeoutRef.current);
+      fitBoundsTimeoutRef.current = null;
     }
-  }, [lang, onSelect, places]);
+
+    if (bounds.isValid() && lastFitKeyRef.current !== currentKey) {
+      lastFitKeyRef.current = currentKey;
+      const maxZoom = validPlaces.length <= 10 ? 15 : 13;
+      // Debounce fitBounds by 100ms so rapid search keystrokes do not trigger overlapping animations
+      fitBoundsTimeoutRef.current = setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.fitBounds(bounds, { padding: [42, 42], maxZoom });
+        }
+      }, 100);
+    }
+
+    return () => {
+      if (fitBoundsTimeoutRef.current) {
+        clearTimeout(fitBoundsTimeoutRef.current);
+        fitBoundsTimeoutRef.current = null;
+      }
+    };
+  }, [activePlace?.id, lang, onSelect, places]);
 
   useEffect(() => {
     const map = mapRef.current;
     const clusterGroup = clusterGroupRef.current;
-    if (!activePlace || !map || !hasCoordinates(activePlace)) {
-      return;
-    }
+    const currentActiveId = activePlace?.id ?? null;
 
-    const activeMarker = markersRef.current.get(activePlace.id);
-    if (!activeMarker) return;
+    // Only zoom and open popup when the selected active place ID actually changes
+    if (prevActivePlaceIdRef.current !== currentActiveId) {
+      const prevId = prevActivePlaceIdRef.current;
+      prevActivePlaceIdRef.current = currentActiveId;
 
-    places.filter(hasCoordinates).forEach((place) => {
-      markersRef.current.get(place.id)?.setIcon(placeIcon(place, place.id === activePlace.id));
-    });
+      if (prevId !== null) {
+        const prevPlace = places.find((p) => p.id === prevId);
+        const prevMarker = markersRef.current.get(prevId);
+        if (prevPlace && prevMarker) {
+          prevMarker.setIcon(placeIcon(prevPlace, false));
+        }
+      }
 
-    if (clusterGroup) {
-      clusterGroup.zoomToShowLayer(activeMarker, () => {
+      if (!activePlace || !map || !hasCoordinates(activePlace)) {
+        return;
+      }
+
+      const activeMarker = markersRef.current.get(activePlace.id);
+      if (!activeMarker) return;
+
+      activeMarker.setIcon(placeIcon(activePlace, true));
+
+      if (clusterGroup) {
+        clusterGroup.zoomToShowLayer(activeMarker, () => {
+          activeMarker.openPopup();
+        });
+      } else {
         activeMarker.openPopup();
-      });
-    } else {
-      activeMarker.openPopup();
-      map.flyTo([activePlace.latitude, activePlace.longitude], 15, { duration: 0.8 });
+        map.flyTo([activePlace.latitude, activePlace.longitude], 15, { duration: 0.8 });
+      }
     }
   }, [activePlace, places]);
 
