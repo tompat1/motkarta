@@ -32,3 +32,10 @@ test("counter-map motion is bounded and has a reduced-motion path", () => {
   assert.match(stylesSource, /@media \(prefers-reduced-motion: reduce\)[\s\S]*countermap-active-route/);
   assert.match(stylesSource, /@media \(max-width: 768px\)[\s\S]*\.countermap-controls/);
 });
+
+test("topbar navigation remains sticky and viewport scrolling is unblocked", () => {
+  assert.match(stylesSource, /\.topbar[\s\S]*?position:\s*sticky;/);
+  assert.match(stylesSource, /\.topbar[\s\S]*?top:\s*0;/);
+  assert.match(stylesSource, /html,\s*\n\s*body[\s\S]*?overflow-x:\s*clip;/);
+});
+
