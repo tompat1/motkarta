@@ -355,8 +355,8 @@ function placeIcon(place: ScoredPlace, active: boolean) {
     // Fork & Knife SVG
     iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M200,32a8,8,0,0,0-8,8V104a24,24,0,0,1-24,24H160a8,8,0,0,0-8,8v80a8,8,0,0,0,16,0V144h8a40,40,0,0,0,40-40V40A8,8,0,0,0,200,32ZM96,32a8,8,0,0,0-8,8V88H72V40a8,8,0,0,0-16,0V88H40V40a8,8,0,0,0-16,0V96a40,40,0,0,0,40,40v80a8,8,0,0,0,16,0V136a40,40,0,0,0,40-40V40A8,8,0,0,0,96,32Z"/></svg>`;
   } else if (kind === "Bakery") {
-    // Bread SVG
-    iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M216,104H40a16,16,0,0,0-16,16v32a48.05,48.05,0,0,0,48,48H184a48.05,48.05,0,0,0,48-48V120A16,16,0,0,0,216,104ZM56,120H96v64H72a32,32,0,0,1-32-32V120ZM160,184H112V120h48V184Zm56-32a32,32,0,0,1-32,32H176V120h40V152Z"/></svg>`;
+    // Bread SVG (Phosphor Bread bold - matching filter label icon)
+    iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M244,80a44.05,44.05,0,0,0-44-44H48a44,44,0,0,0-20,83.17V200a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V119.17A44,44,0,0,0,244,80ZM52,123.3A12,12,0,0,0,48,100a20,20,0,0,1,0-40h92a20,20,0,0,1,0,40,12,12,0,0,0-4,23.3V196H52ZM200,100a12,12,0,0,0-4,23.3V196H160V119.17A43.92,43.92,0,0,0,179.17,60H200a20,20,0,0,1,0,40Z"/></svg>`;
   } else {
     // Coffee Cup SVG (Café & Specialty Coffee)
     iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M224,80H208V64a16,16,0,0,0-16-16H48A16,16,0,0,0,32,64V152a48.05,48.05,0,0,0,48,48h80a48.05,48.05,0,0,0,48-48V136h16a32.03,32.03,0,0,0,32-32V112A32.03,32.03,0,0,0,224,80Zm0,40H208V96h16a16,16,0,0,1,16,16V104A16,16,0,0,1,224,120Z"/></svg>`;
