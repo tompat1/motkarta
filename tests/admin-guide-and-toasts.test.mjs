@@ -220,5 +220,49 @@ test("isD1QuotaError detects Cloudflare D1 row read limit error strings", async 
   assert.equal(isD1QuotaError("Random connection failure"), false);
 });
 
+test("formatEuropeanResetTime formats time in 24-hour European format for Stockholm and Gdansk", async () => {
+  const { formatEuropeanResetTime } = await import("../lib/admin-d1.ts");
 
+  // Test summer date (September, CEST -> 02:00)
+  const summerMidnightUtc = Date.UTC(2026, 8, 12, 0, 0, 0);
+  const summerSv = formatEuropeanResetTime(summerMidnightUtc, "sv");
+  const summerEn = formatEuropeanResetTime(summerMidnightUtc, "en");
 
+  assert.ok(summerSv.includes("02:00"));
+  assert.ok(summerSv.includes("CEST"));
+  assert.ok(summerSv.includes("kl."));
+  assert.ok(summerSv.includes("Stockholm/Gdańsk"));
+
+  assert.ok(summerEn.includes("02:00"));
+  assert.ok(summerEn.includes("CEST"));
+  assert.ok(summerEn.includes("Stockholm/Gdańsk"));
+  assert.equal(summerEn.includes("AM"), false);
+  assert.equal(summerEn.includes("PM"), false);
+
+  // Test winter date (January, CET -> 01:00)
+  const winterMidnightUtc = Date.UTC(2026, 0, 15, 0, 0, 0);
+  const winterSv = formatEuropeanResetTime(winterMidnightUtc, "sv");
+  const winterEn = formatEuropeanResetTime(winterMidnightUtc, "en");
+
+  assert.ok(winterSv.includes("01:00"));
+  assert.ok(winterSv.includes("CET"));
+  assert.ok(winterEn.includes("01:00"));
+  assert.ok(winterEn.includes("CET"));
+});
+
+test("localizeD1QuotaMessage replaces American midnight UTC with European 24-hour time", async () => {
+  const { localizeD1QuotaMessage } = await import("../lib/admin-d1.ts");
+
+  const summerMidnightUtc = Date.UTC(2026, 8, 12, 0, 0, 0);
+  const rawMsg =
+    "D1_ERROR: Your account has exceeded D1's free tier daily row read limit. Upgrade to a paid plan or wait until tomorrow (midnight UTC) to continue.";
+
+  const localizedEn = localizeD1QuotaMessage(rawMsg, "en", summerMidnightUtc);
+  const localizedSv = localizeD1QuotaMessage(rawMsg, "sv", summerMidnightUtc);
+
+  assert.ok(localizedEn.includes("02:00 CEST (Stockholm/Gdańsk)"));
+  assert.equal(localizedEn.includes("midnight UTC"), false);
+
+  assert.ok(localizedSv.includes("kl. 02:00 CEST (Stockholm/Gdańsk)"));
+  assert.equal(localizedSv.includes("midnight UTC"), false);
+});

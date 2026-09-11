@@ -143,8 +143,18 @@ export type AdminSessionStatus = {
   };
   error?: string;
 };
-import { isD1QuotaError, getNextMidnightUtc } from "../../lib/admin-d1";
-export { isD1QuotaError, getNextMidnightUtc };
+import {
+  isD1QuotaError,
+  getNextMidnightUtc,
+  formatEuropeanResetTime,
+  localizeD1QuotaMessage,
+} from "../../lib/admin-d1";
+export {
+  isD1QuotaError,
+  getNextMidnightUtc,
+  formatEuropeanResetTime,
+  localizeD1QuotaMessage,
+};
 
 const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "unresolved_region", "needs_input", "ml_dashboard", "all"];
 
@@ -198,15 +208,18 @@ export function AdminReviewPanel({
     return false;
   });
 
-  const markD1QuotaExceeded = useCallback((errorMsg?: string) => {
-    setD1QuotaExceeded(true);
-    try {
-      window.sessionStorage.setItem("motkarta_d1_quota_exceeded", String(getNextMidnightUtc()));
-    } catch {}
-    if (errorMsg) {
-      setError(errorMsg);
-    }
-  }, []);
+  const markD1QuotaExceeded = useCallback(
+    (errorMsg?: string) => {
+      setD1QuotaExceeded(true);
+      try {
+        window.sessionStorage.setItem("motkarta_d1_quota_exceeded", String(getNextMidnightUtc()));
+      } catch {}
+      if (errorMsg) {
+        setError(localizeD1QuotaMessage(errorMsg, lang));
+      }
+    },
+    [lang],
+  );
 
   const clearD1QuotaBlock = useCallback(() => {
     setD1QuotaExceeded(false);
@@ -215,12 +228,21 @@ export function AdminReviewPanel({
     } catch {}
   }, []);
 
-  const addToast = useCallback((toast: Omit<AdminToast, "id" | "timestamp">) => {
-    const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-    const now = new Date();
-    const timestamp = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-    setToasts((prev) => [...prev.slice(-4), { ...toast, id, timestamp }]);
-  }, []);
+  const addToast = useCallback(
+    (toast: Omit<AdminToast, "id" | "timestamp">) => {
+      const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const now = new Date();
+      const timestamp = now.toLocaleTimeString(lang === "sv" ? "sv-SE" : "en-GB", {
+        timeZone: "Europe/Stockholm",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+      setToasts((prev) => [...prev.slice(-4), { ...toast, id, timestamp }]);
+    },
+    [lang],
+  );
 
   const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -427,8 +449,8 @@ export function AdminReviewPanel({
       if (d1QuotaExceeded && !force) {
         setStatus(
           lang === "sv"
-            ? "Runtime-check pausad: D1 daglig läskvot är nådd (återställs midnatt UTC)."
-            : "Runtime check paused: D1 daily read quota exceeded (resets midnight UTC).",
+            ? `Runtime-check pausad: D1 daglig läskvot är nådd (återställs ${formatEuropeanResetTime(undefined, lang)}).`
+            : `Runtime check paused: D1 daily read quota exceeded (resets at ${formatEuropeanResetTime(undefined, lang)}).`,
         );
         return null;
       }
@@ -444,11 +466,13 @@ export function AdminReviewPanel({
         const payload = (await response.json().catch(() => ({}))) as AdminSchemaStatus;
 
         if (response.status === 429 || payload.quotaExceeded || isD1QuotaError(payload.error)) {
-          const quotaMsg =
+          const quotaMsg = localizeD1QuotaMessage(
             payload.error ??
-            (lang === "sv"
-              ? "Cloudflare D1-kvot uppnådd (daglig läsgräns nådd). Runtime-check pausad."
-              : "Cloudflare D1 quota reached (daily read limit exceeded). Runtime check paused.");
+              (lang === "sv"
+                ? "Cloudflare D1-kvot uppnådd (daglig läsgräns nådd). Runtime-check pausad."
+                : "Cloudflare D1 quota reached (daily read limit exceeded). Runtime check paused."),
+            lang,
+          );
           markD1QuotaExceeded(quotaMsg);
           addToast({
             type: "warning",
@@ -456,8 +480,8 @@ export function AdminReviewPanel({
             message: quotaMsg,
             detail:
               lang === "sv"
-                ? "Kvoten återställs vid midnatt UTC. Automatiska anrop pausade för att spara bandbredd."
-                : "Limit resets midnight UTC. Automatic requests paused to conserve bandwidth.",
+                ? `Kvoten återställs ${formatEuropeanResetTime(undefined, lang)}. Automatiska anrop pausade för att spara bandbredd.`
+                : `Limit resets at ${formatEuropeanResetTime(undefined, lang)}. Automatic requests paused to conserve bandwidth.`,
           });
           return payload;
         }
@@ -1384,8 +1408,8 @@ export function AdminReviewPanel({
               </strong>
               <p>
                 {lang === "sv"
-                  ? "Kontots kostnadsfria gräns för D1-radläsningar har överskridits. Automatiska runtime-checks är pausade för att spara bandbredd och undvika onödiga Cloudflare-anrop. Kvoten återställs vid midnatt UTC."
-                  : "The account's free tier daily row read limit for D1 has been exceeded. Automatic runtime checks are paused to conserve bandwidth and prevent unnecessary Cloudflare requests. Limit resets at midnight UTC."}
+                  ? `Kontots kostnadsfria gräns för D1-radläsningar har överskridits. Automatiska runtime-checks är pausade för att spara bandbredd och undvika onödiga Cloudflare-anrop. Kvoten återställs ${formatEuropeanResetTime(undefined, lang)}.`
+                  : `The account's free tier daily row read limit for D1 has been exceeded. Automatic runtime checks are paused to conserve bandwidth and prevent unnecessary Cloudflare requests. Limit resets at ${formatEuropeanResetTime(undefined, lang)}.`}
               </p>
             </div>
           </div>
