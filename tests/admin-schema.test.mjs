@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   onRequestGet as getAdminSchema,
   onRequestPost as postAdminSchema,
+  isD1QuotaError,
 } from "../functions/api/admin/schema.ts";
 
 const adminToken = "review-secret";
@@ -224,6 +225,57 @@ test("admin schema POST succeeds even if index creation throws", async () => {
   assert.equal(response.status, 200);
   assert.equal(payload.success, true);
   assert.equal(payload.ready, true);
+});
+
+test("isD1QuotaError identifies Cloudflare D1 daily row read quota error", () => {
+  const errorMsg = "D1_ERROR: Your account has exceeded D1's free tier daily row read limit. Upgrade to a paid plan or wait until tomorrow (midnight UTC) to continue.";
+  assert.equal(isD1QuotaError(errorMsg), true);
+  assert.equal(isD1QuotaError(new Error(errorMsg)), true);
+  assert.equal(isD1QuotaError(new Error("Generic table error")), false);
+  assert.equal(isD1QuotaError(null), false);
+});
+
+test("admin schema GET returns HTTP 429 when D1 daily row read quota is exceeded", async () => {
+  const quotaDb = {
+    prepare() {
+      throw new Error("D1_ERROR: Your account has exceeded D1's free tier daily row read limit. Upgrade to a paid plan or wait until tomorrow (midnight UTC) to continue.");
+    },
+  };
+
+  const response = await getAdminSchema({
+    request: new Request("https://motkarta.test/api/admin/schema", {
+      headers: { "x-motkarta-admin-token": adminToken },
+    }),
+    env: { DB: quotaDb, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 429);
+  assert.equal(payload.quotaExceeded, true);
+  assert.equal(payload.ready, false);
+  assert.match(payload.error, /daily row read limit/i);
+});
+
+test("admin schema POST returns HTTP 429 when D1 daily row read quota is exceeded", async () => {
+  const quotaDb = {
+    prepare() {
+      throw new Error("D1_ERROR: Your account has exceeded D1's free tier daily row read limit. Upgrade to a paid plan or wait until tomorrow (midnight UTC) to continue.");
+    },
+  };
+
+  const response = await postAdminSchema({
+    request: new Request("https://motkarta.test/api/admin/schema", {
+      method: "POST",
+      headers: { "x-motkarta-admin-token": adminToken },
+    }),
+    env: { DB: quotaDb, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 429);
+  assert.equal(payload.quotaExceeded, true);
+  assert.equal(payload.ready, false);
+  assert.match(payload.error, /daily row read limit/i);
 });
 
 function fakeSchemaD1(initialTables) {

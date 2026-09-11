@@ -4020,6 +4020,93 @@ button.concierge-clear-btn:hover {
   color: var(--color-water);
 }
 
+.admin-schema-panel.quota-paused {
+  background: #fefce8;
+  border-color: #facc15;
+}
+
+.admin-schema-panel.quota-paused .admin-schema-copy span {
+  color: #ca8a04;
+}
+
+/* D1 Quota Exceeded Pause Banner */
+.admin-d1-quota-banner {
+  background: #fefce8;
+  border: 1px solid #facc15;
+  border-left: 4px solid #ca8a04;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.admin-d1-quota-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.admin-d1-quota-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.admin-d1-quota-text strong {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #854d0e;
+  letter-spacing: 0.04em;
+  margin-bottom: 3px;
+}
+
+.admin-d1-quota-text p {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.4;
+  color: #713f12;
+}
+
+.admin-d1-quota-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: 30px;
+}
+
+.admin-d1-quota-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  background: #ca8a04;
+  color: #ffffff;
+  border: 1px solid #ca8a04;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-d1-quota-btn:hover {
+  background: #a16207;
+  border-color: #a16207;
+}
+
+.admin-d1-quota-btn.secondary {
+  background: transparent;
+  color: #854d0e;
+  border: 1px solid #ca8a04;
+}
+
+.admin-d1-quota-btn.secondary:hover {
+  background: #fef9c3;
+}
+
 .admin-session-dashboard {
   background: var(--color-white);
   border: 1px solid var(--color-ink);

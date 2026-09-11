@@ -1,4 +1,6 @@
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
+import { isD1QuotaError } from "../../../lib/admin-d1.ts";
+export { isD1QuotaError };
 
 type D1RunResult = {
   success?: boolean;
@@ -142,6 +144,7 @@ export async function onRequestGet(context: EventContext<Env>) {
     const status = await loadSchemaStatus(db);
     return Response.json({ source: "d1", ...status }, { headers: jsonHeaders });
   } catch (error) {
+    const isQuota = isD1QuotaError(error);
     console.error("GET /api/admin/schema failed:", error);
     return Response.json(
       {
@@ -149,9 +152,10 @@ export async function onRequestGet(context: EventContext<Env>) {
         ready: false,
         baseSchemaReady: false,
         missing: [],
+        quotaExceeded: isQuota,
         error: error instanceof Error ? error.message : "Schema status check failed.",
       },
-      { headers: jsonHeaders, status: 500 },
+      { headers: jsonHeaders, status: isQuota ? 429 : 500 },
     );
   }
 }
@@ -186,6 +190,7 @@ export async function onRequestPost(context: EventContext<Env>) {
       { headers: jsonHeaders, status: after.ready ? 200 : 409 },
     );
   } catch (error) {
+    const isQuota = isD1QuotaError(error);
     console.error("POST /api/admin/schema failed:", error);
     return Response.json(
       {
@@ -194,9 +199,10 @@ export async function onRequestPost(context: EventContext<Env>) {
         ready: false,
         baseSchemaReady: false,
         missing: [],
+        quotaExceeded: isQuota,
         error: error instanceof Error ? error.message : "Schema initialization failed.",
       },
-      { headers: jsonHeaders, status: 500 },
+      { headers: jsonHeaders, status: isQuota ? 429 : 500 },
     );
   }
 }

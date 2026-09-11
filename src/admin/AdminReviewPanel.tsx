@@ -121,6 +121,7 @@ type AdminSchemaStatus = {
   ready?: boolean;
   success?: boolean;
   baseSchemaReady?: boolean;
+  quotaExceeded?: boolean;
   missing?: Array<{
     kind: "missing_table" | "missing_column";
     table: string;
@@ -142,6 +143,8 @@ export type AdminSessionStatus = {
   };
   error?: string;
 };
+import { isD1QuotaError, getNextMidnightUtc } from "../../lib/admin-d1";
+export { isD1QuotaError, getNextMidnightUtc };
 
 const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "unresolved_region", "needs_input", "ml_dashboard", "all"];
 
@@ -183,6 +186,35 @@ export function AdminReviewPanel({
   const [toasts, setToasts] = useState<AdminToast[]>([]);
   const hasAdminAuth = adminSession?.admin === true;
 
+  const [d1QuotaExceeded, setD1QuotaExceeded] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const saved = window.sessionStorage.getItem("motkarta_d1_quota_exceeded");
+      if (!saved) return false;
+      const expiresAt = Number(saved);
+      if (expiresAt && Date.now() < expiresAt) return true;
+      window.sessionStorage.removeItem("motkarta_d1_quota_exceeded");
+    } catch {}
+    return false;
+  });
+
+  const markD1QuotaExceeded = useCallback((errorMsg?: string) => {
+    setD1QuotaExceeded(true);
+    try {
+      window.sessionStorage.setItem("motkarta_d1_quota_exceeded", String(getNextMidnightUtc()));
+    } catch {}
+    if (errorMsg) {
+      setError(errorMsg);
+    }
+  }, []);
+
+  const clearD1QuotaBlock = useCallback(() => {
+    setD1QuotaExceeded(false);
+    try {
+      window.sessionStorage.removeItem("motkarta_d1_quota_exceeded");
+    } catch {}
+  }, []);
+
   const addToast = useCallback((toast: Omit<AdminToast, "id" | "timestamp">) => {
     const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     const now = new Date();
@@ -205,11 +237,16 @@ export function AdminReviewPanel({
   );
 
   const loadCandidates = useCallback(
-    async (tokenOverride?: string, queryOverride?: string) => {
+    async (tokenOverride?: string, queryOverride?: string, force = false) => {
       const token = (tokenOverride ?? adminToken).trim();
       if (!token && !adminSession?.admin) {
         setCandidates([]);
         setStatus("");
+        return;
+      }
+
+      if (d1QuotaExceeded && !force) {
+        setLoading(false);
         return;
       }
 
@@ -231,7 +268,13 @@ export function AdminReviewPanel({
         const payload = (await response.json().catch(() => ({}))) as {
           candidates?: AdminCandidate[];
           error?: string;
+          quotaExceeded?: boolean;
         };
+
+        if (response.status === 429 || payload.quotaExceeded || isD1QuotaError(payload.error)) {
+          markD1QuotaExceeded(payload.error);
+          return;
+        }
 
         if (!response.ok) {
           throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte ladda granskningskön." : "Could not load review queue."));
@@ -251,6 +294,10 @@ export function AdminReviewPanel({
         );
       } catch (loadError) {
         setCandidates([]);
+        if (isD1QuotaError(loadError)) {
+          markD1QuotaExceeded(loadError instanceof Error ? loadError.message : String(loadError));
+          return;
+        }
         const errMsg = loadError instanceof Error ? loadError.message : String(loadError);
         setError(errMsg);
         addToast({
@@ -262,7 +309,7 @@ export function AdminReviewPanel({
         setLoading(false);
       }
     },
-    [addToast, adminHeaders, adminSession?.admin, adminToken, lang, searchQuery, stateFilter],
+    [addToast, adminHeaders, adminSession?.admin, adminToken, d1QuotaExceeded, lang, markD1QuotaExceeded, searchQuery, stateFilter],
   );
 
   const filteredCandidates = React.useMemo(() => {
@@ -282,10 +329,15 @@ export function AdminReviewPanel({
   }, [candidates, searchQuery]);
 
   const loadDashboard = useCallback(
-    async (tokenOverride?: string) => {
+    async (tokenOverride?: string, force = false) => {
       const token = (tokenOverride ?? adminToken).trim();
       if (!token && !adminSession?.admin) {
         setDashboard(null);
+        return;
+      }
+
+      if (d1QuotaExceeded && !force) {
+        setLoadingDashboard(false);
         return;
       }
 
@@ -294,7 +346,12 @@ export function AdminReviewPanel({
         const response = await fetch("/api/admin/review-dashboard", {
           headers: adminHeaders(token),
         });
-        const payload = (await response.json().catch(() => ({}))) as AdminReviewDashboard;
+        const payload = (await response.json().catch(() => ({}))) as AdminReviewDashboard & { quotaExceeded?: boolean };
+
+        if (response.status === 429 || payload.quotaExceeded || isD1QuotaError(payload.error)) {
+          markD1QuotaExceeded(payload.error);
+          return;
+        }
 
         if (!response.ok) {
           throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte ladda sessionsstatus." : "Could not load session status."));
@@ -303,20 +360,28 @@ export function AdminReviewPanel({
         setDashboard(payload);
       } catch (dashboardError) {
         setDashboard(null);
+        if (isD1QuotaError(dashboardError)) {
+          markD1QuotaExceeded(dashboardError instanceof Error ? dashboardError.message : String(dashboardError));
+          return;
+        }
         setError(dashboardError instanceof Error ? dashboardError.message : String(dashboardError));
       } finally {
         setLoadingDashboard(false);
       }
     },
-    [adminHeaders, adminSession?.admin, adminToken, lang],
+    [adminHeaders, adminSession?.admin, adminToken, d1QuotaExceeded, lang, markD1QuotaExceeded],
   );
 
   const loadSchemaStatus = useCallback(
-    async (tokenOverride?: string) => {
+    async (tokenOverride?: string, force = false) => {
       const token = (tokenOverride ?? adminToken).trim();
       if (!token && !adminSession?.admin) {
         setSchemaStatus(null);
         return;
+      }
+
+      if (d1QuotaExceeded && !force) {
+        return null;
       }
 
       try {
@@ -324,6 +389,11 @@ export function AdminReviewPanel({
           headers: adminHeaders(token),
         });
         const payload = (await response.json().catch(() => ({}))) as AdminSchemaStatus;
+
+        if (response.status === 429 || payload.quotaExceeded || isD1QuotaError(payload.error)) {
+          markD1QuotaExceeded(payload.error);
+          return payload;
+        }
 
         if (!response.ok) {
           throw new Error(
@@ -338,17 +408,30 @@ export function AdminReviewPanel({
         return payload;
       } catch (schemaError) {
         setSchemaStatus(null);
+        if (isD1QuotaError(schemaError)) {
+          markD1QuotaExceeded(schemaError instanceof Error ? schemaError.message : String(schemaError));
+          return null;
+        }
         setError(schemaError instanceof Error ? schemaError.message : String(schemaError));
         return null;
       }
     },
-    [adminHeaders, adminSession?.admin, adminToken, lang],
+    [adminHeaders, adminSession?.admin, adminToken, d1QuotaExceeded, lang, markD1QuotaExceeded],
   );
 
   const runAdminSelfCheck = useCallback(
-    async (tokenOverride?: string) => {
+    async (tokenOverride?: string, force = false) => {
       const token = (tokenOverride ?? adminToken).trim();
       if (!token && !adminSession?.admin) return null;
+
+      if (d1QuotaExceeded && !force) {
+        setStatus(
+          lang === "sv"
+            ? "Runtime-check pausad: D1 daglig läskvot är nådd (återställs midnatt UTC)."
+            : "Runtime check paused: D1 daily read quota exceeded (resets midnight UTC).",
+        );
+        return null;
+      }
 
       setSchemaBusy(true);
       setError(null);
@@ -360,6 +443,25 @@ export function AdminReviewPanel({
         });
         const payload = (await response.json().catch(() => ({}))) as AdminSchemaStatus;
 
+        if (response.status === 429 || payload.quotaExceeded || isD1QuotaError(payload.error)) {
+          const quotaMsg =
+            payload.error ??
+            (lang === "sv"
+              ? "Cloudflare D1-kvot uppnådd (daglig läsgräns nådd). Runtime-check pausad."
+              : "Cloudflare D1 quota reached (daily read limit exceeded). Runtime check paused.");
+          markD1QuotaExceeded(quotaMsg);
+          addToast({
+            type: "warning",
+            title: lang === "sv" ? "⏳ D1-kvot uppnådd" : "⏳ D1 Quota Reached",
+            message: quotaMsg,
+            detail:
+              lang === "sv"
+                ? "Kvoten återställs vid midnatt UTC. Automatiska anrop pausade för att spara bandbredd."
+                : "Limit resets midnight UTC. Automatic requests paused to conserve bandwidth.",
+          });
+          return payload;
+        }
+
         if (!response.ok) {
           throw new Error(
             payload.error ??
@@ -369,6 +471,7 @@ export function AdminReviewPanel({
           );
         }
 
+        clearD1QuotaBlock();
         setSchemaStatus(payload);
         if (payload.ready) {
           setStatus(lang === "sv" ? "Runtime-check klar. DB och adminschema är redo." : "Runtime check complete. DB and admin schema are ready.");
@@ -386,13 +489,18 @@ export function AdminReviewPanel({
       } catch (schemaError) {
         setDashboard(null);
         setCandidates([]);
+        if (isD1QuotaError(schemaError)) {
+          const quotaMsg = schemaError instanceof Error ? schemaError.message : String(schemaError);
+          markD1QuotaExceeded(quotaMsg);
+          return null;
+        }
         setError(schemaError instanceof Error ? schemaError.message : String(schemaError));
         return null;
       } finally {
         setSchemaBusy(false);
       }
     },
-    [addToast, adminHeaders, adminSession?.admin, adminToken, lang, loadCandidates, loadDashboard],
+    [addToast, adminHeaders, adminSession?.admin, adminToken, clearD1QuotaBlock, d1QuotaExceeded, lang, loadCandidates, loadDashboard, markD1QuotaExceeded],
   );
 
   const checkAdminSession = useCallback(
@@ -452,16 +560,16 @@ export function AdminReviewPanel({
   }, []);
 
   useEffect(() => {
-    if (adminSession?.admin) {
+    if (adminSession?.admin && !d1QuotaExceeded) {
       void runAdminSelfCheck(adminToken);
     }
-  }, [adminSession?.admin]);
+  }, [adminSession?.admin, d1QuotaExceeded]);
 
   useEffect(() => {
-    if (hasAdminAuth && schemaStatus?.ready) {
+    if (hasAdminAuth && schemaStatus?.ready && !d1QuotaExceeded) {
       void loadCandidates();
     }
-  }, [hasAdminAuth, schemaStatus?.ready, loadCandidates]);
+  }, [hasAdminAuth, schemaStatus?.ready, d1QuotaExceeded, loadCandidates]);
 
   const handleUnlock = (event: React.FormEvent) => {
     event.preventDefault();
@@ -1264,21 +1372,78 @@ export function AdminReviewPanel({
         <AdminGuidePanel lang={lang} onClose={() => setShowGuide(false)} />
       ) : null}
 
+      {d1QuotaExceeded ? (
+        <div className="admin-d1-quota-banner" role="alert">
+          <div className="admin-d1-quota-content">
+            <span className="admin-d1-quota-icon">⏳</span>
+            <div className="admin-d1-quota-text">
+              <strong>
+                {lang === "sv"
+                  ? "Cloudflare D1-kvot uppnådd (daglig radläsningsgräns nådd)"
+                  : "Cloudflare D1 Quota Reached (Daily Read Limit Exceeded)"}
+              </strong>
+              <p>
+                {lang === "sv"
+                  ? "Kontots kostnadsfria gräns för D1-radläsningar har överskridits. Automatiska runtime-checks är pausade för att spara bandbredd och undvika onödiga Cloudflare-anrop. Kvoten återställs vid midnatt UTC."
+                  : "The account's free tier daily row read limit for D1 has been exceeded. Automatic runtime checks are paused to conserve bandwidth and prevent unnecessary Cloudflare requests. Limit resets at midnight UTC."}
+              </p>
+            </div>
+          </div>
+          <div className="admin-d1-quota-actions">
+            <button
+              type="button"
+              className="admin-d1-quota-btn"
+              onClick={() => void runAdminSelfCheck(undefined, true)}
+              disabled={schemaBusy}
+            >
+              {lang === "sv" ? "Kör kontroll ändå" : "Force check anyway"}
+            </button>
+            <button
+              type="button"
+              className="admin-d1-quota-btn secondary"
+              onClick={clearD1QuotaBlock}
+            >
+              {lang === "sv" ? "Återställ spärr" : "Reset pause"}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       {hasAdminAuth ? (
-        <div className={`admin-schema-panel ${schemaStatus?.ready ? "ready" : "needs-setup"}`}>
+        <div className={`admin-schema-panel ${d1QuotaExceeded ? "quota-paused" : schemaStatus?.ready ? "ready" : "needs-setup"}`}>
           <div className="admin-schema-copy">
-            <span>{schemaStatus?.ready ? (lang === "sv" ? "Runtime redo" : "Runtime ready") : lang === "sv" ? "Runtime-check" : "Runtime check"}</span>
-            <small>{schemaStatusText(schemaStatus, lang)}</small>
+            <span>
+              {d1QuotaExceeded
+                ? (lang === "sv" ? "Pausad (D1-kvot nådd)" : "Paused (D1 quota reached)")
+                : schemaStatus?.ready
+                  ? (lang === "sv" ? "Runtime redo" : "Runtime ready")
+                  : lang === "sv" ? "Runtime-check" : "Runtime check"}
+            </span>
+            <small>
+              {d1QuotaExceeded
+                ? (lang === "sv" ? "Automatiska Cloudflare-anrop stoppade för att spara bandbredd" : "Automatic Cloudflare requests paused to conserve bandwidth")
+                : schemaStatusText(schemaStatus, lang)}
+            </small>
           </div>
           <button
             type="button"
             className="admin-schema-btn"
-            onClick={() => void runAdminSelfCheck()}
+            onClick={() => void runAdminSelfCheck(undefined, true)}
             disabled={!hasAdminAuth || schemaBusy}
-            title={lang === "sv" ? "Kontrollera token, DB och adminschema" : "Check token, DB, and admin schema"}
+            title={
+              d1QuotaExceeded
+                ? (lang === "sv" ? "Kör runtime-check mot Cloudflare ändå" : "Run runtime check against Cloudflare anyway")
+                : (lang === "sv" ? "Kontrollera token, DB och adminschema" : "Check token, DB, and admin schema")
+            }
           >
             {schemaBusy ? <CircleNotch size={14} className="animate-spin" /> : <ShieldCheck size={14} weight="bold" />}
-            {schemaBusy ? (lang === "sv" ? "Kollar" : "Checking") : schemaStatus?.ready ? (lang === "sv" ? "Kolla igen" : "Recheck") : lang === "sv" ? "Kör check" : "Run check"}
+            {schemaBusy
+              ? (lang === "sv" ? "Kollar" : "Checking")
+              : d1QuotaExceeded
+                ? (lang === "sv" ? "Kör ändå" : "Check anyway")
+                : schemaStatus?.ready
+                  ? (lang === "sv" ? "Kolla igen" : "Recheck")
+                  : lang === "sv" ? "Kör check" : "Run check"}
           </button>
         </div>
       ) : null}

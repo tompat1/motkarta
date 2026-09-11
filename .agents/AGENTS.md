@@ -128,9 +128,9 @@ chains (`Nespresso`, `Kahls`, `Wayne's Coffee`, `Espresso House`, `Starbucks`,
 
 From now on, to eliminate technical debt, prevent regressions, and enforce 100% reliability across all AI agents and contributors:
 
-1. **Mandatory PR Approval & Planning**:
-   - For non-trivial code changes, refactors, or new features, generate an `implementation_plan.md` artifact detailing proposed modifications, risks, and verification steps.
-   - Seek user PR approval before executing code changes.
+1. **Autonomous Direct Completion & Walkthrough (No Approval Blocking)**:
+   - Complete edits and implementation directly (autocomplete/execute changes without requiring constant manual "accept all changes" or interactive approval stops).
+   - Once implementation and the verification gate pass, present a clear, comprehensive `walkthrough.md` artifact summarizing all changes and verification results as usual.
 
 2. **Mandatory 4-Tier Full Test Coverage Gate (Before Push / Deploy / Sync / Completion)**:
    All AI agents and developers MUST follow [`directives/testing_and_deployment.md`](../directives/testing_and_deployment.md) and verify 100% pass across all 4 test tiers with zero failures before declaring any task complete, pushing code, or running deployments (`npm run build`, `npm run deploy:cloudflare`, `git push`, dataset syncs):

@@ -208,4 +208,17 @@ test("admin guide panel provides explicit instructions for map inspector and rev
   assert.ok(content.includes("Om knappen är låst (grå)"));
 });
 
+test("isD1QuotaError detects Cloudflare D1 row read limit error strings", async () => {
+  const { isD1QuotaError } = await import("../lib/admin-d1.ts");
+  assert.equal(
+    isD1QuotaError(
+      "D1_ERROR: Your account has exceeded D1's free tier daily row read limit. Upgrade to a paid plan or wait until tomorrow (midnight UTC) to continue.",
+    ),
+    true,
+  );
+  assert.equal(isD1QuotaError(new Error("daily row read limit")), true);
+  assert.equal(isD1QuotaError("Random connection failure"), false);
+});
+
+
 
