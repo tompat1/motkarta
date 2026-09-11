@@ -127,8 +127,96 @@ function viteSyncDevPlugin(): Plugin {
   };
 }
 
+function viteAdminDevPlugin(): Plugin {
+  return {
+    name: "vite-plugin-admin-dev-api",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (!req.url?.startsWith("/api/admin")) {
+          return next();
+        }
+
+        const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+        const pathname = url.pathname;
+        res.setHeader("Content-Type", "application/json");
+
+        if (pathname === "/api/admin/session") {
+          res.statusCode = 200;
+          return res.end(
+            JSON.stringify({
+              admin: true,
+              authMode: "dev",
+              email: "admin@motkarta.local",
+              configured: {
+                token: true,
+                accessJwt: false,
+                trustedHeaders: false,
+                emailAllowlist: false,
+              },
+            }),
+          );
+        }
+
+        if (pathname === "/api/admin/schema") {
+          res.statusCode = 200;
+          return res.end(
+            JSON.stringify({
+              source: "dev",
+              ready: true,
+              success: true,
+              baseSchemaReady: true,
+              missing: [],
+              checkedAt: new Date().toISOString(),
+            }),
+          );
+        }
+
+        if (pathname === "/api/admin/review-dashboard") {
+          res.statusCode = 200;
+          return res.end(
+            JSON.stringify({
+              source: "dev",
+              generatedAt: new Date().toISOString(),
+              nextStep: "caught_up",
+              actions: {
+                harvestNeeded: false,
+                reviewNeeded: false,
+                exportNeeded: false,
+              },
+              counts: {
+                candidateCount: 0,
+                newCandidateCount: 0,
+                hiddenGemReadyCount: 0,
+                needsEvidenceCount: 0,
+                possibleDuplicateCount: 0,
+                reviewEventCount: 0,
+                unexportedReviewCount: 0,
+              },
+              latestReviewAt: null,
+              lastExportedAt: null,
+              exportLogAvailable: false,
+            }),
+          );
+        }
+
+        if (pathname === "/api/admin/candidates") {
+          res.statusCode = 200;
+          return res.end(
+            JSON.stringify({
+              candidates: [],
+              total: 0,
+            }),
+          );
+        }
+
+        next();
+      });
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), viteSyncDevPlugin()],
+  plugins: [react(), viteSyncDevPlugin(), viteAdminDevPlugin()],
   server: {
     host: "0.0.0.0",
     allowedHosts: ["terminal.local"],
@@ -137,3 +225,4 @@ export default defineConfig({
       : {}),
   },
 });
+

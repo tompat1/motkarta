@@ -127,64 +127,105 @@ const adminReviewEventColumns = [
 ] as const;
 
 export async function onRequestGet(context: EventContext<Env>) {
-  const auth = await requireAdmin(context.request, context.env);
-  if (auth) return auth;
+  try {
+    const auth = await requireAdmin(context.request, context.env);
+    if (auth) return auth;
 
-  const db = context.env.DB as D1Database | undefined;
-  if (!db) {
+    const db = context.env.DB as D1Database | undefined;
+    if (!db) {
+      return Response.json(
+        { source: "unavailable", error: "No production D1 dataset is bound." },
+        { headers: jsonHeaders, status: 503 },
+      );
+    }
+
+    const status = await loadSchemaStatus(db);
+    return Response.json({ source: "d1", ...status }, { headers: jsonHeaders });
+  } catch (error) {
+    console.error("GET /api/admin/schema failed:", error);
     return Response.json(
-      { source: "unavailable", error: "No production D1 dataset is bound." },
-      { headers: jsonHeaders, status: 503 },
+      {
+        source: "d1",
+        ready: false,
+        baseSchemaReady: false,
+        missing: [],
+        error: error instanceof Error ? error.message : "Schema status check failed.",
+      },
+      { headers: jsonHeaders, status: 500 },
     );
   }
-
-  const status = await loadSchemaStatus(db);
-  return Response.json({ source: "d1", ...status }, { headers: jsonHeaders });
 }
 
 export async function onRequestPost(context: EventContext<Env>) {
-  const auth = await requireAdmin(context.request, context.env);
-  if (auth) return auth;
+  try {
+    const auth = await requireAdmin(context.request, context.env);
+    if (auth) return auth;
 
-  const db = context.env.DB as D1Database | undefined;
-  if (!db) {
+    const db = context.env.DB as D1Database | undefined;
+    if (!db) {
+      return Response.json(
+        { source: "unavailable", error: "No production D1 dataset is bound." },
+        { headers: jsonHeaders, status: 503 },
+      );
+    }
+
+    const before = await loadSchemaStatus(db);
+    if (before.baseSchemaReady) {
+      await ensureAdminSchema(db);
+    }
+    const after = await loadSchemaStatus(db);
+
     return Response.json(
-      { source: "unavailable", error: "No production D1 dataset is bound." },
-      { headers: jsonHeaders, status: 503 },
+      {
+        source: "d1",
+        success: after.ready,
+        applied: before.missing.length - after.missing.length,
+        before,
+        ...after,
+      },
+      { headers: jsonHeaders, status: after.ready ? 200 : 409 },
+    );
+  } catch (error) {
+    console.error("POST /api/admin/schema failed:", error);
+    return Response.json(
+      {
+        source: "d1",
+        success: false,
+        ready: false,
+        baseSchemaReady: false,
+        missing: [],
+        error: error instanceof Error ? error.message : "Schema initialization failed.",
+      },
+      { headers: jsonHeaders, status: 500 },
     );
   }
-
-  const before = await loadSchemaStatus(db);
-  if (before.baseSchemaReady) {
-    await ensureAdminSchema(db);
-  }
-  const after = await loadSchemaStatus(db);
-
-  return Response.json(
-    {
-      source: "d1",
-      success: after.ready,
-      applied: before.missing.length - after.missing.length,
-      before,
-      ...after,
-    },
-    { headers: jsonHeaders, status: after.ready ? 200 : 409 },
-  );
 }
 
 async function ensureAdminSchema(db: D1Database) {
   await ensureColumns(db, "establishments", establishmentColumns);
-  await db.prepare(createAdminReviewEventsSql()).run();
+  await tryRun(db, createAdminReviewEventsSql());
   await ensureColumns(db, "admin_review_events", adminReviewEventColumns);
-  await db.prepare(createAdminLabelExportsSql()).run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS establishments_lifecycle_idx ON establishments (lifecycle_state)").run();
+  await tryRun(db, createAdminLabelExportsSql());
+  await tryRun(
+    db,
+    "CREATE INDEX IF NOT EXISTS establishments_lifecycle_idx ON establishments (lifecycle_state)",
+  );
   await tryRun(
     db,
     "CREATE UNIQUE INDEX IF NOT EXISTS establishments_candidate_source_unique_idx ON establishments (candidate_source_type, candidate_source_id)",
   );
-  await db.prepare("CREATE INDEX IF NOT EXISTS establishments_duplicate_resolution_idx ON establishments (duplicate_resolution, merged_into_establishment_id)").run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS admin_review_events_establishment_idx ON admin_review_events (establishment_id, reviewed_at)").run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS admin_label_exports_exported_at_idx ON admin_label_exports (exported_at)").run();
+  await tryRun(
+    db,
+    "CREATE INDEX IF NOT EXISTS establishments_duplicate_resolution_idx ON establishments (duplicate_resolution, merged_into_establishment_id)",
+  );
+  await tryRun(
+    db,
+    "CREATE INDEX IF NOT EXISTS admin_review_events_establishment_idx ON admin_review_events (establishment_id, reviewed_at)",
+  );
+  await tryRun(
+    db,
+    "CREATE INDEX IF NOT EXISTS admin_label_exports_exported_at_idx ON admin_label_exports (exported_at)",
+  );
 }
 
 async function tryRun(db: D1Database, sql: string) {
@@ -203,7 +244,7 @@ async function ensureColumns(
   const existingColumns = await loadColumnSet(db, table);
   for (const column of columns) {
     if (!existingColumns.has(column.column)) {
-      await db.prepare(column.sql).run();
+      await tryRun(db, column.sql);
     }
   }
 }

@@ -156,6 +156,76 @@ test("admin schema POST reports missing base schema without creating arbitrary a
   assert.equal(db.tables.admin_review_events, undefined);
 });
 
+test("admin schema GET catches unexpected database errors and returns JSON error", async () => {
+  const brokenDb = {
+    prepare() {
+      throw new Error("D1 connection lost");
+    },
+  };
+
+  const response = await getAdminSchema({
+    request: new Request("https://motkarta.test/api/admin/schema", {
+      headers: { "x-motkarta-admin-token": adminToken },
+    }),
+    env: { DB: brokenDb, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 500);
+  assert.equal(payload.ready, false);
+  assert.match(payload.error, /D1 connection lost/);
+});
+
+test("admin schema POST catches unexpected database errors and returns JSON error", async () => {
+  const brokenDb = {
+    prepare() {
+      throw new Error("D1 database locked");
+    },
+  };
+
+  const response = await postAdminSchema({
+    request: new Request("https://motkarta.test/api/admin/schema", {
+      method: "POST",
+      headers: { "x-motkarta-admin-token": adminToken },
+    }),
+    env: { DB: brokenDb, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 500);
+  assert.equal(payload.ready, false);
+  assert.match(payload.error, /D1 database locked/);
+});
+
+test("admin schema POST succeeds even if index creation throws", async () => {
+  const db = fakeSchemaD1({
+    establishments: ["id", "name", "type", "district", "description", "created_at", "updated_at"],
+  });
+  const originalPrepare = db.prepare.bind(db);
+  db.prepare = (query) => {
+    const stmt = originalPrepare(query);
+    if (query.includes("CREATE INDEX")) {
+      stmt.run = async () => {
+        throw new Error("Index creation failed temporarily");
+      };
+    }
+    return stmt;
+  };
+
+  const response = await postAdminSchema({
+    request: new Request("https://motkarta.test/api/admin/schema", {
+      method: "POST",
+      headers: { "x-motkarta-admin-token": adminToken },
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.success, true);
+  assert.equal(payload.ready, true);
+});
+
 function fakeSchemaD1(initialTables) {
   const db = {
     tables: Object.fromEntries(

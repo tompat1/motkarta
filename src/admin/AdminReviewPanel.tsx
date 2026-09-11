@@ -326,7 +326,12 @@ export function AdminReviewPanel({
         const payload = (await response.json().catch(() => ({}))) as AdminSchemaStatus;
 
         if (!response.ok) {
-          throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte läsa schema-status." : "Could not read schema status."));
+          throw new Error(
+            payload.error ??
+              (lang === "sv"
+                ? `Kunde inte läsa schema-status (HTTP ${response.status}).`
+                : `Could not read schema status (HTTP ${response.status}).`),
+          );
         }
 
         setSchemaStatus(payload);
@@ -356,7 +361,12 @@ export function AdminReviewPanel({
         const payload = (await response.json().catch(() => ({}))) as AdminSchemaStatus;
 
         if (!response.ok) {
-          throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte köra runtime-check." : "Could not run runtime check."));
+          throw new Error(
+            payload.error ??
+              (lang === "sv"
+                ? `Kunde inte köra runtime-check (HTTP ${response.status}).`
+                : `Could not run runtime check (HTTP ${response.status}).`),
+          );
         }
 
         setSchemaStatus(payload);
