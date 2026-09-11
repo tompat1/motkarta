@@ -71,3 +71,22 @@ test("exportEvaluationsAsJson formats DPO pairs for Cloudflare Workers AI", () =
   assert.ok(parsed.dpoPairs[0].prompt);
   assert.ok(parsed.dpoPairs[0].chosen);
 });
+
+test("simulateRagEvaluation and getInitialRagEvaluations support English localization", async () => {
+  const { getInitialRagEvaluations } = await import("../lib/admin-rag-eval.ts");
+
+  // English simulation test
+  const enResult = simulateRagEvaluation("Pizza", "en");
+  assert.equal(enResult.area, "Stockholm City Center");
+  assert.ok(enResult.superpower.includes("Pizza"));
+  assert.ok(enResult.factualityScore.includes("Zero Hallucinated Attributes"));
+  assert.ok(enResult.sampleMatch.includes("Verified Double-Lock"));
+
+  // English initial evaluations test
+  const enDefaults = getInitialRagEvaluations("en");
+  assert.equal(enDefaults.length, 2);
+  assert.equal(enDefaults[0].extractedCuisine, "European Dining (Previous Bug)");
+  assert.ok(enDefaults[0].feedbackNotes.includes("Previously, a general query"));
+  assert.ok(enDefaults[0].tags.includes("❌ Wrong category/cuisine"));
+  assert.ok(!enDefaults[0].formattedTime.includes("kl."));
+});

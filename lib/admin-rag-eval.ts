@@ -79,9 +79,11 @@ export function simulateRagEvaluation(
   const raw = queryText.trim();
   const q = raw.toLowerCase();
 
+  const isEn = lang === "en";
+
   // 1. Cuisine / Venue Type Detection
-  let cuisine = "Kvarterskrog & Matupplevelse";
-  let superpower = "Kvarterskrog";
+  let cuisine = isEn ? "Neighborhood Dining & Food Culture" : "Kvarterskrog & Matupplevelse";
+  let superpower = isEn ? "Independent Neighborhood Gem" : "Kvarterskrog";
   let excludedChains = ["Starbucks", "Espresso House", "Wayne's Coffee", "McDonald's", "Burger King"];
   let candidates: Array<{ name: string; address: string; tags: string; verified: boolean }> = [];
 
@@ -184,7 +186,7 @@ export function simulateRagEvaluation(
     q.includes("terrass");
 
   // 2. District Detection
-  let area = "Stockholm Innerstad";
+  let area = isEn ? "Stockholm City Center" : "Stockholm Innerstad";
   if (
     q.includes("söder") ||
     q.includes("södermalm") ||
@@ -223,7 +225,7 @@ export function simulateRagEvaluation(
     q.includes("hötorget") ||
     q.includes("centralen")
   ) {
-    area = "Norrmalm / City";
+    area = isEn ? "Norrmalm / City" : "Norrmalm / City";
   } else if (
     q.includes("kransen") ||
     q.includes("midsommarkransen") ||
@@ -231,277 +233,277 @@ export function simulateRagEvaluation(
     q.includes("gröndal") ||
     q.includes("enskede")
   ) {
-    area = "Söderort (Midsommarkransen / Aspudden)";
+    area = isEn ? "South Suburbs (Midsommarkransen / Aspudden)" : "Söderort (Midsommarkransen / Aspudden)";
   }
 
   // 3. Match candidate venues and assign cuisine/superpower
   if (isPizza) {
-    cuisine = "Pizza / Pizzeria (Napolitansk & Hantverk)";
-    superpower = "Hantverkspizza & Surdeg";
+    cuisine = isEn ? "Pizza / Pizzeria (Neapolitan & Craft)" : "Pizza / Pizzeria (Napolitansk & Hantverk)";
+    superpower = isEn ? "Craft Pizza & Sourdough" : "Hantverkspizza & Surdeg";
     excludedChains = ["Pizza Hut", "Domino's", "Espresso House", "Starbucks", "McDonald's"];
     candidates = [
       {
         name: "Omnipollos Hatt",
         address: "Hökens gata 1A, Södermalm",
-        tags: "Hantverkspizza på surdeg · Eget mikrobryggeri · Naturvin",
+        tags: isEn ? "Craft sourdough pizza · Microbrewery beer · Natural wine" : "Hantverkspizza på surdeg · Eget mikrobryggeri · Naturvin",
         verified: true,
       },
       {
         name: "Crisp Pizza Social",
         address: "Kocksgatan 34, Södermalm",
-        tags: "Romersk krispig al taglio & hela pizzor · Hantverksdeg",
+        tags: isEn ? "Roman crisp al taglio & whole pizzas · Artisan dough" : "Romersk krispig al taglio & hela pizzor · Hantverksdeg",
         verified: true,
       },
       {
         name: "800 Grader",
         address: "Sigtunagatan 17, Vasastan",
-        tags: "Klassisk napolitansk vedugnspizza · Egen tomatsås",
+        tags: isEn ? "Classic Neapolitan wood-fired pizza · House tomato sauce" : "Klassisk napolitansk vedugnspizza · Egen tomatsås",
         verified: true,
       },
       {
         name: "Bitza",
         address: "Hornstulls strand 7, Södermalm",
-        tags: "Arabisk-italiensk fusionpizza · Vedugnsbakat tunnbröd",
+        tags: isEn ? "Arabic-Italian fusion pizza · Wood-fired flatbread" : "Arabisk-italiensk fusionpizza · Vedugnsbakat tunnbröd",
         verified: true,
       },
     ];
   } else if (isCoffee) {
-    cuisine = "Specialty Coffee / Café (Guldstandard)";
-    superpower = "Dubbellås Specialty Coffee (15 kurerade rosterier)";
+    cuisine = isEn ? "Specialty Coffee / Café (Gold Standard)" : "Specialty Coffee / Café (Guldstandard)";
+    superpower = isEn ? "Double-Lock Specialty Coffee (15 curated roasters)" : "Dubbellås Specialty Coffee (15 kurerade rosterier)";
     excludedChains = ["Starbucks", "Espresso House", "Wayne's Coffee", "Bönor & Blad", "Kahls", "McDonald's"];
     candidates = [
       {
         name: "Drop Coffee",
         address: "Wollmar Yxkullsgatan 10, Södermalm",
-        tags: "Eget rosteri · Single Origin · VM-rostare · Dubbellås",
+        tags: isEn ? "In-house roastery · Single Origin · World Roasting Championship · Double-lock" : "Eget rosteri · Single Origin · VM-rostare · Dubbellås",
         verified: true,
       },
       {
         name: "Café Pascal",
         address: "Norrtullsgatan 4, Vasastan / Skånegatan 76, Söder",
-        tags: "Specialty Coffee · Eget hantverksbageri · Guldstandard",
+        tags: isEn ? "Specialty coffee · Artisan in-house bakery · Gold standard" : "Specialty Coffee · Eget hantverksbageri · Guldstandard",
         verified: true,
       },
       {
         name: "Lykke Kaffegårdar",
         address: "Nytorgsgatan 38, Södermalm",
-        tags: "Kooperativt odlat specialkaffe · Hantverksbryggning",
+        tags: isEn ? "Cooperatively farmed specialty coffee · Craft brewing" : "Kooperativt odlat specialkaffe · Hantverksbryggning",
         verified: true,
       },
       {
         name: "Solkant Kaffe",
         address: "Skånegatan, Södermalm",
-        tags: "Mikrorosteri · Specialkaffe · Dubbellås-verifierad",
+        tags: isEn ? "Micro-roastery · Specialty coffee · Verified double-lock" : "Mikrorosteri · Specialkaffe · Dubbellås-verifierad",
         verified: true,
       },
     ];
   } else if (isCzechBeer) {
-    cuisine = "Tjeckiskt / Hantverksöl & Klassisk Krog";
-    superpower = "Äkta Tankpilsner & Eget Mikrobryggeri";
+    cuisine = isEn ? "Czech / Craft Beer & Classic Pub" : "Tjeckiskt / Hantverksöl & Klassisk Krog";
+    superpower = isEn ? "Authentic Tank Pilsner & Microbrewery" : "Äkta Tankpilsner & Eget Mikrobryggeri";
     excludedChains = ["O'Learys", "Harrys", "Starbucks", "Espresso House", "McDonald's"];
     candidates = [
       {
         name: "Soldaten Svejk",
         address: "Östgötagatan 11, Södermalm",
-        tags: "Äkta tjeckisk pilsner på tank · Klassiska schnitzlar · Dubbellås",
+        tags: isEn ? "Authentic Czech tank pilsner · Classic schnitzel · Double-lock" : "Äkta tjeckisk pilsner på tank · Klassiska schnitzlar · Dubbellås",
         verified: true,
       },
       {
         name: "Akkurat",
         address: "Hornsgatan 18, Södermalm",
-        tags: "Världsberömd öl- & whiskykrog · Oberoende hantverksbryggerier",
+        tags: isEn ? "World-renowned beer & whisky tavern · Independent craft breweries" : "Världsberömd öl- & whiskykrog · Oberoende hantverksbryggerier",
         verified: true,
       },
       {
         name: "Oliver Twist",
         address: "Repslagargatan 6, Södermalm",
-        tags: "Pionjär inom oberoende svensk & internationell craft beer",
+        tags: isEn ? "Pioneer in Swedish & international craft beer" : "Pionjär inom oberoende svensk & internationell craft beer",
         verified: true,
       },
     ];
   } else if (isBakery) {
-    cuisine = "Hantverksbageri / Surdeg & Fika";
-    superpower = "Stenugnsbakat Surdegsbröd";
+    cuisine = isEn ? "Artisan Bakery / Sourdough & Fika" : "Hantverksbageri / Surdeg & Fika";
+    superpower = isEn ? "Stone Oven Sourdough Bakery" : "Stenugnsbakat Surdegsbröd";
     excludedChains = ["Espresso House", "Gateau", "Starbucks", "Pressbyrån", "7-Eleven"];
     candidates = [
       {
         name: "Bageri Petrus",
         address: "Swedenborgsgatan 7, Södermalm",
-        tags: "Stenugnsbakat surdegsbröd · Kardemummabullar · Hantverk",
+        tags: isEn ? "Stone-oven sourdough bread · Cardamom buns · Craft bakery" : "Stenugnsbakat surdegsbröd · Kardemummabullar · Hantverk",
         verified: true,
       },
       {
         name: "Svedjan Bageri",
         address: "Brännkyrkagatan 88, Södermalm",
-        tags: "Gårdsbageri · Eget smör & hantverksbullar",
+        tags: isEn ? "Farm bakery · Artisanal farm butter & craft buns" : "Gårdsbageri · Eget smör & hantverksbullar",
         verified: true,
       },
       {
         name: "Lillebrors Bageri",
         address: "Rörstrandsgatan 12, Vasastan",
-        tags: "Färskgräddade croissanter & bullar vid Karlbergsvägen",
+        tags: isEn ? "Fresh-baked croissants & buns in Karlbergsvägen" : "Färskgräddade croissanter & bullar vid Karlbergsvägen",
         verified: true,
       },
     ];
   } else if (isItalianPasta) {
-    cuisine = "Italienskt / Trattoria & Färsk Pasta";
-    superpower = "Handgjord Färsk Pasta";
+    cuisine = isEn ? "Italian / Trattoria & Fresh Pasta" : "Italienskt / Trattoria & Färsk Pasta";
+    superpower = isEn ? "Handmade Fresh Pasta" : "Handgjord Färsk Pasta";
     excludedChains = ["Vapiano", "Pizza Hut", "McDonald's", "Espresso House"];
     candidates = [
       {
         name: "Gazza",
         address: "Hornsgatan 66, Södermalm",
-        tags: "Färsk handgjord pasta · Naturvin · Kvarterstrattoria",
+        tags: isEn ? "Fresh handmade pasta · Natural wine · Neighborhood trattoria" : "Färsk handgjord pasta · Naturvin · Kvarterstrattoria",
         verified: true,
       },
       {
         name: "L'Avventura",
         address: "Sveavägen 77, Vasastan",
-        tags: "Klassisk italiensk matsal i ombyggd biograf · Färsk pasta",
+        tags: isEn ? "Classic Italian dining room in a converted cinema · Fresh pasta" : "Klassisk italiensk matsal i ombyggd biograf · Färsk pasta",
         verified: true,
       },
     ];
   } else if (isJapaneseRamen) {
-    cuisine = "Japanskt / Autentisk Ramen & Izakaya";
-    superpower = "Egentillverkade Nudlar & Långkokt Buljong";
+    cuisine = isEn ? "Japanese / Authentic Ramen & Izakaya" : "Japanskt / Autentisk Ramen & Izakaya";
+    superpower = isEn ? "Craft Noodles & Slow-cooked Broth" : "Egentillverkade Nudlar & Långkokt Buljong";
     excludedChains = ["Sushi Yama", "McDonald's", "Starbucks"];
     candidates = [
       {
         name: "Totemo Ramen",
         address: "Sankt Eriksgatan 70, Vasastan",
-        tags: "Hantverksnudlar · 12h långkokt buljong · Begränsade portioner",
+        tags: isEn ? "Handcrafted noodles · 12h slow-cooked broth · Limited daily batches" : "Hantverksnudlar · 12h långkokt buljong · Begränsade portioner",
         verified: true,
       },
       {
         name: "Ai Ramen",
         address: "Erstagatan 22, Södermalm",
-        tags: "Egentillverkade ramen-nudlar · Tonkotsu & veganska buljonger",
+        tags: isEn ? "Housemade ramen noodles · Tonkotsu & vegan broths" : "Egentillverkade ramen-nudlar · Tonkotsu & veganska buljonger",
         verified: true,
       },
       {
         name: "Blue Light Yokohama",
         address: "Åsögatan 170, Södermalm",
-        tags: "Autentisk japansk izakaya & smårätter",
+        tags: isEn ? "Authentic Japanese izakaya & small plates" : "Autentisk japansk izakaya & smårätter",
         verified: true,
       },
     ];
   } else if (isFrenchBistro) {
-    cuisine = "Franskt / Kvartersbistro";
-    superpower = "Klassisk Fransk Matlagning";
+    cuisine = isEn ? "French / Neighborhood Bistro" : "Franskt / Kvartersbistro";
+    superpower = isEn ? "Classic French Cooking" : "Klassisk Fransk Matlagning";
     excludedChains = ["McDonald's", "Espresso House", "O'Learys"];
     candidates = [
       {
         name: "Bistro Barbro",
         address: "Hornstulls strand 9, Södermalm",
-        tags: "Asiatisk-fransk bistro under bron · Hundvänligt (Tasstipset)",
+        tags: isEn ? "Asian-French bistro under the bridge · Dog-friendly (Tasstipset)" : "Asiatisk-fransk bistro under bron · Hundvänligt (Tasstipset)",
         verified: true,
       },
       {
         name: "Babette",
         address: "Roslagsgatan 16, Vasastan",
-        tags: "Kvarterskrog · Dagligen skiftande meny · Hantverksvin",
+        tags: isEn ? "Neighborhood bistro · Daily changing menu · Artisan wine" : "Kvarterskrog · Dagligen skiftande meny · Hantverksvin",
         verified: true,
       },
     ];
   } else if (isSwedishHusman) {
-    cuisine = "Svensk Husmanskost & Historisk Krog";
-    superpower = "Traditionell Husmanskost";
+    cuisine = isEn ? "Swedish Home Cooking & Historic Tavern" : "Svensk Husmanskost & Historisk Krog";
+    superpower = isEn ? "Traditional Home Cooking" : "Traditionell Husmanskost";
     excludedChains = ["McDonald's", "Max", "Burger King", "O'Learys"];
     candidates = [
       {
         name: "Tennstopet",
         address: "Dalagatan 50, Vasastan",
-        tags: "Klassisk svensk husmanskost · Oxbringa, strömming & sill",
+        tags: isEn ? "Classic Swedish home cooking · Cured beef, herring & toast" : "Klassisk svensk husmanskost · Oxbringa, strömming & sill",
         verified: true,
       },
       {
         name: "Pelikan",
         address: "Blekingegatan 40, Södermalm",
-        tags: "Historisk jugendölhall · Köttbullar & fläsklägg sedan 1904",
+        tags: isEn ? "Historic Art Nouveau beer hall · Meatballs & pork shank since 1904" : "Historisk jugendölhall · Köttbullar & fläsklägg sedan 1904",
         verified: true,
       },
     ];
   } else if (isBurger) {
-    cuisine = "Burgare / Hantverks-smashburgers";
-    superpower = "Färskmalet Nötkött & Egenbakat Brioche";
+    cuisine = isEn ? "Burgers / Artisan Smashburgers" : "Burgare / Hantverks-smashburgers";
+    superpower = isEn ? "Fresh Ground Swedish Beef & Brioche" : "Färskmalet Nötkött & Egenbakat Brioche";
     excludedChains = ["McDonald's", "Burger King", "MAX", "Subway"];
     candidates = [
       {
         name: "Franky's Burger",
         address: "Tegnérgatan 16, Vasastan",
-        tags: "Hantverksburgare · Färskmalet svenskt kött · Dubbellås",
+        tags: isEn ? "Artisan smashburgers · Fresh-ground Swedish beef · Double-lock" : "Hantverksburgare · Färskmalet svenskt kött · Dubbellås",
         verified: true,
       },
       {
         name: "Barrels Burgers & Beer",
         address: "Stora Nygatan 20, Gamla Stan",
-        tags: "Egenbakat briochebröd · Lokalt bryggd craft beer",
+        tags: isEn ? "In-house baked brioche buns · Locally brewed craft beer" : "Egenbakat briochebröd · Lokalt bryggd craft beer",
         verified: true,
       },
     ];
   } else if (isMexican) {
-    cuisine = "Mexikanskt / Autentisk Taqueria";
-    superpower = "Hemgjord Masa & Långkok";
+    cuisine = isEn ? "Mexican / Authentic Taqueria" : "Mexikanskt / Autentisk Taqueria";
+    superpower = isEn ? "Housemade Masa & Slow Braises" : "Hemgjord Masa & Långkok";
     excludedChains = ["Taco Bar", "McDonald's", "Subway"];
     candidates = [
       {
         name: "La Neta",
         address: "Barnhusgatan 2, Norrmalm / Östgötagatan 12, Söder",
-        tags: "Autentiska mexikanska tacos · Egenbakade majstortillas",
+        tags: isEn ? "Authentic Mexican tacos · Freshly made corn tortillas" : "Autentiska mexikanska tacos · Egenbakade majstortillas",
         verified: true,
       },
       {
         name: "Chelas",
         address: "Verkstadsgatan 4, Hornstull",
-        tags: "Mexikansk krog i Hornstull · Småskaligt och familjärt",
+        tags: isEn ? "Neighborhood Mexican tavern in Hornstull · Small-scale & family-run" : "Mexikansk krog i Hornstull · Småskaligt och familjärt",
         verified: true,
       },
     ];
   } else if (isWineBar) {
-    cuisine = "Naturvin & Hantverksvinbar";
-    superpower = "Småskaliga Naturviner utan Tillsatser";
+    cuisine = isEn ? "Natural Wine & Craft Wine Bar" : "Naturvin & Hantverksvinbar";
+    superpower = isEn ? "Small-scale Natural Wines" : "Småskaliga Naturviner utan Tillsatser";
     excludedChains = ["O'Learys", "Espresso House", "Starbucks"];
     candidates = [
       {
         name: "Savant Bar",
         address: "Tegnérgatan 4, Vasastan",
-        tags: "Naturvinsbar · Cirkulärt tänkande & noll matsvinn",
+        tags: isEn ? "Natural wine bar · Circular ethos & zero food waste" : "Naturvinsbar · Cirkulärt tänkande & noll matsvinn",
         verified: true,
       },
       {
         name: "Tyge & Sessil",
         address: "Kommendörsgatan 10, Östermalm",
-        tags: "Naturvin från småskaliga europeiska bönder",
+        tags: isEn ? "Natural wine from small-scale European growers" : "Naturvin från småskaliga europeiska bönder",
         verified: true,
       },
       {
         name: "Grus Grus",
         address: "Karlbergsvägen 14, Vasastan",
-        tags: "Vinbar & bistromat vid Odenplan · Obehandlade viner",
+        tags: isEn ? "Wine bar & bistro near Odenplan · Unadulterated wines" : "Vinbar & bistromat vid Odenplan · Obehandlade viner",
         verified: true,
       },
     ];
   } else {
     // Default fallback with strong Stockholm favorites
-    cuisine = "Kvarterskrog & Oberoende Matkultur";
-    superpower = "Oberoende Kvarterskrog";
+    cuisine = isEn ? "Neighborhood Dining & Independent Food Culture" : "Kvarterskrog & Oberoende Matkultur";
+    superpower = isEn ? "Independent Neighborhood Gem" : "Oberoende Kvarterskrog";
     candidates = [
       {
         name: "Soldaten Svejk",
         address: "Östgötagatan 11, Södermalm",
-        tags: "Oberoende kvarterskrog · Tjeckisk pilsner & husmanskost",
+        tags: isEn ? "Independent neighborhood tavern · Czech pilsner & traditional fare" : "Oberoende kvarterskrog · Tjeckisk pilsner & husmanskost",
         verified: true,
       },
       {
         name: "Drop Coffee",
         address: "Wollmar Yxkullsgatan 10, Södermalm",
-        tags: "Specialty Coffee · Eget rosteri · Single Origin",
+        tags: isEn ? "Specialty coffee · In-house roastery · Single Origin" : "Specialty Coffee · Eget rosteri · Single Origin",
         verified: true,
       },
       {
         name: "800 Grader",
         address: "Sigtunagatan 17, Vasastan",
-        tags: "Napolitansk hantverkspizza med surdeg",
+        tags: isEn ? "Neapolitan artisan pizza with sourdough crust" : "Napolitansk hantverkspizza med surdeg",
         verified: true,
       },
     ];
@@ -509,10 +511,10 @@ export function simulateRagEvaluation(
 
   // Adjust superpower if dog or outdoor seating specified
   if (isDog) {
-    superpower = "Hundvänligt (Verifierad Tasstipset) · " + superpower;
+    superpower = (isEn ? "Dog-Friendly (Verified Tasstipset) · " : "Hundvänligt (Verifierad Tasstipset) · ") + superpower;
   }
   if (isOutdoor) {
-    superpower = "Uteservering & Solkant · " + superpower;
+    superpower = (isEn ? "Outdoor Seating & Sunny Terrace · " : "Uteservering & Solkant · ") + superpower;
   }
 
   // Filter candidates matching area if specific
@@ -525,13 +527,20 @@ export function simulateRagEvaluation(
   }
 
   // Build factual sample match text
+  const statusLabel = (verified: boolean) =>
+    isEn
+      ? verified ? "Verified Double-Lock" : "Active"
+      : verified ? "Verifierad Dubbellås" : "Aktiv";
+
   const matchLines = candidates.map(
     (c, idx) =>
-      `${idx + 1}. ${c.name} (${c.address}) · ${c.tags} · [Status: ${c.verified ? "Verifierad Dubbellås" : "Aktiv"}]`,
+      `${idx + 1}. ${c.name} (${c.address}) · ${c.tags} · [Status: ${statusLabel(c.verified)}]`,
   );
 
   const sampleMatch = matchLines.join("\n");
-  const factualityScore = "100% (Zero Hallucinated Attributes · Inga syntetiska gissningar)";
+  const factualityScore = isEn
+    ? "100% (Zero Hallucinated Attributes · No Synthetic Guesses)"
+    : "100% (Zero Hallucinated Attributes · Inga syntetiska gissningar)";
 
   return {
     query: raw,
@@ -551,7 +560,7 @@ export const INITIAL_RAG_EVALUATIONS: RagEvaluationRecord[] = [
   {
     id: "eval_preset_1",
     timestamp: Date.now() - 3600000 * 2,
-    formattedTime: formatEuropeanDateTime(Date.now() - 3600000 * 2),
+    formattedTime: formatEuropeanDateTime(Date.now() - 3600000 * 2, "sv"),
     query: "Pizza",
     rating: "bad",
     extractedCuisine: "Europeiskt (Tidigare fel)",
@@ -569,7 +578,7 @@ export const INITIAL_RAG_EVALUATIONS: RagEvaluationRecord[] = [
   {
     id: "eval_preset_2",
     timestamp: Date.now() - 3600000 * 1,
-    formattedTime: formatEuropeanDateTime(Date.now() - 3600000 * 1),
+    formattedTime: formatEuropeanDateTime(Date.now() - 3600000 * 1, "sv"),
     query: "Mysigt café med bra espresso på Södermalm",
     rating: "good",
     extractedCuisine: "Specialty Coffee / Café (Guldstandard)",
@@ -587,25 +596,70 @@ export const INITIAL_RAG_EVALUATIONS: RagEvaluationRecord[] = [
   },
 ];
 
+export const INITIAL_RAG_EVALUATIONS_EN: RagEvaluationRecord[] = [
+  {
+    id: "eval_preset_1",
+    timestamp: Date.now() - 3600000 * 2,
+    formattedTime: formatEuropeanDateTime(Date.now() - 3600000 * 2, "en"),
+    query: "Pizza",
+    rating: "bad",
+    extractedCuisine: "European Dining (Previous Bug)",
+    targetDistrict: "Stockholm City Center",
+    superpower: "Neighborhood Gem",
+    excludedChains: ["Starbucks", "Espresso House", "Wayne's Coffee", "McDonald's"],
+    sampleMatch: "Bageri Petrus (Swedenborgsgatan 7, Södermalm) · Artisan Bakery",
+    feedbackNotes:
+      "Previously, a general query for 'Pizza' yielded a bakery (Bageri Petrus) rather than Neapolitan or Roman pizzerias. The intent parser lacked explicit mapping for pizza categories.",
+    expectedResponse:
+      "Should have returned artisan pizzerias such as Omnipollos Hatt (Södermalm), 800 Grader (Vasastan), or Crisp Pizza Social (Kocksgatan).",
+    tags: ["❌ Wrong category/cuisine", "❌ Missing known venues"],
+    factualityScore: "Calibrated via admin feedback",
+  },
+  {
+    id: "eval_preset_2",
+    timestamp: Date.now() - 3600000 * 1,
+    formattedTime: formatEuropeanDateTime(Date.now() - 3600000 * 1, "en"),
+    query: "Cozy café with great espresso in Södermalm",
+    rating: "good",
+    extractedCuisine: "Specialty Coffee / Café (Gold Standard)",
+    targetDistrict: "Södermalm",
+    superpower: "Double-Lock Specialty Coffee",
+    excludedChains: ["Starbucks", "Espresso House", "Wayne's Coffee", "Bönor & Blad"],
+    sampleMatch:
+      "1. Drop Coffee (Wollmar Yxkullsgatan 10, Södermalm) · In-house roastery · Single Origin\n2. Lykke Kaffegårdar (Nytorgsgatan 38, Södermalm) · Cooperative specialty coffee",
+    feedbackNotes:
+      "Flawless match! Retrieved both Drop Coffee and Lykke, automatically filtered Espresso House and Starbucks, and remained strictly within Södermalm.",
+    expectedResponse:
+      "Drop Coffee, Lykke Kaffegårdar, or Café Pascal on Skånegatan.",
+    tags: ["✅ Perfect match", "✅ Verified double-lock", "✅ Chains excluded"],
+    factualityScore: "100% (Zero Hallucinated Attributes)",
+  },
+];
+
+export function getInitialRagEvaluations(lang: Language = "sv"): RagEvaluationRecord[] {
+  return lang === "en" ? INITIAL_RAG_EVALUATIONS_EN : INITIAL_RAG_EVALUATIONS;
+}
+
 const STORAGE_KEY = "motkarta_admin_rag_evaluations_v1";
 
 /**
  * Loads stored evaluations from localStorage, or defaults to initial calibration records.
  */
-export function loadStoredRagEvaluations(): RagEvaluationRecord[] {
+export function loadStoredRagEvaluations(lang: Language = "sv"): RagEvaluationRecord[] {
+  const defaults = getInitialRagEvaluations(lang);
   if (typeof window === "undefined" || !window.localStorage) {
-    return INITIAL_RAG_EVALUATIONS;
+    return defaults;
   }
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return INITIAL_RAG_EVALUATIONS;
+    if (!raw) return defaults;
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
       return parsed as RagEvaluationRecord[];
     }
-    return INITIAL_RAG_EVALUATIONS;
+    return defaults;
   } catch {
-    return INITIAL_RAG_EVALUATIONS;
+    return defaults;
   }
 }
 
@@ -614,8 +668,9 @@ export function loadStoredRagEvaluations(): RagEvaluationRecord[] {
  */
 export function saveRagEvaluationRecord(
   record: RagEvaluationRecord,
+  lang: Language = "sv",
 ): RagEvaluationRecord[] {
-  const current = loadStoredRagEvaluations();
+  const current = loadStoredRagEvaluations(lang);
   const updated = [record, ...current.filter((r) => r.id !== record.id)];
   if (typeof window !== "undefined" && window.localStorage) {
     try {
@@ -630,8 +685,11 @@ export function saveRagEvaluationRecord(
 /**
  * Deletes an evaluation record by ID and returns the updated list.
  */
-export function deleteRagEvaluationRecord(id: string): RagEvaluationRecord[] {
-  const current = loadStoredRagEvaluations();
+export function deleteRagEvaluationRecord(
+  id: string,
+  lang: Language = "sv",
+): RagEvaluationRecord[] {
+  const current = loadStoredRagEvaluations(lang);
   const updated = current.filter((r) => r.id !== id);
   if (typeof window !== "undefined" && window.localStorage) {
     try {

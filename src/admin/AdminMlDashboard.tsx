@@ -9,6 +9,7 @@ import {
   deleteRagEvaluationRecord,
   exportEvaluationsAsJson,
   formatEuropeanDateTime,
+  getInitialRagEvaluations,
   loadStoredRagEvaluations,
   saveRagEvaluationRecord,
   simulateRagEvaluation,
@@ -503,9 +504,14 @@ export function AdminMlDashboard({
 
   // Saved evaluations & RLHF training data
   const [savedEvaluations, setSavedEvaluations] = useState<RagEvaluationRecord[]>(
-    () => loadStoredRagEvaluations(),
+    () => loadStoredRagEvaluations(lang),
   );
   const [historyFilter, setHistoryFilter] = useState<"all" | "good" | "bad">("all");
+
+  // Re-simulate RAG when language changes
+  useEffect(() => {
+    setRagResult(simulateRagEvaluation(evaluatedQuery || "Pizza", lang));
+  }, [lang, evaluatedQuery]);
 
   const handleRunRagEvaluation = (queryOverride?: string) => {
     const q = (queryOverride !== undefined ? queryOverride : testQuery).trim();
@@ -552,7 +558,7 @@ export function AdminMlDashboard({
       tags: selectedTags,
       factualityScore: ragResult.factualityScore,
     };
-    const updated = saveRagEvaluationRecord(rec);
+    const updated = saveRagEvaluationRecord(rec, lang);
     setSavedEvaluations(updated);
     setSaveSuccessMsg(
       lang === "sv"
@@ -563,7 +569,7 @@ export function AdminMlDashboard({
   };
 
   const handleDeleteEvaluation = (id: string) => {
-    const updated = deleteRagEvaluationRecord(id);
+    const updated = deleteRagEvaluationRecord(id, lang);
     setSavedEvaluations(updated);
   };
 
@@ -573,8 +579,8 @@ export function AdminMlDashboard({
         ? "Vill du rensa all sparad träningsdata och feedback för RAG?"
         : "Do you want to clear all saved RAG training feedback?";
     if (typeof window !== "undefined" && window.confirm && window.confirm(confirmMsg)) {
-      const updated = clearAllRagEvaluations();
-      setSavedEvaluations(updated);
+      clearAllRagEvaluations();
+      setSavedEvaluations(getInitialRagEvaluations(lang));
     }
   };
 
@@ -1125,43 +1131,73 @@ export function AdminMlDashboard({
                   type="button"
                   onClick={() => handleRunRagEvaluation("Pizza")}
                 >
-                  🍕 Pizza (Testa manual)
+                  {lang === "sv" ? "🍕 Pizza (Testa manual)" : "🍕 Pizza (Test manual)"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleRunRagEvaluation("Mysigt café med bra espresso på Södermalm")}
+                  onClick={() =>
+                    handleRunRagEvaluation(
+                      lang === "sv"
+                        ? "Mysigt café med bra espresso på Södermalm"
+                        : "Cozy café with great espresso in Södermalm",
+                    )
+                  }
                 >
-                  ☕ Espresso Söder
+                  {lang === "sv" ? "☕ Espresso Söder" : "☕ Espresso Söder"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleRunRagEvaluation("Tjeckisk öl och husmanskost")}
+                  onClick={() =>
+                    handleRunRagEvaluation(
+                      lang === "sv" ? "Tjeckisk öl och husmanskost" : "Czech beer and traditional fare",
+                    )
+                  }
                 >
-                  🍺 Tjeckisk öl
+                  {lang === "sv" ? "🍺 Tjeckisk öl" : "🍺 Czech Beer"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleRunRagEvaluation("Hundvänlig bistro med uteservering")}
+                  onClick={() =>
+                    handleRunRagEvaluation(
+                      lang === "sv"
+                        ? "Hundvänlig bistro med uteservering"
+                        : "Dog-friendly bistro with outdoor seating",
+                    )
+                  }
                 >
-                  🐕 Hundvänlig bistro
+                  {lang === "sv" ? "🐕 Hundvänlig bistro" : "🐕 Dog-friendly bistro"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleRunRagEvaluation("Hantverksbageri med surdegsbröd och bullar")}
+                  onClick={() =>
+                    handleRunRagEvaluation(
+                      lang === "sv"
+                        ? "Hantverksbageri med surdegsbröd och bullar"
+                        : "Artisan bakery with sourdough and pastries",
+                    )
+                  }
                 >
-                  🥐 Hantverksbageri
+                  {lang === "sv" ? "🥐 Hantverksbageri" : "🥐 Artisan Bakery"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleRunRagEvaluation("Naturvin och vinbar i Vasastan")}
+                  onClick={() =>
+                    handleRunRagEvaluation(
+                      lang === "sv" ? "Naturvin och vinbar i Vasastan" : "Natural wine and wine bar in Vasastan",
+                    )
+                  }
                 >
-                  🍷 Vinbar Vasastan
+                  {lang === "sv" ? "🍷 Vinbar Vasastan" : "🍷 Wine Bar Vasastan"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleRunRagEvaluation("Autentisk japansk ramen")}
+                  onClick={() =>
+                    handleRunRagEvaluation(
+                      lang === "sv" ? "Autentisk japansk ramen" : "Authentic Japanese ramen",
+                    )
+                  }
                 >
-                  🍜 Autentisk ramen
+                  {lang === "sv" ? "🍜 Autentisk ramen" : "🍜 Authentic Ramen"}
                 </button>
               </div>
             </div>
@@ -1281,21 +1317,38 @@ export function AdminMlDashboard({
                     </span>
                     <div className="admin-rag-tags-row">
                       {(activeRating === "bad"
-                        ? [
-                            "❌ Fel kategori/mat",
-                            "❌ Fel stadsdel/område",
-                            "❌ Kedja visades (borde filtrerats)",
-                            "❌ Hallucinerat attribut",
-                            "❌ Irrelevant förslag",
-                            "❌ Saknade kända pizzerior/krogar",
-                          ]
-                        : [
-                            "✅ Perfekt träff",
-                            "✅ Rätt dubbellås-verifiering",
-                            "✅ Kedjor exkluderade",
-                            "✅ Rätt stadsdel",
-                            "✅ Hög precision",
-                          ]
+                        ? lang === "sv"
+                          ? [
+                              "❌ Fel kategori/mat",
+                              "❌ Fel stadsdel/område",
+                              "❌ Kedja visades (borde filtrerats)",
+                              "❌ Hallucinerat attribut",
+                              "❌ Irrelevant förslag",
+                              "❌ Saknade kända pizzerior/krogar",
+                            ]
+                          : [
+                              "❌ Wrong category/cuisine",
+                              "❌ Wrong district/area",
+                              "❌ Chain displayed (should be excluded)",
+                              "❌ Hallucinated attribute",
+                              "❌ Irrelevant suggestion",
+                              "❌ Missing known venues",
+                            ]
+                        : lang === "sv"
+                          ? [
+                              "✅ Perfekt träff",
+                              "✅ Rätt dubbellås-verifiering",
+                              "✅ Kedjor exkluderade",
+                              "✅ Rätt stadsdel",
+                              "✅ Hög precision",
+                            ]
+                          : [
+                              "✅ Perfect match",
+                              "✅ Verified double-lock",
+                              "✅ Chains excluded",
+                              "✅ Correct district",
+                              "✅ High precision",
+                            ]
                       ).map((tag) => (
                         <button
                           key={tag}
@@ -1569,17 +1622,36 @@ export function AdminMlDashboard({
                 <span className="cf-badge">Workers AI Embeddings</span>
                 <span className="cf-model-tag">@cf/baai/bge-small-en-v1.5</span>
               </div>
-              <h5>1. Byt ut externa API:er mot Cloudflare Workers AI för Vektorer</h5>
+              <h5>
+                {lang === "sv"
+                  ? "1. Byt ut externa API:er mot Cloudflare Workers AI för Vektorer"
+                  : "1. Replace External APIs with Cloudflare Workers AI for Vectors"}
+              </h5>
               <p>
-                Istället för att anropa OpenAI för embeddingar kan Cloudflare Workers generera 384-dimensionella vektorer direkt på samma maskin som Cloudflare Pages och D1.
+                {lang === "sv"
+                  ? "Istället för att anropa OpenAI för embeddingar kan Cloudflare Workers generera 384-dimensionella vektorer direkt på samma maskin som Cloudflare Pages och D1."
+                  : "Instead of calling external embedding APIs with network latency, Cloudflare Workers generates 384-dimensional dense vectors directly on the same edge node as Pages and D1."}
               </p>
               <div className="cf-code-snippet">
                 <pre>
-                  <code>{`// Inuti functions/api/concierge.ts
+                  <code>{lang === "sv"
+                    ? `// Inuti functions/api/concierge.ts
 export async function onRequestPost(context) {
   const { query } = await context.request.json();
   
   // Kör BGE-vektormodell direkt i kanten (sub-5ms!)
+  const { data } = await context.env.AI.run(
+    "@cf/baai/bge-small-en-v1.5",
+    { text: [query] }
+  );
+  const queryVector = data[0];
+  ...
+}`
+                    : `// Inside functions/api/concierge.ts
+export async function onRequestPost(context) {
+  const { query } = await context.request.json();
+  
+  // Run BGE vector model directly at edge (sub-5ms!)
   const { data } = await context.env.AI.run(
     "@cf/baai/bge-small-en-v1.5",
     { text: [query] }
@@ -1595,22 +1667,37 @@ export async function onRequestPost(context) {
             <div className="admin-ml-cf-card">
               <div className="cf-card-header">
                 <span className="cf-badge">Cloudflare Vectorize</span>
-                <span className="cf-model-tag">Serverless Vector DB</span>
+                <span className="cf-model-tag">{lang === "sv" ? "Serverless Vektordatabas" : "Serverless Vector DB"}</span>
               </div>
-              <h5>2. Använd Cloudflare Vectorize för Blixtsnabb Likhetssökning</h5>
+              <h5>
+                {lang === "sv"
+                  ? "2. Använd Cloudflare Vectorize för Blixtsnabb Likhetssökning"
+                  : "2. Use Cloudflare Vectorize for Lightning-Fast Similarity Search"}
+              </h5>
               <p>
-                Vectorize är Cloudflares globalt distribuerade vektordatabas. Vi kan indexera alla ~350 restauranger i Stockholm och göra cosinus-likhetssökningar på under 4ms.
+                {lang === "sv"
+                  ? "Vectorize är Cloudflares globalt distribuerade vektordatabas. Vi kan indexera alla ~350 restauranger i Stockholm och göra cosinus-likhetssökningar på under 4ms."
+                  : "Vectorize is Cloudflare's globally distributed serverless vector database. We can index all ~350 Stockholm venues and run cosine similarity search in under 4ms."}
               </p>
               <div className="cf-code-snippet">
                 <pre>
-                  <code>{`// Sök direkt i Vectorize med stadsdelsfilter
+                  <code>{lang === "sv"
+                    ? `// Sök direkt i Vectorize med stadsdelsfilter
 const matches = await context.env.VECTORIZE.query(queryVector, {
   topK: 10,
   returnMetadata: "all",
   filter: { district: "Södermalm" }
 });
 
-// matches innehåller de mest relevanta platserna direkt!`}</code>
+// matches innehåller de mest relevanta platserna direkt!`
+                    : `// Query Vectorize directly with district filter
+const matches = await context.env.VECTORIZE.query(queryVector, {
+  topK: 10,
+  returnMetadata: "all",
+  filter: { district: "Södermalm" }
+});
+
+// matches contains the most relevant venues directly!`}</code>
                 </pre>
               </div>
             </div>
@@ -1621,18 +1708,36 @@ const matches = await context.env.VECTORIZE.query(queryVector, {
                 <span className="cf-badge">Workers AI LLM</span>
                 <span className="cf-model-tag">@cf/meta/llama-3.1-8b-instruct</span>
               </div>
-              <h5>3. Groundad Concierge RAG med Llama 3.1 i Edge</h5>
+              <h5>
+                {lang === "sv"
+                  ? "3. Groundad Concierge RAG med Llama 3.1 i Edge"
+                  : "3. Grounded Concierge RAG with Llama 3.1 at the Edge"}
+              </h5>
               <p>
-                Syntetisera trevliga och personliga svar till användaren baserat uteslutande på Motkartas verifierade fakta, utan risk för hallucinationer.
+                {lang === "sv"
+                  ? "Syntetisera trevliga och personliga svar till användaren baserat uteslutande på Motkartas verifierade fakta, utan risk för hallucinationer."
+                  : "Synthesize engaging and personalized responses based exclusively on Motkarta's verified facts, eliminating hallucination risks."}
               </p>
               <div className="cf-code-snippet">
                 <pre>
-                  <code>{`const response = await context.env.AI.run(
+                  <code>{lang === "sv"
+                    ? `const response = await context.env.AI.run(
   "@cf/meta/llama-3.1-8b-instruct",
   {
     messages: [
       { role: "system", content: "Du är Motkarta Concierge. Rekommendera ENDAST platser ur given kontext." },
       { role: "user", content: \`Fråga: \${query}\\nFakta:\\n\${facts}\` }
+    ],
+    max_tokens: 200,
+    temperature: 0.2
+  }
+);`
+                    : `const response = await context.env.AI.run(
+  "@cf/meta/llama-3.1-8b-instruct",
+  {
+    messages: [
+      { role: "system", content: "You are Motkarta Concierge. Recommend ONLY places from provided factual context." },
+      { role: "user", content: \`Query: \${query}\\nFacts:\\n\${facts}\` }
     ],
     max_tokens: 200,
     temperature: 0.2
@@ -1648,19 +1753,36 @@ const matches = await context.env.VECTORIZE.query(queryVector, {
                 <span className="cf-badge">Cloudflare Agents SDK</span>
                 <span className="cf-model-tag">Stateful Durable Objects</span>
               </div>
-              <h5>4. Autonoma AI-Agenter för Bakgrundssynkning & Drift-kontroll</h5>
+              <h5>
+                {lang === "sv"
+                  ? "4. Autonoma AI-Agenter för Bakgrundssynkning & Drift-kontroll"
+                  : "4. Autonomous AI Agents for Background Syncing & Drift Control"}
+              </h5>
               <p>
-                Använd Cloudflare Agents för att bygga en bakgrundsagent som periodiskt kontrollerar nya OSM-kandidater, kör double-lock validering och uppdaterar D1 autonomt.
+                {lang === "sv"
+                  ? "Använd Cloudflare Agents för att bygga en bakgrundsagent som periodiskt kontrollerar nya OSM-kandidater, kör double-lock validering och uppdaterar D1 autonomt."
+                  : "Use Cloudflare Agents SDK to build an autonomous background worker that periodically inspects OSM candidates, validates double-lock criteria, and updates D1."}
               </p>
               <div className="cf-code-snippet">
                 <pre>
-                  <code>{`import { Agent } from "@cloudflare/agents";
+                  <code>{lang === "sv"
+                    ? `import { Agent } from "@cloudflare/agents";
 
 export class CandidateHarvesterAgent extends Agent {
   async onSchedule() {
     // 1. Hämta nya kandidater från OSM
     // 2. Kör isolering av dolda pärlor
     // 3. Uppdatera D1 när dubbellås är verifierat
+    await this.processPendingCandidates();
+  }
+}`
+                    : `import { Agent } from "@cloudflare/agents";
+
+export class CandidateHarvesterAgent extends Agent {
+  async onSchedule() {
+    // 1. Harvest new candidates from OSM
+    // 2. Run hidden gems isolation
+    // 3. Update D1 when double-lock is verified
     await this.processPendingCandidates();
   }
 }`}</code>
@@ -1672,17 +1794,27 @@ export class CandidateHarvesterAgent extends Agent {
             <div className="admin-ml-cf-card">
               <div className="cf-card-header">
                 <span className="cf-badge">Cloudflare AI Gateway</span>
-                <span className="cf-model-tag">Observability & Cache</span>
+                <span className="cf-model-tag">{lang === "sv" ? "Observerbarhet & Cache" : "Observability & Cache"}</span>
               </div>
-              <h5>5. AI Gateway för Automatisk Caching & Kvotsparande</h5>
+              <h5>
+                {lang === "sv"
+                  ? "5. AI Gateway för Automatisk Caching & Kvotsparande"
+                  : "5. AI Gateway for Automatic Caching & Quota Protection"}
+              </h5>
               <p>
-                Eftersom användare ofta ställer liknande frågor ("bra fika i gamla stan"), kan AI Gateway cacha svaren och minska anropen med upp till 70%, vilket sparar bandbredd och resurser.
+                {lang === "sv"
+                  ? "Eftersom användare ofta ställer liknande frågor (\"bra fika i gamla stan\"), kan AI Gateway cacha svaren och minska anropen med upp till 70%, vilket sparar bandbredd och resurser."
+                  : "Because users frequently submit similar queries ('great coffee in Gamla Stan'), AI Gateway automatically caches responses and cuts API requests by up to 70%, preserving bandwidth and free-tier quotas."}
               </p>
               <div className="cf-code-snippet">
                 <pre>
-                  <code>{`// AI Gateway ger automatisk caching och rate-limiting:
+                  <code>{lang === "sv"
+                    ? `// AI Gateway ger automatisk caching och rate-limiting:
 // https://gateway.ai.cloudflare.com/v1/{account_id}/motkarta-gateway/
-// Minskar kostnader och förhindrar att gratiskvoter överskrids.`}</code>
+// Minskar kostnader och förhindrar att gratiskvoter överskrids.`
+                    : `// AI Gateway provides automatic edge caching and rate-limiting:
+// https://gateway.ai.cloudflare.com/v1/{account_id}/motkarta-gateway/
+// Reduces costs and protects against free-tier quota exhaustion.`}</code>
                 </pre>
               </div>
             </div>
@@ -1690,21 +1822,34 @@ export class CandidateHarvesterAgent extends Agent {
             {/* Tip 6 */}
             <div className="admin-ml-cf-card">
               <div className="cf-card-header">
-                <span className="cf-badge">RLHF & DPO Calibration</span>
-                <span className="cf-model-tag">Fine-Tuning & Few-Shot</span>
+                <span className="cf-badge">{lang === "sv" ? "RLHF & DPO-kalibrering" : "RLHF & DPO Calibration"}</span>
+                <span className="cf-model-tag">{lang === "sv" ? "Finjustering & Few-Shot" : "Fine-Tuning & Few-Shot"}</span>
               </div>
-              <h5>6. Träna Cloudflare Workers AI med Vår Manuella Feedback</h5>
+              <h5>
+                {lang === "sv"
+                  ? "6. Träna Cloudflare Workers AI med Vår Manuella Feedback"
+                  : "6. Train Cloudflare Workers AI with Our Manual Feedback"}
+              </h5>
               <p>
-                De sparade 👍 och 👎 utvärderingarna under flik 3 exporteras som strukturerade DPO-par (Direct Preference Optimization). Använd dem direkt som few-shot exemplars i Llama 3.1-prompterna eller för offline finjustering så att modellen aldrig upprepar felaktiga svar.
+                {lang === "sv"
+                  ? "De sparade 👍 och 👎 utvärderingarna under flik 3 exporteras som strukturerade DPO-par (Direct Preference Optimization). Använd dem direkt som few-shot exemplars i Llama 3.1-prompterna eller för offline finjustering så att modellen aldrig upprepar felaktiga svar."
+                  : "Saved 👍 and 👎 evaluations from Tab 3 export directly as structured DPO (Direct Preference Optimization) pairs. Ingest them directly as few-shot exemplars in Llama 3.1 system prompts or for offline fine-tuning so the model never repeats incorrect responses."}
               </p>
               <div className="cf-code-snippet">
                 <pre>
-                  <code>{`// Injektera sparade kalibreringspar direkt i system-prompten:
+                  <code>{lang === "sv"
+                    ? `// Injektera sparade kalibreringspar direkt i system-prompten:
 const fewShotExamples = savedDpoPairs.map(p => 
   \`Fråga: \${p.prompt} ➔ Föredraget svar: \${p.chosen}\`
 ).join("\\n");
 
-const systemPrompt = \`Du är Motkarta Concierge. Följ dessa godkända kalibreringar:\\n\${fewShotExamples}\`;`}</code>
+const systemPrompt = \`Du är Motkarta Concierge. Följ dessa godkända kalibreringar:\\n\${fewShotExamples}\`;`
+                    : `// Inject saved calibration pairs directly into system prompt:
+const fewShotExamples = savedDpoPairs.map(p => 
+  \`Query: \${p.prompt} ➔ Preferred Answer: \${p.chosen}\`
+).join("\\n");
+
+const systemPrompt = \`You are Motkarta Concierge. Adhere to these verified calibrations:\\n\${fewShotExamples}\`;`}</code>
                 </pre>
               </div>
             </div>
