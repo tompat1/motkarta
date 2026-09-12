@@ -149,7 +149,19 @@ function ImageLightboxModal({
   );
 }
 
-export function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput; lang?: Language }) {
+export function LazyPlaceMediaDrawer({
+  place,
+  lang = "sv",
+  excludePhotoId,
+  excludePhotoUrl,
+  excludeFirstPhoto,
+}: {
+  place: PlaceInput;
+  lang?: Language;
+  excludePhotoId?: string | null;
+  excludePhotoUrl?: string | null;
+  excludeFirstPhoto?: boolean;
+}) {
   const [activeTab, setActiveTab] = useState<"photos" | "reviews">("photos");
   const [photos, setPhotos] = useState<PlacePhoto[] | null>(null);
   const [reviews, setReviews] = useState<PlaceReview[] | null>(null);
@@ -180,11 +192,20 @@ export function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput
     };
   }, [place]);
 
+  const displayPhotos = photos
+    ? photos.filter((img, idx) => {
+        if (excludePhotoId && img.id === excludePhotoId) return false;
+        if (excludePhotoUrl && (img.url === excludePhotoUrl || img.thumbnailUrl === excludePhotoUrl)) return false;
+        if (excludeFirstPhoto && idx === 0) return false;
+        return true;
+      })
+    : null;
+
   return (
     <div className="lazy-media-drawer">
-      {lightboxIndex !== null ? (
+      {lightboxIndex !== null && displayPhotos ? (
         <ImageLightboxModal
-          photos={photos}
+          photos={displayPhotos}
           initialIndex={lightboxIndex}
           lang={lang}
           onClose={() => setLightboxIndex(null)}
@@ -197,7 +218,7 @@ export function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput
           onClick={() => setActiveTab("photos")}
         >
           <Image size={14} weight="bold" />
-          {lang === "sv" ? "Bilder" : "Photos"} ({photos?.length ?? "..."})
+          {lang === "sv" ? "Bilder" : "Photos"} ({displayPhotos ? displayPhotos.length : "..."})
         </button>
         <button
           type="button"
@@ -216,8 +237,8 @@ export function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput
         </div>
       ) : activeTab === "photos" ? (
         <div className="photo-grid">
-          {photos && photos.length > 0 ? (
-            photos.map((img, idx) => (
+          {displayPhotos && displayPhotos.length > 0 ? (
+            displayPhotos.map((img, idx) => (
               <div
                 key={img.id}
                 className="photo-card"
@@ -236,6 +257,14 @@ export function LazyPlaceMediaDrawer({ place, lang = "sv" }: { place: PlaceInput
                 <span className="photo-caption">{img.caption}</span>
               </div>
             ))
+          ) : photos && photos.length > 0 ? (
+            <div
+              className="photo-card photo-card-dummy"
+              aria-label={lang === "sv" ? "Huvudbild visas ovan" : "Main image shown above"}
+            >
+              <img src={DUMMY_PLACE_IMAGE_URL} alt="" loading="lazy" aria-hidden="true" />
+              <span className="photo-caption">{lang === "sv" ? "HUVUDBILD OVAN" : "MAIN IMAGE ABOVE"}</span>
+            </div>
           ) : (
             <div className="photo-card photo-card-dummy" aria-label={lang === "sv" ? "Ingen platsbild ännu" : "No place photo yet"}>
               <img src={DUMMY_PLACE_IMAGE_URL} alt="" loading="lazy" aria-hidden="true" />

@@ -40,3 +40,17 @@ test("styles.css defines map card photo container and responsive styling", () =>
   assert.match(stylesSource, /\.map-card-hero-photo-dummy\s*\{/);
   assert.match(stylesSource, /\.map-card-photo-credit\s*\{/);
 });
+
+const mediaDrawerSource = await readFile(new URL("../src/components/LazyPlaceMediaDrawer.tsx", import.meta.url), "utf8");
+
+test("LazyPlaceMediaDrawer excludes main placeholder photo to prevent duplicate images in map card", () => {
+  // App.tsx passes exclusion props to LazyPlaceMediaDrawer
+  assert.match(appSource, /<LazyPlaceMediaDrawer[\s\S]*?excludePhotoId=\{activeCardPhoto\?\.id\}/);
+  assert.match(appSource, /excludeFirstPhoto=\{Boolean\(activeCardPhoto\)\}/);
+
+  // LazyPlaceMediaDrawer accepts exclusion props and filters out main photo
+  assert.match(mediaDrawerSource, /excludePhotoId\?: string \| null/);
+  assert.match(mediaDrawerSource, /const displayPhotos = photos\s*\?\s*photos\.filter/);
+  assert.match(mediaDrawerSource, /if \(excludePhotoId && img\.id === excludePhotoId\) return false;/);
+  assert.match(mediaDrawerSource, /if \(excludeFirstPhoto && idx === 0\) return false;/);
+});

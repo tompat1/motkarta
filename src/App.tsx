@@ -2369,7 +2369,13 @@ export default function App() {
                 <p className="source-line">
                   {t.sourceLabel}: {active.sourceName ?? "OpenStreetMap"} · {t.lastUpdatedLabel}: {formatUpdatedDate(active.lastUpdated)}
                 </p>
-                <LazyPlaceMediaDrawer place={active} lang={lang} />
+                <LazyPlaceMediaDrawer
+                  place={active}
+                  lang={lang}
+                  excludePhotoId={activeCardPhoto?.id}
+                  excludePhotoUrl={activeCardPhoto?.url}
+                  excludeFirstPhoto={Boolean(activeCardPhoto)}
+                />
               </div>
             )}
           </article>
