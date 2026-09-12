@@ -53,3 +53,10 @@ test("desktop hero features independent discovery manifesto", () => {
   assert.match(sharedSource, /heroManifestSecondary:\s*"OBEROENDE UPPTÄCKT FÖR EN LJUSARE STAD\."/);
 });
 
+test("controls section header displays discovery sub-paragraph", () => {
+  assert.match(appSource, /\{t\.controlsHeading\}/);
+  assert.match(appSource, /\{t\.controlsSubparagraph\}/);
+  assert.match(sharedSource, /controlsSubparagraph:\s*"Tell us what you're in the mood for\. Ask freely or use a few preferences – we'll find great places based on transparent signals\."/);
+  assert.match(sharedSource, /controlsSubparagraph:\s*"Berätta vad du är sugen på\. Fråga fritt eller välj några preferenser – vi hittar fantastiska ställen baserat på transparenta signaler\."/);
+});
+
