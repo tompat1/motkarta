@@ -1,104 +1,101 @@
-import test from "node:test";
 import assert from "node:assert/strict";
-import { placeFacts } from "../lib/concierge/facts.ts";
+import test from "node:test";
+import { getStoredPlaceFeedback, savePlaceFeedback } from "../lib/place-feedback.ts";
+import { addUserReview, fetchPlaceReviews } from "../lib/lazy-media.ts";
 
-test("placeFacts includes base facts for RAG document context", () => {
-  const samplePlace = {
-    id: 116240012,
-    name: "Soldaten Svejk",
-    kind: "Restaurant",
-    area: "Södermalm",
-    address: "Östgötagatan 12, 116 24 Stockholm",
-    cuisine: "pub",
-    openingHours: "Mo-Th 16:00-23:00; Fr-Sa 15:00-00:00; Su 16:00-23:00",
-    priceSEK: "160–350",
-    tags: ["Czech", "Pub", "Södermalm", "Spotted by Locals", "Hidden Gem"],
+test("getStoredPlaceFeedback returns empty array when localStorage is empty", () => {
+  const globalStorage = new Map();
+  global.localStorage = {
+    getItem: (key) => globalStorage.get(key) ?? null,
+    setItem: (key, val) => globalStorage.set(key, String(val)),
+    removeItem: (key) => globalStorage.delete(key),
   };
 
-  const res = placeFacts(samplePlace);
-  assert.equal(res.id, 116240012);
-  assert.ok(res.document.includes("name: Soldaten Svejk"));
-  assert.ok(res.document.includes("area: Södermalm"));
-  assert.ok(res.document.includes("cuisine: pub"));
+  const results = getStoredPlaceFeedback(42, "Kafé Pascal");
+  assert.ok(Array.isArray(results));
+  assert.equal(results.length, 0);
 });
 
-test("placeFacts dynamically incorporates user RAG feedback when window.localStorage exists", () => {
-  const samplePlace = {
-    id: 329797914,
-    name: "Solkant",
-    kind: "Specialty coffee",
-    area: "Vasastan",
-    address: "Hälsingegatan 2, Stockholm",
-    cuisine: "bakery",
-  };
-
-  // Mock global window & localStorage
-  const originalWindow = globalThis.window;
-  globalThis.window = {
-    localStorage: {
-      getItem: (key) => {
-        if (key === "motkarta_rag_learning_feedback") {
-          return JSON.stringify([
-            {
-              targetId: 329797914,
-              targetName: "Solkant",
-              isPositive: true,
-              selectedReasons: ["Genuint & fantastisk mat/kaffe", "Exakt rätt område"],
-              comment: "Fantastiska surdegsbullar!",
-              timestampMs: Date.now(),
-            },
-          ]);
-        }
-        return null;
+test("getStoredPlaceFeedback matches feedback by numeric targetId and case-insensitive name", () => {
+  const globalStorage = new Map();
+  globalStorage.set(
+    "motkarta_rag_learning_feedback",
+    JSON.stringify([
+      {
+        targetId: 101,
+        targetName: "Kafé Pascal",
+        isPositive: true,
+        selectedReasons: ["Genuint & fantastisk mat/kaffe", "Bra stämning & härlig miljö"],
+        comment: "Bästa kaffet och kanelbullarna i stan!",
+        timestampMs: 1720000000000,
       },
-    },
+      {
+        targetId: "other-id",
+        targetName: "kafé pascal",
+        isPositive: false,
+        selectedReasons: ["Ändrade öppettider eller permanent stängt"],
+        comment: "Stängde kl 16 på söndag.",
+        timestampMs: 1720000050000,
+      },
+      {
+        targetId: 999,
+        targetName: "Unrelated Bakery",
+        isPositive: true,
+        selectedReasons: ["Prisvärt & bra meny"],
+        comment: "Gott bröd",
+        timestampMs: 1720000010000,
+      },
+    ])
+  );
+
+  global.localStorage = {
+    getItem: (key) => globalStorage.get(key) ?? null,
+    setItem: (key, val) => globalStorage.set(key, String(val)),
+    removeItem: (key) => globalStorage.delete(key),
   };
 
-  try {
-    const res = placeFacts(samplePlace);
-    assert.ok(res.document.includes("user_feedback"));
-    assert.ok(res.document.includes("Fantastiska surdegsbullar!"));
-    assert.ok(res.facts.some((f) => f.source === "Community Fast Feedback Loop"));
-  } finally {
-    globalThis.window = originalWindow;
-  }
+  const results = getStoredPlaceFeedback(101, "Kafé Pascal");
+  assert.equal(results.length, 2);
+  // Sorted newest first
+  assert.equal(results[0].timestampMs, 1720000050000);
+  assert.equal(results[0].isPositive, false);
+  assert.equal(results[0].selectedReasons[0], "Ändrade öppettider eller permanent stängt");
+
+  assert.equal(results[1].timestampMs, 1720000000000);
+  assert.equal(results[1].isPositive, true);
+  assert.ok(results[1].comment.includes("Bästa kaffet"));
 });
 
-test("user hidden gem nominations persist in localStorage key motkarta_user_nominated_gems", () => {
-  const mockStorage = new Map();
-  const originalWindow = globalThis.window;
-  globalThis.window = {
-    localStorage: {
-      getItem: (key) => mockStorage.get(key) ?? null,
-      setItem: (key, val) => mockStorage.set(key, val),
-    },
+test("savePlaceFeedback stores structured feedback and bridges to user reviews", async () => {
+  const globalStorage = new Map();
+  global.localStorage = {
+    getItem: (key) => globalStorage.get(key) ?? null,
+    setItem: (key, val) => globalStorage.set(key, String(val)),
+    removeItem: (key) => globalStorage.delete(key),
+  };
+  global.window = {
+    localStorage: global.localStorage,
+    dispatchEvent: () => true,
   };
 
-  try {
-    const nominationPayload = {
-      targetId: 116240012,
-      targetName: "Soldaten Svejk",
-      selectedReasons: ["Genuint hantverk & egen nisch", "Lokal stolthet / stamställe"],
-      comment: "En riktig institution på Söder med fantastisk tjeckisk öl.",
+  savePlaceFeedback(
+    {
+      targetId: 505,
+      targetName: "Stora Bageriet",
+      isPositive: true,
+      selectedReasons: ["Genuint & fantastisk mat/kaffe", "Exakt rätt område & bra läge"],
+      comment: "Underbara kardemummabullar och trevlig personal!",
       timestampMs: Date.now(),
-    };
+    },
+    { lang: "sv" }
+  );
 
-    // Simulate saving nomination
-    const existing = JSON.parse(globalThis.window.localStorage.getItem("motkarta_user_nominated_gems") || "[]");
-    existing.push(nominationPayload);
-    globalThis.window.localStorage.setItem("motkarta_user_nominated_gems", JSON.stringify(existing));
+  const matched = getStoredPlaceFeedback(505, "Stora Bageriet");
+  assert.equal(matched.length, 1);
+  assert.equal(matched[0].targetId, 505);
+  assert.equal(matched[0].targetName, "Stora Bageriet");
+  assert.ok(matched[0].comment.includes("kardemummabullar"));
 
-    // Verify retrieval
-    const stored = JSON.parse(globalThis.window.localStorage.getItem("motkarta_user_nominated_gems") || "[]");
-    assert.equal(stored.length, 1);
-    assert.equal(stored[0].targetId, 116240012);
-    assert.equal(stored[0].targetName, "Soldaten Svejk");
-    assert.deepEqual(stored[0].selectedReasons, [
-      "Genuint hantverk & egen nisch",
-      "Lokal stolthet / stamställe",
-    ]);
-    assert.match(stored[0].comment, /tjeckisk öl/);
-  } finally {
-    globalThis.window = originalWindow;
-  }
+  const reviews = await fetchPlaceReviews(505);
+  assert.ok(reviews.some((r) => r.content.includes("kardemummabullar")));
 });

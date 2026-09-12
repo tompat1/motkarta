@@ -8865,6 +8865,153 @@ footer {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Place Specific Visitor Feedback & Reviews Integration                     */
+/* -------------------------------------------------------------------------- */
+
+.place-reviews-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.place-feedback-card-action {
+  margin-bottom: 4px;
+}
+
+.place-leave-feedback-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--color-paper, #f8fafc);
+  border: 1px dashed var(--color-water, #2563eb);
+  color: var(--color-water, #2563eb);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all var(--motion-fast, 0.15s ease);
+}
+
+.place-leave-feedback-btn:hover {
+  background: #eff6ff;
+  border-style: solid;
+  transform: translateY(-1px);
+}
+
+.place-leave-feedback-btn:active {
+  transform: translateY(0);
+}
+
+.place-feedback-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(248, 250, 252, 0.7);
+  border: 1px solid var(--color-mist, #e2e8f0);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.place-feedback-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-mist, #e2e8f0);
+}
+
+.place-feedback-section-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-ink, #0f172a);
+}
+
+.place-feedback-count-badge {
+  background: var(--color-water, #2563eb);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.place-feedback-item-card {
+  background: #ffffff;
+  border: 1px solid var(--color-mist, #e2e8f0);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.feedback-sentiment-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.feedback-sentiment-pill.is-positive {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.feedback-sentiment-pill.is-negative {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.feedback-reason-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.feedback-reason-pill {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Modal mobile & safe-area styles */
+.place-feedback-backdrop {
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@media (max-width: 768px) {
+  .place-feedback-backdrop {
+    padding-top: max(24px, env(safe-area-inset-top, 24px)) !important;
+  }
+  .place-feedback-card {
+    border-radius: 14px !important;
+    padding: 20px 16px !important;
+    max-height: calc(100dvh - max(48px, env(safe-area-inset-top, 48px) + 24px)) !important;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
 /* Concierge Superpowers UI & Modal                                          */
 /* -------------------------------------------------------------------------- */
 

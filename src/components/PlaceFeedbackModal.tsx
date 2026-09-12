@@ -1,15 +1,9 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { ThumbsUp, ThumbsDown, X, Check, ChatText, Sparkle } from "@phosphor-icons/react";
 import type { Language } from "../app/shared";
-
-export interface FeedbackData {
-  targetId: number | string;
-  targetName: string;
-  isPositive: boolean;
-  selectedReasons: string[];
-  comment: string;
-  timestampMs: number;
-}
+import { savePlaceFeedback, type FeedbackData } from "../../lib/place-feedback";
+export type { FeedbackData };
 
 export interface PlaceFeedbackModalProps {
   isOpen: boolean;
@@ -118,24 +112,11 @@ export function PlaceFeedbackModal({
       timestampMs: Date.now(),
     };
 
-    if (isNominateGem) {
-      // 1. Save to user nominated gems in localStorage
-      try {
-        const existingRaw = localStorage.getItem("motkarta_user_nominated_gems");
-        const existing: Record<string, unknown>[] = existingRaw ? JSON.parse(existingRaw) : [];
-        existing.push({
-          targetId,
-          targetName,
-          selectedReasons,
-          comment: comment.trim(),
-          timestampMs: Date.now(),
-        });
-        localStorage.setItem("motkarta_user_nominated_gems", JSON.stringify(existing.slice(-100)));
-      } catch {
-        // Ignore storage errors
-      }
+    // 1. Save structured feedback and bridge to review store
+    savePlaceFeedback(data, { isNominateGem, lang });
 
-      // 2. Post nomination event to recommendation telemetry backend API
+    // 2. Telemetry tracking
+    if (isNominateGem) {
       void fetch("/api/recommendation-events", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -159,16 +140,6 @@ export function PlaceFeedbackModal({
         }),
       }).catch(() => {});
     } else {
-      // Standard feedback logic
-      try {
-        const existingRaw = localStorage.getItem("motkarta_rag_learning_feedback");
-        const existing: FeedbackData[] = existingRaw ? JSON.parse(existingRaw) : [];
-        existing.push(data);
-        localStorage.setItem("motkarta_rag_learning_feedback", JSON.stringify(existing.slice(-100)));
-      } catch {
-        // Ignore storage errors
-      }
-
       void fetch("/api/recommendation-events", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -204,27 +175,31 @@ export function PlaceFeedbackModal({
     }, 1400);
   };
 
-  return (
+  const modalContent = (
     <div
-      className="sync-modal-backdrop"
+      className="sync-modal-backdrop place-feedback-backdrop"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={lang === "sv" ? "Feedback till RAG & rekommendation" : "Feedback for RAG & recommendations"}
       style={{
         position: "fixed",
         inset: 0,
-        backgroundColor: "rgba(15, 23, 42, 0.65)",
-        backdropFilter: "blur(4px)",
-        zIndex: 10000,
+        backgroundColor: "rgba(15, 23, 42, 0.72)",
+        backdropFilter: "blur(5px)",
+        WebkitBackdropFilter: "blur(5px)",
+        zIndex: 100000,
         display: "flex",
-        alignItems: "center",
+        alignItems: "flex-start",
         justifyContent: "center",
-        padding: "16px",
+        padding: "max(20px, env(safe-area-inset-top, 20px)) 16px max(24px, env(safe-area-inset-bottom, 24px)) 16px",
         boxSizing: "border-box",
         overflowY: "auto",
         WebkitOverflowScrolling: "touch",
       }}
     >
       <div
-        className="feedback-modal-card"
+        className="feedback-modal-card place-feedback-card"
         onClick={(e) => e.stopPropagation()}
         style={{
           background: "var(--color-white, #ffffff)",
@@ -232,12 +207,12 @@ export function PlaceFeedbackModal({
           borderRadius: "16px",
           maxWidth: "480px",
           width: "100%",
-          maxHeight: "calc(100dvh - 32px)",
+          maxHeight: "calc(100dvh - max(40px, env(safe-area-inset-top, 40px) + 24px))",
           overflowY: "auto",
           padding: "24px",
-          boxShadow: "0 20px 40px rgba(0, 0, 0, 0.18)",
+          boxShadow: "0 24px 48px rgba(0, 0, 0, 0.28)",
           position: "relative",
-          margin: "auto",
+          margin: "auto 0",
           boxSizing: "border-box",
           animation: "modalFadeIn 0.2s ease-out",
         }}
@@ -528,11 +503,16 @@ export function PlaceFeedbackModal({
               {isNominateGem ? <Sparkle size={18} weight="fill" /> : <Check size={18} weight="bold" />}
               {isNominateGem
                 ? (lang === "sv" ? "Tipsa & spara som din pärla" : "Nominate & save as your gem")
-                : (lang === "sv" ? "Skicka feedback & lär RAG" : "Submit Feedback & Train RAG")}
+                : (lang === "sv" ? "Skicka Feedback, lär oss" : "Send Feedback, teach us")}
             </button>
           </form>
         )}
       </div>
     </div>
   );
+
+  if (typeof document !== "undefined") {
+    return createPortal(modalContent, document.body);
+  }
+  return modalContent;
 }

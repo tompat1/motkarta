@@ -23,6 +23,7 @@ import type { ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
 import { fetchPlacePhotos, type PlacePhoto } from "../../lib/lazy-media";
 import { formatDistance, distanceFromPoint } from "../app/shared";
+import { LazyPlaceMediaDrawer } from "./LazyPlaceMediaDrawer";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 import { MotkartaScoreWidget } from "./MotkartaScoreWidget";
 
@@ -438,6 +439,13 @@ export function PlaceDetailSheet({
               })}
             </div>
           </div>
+
+          {/* Lazy Loaded Media & Reviews with Feedback */}
+          <LazyPlaceMediaDrawer
+            place={place}
+            lang={lang}
+            excludePhotoUrl={photos[activePhotoIndex]?.url}
+          />
         </div>
 
         {/* Sticky Primary CTA Action */}

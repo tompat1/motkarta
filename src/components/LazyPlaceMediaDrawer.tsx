@@ -7,7 +7,19 @@ import {
   type PlaceReview,
 } from "../../lib/lazy-media";
 import type { Language } from "../app/shared";
-import { CaretLeft, CaretRight, ChatTeardropText, CircleNotch, Image } from "@phosphor-icons/react";
+import {
+  CaretLeft,
+  CaretRight,
+  ChatTeardropText,
+  ChatText,
+  CircleNotch,
+  Image,
+  ThumbsDown,
+  ThumbsUp,
+  Sparkle,
+} from "@phosphor-icons/react";
+import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
+import { getStoredPlaceFeedback, type FeedbackData } from "../../lib/place-feedback";
 
 const DUMMY_PLACE_IMAGE_URL = "/motkarta_drop_divided_black_red.svg";
 
@@ -165,8 +177,29 @@ export function LazyPlaceMediaDrawer({
   const [activeTab, setActiveTab] = useState<"photos" | "reviews">("photos");
   const [photos, setPhotos] = useState<PlacePhoto[] | null>(null);
   const [reviews, setReviews] = useState<PlaceReview[] | null>(null);
+  const [placeFeedback, setPlaceFeedback] = useState<FeedbackData[]>([]);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const refreshFeedback = useCallback(() => {
+    if (place) {
+      setPlaceFeedback(getStoredPlaceFeedback(place.id, place.name));
+    }
+  }, [place]);
+
+  useEffect(() => {
+    refreshFeedback();
+
+    const handleUpdate = () => {
+      refreshFeedback();
+    };
+
+    window.addEventListener("motkarta-feedback-submitted", handleUpdate);
+    return () => {
+      window.removeEventListener("motkarta-feedback-submitted", handleUpdate);
+    };
+  }, [refreshFeedback]);
 
   useEffect(() => {
     let isCurrent = true;
@@ -226,7 +259,13 @@ export function LazyPlaceMediaDrawer({
           onClick={() => setActiveTab("reviews")}
         >
           <ChatTeardropText size={14} weight="bold" />
-          {lang === "sv" ? "Recensioner" : "Reviews"} ({reviews?.length ?? "..."})
+          {lang === "sv" ? "Recensioner" : "Reviews"} (
+          {reviews !== null
+            ? reviews.length + placeFeedback.length
+            : placeFeedback.length > 0
+            ? placeFeedback.length
+            : "..."}
+          )
         </button>
       </div>
 
@@ -273,7 +312,113 @@ export function LazyPlaceMediaDrawer({
           )}
         </div>
       ) : (
-        <div className="review-list">
+        <div className="review-list place-reviews-container">
+          {/* Action button to leave feedback on this specific place */}
+          <div className="place-feedback-card-action">
+            <button
+              type="button"
+              className="place-leave-feedback-btn"
+              onClick={() => setIsFeedbackModalOpen(true)}
+              title={
+                lang === "sv"
+                  ? "Skicka feedback och lär RAG-modellen om detta ställe"
+                  : "Send feedback and teach the RAG model about this place"
+              }
+            >
+              <ChatText size={15} weight="bold" />
+              <span>
+                {lang === "sv" ? "Tyck till om stället (Lär oss)" : "Give feedback on place (Teach us)"}
+              </span>
+            </button>
+          </div>
+
+          {/* Place-specific visitor feedback section */}
+          {placeFeedback.length > 0 ? (
+            <div className="place-feedback-section">
+              <div className="place-feedback-section-header">
+                <span className="place-feedback-section-title">
+                  {lang === "sv" ? "Besökarfeedback & RAG-signaler" : "Visitor Feedback & RAG Signals"}
+                </span>
+                <span className="place-feedback-count-badge">{placeFeedback.length}</span>
+              </div>
+
+              {placeFeedback.map((fb, idx) => (
+                <article key={`pfb-${idx}-${fb.timestampMs}`} className="review-card place-feedback-item-card">
+                  <div className="review-card-head">
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <span className={`feedback-sentiment-pill ${fb.isPositive ? "is-positive" : "is-negative"}`}>
+                        {fb.isPositive ? <ThumbsUp size={12} weight="fill" /> : <ThumbsDown size={12} weight="fill" />}
+                        {fb.isPositive
+                          ? (lang === "sv" ? "Rekommenderas" : "Recommended")
+                          : (lang === "sv" ? "Synpunkt" : "Visitor note")}
+                      </span>
+                      <span className="review-author" style={{ fontSize: "12px" }}>
+                        {lang === "sv" ? "Lokal besökare" : "Local visitor"}
+                      </span>
+                    </div>
+                    <span
+                      className="review-source-tag"
+                      style={{
+                        background: "rgba(16, 185, 129, 0.12)",
+                        color: "#047857",
+                        borderColor: "rgba(16, 185, 129, 0.25)",
+                      }}
+                    >
+                      {lang === "sv" ? "Kopplad till stället" : "Connected feedback"}
+                    </span>
+                  </div>
+
+                  {fb.selectedReasons && fb.selectedReasons.length > 0 ? (
+                    <div className="feedback-reason-chips-row">
+                      {fb.selectedReasons.map((reason) => (
+                        <span key={reason} className="feedback-reason-pill">
+                          ✓ {reason}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {fb.comment ? (
+                    <p
+                      className="review-content"
+                      style={{ marginTop: "4px", fontStyle: "italic", color: "var(--color-ink)" }}
+                    >
+                      "{fb.comment}"
+                    </p>
+                  ) : null}
+
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      fontSize: "11px",
+                      color: "var(--color-stone)",
+                      marginTop: "2px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "4px",
+                        color: "#2563eb",
+                        fontWeight: 600,
+                      }}
+                    >
+                      <Sparkle size={12} weight="fill" />
+                      {lang === "sv" ? "Tränar rekommendationer" : "Trains recommendations"}
+                    </span>
+                    <span>
+                      {new Date(fb.timestampMs).toLocaleDateString(lang === "sv" ? "sv-SE" : "en-US")}
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : null}
+
+          {/* Editorial & Community reviews */}
           {reviews?.map((rev) => (
             <article key={rev.id} className="review-card">
               <div className="review-card-head">
@@ -281,14 +426,49 @@ export function LazyPlaceMediaDrawer({
                 <span className="review-source-tag">{rev.source}</span>
               </div>
               <p className="review-content">"{rev.content}"</p>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "var(--color-stone)" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: "11px",
+                  color: "var(--color-stone)",
+                }}
+              >
                 <span>★ {rev.rating.toFixed(1)} / 5.0</span>
                 <span>{rev.date}</span>
               </div>
             </article>
           ))}
+
+          {(!reviews || reviews.length === 0) && placeFeedback.length === 0 ? (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "16px 8px",
+                color: "var(--color-stone)",
+                fontSize: "12px",
+              }}
+            >
+              {lang === "sv"
+                ? "Inga recensioner eller feedback ännu. Klicka ovan för att dela dina synpunkter och lära modellen!"
+                : "No reviews or feedback yet. Click above to share your feedback and teach the model!"}
+            </div>
+          ) : null}
         </div>
       )}
+
+      {/* PlaceFeedbackModal mounted right inside drawer for this specific place */}
+      <PlaceFeedbackModal
+        isOpen={isFeedbackModalOpen}
+        targetId={place.id}
+        targetName={place.name}
+        initialType="up"
+        lang={lang}
+        onClose={() => setIsFeedbackModalOpen(false)}
+        onSubmitFeedback={() => {
+          refreshFeedback();
+        }}
+      />
     </div>
   );
 }
