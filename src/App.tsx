@@ -35,7 +35,6 @@ import {
   modeLabel,
   modeScore,
   preferencesFromQuery,
-  recommendationExplanation,
   recommendationImpressionLimit,
   renderLimit,
   rounded,
@@ -122,6 +121,9 @@ import { MotkartaScoreWidget } from "./components/MotkartaScoreWidget";
 import {
   addUserReview,
   addUserPhoto,
+  fetchPlacePhotos,
+  type PlacePhoto,
+  DUMMY_PLACE_IMAGE_URL,
 } from "../lib/lazy-media";
 import {
   type PlaceInput,
@@ -933,6 +935,24 @@ export default function App() {
   }, [recordRecommendationEvents, recommendationResultSetId, visibleRanked]);
 
   const active = selected !== null ? (ranked.find((place) => place.id === selected) ?? null) : null;
+  const [activeCardPhoto, setActiveCardPhoto] = useState<PlacePhoto | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (active) {
+      setActiveCardPhoto(null);
+      void fetchPlacePhotos(active).then((fetched) => {
+        if (isMounted) {
+          setActiveCardPhoto(fetched && fetched.length > 0 ? fetched[0] : null);
+        }
+      });
+    } else {
+      setActiveCardPhoto(null);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [active?.id]);
 
   useEffect(() => {
     if (selected !== null && !ranked.some((place) => place.id === selected)) {
@@ -2170,7 +2190,35 @@ export default function App() {
                 {cuisineParts(active).length ? (
                   <p className="cuisine-line">{cuisineParts(active).map((c) => cuisineLabel(c, lang)).join(" · ")}</p>
                 ) : null}
-                <p className="recommendation">{recommendationExplanation(active)}</p>
+                <div
+                  className={`map-card-photo-container ${!activeCardPhoto ? "map-card-photo-container-dummy" : ""}`}
+                  onClick={() => setIsPlaceDetailOpen(true)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setIsPlaceDetailOpen(true);
+                    }
+                  }}
+                  title={lang === "sv" ? "Visa ställets detaljer" : "View place details"}
+                >
+                  <img
+                    src={activeCardPhoto?.url ?? DUMMY_PLACE_IMAGE_URL}
+                    alt={activeCardPhoto?.caption || active.name}
+                    className={`map-card-hero-photo ${!activeCardPhoto ? "map-card-hero-photo-dummy" : ""}`}
+                    loading="eager"
+                    onError={(event) => {
+                      event.currentTarget.src = DUMMY_PLACE_IMAGE_URL;
+                      event.currentTarget.classList.add("map-card-hero-photo-dummy");
+                    }}
+                  />
+                  {activeCardPhoto?.credit ? (
+                    <span className="map-card-photo-credit">
+                      📷 {activeCardPhoto.credit}
+                    </span>
+                  ) : null}
+                </div>
                 <p className="note">{active.note}</p>
                 <div className="tag-row">
                   {active.tags.map((tag: string) => (

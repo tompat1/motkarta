@@ -30,7 +30,7 @@ export type PlaceContext = {
   note?: string;
 };
 
-const DUMMY_PLACE_IMAGE_URL = "/motkarta_drop_divided_black_red.svg";
+export const DUMMY_PLACE_IMAGE_URL = "/motkarta_drop_divided_black_red.svg";
 
 const reviewsCache = new Map<number, PlaceReview[]>();
 const photosCache = new Map<number, PlacePhoto[]>();

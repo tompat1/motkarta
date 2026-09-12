@@ -2178,6 +2178,67 @@ button.search-clear-btn:hover {
   color: var(--color-ink);
 }
 
+.map-card-photo-container {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--color-paper, #ffffff);
+  border: 1px solid var(--color-mist);
+  transition: transform var(--motion-fast), box-shadow var(--motion-fast);
+  margin-bottom: 2px;
+}
+
+.map-card-photo-container:hover {
+  box-shadow: 0 4px 14px rgba(17, 17, 17, 0.08);
+}
+
+.map-card-photo-container-dummy {
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-card-hero-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--motion-fast);
+}
+
+.map-card-photo-container:hover .map-card-hero-photo:not(.map-card-hero-photo-dummy) {
+  transform: scale(1.02);
+}
+
+.map-card-hero-photo-dummy {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 36px;
+  background: #ffffff;
+}
+
+.map-card-photo-credit {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .recommendation {
   border-left: 3px solid var(--color-signal);
   font-family: var(--font-body);
@@ -11126,6 +11187,14 @@ footer {
   .cuisine-line {
     font-size: 10px;
     margin-bottom: 2px;
+  }
+
+  .map-card-photo-container {
+    height: 130px;
+  }
+
+  .map-card-hero-photo-dummy {
+    padding: 24px;
   }
 
   .recommendation,
