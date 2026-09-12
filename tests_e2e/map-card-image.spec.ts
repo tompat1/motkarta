@@ -44,6 +44,17 @@ test.describe("Map Place Card Image Placeholder & Clean Note", () => {
     await expect(heroPhoto).toBeVisible();
     await expect(heroPhoto).toHaveAttribute("src", /.+/);
 
+    // Verify that the main image is not duplicated in the gallery below
+    const heroSrc = await heroPhoto.getAttribute("src");
+    if (heroSrc && !heroSrc.includes("motkarta_drop_divided")) {
+      const galleryPhotos = mapCard.locator(".lazy-media-drawer .photo-grid .photo-card img");
+      const count = await galleryPhotos.count();
+      for (let i = 0; i < count; i++) {
+        const gallerySrc = await galleryPhotos.nth(i).getAttribute("src");
+        expect(gallerySrc).not.toBe(heroSrc);
+      }
+    }
+
     // Capture screenshot of the map place card on desktop
     if (testInfo.project.name === "chromium") {
       await mapCard.screenshot({
