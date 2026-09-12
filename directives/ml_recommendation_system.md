@@ -273,3 +273,12 @@ validated with real collection metrics.
   phase after completed writes instead of repeating embeddings/upserts. The
   deprecated Gemma 3 prototype is replaced by Gemma 4 under synthesis v2; inspect
   its chat-completion finish reason and apply the same strict fact-ID gate.
+
+## Tasstipset source restriction (2026-09-13)
+
+Tasstipset may only enrich dog-friendly attributes on existing Restaurant,
+Bakery, Café, Coffee shop/Coffeeshop and Specialty coffee venues. Never create
+venues/candidates from it or use it to increase guide/quality evidence, promote
+lifecycle or replace other venue details. Reject non-food and unknown categories.
+Use the shared feature-only matching path and follow the audit/rollback in
+`docs/ml/operations-runbook.md`. O'Learys is excluded across all branches.

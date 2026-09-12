@@ -257,6 +257,13 @@ flowchart TD
 Trust increases only through evidence and review. ML cannot move a record directly
 from quarantined platform data to user-visible status.
 
+Tasstipset follows a separate feature-only enrichment path: match an existing
+allowed food venue, then add dog-friendly tags and an attributed dog-policy fact.
+It does not feed venue creation, candidate nomination or quality evidence. Shared
+catalog admission guards reject O'Learys and the audited Tasstipset-only records
+before public rendering or concierge retrieval. See the
+[runbook](operations-runbook.md#catalog-exclusions-and-tasstipset-feature-only-policy-2026-09-13).
+
 ## Source-of-truth hierarchy
 
 When documentation and code disagree:

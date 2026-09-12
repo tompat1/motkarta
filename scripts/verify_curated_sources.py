@@ -27,6 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from motkarta.stockholm_boundary import is_stockholm_municipality_place
+from motkarta.dog_friendly import tasstipset_coverage
 
 PLACES_FILE = ROOT / "public" / "data" / "places.json"
 FOOD_CONTROL_CSV = ROOT / "data" / "stockholm_food_control.csv"
@@ -274,11 +275,16 @@ def verify_all_curated_sources(
             tasstipset_matched += 1
 
     tasstipset_cov_pct = (tasstipset_matched / len(tasstipset_indep) * 100) if tasstipset_indep else 0.0
-    tasstipset_pass = tasstipset_dog_places >= 150 and tasstipset_cov_pct >= 60.0 and tasstipset_out_of_scope == 0
+    feature_coverage = tasstipset_coverage(places, tasstipset_indep)
+    tasstipset_pass = (feature_coverage["eligible_coverage_pct"] >= 60.0
+                      and feature_coverage["source_only_venues"] == 0
+                      and feature_coverage["ineligible_dog_venues"] == 0
+                      and tasstipset_out_of_scope == 0)
     sources_report.append({
         "id": "tasstipset",
+        **feature_coverage,
         "name": "Tasstipset (Hundvänliga ställen)",
-        "type": "Verified Guide",
+        "type": "Dog-friendly feature directory",
         "license": "Citerat med tillstånd (tasstipset.se)",
         "source_data_points": len(tasstipset_stockholm_gt) or 249,
         "matched_places": tasstipset_dog_places,

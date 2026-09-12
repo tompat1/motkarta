@@ -1,12 +1,13 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
+import { isExcludedCatalogPlace } from "../lib/catalog-exclusions.ts";
 
 const input = resolve(process.argv[2] ?? "public/data/places.json");
 const output = resolve(process.argv[3] ?? "drizzle/seed-places.sql");
 const now = new Date().toISOString();
 
 const rawData = JSON.parse(await readFile(input, "utf8"));
-const places = rawData.places ?? rawData;
+const places = (rawData.places ?? rawData).filter((place) => !isExcludedCatalogPlace(place));
 
 const lines = [
   "BEGIN TRANSACTION;",

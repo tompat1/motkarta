@@ -31,6 +31,16 @@ Do not treat a default display area such as `Stockholm` as boundary evidence
 when a source URL, address, locality or coordinates identify a place outside the
 municipality.
 
+## Tasstipset boundary
+
+Tasstipset is an attribute source, not a venue discovery or quality-evidence
+source. It may only add dog-friendly tags and attributed `dogFriendly` facts to
+existing independently sourced restaurants, bakeries, cafés, coffee shops and
+specialty coffee venues. It cannot create catalog/candidate records, promote
+lifecycle, supply specialist-guide evidence or overwrite other venue fields.
+Lodging, shops, parks, bars/pubs and unknown source categories are excluded.
+See the [operational repair and rollback](operations-runbook.md#catalog-exclusions-and-tasstipset-feature-only-policy-2026-09-13).
+
 ## Venue identity
 
 Preferred stable identity order:

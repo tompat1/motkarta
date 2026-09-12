@@ -1,6 +1,7 @@
 import policy from './policy.json' with { type: 'json' };
 import type { ConciergePlace, Coordinates } from './contracts.ts';
 import { includesPhrase, normalize } from './facts.ts';
+import { isExcludedCatalogPlace } from '../catalog-exclusions.ts';
 
 export function inStockholm(place: ConciergePlace): boolean {
   // The envelope only rejects impossible locations; it never proves municipality membership.
@@ -11,6 +12,7 @@ export function inStockholm(place: ConciergePlace): boolean {
   return policy.stockholmLocalities.some((area) => text.includes(` ${normalize(area)} `));
 }
 export function eligiblePlace(place: ConciergePlace): boolean {
+  if (isExcludedCatalogPlace(place)) return false;
   if (!Number.isSafeInteger(place.id) || !place.name || !['baseline', 'active', 'verified', 'featured'].includes(place.lifecycleState ?? 'baseline')) return false;
   if (place.validationLabel === 'closed_wrong_category' || place.chainStatus === 'chain') return false;
   const name = ` ${normalize(place.name)} `;

@@ -177,7 +177,7 @@ def test_map_category_to_kind():
     assert scraper.map_category_to_kind("Café") == "Café"
     assert scraper.map_category_to_kind("Bageri") == "Bakery"
     assert scraper.map_category_to_kind("Restaurang") == "Restaurant"
-    assert scraper.map_category_to_kind("Vinbar") == "Restaurant"
+    assert scraper.map_category_to_kind("Vinbar") == "Unknown"
     assert scraper.map_category_to_kind("Hotell") == "Hotell"
     assert scraper.map_category_to_kind("Park") == "Park"
 
@@ -284,9 +284,10 @@ def test_sync_tasstipset_skips_out_of_scope_records(tmp_path):
     )
     payload = json.loads(places_path.read_text(encoding="utf-8"))
 
-    assert result["added"] == 1
+    assert result["added"] == 0
+    assert result["skipped_unmatched"] == 1
     assert result["skipped_out_of_scope"] == 1
-    assert [place["name"] for place in payload["places"]] == ["Drop Coffee Roasters"]
+    assert payload["places"] == []
 
 
 def test_verify_tasstipset_scraping_report():
@@ -295,8 +296,10 @@ def test_verify_tasstipset_scraping_report():
     summary = run_verification(quiet=True)
     assert summary["status"] == "PASS"
     assert summary["ground_truth"]["total"] >= 200
-    assert summary["scraper"]["total_scraped"] >= 200
+    assert summary["scraper"]["total_scraped"] > 0
     assert summary["public_dataset"]["dog_friendly_places"] >= 150
-    assert summary["public_dataset"]["ground_truth_coverage_pct"] >= 60.0
+    assert summary["public_dataset"]["eligible_coverage_pct"] >= 60.0
+    assert summary["public_dataset"]["source_only_venues"] == 0
+    assert summary["public_dataset"]["ineligible_dog_venues"] == 0
     assert summary["scraper"]["out_of_scope"] == 0
     assert summary["public_dataset"]["dog_friendly_out_of_scope"] == 0

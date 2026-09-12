@@ -9,6 +9,7 @@ from difflib import SequenceMatcher
 from pathlib import Path
 
 import pandas as pd
+from motkarta.catalog_exclusions import is_excluded_catalog_name, is_olearys_name
 
 from motkarta.normalize import ESTABLISHMENT_TYPES, is_prime_specialty_coffee, normalize_osm_establishment_type
 from motkarta.outliers import process_motkarta_gems
@@ -40,7 +41,7 @@ DISCOVERY_WEIGHTS = {
     "complete_profile": 10,
     "recently_updated": 10,
 }
-EXCLUDED_CHAIN_BRANDS = {"McDonald's", "Burger King", "Sibylla", "MAX"}
+EXCLUDED_CHAIN_BRANDS = {"McDonald's", "Burger King", "Sibylla", "MAX", "O'Learys"}
 
 
 @dataclass(frozen=True)
@@ -230,8 +231,9 @@ def filter_excluded_chains(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFr
         data["chain_brand"] = data["name"].map(known_chain_brand)
         data["excluded_chain"] = data["chain_brand"].isin(EXCLUDED_CHAIN_BRANDS)
 
-    excluded = data[data["excluded_chain"]].copy().reset_index(drop=True)
-    included = data[~data["excluded_chain"]].copy().reset_index(drop=True)
+    excluded_mask = data["excluded_chain"] | data["name"].map(is_excluded_catalog_name)
+    excluded = data[excluded_mask].copy().reset_index(drop=True)
+    included = data[~excluded_mask].copy().reset_index(drop=True)
     return included, excluded
 
 
@@ -640,6 +642,8 @@ def name_tokens(value: object) -> list[str]:
 
 
 def known_chain_brand(name: object) -> str:
+    if is_olearys_name(name):
+        return "O'Learys"
     tokens = name_tokens(name)
     if not tokens:
         return ""

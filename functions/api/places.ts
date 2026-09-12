@@ -1,5 +1,6 @@
 import { loadPlacesFromD1 } from "../../lib/place-records.ts";
 import { normalize } from "../../lib/concierge/facts.ts";
+import { isExcludedCatalogPlace } from "../../lib/catalog-exclusions.ts";
 
 type EventContext<Env> = {
   request?: Request;
@@ -24,7 +25,7 @@ async function loadFallbackPlaces(context: EventContext<Env>) {
       const json = await assetRes.json();
       const places = Array.isArray(json) ? json : (json as { places?: unknown[] }).places;
       if (Array.isArray(places) && places.length > 0) {
-        return places;
+        return places.filter((place) => !isExcludedCatalogPlace(place ?? {}));
       }
     }
   } catch {
@@ -51,7 +52,8 @@ export async function onRequestGet(context: EventContext<Env>) {
   }
 
   try {
-    const places = await loadPlacesFromD1(db as Parameters<typeof loadPlacesFromD1>[0]);
+    const places = (await loadPlacesFromD1(db as Parameters<typeof loadPlacesFromD1>[0]))
+      .filter((place) => !isExcludedCatalogPlace(place));
     const fallbackPlaces = await loadFallbackPlaces(context);
     if (!places.length && fallbackPlaces) {
       return Response.json(
@@ -96,4 +98,3 @@ export async function onRequestGet(context: EventContext<Env>) {
     );
   }
 }
-

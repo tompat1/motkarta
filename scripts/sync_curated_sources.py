@@ -16,6 +16,9 @@ from pathlib import Path
 from typing import Any
 
 from motkarta.stockholm_boundary import is_stockholm_municipality_place
+from motkarta.catalog_exclusions import is_excluded_catalog_name
+from motkarta.dog_friendly import is_tasstipset_source
+from scripts.fetch_tasstipset_dog_places import enrich_tasstipset_places
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -119,11 +122,16 @@ def sync_curated_sources(
     skipped_out_of_scope = 0
 
     for record in curated_places:
+        if is_excluded_catalog_name(record.get("name")):
+            continue
         assert_no_forbidden_value_fields(record)
         if not is_record_in_stockholm(record):
             skipped_out_of_scope += 1
             if not quiet:
                 print(f"Skipped out-of-scope curated place: {clean_text(record.get('name'))}")
+            continue
+        if is_tasstipset_source(record.get("sourceName")) or is_tasstipset_source(record.get("sourceUrl")):
+            updated += enrich_tasstipset_places(places, [record])["matched"]
             continue
         place = neutral_place(record)
         key = place_key(place)

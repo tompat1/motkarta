@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
+import { isExcludedCatalogName } from "../lib/catalog-exclusions.ts";
 import {
   normalizeOsmEstablishmentType,
   osmDescription,
@@ -22,7 +23,7 @@ let skipped = 0;
 
 for (const row of rows) {
   const type = normalizeOsmEstablishmentType(row);
-  if (!type || !row.name || !row.osm_type || !row.osm_id) {
+  if (!type || !row.name || !row.osm_type || !row.osm_id || isExcludedCatalogName(row.name)) {
     skipped += 1;
     continue;
   }

@@ -22,6 +22,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from motkarta.stockholm_boundary import is_stockholm_municipality_place
+from motkarta.dog_friendly import tasstipset_coverage
+from scripts.fetch_tasstipset_dog_places import map_category_to_kind
 
 DEFAULT_GROUND_TRUTH = ROOT / "data" / "tasstipset_stockholm_ground_truth.csv"
 DEFAULT_SCRAPED_OUTPUT = ROOT / "outputs" / "tasstipset_dog_places_stockholm.json"
@@ -79,7 +81,7 @@ def run_verification(
 
     scraped_places: list[dict[str, Any]] = scraped_payload.get("places", [])
     scraped_total = len(scraped_places)
-    scraped_food = sum(1 for p in scraped_places if p.get("category", "").lower() != "park")
+    scraped_food = sum(map_category_to_kind(p.get("category", "")) in {"Restaurant", "Café", "Bakery"} for p in scraped_places)
     scraped_verified = sum(1 for p in scraped_places if p.get("is_venue_verified"))
     scraped_out_of_scope = sum(1 for p in scraped_places if not is_place_in_stockholm(p))
 
@@ -191,13 +193,15 @@ def run_verification(
         )
         key_venue_status.append({"name": kv, "dog_friendly_verified": found_in_public})
 
+    feature_coverage = tasstipset_coverage(public_places, gt_independent)
     summary = {
         "status": (
             "PASS"
             if (
-                scraped_total >= 200
-                and dog_friendly_total >= 150
-                and public_coverage_pct >= 60.0
+                scraped_total > 0
+                and feature_coverage["eligible_coverage_pct"] >= 60.0
+                and feature_coverage["source_only_venues"] == 0
+                and feature_coverage["ineligible_dog_venues"] == 0
                 and scraped_out_of_scope == 0
                 and public_dog_out_of_scope == 0
             )
@@ -217,6 +221,7 @@ def run_verification(
             "out_of_scope": scraped_out_of_scope,
         },
         "public_dataset": {
+            **feature_coverage,
             "total_places": public_total,
             "dog_friendly_places": dog_friendly_total,
             "ground_truth_matched": public_matched_gt,

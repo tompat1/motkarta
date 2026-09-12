@@ -43,6 +43,8 @@ except ImportError:
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from motkarta.dog_friendly import eligible_dog_friendly_target
 OSM_RAW = ROOT / "data" / "raw" / "osm_stockholm_food_places.json"
 PLACES_JSON = ROOT / "public" / "data" / "places.json"
 HUSA_GUIDE = ROOT / "data" / "husa_guide_ground_truth.json"
@@ -395,6 +397,8 @@ def extract_ground_truth_facts(
                 norm = normalize_name(name)
                 matched = place_index.get(norm, [])
                 for place in matched:
+                    if not eligible_dog_friendly_target(place):
+                        continue
                     pid = place["id"]
                     if pid not in facts_by_id:
                         facts_by_id[pid] = []

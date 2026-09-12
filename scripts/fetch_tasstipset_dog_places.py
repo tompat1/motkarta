@@ -16,7 +16,6 @@ import sys
 import time
 import urllib.parse
 import urllib.request
-import zlib
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -32,6 +31,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from motkarta.stockholm_boundary import is_stockholm_municipality_place
+from motkarta.catalog_exclusions import is_excluded_catalog_name
+from motkarta.dog_friendly import add_dog_friendly_feature, eligible_dog_friendly_target
 
 DEFAULT_OUTPUT_PATH = ROOT / "outputs" / "tasstipset_dog_places_stockholm.json"
 DEFAULT_PLACES_PATH = ROOT / "public" / "data" / "places.json"
@@ -208,19 +209,17 @@ def extract_stockholm_place_links(
 def map_category_to_kind(category_str: str) -> str:
     """Map Tasstipset category string to Motkarta establishment kind."""
     cat_lower = category_str.lower()
-    if any(k in cat_lower for k in ["cafeorcoffeeshop", "caf", "kafe", "fika", "kafé"]):
+    if any(k in cat_lower for k in ["cafeorcoffeeshop", "caf", "kafe", "fika", "kafé", "coffee shop", "coffeeshop", "specialty coffee"]):
         return "Café"
     if any(k in cat_lower for k in ["bakery", "bageri", "konditori"]):
         return "Bakery"
     if any(k in cat_lower for k in ["restaurang", "restaurant", "bistro", "brasserie", "krog"]):
         return "Restaurant"
-    if any(k in cat_lower for k in ["bar", "pub", "vin", "bryggeri"]):
-        return "Restaurant"
-    if any(k in cat_lower for k in ["hotell", "hotel"]):
+    if any(k in cat_lower for k in ["hotell", "hotel", "hostel", "vandrarhem", "lodgingbusiness"]):
         return "Hotell"
     if any(k in cat_lower for k in ["park", "strand"]):
         return "Park"
-    return "Restaurant"
+    return "Unknown"
 
 
 def clean_text_emojis(text: str) -> str:
@@ -252,6 +251,8 @@ def parse_tasstipset_place_page(html_content: str, url: str) -> DogPlaceRecord:
                 "store",
                 "park",
                 "hotel",
+                "hostel",
+                "lodgingbusiness",
             ]
         ):
             place_json = block
@@ -313,7 +314,7 @@ def parse_tasstipset_place_page(html_content: str, url: str) -> DogPlaceRecord:
     )
 
     # Category & Area
-    category = "Restaurang"
+    category = "Unknown"
     if json_ld_type:
         category = json_ld_type
 
@@ -331,7 +332,7 @@ def parse_tasstipset_place_page(html_content: str, url: str) -> DogPlaceRecord:
         for span in spans:
             cleaned_s = clean_text_emojis(span)
             s_lower = cleaned_s.lower()
-            if any(k in s_lower for k in ["café", "restaurang", "bageri", "hotell", "park", "bar", "vinbar"]):
+            if any(k in s_lower for k in ["café", "restaurang", "bageri", "hotell", "hostel", "vandrarhem", "park", "bar", "vinbar"]):
                 category = cleaned_s
             elif any(
                 dist in s_lower
@@ -422,6 +423,10 @@ def is_food_establishment(record: DogPlaceRecord) -> bool:
     """Check if record is a food/drink establishment (not a dog park, pet salon, or pure hotel)."""
     name_l = record.name.lower()
     cat_l = record.category.lower()
+    if is_excluded_catalog_name(record.name):
+        return False
+    if map_category_to_kind(cat_l or record.kind) not in {"Café", "Bakery", "Restaurant"}:
+        return False
     if "hundrastgård" in name_l or "rastgård" in name_l or "hundpark" in name_l:
         return False
     if "hunddagis" in name_l or "veterinär" in name_l or "djursjukhus" in name_l:
@@ -537,195 +542,71 @@ def haversine_distance_m(lat1: float, lon1: float, lat2: float, lon2: float) -> 
     return 6371000 * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 
+def enrich_tasstipset_places(places: list[dict[str, Any]], dog_places: list[dict[str, Any]]) -> dict[str, int]:
+    """Match existing food venues; Tasstipset never creates or promotes a venue."""
+    import difflib
+
+    matched_ids = set()
+    skipped_out_of_scope = 0
+    skipped_unmatched = 0
+    targets = [p for p in places if eligible_dog_friendly_target(p)]
+    for record in dog_places:
+        if is_excluded_catalog_name(record.get("name")):
+            continue
+        if not is_in_stockholm_municipality(record):
+            skipped_out_of_scope += 1
+            continue
+        category = record.get("category") or record.get("kind", "")
+        dummy = DogPlaceRecord(source_id="", name=record.get("name", ""), url="",
+                              category=category, kind=map_category_to_kind(category),
+                              area=record.get("area", ""), address=record.get("address", ""),
+                              latitude=record.get("latitude"), longitude=record.get("longitude"))
+        if not is_food_establishment(dummy):
+            continue
+        name = norm_str(record.get("name", ""))
+        matches = []
+        for target in targets:
+            candidate_name = norm_str(target.get("name", ""))
+            if not name or not candidate_name:
+                continue
+            exact = name == candidate_name
+            if not exact and difflib.SequenceMatcher(None, name, candidate_name).ratio() < 0.9:
+                continue
+            coords = [record.get("latitude"), record.get("longitude"), target.get("latitude"), target.get("longitude")]
+            if all(isinstance(c, (int, float)) for c in coords):
+                if haversine_distance_m(*coords) > 200:
+                    continue
+            elif not exact:
+                continue
+            matches.append(target)
+        if len(matches) != 1:
+            skipped_unmatched += 1
+            continue
+        target = matches[0]
+        add_dog_friendly_feature(target, record)
+        matched_ids.add(target["id"])
+    return {"matched": len(matched_ids), "added": 0, "skipped_out_of_scope": skipped_out_of_scope,
+            "skipped_unmatched": skipped_unmatched, "total": len(places)}
+
+
 def sync_tasstipset_to_places(
     dog_places: list[dict[str, Any]],
     places_path: Path = DEFAULT_PLACES_PATH,
     curated_path: Path = DEFAULT_CURATED_PATH,
     quiet: bool = False,
 ) -> dict[str, int]:
-    """Sync scraped dog-friendly venues into public/data/places.json using robust inverted index matching."""
-    import difflib
-    from collections import defaultdict
-
-    if not places_path.exists():
-        raise FileNotFoundError(f"{places_path} not found")
-
+    """Enrich only dog-friendly features; curated_path is retained for CLI compatibility."""
     payload = json.loads(places_path.read_text(encoding="utf-8"))
-    places = payload.get("places", payload)
+    places = payload.get("places", []) if isinstance(payload, dict) else payload
     if not isinstance(places, list):
         raise ValueError("Invalid places payload format.")
-
-    # Build fast inverted indexes over existing places
-    exact_map: dict[str, list[int]] = defaultdict(list)
-    token_map: dict[str, list[int]] = defaultdict(list)
-
-    def extract_tokens(s: Any) -> list[str]:
-        cleaned = re.sub(r"[^a-z0-9åäö]+", " ", str(s or "").lower())
-        return [t for t in cleaned.split() if len(t) >= 3]
-
-    for idx, p in enumerate(places):
-        pname = p.get("name", "")
-        pnorm = norm_str(pname)
-        if pnorm:
-            exact_map[pnorm].append(idx)
-        for tok in extract_tokens(pname):
-            token_map[tok].append(idx)
-
-    matched_count = 0
-    added_count = 0
-    skipped_out_of_scope = 0
-    dog_tags_standard = ["Dog friendly", "Hundvänligt", "Tasstipset"]
-    enriched_indices: set[int] = set()
-
-    for d in dog_places:
-        if not is_in_stockholm_municipality(d):
-            skipped_out_of_scope += 1
-            continue
-
-        d_name = d.get("name", "")
-        d_norm = norm_str(d_name)
-        d_lat = d.get("latitude")
-        d_lon = d.get("longitude")
-        d_kind = d.get("kind", "Restaurant")
-        d_quote = d.get("dog_policy_quote")
-        d_tags = d.get("tags", dog_tags_standard)
-
-        dummy_rec = DogPlaceRecord(
-            source_id=d.get("source_id", ""),
-            name=d_name,
-            url=d.get("url", ""),
-            category=d.get("category", ""),
-            kind=d_kind,
-            area=d.get("area", ""),
-            address=d.get("address", ""),
-            latitude=d_lat,
-            longitude=d_lon,
-        )
-        if not is_food_establishment(dummy_rec):
-            continue
-
-        best_idx: int | None = None
-
-        # 1. Exact normalized name match
-        if d_norm in exact_map:
-            best_idx = exact_map[d_norm][0]
-        else:
-            # 2. Token-based candidate match
-            candidates: set[int] = set()
-            for tok in extract_tokens(d_name):
-                for idx in token_map.get(tok, []):
-                    candidates.add(idx)
-
-            best_score = 0.0
-            for c_idx in candidates:
-                c_name = places[c_idx].get("name", "")
-                c_norm = norm_str(c_name)
-
-                if (d_norm in c_norm or c_norm in d_norm) and min(len(d_norm), len(c_norm)) >= 4:
-                    score = 0.95
-                else:
-                    score = difflib.SequenceMatcher(None, d_norm, c_norm).ratio()
-
-                if score < 0.78:
-                    continue
-
-                c_lat = places[c_idx].get("latitude")
-                c_lon = places[c_idx].get("longitude")
-                if d_lat and d_lon and c_lat and c_lon:
-                    dist = haversine_distance_m(d_lat, d_lon, c_lat, c_lon)
-                    if dist > 2000 and score < 0.95:
-                        continue
-
-                if score > best_score:
-                    best_score = score
-                    best_idx = c_idx
-
-        if best_idx is not None:
-            target = places[best_idx]
-            existing_tags = set(target.get("tags", []))
-            for t in d_tags:
-                existing_tags.add(t)
-            target["tags"] = sorted(existing_tags)
-
-            ev_label = target.get("evidenceLabel", "")
-            if "Tasstipset" not in ev_label:
-                target["evidenceLabel"] = f"{ev_label} · Tasstipset".strip(" ·")
-
-            ev = target.get("evidence", {})
-            ev["specialistGuide"] = max(ev.get("specialistGuide", 0), 0.7 if d.get("is_venue_verified") else 0.5)
-            target["evidence"] = ev
-
-            if d_quote and not target.get("note"):
-                target["note"] = f"Hundpolicy: {d_quote}"
-
-            if best_idx not in enriched_indices:
-                enriched_indices.add(best_idx)
-                matched_count += 1
-        else:
-            # Add new independent food place if valid coordinates
-            if d_lat and d_lon:
-                new_id = zlib.crc32(f"tasstipset:{d_name}:{d.get('address')}".encode("utf-8"))
-                new_place = {
-                    "id": new_id,
-                    "name": d_name,
-                    "kind": d_kind if d_kind in ["Café", "Bakery", "Restaurant"] else "Restaurant",
-                    "cuisine": d.get("category", "Restaurant").lower(),
-                    "area": d.get("area") or "Stockholm",
-                    "address": d.get("address") or f"{d.get('area', 'Stockholm')}, Stockholm",
-                    "note": f"Hundpolicy: {d_quote}" if d_quote else "Hundar välkomna (verifierad via Tasstipset)",
-                    "tags": sorted(set([*d_tags, "Curated", "Tasstipset"])),
-                    "sourceName": "Tasstipset",
-                    "sourceUrl": d.get("url") or "https://tasstipset.se/",
-                    "evidenceLabel": "Tasstipset (Hundvänliga ställen)",
-                    "website": d.get("website"),
-                    "latitude": d_lat,
-                    "longitude": d_lon,
-                    "x": round(min(92, max(8, ((d_lon - 17.75) / (18.25 - 17.75)) * 100)), 2),
-                    "y": round(100 - min(92, max(8, ((d_lat - 59.2) / (59.47 - 59.2)) * 100)), 2),
-                    "ratingAverage": 0,
-                    "reliableRatingCount": 0,
-                    "reviewCount": 0,
-                    "priceLevel": 0,
-                    "categoryMeanRating": 0,
-                    "categoryPopularityRaw": 0,
-                    "localPopularityPercentile": 0,
-                    "mainstreamExposure": 45,
-                    "daysSinceFreshEvidence": 30,
-                    "lifecycleState": "verified" if d.get("is_venue_verified") else "active",
-                    "evidence": {
-                        "specialistGuide": 0.7 if d.get("is_venue_verified") else 0.5,
-                        "independentEditorial": 1,
-                        "verifiedAttributes": 35,
-                        "dataFreshness": 90,
-                        "confidence": "High" if d.get("is_venue_verified") else "Medium",
-                    },
-                    "engagement": {
-                        "searchImpressions": 0,
-                        "profileViews": 0,
-                        "mapMarkerClicks": 0,
-                        "saves": 0,
-                        "directionRequests": 0,
-                        "confirmedVisits": 0,
-                        "repeatVisits": 0,
-                        "recommendations": 0,
-                        "recentSaves": 0,
-                    },
-                }
-                places.append(new_place)
-                added_count += 1
-
-    payload["places"] = places
-    payload["totalPlaces"] = len(places)
+    stats = enrich_tasstipset_places(places, dog_places)
+    if isinstance(payload, dict):
+        payload["totalPlaces"] = len(places)
     places_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-
     if not quiet:
-        print(
-            "🎉 Tasstipset sync finished: "
-            f"{matched_count} existing places enriched, {added_count} new dog places added, "
-            f"{skipped_out_of_scope} out-of-scope places skipped."
-        )
-
-    return {"matched": matched_count, "added": added_count, "skipped_out_of_scope": skipped_out_of_scope, "total": len(places)}
+        print(f"Tasstipset: {stats['matched']} existing venues enriched; {stats['skipped_unmatched']} unmatched records skipped.")
+    return stats
 
 
 def parse_args() -> argparse.Namespace:

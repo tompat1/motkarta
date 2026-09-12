@@ -1,5 +1,6 @@
 import type { PlaceInput } from "../../lib/scoring";
-import { isBroadStockholmArea, resolveStockholmRegion } from "../../lib/stockholm-regions";
+import { isExcludedCatalogPlace } from "../../lib/catalog-exclusions.ts";
+import { isBroadStockholmArea, resolveStockholmRegion } from "../../lib/stockholm-regions.ts";
 
 const EXCLUDED_COMMERCIAL_CHAINS = [
   "nespresso",
@@ -64,7 +65,7 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[
   // 1. Purge commercial chains
   const filtered = inputPlaces.filter((p) => {
     const n = p.name.toLowerCase();
-    return !EXCLUDED_COMMERCIAL_CHAINS.some((chain) => n.includes(chain));
+    return !isExcludedCatalogPlace(p) && !EXCLUDED_COMMERCIAL_CHAINS.some((chain) => n.includes(chain));
   });
 
   // 2. Replace broad location buckets with more useful regions when the data supports it.

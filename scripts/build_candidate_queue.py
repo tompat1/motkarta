@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from motkarta.stockholm_boundary import is_stockholm_municipality_place
+from motkarta.dog_friendly import is_tasstipset_source
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -183,6 +184,8 @@ def curated_submission_entries(path: Path | None, validations: dict[str, dict[st
     records = payload.get("submissions") or payload.get("places") or (payload if isinstance(payload, list) else [])
     entries = []
     for index, record in enumerate(records):
+        if is_tasstipset_source(first_evidence_source_name(record)) or is_tasstipset_source(record.get("sourceUrl")):
+            continue
         match = record.get("match", {}) if isinstance(record, dict) else {}
         if not is_curated_submission_in_stockholm(record, match):
             continue

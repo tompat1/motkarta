@@ -11,6 +11,10 @@ import json
 import math
 import os
 import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from motkarta.catalog_exclusions import is_excluded_catalog_name
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "..", "public", "data", "places.json")
 
@@ -55,7 +59,7 @@ def main():
     purged_chains = 0
     for p in places:
         name_lower = p["name"].lower()
-        if any(chain in name_lower for chain in EXCLUDED_CHAINS):
+        if is_excluded_catalog_name(p["name"]) or any(chain in name_lower for chain in EXCLUDED_CHAINS):
             purged_chains += 1
             continue
         non_chain_places.append(p)

@@ -1,0 +1,5 @@
+{
+  "excluded": ["O'Learys", "O’Learys Vällingby", "OLEARYS", "O Learys Bar & Restaurang", "O-Learys Stockholm", "Stockholm O'Learys"],
+  "nonFood": ["STF Stockholm Skeppsholmen Vandrarhem", "STF Stockholm/Gärdet Vandrarhem"],
+  "included": ["Soldaten Svejk", "Oliver's", "Learys Café", "Olearysala", "CoolEarys", "Café Skeppsholmen", "Långa Raden"]
+}

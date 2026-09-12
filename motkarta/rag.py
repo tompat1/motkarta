@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from motkarta.stockholm_boundary import normalized_boundary_text, contains_boundary_token
 from motkarta.stockholm_boundary import STOCKHOLM_MUNICIPALITY_BBOX
+from motkarta.catalog_exclusions import is_excluded_catalog_place
 
 POLICY = json.loads((Path(__file__).resolve().parents[1] / 'lib/concierge/policy.json').read_text())
 CORPUS_VERSION = 'concierge-facts-v1'
@@ -20,6 +21,8 @@ class RagDocument:
 
 
 def eligible_place(place: dict) -> bool:
+    if is_excluded_catalog_place(place):
+        return False
     state = place.get('lifecycleState', place.get('lifecycle_state')) or 'baseline'
     if state not in {'baseline', 'active', 'verified', 'featured'}:
         return False

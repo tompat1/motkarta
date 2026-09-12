@@ -18,6 +18,7 @@ import argparse
 import json
 import os
 import re
+import sys
 import time
 import urllib.parse
 import urllib.request
@@ -28,6 +29,9 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from motkarta.catalog_exclusions import is_excluded_catalog_name
+
 DEFAULT_PLACES_FILE = ROOT / "public" / "data" / "places.json"
 DEFAULT_PHOTOS_FILE = ROOT / "public" / "data" / "place_photos.json"
 DEFAULT_CANDIDATES_FILE = ROOT / "outputs" / "google_places_candidates.json"
@@ -540,7 +544,7 @@ def sync_metadata(
 
 def is_excluded_chain(name: object) -> bool:
     normalized = clean_text(name).lower()
-    return any(chain in normalized for chain in EXCLUDED_CHAINS)
+    return is_excluded_catalog_name(name) or any(chain in normalized for chain in EXCLUDED_CHAINS)
 
 
 def has_street_info(place: dict[str, Any]) -> bool:

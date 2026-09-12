@@ -25,6 +25,58 @@ This runbook covers environment setup, residual-model execution, evaluation,
 schema migration, validation, release and rollback. It does not authorize paid
 API usage, production data writes or deployment without the relevant task scope.
 
+### Catalog exclusions and Tasstipset feature-only policy (2026-09-13)
+
+At the owner's request, `catalog-exclusions-v1` excludes every O'Learys branch
+(case/apostrophe/spacing/hyphen variants). Three O'Learys records and 47 records
+created solely from Tasstipset have been removed, reducing the published catalog
+from 3,246 to 3,196 venues. The Tasstipset records include both STF Stockholm
+hostels, hotels and a shop. Their IDs/names are preserved in
+`lib/catalog-exclusions.json` for audit and stale-record rejection. Corresponding
+seed records and dependent rows are removed. Raw acquisition records remain
+available for provenance; they do not authorize public venue creation.
+
+Tasstipset is now **feature enrichment only**. It can match an existing,
+independently sourced Restaurant, Bakery, Café, Coffee shop/Coffeeshop or Specialty
+coffee venue. It may add dog-friendly tags and a `dogFriendly` source fact with
+policy text and attribution. It cannot add venues, change categories, descriptions,
+websites, lifecycle or evidence scores, or nominate discovery candidates.
+Unknown, lodging, shop, park, bar and pub source categories are rejected.
+Explicit hotel restaurants remain eligible when independently classified as food
+venues. Unknown matches are skipped; multiple matches abstain; coordinate matches
+must be within 200 metres. Repeated syncs are idempotent.
+
+`motkarta/dog_friendly.py` defines allowed targets and feature writes.
+`scripts/fetch_tasstipset_dog_places.py` owns matching; curated imports use the same
+path. Catalog fact enrichment also checks target types. Both concierge adapters,
+the list/map sanitizer, public API and seeds apply the catalog exclusions.
+Tasstipset-only primary sources and the recorded removed IDs cannot return via
+stale assets or D1 IDs. This does not modify source acquisition archives or apply
+production database/index changes.
+
+The original hostel bug had two causes: lodging was admitted by the scraper's
+food guard, and sync coerced unsupported kinds to Restaurant. The sync also
+raised specialist-guide evidence. History from `11b02b4`, `1f5b6e0` and `1ab8ede`
+was used to restore only still-matching Tasstipset changes: 283 guide-evidence
+values and 157 evidence labels. Dog-friendly tags, retained venue IDs and other
+subsequent edits remain intact. Data inputs are corrected; scorer/model formulas,
+versions, event schemas and privacy boundaries are unchanged. No training occurs.
+
+Run `npm run test:gate` after refreshes and before push/build. Regression tests
+check zero excluded public/seed records, D1/fallback guards, allowed venue types,
+unchanged non-dog fields, idempotence, ambiguity and distance rejection.
+Coverage now evaluates existing eligible reference venues rather than requiring
+Tasstipset to create unmatched venues: 150/167 existing references are tagged
+(89.8%); total-directory coverage remains separately reported at 53.8%.
+There are 164 dog-friendly catalog venues, zero Tasstipset-only venues and zero
+Tasstipset-tagged venues of disallowed types. The old whole-directory 60% gate
+was incompatible with enrichment-only use; the same threshold now applies to
+eligible existing venues, alongside strict source/type invariants.
+
+Rollback requires reverting the policy/callers and restoring the removed records,
+seed rows and audited evidence changes together. Never restore only the data
+while leaving contradictory import or public admission rules in place.
+
 ## Environment setup
 
 From the repository root:
@@ -437,4 +489,3 @@ To ensure that administrative operations are never opaque, the admin interface s
   - *Mainstream*: Details verified publishing and standard Bayesian quality score computation.
   - *Duplicate Merge*: Explains evidence migration into the master entity and recording of training labels for the deduplication model.
   - *District Update*: Details contribution to outer-city representation in the drift monitor.
-

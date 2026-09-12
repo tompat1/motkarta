@@ -1,0 +1,239 @@
+{
+  "tasstipsetOnlyPlaces": [
+    {
+      "id": 156585923,
+      "name": "Allgotths",
+      "sourceCategory": "cafeorcoffeeshop"
+    },
+    {
+      "id": 2795334254,
+      "name": "Amore",
+      "sourceCategory": "cafeorcoffeeshop"
+    },
+    {
+      "id": 1988337543,
+      "name": "Bar à Vins",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 1630394251,
+      "name": "Bar Kaja",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 1527861774,
+      "name": "Bar Nordic",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 3012883076,
+      "name": "Beer n' Play",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 2912025223,
+      "name": "Dryck",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 3293672420,
+      "name": "Karamell",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 4199704092,
+      "name": "Paulas",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 1631807358,
+      "name": "Sofia common",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 2669299134,
+      "name": "Udda",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 3140639710,
+      "name": "Wirströms Pub",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 2173611319,
+      "name": "The Bull and Bear Inn",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 215790313,
+      "name": "The King's Fox",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 4162790730,
+      "name": "Mondo",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 683681510,
+      "name": "Queen's Head",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 2925358111,
+      "name": "Bistro Doma",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 3736865331,
+      "name": "Golf Baren Aspudden",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 1900456167,
+      "name": "Chewie's Bar",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 3211833687,
+      "name": "Bar Libertin",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 1618356705,
+      "name": "Bar Nîmes",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 2962875828,
+      "name": "Den Gröne Jägaren",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 2895879604,
+      "name": "Röda Villan Fjäderholmarna",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 1622348307,
+      "name": "STF Stockholm Skeppsholmen Vandrarhem",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 4133378355,
+      "name": "STF Stockholm/Gärdet Vandrarhem",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 3529389257,
+      "name": "The Bishops Arms",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 1399975474,
+      "name": "The Bishops Arms",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 733934834,
+      "name": "The Bishops Arms",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 4025452109,
+      "name": "The Bishops Arms",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 4100336442,
+      "name": "The Bishops Arms",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 1015019099,
+      "name": "Scandic Continental",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 2796074732,
+      "name": "Scandic Gamla Stan",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 2383178760,
+      "name": "Scandic Go Upplandsgatan",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 85040923,
+      "name": "Scandic Grand Central",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 154148554,
+      "name": "Scandic no.53",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 2588983631,
+      "name": "Scandic Park",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 3887003063,
+      "name": "Scandic Talk Hotel",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 2113492179,
+      "name": "Cool Dogs",
+      "sourceCategory": "store"
+    },
+    {
+      "id": 1659760189,
+      "name": "Hallen Södermalm",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 1901644272,
+      "name": "Haymarket",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 2765948110,
+      "name": "Hilma",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 96981973,
+      "name": "Pet Sounds Bar",
+      "sourceCategory": "restaurant"
+    },
+    {
+      "id": 844541298,
+      "name": "Scandic Klara",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 2432122147,
+      "name": "Scandic Malmen",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 3121575674,
+      "name": "Scandic Norra Bantorget",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 2317054663,
+      "name": "Sjöfartshotellet",
+      "sourceCategory": "hotel"
+    },
+    {
+      "id": 208300274,
+      "name": "The Bishops Arms",
+      "sourceCategory": "restaurant"
+    }
+  ]
+}
