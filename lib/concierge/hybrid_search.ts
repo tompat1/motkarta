@@ -1,5 +1,6 @@
 import type { RankedCandidate } from './contracts.ts';
 import { dataCompletenessBonus } from './retrieval.ts';
+import { normalize } from './facts.ts';
 
 export interface FusionOptions {
   /**
@@ -80,8 +81,32 @@ export function reciprocalRankFusion(
     return a.place.id - b.place.id;
   });
 
+  const deduplicated: RankedCandidate[] = [];
+  const seenIds = new Set<number>();
+  const seenOsm = new Set<string>();
+  const seenGeo = new Set<string>();
+  const seenNameArea = new Set<string>();
+
+  for (const candidate of candidates) {
+    const p = candidate.place;
+    if (seenIds.has(p.id)) continue;
+    if (p.osmIdentity && seenOsm.has(p.osmIdentity)) continue;
+    const normName = normalize(p.name);
+    const normArea = normalize(p.area || '');
+    if (normArea && seenNameArea.has(`${normName}::${normArea}`)) continue;
+    if (p.latitude && p.longitude && Number.isFinite(p.latitude) && Number.isFinite(p.longitude) && p.latitude !== 0 && p.longitude !== 0) {
+      const geoKey = `${normName}:${p.latitude.toFixed(3)},${p.longitude.toFixed(3)}`;
+      if (seenGeo.has(geoKey)) continue;
+      seenGeo.add(geoKey);
+    }
+    seenIds.add(p.id);
+    if (p.osmIdentity) seenOsm.add(p.osmIdentity);
+    if (normArea) seenNameArea.add(`${normName}::${normArea}`);
+    deduplicated.push(candidate);
+  }
+
   // Assign 1-based fusionRank
-  return candidates.map((c, index) => ({
+  return deduplicated.map((c, index) => ({
     ...c,
     fusionRank: index + 1,
   }));

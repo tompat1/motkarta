@@ -3,7 +3,7 @@ import { includesPhrase, normalize } from './facts.ts';
 import type { QueryContext } from './contracts.ts';
 import policy from './policy.json' with { type: 'json' };
 
-const STOP = new Set(normalize('and the for with from some best good great find where what want like near place places spot spots food eat get have looking a an in on of to me i och den det ett att som har kan ska med bra för nära mig dig sin sina vara eller alla bästa hitta var deras här där ställe ställen ställena stället restaurang restauranger krog krogar kafe kafeer cafe cafes bageri bagerier mat äta vill på en i is please show recommend something tips rekommendationer stan och and or eller ge fler mer visa andra annat nagra nagot more other give next suggestions forslag då ju väl nu').split(' '));
+const STOP = new Set(normalize('and the for with from some best good great find where what want like near place places spot spots food eat get have looking a an in on of to me i och den det ett att som har kan ska med bra för nära mig dig sin sina vara eller alla bästa hitta var deras här där ställe ställen ställena stället restaurang restauranger krog krogar kafe kafeer cafe cafes bageri bagerier mat äta vill på en i is please show recommend something tips rekommendationer stan staden stad town city och and or eller ge fler mer visa andra annat nagra nagot more other give next suggestions forslag då ju väl nu').split(' '));
 const DESCRIPTORS = new Set(normalize('family owned run familjeägd familjeägt handmade handgjorda handgjord independent local authentic artisan hantverks cozy cosy quiet dinner middag lunch breakfast frukost cheap affordable budget billigt prisvärt filter hidden gems dolda pärlor').split(' '));
 const normalizedAliases = new Map(Object.entries(CUISINE_ALIASES).map(([key, values]) => [normalize(key), values.map(normalize)]));
 const normalizedCuisineTerms = new Set([...normalizedAliases.entries()].flatMap(([key, values]) => [key, ...values]));
@@ -38,6 +38,8 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
     ['pierogi', 'pierogi'], ['tacos', 'tacos'], ['ramen', 'ramen'], ['sushi', 'sushi'],
     ['cardamom bun', 'cardamom'], ['kardemummabulle', 'cardamom'], ['kardemumma', 'cardamom'],
     ['sourdough', 'sourdough'], ['surdegsbrod', 'sourdough'], ['surdeg', 'sourdough'],
+    ['burger', 'burger'], ['burgers', 'burger'], ['burgare', 'burger'], ['burgaren', 'burger'],
+    ['burgarna', 'burger'], ['hamburgare', 'burger'], ['hamburgaren', 'burger'], ['hamburgarna', 'burger'],
   ].filter(([word]) => includesPhrase(positive, word)).map(([, dish]) => dish);
   const specialty = /\b(specialty|specialkaffe|roastery|roaster|rosteri)\b/.test(normalize(positive));
   const bakery = /\b(bakery|bageri|hantverksbageri)\b/.test(normalize(positive));
@@ -46,7 +48,7 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
   const openNow = /\b(open now|oppet nu|open tonight|oppet ikvall)\b/.test(normalized);
   const exclusions = negative.flatMap((value) => queryTerms(value)).flatMap(tokenAlternatives);
   const cuisineKinds = filters.cuisines.filter((c) => !['coffee', 'bakery'].includes(c));
-  const localityTokens = new Set(['soder', 'sodermalm', 'vasastan', 'vasan', 'ostermalm', 'oster', 'kungsholmen', 'gamla', 'stan', ...(area ? area.split(' ') : [])]);
+  const localityTokens = new Set(['soder', 'sodermalm', 'vasastan', 'vasan', 'ostermalm', 'oster', 'kungsholmen', 'gamla', 'stan', 'staden', 'stad', 'town', 'city', ...(area ? area.split(' ') : [])]);
   const terms = queryTerms(positive).filter((token) => !localityTokens.has(token) && !/^\d+$/.test(token) && !['under', 'below', 'less', 'than', 'max', 'hogst', 'sek', 'kr', 'kronor'].includes(token));
   return { positive, filters, priceMax, area, outsideStockholm, excludedBrandRequested, dishes: [...new Set(dishes)], specialty, bakery, dinner, near, openNow, exclusions, cuisineKinds, terms,
     hiddenGem: /\b(hidden gems?|dolda parlor|dold parla)\b/.test(normalized),

@@ -176,6 +176,35 @@ test("extractStructuredFilters parses Swedish cuisine keywords", () => {
   assert.equal(filters.price_max, 250, "Should detect 'rimligt pris' as affordable");
 });
 
+test("extractStructuredFilters parses Swedish burger keywords (burgare, burgaren, hamburgare)", () => {
+  assert.deepEqual(extractStructuredFilters("bästa burgaren i stan").cuisines, ["burger"]);
+  assert.deepEqual(extractStructuredFilters("hamburgare på söder").cuisines, ["burger"]);
+  assert.deepEqual(extractStructuredFilters("best burger in town").cuisines, ["burger"]);
+});
+
+test("RAG retrieveAndSynthesize returns top burger spots and deduplicates establishments for 'bästa burgaren i stan'", () => {
+  const resultSv = retrieveAndSynthesize("bästa burgaren i stan", livePlaces, { language: "sv" });
+  const resultEn = retrieveAndSynthesize("best burger in town", livePlaces, { language: "en" });
+
+  assert.ok(resultSv.recommendedPlaces.length > 0, "Swedish burger search should return results");
+  assert.ok(resultEn.recommendedPlaces.length > 0, "English burger search should return results");
+
+  const namesSv = resultSv.recommendedPlaces.map((p) => p.name);
+  const namesEn = resultEn.recommendedPlaces.map((p) => p.name);
+
+  // Both should prioritize top-rated independent burger venues like Franky's or Lily's or Bun Meat Bun
+  assert.ok(namesSv.some((n) => n.includes("Franky") || n.includes("Lily") || n.includes("Bun Meat Bun")), `Expected top burger venue in Swedish, got: ${namesSv.join(", ")}`);
+  assert.ok(namesEn.some((n) => n.includes("Franky") || n.includes("Lily") || n.includes("Bun Meat Bun")), `Expected top burger venue in English, got: ${namesEn.join(", ")}`);
+
+  // No duplicate venue names in recommendations
+  const uniqueNamesSv = new Set(namesSv);
+  assert.equal(namesSv.length, uniqueNamesSv.size, "Should not return duplicate places in results");
+
+  // Commercial chain O'Learys should be excluded
+  assert.equal(namesSv.some((n) => n.toLowerCase().includes("o'learys") || n.toLowerCase().includes("olearys")), false);
+  assert.equal(namesEn.some((n) => n.toLowerCase().includes("o'learys") || n.toLowerCase().includes("olearys")), false);
+});
+
 test("concierge search input has exact aria-label and top-nav CONCIERGE and OnboardingModal focus input", async () => {
   const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
 

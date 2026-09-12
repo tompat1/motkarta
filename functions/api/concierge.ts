@@ -1,6 +1,7 @@
 import { loadPlacesFromD1 } from '../../lib/place-records.ts';
 import { VERSIONS, type AiBinding, type ConciergePlace, type QueryContext, type VectorBinding } from '../../lib/concierge/contracts.ts';
 import { coordinates } from '../../lib/concierge/gates.ts';
+import { plainText, safeUrl, normalize } from '../../lib/concierge/facts.ts';
 import { lexicalCandidates, fuseCandidates } from '../../lib/concierge/retrieval.ts';
 import { buildResponse } from '../../lib/concierge/response.ts';
 import { semanticCandidates, withinDeadline } from '../../lib/concierge/providers.ts';
@@ -196,11 +197,18 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
             sourceNamespace = 'published_dataset';
           } else {
             const existingIds = new Set(places.map((p) => p.id));
+            const existingOsm = new Set(places.map((p) => p.osmIdentity).filter(Boolean) as string[]);
+            const existingNameArea = new Set(places.map((p) => `${normalize(p.name)}::${normalize(p.area || '')}`));
             for (const ap of assetPlaces) {
-              if (!existingIds.has(ap.id)) {
-                places.push(ap);
-                existingIds.add(ap.id);
-              }
+              if (existingIds.has(ap.id)) continue;
+              if (ap.osmIdentity && existingOsm.has(ap.osmIdentity)) continue;
+              const nameArea = `${normalize(ap.name)}::${normalize(ap.area || '')}`;
+              if (nameArea && existingNameArea.has(nameArea)) continue;
+
+              places.push(ap);
+              existingIds.add(ap.id);
+              if (ap.osmIdentity) existingOsm.add(ap.osmIdentity);
+              existingNameArea.add(nameArea);
             }
           }
         }

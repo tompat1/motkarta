@@ -19,7 +19,11 @@ function oneEdit(a: string, b: string): boolean {
 function matchesTerm(term: string, text: string): boolean {
   return tokenAlternatives(term).some((alternative) => includesPhrase(text, alternative)) || text.split(' ').some((word) => oneEdit(term, word));
 }
-const DISH_TERMS: Record<string, string[]> = { cardamom: ['cardamom', 'kardemumma', 'kardemummabulle'], sourdough: ['sourdough', 'surdeg', 'surdegsbrod'] };
+const DISH_TERMS: Record<string, string[]> = {
+  cardamom: ['cardamom', 'kardemumma', 'kardemummabulle'],
+  sourdough: ['sourdough', 'surdeg', 'surdegsbrod'],
+  burger: ['burger', 'burgers', 'burgare', 'burgaren', 'burgarna', 'hamburgare', 'hamburgaren', 'hamburgarna'],
+};
 const MEAL_CUISINES = new Set(['thai', 'polish', 'italian', 'french', 'japanese', 'chinese', 'korean', 'indian', 'mexican', 'vietnamese', 'spanish', 'greek', 'german', 'austrian', 'hungarian', 'czech', 'pub', 'middle eastern', 'lebanese', 'burger', 'pizza', 'sushi', 'ramen']);
 
 export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent, context: QueryContext): boolean {
@@ -118,7 +122,32 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
 
     return a.place.id - b.place.id;
   });
-  return candidates.map((candidate, index) => ({ ...candidate, lexicalRank: index + 1, fusionScore: 1 / (60 + index + 1) }));
+
+  const deduplicated: RankedCandidate[] = [];
+  const seenIds = new Set<number>();
+  const seenOsm = new Set<string>();
+  const seenGeo = new Set<string>();
+  const seenNameArea = new Set<string>();
+
+  for (const candidate of candidates) {
+    const p = candidate.place;
+    if (seenIds.has(p.id)) continue;
+    if (p.osmIdentity && seenOsm.has(p.osmIdentity)) continue;
+    const normName = normalize(p.name);
+    const normArea = normalize(p.area || '');
+    if (normArea && seenNameArea.has(`${normName}::${normArea}`)) continue;
+    if (p.latitude && p.longitude && Number.isFinite(p.latitude) && Number.isFinite(p.longitude) && p.latitude !== 0 && p.longitude !== 0) {
+      const geoKey = `${normName}:${p.latitude.toFixed(3)},${p.longitude.toFixed(3)}`;
+      if (seenGeo.has(geoKey)) continue;
+      seenGeo.add(geoKey);
+    }
+    seenIds.add(p.id);
+    if (p.osmIdentity) seenOsm.add(p.osmIdentity);
+    if (normArea) seenNameArea.add(`${normName}::${normArea}`);
+    deduplicated.push(candidate);
+  }
+
+  return deduplicated.map((candidate, index) => ({ ...candidate, lexicalRank: index + 1, fusionScore: 1 / (60 + index + 1) }));
 }
 export function fuseCandidates(lexical: RankedCandidate[], semantic: RankedCandidate[]): RankedCandidate[] {
   return reciprocalRankFusion(lexical, semantic);

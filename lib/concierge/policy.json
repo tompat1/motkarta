@@ -136,7 +136,9 @@
     "sibylla",
     "burger king",
     "subway",
-    "pizza hut"
+    "pizza hut",
+    "olearys",
+    "o learys"
   ],
   "excludedExactChains": ["max"],
   "specialtyNames": [

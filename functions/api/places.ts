@@ -1,4 +1,5 @@
 import { loadPlacesFromD1 } from "../../lib/place-records.ts";
+import { normalize } from "../../lib/concierge/facts.ts";
 
 type EventContext<Env> = {
   request?: Request;
@@ -60,10 +61,19 @@ export async function onRequestGet(context: EventContext<Env>) {
     }
     if (places.length && Array.isArray(fallbackPlaces)) {
       const existingIds = new Set(places.map((p) => p.id));
-      for (const fp of fallbackPlaces as Array<{ id: number }>) {
-        if (fp && typeof fp.id === "number" && !existingIds.has(fp.id)) {
+      const existingOsm = new Set(places.map((p) => (p as any).osmIdentity).filter(Boolean) as string[]);
+      const existingNameArea = new Set(places.map((p) => `${normalize(p.name)}::${normalize(p.area || '')}`));
+      for (const fp of fallbackPlaces as Array<{ id: number; name?: string; area?: string; osmIdentity?: string }>) {
+        if (fp && typeof fp.id === "number") {
+          if (existingIds.has(fp.id)) continue;
+          if (fp.osmIdentity && existingOsm.has(fp.osmIdentity)) continue;
+          const nameArea = fp.name ? `${normalize(fp.name)}::${normalize(fp.area || '')}` : '';
+          if (nameArea && existingNameArea.has(nameArea)) continue;
+
           places.push(fp as any);
           existingIds.add(fp.id);
+          if (fp.osmIdentity) existingOsm.add(fp.osmIdentity);
+          if (nameArea) existingNameArea.add(nameArea);
         }
       }
     }
