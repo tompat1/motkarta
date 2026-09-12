@@ -36,7 +36,7 @@ test("lazy-media.ts exports DUMMY_PLACE_IMAGE_URL", () => {
 test("styles.css defines map card photo container and responsive styling", () => {
   assert.match(stylesSource, /\.map-card-photo-container\s*\{/);
   assert.match(stylesSource, /\.map-card-photo-container-dummy\s*\{/);
-  assert.match(stylesSource, /\.map-card-hero-photo\s*\{/);
+  assert.match(stylesSource, /\.map-card-hero-photo\s*\{[\s\S]*?object-fit:\s*contain;/);
   assert.match(stylesSource, /\.map-card-hero-photo-dummy\s*\{/);
   assert.match(stylesSource, /\.map-card-photo-credit\s*\{/);
 });

@@ -2269,13 +2269,17 @@ button.search-clear-btn:hover {
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-  background: var(--color-paper, #ffffff);
+  background: #ffffff;
   border: 1px solid var(--color-mist);
-  transition: transform var(--motion-fast), box-shadow var(--motion-fast);
+  transition: transform var(--motion-fast), box-shadow var(--motion-fast), border-color var(--motion-fast);
   margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .map-card-photo-container:hover {
+  border-color: var(--color-ink);
   box-shadow: 0 4px 14px rgba(17, 17, 17, 0.08);
 }
 
@@ -2289,13 +2293,14 @@ button.search-clear-btn:hover {
 .map-card-hero-photo {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
   transition: transform var(--motion-fast);
+  background: #ffffff;
 }
 
 .map-card-photo-container:hover .map-card-hero-photo:not(.map-card-hero-photo-dummy) {
-  transform: scale(1.02);
+  transform: none;
 }
 
 .map-card-hero-photo-dummy {
