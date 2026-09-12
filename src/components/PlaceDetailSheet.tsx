@@ -352,7 +352,7 @@ export function PlaceDetailSheet({
           <hr className="place-detail-divider" />
 
           {/* Place Note & Story */}
-          {place.note ? (
+          {place.note && !place.note.toLowerCase().includes("from openstreetmap") ? (
             <section className="place-detail-section">
               <p className="place-detail-description">{place.note}</p>
             </section>

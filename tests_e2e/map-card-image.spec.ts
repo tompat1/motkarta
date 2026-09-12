@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Map Place Card Image Placeholder", () => {
+test.describe("Map Place Card Image Placeholder & Clean Note", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem("motkarta_preloader_seen", "true");
@@ -8,7 +8,7 @@ test.describe("Map Place Card Image Placeholder", () => {
     });
   });
 
-  test("map place card renders image placeholder and removes red-line paragraph", async ({ page }, testInfo) => {
+  test("map place card renders image placeholder and removes red-line and raw note lines", async ({ page }, testInfo) => {
     await page.goto("/");
 
     const isMobile = testInfo.project.name.startsWith("mobile");
@@ -31,6 +31,10 @@ test.describe("Map Place Card Image Placeholder", () => {
 
     // Verify the red-line recommendation paragraph is NOT present
     await expect(mapCard.locator("p.recommendation")).toHaveCount(0);
+
+    // Verify raw note paragraph is NOT present in map card
+    await expect(mapCard.locator("p.note")).toHaveCount(0);
+    await expect(mapCard).not.toContainText("from OpenStreetMap. Cuisine tag");
 
     // Verify the main image placeholder / photo container is present and visible
     const photoContainer = mapCard.locator(".map-card-photo-container");

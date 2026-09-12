@@ -5,6 +5,7 @@ import test from "node:test";
 const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
 const stylesSource = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
 const lazyMediaSource = await readFile(new URL("../lib/lazy-media.ts", import.meta.url), "utf8");
+const detailSheetSource = await readFile(new URL("../src/components/PlaceDetailSheet.tsx", import.meta.url), "utf8");
 
 test("App.tsx replaces recommendation paragraph with map card photo container", () => {
   // Recommendation paragraph with red line is removed from map card
@@ -17,6 +18,15 @@ test("App.tsx replaces recommendation paragraph with map card photo container", 
 
   // Clicking photo opens place detail sheet
   assert.match(appSource, /onClick=\{\(\) => setIsPlaceDetailOpen\(true\)\}/);
+});
+
+test("App.tsx removes note paragraph from map card", () => {
+  // Note paragraph is removed from the map card
+  assert.ok(!appSource.includes('<p className="note">{active.note}</p>'), "App.tsx map card should not contain <p className=\"note\">{active.note}</p>");
+});
+
+test("PlaceDetailSheet filters out raw OpenStreetMap notes", () => {
+  assert.match(detailSheetSource, /place\.note && !place\.note\.toLowerCase\(\)\.includes\("from openstreetmap"\)/);
 });
 
 test("lazy-media.ts exports DUMMY_PLACE_IMAGE_URL", () => {

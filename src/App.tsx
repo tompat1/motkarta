@@ -2219,7 +2219,6 @@ export default function App() {
                     </span>
                   ) : null}
                 </div>
-                <p className="note">{active.note}</p>
                 <div className="tag-row">
                   {active.tags.map((tag: string) => (
                     <span key={tag}>{tag}</span>
