@@ -1703,13 +1703,15 @@ export default function App() {
       <section className="controls countermap-controls" id="map" aria-labelledby="countermap-controls-title">
         <header className="countermap-controls-head">
           <div className="countermap-controls-head-title-row">
-            <h2 id="countermap-controls-title">{lang === "sv" ? "Vad låter gott?" : "What sounds good?"}</h2>
+            <h2 id="countermap-controls-title">{t.controlsHeading}</h2>
             <div className="countermap-selection-readout" aria-live="polite">
               <strong>{ranked.length.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</strong>
               <span>{lang === "sv" ? "ställen i urvalet" : "places in selection"}</span>
             </div>
           </div>
-          <p>{lang === "sv" ? "Fråga fritt eller bygg ditt urval med transparenta filter." : "Ask freely or build your selection with transparent filters."}</p>
+          <p data-subparagraph-en="Tell us what you're in the mood for. Ask freely or use a few preferences – we'll find great places based on transparent signals.">
+            {t.controlsSubparagraph}
+          </p>
         </header>
 
         <div className="countermap-concierge-panel">
