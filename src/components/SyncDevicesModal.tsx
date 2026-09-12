@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import QRCode from "qrcode";
 import {
   DeviceMobile,
   Laptop,
@@ -10,6 +11,8 @@ import {
   Sparkle,
 } from "@phosphor-icons/react";
 import type { Language } from "../app/shared";
+import { CANONICAL_SYNC_URL, getSyncShareableUrl } from "../app/sync-utils";
+export { CANONICAL_SYNC_URL, getSyncShareableUrl };
 
 interface SyncDevicesModalProps {
   isOpen: boolean;
@@ -30,17 +33,58 @@ export function SyncDevicesModal({
   const [syncCode, setSyncCode] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [qrSvg, setQrSvg] = useState<string>("");
+  const [isGeneratingQr, setIsGeneratingQr] = useState(false);
 
   const [inputCode, setInputCode] = useState("");
   const [isFetching, setIsFetching] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  const shareableUrl = useMemo(() => {
+    return getSyncShareableUrl(syncCode, savedPlaceIds);
+  }, [syncCode, savedPlaceIds]);
+
   useEffect(() => {
     if (isOpen && savedPlaceIds.length > 0 && !syncCode) {
       void generateCode();
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || savedPlaceIds.length === 0) {
+      setQrSvg("");
+      return;
+    }
+    let cancelled = false;
+    setIsGeneratingQr(true);
+
+    QRCode.toString(shareableUrl, {
+      type: "svg",
+      margin: 2,
+      errorCorrectionLevel: "M",
+      color: {
+        dark: "#0F172A",
+        light: "#FFFFFF",
+      },
+    })
+      .then((svg) => {
+        if (!cancelled) {
+          setQrSvg(svg);
+          setIsGeneratingQr(false);
+        }
+      })
+      .catch((err) => {
+        console.error("QR generation failed", err);
+        if (!cancelled) {
+          setIsGeneratingQr(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [shareableUrl, isOpen, savedPlaceIds.length]);
 
   if (!isOpen) return null;
 
@@ -65,15 +109,9 @@ export function SyncDevicesModal({
     }
   };
 
-  const getShareableUrl = () => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://motkarta.se";
-    return `${origin}/?sync=${syncCode || ""}`;
-  };
-
   const handleCopyLink = () => {
-    const url = getShareableUrl();
     if (navigator.clipboard) {
-      void navigator.clipboard.writeText(url);
+      void navigator.clipboard.writeText(shareableUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
     }
@@ -199,36 +237,23 @@ export function SyncDevicesModal({
                   </span>
                 </div>
 
-                {/* QR Code SVG Representation */}
+                {/* Real Scannable QR Code */}
                 <div className="sync-qr-box">
-                  <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="120" height="120" rx="12" fill="#F8FAFC" />
-                    {/* Corner Position Detection Squares */}
-                    <rect x="12" y="12" width="32" height="32" rx="4" fill="#0F172A" />
-                    <rect x="18" y="18" width="20" height="20" rx="2" fill="#FFFFFF" />
-                    <rect x="22" y="22" width="12" height="12" rx="1" fill="#0F172A" />
-
-                    <rect x="76" y="12" width="32" height="32" rx="4" fill="#0F172A" />
-                    <rect x="82" y="18" width="20" height="20" rx="2" fill="#FFFFFF" />
-                    <rect x="86" y="22" width="12" height="12" rx="1" fill="#0F172A" />
-
-                    <rect x="12" y="76" width="32" height="32" rx="4" fill="#0F172A" />
-                    <rect x="18" y="82" width="20" height="20" rx="2" fill="#FFFFFF" />
-                    <rect x="22" y="86" width="12" height="12" rx="1" fill="#0F172A" />
-
-                    {/* Data Matrix Dots */}
-                    <rect x="52" y="16" width="12" height="12" rx="2" fill="#2563EB" />
-                    <rect x="52" y="34" width="12" height="12" rx="2" fill="#0F172A" />
-                    <rect x="16" y="52" width="12" height="12" rx="2" fill="#0F172A" />
-                    <rect x="34" y="52" width="12" height="12" rx="2" fill="#2563EB" />
-                    <rect x="52" y="52" width="16" height="16" rx="3" fill="#0F172A" />
-                    <rect x="74" y="52" width="12" height="12" rx="2" fill="#0F172A" />
-                    <rect x="92" y="52" width="12" height="12" rx="2" fill="#2563EB" />
-                    <rect x="52" y="74" width="12" height="12" rx="2" fill="#0F172A" />
-                    <rect x="74" y="74" width="30" height="30" rx="6" fill="#0F172A" />
-                    <rect x="80" y="80" width="18" height="18" rx="3" fill="#FFFFFF" />
-                    <rect x="84" y="84" width="10" height="10" rx="2" fill="#2563EB" />
-                  </svg>
+                  {qrSvg ? (
+                    <div
+                      className="sync-qr-code-wrapper"
+                      dangerouslySetInnerHTML={{ __html: qrSvg }}
+                      role="img"
+                      aria-label={lang === "sv" ? "QR-kod för att synka enheter" : "QR code to sync devices"}
+                    />
+                  ) : (
+                    <div className="sync-qr-loading">
+                      <span>{isGeneratingQr || isGenerating ? "..." : ""}</span>
+                    </div>
+                  )}
+                  <div className="sync-qr-url-badge" title={shareableUrl}>
+                    <span className="sync-qr-url-text">{shareableUrl}</span>
+                  </div>
                   <p className="qr-box-caption">
                     {lang === "sv"
                       ? "Öppna länken eller skanna med kameran från din mobil eller dator."

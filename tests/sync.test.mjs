@@ -45,3 +45,55 @@ test("GET /api/sync handles missing or invalid sync codes cleanly", async () => 
   const data = await response.json();
   assert.ok(data.error.includes("not found"));
 });
+
+test("getSyncShareableUrl generates canonical https://motkarta.rynell.org/ with sync code and saved places", async () => {
+  const { getSyncShareableUrl, parseSyncDirectPlaces, CANONICAL_SYNC_URL } = await import("../src/app/sync-utils.ts");
+  assert.equal(CANONICAL_SYNC_URL, "https://motkarta.rynell.org");
+
+  const urlStr = getSyncShareableUrl("MOT-RE3R", [1, 3, 14]);
+  const url = new URL(urlStr);
+
+  assert.equal(url.origin, "https://motkarta.rynell.org");
+  assert.equal(url.pathname, "/");
+  assert.equal(url.searchParams.get("sync"), "MOT-RE3R");
+  assert.equal(url.searchParams.get("places"), "1,3,14");
+
+  // Verify places array parses back identically using parseSyncDirectPlaces
+  const parsedPlaces = parseSyncDirectPlaces(url.searchParams.get("places"));
+  assert.deepEqual(parsedPlaces, [1, 3, 14]);
+});
+
+test("getSyncShareableUrl handles code without places or places without code cleanly", async () => {
+  const { getSyncShareableUrl } = await import("../src/app/sync-utils.ts");
+
+  const codeOnlyUrl = new URL(getSyncShareableUrl("MOT-AB12", []));
+  assert.equal(codeOnlyUrl.searchParams.get("sync"), "MOT-AB12");
+  assert.equal(codeOnlyUrl.searchParams.has("places"), false);
+
+  const placesOnlyUrl = new URL(getSyncShareableUrl(null, [42, 99]));
+  assert.equal(placesOnlyUrl.searchParams.has("sync"), false);
+  assert.equal(placesOnlyUrl.searchParams.get("places"), "42,99");
+});
+
+test("QRCode generates valid scannable SVG for canonical sync URL", async () => {
+  const { getSyncShareableUrl } = await import("../src/app/sync-utils.ts");
+  const QRCode = (await import("qrcode")).default;
+
+  const url = getSyncShareableUrl("MOT-RE3R", [1, 3, 14]);
+  const svg = await QRCode.toString(url, {
+    type: "svg",
+    margin: 2,
+    errorCorrectionLevel: "M",
+  });
+
+  assert.ok(svg.startsWith("<svg"));
+  assert.ok(svg.includes("viewBox="));
+  assert.ok(svg.includes("<path"));
+  assert.ok(svg.trim().endsWith("</svg>"));
+
+  // Verify internal QR matrix structure
+  const qr = QRCode.create(url, { errorCorrectionLevel: "M" });
+  assert.ok(qr.modules.size >= 21);
+  assert.ok(qr.version >= 1);
+});
+

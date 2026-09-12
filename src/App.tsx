@@ -9,6 +9,7 @@ import { CuratedSourcesPanel } from "./components/CuratedSourcesPanel";
 import { ExternalMapLinks } from "./components/ExternalMapLinks";
 import { FoodMap } from "./components/FoodMap";
 import { SyncDevicesModal } from "./components/SyncDevicesModal";
+import { parseSyncDirectPlaces } from "./app/sync-utils";
 import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
 import { VerificationBar } from "./components/VerificationBar";
 import { matchesEstablishmentFilter } from "./app/place-filtering";
@@ -254,24 +255,61 @@ export default function App() {
     });
   }, []);
 
+  const [syncToast, setSyncToast] = useState<{ count: number; code?: string } | null>(null);
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const syncCode = params.get("sync");
-      if (syncCode) {
-        const cleanCode = syncCode.trim().toUpperCase();
-        void fetch(`/api/sync?code=${encodeURIComponent(cleanCode)}`)
-          .then((res) => (res.ok ? res.json() : null))
-          .then((data: { savedPlaceIds?: number[] } | null) => {
-            if (data?.savedPlaceIds && data.savedPlaceIds.length > 0) {
-              handleImportSavedPlaces(data.savedPlaceIds);
-              const newUrl = new URL(window.location.href);
-              newUrl.searchParams.delete("sync");
-              window.history.replaceState({}, "", newUrl.toString());
-            }
-          })
-          .catch(() => {});
+    if (!syncToast) return;
+    const timer = setTimeout(() => {
+      setSyncToast(null);
+    }, 7000);
+    return () => clearTimeout(timer);
+  }, [syncToast]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const syncCode = params.get("sync");
+    const directParam = params.get("places") || params.get("favs");
+
+    let directCount = 0;
+    if (directParam) {
+      const parsedIds = parseSyncDirectPlaces(directParam);
+      if (parsedIds.length > 0) {
+        handleImportSavedPlaces(parsedIds);
+        directCount = parsedIds.length;
       }
+    }
+
+    if (syncCode) {
+      const cleanCode = syncCode.trim().toUpperCase();
+      void fetch(`/api/sync?code=${encodeURIComponent(cleanCode)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: { savedPlaceIds?: number[]; syncCode?: string } | null) => {
+          if (data?.savedPlaceIds && data.savedPlaceIds.length > 0) {
+            handleImportSavedPlaces(data.savedPlaceIds);
+            setSyncToast({
+              count: data.savedPlaceIds.length,
+              code: data.syncCode || cleanCode,
+            });
+          } else if (directCount > 0) {
+            setSyncToast({ count: directCount, code: cleanCode });
+          }
+        })
+        .catch(() => {
+          if (directCount > 0) {
+            setSyncToast({ count: directCount, code: cleanCode });
+          }
+        });
+    } else if (directCount > 0) {
+      setSyncToast({ count: directCount });
+    }
+
+    if (syncCode || directParam) {
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("sync");
+      newUrl.searchParams.delete("places");
+      newUrl.searchParams.delete("favs");
+      window.history.replaceState({}, "", newUrl.toString());
     }
   }, [handleImportSavedPlaces]);
 
@@ -2721,6 +2759,48 @@ export default function App() {
         onImportSavedPlaces={handleImportSavedPlaces}
         lang={lang}
       />
+
+      {syncToast ? (
+        <div className="sync-toast-banner" role="status" aria-live="polite">
+          <div className="sync-toast-header">
+            <div className="sync-toast-main">
+              <span className="sync-toast-sparkle">✨</span>
+              <div className="sync-toast-copy">
+                <strong>
+                  {lang === "sv"
+                    ? `${syncToast.count} sparade favoritställen synkade!`
+                    : `${syncToast.count} saved favorites synced!`}
+                </strong>
+                <small>
+                  {lang === "sv"
+                    ? "Dina favoritställen är nu redo på denna enhet."
+                    : "Your favorites are now ready on this device."}
+                </small>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="sync-toast-close-btn"
+              onClick={() => setSyncToast(null)}
+              aria-label={lang === "sv" ? "Stäng" : "Close"}
+            >
+              <X size={18} weight="bold" />
+            </button>
+          </div>
+          <div className="sync-toast-actions">
+            <button
+              type="button"
+              className="sync-toast-action-btn"
+              onClick={() => {
+                selectKindFilter("Saved");
+                setSyncToast(null);
+              }}
+            >
+              {lang === "sv" ? "Visa sparade favoritställen ★" : "View saved favorites ★"}
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {/* Mobile Navigation Drawer (Hamburger Menu) */}
       {isMobileMenuOpen ? (
