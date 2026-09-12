@@ -1586,6 +1586,21 @@ export default function App() {
             <span className="countermap-hero-line countermap-hero-highlight">{t.titleSubEnd}</span>
           </h1>
           <div className="countermap-hero-copy-foot">
+            <div
+              className="countermap-hero-manifest"
+              role="region"
+              aria-label={t.heroManifestBadge}
+              data-manifest-en={t.heroManifestEn}
+            >
+              <div className="countermap-hero-manifest-eyebrow">
+                <span className="countermap-hero-manifest-pip" aria-hidden="true" />
+                <span className="countermap-hero-manifest-badge">{t.heroManifestBadge}</span>
+              </div>
+              <div className="countermap-hero-manifest-body">
+                <p className="countermap-hero-manifest-primary">{t.heroManifestPrimary}</p>
+                <p className="countermap-hero-manifest-secondary">{t.heroManifestSecondary}</p>
+              </div>
+            </div>
             <p className="lede">
               {t.ledeLines ? (
                 t.ledeLines.map((line, idx) => (

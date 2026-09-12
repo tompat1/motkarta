@@ -831,8 +831,82 @@ button.search-clear-btn:hover {
   border-top: none;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   padding-top: 0;
+}
+
+.countermap-hero-manifest {
+  border-left: 3px solid var(--color-signal);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  max-width: 58ch;
+  padding: 4px 0 4px 18px;
+}
+
+.countermap-hero-manifest-eyebrow {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.countermap-hero-manifest-pip {
+  background: var(--color-signal);
+  display: inline-block;
+  flex-shrink: 0;
+  height: 8px;
+  width: 8px;
+}
+
+.countermap-hero-manifest-badge {
+  color: var(--color-signal);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.countermap-hero-manifest-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.countermap-hero-manifest-primary {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 68, "wght" 800;
+  font-stretch: 68%;
+  font-size: clamp(1.2rem, 1.45vw, 1.55rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.countermap-hero-manifest-secondary {
+  color: #3b3935;
+  font-family: var(--font-mono);
+  font-size: clamp(12px, 0.95vw, 13.5px);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.countermap-hero-manifest-translation {
+  color: var(--color-stone);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  line-height: 1.45;
+  margin: 2px 0 0;
 }
 
 .countermap-hero .lede {
@@ -1624,6 +1698,16 @@ button.search-clear-btn:hover {
 
   .countermap-hero .lede-desktop-br {
     display: none;
+  }
+
+  .countermap-hero-manifest {
+    padding: 2px 0 2px 14px;
+    border-left-width: 2.5px;
+    gap: 6px;
+  }
+
+  .countermap-hero-manifest-primary {
+    font-size: clamp(1.05rem, 4.8vw, 1.35rem);
   }
 
   .countermap-controls {

@@ -39,3 +39,17 @@ test("topbar navigation remains sticky and viewport scrolling is unblocked", () 
   assert.match(stylesSource, /html,\s*\n\s*body[\s\S]*?overflow-x:\s*clip;/);
 });
 
+const sharedSource = await readFile(new URL("../src/app/shared.ts", import.meta.url), "utf8");
+
+test("desktop hero features independent discovery manifesto", () => {
+  assert.match(appSource, /className="countermap-hero-manifest"/);
+  assert.match(appSource, /countermap-hero-manifest-primary/);
+  assert.match(appSource, /countermap-hero-manifest-secondary/);
+  assert.match(stylesSource, /\.countermap-hero-manifest\s*\{/);
+  assert.match(stylesSource, /\.countermap-hero-manifest-primary\s*\{/);
+  assert.match(sharedSource, /heroManifestPrimary:\s*"A MORE DELICIOUS, MORE HUMAN STOCKHOLM\."/);
+  assert.match(sharedSource, /heroManifestSecondary:\s*"INDEPENDENT DISCOVERY FOR A BRIGHTER CITY\."/);
+  assert.match(sharedSource, /heroManifestPrimary:\s*"ETT GODARE, MER MÄNSKLIGT STOCKHOLM\."/);
+  assert.match(sharedSource, /heroManifestSecondary:\s*"OBEROENDE UPPTÄCKT FÖR EN LJUSARE STAD\."/);
+});
+
