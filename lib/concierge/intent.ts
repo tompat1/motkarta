@@ -32,6 +32,7 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
     else if (/\b(kungsholmen|fridhemsplan|stadshagen|kristineberg|fredhall|marieberg)\b/i.test(normalized)) rawArea = 'kungsholmen';
     else if (/\b(norrmalm|city|hotorget|t-centralen|tcentralen|sergels torg|klara)\b/i.test(normalized)) rawArea = 'norrmalm';
     else if (/\b(djurgarden|djurgardsbrunn)\b/i.test(normalized)) rawArea = 'djurgarden';
+    else if (/\b(riddarholmen)\b/i.test(normalized)) rawArea = 'riddarholmen';
     else if (/\b(skeppsholmen|kastellholmen)\b/i.test(normalized)) rawArea = 'skeppsholmen';
     else if (/\b(gardet|ladugardsgardet|frihamnen|tessinparken)\b/i.test(normalized)) rawArea = 'gardet';
     else if (/\b(kransen|midsommarkransen|telefonplan|tellusborg)\b/i.test(normalized)) rawArea = 'kransen';
@@ -61,7 +62,7 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
   const localityTokens = new Set([
     'soder', 'sodermalm', 'vasastan', 'vasastaden', 'vasan', 'ostermalm', 'oster',
     'kungsholmen', 'gamla', 'stan', 'gamlastan', 'staden', 'stad', 'town', 'city',
-    'gardet', 'kransen', 'djurgarden', 'skeppsholmen', 'norrmalm', 'vasterort', 'soderort', 'norrort',
+    'gardet', 'kransen', 'djurgarden', 'riddarholmen', 'skeppsholmen', 'norrmalm', 'vasterort', 'soderort', 'norrort',
     'birkastan', 'sofo', 'hornstull', 'mariatorget', 'nytorget', 'skanstull',
     'zinken', 'zinkensdamm', 'stureplan', 'karlaplan', 'fridhemsplan', 'odenplan',
     'bromma', 'alvik', 'kista', 'arsta', 'liljeholmen', 'aspudden', 'hagersten',

@@ -55,6 +55,7 @@ STOCKHOLM_LOCALITIES = {
     "norrmalm",
     "norra djurgarden",
     "ragsved",
+    "riddarholmen",
     "rinkeby",
     "skarpnack",
     "skarholmen",

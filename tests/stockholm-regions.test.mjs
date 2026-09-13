@@ -91,6 +91,7 @@ test("detects broad Stockholm area labels", () => {
   assert.equal(isBroadStockholmArea("Gärdet"), false);
   assert.equal(isBroadStockholmArea("Kransen"), false);
   assert.equal(isBroadStockholmArea("Skeppsholmen"), false);
+  assert.equal(isBroadStockholmArea("Riddarholmen"), false);
 });
 
 test("resolves Gärdet and Kransen by aliases and coordinates", () => {
@@ -173,6 +174,49 @@ test("resolves Skeppsholmen places and removes them from Gamla Stan", () => {
       longitude: 18.082,
     }),
     "Skeppsholmen",
+  );
+});
+
+test("resolves Riddarholmen places correctly", () => {
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Riddaren Mat & Catering",
+      area: "Stockholm",
+      address: "Birger Jarls Torg 16",
+      latitude: 59.32525,
+      longitude: 18.06425,
+    }),
+    "Riddarholmen",
+  );
+
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Brasserie Hutton",
+      area: "Gamla Stan",
+      address: "Riddarholmskajen 4",
+      latitude: 59.3240043,
+      longitude: 18.0625793,
+    }),
+    "Riddarholmen",
+  );
+
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Lilla Gästabud",
+      area: "Gamla Stan",
+      address: "Lilla Nygatan 16",
+    }),
+    "Riddarholmen",
+  );
+
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Riddarholmen Spot",
+      area: "Stockholm",
+      latitude: 59.325,
+      longitude: 18.064,
+    }),
+    "Riddarholmen",
   );
 });
 

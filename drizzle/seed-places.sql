@@ -5269,7 +5269,7 @@ INSERT INTO establishment_tags (establishment_id, tag) VALUES (3766658192, 'Bake
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (3766658192, 'Central Stockholm');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (3766658192, 'OpenStreetMap');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (3766658192, 'Opening hours');
-INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website, opening_hours, price_sek) VALUES (2479448266, 'Mälardrottningen Brasserie Hutton', 'Restaurant', 'Gamla Stan', 'Restaurant from OpenStreetMap.', 2, 59.3240043, 18.0625793, 'unknown', NULL, NULL, '2026-09-11T07:03:25.855Z', '2026-09-11T07:03:25.855Z', 'Central Stockholm, Stockholm', 'https://malardrottningen.se/sv/restaurangen/', 'Mo-Sa 17:00-23:00', '160–320');
+INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website, opening_hours, price_sek) VALUES (2479448266, 'Mälardrottningen Brasserie Hutton', 'Restaurant', 'Riddarholmen', 'Restaurant from OpenStreetMap.', 2, 59.3240043, 18.0625793, 'unknown', NULL, NULL, '2026-09-11T07:03:25.855Z', '2026-09-11T07:03:25.855Z', 'Riddarholmskajen 4, Riddarholmen', 'https://malardrottningen.se/sv/restaurangen/?utm_source=google', 'Mo-Sa 17:00-23:00', '200–300');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (2479448266, 'Central Stockholm');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (2479448266, 'OpenStreetMap');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (2479448266, 'Restaurant');
@@ -16839,7 +16839,13 @@ INSERT INTO establishment_tags (establishment_id, tag) VALUES (262069873, 'Openi
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (262069873, 'Pasta');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (262069873, 'Restaurant');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (262069873, 'Tasstipset');
-INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website, opening_hours, price_sek) VALUES (2037336361, 'Lilla Gästabud', 'Restaurant', 'Gamla Stan', 'Restaurant from OpenStreetMap. Cuisine tag: regional.', 2, 59.3233636, 18.0691922, 'unknown', NULL, NULL, '2026-09-11T07:03:25.855Z', '2026-09-11T07:03:25.855Z', 'Central Stockholm, Stockholm', 'https://www.stockholmsgastabud.se', 'Mo-Su 12:00-22:00', '160–320');
+INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website, opening_hours, price_sek) VALUES (2037336361, 'Lilla Gästabud', 'Restaurant', 'Riddarholmen', 'Restaurant from OpenStreetMap. Cuisine tag: regional.', 2, 59.3233636, 18.0691922, 'unknown', NULL, NULL, '2026-09-11T07:03:25.855Z', '2026-09-11T07:03:25.855Z', 'Lilla Nygatan 16', 'https://www.stockholmsgastabud.se/', 'Mo-Su 12:00-22:00', '200–300');
+INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website, opening_hours, price_sek) VALUES (2700912794, 'Riddaren Mat & Catering', 'Restaurant', 'Riddarholmen', 'Modern lunch med klassiska inslag och catering från Riddarholmen.', 1, 59.32525, 18.06425, 'independent', NULL, NULL, '2026-09-13T19:30:00.000Z', '2026-09-13T19:30:00.000Z', 'Birger Jarls Torg 16, Riddarholmen', 'http://riddaren.nu/', 'Mo-Fr 08:00-15:00', '95–160');
+INSERT INTO establishment_tags (establishment_id, tag) VALUES (2700912794, 'Restaurant');
+INSERT INTO establishment_tags (establishment_id, tag) VALUES (2700912794, 'Catering');
+INSERT INTO establishment_tags (establishment_id, tag) VALUES (2700912794, 'Lunch');
+INSERT INTO establishment_tags (establishment_id, tag) VALUES (2700912794, 'Independent');
+INSERT INTO establishment_tags (establishment_id, tag) VALUES (2700912794, 'Riddarholmen');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (2037336361, 'Central Stockholm');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (2037336361, 'OpenStreetMap');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (2037336361, 'Opening hours');

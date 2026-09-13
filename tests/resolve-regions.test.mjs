@@ -22,6 +22,7 @@ test("broad stockholm area detection recognizes generic labels and missing value
   assert.equal(isBroadStockholmArea("Gärdet"), false);
   assert.equal(isBroadStockholmArea("Kransen"), false);
   assert.equal(isBroadStockholmArea("Skeppsholmen"), false);
+  assert.equal(isBroadStockholmArea("Riddarholmen"), false);
 });
 
 test("resolveStockholmRegion resolves broad/unspecified places into specific regions", () => {

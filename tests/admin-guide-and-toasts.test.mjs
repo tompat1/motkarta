@@ -181,11 +181,12 @@ test("admin batch district assignment updates multiple candidates and persists r
   assert.equal(updatedCandidates.find((c) => c.id === 3)?.area, "Södermalm");
 });
 
-test("canonical districts include Gärdet, Kransen, and Skeppsholmen for batch selection", async () => {
+test("canonical districts include Gärdet, Kransen, Skeppsholmen, and Riddarholmen for batch selection", async () => {
   const { STOCKHOLM_REGIONS } = await import("../lib/stockholm-regions.ts");
   assert.ok(STOCKHOLM_REGIONS.includes("Gärdet"));
   assert.ok(STOCKHOLM_REGIONS.includes("Kransen"));
   assert.ok(STOCKHOLM_REGIONS.includes("Skeppsholmen"));
+  assert.ok(STOCKHOLM_REGIONS.includes("Riddarholmen"));
 });
 
 test("hidden gem double-lock gate requires at least 2 independent sources", () => {

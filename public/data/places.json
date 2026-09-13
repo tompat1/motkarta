@@ -96990,12 +96990,13 @@
       "name": "Mälardrottningen Brasserie Hutton",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Gamla Stan",
+      "area": "Riddarholmen",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Riddarholmen"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -97051,10 +97052,10 @@
       "longitude": 18.0625793,
       "x": 62.52,
       "y": 54.07,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Riddarholmskajen 4, Riddarholmen",
       "osmIdentity": "node:1246189088",
       "idNamespace": "public",
-      "website": "https://malardrottningen.se/sv/restaurangen/",
+      "website": "https://malardrottningen.se/sv/restaurangen/?utm_source=google",
       "sourceFacts": [
         {
           "id": "2479448266:osm:website",
@@ -97068,7 +97069,7 @@
         }
       ],
       "openingHours": "Mo-Sa 17:00-23:00",
-      "priceSEK": "160–320"
+      "priceSEK": "200–300"
     },
     {
       "id": 3861711550,
@@ -306312,14 +306313,15 @@
       "name": "Lilla Gästabud",
       "kind": "Restaurant",
       "cuisine": "regional",
-      "area": "Gamla Stan",
+      "area": "Riddarholmen",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: regional.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Regional",
-        "Restaurant"
+        "Restaurant",
+        "Riddarholmen"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -306377,7 +306379,7 @@
       "longitude": 18.0691922,
       "x": 63.84,
       "y": 54.31,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Lilla Nygatan 16",
       "osmIdentity": "node:12344489601",
       "idNamespace": "public",
       "openingHours": "Mo-Su 12:00-22:00",
@@ -306404,7 +306406,7 @@
           "capturedAt": "2026-09-07T09:02:10Z"
         }
       ],
-      "priceSEK": "160–320"
+      "priceSEK": "200–300"
     },
     {
       "id": 3230609013,
@@ -336097,6 +336099,91 @@
       },
       "is_hidden_gem": true,
       "priceLevel": 0
+    },
+    {
+      "id": 2700912794,
+      "name": "Riddaren Mat & Catering",
+      "kind": "Restaurant",
+      "cuisine": "",
+      "area": "Riddarholmen",
+      "note": "Modern lunch med klassiska inslag och catering från Riddarholmen.",
+      "tags": [
+        "Restaurant",
+        "Catering",
+        "Lunch",
+        "Independent",
+        "Riddarholmen"
+      ],
+      "is_hidden_gem": false,
+      "is_structural_anomaly": false,
+      "discoveryReasons": [
+        "it appears independent",
+        "it has lower local visibility"
+      ],
+      "discoverySignals": {
+        "independent_business": true,
+        "underrepresented_cuisine": false,
+        "low_local_visibility": true,
+        "verified_open": true,
+        "complete_profile": true,
+        "recently_updated": true
+      },
+      "sourceName": "Official Website",
+      "lastUpdated": "2026-09-13",
+      "evidenceLabel": "Official website verified",
+      "ratingAverage": 5.0,
+      "reliableRatingCount": 27,
+      "reviewCount": 27,
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0,
+      "priceLevel": 1,
+      "mainstreamExposure": 15.0,
+      "ageDays": 1200,
+      "daysSinceFreshEvidence": 5,
+      "evidence": {
+        "specialistGuide": 0,
+        "independentEditorial": 0,
+        "verifiedUserRating": 5.0,
+        "repeatVisits": 0,
+        "recentReviews": 0,
+        "credibleReviewers": 0,
+        "inspectionStatus": 60,
+        "verifiedAttributes": 50,
+        "dataFreshness": 90,
+        "confidence": "Medium"
+      },
+      "engagement": {
+        "searchImpressions": 0,
+        "profileViews": 0,
+        "mapMarkerClicks": 0,
+        "saves": 0,
+        "directionRequests": 0,
+        "confirmedVisits": 0,
+        "repeatVisits": 0,
+        "recommendations": 0,
+        "recentSaves": 0
+      },
+      "latitude": 59.32525,
+      "longitude": 18.06425,
+      "x": 62.65,
+      "y": 54.0,
+      "address": "Birger Jarls Torg 16, Riddarholmen",
+      "website": "http://riddaren.nu/",
+      "openingHours": "Mo-Fr 08:00-15:00",
+      "priceSEK": "95–160",
+      "sourceFacts": [
+        {
+          "id": "2700912794:website",
+          "placeId": 2700912794,
+          "field": "tags",
+          "value": "Website: http://riddaren.nu/",
+          "source": "Official Website",
+          "verification": "listed",
+          "url": "http://riddaren.nu/",
+          "capturedAt": "2026-09-13T19:30:00Z"
+        }
+      ]
     }
   ],
   "totalPlaces": 3196
