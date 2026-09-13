@@ -23,6 +23,8 @@ const DISH_TERMS: Record<string, string[]> = {
   cardamom: ['cardamom', 'kardemumma', 'kardemummabulle'],
   sourdough: ['sourdough', 'surdeg', 'surdegsbrod'],
   burger: ['burger', 'burgers', 'burgare', 'burgaren', 'burgarna', 'hamburgare', 'hamburgaren', 'hamburgarna'],
+  dumplings: ['dumpling', 'dumplings', 'dim sum', 'dimsum', 'jiaozi', 'gyoza'],
+  'dim sum': ['dim sum', 'dimsum', 'dumplings', 'dumpling'],
 };
 const MEAL_CUISINES = new Set(['thai', 'polish', 'italian', 'french', 'japanese', 'chinese', 'korean', 'indian', 'mexican', 'vietnamese', 'spanish', 'greek', 'german', 'austrian', 'hungarian', 'czech', 'pub', 'middle eastern', 'lebanese', 'burger', 'pizza', 'sushi', 'ramen']);
 

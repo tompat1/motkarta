@@ -51,6 +51,8 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
     ['sourdough', 'sourdough'], ['surdegsbrod', 'sourdough'], ['surdeg', 'sourdough'],
     ['burger', 'burger'], ['burgers', 'burger'], ['burgare', 'burger'], ['burgaren', 'burger'],
     ['burgarna', 'burger'], ['hamburgare', 'burger'], ['hamburgaren', 'burger'], ['hamburgarna', 'burger'],
+    ['dumpling', 'dumplings'], ['dumplings', 'dumplings'],
+    ['dim sum', 'dim sum'], ['dimsum', 'dim sum'],
   ].filter(([word]) => includesPhrase(positive, word)).map(([, dish]) => dish);
   const specialty = /\b(specialty|specialkaffe|roastery|roaster|rosteri)\b/.test(normalize(positive));
   const bakery = /\b(bakery|bageri|hantverksbageri)\b/.test(normalize(positive));

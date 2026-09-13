@@ -263,3 +263,39 @@ test("RAG retrieveAndSynthesize lists ALL places in region when user writes Gaml
   assert.ok(resultGeneric.cards.length <= 5, "Non-district queries must remain capped at top 5 recommendations");
 });
 
+test("extractStructuredFilters parses Swedish Chinese cuisine keywords", () => {
+  assert.deepEqual(extractStructuredFilters("kinaställen på kungsholmen").cuisines, ["chinese"]);
+  assert.deepEqual(extractStructuredFilters("kinaställe kungsholmen").cuisines, ["chinese"]);
+  assert.deepEqual(extractStructuredFilters("bästa kinastället i stan").cuisines, ["chinese"]);
+  assert.deepEqual(extractStructuredFilters("kinarestauranger i stockholm").cuisines, ["chinese"]);
+  assert.deepEqual(extractStructuredFilters("kinakrog på söder").cuisines, ["chinese"]);
+  assert.deepEqual(extractStructuredFilters("kinamat").cuisines, ["chinese"]);
+  assert.deepEqual(extractStructuredFilters("dumplings och dim sum").cuisines, ["chinese"]);
+});
+
+test("RAG retrieveAndSynthesize returns all Chinese places on Kungsholmen for 'kinaställen på kungsholmen'", () => {
+  const result = retrieveAndSynthesize("kinaställen på kungsholmen", livePlaces, { language: "sv" });
+
+  assert.equal(result.status, "ok");
+  assert.equal(result.cards.length, 12, "Should return all 12 Chinese places on Kungsholmen");
+  assert.ok(result.intro.includes("alla 12 ställen i Kungsholmen"));
+
+  const names = result.cards.map((c) => c.name);
+  assert.ok(names.includes("Eat East"));
+  assert.ok(names.includes("Restaurang Hong Kong"));
+  assert.ok(names.includes("Plus 86"));
+  assert.ok(names.includes("Hangchow"));
+  assert.ok(names.includes("China Corner"));
+  assert.ok(names.includes("Lao Wai"));
+  assert.ok(names.includes("Stråket"));
+  assert.ok(names.includes("Kinamuren"));
+  assert.ok(names.includes("Hemma hos Dong"));
+  assert.ok(names.includes("Ox Lan"));
+  assert.ok(names.includes("Lilla Kina"));
+  assert.ok(names.includes("Weidao"));
+
+  for (const card of result.cards) {
+    assert.equal(card.area, "Kungsholmen");
+  }
+});
+
