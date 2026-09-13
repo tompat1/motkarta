@@ -1913,7 +1913,7 @@ INSERT INTO establishment_tags (establishment_id, tag) VALUES (3290566572, 'Open
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (3290566572, 'Opening hours');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (3290566572, 'Restaurant');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (3290566572, 'Website');
-INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website, opening_hours, price_sek) VALUES (3990807847, 'Harö Krog', 'Restaurant', 'Gamla Stan', 'Restaurant from OpenStreetMap.', 2, 59.3282692, 18.0795023, 'unknown', NULL, NULL, '2026-09-11T07:03:25.855Z', '2026-09-11T07:03:25.855Z', 'Central Stockholm, Stockholm', NULL, 'Mo-Sa 17:00-23:00', '160–320');
+INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website, opening_hours, price_sek) VALUES (3990807847, 'Harö Krog', 'Restaurant', 'Skeppsholmen', 'Restaurant from OpenStreetMap.', 2, 59.3282692, 18.0795023, 'unknown', NULL, NULL, '2026-09-11T07:03:25.855Z', '2026-09-11T07:03:25.855Z', 'Central Stockholm, Stockholm', NULL, 'Mo-Sa 17:00-23:00', '160–320');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (3990807847, 'Central Stockholm');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (3990807847, 'OpenStreetMap');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (3990807847, 'Restaurant');
@@ -16743,7 +16743,7 @@ INSERT INTO establishment_tags (establishment_id, tag) VALUES (968072330, 'Café
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (968072330, 'Central Stockholm');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (968072330, 'OpenStreetMap');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (968072330, 'Opening hours');
-INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website, opening_hours, price_sek) VALUES (3073741196, 'Café Skeppsholmen', 'Café', 'Gamla Stan', 'Café from OpenStreetMap.', 1, 59.3252445, 18.0811992, 'unknown', NULL, NULL, '2026-09-11T07:03:25.855Z', '2026-09-11T07:03:25.855Z', 'Central Stockholm, Stockholm', NULL, 'Mo-Fr 07:30-18:00; Sa-Su 08:00-17:00', '45–140');
+INSERT INTO establishments (id, name, type, district, description, price_level, latitude, longitude, chain_status, osm_type, osm_id, created_at, updated_at, address, website, opening_hours, price_sek) VALUES (3073741196, 'Café Skeppsholmen', 'Café', 'Skeppsholmen', 'Café from OpenStreetMap.', 1, 59.3252445, 18.0811992, 'unknown', NULL, NULL, '2026-09-11T07:03:25.855Z', '2026-09-11T07:03:25.855Z', 'Central Stockholm, Stockholm', NULL, 'Mo-Fr 07:30-18:00; Sa-Su 08:00-17:00', '45–140');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (3073741196, 'Café');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (3073741196, 'Central Stockholm');
 INSERT INTO establishment_tags (establishment_id, tag) VALUES (3073741196, 'OpenStreetMap');

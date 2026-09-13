@@ -15,6 +15,7 @@ export const STOCKHOLM_REGIONS = [
   "Västermalm",
   "Norrmalm",
   "Östermalm",
+  "Skeppsholmen",
   "Södermalm",
   "Söderort",
   "Vasastan",
@@ -42,6 +43,7 @@ const AREA_ALIASES: Array<{ region: string; aliases: string[] }> = [
   { region: "Kransen", aliases: ["kransen", "midsommarkransen", "svandammsplan", "svandammsparken", "tellusborg", "tellusborgsvägen", "tegelbruksvägen", "vattenledningsvägen", "bäckvägen", "backvagen", "klockargatan", "nymilsgatan"] },
   { region: "Södermalm", aliases: ["södermalm", "soder", "söder", "mariatorget", "hornstull", "sofo", "nytorget", "östgöta", "ostgota", "zinkensdamm", "skanstull", "götgatan", "gotgatan", "folkungagatan", "bondegatan", "kocksgatan", "skånegatan", "renstiernas"] },
   { region: "Djurgården", aliases: ["djurgården", "djurgarden", "biskopsudden", "skansen", "grona lund", "gröna lund", "djurgårdsbrunn"] },
+  { region: "Skeppsholmen", aliases: ["skeppsholmen", "kastellholmen", "svensksundsvägen", "svensksundsvagen", "exercisplan", "flaggmansvägen", "flaggmansvagen", "sjöbacksstigen", "sjobacksstigen"] },
   { region: "Vasastan", aliases: ["vasastan", "vasastaden", "odenplan", "birkastan", "st eriksplan", "rörstrandsgatan", "rorstrandsgatan", "sankt eriksplan"] },
   { region: "Norrmalm", aliases: ["norrmalm", "city", "hötorget", "hotorget", "t-centralen", "drottninggatan", "sergels torg", "hamngatan", "klarabergsgatan", "bryggargatan", "tegelbacken"] },
   { region: "Östermalm", aliases: ["östermalm", "ostermalm", "stureplan", "karlaplan", "humlegården", "humlegarden", "strandvägen", "styrmansgatan", "linnégatan"] },
@@ -71,6 +73,10 @@ const PLACE_OVERRIDES = new Map<string, string>([
   ["lillebrors bageri", "Vasastan"],
   ["vete-katten", "Norrmalm"],
   ["sturehof", "Östermalm"],
+  ["cafe skeppsholmen", "Skeppsholmen"],
+  ["café skeppsholmen", "Skeppsholmen"],
+  ["haro krog", "Skeppsholmen"],
+  ["harö krog", "Skeppsholmen"],
 ]);
 
 const REGION_BOXES: Array<{
@@ -80,7 +86,8 @@ const REGION_BOXES: Array<{
   lonMin: number;
   lonMax: number;
 }> = [
-  { region: "Gamla Stan", latMin: 59.3210, latMax: 59.3288, lonMin: 18.0610, lonMax: 18.0820 },
+  { region: "Skeppsholmen", latMin: 59.3220, latMax: 59.3290, lonMin: 18.0780, lonMax: 18.0890 },
+  { region: "Gamla Stan", latMin: 59.3210, latMax: 59.3288, lonMin: 18.0610, lonMax: 18.0770 },
   { region: "Södermalm", latMin: 59.3000, latMax: 59.3210, lonMin: 18.0150, lonMax: 18.1050 },
   { region: "Djurgården", latMin: 59.3180, latMax: 59.3370, lonMin: 18.0850, lonMax: 18.1600 },
   { region: "Gärdet", latMin: 59.3400, latMax: 59.3560, lonMin: 18.0920, lonMax: 18.1350 },

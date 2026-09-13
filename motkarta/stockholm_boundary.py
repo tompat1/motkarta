@@ -58,6 +58,7 @@ STOCKHOLM_LOCALITIES = {
     "rinkeby",
     "skarpnack",
     "skarholmen",
+    "skeppsholmen",
     "skondal",
     "slussen",
     "sodermalm",

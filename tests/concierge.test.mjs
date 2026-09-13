@@ -222,16 +222,22 @@ test("RAG retrieveAndSynthesize lists ALL places in region when user writes Gaml
   const resultGamlaStanLower = retrieveAndSynthesize("gamla stan", livePlaces, { language: "sv" });
   const resultGamlastan = retrieveAndSynthesize("gamlastan", livePlaces, { language: "sv" });
 
-  // In live places, there are 128 places in Gamla Stan (2 are Espresso House chains, leaving 126 eligible)
-  assert.equal(resultGamlaStan.cards.length, 126, "Should return all 126 places in Gamla Stan");
-  assert.equal(resultGamlaStanLower.cards.length, 126, "Case-insensitive query should also return all places");
-  assert.equal(resultGamlastan.cards.length, 126, "Compound word gamlastan should also return all places");
-  assert.equal(resultGamlaStan.recommendedPlaces.length, 126);
+  // In live places, there were 128 places in Gamla Stan (2 are Espresso House chains, leaving 126 eligible).
+  // With Café Skeppsholmen and Harö Krog moved to Skeppsholmen, there are 124 eligible places in Gamla Stan.
+  assert.equal(resultGamlaStan.cards.length, 124, "Should return all 124 places in Gamla Stan");
+  assert.equal(resultGamlaStanLower.cards.length, 124, "Case-insensitive query should also return all places");
+  assert.equal(resultGamlastan.cards.length, 124, "Compound word gamlastan should also return all places");
+  assert.equal(resultGamlaStan.recommendedPlaces.length, 124);
 
   assert.ok(
-    resultGamlaStan.intro.includes("alla 126 ställen i Gamla Stan"),
-    `Intro should state all 126 places in Gamla Stan, got: ${resultGamlaStan.intro}`,
+    resultGamlaStan.intro.includes("alla 124 ställen i Gamla Stan"),
+    `Intro should state all 124 places in Gamla Stan, got: ${resultGamlaStan.intro}`,
   );
+
+  // Skeppsholmen (2 places: Café Skeppsholmen, Harö Krog)
+  const resultSkeppsholmen = retrieveAndSynthesize("Skeppsholmen", livePlaces, { language: "sv" });
+  assert.equal(resultSkeppsholmen.cards.length, 2, "Should return all 2 places in Skeppsholmen");
+  assert.ok(resultSkeppsholmen.intro.includes("alla 2 ställen i Skeppsholmen"));
 
   // Gärdet (39 places)
   const resultGardet = retrieveAndSynthesize("Gärdet", livePlaces, { language: "sv" });

@@ -90,6 +90,7 @@ test("detects broad Stockholm area labels", () => {
   assert.equal(isBroadStockholmArea("Södermalm"), false);
   assert.equal(isBroadStockholmArea("Gärdet"), false);
   assert.equal(isBroadStockholmArea("Kransen"), false);
+  assert.equal(isBroadStockholmArea("Skeppsholmen"), false);
 });
 
 test("resolves Gärdet and Kransen by aliases and coordinates", () => {
@@ -142,3 +143,36 @@ test("resolves Gärdet and Kransen by aliases and coordinates", () => {
     "Kransen",
   );
 });
+
+test("resolves Skeppsholmen places and removes them from Gamla Stan", () => {
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Café Skeppsholmen",
+      area: "Gamla Stan",
+      latitude: 59.3252445,
+      longitude: 18.0811992,
+    }),
+    "Skeppsholmen",
+  );
+
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Harö Krog",
+      area: "Gamla Stan",
+      latitude: 59.3282692,
+      longitude: 18.0795023,
+    }),
+    "Skeppsholmen",
+  );
+
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Skeppsholmen Generic Spot",
+      area: "Stockholm",
+      latitude: 59.325,
+      longitude: 18.082,
+    }),
+    "Skeppsholmen",
+  );
+});
+
