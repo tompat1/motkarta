@@ -1249,6 +1249,7 @@ export default function App() {
       return [queryText.trim(), ...filtered].slice(0, 100);
     });
 
+    const userMessageTimestamp = Date.now();
     const currentMessages = conciergeChatMessages;
     const timer = setTimeout(() => controller.abort(), 6000);
     try {
@@ -1267,8 +1268,8 @@ export default function App() {
       if (payload.action) setSuperpowerMode(payload.action);
       setConciergeChatMessages((prev) => [
         ...prev,
-        { role: "user" as const, content: queryText.trim() },
-        { role: "assistant" as const, content: payload.intro || payload.answer },
+        { role: "user" as const, content: queryText.trim(), timestamp: userMessageTimestamp },
+        { role: "assistant" as const, content: payload.intro || payload.answer, timestamp: Date.now() },
       ].slice(-10));
     } catch {
       if (conciergeRequest.current !== controller) return;
@@ -1287,8 +1288,8 @@ export default function App() {
           if (result.action) setSuperpowerMode(result.action);
           setConciergeChatMessages((prev) => [
             ...prev,
-            { role: "user" as const, content: queryText.trim() },
-            { role: "assistant" as const, content: result.intro || result.answer },
+            { role: "user" as const, content: queryText.trim(), timestamp: userMessageTimestamp },
+            { role: "assistant" as const, content: result.intro || result.answer, timestamp: Date.now() },
           ].slice(-10));
         } catch {
           if (conciergeRequest.current === controller) setAnswer(lang === 'sv' ? 'Katalogen är inte tillgänglig just nu.' : 'The catalog is currently unavailable.');

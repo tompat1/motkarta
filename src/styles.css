@@ -8198,14 +8198,16 @@ footer {
   color: var(--color-white);
 }
 
-.countermap-concierge-panel .concierge-chat-history {
+.countermap-concierge-panel .concierge-chat-history,
+.concierge-chat-history {
   background: #181818;
   border: 1px solid #303030;
   border-radius: 4px;
   padding: 12px 14px;
 }
 
-.countermap-concierge-panel .concierge-chat-history-title {
+.countermap-concierge-panel .concierge-chat-history-title,
+.concierge-chat-history-title {
   color: #999;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -8215,14 +8217,43 @@ footer {
   text-transform: uppercase;
 }
 
-.countermap-concierge-panel .concierge-chat-bubble {
+.countermap-concierge-panel .concierge-chat-bubble,
+.concierge-chat-bubble {
+  background: #202020;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
   font-family: var(--font-body);
   font-size: 13px;
   line-height: 1.45;
   margin-bottom: 6px;
+  padding: 8px 10px;
 }
 
-.countermap-concierge-panel .concierge-chat-role.user {
+.countermap-concierge-panel .concierge-chat-bubble:last-child,
+.concierge-chat-bubble:last-child {
+  margin-bottom: 0;
+}
+
+.countermap-concierge-panel .concierge-chat-bubble.user,
+.concierge-chat-bubble.user {
+  border-left: 2px solid #60a5fa;
+}
+
+.countermap-concierge-panel .concierge-chat-bubble.assistant,
+.concierge-chat-bubble.assistant {
+  border-left: 2px solid var(--color-signal);
+}
+
+.countermap-concierge-panel .concierge-chat-bubble-header,
+.concierge-chat-bubble-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.countermap-concierge-panel .concierge-chat-role.user,
+.concierge-chat-role.user {
   color: #60a5fa;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -8230,12 +8261,29 @@ footer {
   text-transform: uppercase;
 }
 
-.countermap-concierge-panel .concierge-chat-role.assistant {
+.countermap-concierge-panel .concierge-chat-role.assistant,
+.concierge-chat-role.assistant {
   color: var(--color-signal);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+.countermap-concierge-panel .concierge-chat-timestamp,
+.concierge-chat-timestamp {
+  color: #888;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  user-select: none;
+}
+
+.countermap-concierge-panel .concierge-chat-bubble-content,
+.concierge-chat-bubble-content {
+  color: #e5e5e5;
+  word-break: break-word;
 }
 
 .countermap-concierge-panel .concierge-clarification-box {

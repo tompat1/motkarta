@@ -146,10 +146,17 @@ export function validateRequest(value: unknown): { query: string; context: Query
       if (!['user', 'assistant'].includes(String(m.role)) || typeof m.content !== 'string' || !m.content.trim() || m.content.length > 1000) {
         throw new Error('invalid_messages');
       }
+      if (m.timestamp !== undefined && typeof m.timestamp !== 'string' && typeof m.timestamp !== 'number') {
+        throw new Error('invalid_messages');
+      }
     }
     validMessages = body.messages.map((msg) => {
-      const m = msg as { role: 'user' | 'assistant'; content: string };
-      return { role: m.role, content: m.content.trim() };
+      const m = msg as { role: 'user' | 'assistant'; content: string; timestamp?: string | number };
+      return {
+        role: m.role,
+        content: m.content.trim(),
+        ...(m.timestamp !== undefined ? { timestamp: m.timestamp } : {}),
+      };
     });
   }
   return {

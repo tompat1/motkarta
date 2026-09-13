@@ -27,6 +27,7 @@ Extend `lib/concierge/contracts.ts` to support multi-turn conversational turns:
 export type ChatMessage = {
   role: 'user' | 'assistant';
   content: string;
+  timestamp?: number | string; // Message timestamp (Stockholm 24h format in UI)
 };
 
 export type QueryContext = {

@@ -8,6 +8,9 @@ import type { Language } from "../app/shared";
 import { ArrowSquareOut, CheckCircle, Globe, MagnifyingGlass, MapPin, MapTrifold, PlusCircle, Sliders, Sparkle, ThumbsDown, ThumbsUp, X } from "@phosphor-icons/react";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 
+import { formatChatTimestamp, formatChatTimestampTooltip } from "../../lib/concierge/format";
+export { formatChatTimestamp, formatChatTimestampTooltip };
+
 export function ConciergeAnswerView({
   answer,
   response,
@@ -97,14 +100,33 @@ export function ConciergeAnswerView({
           <div className="concierge-chat-history-title">
             💬 {lang === "sv" ? "Konversationshistorik" : "Conversation History"}
           </div>
-          {messages.map((msg, idx) => (
-            <div key={idx} className="concierge-chat-bubble">
-              <strong className={`concierge-chat-role ${msg.role}`}>
-                {msg.role === "user" ? (lang === "sv" ? "Du" : "You") : "Concierge"}:
-              </strong>{" "}
-              <span>{msg.content}</span>
-            </div>
-          ))}
+          {messages.map((msg, idx) => {
+            const timeStr = formatChatTimestamp(msg.timestamp, lang);
+            const dateObj = msg.timestamp ? (typeof msg.timestamp === "number" ? new Date(msg.timestamp) : new Date(msg.timestamp)) : null;
+            const validDate = dateObj && !isNaN(dateObj.getTime()) ? dateObj : null;
+            const isoTime = validDate ? validDate.toISOString() : undefined;
+            const tooltip = formatChatTimestampTooltip(msg.timestamp, lang);
+
+            return (
+              <div key={idx} className={`concierge-chat-bubble ${msg.role}`}>
+                <div className="concierge-chat-bubble-header">
+                  <strong className={`concierge-chat-role ${msg.role}`}>
+                    {msg.role === "user" ? (lang === "sv" ? "Du" : "You") : "Concierge"}
+                  </strong>
+                  {timeStr ? (
+                    <time
+                      className="concierge-chat-timestamp"
+                      dateTime={isoTime}
+                      title={tooltip}
+                    >
+                      {timeStr}
+                    </time>
+                  ) : null}
+                </div>
+                <div className="concierge-chat-bubble-content">{msg.content}</div>
+              </div>
+            );
+          })}
         </div>
       ) : null}
       {parsed.clarification ? (
