@@ -12,6 +12,10 @@ export interface FusionOptions {
    * Maximum number of lexical candidates to take into fusion before exact matches.
    */
   maxLexical?: number;
+  /**
+   * Whether this search is for an entire district/region (disables whole-district name suppression).
+   */
+  isDistrictQuery?: boolean;
 }
 
 /**
@@ -93,7 +97,7 @@ export function reciprocalRankFusion(
     if (p.osmIdentity && seenOsm.has(p.osmIdentity)) continue;
     const normName = normalize(p.name);
     const normArea = normalize(p.area || '');
-    if (normArea && seenNameArea.has(`${normName}::${normArea}`)) continue;
+    if (!options.isDistrictQuery && normArea && seenNameArea.has(`${normName}::${normArea}`)) continue;
     if (p.latitude && p.longitude && Number.isFinite(p.latitude) && Number.isFinite(p.longitude) && p.latitude !== 0 && p.longitude !== 0) {
       const geoKey = `${normName}:${p.latitude.toFixed(3)},${p.longitude.toFixed(3)}`;
       if (seenGeo.has(geoKey)) continue;
@@ -101,7 +105,7 @@ export function reciprocalRankFusion(
     }
     seenIds.add(p.id);
     if (p.osmIdentity) seenOsm.add(p.osmIdentity);
-    if (normArea) seenNameArea.add(`${normName}::${normArea}`);
+    if (!options.isDistrictQuery && normArea) seenNameArea.add(`${normName}::${normArea}`);
     deduplicated.push(candidate);
   }
 

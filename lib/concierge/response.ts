@@ -63,13 +63,35 @@ export function renderAnswer(result: Pick<ConciergeResponse, 'intro' | 'cards'>)
     `• **Last verified date**: ${c.lastVerified}`, `• **Missing/Uncertain info**: ${c.missingInfo}`,
   ].join('\n'))].join('\n\n');
 }
+const CANONICAL_AREA_NAMES: Record<string, string> = {
+  'gamla stan': 'Gamla Stan',
+  'sodermalm': 'Södermalm',
+  'vasastan': 'Vasastan',
+  'ostermalm': 'Östermalm',
+  'kungsholmen': 'Kungsholmen',
+  'norrmalm': 'Norrmalm',
+  'djurgarden': 'Djurgården',
+  'gardet': 'Gärdet',
+  'kransen': 'Kransen',
+  'vasterort': 'Västerort',
+  'soderort': 'Söderort',
+  'norrort': 'Norrort',
+  'city': 'City',
+};
+
 export function buildResponse(query: string, candidates: RankedCandidate[], total: number, context: QueryContext = {}, source = 'local'): ConciergeResponse {
   const intent = parseIntent(query, context);
   const action = parseAction(query);
   const sv = intent.language === 'sv';
-  const picks = action ? [] : candidates.slice(0, 5);
+  const isDistrictQuery = Boolean(intent.area);
+  const picks = action ? [] : (isDistrictQuery ? candidates : candidates.slice(0, 5));
   let intro = sv ? 'Här är träffar från Motkartas katalog. Saknade uppgifter är markerade.' : 'Based on our auditable open dataset, here are catalog matches. Missing facts are marked.';
-  if (intent.isPagination) {
+  if (isDistrictQuery && picks.length > 0) {
+    const areaName = intent.area ? (CANONICAL_AREA_NAMES[intent.area] || intent.area.split(' ').map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')) : '';
+    intro = sv
+      ? `Här är alla ${picks.length} ställen i ${areaName} från Motkartas katalog. Saknade uppgifter är markerade.`
+      : `Based on our auditable open dataset, here are all ${picks.length} places in ${areaName}. Missing facts are marked.`;
+  } else if (intent.isPagination) {
     intro = sv ? 'Här är fler rekommenderade ställen från Motkartas katalog.' : 'Here are more recommended places from the Motkarta catalog.';
   }
   if (!picks.length) {

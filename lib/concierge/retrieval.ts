@@ -26,12 +26,33 @@ const DISH_TERMS: Record<string, string[]> = {
 };
 const MEAL_CUISINES = new Set(['thai', 'polish', 'italian', 'french', 'japanese', 'chinese', 'korean', 'indian', 'mexican', 'vietnamese', 'spanish', 'greek', 'german', 'austrian', 'hungarian', 'czech', 'pub', 'middle eastern', 'lebanese', 'burger', 'pizza', 'sushi', 'ramen']);
 
+const SODERORT_SUB = [
+  'soderort', 'arsta', 'liljeholmen', 'aspudden', 'hagersten', 'enskede',
+  'farsta', 'skarpnack', 'bagarmossen', 'gubbangen', 'hokerangen',
+  'bandhagen', 'hogdalen', 'ragsved', 'hagsatra', 'skarholmen',
+  'bredang', 'fruangen', 'vastberga', 'johanneshov',
+];
+
+export function matchesArea(area: string, place: ConciergePlace): boolean {
+  if (place.area && includesPhrase(place.area, area)) return true;
+  if ((area === 'norrmalm' || area === 'city') && place.area && (includesPhrase(place.area, 'city') || includesPhrase(place.area, 'norrmalm'))) return true;
+  if (area === 'soderort' && place.area && includesPhrase(place.area, 'soderort')) return true;
+
+  const isBroad = !place.area || /^(stockholm|central stockholm|north stockholm|south stockholm|east stockholm|west stockholm|sweden|sverige|unspecified)$/i.test(place.area.trim());
+  if (isBroad && place.address) {
+    if (includesPhrase(place.address, area)) return true;
+    if ((area === 'norrmalm' || area === 'city') && (includesPhrase(place.address, 'city') || includesPhrase(place.address, 'norrmalm'))) return true;
+    if (area === 'soderort' && SODERORT_SUB.some((sub) => includesPhrase(place.address, sub))) return true;
+  }
+  return false;
+}
+
 export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent, context: QueryContext): boolean {
   const { place, facts } = candidate;
   const attributes = facts.facts.filter((fact) => ['dish', 'tags', 'cuisine'].includes(fact.field)).map((fact) => fact.value).join(' ');
   if (intent.outsideStockholm || intent.excludedBrandRequested || intent.openNow) return false; // No verified live hours evaluator yet.
   if (intent.exclusions.some((term) => includesPhrase(`${place.name} ${place.kind} ${attributes}`, term))) return false;
-  if (intent.area && !includesPhrase(`${place.area} ${place.address ?? ''}`, intent.area)) return false;
+  if (intent.area && !matchesArea(intent.area, place)) return false;
   if (intent.specialty && !specialtyEligible(place)) return false;
   if (intent.bakery && !intent.specialty && !['Bakery', 'Café'].includes(place.kind)) return false;
   if (intent.dinner && place.kind !== 'Restaurant') return false;
@@ -135,7 +156,7 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     if (p.osmIdentity && seenOsm.has(p.osmIdentity)) continue;
     const normName = normalize(p.name);
     const normArea = normalize(p.area || '');
-    if (normArea && seenNameArea.has(`${normName}::${normArea}`)) continue;
+    if (!intent.area && normArea && seenNameArea.has(`${normName}::${normArea}`)) continue;
     if (p.latitude && p.longitude && Number.isFinite(p.latitude) && Number.isFinite(p.longitude) && p.latitude !== 0 && p.longitude !== 0) {
       const geoKey = `${normName}:${p.latitude.toFixed(3)},${p.longitude.toFixed(3)}`;
       if (seenGeo.has(geoKey)) continue;
@@ -143,14 +164,14 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     }
     seenIds.add(p.id);
     if (p.osmIdentity) seenOsm.add(p.osmIdentity);
-    if (normArea) seenNameArea.add(`${normName}::${normArea}`);
+    if (!intent.area && normArea) seenNameArea.add(`${normName}::${normArea}`);
     deduplicated.push(candidate);
   }
 
   return deduplicated.map((candidate, index) => ({ ...candidate, lexicalRank: index + 1, fusionScore: 1 / (60 + index + 1) }));
 }
-export function fuseCandidates(lexical: RankedCandidate[], semantic: RankedCandidate[]): RankedCandidate[] {
-  return reciprocalRankFusion(lexical, semantic);
+export function fuseCandidates(lexical: RankedCandidate[], semantic: RankedCandidate[], isDistrictQuery = false): RankedCandidate[] {
+  return reciprocalRankFusion(lexical, semantic, { isDistrictQuery });
 }
 
 export { reciprocalRankFusion } from './hybrid_search.ts';

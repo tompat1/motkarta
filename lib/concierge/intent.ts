@@ -25,11 +25,20 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
   const priceMax = explicitPrice ? Number(explicitPrice[1]) : filters.price_max;
   let rawArea = policy.stockholmLocalities.filter((value) => value !== 'stockholm' && includesPhrase(positive, value)).sort((a, b) => b.length - a.length)[0];
   if (!rawArea) {
-    if (/\b(soder|sodermalm|pa soder|pa sodermalm)\b/i.test(normalized)) rawArea = 'sodermalm';
-    else if (/\b(vasastan|vasan|pa vasastan)\b/i.test(normalized)) rawArea = 'vasastan';
-    else if (/\b(ostermalm|oster|pa ostermalm)\b/i.test(normalized)) rawArea = 'ostermalm';
-    else if (/\b(kungsholmen)\b/i.test(normalized)) rawArea = 'kungsholmen';
-    else if (/\b(gamla stan)\b/i.test(normalized)) rawArea = 'gamla stan';
+    if (/\b(gamla stan|gamlastan|gamla staden|old town)\b/i.test(normalized)) rawArea = 'gamla stan';
+    else if (/\b(soder|sodermalm|pa soder|pa sodermalm|sofo|zinkensdamm|zinken|mariatorget|nytorget|hornstull|skanstull|slussen|medborgarplatsen)\b/i.test(normalized)) rawArea = 'sodermalm';
+    else if (/\b(vasastan|vasastaden|vasan|pa vasastan|birkastan|st eriksplan|sankt eriksplan|odenplan|rorstrandsgatan)\b/i.test(normalized)) rawArea = 'vasastan';
+    else if (/\b(ostermalm|oster|pa ostermalm|stureplan|karlaplan|humlegarden)\b/i.test(normalized)) rawArea = 'ostermalm';
+    else if (/\b(kungsholmen|fridhemsplan|stadshagen|kristineberg|fredhall|marieberg)\b/i.test(normalized)) rawArea = 'kungsholmen';
+    else if (/\b(norrmalm|city|hotorget|t-centralen|tcentralen|sergels torg|klara)\b/i.test(normalized)) rawArea = 'norrmalm';
+    else if (/\b(djurgarden|djurgardsbrunn)\b/i.test(normalized)) rawArea = 'djurgarden';
+    else if (/\b(gardet|ladugardsgardet|frihamnen|tessinparken)\b/i.test(normalized)) rawArea = 'gardet';
+    else if (/\b(kransen|midsommarkransen|telefonplan|tellusborg)\b/i.test(normalized)) rawArea = 'kransen';
+    else if (/\b(vasterort|bromma|alvik|vallingby|hasselby|spanga|kista|blackeberg|grimsta|husby|rinkeby|tensta|vinsta)\b/i.test(normalized)) rawArea = 'vasterort';
+    else if (/\b(soderort|arsta|liljeholmen|aspudden|hagersten|enskede|farsta|skarpnack|bagarmossen|gubbangen|hokerangen|bandhagen|hogdalen|ragsved|hagsatra|skarholmen|bredang|fruangen|vastberga|johanneshov)\b/i.test(normalized)) rawArea = 'soderort';
+    else if (/\b(norrort)\b/i.test(normalized)) rawArea = 'norrort';
+  } else if (rawArea === 'gamlastan' || rawArea === 'gamla staden' || rawArea === 'old town') {
+    rawArea = 'gamla stan';
   }
   const area = rawArea;
   const excludedBrandRequested = policy.excludedChains.some((name) => includesPhrase(positive, name));
@@ -48,9 +57,18 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
   const openNow = /\b(open now|oppet nu|open tonight|oppet ikvall)\b/.test(normalized);
   const exclusions = negative.flatMap((value) => queryTerms(value)).flatMap(tokenAlternatives);
   const cuisineKinds = filters.cuisines.filter((c) => !['coffee', 'bakery'].includes(c));
-  const localityTokens = new Set(['soder', 'sodermalm', 'vasastan', 'vasan', 'ostermalm', 'oster', 'kungsholmen', 'gamla', 'stan', 'staden', 'stad', 'town', 'city', ...(area ? area.split(' ') : [])]);
+  const localityTokens = new Set([
+    'soder', 'sodermalm', 'vasastan', 'vasastaden', 'vasan', 'ostermalm', 'oster',
+    'kungsholmen', 'gamla', 'stan', 'gamlastan', 'staden', 'stad', 'town', 'city',
+    'gardet', 'kransen', 'djurgarden', 'norrmalm', 'vasterort', 'soderort', 'norrort',
+    'birkastan', 'sofo', 'hornstull', 'mariatorget', 'nytorget', 'skanstull',
+    'zinken', 'zinkensdamm', 'stureplan', 'karlaplan', 'fridhemsplan', 'odenplan',
+    'bromma', 'alvik', 'kista', 'arsta', 'liljeholmen', 'aspudden', 'hagersten',
+    'enskede', 'farsta', 'skarpnack',
+    ...(area ? area.split(' ') : [])
+  ]);
   const terms = queryTerms(positive).filter((token) => !localityTokens.has(token) && !/^\d+$/.test(token) && !['under', 'below', 'less', 'than', 'max', 'hogst', 'sek', 'kr', 'kronor'].includes(token));
-  return { positive, filters, priceMax, area, outsideStockholm, excludedBrandRequested, dishes: [...new Set(dishes)], specialty, bakery, dinner, near, openNow, exclusions, cuisineKinds, terms,
+  return { positive, filters, priceMax, area, isDistrictQuery: Boolean(area), outsideStockholm, excludedBrandRequested, dishes: [...new Set(dishes)], specialty, bakery, dinner, near, openNow, exclusions, cuisineKinds, terms,
     hiddenGem: /\b(hidden gems?|dolda parlor|dold parla)\b/.test(normalized),
     language: context.language ?? (/\b(och|jag|nara|mig|basta|hitta|kaffe|middag|pa|oppet|polska)\b/.test(normalized) ? 'sv' : 'en'),
   };
@@ -92,6 +110,7 @@ export function parseIntent(query: string, context: QueryContext = {}) {
         cuisineKinds: base.cuisineKinds.length ? base.cuisineKinds : prevTopicIntent.cuisineKinds,
         dishes: base.dishes.length ? base.dishes : prevTopicIntent.dishes,
         area: base.area ?? prevTopicIntent.area,
+        isDistrictQuery: Boolean(base.area ?? prevTopicIntent.area),
         specialty: base.specialty || prevTopicIntent.specialty,
         bakery: base.bakery || prevTopicIntent.bakery,
         dinner: base.dinner || prevTopicIntent.dinner,
@@ -114,6 +133,7 @@ export function parseIntent(query: string, context: QueryContext = {}) {
         cuisineKinds: prevTopicIntent.cuisineKinds,
         dishes: prevTopicIntent.dishes,
         area: base.area ?? prevTopicIntent.area,
+        isDistrictQuery: Boolean(base.area ?? prevTopicIntent.area),
         specialty: prevTopicIntent.specialty,
         bakery: prevTopicIntent.bakery,
         dinner: base.dinner || prevTopicIntent.dinner,
@@ -130,6 +150,7 @@ export function parseIntent(query: string, context: QueryContext = {}) {
 
   return {
     ...base,
+    isDistrictQuery: Boolean(base.area),
     isPagination,
     isFollowUp,
     excludedPlaceNames,

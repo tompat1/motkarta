@@ -850,7 +850,13 @@ export default function App() {
       userLocation,
     ],
   );
-  const visibleRanked = useMemo(() => ranked.slice(0, renderLimit), [ranked]);
+
+  const visibleRanked = useMemo(() => {
+    if (conciergePlaces.length > 0) {
+      return ranked;
+    }
+    return ranked.slice(0, renderLimit);
+  }, [conciergePlaces.length, ranked, renderLimit]);
   const hasSearchQuery = Boolean(query.trim());
   const activeHeroStoryId =
     kind === "Restaurant"

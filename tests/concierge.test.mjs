@@ -216,3 +216,39 @@ test("concierge search input has exact aria-label and top-nav CONCIERGE and Onbo
   assert.equal(appSource.includes('onOpenConcierge={focusSearchInput}'), true);
   assert.equal(appSource.includes('href="#concierge"'), true);
 });
+
+test("RAG retrieveAndSynthesize lists ALL places in region when user writes Gamla Stan, gamlastan, or any district", () => {
+  const resultGamlaStan = retrieveAndSynthesize("Gamla Stan", livePlaces, { language: "sv" });
+  const resultGamlaStanLower = retrieveAndSynthesize("gamla stan", livePlaces, { language: "sv" });
+  const resultGamlastan = retrieveAndSynthesize("gamlastan", livePlaces, { language: "sv" });
+
+  // In live places, there are 128 places in Gamla Stan (2 are Espresso House chains, leaving 126 eligible)
+  assert.equal(resultGamlaStan.cards.length, 126, "Should return all 126 places in Gamla Stan");
+  assert.equal(resultGamlaStanLower.cards.length, 126, "Case-insensitive query should also return all places");
+  assert.equal(resultGamlastan.cards.length, 126, "Compound word gamlastan should also return all places");
+  assert.equal(resultGamlaStan.recommendedPlaces.length, 126);
+
+  assert.ok(
+    resultGamlaStan.intro.includes("alla 126 ställen i Gamla Stan"),
+    `Intro should state all 126 places in Gamla Stan, got: ${resultGamlaStan.intro}`,
+  );
+
+  // Gärdet (39 places)
+  const resultGardet = retrieveAndSynthesize("Gärdet", livePlaces, { language: "sv" });
+  assert.equal(resultGardet.cards.length, 39, "Should return all 39 places in Gärdet");
+  assert.ok(resultGardet.intro.includes("alla 39 ställen i Gärdet"));
+
+  // Kransen (41 places)
+  const resultKransen = retrieveAndSynthesize("Kransen", livePlaces, { language: "sv" });
+  assert.equal(resultKransen.cards.length, 41, "Should return all 41 places in Kransen");
+  assert.ok(resultKransen.intro.includes("alla 41 ställen i Kransen"));
+
+  // Vasastan (205 places)
+  const resultVasastan = retrieveAndSynthesize("Vasastan", livePlaces, { language: "sv" });
+  assert.equal(resultVasastan.cards.length, 205, "Should return all 205 places in Vasastan");
+
+  // Non-district query still capped at 5
+  const resultGeneric = retrieveAndSynthesize("cardamom bun and filter coffee", livePlaces);
+  assert.ok(resultGeneric.cards.length <= 5, "Non-district queries must remain capped at top 5 recommendations");
+});
+

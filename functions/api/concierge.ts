@@ -236,7 +236,7 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
     if (env.AI && env.CONCIERGE_INDEX && env.CONCIERGE_MIN_SIMILARITY?.trim() && Number.isFinite(threshold) && threshold >= 0 && threshold <= 1) {
       try {
         const semantic = await semanticCandidates(query, places, context, env.AI, env.CONCIERGE_INDEX, threshold, deadline);
-        if (semantic.length) { candidates = fuseCandidates(candidates, semantic); hybrid = true; }
+        if (semantic.length) { candidates = fuseCandidates(candidates, semantic, Boolean(intent.area)); hybrid = true; }
         else fallbacks.push('no_current_semantic_matches');
       } catch { fallbacks.push('semantic_unavailable'); }
     } else fallbacks.push('semantic_not_configured');
@@ -253,7 +253,7 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
     }
   }
   if (hybrid) { result.modelVersion = VERSIONS.hybrid; result.retrievalMode = 'hybrid'; }
-  if (allowAI && env.CONCIERGE_SYNTHESIS_MODE === 'constrained' && result.cards.length) {
+  if (allowAI && env.CONCIERGE_SYNTHESIS_MODE === 'constrained' && result.cards.length > 0 && result.cards.length <= 5) {
     if (env.AI && deadline - Date.now() > 100) {
       try { result = await synthesize(result, env.AI, intent.language, deadline, context); }
       catch { fallbacks.push('synthesis_rejected_or_unavailable'); }
