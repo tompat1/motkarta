@@ -336190,9 +336190,9 @@
       "id": 1181855637,
       "name": "Gamla Riksarkivet",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "swedish;scandinavian",
       "area": "Riddarholmen",
-      "note": "Historisk restaurang, festvåning och catering på Riddarholmen.",
+      "note": "Historisk restaurang, festvåning och catering på Riddarholmen. Svenskt och skandinaviskt kök.",
       "tags": [
         "Restaurant",
         "Catering",
@@ -336200,7 +336200,9 @@
         "Independent",
         "Riddarholmen",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Swedish",
+        "Scandinavian"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -336272,7 +336274,8 @@
           "url": "https://gamlariksarkivet.com/",
           "capturedAt": "2026-09-13T20:55:00Z"
         }
-      ]
+      ],
+      "priceSEK": "800–1600"
     }
   ],
   "totalPlaces": 3198

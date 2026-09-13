@@ -113,6 +113,7 @@ const CUISINE_TAGS = new Map([
   ["regional", "regional"],
   ["salad", "salad"],
   ["sandwich", "sandwich"],
+  ["scandinavian", "scandinavian"],
   ["seafood", "seafood"],
   ["spanish", "spanish"],
   ["sushi", "sushi"],
