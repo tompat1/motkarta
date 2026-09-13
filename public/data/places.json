@@ -336185,7 +336185,95 @@
           "capturedAt": "2026-09-13T19:30:00Z"
         }
       ]
+    },
+    {
+      "id": 1181855637,
+      "name": "Gamla Riksarkivet",
+      "kind": "Restaurant",
+      "cuisine": "",
+      "area": "Riddarholmen",
+      "note": "Historisk restaurang, festvåning och catering på Riddarholmen.",
+      "tags": [
+        "Restaurant",
+        "Catering",
+        "Lunch",
+        "Independent",
+        "Riddarholmen",
+        "OpenStreetMap",
+        "Opening hours"
+      ],
+      "is_hidden_gem": false,
+      "is_structural_anomaly": false,
+      "discoveryReasons": [
+        "it appears independent",
+        "it has lower local visibility"
+      ],
+      "discoverySignals": {
+        "independent_business": true,
+        "underrepresented_cuisine": false,
+        "low_local_visibility": true,
+        "verified_open": true,
+        "complete_profile": true,
+        "recently_updated": true
+      },
+      "sourceName": "OpenStreetMap",
+      "lastUpdated": "2026-09-13",
+      "evidenceLabel": "OpenStreetMap verified open data",
+      "ratingAverage": 0,
+      "reliableRatingCount": 0,
+      "reviewCount": 0,
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0,
+      "priceLevel": 0,
+      "mainstreamExposure": 15,
+      "ageDays": 1200,
+      "daysSinceFreshEvidence": 1,
+      "evidence": {
+        "specialistGuide": 0,
+        "independentEditorial": 0,
+        "verifiedUserRating": 0,
+        "repeatVisits": 0,
+        "recentReviews": 0,
+        "credibleReviewers": 0,
+        "inspectionStatus": 60,
+        "verifiedAttributes": 50,
+        "dataFreshness": 90,
+        "confidence": "Medium"
+      },
+      "engagement": {
+        "searchImpressions": 0,
+        "profileViews": 0,
+        "mapMarkerClicks": 0,
+        "saves": 0,
+        "directionRequests": 0,
+        "confirmedVisits": 0,
+        "repeatVisits": 0,
+        "recommendations": 0,
+        "recentSaves": 0
+      },
+      "latitude": 59.3256377,
+      "longitude": 18.0640641,
+      "x": 62.81,
+      "y": 53.47,
+      "address": "Birger Jarls Torg 2a, Riddarholmen",
+      "osmIdentity": "way:23841396",
+      "idNamespace": "public",
+      "website": "https://gamlariksarkivet.com/",
+      "openingHours": "Mo-Su 08:00-17:00",
+      "sourceFacts": [
+        {
+          "id": "1181855637:website",
+          "placeId": 1181855637,
+          "field": "tags",
+          "value": "Website: https://gamlariksarkivet.com/",
+          "source": "OpenStreetMap",
+          "verification": "listed",
+          "url": "https://gamlariksarkivet.com/",
+          "capturedAt": "2026-09-13T20:55:00Z"
+        }
+      ]
     }
   ],
-  "totalPlaces": 3197
+  "totalPlaces": 3198
 }

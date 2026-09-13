@@ -234,10 +234,10 @@ test("RAG retrieveAndSynthesize lists ALL places in region when user writes Gaml
     `Intro should state all 122 places in Gamla Stan, got: ${resultGamlaStan.intro}`,
   );
 
-  // Riddarholmen (3 places: Riddaren Mat & Catering, Mälardrottningen Brasserie Hutton, Lilla Gästabud)
+  // Riddarholmen (4 places: Riddaren Mat & Catering, Mälardrottningen Brasserie Hutton, Lilla Gästabud, Gamla Riksarkivet)
   const resultRiddarholmen = retrieveAndSynthesize("Riddarholmen", livePlaces, { language: "sv" });
-  assert.equal(resultRiddarholmen.cards.length, 3, "Should return all 3 places in Riddarholmen");
-  assert.ok(resultRiddarholmen.intro.includes("alla 3 ställen i Riddarholmen"));
+  assert.equal(resultRiddarholmen.cards.length, 4, "Should return all 4 places in Riddarholmen");
+  assert.ok(resultRiddarholmen.intro.includes("alla 4 ställen i Riddarholmen"));
 
   // Skeppsholmen (2 places: Café Skeppsholmen, Harö Krog)
   const resultSkeppsholmen = retrieveAndSynthesize("Skeppsholmen", livePlaces, { language: "sv" });

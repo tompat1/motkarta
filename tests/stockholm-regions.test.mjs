@@ -211,6 +211,17 @@ test("resolves Riddarholmen places correctly", () => {
 
   assert.equal(
     resolveStockholmRegion({
+      name: "Gamla Riksarkivet",
+      area: "Stockholm",
+      address: "Birger Jarls Torg 2a",
+      latitude: 59.3256377,
+      longitude: 18.0640641,
+    }),
+    "Riddarholmen",
+  );
+
+  assert.equal(
+    resolveStockholmRegion({
       name: "Riddarholmen Spot",
       area: "Stockholm",
       latitude: 59.325,

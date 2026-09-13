@@ -87,6 +87,8 @@ const PLACE_OVERRIDES = new Map<string, string>([
   ["mälardrottningen brasserie hutton", "Riddarholmen"],
   ["lilla gastabud", "Riddarholmen"],
   ["lilla gästabud", "Riddarholmen"],
+  ["gamla riksarkivet", "Riddarholmen"],
+  ["riksarkivet", "Riddarholmen"],
 ]);
 
 const REGION_BOXES: Array<{
