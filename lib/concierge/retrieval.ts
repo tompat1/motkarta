@@ -39,7 +39,7 @@ export function matchesArea(area: string, place: ConciergePlace): boolean {
   if (area === 'soderort' && place.area && includesPhrase(place.area, 'soderort')) return true;
 
   const isBroad = !place.area || /^(stockholm|central stockholm|north stockholm|south stockholm|east stockholm|west stockholm|sweden|sverige|unspecified)$/i.test(place.area.trim());
-  const address = place.address;
+  const { address } = place;
   if (isBroad && address) {
     if (includesPhrase(address, area)) return true;
     if ((area === 'norrmalm' || area === 'city') && (includesPhrase(address, 'city') || includesPhrase(address, 'norrmalm'))) return true;
@@ -178,7 +178,7 @@ export function fuseCandidates(lexical: RankedCandidate[], semantic: RankedCandi
 export { reciprocalRankFusion } from './hybrid_search.ts';
 
 export function exactNameIds(query: string, places: ConciergePlace[]): Set<number> {
-  const positive = parseIntent(query).positive;
+  const { positive } = parseIntent(query);
   return new Set(places.filter((p) => isExactPlaceMatch(positive, p.name)).map((p) => p.id));
 }
 
