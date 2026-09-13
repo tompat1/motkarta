@@ -39,10 +39,11 @@ export function matchesArea(area: string, place: ConciergePlace): boolean {
   if (area === 'soderort' && place.area && includesPhrase(place.area, 'soderort')) return true;
 
   const isBroad = !place.area || /^(stockholm|central stockholm|north stockholm|south stockholm|east stockholm|west stockholm|sweden|sverige|unspecified)$/i.test(place.area.trim());
-  if (isBroad && place.address) {
-    if (includesPhrase(place.address, area)) return true;
-    if ((area === 'norrmalm' || area === 'city') && (includesPhrase(place.address, 'city') || includesPhrase(place.address, 'norrmalm'))) return true;
-    if (area === 'soderort' && SODERORT_SUB.some((sub) => includesPhrase(place.address, sub))) return true;
+  const address = place.address;
+  if (isBroad && address) {
+    if (includesPhrase(address, area)) return true;
+    if ((area === 'norrmalm' || area === 'city') && (includesPhrase(address, 'city') || includesPhrase(address, 'norrmalm'))) return true;
+    if (area === 'soderort' && SODERORT_SUB.some((sub) => includesPhrase(address, sub))) return true;
   }
   return false;
 }
