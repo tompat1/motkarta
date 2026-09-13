@@ -48,16 +48,29 @@ export type QueryContext = {
 ## 3. On-Demand Web Search Enrichment for Unanswered Queries [Implemented]
 
 ### Problem Statement
-When a user asks about a niche dish, specialty coffee process, or venue that is not yet fully populated in the local catalog, traditional search engines fallback to commercial sponsored ads or generic SEO text.
+When a user asks about a niche dish, specialty coffee process, or venue that is not yet populated in the local curated dataset (`cards.length === 0`), traditional search fallback often sends users to ad-heavy search engines or commercial directories with sponsored rankings.
 
-### Architectural Solution: Grounded Web Search Enrichment
-When Concierge detects a partial or ungrounded query (`fallbackReasons` contains `no_current_semantic_matches` or `missing_dish_facts`):
+### Architectural Implementation: Zero-Ad Inline Web Enrichment
+Concierge now executes an on-demand, non-commercial web enrichment pipeline when no catalog cards match:
 
-1. **Trigger Targeted Search**: Launch an on-demand scraper (`execution/enrich_catalog.py --scrape` or `execution/enrich_web_search.py`) targeted at official venue websites or open curated registries.
-2. **Fact Extraction**: Extract missing `openingHours`, `dish`, `atmosphere`, or `priceSEK` facts from the venue site.
-3. **Fact Provenance**: Attribute extracted facts to `source: "Web Search ({domain})"`, `verification: "listed"`, with `capturedAt` UTC timestamp.
-4. **Overlay Ingestion**: Append the newly extracted facts to `data/enrichment_overlay.json` and re-run `apply_enrichment.py`, permanently improving the fact bank for all future users.
+1. **Automatic Detection & Trigger**:
+   - In `functions/api/concierge.ts`, if `result.cards.length === 0`, Concierge automatically triggers `fetchExternalWebResults(query, env)`.
+   - No external paid API key is strictly required: queries utilize Brave Search or Tavily if configured, and seamlessly fallback to direct DuckDuckGo HTML open web scraping via Cloudflare Workers / server-side runtime (bypassing client CORS).
+
+2. **Strict Commercial Signal Elimination (`lib/concierge/web-search.ts`)**:
+   - **Prohibited Domain Blocklist**: Rejects review aggregators (`yelp`, `tripadvisor`, `thefork`, `gastrogate`, `bokabord`, `eniro`, `hitta`, `reco`) and commercial fast-food/coffee chains (`starbucks`, `espressohouse`, `mcdonalds`, `max`, `waynescoffee`, `subway`, etc.).
+   - **Text Cleansing (`cleanCommercialText`)**: Strips star ratings (`4.5 av 5 stjärnor`, `★★★★☆`), review counts (`142 omdömen`), booking promotional slogans (`Boka bord online`), discount pitches (`20% rabatt`), and sponsored prefixes.
+   - **Title Normalization (`cleanCommercialTitle`)**: Strips directory suffixes (`- Tripadvisor`, `- Yelp`, `- Thatsup`), removes top-10 listicle prefixes, and unescapes HTML entities.
+   - **Domain Deduplication**: Limits results to maximum 1 result per domain and at most 5 curated cards.
+
+3. **Inline Presentation (`src/components/ConciergeAnswerView.tsx` & `src/styles.css`)**:
+   - All results are rendered directly **inline** as structured cards (`.concierge-card.concierge-web-card`) matching native venue card styling.
+   - Distinctive electric cyan accent styling (`#38bdf8`) clearly marks external web discoveries.
+   - Displays a prominent non-commercial badge: `"Realtidsresultat från öppna webben · Filtrerade utan kommersiella signaler & annonser"`.
+   - Links point directly to the venue's official website or editorial article, completely eliminating Google search redirect links and ad exposure.
 
 ### Core Value Guardrails
-- **No Commercial Ads or Rating Aggregators**: Search enrichment strictly ignores Yelp, TripAdvisor, Google Star ratings, or paid promotion sites.
-- **ODbL / CC0 / Fair Use Compliance**: Only venue self-reported facts or open-source data are ingested.
+- **No Commercial Ads or Rating Aggregators**: Aggressively filtered via domain blocklists and regex cleaners.
+- **Privacy-Preserving**: No search queries are tracked or monetized.
+- **Inline Consistency**: Web enrichments feel native to the Concierge experience rather than an external detour.
+

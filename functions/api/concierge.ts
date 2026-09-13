@@ -20,24 +20,17 @@ export type Env = {
   BRAVE_SEARCH_API_KEY?: string;
   TAVILY_API_KEY?: string;
 };
-const PROHIBITED_DOMAINS = ['yelp.com', 'tripadvisor.com', 'google.com', 'facebook.com', 'instagram.com', 'zomato.com', 'foursquare.com', 'trustpilot.com'];
-
-export function isProhibitedDomain(url: string): boolean {
-  try {
-    const hostname = new URL(url).hostname.toLowerCase();
-    return PROHIBITED_DOMAINS.some((p) => hostname === p || hostname.endsWith('.' + p));
-  } catch {
-    return true;
-  }
-}
+import { isProhibitedDomain, filterExternalWebResults, parseDuckDuckGoHtml, PROHIBITED_DOMAINS } from '../../lib/concierge/web-search.ts';
+export { isProhibitedDomain };
 
 export async function fetchExternalWebResults(query: string, env: Env, deadline: number): Promise<import('../../lib/concierge/contracts.ts').ExternalWebResult[]> {
-  const timeoutMs = Math.max(50, Math.min(1200, deadline - Date.now()));
+  const timeoutMs = Math.max(100, Math.min(1800, deadline - Date.now()));
   if (timeoutMs <= 100) return [];
 
+  // 1. Brave Search API (if configured)
   if (env.BRAVE_SEARCH_API_KEY?.trim()) {
     try {
-      const searchUrl = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query + ' Stockholm café restaurang mat')}&count=5`;
+      const searchUrl = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query + ' Stockholm café restaurang mat')}&count=8`;
       const res = await withinDeadline(
         fetch(searchUrl, {
           headers: {
@@ -49,25 +42,21 @@ export async function fetchExternalWebResults(query: string, env: Env, deadline:
       );
       if (res.ok) {
         const data = await res.json() as { web?: { results?: Array<{ title?: string; url?: string; description?: string }> } };
-        const results = data.web?.results ?? [];
-        return results
-          .filter((r) => r.url && !isProhibitedDomain(r.url))
-          .slice(0, 3)
-          .map((r) => {
-            const domain = new URL(r.url!).hostname.replace(/^www\./, '');
-            return {
-              title: r.title || domain,
-              url: r.url!,
-              snippet: r.description || '',
-              domain,
-            };
-          });
+        const raw = (data.web?.results ?? []).map((r) => ({
+          title: r.title || '',
+          url: r.url || '',
+          snippet: r.description || '',
+          domain: '',
+        }));
+        const cleaned = filterExternalWebResults(raw);
+        if (cleaned.length) return cleaned;
       }
     } catch {
-      // ignore
+      // fallback
     }
   }
 
+  // 2. Tavily Search API (if configured)
   if (env.TAVILY_API_KEY?.trim()) {
     try {
       const res = await withinDeadline(
@@ -77,31 +66,47 @@ export async function fetchExternalWebResults(query: string, env: Env, deadline:
           body: JSON.stringify({
             api_key: env.TAVILY_API_KEY.trim(),
             query: `${query} Stockholm café restaurang`,
-            max_results: 5,
-            exclude_domains: PROHIBITED_DOMAINS,
+            max_results: 8,
           }),
         }),
         timeoutMs,
       );
       if (res.ok) {
         const data = await res.json() as { results?: Array<{ title?: string; url?: string; content?: string }> };
-        const results = data.results ?? [];
-        return results
-          .filter((r) => r.url && !isProhibitedDomain(r.url))
-          .slice(0, 3)
-          .map((r) => {
-            const domain = new URL(r.url!).hostname.replace(/^www\./, '');
-            return {
-              title: r.title || domain,
-              url: r.url!,
-              snippet: r.content || '',
-              domain,
-            };
-          });
+        const raw = (data.results ?? []).map((r) => ({
+          title: r.title || '',
+          url: r.url || '',
+          snippet: r.content || '',
+          domain: '',
+        }));
+        const cleaned = filterExternalWebResults(raw);
+        if (cleaned.length) return cleaned;
       }
     } catch {
-      // ignore
+      // fallback
     }
+  }
+
+  // 3. Open Web / DuckDuckGo HTML Fallback (always accessible, zero commercial trackers or API keys required)
+  try {
+    const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query + ' Stockholm café restaurang mat')}`;
+    const res = await withinDeadline(
+      fetch(searchUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml',
+          'Accept-Language': 'sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7',
+        },
+      }),
+      timeoutMs,
+    );
+    if (res.ok) {
+      const html = await res.text();
+      const cleaned = parseDuckDuckGoHtml(html);
+      if (cleaned.length) return cleaned;
+    }
+  } catch {
+    // ignore
   }
 
   return [];
@@ -249,7 +254,7 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
     } else fallbacks.push('semantic_not_configured');
   }
   let result = buildResponse(query, candidates, places.length, context, sourceNamespace);
-  if (!result.cards.length && result.webSearch && (env.BRAVE_SEARCH_API_KEY || env.TAVILY_API_KEY) && deadline - Date.now() > 150) {
+  if (!result.cards.length && result.webSearch && deadline - Date.now() > 150) {
     try {
       const externalResults = await fetchExternalWebResults(query, env, deadline);
       if (externalResults.length) {

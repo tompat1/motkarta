@@ -55,7 +55,16 @@ export function makeCard(candidate: RankedCandidate, language: 'sv' | 'en'): Con
     distanceKm: candidate.distanceKm, website: safeUrl(place.website),
   };
 }
-export function renderAnswer(result: Pick<ConciergeResponse, 'intro' | 'cards'>): string {
+export function renderAnswer(result: Pick<ConciergeResponse, 'intro' | 'cards'> & { webSearch?: WebSearchFallback }): string {
+  if (!result.cards.length && result.webSearch?.externalResults?.length) {
+    const webCards = result.webSearch.externalResults.map((ext) => [
+      `### **${ext.title}** (${ext.domain})`,
+      ext.snippet ? `• ${ext.snippet}` : null,
+      `• [Besök hemsida](${ext.url})`,
+    ].filter(Boolean).join('\n'));
+    return [result.intro, ...webCards].join('\n\n');
+  }
+
   return [result.intro, ...result.cards.map((c) => [
     `### **${c.name}**`, `• **Why it matches**: ${c.whyItMatches}`,
     `• **Area / Location**: ${c.area}`, `• **Price confidence**: ${c.priceConfidence}`,

@@ -148,80 +148,92 @@ export function ConciergeAnswerView({
       ) : parsed.intro ? <p className="concierge-intro">{parsed.intro}</p> : null}
 
       {parsed.cards.length === 0 && (response?.query || answer) ? (
-        <div className="concierge-web-fallback">
-          <div className="concierge-web-fallback-header">
-            <Globe size={16} weight="bold" />
-            <span>{lang === "sv" ? "Hittar du inte det du söker i katalogen?" : "Can't find what you're looking for in the catalog?"}</span>
-          </div>
-          <p className="concierge-web-fallback-desc">
-            {lang === "sv"
-              ? "Sök på öppna webben eller tipsa oss om ett oberoende ställe i Stockholm så lägger vi till det!"
-              : "Search the open web or suggest an independent Stockholm place to have it added to Motkarta!"}
-          </p>
-          <div className="concierge-web-fallback-actions">
-            {response?.webSearch?.links ? (
-              response.webSearch.links.map((link) => (
-                <a
-                  key={link.provider}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`concierge-web-btn ${link.provider}`}
-                >
-                  <MagnifyingGlass size={13} weight="bold" /> {link.title} <ArrowSquareOut size={12} />
-                </a>
-              ))
-            ) : (
-              <>
-                <a
-                  href={`https://www.google.com/search?q=${encodeURIComponent(`${response?.query || answer} Stockholm café restaurang mat`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="concierge-web-btn google"
-                >
-                  <MagnifyingGlass size={13} weight="bold" /> {lang === "sv" ? "Sök på Google" : "Search on Google"} <ArrowSquareOut size={12} />
-                </a>
-                <a
-                  href={`https://duckduckgo.com/?q=${encodeURIComponent(`${response?.query || answer} Stockholm mat café`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="concierge-web-btn duckduckgo"
-                >
-                  <Globe size={13} weight="bold" /> {lang === "sv" ? "Sök på DuckDuckGo" : "Search on DuckDuckGo"} <ArrowSquareOut size={12} />
-                </a>
-              </>
-            )}
-            <button
-              type="button"
-              onClick={() => onTriggerAction?.('add_place', response?.query || undefined)}
-              className="concierge-web-btn add-place"
-            >
-              <PlusCircle size={14} weight="bold" /> {lang === "sv" ? "Tipsa / Lägg till ställe" : "Suggest / Add place"}
-            </button>
+        <div className="concierge-inline-web-enrichment">
+          <div className="concierge-inline-web-banner">
+            <div className="concierge-inline-web-banner-header">
+              <span className="concierge-inline-web-pill">
+                <Globe size={15} weight="bold" />
+                {lang === "sv" ? "Automatisk oberoende webbsökning" : "Automatic independent web search"}
+              </span>
+              <span className="concierge-inline-web-guarantee">
+                <CheckCircle size={13} weight="bold" /> {lang === "sv" ? "Filtrerad från kommersiella annonser & betygssajter" : "Filtered from commercial ads & rating aggregators"}
+              </span>
+            </div>
+            <p className="concierge-inline-web-desc">
+              {lang === "sv"
+                ? "Inga verifierade ställen matchade i den lokala katalogen. Här är relevanta oberoende webbträffar från öppna nätet:"
+                : "No verified places matched in the local catalog. Here are relevant independent web results from the open web:"}
+            </p>
           </div>
 
           {response?.webSearch?.externalResults && response.webSearch.externalResults.length > 0 ? (
-            <div className="concierge-external-results">
-              <div className="concierge-external-results-title">
-                🌐 {lang === "sv" ? "Externa webbträffar (ej verifierade i Motkarta än):" : "External web results (unverified in Motkarta):"}
-              </div>
-              <div className="concierge-external-results-list">
-                {response.webSearch.externalResults.map((ext, extIdx) => (
-                  <a
-                    key={extIdx}
-                    href={ext.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="concierge-external-result-card"
-                  >
-                    <div className="concierge-external-result-domain">{ext.domain}</div>
-                    <div className="concierge-external-result-title">{ext.title} <ArrowSquareOut size={12} /></div>
-                    {ext.snippet ? <div className="concierge-external-result-snippet">{ext.snippet}</div> : null}
-                  </a>
-                ))}
-              </div>
+            <div className="concierge-cards-grid concierge-inline-web-grid">
+              {response.webSearch.externalResults.map((ext, extIdx) => (
+                <div key={extIdx} className="concierge-card concierge-web-card">
+                  <div className="concierge-card-main">
+                    <div className="concierge-card-head">
+                      <div className="concierge-card-title-row">
+                        <h4 className="concierge-card-title">
+                          <a
+                            href={ext.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="concierge-web-title-link"
+                          >
+                            {ext.title} <ArrowSquareOut size={13} weight="bold" />
+                          </a>
+                        </h4>
+                        <span className="concierge-web-domain-badge">{ext.domain}</span>
+                      </div>
+                    </div>
+
+                    {ext.snippet ? (
+                      <div className="concierge-card-web-snippet">{ext.snippet}</div>
+                    ) : null}
+
+                    <div className="concierge-card-web-footer">
+                      <span className="concierge-web-tag-unverified">
+                        {lang === "sv" ? "🌐 Oberoende webbträff (ej verifierad i Motkarta än)" : "🌐 Independent web result (unverified in Motkarta)"}
+                      </span>
+                      <div className="concierge-card-web-actions">
+                        <a
+                          href={ext.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="concierge-card-btn visit-site"
+                        >
+                          <Globe size={13} weight="bold" /> {lang === "sv" ? "Besök hemsida" : "Visit website"}
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => onTriggerAction?.('add_place', ext.title)}
+                          className="concierge-card-btn add-place"
+                          title={lang === "sv" ? "Tipsa om att lägga till stället i Motkarta" : "Suggest adding place to Motkarta"}
+                        >
+                          <PlusCircle size={14} weight="bold" /> {lang === "sv" ? "Tipsa / Lägg till" : "Suggest / Add"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          ) : null}
+          ) : (
+            <div className="concierge-inline-web-empty">
+              <p>
+                {lang === "sv"
+                  ? "Inga oberoende ställen hittades på webben utan kommersiella signaler. Känner du till ett ställe i Stockholm som passar?"
+                  : "No independent places found on the web without commercial signals. Do you know a Stockholm place that fits?"}
+              </p>
+              <button
+                type="button"
+                onClick={() => onTriggerAction?.('add_place', response?.query || answer)}
+                className="concierge-web-btn add-place"
+              >
+                <PlusCircle size={14} weight="bold" /> {lang === "sv" ? "Tipsa / Lägg till ställe" : "Suggest / Add place"}
+              </button>
+            </div>
+          )}
         </div>
       ) : null}
 
