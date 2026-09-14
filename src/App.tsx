@@ -1580,35 +1580,38 @@ export default function App() {
 
       {/* Mobile-only Quick Search & Filter Controls */}
       <div className="mobile-controls-bar">
-        <div className="mobile-filter-actions">
-          <button
-            type="button"
-            className={`quick-filter-pill ${activeFilterCount > 0 ? "is-primary-active" : ""}`}
-            onClick={() => setIsFilterSheetOpen(true)}
-            aria-haspopup="dialog"
-            aria-expanded={isFilterSheetOpen}
-          >
-            <Faders size={14} weight="bold" />
-            <span>{lang === "sv" ? "Filter" : "Filters"}</span>
-            {activeFilterCount > 0 ? <span className="quick-filter-badge">{activeFilterCount}</span> : null}
-          </button>
-          <button type="button" className="quick-filter-pill" onClick={() => setIsSyncModalOpen(true)}>
-            <DeviceMobile size={13} weight="bold" />
-            <span>{lang === "sv" ? "Synka enheter" : "Sync Devices"}</span>
-          </button>
-        </div>
-        <div className="mobile-type-filters" role="group" aria-label={t.typeFilterLabel}>
-          {visibleEstablishmentTypes.map((item) => (
+        <div className="mobile-controls-scroll" role="toolbar" aria-label={lang === "sv" ? "Filter och snabbval" : "Filters and quick selections"}>
+          <div className="mobile-filter-actions">
             <button
-              key={item}
               type="button"
-              className={`quick-filter-pill ${kind === item ? "is-active" : ""}`}
-              aria-pressed={kind === item}
-              onClick={() => selectKindFilter(item)}
+              className={`quick-filter-pill is-action-filter ${activeFilterCount > 0 ? "is-primary-active" : ""}`}
+              onClick={() => setIsFilterSheetOpen(true)}
+              aria-haspopup="dialog"
+              aria-expanded={isFilterSheetOpen}
             >
-              {kindFilterLabel(item, lang)}
+              <Faders size={14} weight="bold" />
+              <span>{lang === "sv" ? "Filter" : "Filters"}</span>
+              {activeFilterCount > 0 ? <span className="quick-filter-badge">{activeFilterCount}</span> : null}
             </button>
-          ))}
+            <button type="button" className="quick-filter-pill is-action-sync" onClick={() => setIsSyncModalOpen(true)}>
+              <DeviceMobile size={13} weight="bold" />
+              <span>{lang === "sv" ? "Synka enheter" : "Sync Devices"}</span>
+            </button>
+          </div>
+          <div className="mobile-controls-divider" aria-hidden="true" />
+          <div className="mobile-type-filters" role="group" aria-label={t.typeFilterLabel}>
+            {visibleEstablishmentTypes.map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={`quick-filter-pill ${kind === item ? "is-active" : ""}`}
+                aria-pressed={kind === item}
+                onClick={() => selectKindFilter(item)}
+              >
+                {kindFilterLabel(item, lang)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -2724,6 +2727,9 @@ export default function App() {
       <MobileFilterBottomSheet
         isOpen={isFilterSheetOpen}
         onClose={() => setIsFilterSheetOpen(false)}
+        kind={kind}
+        establishmentTypes={visibleEstablishmentTypes}
+        onSelectKind={selectKindFilter}
         cuisine={cuisine}
         cuisineOptions={cuisineOptions}
         onSelectCuisine={selectCuisineFilter}

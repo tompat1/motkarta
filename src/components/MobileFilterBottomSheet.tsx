@@ -1,10 +1,20 @@
 import { useEffect, useRef } from "react";
-import { Check, X, ArrowCounterClockwise } from "@phosphor-icons/react";
-import { allCuisines, cuisineLabel, translations, type Language } from "../app/shared";
+import { Check, X, ArrowCounterClockwise, ForkKnife, Bread, Coffee, MapTrifold, Star, Sparkle } from "@phosphor-icons/react";
+import {
+  allCuisines,
+  cuisineLabel,
+  kindFilterLabel,
+  translations,
+  type Language,
+  type EstablishmentFilter,
+} from "../app/shared";
 
 interface MobileFilterBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
+  kind: EstablishmentFilter;
+  establishmentTypes: EstablishmentFilter[];
+  onSelectKind: (kind: EstablishmentFilter) => void;
   cuisine: string;
   cuisineOptions: string[];
   onSelectCuisine: (cuisine: string) => void;
@@ -15,7 +25,8 @@ interface MobileFilterBottomSheetProps {
 }
 
 export function MobileFilterBottomSheet({
-  isOpen, onClose, cuisine, cuisineOptions, onSelectCuisine,
+  isOpen, onClose, kind, establishmentTypes, onSelectKind,
+  cuisine, cuisineOptions, onSelectCuisine,
   hasActiveFilters, onResetFilters, matchingCount, lang,
 }: MobileFilterBottomSheetProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -63,23 +74,58 @@ export function MobileFilterBottomSheet({
           <div className="filter-sheet-handle" />
         </div>
         <div className="filter-sheet-header">
-          <h2 id="filter-sheet-title">{t.cuisineFilterLabel}</h2>
+          <h2 id="filter-sheet-title">{lang === "sv" ? "Filter" : "Filters"}</h2>
           <button type="button" className="filter-sheet-close" onClick={onClose}
             aria-label={lang === "sv" ? "Stäng filter" : "Close filters"}>
             <X size={20} weight="bold" />
           </button>
         </div>
         <div className="filter-sheet-scrollable-body">
-          <div className="filter-sheet-grid" role="group" aria-label={t.cuisineFilterLabel}>
-            {[allCuisines, ...cuisineOptions].map((item) => (
-              <button key={item} type="button"
-                className={`filter-pill-button ${cuisine === item ? "is-selected" : ""}`}
-                aria-pressed={cuisine === item} onClick={() => onSelectCuisine(item)}>
-                {cuisine === item ? <Check size={14} weight="bold" className="filter-pill-check" /> : null}
-                <span>{item === allCuisines ? t.allCuisines : cuisineLabel(item, lang)}</span>
-              </button>
-            ))}
-          </div>
+          <section className="filter-sheet-section">
+            <h3 className="filter-sheet-section-title">{t.typeFilterLabel}</h3>
+            <div className="filter-sheet-type-grid" role="group" aria-label={t.typeFilterLabel}>
+              {establishmentTypes.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={`filter-pill-button ${kind === item ? "is-selected" : ""}`}
+                  aria-pressed={kind === item}
+                  onClick={() => onSelectKind(item)}
+                >
+                  {kind === item ? (
+                    <Check size={14} weight="bold" className="filter-pill-check" />
+                  ) : item === "Restaurant" ? (
+                    <ForkKnife size={16} weight="bold" aria-hidden="true" />
+                  ) : item === "Bakery" ? (
+                    <Bread size={16} weight="bold" aria-hidden="true" />
+                  ) : item === "Café" || item === "Specialty coffee" ? (
+                    <Coffee size={16} weight="bold" aria-hidden="true" />
+                  ) : item === "All places" ? (
+                    <MapTrifold size={16} weight="bold" aria-hidden="true" />
+                  ) : item === "Saved" ? (
+                    <Star size={16} weight="bold" aria-hidden="true" />
+                  ) : item === "Latest" ? (
+                    <Sparkle size={16} weight="bold" aria-hidden="true" />
+                  ) : null}
+                  <span>{kindFilterLabel(item, lang)}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="filter-sheet-section">
+            <h3 className="filter-sheet-section-title">{t.cuisineFilterLabel}</h3>
+            <div className="filter-sheet-grid cuisine-grid" role="group" aria-label={t.cuisineFilterLabel}>
+              {[allCuisines, ...cuisineOptions].map((item) => (
+                <button key={item} type="button"
+                  className={`filter-pill-button ${cuisine === item ? "is-selected" : ""}`}
+                  aria-pressed={cuisine === item} onClick={() => onSelectCuisine(item)}>
+                  {cuisine === item ? <Check size={14} weight="bold" className="filter-pill-check" /> : null}
+                  <span>{item === allCuisines ? t.allCuisines : cuisineLabel(item, lang)}</span>
+                </button>
+              ))}
+            </div>
+          </section>
         </div>
         <div className="filter-sheet-footer">
           <button type="button" className="filter-reset-link-btn" onClick={onResetFilters} disabled={!hasActiveFilters}>
