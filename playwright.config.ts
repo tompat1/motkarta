@@ -11,7 +11,7 @@ export default defineConfig({
   workers: 1,
   reporter: "html",
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL: "http://localhost:4173",
     trace: "on-first-retry",
   },
   projects: [
@@ -29,8 +29,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev",
-    url: "http://localhost:5173",
-    reuseExistingServer: !process.env.CI,
+    command: "npm run dev -- --port 4173 --strictPort",
+    env: { MOTKARTA_E2E: "1" },
+    url: "http://localhost:4173",
+    reuseExistingServer: false,
   },
 });

@@ -443,6 +443,7 @@ def evaluate_position_bias(telemetry_df: pd.DataFrame):
 }
 
 export default defineConfig({
+  cacheDir: process.env.MOTKARTA_E2E === "1" ? "node_modules/.vite-e2e" : "node_modules/.vite",
   plugins: [react(), viteSyncDevPlugin(), viteAdminDevPlugin()],
   server: {
     host: "0.0.0.0",

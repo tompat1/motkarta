@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   MapPin,
   Star,
@@ -11,20 +11,11 @@ import {
 } from "@phosphor-icons/react";
 import type { ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
-import { fetchPlacePhotos, type PlacePhoto } from "../../lib/lazy-media";
+import { DUMMY_PLACE_IMAGE_URL, fetchPlacePhotos } from "../../lib/lazy-media";
 import { formatDistance, distanceFromPoint, hasCoordinates } from "../app/shared";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 
-const DUMMY_PLACE_IMAGE_URL = "/motkarta_drop_divided_black_red.svg";
-
-function canLoadImage(url: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    const image = new Image();
-    image.onload = () => resolve(true);
-    image.onerror = () => resolve(false);
-    image.src = url;
-  });
-}
+import { firstAvailablePhoto } from "../../lib/photo-loading";
 
 interface MobilePlaceCardListProps {
   places: ScoredPlace[];
@@ -45,25 +36,40 @@ export function MobilePlaceCardList({
   onSelectPlace,
   onToggleSave,
 }: MobilePlaceCardListProps) {
-  const [photoMap, setPhotoMap] = useState<Record<number, string>>({});
+  const [photoMap, setPhotoMap] = useState<Record<number, string | null>>({});
+  const listRef = useRef<HTMLDivElement>(null);
+  const loadedPhotos = useRef(new Map<number, string | null>());
   const [feedbackTarget, setFeedbackTarget] = useState<{ id: number; name: string; type: "up" | "down" } | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-    const placesToFetch = places.slice(0, 25);
-    placesToFetch.forEach((p) => {
-      if (!photoMap[p.id]) {
-        void fetchPlacePhotos(p).then(async (photos) => {
-          const url = photos[0]?.url;
-          const loaded = url ? await canLoadImage(url) : false;
-          if (isMounted && url && loaded) {
-            setPhotoMap((prev) => ({ ...prev, [p.id]: url }));
-          }
-        });
+    const controller = new AbortController();
+    const byId = new Map(places.map((place) => [String(place.id), place]));
+    const load = async (element: Element) => {
+      const place = byId.get(element.getAttribute("data-place-id") ?? "");
+      if (!place || loadedPhotos.current.has(place.id)) return;
+      const photos = await fetchPlacePhotos(place);
+      const photo = await firstAvailablePhoto(photos, controller.signal);
+      if (!controller.signal.aborted) {
+        loadedPhotos.current.set(place.id, photo?.url ?? null);
+        setPhotoMap((previous) => ({ ...previous, [place.id]: photo?.url ?? null }));
       }
-    });
+    };
+    const cards = listRef.current?.querySelectorAll("[data-place-id]") ?? [];
+    if (typeof IntersectionObserver === "undefined") {
+      cards.forEach((card) => { void load(card); });
+      return () => controller.abort();
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        observer.unobserve(entry.target);
+        void load(entry.target);
+      });
+    }, { rootMargin: "300px" });
+    cards.forEach((card) => observer.observe(card));
     return () => {
-      isMounted = false;
+      observer.disconnect();
+      controller.abort();
     };
   }, [places]);
 
@@ -78,7 +84,7 @@ export function MobilePlaceCardList({
   }
 
   return (
-    <div className="mobile-place-card-list">
+    <div className="mobile-place-card-list" ref={listRef}>
       {places.map((place) => {
         const isSaved = savedPlaceIds.includes(place.id);
         const isActive = activePlace?.id === place.id;
@@ -96,6 +102,7 @@ export function MobilePlaceCardList({
         return (
           <article
             key={place.id}
+            data-place-id={place.id}
             className={`mobile-photo-card ${isActive ? "is-active-card" : ""}`}
             onClick={() => onSelectPlace(place)}
           >

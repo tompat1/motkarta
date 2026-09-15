@@ -55,3 +55,13 @@ If any tier fails during execution:
 3. **Fix Root Cause:** Fix the code logic or update the test contract if business logic intentionally evolved. Never mock out or comment out broken tests to force a pass.
 4. **Re-run the Combined Gate:** Verify `npm run test:gate` passes completely.
 5. **Update Living Docs:** Record edge cases or newly discovered test requirements in this directive.
+
+## Local browser test isolation
+
+Playwright uses port 4173 and `node_modules/.vite-e2e` (via `MOTKARTA_E2E=1`).
+It starts its own server instead of reusing an active development server. A
+shared Vite cache produced HTTP 504 `Outdated Optimize Dep` failures before any
+application code ran; inspect browser network errors when a page stays blank.
+Keep screenshots under `testInfo.outputPath(...)`, not absolute paths in a
+developer home directory. Photo-loading regressions use local image fixtures
+with one failing URL and one working URL, and scroll beyond result 25.

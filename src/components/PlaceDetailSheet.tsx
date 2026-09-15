@@ -1,3 +1,4 @@
+import { firstAvailablePhoto } from "../../lib/photo-loading";
 import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -79,19 +80,21 @@ export function PlaceDetailSheet({
   }, [place?.id]);
 
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
+    setPhotos([]);
+    setActivePhotoIndex(0);
     if (place) {
-      void fetchPlacePhotos(place).then((fetched) => {
-        if (isMounted) {
-          setPhotos(fetched);
-          setActivePhotoIndex(0);
+      void fetchPlacePhotos(place).then(async (fetched) => {
+        const available = await firstAvailablePhoto(fetched, controller.signal);
+        if (!controller.signal.aborted && available) {
+          const index = fetched.findIndex((photo) => photo.id === available.id);
+          setPhotos(fetched.map((photo, position) => position === index ? available : photo));
+          setActivePhotoIndex(index);
         }
       });
     }
-    return () => {
-      isMounted = false;
-    };
-  }, [place]);
+    return () => controller.abort();
+  }, [place?.id]);
 
   if (!isOpen || !place) return null;
 

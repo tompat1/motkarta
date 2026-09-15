@@ -1,5 +1,7 @@
 "use client";
 
+import { firstAvailablePhoto } from "../lib/photo-loading";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { OnboardingModal } from "./components/OnboardingModal";
 import { AdminReviewPanel, isAdminRoutePath, readStoredAdminToken, type AdminSessionStatus } from "./admin/AdminReviewPanel";
@@ -983,20 +985,16 @@ export default function App() {
   const [activeCardPhoto, setActiveCardPhoto] = useState<PlacePhoto | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
+    setActiveCardPhoto(null);
     if (active) {
-      setActiveCardPhoto(null);
-      void fetchPlacePhotos(active).then((fetched) => {
-        if (isMounted) {
-          setActiveCardPhoto(fetched && fetched.length > 0 ? fetched[0] : null);
-        }
-      });
-    } else {
-      setActiveCardPhoto(null);
+      void fetchPlacePhotos(active)
+        .then((photos) => firstAvailablePhoto(photos, controller.signal))
+        .then((photo) => {
+          if (!controller.signal.aborted) setActiveCardPhoto(photo);
+        });
     }
-    return () => {
-      isMounted = false;
-    };
+    return () => controller.abort();
   }, [active?.id]);
 
   useEffect(() => {
@@ -2147,6 +2145,21 @@ export default function App() {
           </div>
         </div>
 
+        {mobileViewMode === "list" ? (
+          <MobilePlaceCardList
+            places={visibleRanked}
+            activePlace={active}
+            savedPlaceIds={savedPlaceIds}
+            userLocation={userLocation}
+            lang={lang}
+            onSelectPlace={(place) => {
+              setSelected(place.id);
+              setIsPlaceDetailOpen(true);
+            }}
+            onToggleSave={handleToggleSavePlace}
+          />
+        ) : null}
+
         <div className={`map-panel ${mobileViewMode === "list" ? "mobile-view-hidden" : ""}`}>
           <FoodMap
               places={mapPlaces}
@@ -2425,14 +2438,13 @@ export default function App() {
                   lang={lang}
                   excludePhotoId={activeCardPhoto?.id}
                   excludePhotoUrl={activeCardPhoto?.url}
-                  excludeFirstPhoto={Boolean(activeCardPhoto)}
+                  excludeFirstPhoto={false}
                 />
               </div>
             )}
           </article>
           ) : null}
         </div>
-        )}
 
         <aside className="results">
 

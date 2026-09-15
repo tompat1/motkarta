@@ -85,3 +85,49 @@ When loading photos in the frontend:
 
 1. **`lib/lazy-media.ts`**: `fetchPlacePhotos(place)` loads static photos from `public/data/place_photos.json` or queries Cloudflare D1 `/api/photos`. Filters out disallowed stock, Wikimedia, and social media URLs at runtime.
 2. **Branded Fallback Badge**: When a venue lacks verified photos, components ([`PlaceDetailSheet.tsx`](file:///Users/thomasrynell/proj/motkarta/src/components/PlaceDetailSheet.tsx#L163-L173), [`MobilePlaceCardList.tsx`](file:///Users/thomasrynell/proj/motkarta/src/components/MobilePlaceCardList.tsx#L103-L115)) render Motkarta's custom SVG badge (`/motkarta_drop_divided_black_red.svg`) rather than empty broken image boxes.
+
+## Photo loading and recovery repair (September 2026)
+
+Mobile result cards fetch photos when they enter a 300px margin around the
+viewport, including results after position 25. Image probes are cancelled when the
+list changes or unmounts; shared dataset requests may finish and populate the cache. List cards, the map card, and the detail sheet try the
+available image URLs and distinct thumbnails in order, with an eight-second
+per-image timeout, before displaying the branded badge. Concurrent requests
+share the static dataset download and per-place lookup. Failed network requests
+are retryable rather than permanently cached as empty results.
+
+The official-site scraper now parses HTML metadata plus lazy `data-src` and
+responsive `srcset` images, including URLs with query parameters. Exclusions
+match stock/social domains and logo/icon asset names, not the broad substring
+`stock` (which incorrectly excluded Stockholm URLs). Existing records are
+preserved across failures and limited runs; URL merges are idempotent. Generated
+SQL uses additive upserts instead of deleting the photo table.
+
+Use an isolated output for a bounded recovery run:
+
+```bash
+python3 scripts/fetch_place_photos.py --only-missing --validate --limit 30 --workers 4 \
+  --output-json .tmp/photo-repair/recovered-photos.json \
+  --output-sql .tmp/photo-repair/recovered-photos.sql
+```
+
+The default existing input remains `public/data/place_photos.json`; use
+`--existing-json` to resume from a staged result. Remove `--limit` for the full
+missing-photo backlog. `--validate` checks newly discovered URLs with the existing
+HTTP validator. It does not establish visual relevance or permission to reuse a
+photo. Existing records are preserved without claiming they were revalidated.
+Inspect new images before promoting the staged dataset. No paid metadata lookup
+or database write is performed by this command.
+
+`photoPlaces` counts only current catalog IDs with photo entries. Coverage
+reports show `PROGRESSING` until all current venues have an entry; HTTP extraction
+alone no longer produces a `verifiedPhotoPlaces` claim. Historical benchmarks
+above describe previous runs, not current live coverage.
+
+The earlier Visit Stockholm search helper was unused and accepted search-result
+images without verifying venue identity. It has been removed. This scraper
+currently uses official venue websites only; a municipal-photo adapter needs
+verified source endpoints and venue matching before it can be enabled. Venues
+without websites still need a separate website-discovery pass. The standalone
+cleanup script can remove existing entries and should not be used as an additive
+recovery command.

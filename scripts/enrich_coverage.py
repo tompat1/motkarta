@@ -203,7 +203,7 @@ def enrich_addresses_and_photos(
     photos_payload = {
         "updatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "totalPlaces": len(places),
-        "verifiedPhotoPlaces": len(photos_by_place),
+        "photoPlaces": sum(bool(photos_by_place.get(str(place["id"]))) for place in places),
         "totalPhotos": total_photos,
         "photosByPlace": photos_by_place,
     }
@@ -221,7 +221,7 @@ def enrich_addresses_and_photos(
     coord_count = sum(1 for p in places if p.get("latitude") and p.get("longitude"))
     hours_count = sum(1 for p in places if p.get("openingHours"))
     price_count = sum(1 for p in places if p.get("priceLevel", 0) > 0 or p.get("priceSEK"))
-    photo_place_count = len(photos_by_place)
+    photo_place_count = sum(bool(photos_by_place.get(str(place["id"]))) for place in places)
 
     stats = {
         "generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -238,7 +238,7 @@ def enrich_addresses_and_photos(
             "totalPhotos": total_photos,
             "percentage": round((photo_place_count / total_places * 100), 1) if total_places else 0,
             "target": 100.0,
-            "status": "PASS",
+            "status": "PASS" if total_places > 0 and photo_place_count == total_places else "PROGRESSING",
         },
         "openingHours": {
             "count": hours_count,

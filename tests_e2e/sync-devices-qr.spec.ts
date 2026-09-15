@@ -12,7 +12,7 @@ test.describe("Sync Devices Real QR Code & Favorites URL Flow", () => {
 
   test("renders real scannable QR code pointing to https://motkarta.rynell.org/ when places are saved", async ({
     page,
-  }) => {
+  }, testInfo) => {
     // Seed localStorage with saved places
     await page.addInitScript(() => {
       window.localStorage.setItem("motkarta_saved_places", JSON.stringify([1, 3, 14]));
@@ -43,13 +43,13 @@ test.describe("Sync Devices Real QR Code & Favorites URL Flow", () => {
     await expect(copyBtn).toBeVisible();
 
     await page.screenshot({
-      path: "/Users/thomasrynell/.gemini/antigravity-ide/brain/72a70bf3-d6b1-4a28-a1fb-a71bcfa751db/sync_modal_real_qr.png",
+      path: testInfo.outputPath("sync_modal_real_qr.png"),
     });
   });
 
   test("importing favorites via URL parameter displays sync toast and merges saved places", async ({
     page,
-  }) => {
+  }, testInfo) => {
     // Seed initial place in localStorage
     await page.addInitScript(() => {
       window.localStorage.setItem("motkarta_saved_places", JSON.stringify([99]));
@@ -64,7 +64,7 @@ test.describe("Sync Devices Real QR Code & Favorites URL Flow", () => {
     await expect(toast).toContainText(/sparade|saved/i);
 
     await page.screenshot({
-      path: "/Users/thomasrynell/.gemini/antigravity-ide/brain/72a70bf3-d6b1-4a28-a1fb-a71bcfa751db/sync_toast_banner.png",
+      path: testInfo.outputPath("sync_toast_banner.png"),
     });
 
     // Verify URL parameters are cleaned up

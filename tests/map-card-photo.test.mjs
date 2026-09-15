@@ -46,7 +46,7 @@ const mediaDrawerSource = await readFile(new URL("../src/components/LazyPlaceMed
 test("LazyPlaceMediaDrawer excludes main placeholder photo to prevent duplicate images in map card", () => {
   // App.tsx passes exclusion props to LazyPlaceMediaDrawer
   assert.match(appSource, /<LazyPlaceMediaDrawer[\s\S]*?excludePhotoId=\{activeCardPhoto\?\.id\}/);
-  assert.match(appSource, /excludeFirstPhoto=\{Boolean\(activeCardPhoto\)\}/);
+  assert.match(appSource, /excludeFirstPhoto=\{false\}/);
 
   // LazyPlaceMediaDrawer accepts exclusion props and filters out main photo
   assert.match(mediaDrawerSource, /excludePhotoId\?: string \| null/);

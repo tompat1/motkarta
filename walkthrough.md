@@ -1,3 +1,57 @@
+# Venue photo loading and enrichment repair
+
+Mobile cards now request photos as they approach the viewport instead of stopping
+at the first 25 results. List cards, the map card, and the detail sheet try later
+images and distinct thumbnails when an image fails, with bounded timeouts and
+cancellation when the selected venue/list changes. Concurrent photo lookups share
+the static dataset download and per-place requests. Failed network lookups are
+retryable rather than cached forever as empty results.
+
+A pre-existing map refactor had removed the `MobilePlaceCardList` render and left
+an unmatched JSX closing expression in `App.tsx`. Restored the list and removed
+the stray expression while retaining the mounted map and its mobile visibility
+class. The map gallery now excludes the actual selected hero image rather than
+always hiding its first image.
+
+The official-site scraper now allows legitimate Stockholm URLs, parses metadata,
+lazy images and responsive image candidates, excludes named stock/social domains
+and logo/icon assets (including encoded resize URLs), and avoids repeated image
+size variants. Scrapes merge into existing photos; partial runs or temporary
+website failures cannot erase earlier records. Added missing-only, bounded,
+isolated-output and HTTP-validation options. Generated SQL uses upserts rather
+than clearing the photo table. Coverage counts current catalog IDs and reports
+PROGRESSING until the stated 100% photo-entry target is reached.
+
+The unused Visit Stockholm search helper was removed: it had no verified venue
+identity matching and was never used in the collection flow. Municipal-source
+support needs a separate verified adapter. No scoring, place taxonomy, paid
+metadata calls, production database writes, or deployments were performed.
+
+A 30-venue official-website recovery trial produced 28 HTTP-checked candidate URLs
+across 11 previously empty entries. The final icon rules reject three of those;
+other candidates include shared property-owner images that need venue/source and
+visual review. All 2,945 existing photo records were preserved. Recovery files
+and the per-candidate review report are in `.tmp/photo-repair/`; they have not been
+merged into the public dataset or applied to D1. HTTP success alone is not visual
+verification or a claim of venue-specific photo coverage.
+
+Verification: production build passed its full gate with TypeScript/lint,
+324 JavaScript tests, 146 Python tests, and 54 Playwright tests across desktop
+Chromium, mobile Chrome, and mobile Safari. The photo regression scrolls beyond
+result 25, verifies fallback from a broken first URL, checks the shared dataset
+request, and opens the working photo in detail/map views. Additional unit tests
+cover cancellation, timeouts, retryable failures, responsive extraction,
+non-destructive partial runs, and accurate coverage. Python was rerun after the
+last asset-rule refinement. Compiled Pages worker and artifact validation passed;
+the existing large JavaScript chunk warning remains.
+
+Browser tests now use port 4173 with a separate Vite cache, preventing the stale
+`Outdated Optimize Dep` responses encountered when reusing a development server.
+Screenshots use Playwright's per-test output paths instead of developer-specific
+home directories. These operational findings are recorded in the testing directive.
+
+---
+
 # Catalog cleanup and Tasstipset restrictions
 
 O'Learys is excluded across all branches, spelling variants, public list/map

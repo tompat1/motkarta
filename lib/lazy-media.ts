@@ -74,6 +74,7 @@ export async function fetchPlaceReviews(input: PlaceContext | number): Promise<P
   return fallbackReviews;
 }
 
+let staticPhotosDatasetRequest: Promise<Record<string, PlacePhoto[]>> | null = null;
 let staticPhotosDatasetCache: Record<string, PlacePhoto[]> | null = null;
 
 function isWikimediaPhoto(photo: PlacePhoto): boolean {
@@ -128,7 +129,7 @@ function placeholderPhoto(placeId: number, caption?: string): PlacePhoto {
   };
 }
 
-async function loadStaticPhotosDataset(): Promise<Record<string, PlacePhoto[]>> {
+async function fetchStaticPhotosDataset(): Promise<Record<string, PlacePhoto[]>> {
   if (staticPhotosDatasetCache) return staticPhotosDatasetCache;
   try {
     const res = await fetch("/data/place_photos.json");
@@ -144,11 +145,31 @@ async function loadStaticPhotosDataset(): Promise<Record<string, PlacePhoto[]>> 
   } catch {
     // Ignore static load failures
   }
-  staticPhotosDatasetCache = {};
   return {};
 }
 
+async function loadStaticPhotosDataset(): Promise<Record<string, PlacePhoto[]>> {
+  if (staticPhotosDatasetCache) return staticPhotosDatasetCache;
+  if (!staticPhotosDatasetRequest) {
+    staticPhotosDatasetRequest = fetchStaticPhotosDataset().finally(() => {
+      staticPhotosDatasetRequest = null;
+    });
+  }
+  return staticPhotosDatasetRequest;
+}
+
+const pendingPhotos = new Map<number, Promise<PlacePhoto[]>>();
+
 export async function fetchPlacePhotos(input: PlaceContext | number): Promise<PlacePhoto[]> {
+  const ctx = parseContext(input);
+  const pending = pendingPhotos.get(ctx.id);
+  if (pending) return pending;
+  const request = loadPlacePhotos(ctx).finally(() => pendingPhotos.delete(ctx.id));
+  pendingPhotos.set(ctx.id, request);
+  return request;
+}
+
+async function loadPlacePhotos(input: PlaceContext | number): Promise<PlacePhoto[]> {
   const ctx = parseContext(input);
   if (photosCache.has(ctx.id)) {
     return photosCache.get(ctx.id)!;
@@ -191,7 +212,6 @@ export async function fetchPlacePhotos(input: PlaceContext | number): Promise<Pl
   }
 
   const fallbackPhotos: PlacePhoto[] = [];
-  photosCache.set(ctx.id, fallbackPhotos);
   return fallbackPhotos;
 }
 

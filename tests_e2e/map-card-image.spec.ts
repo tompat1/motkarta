@@ -58,7 +58,7 @@ test.describe("Map Place Card Image Placeholder & Clean Note", () => {
     // Capture screenshot of the map place card on desktop
     if (testInfo.project.name === "chromium") {
       await mapCard.screenshot({
-        path: "/Users/thomasrynell/.gemini/antigravity-ide/brain/72a70bf3-d6b1-4a28-a1fb-a71bcfa751db/map_card_image_placeholder.png",
+        path: testInfo.outputPath("map_card_image_placeholder.png"),
       });
     }
   });

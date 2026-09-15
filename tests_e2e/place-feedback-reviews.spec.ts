@@ -66,7 +66,7 @@ test.describe("Place Feedback Modal, Sticky Bar Bugfix & Reviews Display", () =>
 
       if (testInfo.project.name === "mobile-chrome") {
         await page.screenshot({
-          path: "/Users/thomasrynell/.gemini/antigravity-ide/brain/72a70bf3-d6b1-4a28-a1fb-a71bcfa751db/mobile_feedback_modal_fixed.png",
+          path: testInfo.outputPath("mobile_feedback_modal_fixed.png"),
         });
       }
 
@@ -105,7 +105,7 @@ test.describe("Place Feedback Modal, Sticky Bar Bugfix & Reviews Display", () =>
 
       if (testInfo.project.name === "mobile-chrome") {
         await page.screenshot({
-          path: "/Users/thomasrynell/.gemini/antigravity-ide/brain/72a70bf3-d6b1-4a28-a1fb-a71bcfa751db/mobile_place_reviews_feedback.png",
+          path: testInfo.outputPath("mobile_place_reviews_feedback.png"),
         });
       }
     } else {
@@ -132,7 +132,7 @@ test.describe("Place Feedback Modal, Sticky Bar Bugfix & Reviews Display", () =>
 
       if (testInfo.project.name === "chromium") {
         await page.screenshot({
-          path: "/Users/thomasrynell/.gemini/antigravity-ide/brain/72a70bf3-d6b1-4a28-a1fb-a71bcfa751db/desktop_map_card_reviews_feedback.png",
+          path: testInfo.outputPath("desktop_map_card_reviews_feedback.png"),
         });
       }
     }
