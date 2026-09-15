@@ -255,4 +255,33 @@ test.describe("Mobile Full User Flows", () => {
     const markerBg = await bakeryMarker.evaluate((el) => window.getComputedStyle(el).backgroundColor);
     expect(markerBg).toBe("rgba(0, 0, 0, 0)");
   });
+
+  test("10. Specialty coffee map marker renders custom takeaway cup icon", async ({ page }) => {
+    await page.goto("/");
+
+    // Filter to Specialty coffee
+    const coffeePill = page.locator('.mobile-type-filters button, .chip-row button', { hasText: /specialty coffee/i }).first();
+    await expect(coffeePill).toBeVisible();
+    await coffeePill.click();
+
+    // Zoom into map to uncluster
+    const zoomInBtn = page.locator('.map-control-btn', { hasText: '+' }).first();
+    if (await zoomInBtn.isVisible()) {
+      await zoomInBtn.click();
+      await zoomInBtn.click();
+      await zoomInBtn.click();
+    }
+
+    const specialtyMarker = page.locator('.motkarta-map-marker.kind-specialty-coffee').first();
+    await expect(specialtyMarker).toBeVisible({ timeout: 10000 });
+
+    // Capture screenshot of marker
+    await specialtyMarker.screenshot({ path: "test-results/specialty-coffee-marker.png" });
+
+    // Ensure it contains SVG with the specialty coffee path
+    const svgPath = specialtyMarker.locator("svg path").first();
+    await expect(svgPath).toBeVisible();
+    const dAttr = await svgPath.getAttribute("d");
+    expect(dAttr).toContain("M94 54");
+  });
 });
