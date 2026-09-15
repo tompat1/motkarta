@@ -2,7 +2,87 @@ import React, { useMemo, useState } from "react";
 import type { EstablishmentType, PlaceInput } from "../../lib/scoring";
 import type { CuratedSource, Language, SuperpowerMode } from "../app/shared";
 import { curatedSourceTypes } from "../app/shared";
-import { Image, PlusCircle, ShieldCheck, Sparkle, Star } from "@phosphor-icons/react";
+import { Camera, Image, Link, PlusCircle, ShieldCheck, Sparkle, Star, Trash, UploadSimple } from "@phosphor-icons/react";
+
+export async function processImageFile(file: File): Promise<{
+  dataUrl: string;
+  name: string;
+  sizeKb: number;
+}> {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Endast bildfiler (JPG, PNG, WebP) stöds");
+  }
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Kunde inte läsa bildfilen från enheten"));
+    reader.onload = () => {
+      const result = reader.result as string;
+      if (typeof window === "undefined" || !window.Image) {
+        resolve({
+          dataUrl: result,
+          name: file.name,
+          sizeKb: Math.max(1, Math.round(file.size / 1024)),
+        });
+        return;
+      }
+
+      const img = new window.Image();
+      img.onerror = () => {
+        resolve({
+          dataUrl: result,
+          name: file.name,
+          sizeKb: Math.max(1, Math.round(file.size / 1024)),
+        });
+      };
+      img.onload = () => {
+        try {
+          const maxDim = 1200;
+          let { width, height } = img;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve({
+              dataUrl: result,
+              name: file.name,
+              sizeKb: Math.max(1, Math.round(file.size / 1024)),
+            });
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+          const optimizedDataUrl = canvas.toDataURL("image/jpeg", 0.85);
+          const sizeKb = Math.max(1, Math.round((optimizedDataUrl.length * 3) / 4 / 1024));
+          resolve({
+            dataUrl: optimizedDataUrl,
+            name: file.name,
+            sizeKb,
+          });
+        } catch {
+          resolve({
+            dataUrl: result,
+            name: file.name,
+            sizeKb: Math.max(1, Math.round(file.size / 1024)),
+          });
+        }
+      };
+      img.src = result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 export function ConciergeSuperpowerModal({
   mode,
@@ -46,8 +126,40 @@ export function ConciergeSuperpowerModal({
   const [reviewContent, setReviewContent] = useState("");
 
   // Photo fields
+  const [photoSource, setPhotoSource] = useState<"device" | "url">("device");
+  const [devicePhoto, setDevicePhoto] = useState<{
+    dataUrl: string;
+    name: string;
+    sizeKb: number;
+  } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [photoUrl, setPhotoUrl] = useState("");
   const [caption, setCaption] = useState("");
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = async (file: File) => {
+    setUploadError(null);
+    setIsOptimizing(true);
+    try {
+      const processed = await processImageFile(file);
+      setDevicePhoto(processed);
+      setPhotoSource("device");
+    } catch (err: any) {
+      setUploadError(err?.message || (lang === "sv" ? "Kunde inte läsa bilden" : "Failed to load image"));
+    } finally {
+      setIsOptimizing(false);
+    }
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileSelect(file);
+    }
+    e.target.value = "";
+  };
 
   // Source fields
   const [sourceName, setSourceName] = useState("");
@@ -182,12 +294,17 @@ export function ConciergeSuperpowerModal({
 
   const handleSubmitPhoto = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!photoUrl.trim()) return;
+    const finalUrl = photoSource === "device" ? devicePhoto?.dataUrl : photoUrl.trim();
+    if (!finalUrl) return;
+
+    const isFromDevice = photoSource === "device";
     onAddPhoto(selectedPlaceId, {
-      url: photoUrl.trim(),
-      thumbnailUrl: photoUrl.trim(),
-      caption: caption.trim() || "Foto inskickat av användare",
-      credit: "Inskickat via Concierge",
+      url: finalUrl,
+      thumbnailUrl: finalUrl,
+      caption: caption.trim() || (lang === "sv" ? "Foto inskickat av användare" : "Photo submitted by user"),
+      credit: isFromDevice
+        ? (lang === "sv" ? "Uppladdat från enhet" : "Uploaded from device")
+        : "Inskickat via Concierge",
     });
     onClose();
   };
@@ -333,7 +450,7 @@ export function ConciergeSuperpowerModal({
         {mode === "add_photo" && (
           <form className="superpower-form" onSubmit={handleSubmitPhoto}>
             <div className="superpower-form-group">
-              <label>Välj ställe *</label>
+              <label>{lang === "sv" ? "Välj ställe *" : "Select place *"}</label>
               <select value={selectedPlaceId} onChange={(e) => setSelectedPlaceId(Number(e.target.value))}>
                 {places.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -342,16 +459,177 @@ export function ConciergeSuperpowerModal({
                 ))}
               </select>
             </div>
-            <div className="superpower-form-group">
-              <label>Bild-URL *</label>
-              <input type="url" required value={photoUrl} onChange={(e) => setPhotoUrl(e.target.value)} placeholder="https://..." />
+
+            {/* Source selector tabs */}
+            <div className="superpower-source-toggle" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={photoSource === "device"}
+                className={`superpower-tab-btn ${photoSource === "device" ? "is-active" : ""}`}
+                onClick={() => setPhotoSource("device")}
+              >
+                <UploadSimple size={15} weight="bold" />
+                {lang === "sv" ? "Från enhet / Kamera" : "From device / Camera"}
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={photoSource === "url"}
+                className={`superpower-tab-btn ${photoSource === "url" ? "is-active" : ""}`}
+                onClick={() => setPhotoSource("url")}
+              >
+                <Link size={15} weight="bold" />
+                {lang === "sv" ? "Bild-URL" : "Image URL"}
+              </button>
             </div>
+
+            {photoSource === "device" ? (
+              <div className="superpower-form-group">
+                <label>{lang === "sv" ? "Välj bild från enhet *" : "Choose image from device *"}</label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleFileInputChange}
+                />
+                {devicePhoto ? (
+                  <div className="superpower-photo-preview-card">
+                    <img
+                      src={devicePhoto.dataUrl}
+                      alt={devicePhoto.name}
+                      className="superpower-preview-thumbnail"
+                    />
+                    <div className="superpower-preview-details">
+                      <span className="superpower-preview-filename" title={devicePhoto.name}>
+                        {devicePhoto.name}
+                      </span>
+                      <span className="superpower-preview-meta">
+                        {devicePhoto.sizeKb} KB · {lang === "sv" ? "Optimerad bild redo" : "Optimized image ready"}
+                      </span>
+                    </div>
+                    <div className="superpower-preview-actions">
+                      <button
+                        type="button"
+                        className="superpower-preview-action-btn"
+                        onClick={() => fileInputRef.current?.click()}
+                        title={lang === "sv" ? "Byt bild" : "Change image"}
+                      >
+                        {lang === "sv" ? "Byt" : "Change"}
+                      </button>
+                      <button
+                        type="button"
+                        className="superpower-preview-action-btn is-delete"
+                        onClick={() => setDevicePhoto(null)}
+                        title={lang === "sv" ? "Ta bort bild" : "Remove photo"}
+                        aria-label={lang === "sv" ? "Ta bort bild" : "Remove photo"}
+                      >
+                        <Trash size={15} />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className={`superpower-dropzone ${isDragging ? "is-dragging" : ""}`}
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setIsDragging(true);
+                    }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsDragging(false);
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) handleFileSelect(file);
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        fileInputRef.current?.click();
+                      }
+                    }}
+                  >
+                    <div className="superpower-dropzone-icon-circle">
+                      <Camera size={24} weight="bold" />
+                    </div>
+                    <div className="superpower-dropzone-text">
+                      <strong>
+                        {isOptimizing
+                          ? (lang === "sv" ? "Optimerar bild..." : "Optimizing image...")
+                          : (lang === "sv" ? "Välj bild eller ta foto" : "Choose image or take photo")}
+                      </strong>
+                      <span>
+                        {lang === "sv"
+                          ? "Klicka för att bläddra i enheten eller dra in ett foto hit"
+                          : "Click to browse device or drag & drop a photo here"}
+                      </span>
+                    </div>
+                    <span className="superpower-dropzone-badge">
+                      {lang === "sv" ? "Kamera & Galleri · JPG, PNG, WebP" : "Camera & Gallery · JPG, PNG, WebP"}
+                    </span>
+                  </div>
+                )}
+                {uploadError ? (
+                  <p className="superpower-upload-error" role="alert">
+                    ⚠️ {uploadError}
+                  </p>
+                ) : null}
+              </div>
+            ) : (
+              <div className="superpower-form-group">
+                <label>{lang === "sv" ? "Bild-URL *" : "Image URL *"}</label>
+                <input
+                  type="url"
+                  required={photoSource === "url"}
+                  value={photoUrl}
+                  onChange={(e) => setPhotoUrl(e.target.value)}
+                  placeholder="https://..."
+                />
+                {photoUrl.trim().startsWith("http") ? (
+                  <div className="superpower-url-preview">
+                    <img
+                      src={photoUrl.trim()}
+                      alt="Förhandsvisning"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                ) : null}
+              </div>
+            )}
+
             <div className="superpower-form-group">
-              <label>Bildtext / Bildbeskrivning</label>
-              <input type="text" value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="t.ex. Färskgräddade bullar & baristakaffe" />
+              <label>{lang === "sv" ? "Bildtext / Bildbeskrivning" : "Caption / Description"}</label>
+              <input
+                type="text"
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                placeholder={
+                  lang === "sv"
+                    ? "t.ex. Färskgräddade bullar & baristakaffe"
+                    : "e.g. Freshly baked buns & barista coffee"
+                }
+              />
             </div>
-            <button type="submit" className="superpower-submit-btn">
-              <Image size={16} /> Lägg till foto i galleriet
+
+            <button
+              type="submit"
+              className="superpower-submit-btn"
+              disabled={isOptimizing || (photoSource === "device" ? !devicePhoto : !photoUrl.trim())}
+              style={{
+                opacity: (photoSource === "device" ? !devicePhoto : !photoUrl.trim()) ? 0.5 : 1,
+                cursor: (photoSource === "device" ? !devicePhoto : !photoUrl.trim()) ? "not-allowed" : "pointer",
+              }}
+            >
+              <Image size={16} />{" "}
+              {isOptimizing
+                ? (lang === "sv" ? "Optimerar bild..." : "Optimizing image...")
+                : (lang === "sv" ? "Lägg till foto i galleriet" : "Add photo to gallery")}
             </button>
           </form>
         )}

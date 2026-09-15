@@ -284,4 +284,59 @@ test.describe("Mobile Full User Flows", () => {
     const dAttr = await svgPath.getAttribute("d");
     expect(dAttr).toContain("M94 54");
   });
+
+  test("11. Upload photo from device in superpower modal", async ({ page }) => {
+    await page.goto("/");
+
+    // Open photo modal via superpower chip button
+    const photoChip = page.locator('.superpower-chip-btn', { hasText: /foto/i }).first();
+    await expect(photoChip).toBeVisible();
+    await photoChip.click();
+
+    // Verify modal appears
+    const modal = page.locator('.superpower-modal-card');
+    await expect(modal).toBeVisible();
+    await expect(modal.locator('h3')).toContainText(/lägg till foto/i);
+
+    // Verify source toggle buttons are visible
+    const deviceTab = modal.locator('.superpower-tab-btn', { hasText: /från enhet/i });
+    const urlTab = modal.locator('.superpower-tab-btn', { hasText: /bild-url/i });
+    await expect(deviceTab).toBeVisible();
+    await expect(urlTab).toBeVisible();
+    await expect(deviceTab).toHaveClass(/is-active/);
+
+    // Verify dropzone is visible
+    const dropzone = modal.locator('.superpower-dropzone');
+    await expect(dropzone).toBeVisible();
+
+    // Upload a test image from device via file input
+    const fileInput = modal.locator('input[type="file"]');
+    await fileInput.setInputFiles({
+      name: "croissant.png",
+      mimeType: "image/png",
+      buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64"),
+    });
+
+    // Verify preview card appears with filename and thumbnail
+    const previewCard = modal.locator('.superpower-photo-preview-card');
+    await expect(previewCard).toBeVisible();
+    await expect(previewCard).toContainText("croissant.png");
+    await expect(previewCard.locator('img.superpower-preview-thumbnail')).toBeVisible();
+
+    // Enter caption
+    const captionInput = modal.locator('input[placeholder*="t.ex."]');
+    await captionInput.fill("Färskgräddad croissant");
+
+    // Screenshot the modal with uploaded image preview
+    await modal.screenshot({ path: "test-results/device-photo-modal-preview.png" });
+
+    // Submit the photo
+    const submitBtn = modal.locator('.superpower-submit-btn');
+    await expect(submitBtn).toBeEnabled();
+    await submitBtn.click();
+
+    // Verify modal closes
+    await expect(modal).not.toBeVisible();
+  });
 });
+

@@ -96,6 +96,25 @@ export function PlaceDetailSheet({
     return () => controller.abort();
   }, [place?.id]);
 
+  useEffect(() => {
+    const handlePhotoAdded = (e: Event) => {
+      const customEvent = e as CustomEvent<{ placeId: number }>;
+      if (place && customEvent.detail?.placeId === place.id) {
+        void fetchPlacePhotos(place).then(async (fetched) => {
+          if (fetched.length > 0) {
+            setPhotos(fetched);
+            setActivePhotoIndex(0);
+          }
+        });
+      }
+    };
+
+    window.addEventListener("motkarta:photo_added", handlePhotoAdded);
+    return () => {
+      window.removeEventListener("motkarta:photo_added", handlePhotoAdded);
+    };
+  }, [place?.id]);
+
   if (!isOpen || !place) return null;
 
   // Subtitle tags: AREA • CUISINE / KIND • INDEPENDENT

@@ -107,6 +107,23 @@ test("addUserReview and addUserPhoto dynamically enrich place media", async () =
   assert.ok(photos.some((p) => p.caption.includes("Djurgården")));
 });
 
+test("addUserPhoto accepts device uploaded base64 data URLs", async () => {
+  const sampleBase64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP...";
+  const newPhoto = addUserPhoto(101, {
+    url: sampleBase64,
+    thumbnailUrl: sampleBase64,
+    caption: "Färsk croissant från ugnen",
+    credit: "Uppladdat från enhet",
+  });
+
+  assert.equal(newPhoto.placeId, 101);
+  assert.equal(newPhoto.url, sampleBase64);
+  assert.equal(newPhoto.credit, "Uppladdat från enhet");
+
+  const photos = await fetchPlacePhotos(mockPlaces[0]);
+  assert.ok(photos.some((p) => p.caption.includes("Färsk croissant")));
+});
+
 test("addUserPhoto turns Instagram submissions into the Motkarta dummy image", async () => {
   const newPhoto = addUserPhoto(202, {
     url: "https://scontent.cdninstagram.com/v/t51.2885-19/example.jpg",

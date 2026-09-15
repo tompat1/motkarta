@@ -171,6 +171,7 @@ export async function fetchPlacePhotos(input: PlaceContext | number): Promise<Pl
 
 async function loadPlacePhotos(input: PlaceContext | number): Promise<PlacePhoto[]> {
   const ctx = parseContext(input);
+  loadUserStoredMedia();
   if (photosCache.has(ctx.id)) {
     return photosCache.get(ctx.id)!;
   }
@@ -315,6 +316,7 @@ export function addUserPhoto(placeId: number, photo: Omit<PlacePhoto, "id" | "pl
       const stored = localStorage.getItem("motkarta_user_photos");
       const list: PlacePhoto[] = stored ? JSON.parse(stored) : [];
       localStorage.setItem("motkarta_user_photos", JSON.stringify([newPhoto, ...list]));
+      window.dispatchEvent(new CustomEvent("motkarta:photo_added", { detail: { placeId, photo: newPhoto } }));
     } catch {}
   }
 

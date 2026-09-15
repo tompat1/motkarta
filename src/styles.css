@@ -9361,6 +9361,218 @@ footer {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Superpower Photo Upload from Device & URL                                 */
+/* -------------------------------------------------------------------------- */
+
+.superpower-source-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.superpower-tab-btn {
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all var(--motion-fast);
+}
+
+.superpower-tab-btn:hover {
+  border-color: var(--color-ink);
+  background: var(--color-white);
+}
+
+.superpower-tab-btn.is-active {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+}
+
+.superpower-dropzone {
+  border: 2px dashed var(--color-mist);
+  background: var(--color-white);
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.superpower-dropzone:hover,
+.superpower-dropzone:focus-visible {
+  border-color: var(--color-water);
+  background: #f0f7ff;
+  outline: none;
+}
+
+.superpower-dropzone.is-dragging {
+  border-color: var(--color-water);
+  background: #e0effe;
+  transform: scale(0.99);
+}
+
+.superpower-dropzone-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-water);
+  border: 1px solid var(--color-mist);
+}
+
+.superpower-dropzone-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.superpower-dropzone-text strong {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.superpower-dropzone-text span {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--color-stone);
+}
+
+.superpower-dropzone-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-water);
+  background: rgba(50, 107, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+
+.superpower-photo-preview-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+}
+
+.superpower-preview-thumbnail {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border: 1px solid var(--color-mist);
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+
+.superpower-preview-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.superpower-preview-filename {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.superpower-preview-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #16a34a;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.superpower-preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.superpower-preview-action-btn {
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  padding: 6px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all var(--motion-fast);
+}
+
+.superpower-preview-action-btn:hover {
+  background: var(--color-white);
+  border-color: var(--color-ink);
+}
+
+.superpower-preview-action-btn.is-delete:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+.superpower-upload-error {
+  margin: 6px 0 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.superpower-url-preview {
+  margin-top: 8px;
+  border: 1px solid var(--color-mist);
+  background: var(--color-white);
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 120px;
+  overflow: hidden;
+}
+
+.superpower-url-preview img {
+  max-height: 108px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* -------------------------------------------------------------------------- */
 /* Full Scale Image Lightbox Modal                                            */
 /* -------------------------------------------------------------------------- */
 
