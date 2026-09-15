@@ -232,4 +232,27 @@ test.describe("Mobile Full User Flows", () => {
     const cardList = page.locator(".mobile-place-card-list");
     await expect(cardList).toBeVisible();
   });
+
+  test("9. Bakery map marker has transparent background without rectangular artifact", async ({ page }) => {
+    await page.goto("/");
+
+    // Filter to Bakery
+    const bageriPill = page.locator('.mobile-type-filters button, .chip-row button', { hasText: /bageri/i }).first();
+    await expect(bageriPill).toBeVisible();
+    await bageriPill.click();
+
+    // Zoom into map to uncluster
+    const zoomInBtn = page.locator('.map-control-btn', { hasText: '+' }).first();
+    if (await zoomInBtn.isVisible()) {
+      await zoomInBtn.click();
+      await zoomInBtn.click();
+      await zoomInBtn.click();
+    }
+
+    const bakeryMarker = page.locator('.motkarta-map-marker.kind-bakery').first();
+    await expect(bakeryMarker).toBeVisible({ timeout: 10000 });
+
+    const markerBg = await bakeryMarker.evaluate((el) => window.getComputedStyle(el).backgroundColor);
+    expect(markerBg).toBe("rgba(0, 0, 0, 0)");
+  });
 });

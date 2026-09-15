@@ -332,7 +332,12 @@ export function FoodMap({
         const currentMap = mapRef.current;
         const currentCluster = clusterGroupRef.current;
         const container = containerRef.current;
-        if (!currentMap || !container) return;
+        if (!currentMap || !container || !(currentMap as any)._loaded) {
+          window.requestAnimationFrame(() => {
+            window.setTimeout(runFocusSequence, 50);
+          });
+          return;
+        }
 
         if (container.clientHeight === 0 || container.clientWidth === 0) {
           window.requestAnimationFrame(() => {
@@ -341,7 +346,11 @@ export function FoodMap({
           return;
         }
 
-        currentMap.invalidateSize({ animate: false });
+        try {
+          currentMap.invalidateSize({ pan: false, animate: false });
+        } catch {
+          // ignore layout transition race
+        }
 
         if (!activePlace) return;
 
@@ -368,12 +377,20 @@ export function FoodMap({
           flyCenter = [targetLat - latShift, targetLng];
         }
 
-        const triggerPopup = () => {
+        const triggerPopup = (retries = 6) => {
           try {
             if (activeMarker.isPopupOpen && activeMarker.isPopupOpen()) return;
+            if (!activeMarker.getElement() || !(activeMarker as any)._map) {
+              if (retries > 0) {
+                window.setTimeout(() => triggerPopup(retries - 1), 100);
+                return;
+              }
+            }
             activeMarker.openPopup();
           } catch {
-            // ignore if map/marker not ready
+            if (retries > 0) {
+              window.setTimeout(() => triggerPopup(retries - 1), 100);
+            }
           }
         };
 
