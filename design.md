@@ -601,9 +601,13 @@ Buttons must be at least 44 px tall and use verb-led labels.
 - Map is full viewport behind a solid bottom sheet.
 - Sheet stops: peek, half, full.
 - Search and core filters remain reachable with one hand.
+- **Top Controls Carousel:** Single 48px sticky row (`.mobile-controls-scroll`) with horizontal momentum scrolling combining actions (`[ FILTER ]`, `[ SYNKA ENHETER ]`), a vertical divider, and the 7 establishment quick pills.
+- **Search Sizing Guarantee:** Explicit grid track constraints (`grid-template-columns: minmax(0, 1fr)`) and `box-sizing: border-box; min-width: 0;` to prevent input overflow across 360px – 390px viewports.
+- **Filter Bottom Sheet:** Dual-section architecture housing Establishment Type and Cuisine selection.
 - Place detail becomes a full page or full-height sheet.
 - Safe-area insets are mandatory.
 - Never trap the user in a map without a list alternative.
+- Full specifications and implementation details: [docs/mobile-view.md](file:///Users/thomasrynell/proj/motkarta/docs/mobile-view.md).
 
 ---
 
