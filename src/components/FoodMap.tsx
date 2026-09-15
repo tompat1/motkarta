@@ -219,18 +219,9 @@ export function FoodMap({
   useEffect(() => {
     const map = mapRef.current;
     const clusterGroup = clusterGroupRef.current;
-    console.log("[DEBUG_EFFECT2] Effect 2 ran:", {
-      hasMap: Boolean(map),
-      hasCluster: Boolean(clusterGroup),
-      placesCount: places.length,
-      hasTarget: places.some((p) => p.id === 2596082244),
-    });
     if (!map) {
       return;
     }
-
-    // Halt any running map animations before updating layers to prevent race conditions
-    map.stop();
 
     if (clusterGroup) {
       clusterGroup.clearLayers();
@@ -249,6 +240,10 @@ export function FoodMap({
         onSelect(place.id);
         marker.openPopup();
       });
+
+      if (isActive) {
+        marker.setZIndexOffset(1000);
+      }
 
       marker.bindPopup(placePopupHtml(place, index + 1, lang), {
         maxWidth: 280,
@@ -292,7 +287,7 @@ export function FoodMap({
         fitBoundsTimeoutRef.current = null;
       }
     };
-  }, [focusRequest?.id, lang, onSelect, places]);
+  }, [lang, onSelect, places]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -337,17 +332,9 @@ export function FoodMap({
         const currentMap = mapRef.current;
         const currentCluster = clusterGroupRef.current;
         const container = containerRef.current;
-        console.log("[DEBUG_FOCUS] runFocusSequence called:", {
-          hasMap: Boolean(currentMap),
-          hasCluster: Boolean(currentCluster),
-          clientHeight: container?.clientHeight,
-          clientWidth: container?.clientWidth,
-          activePlaceId: activePlace?.id,
-          hasActiveMarker: activePlace ? Boolean(markersRef.current.get(activePlace.id)) : false,
-        });
-        if (!currentMap) return;
+        if (!currentMap || !container) return;
 
-        if (!container || container.clientHeight === 0 || container.clientWidth === 0) {
+        if (container.clientHeight === 0 || container.clientWidth === 0) {
           window.requestAnimationFrame(() => {
             window.setTimeout(runFocusSequence, 50);
           });
@@ -373,39 +360,31 @@ export function FoodMap({
         const targetLng = activePlace.longitude;
         const targetZoom = Math.max(currentMap.getZoom(), 15);
 
-        const panAndOpenPopup = () => {
-          let opened = false;
-          const triggerPopup = () => {
-            if (!opened) {
-              opened = true;
-              if (currentCluster && typeof currentCluster.zoomToShowLayer === "function") {
-                currentCluster.zoomToShowLayer(activeMarker, () => {
-                  activeMarker.openPopup();
-                });
-              } else {
-                activeMarker.openPopup();
-              }
-            }
-          };
-
-          const center = currentMap.getCenter();
-          const dist = center.distanceTo(L.latLng(targetLat, targetLng));
-          if (dist < 15 && currentMap.getZoom() >= targetZoom) {
-            triggerPopup();
-            return;
+        let opened = false;
+        const triggerPopup = () => {
+          if (!opened) {
+            opened = true;
+            activeMarker.openPopup();
           }
-
-          currentMap.once("moveend", triggerPopup);
-          currentMap.flyTo([targetLat, targetLng], targetZoom, {
-            duration: 0.5,
-            easeLinearity: 0.25,
-          });
-
-          // Safety fallback in case flyTo did not trigger moveend
-          window.setTimeout(triggerPopup, 650);
         };
 
-        panAndOpenPopup();
+        if (currentCluster && typeof currentCluster.zoomToShowLayer === "function" && currentCluster.hasLayer(activeMarker)) {
+          currentCluster.zoomToShowLayer(activeMarker, () => {
+            if (currentMap.getZoom() < 15) {
+              currentMap.setView([targetLat, targetLng], 15, { animate: false });
+            }
+            triggerPopup();
+          });
+        } else {
+          currentMap.flyTo([targetLat, targetLng], targetZoom, {
+            duration: 0.4,
+            easeLinearity: 0.25,
+          });
+          currentMap.once("moveend", triggerPopup);
+        }
+
+        // Safety fallback in case zoomToShowLayer or flyTo animation was delayed
+        window.setTimeout(triggerPopup, 650);
       };
 
       runFocusSequence();

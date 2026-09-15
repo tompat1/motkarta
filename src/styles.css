@@ -13029,6 +13029,10 @@ footer {
     border: none;
   }
 
+  .map-panel.mobile-view-hidden {
+    display: none !important;
+  }
+
   .results {
     display: none;
   }

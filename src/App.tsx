@@ -2147,22 +2147,8 @@ export default function App() {
           </div>
         </div>
 
-        {mobileViewMode === "list" ? (
-          <MobilePlaceCardList
-            places={visibleRanked}
-            activePlace={active}
-            savedPlaceIds={savedPlaceIds}
-            userLocation={userLocation}
-            lang={lang}
-            onSelectPlace={(p) => {
-              setSelected(p.id);
-              setIsPlaceDetailOpen(true);
-            }}
-            onToggleSave={handleToggleSavePlace}
-          />
-        ) : (
-          <div className="map-panel">
-            <FoodMap
+        <div className={`map-panel ${mobileViewMode === "list" ? "mobile-view-hidden" : ""}`}>
+          <FoodMap
               places={mapPlaces}
               activePlace={active}
               focusRequest={mapFocusRequest}
