@@ -116,6 +116,52 @@ test.describe("Mobile Full User Flows", () => {
     await expect(detailSheet).not.toBeVisible({ timeout: 10000 });
   });
 
+  test("5b. Mobile place detail 'View on Map' centers and opens popup", async ({ page }) => {
+    page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
+    await page.goto("/");
+
+    // Switch to list view
+    const viewToggleBtn = page.locator(".floating-view-toggle-btn");
+    await viewToggleBtn.click();
+
+    // Click first photo card in mobile list
+    const firstCard = page.locator(".mobile-photo-card").first();
+    await expect(firstCard).toBeVisible();
+    const cardTitle = firstCard.locator("h2").first();
+    const expectedName = (await cardTitle.textContent())?.trim() || "";
+    if (await cardTitle.isVisible()) {
+      await cardTitle.click();
+    } else {
+      await firstCard.click();
+    }
+
+    // Verify PlaceDetailSheet opens
+    const detailSheet = page.locator(".place-detail-sheet");
+    await expect(detailSheet).toBeVisible({ timeout: 10000 });
+
+    // Click "VISA PÅ KARTAN" CTA
+    const viewOnMapBtn = page.locator(".place-detail-primary-cta");
+    await expect(viewOnMapBtn).toBeVisible();
+    await viewOnMapBtn.click();
+
+    // Detail sheet should close
+    await expect(detailSheet).not.toBeVisible({ timeout: 10000 });
+
+    // Map panel should be visible
+    const mapPanel = page.locator(".map-panel");
+    await expect(mapPanel).toBeVisible({ timeout: 10000 });
+
+    // Active marker and popup should be visible and match selected venue
+    const activeMarker = page.locator(".motkarta-map-marker.active");
+    await expect(activeMarker).toBeVisible({ timeout: 10000 });
+
+    const leafletPopup = page.locator(".leaflet-popup");
+    await expect(leafletPopup).toBeVisible({ timeout: 10000 });
+    if (expectedName) {
+      await expect(leafletPopup).toContainText(expectedName);
+    }
+  });
+
   test("6. Device sync modal flow", async ({ page }) => {
     await page.goto("/");
 

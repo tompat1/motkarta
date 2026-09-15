@@ -154,3 +154,21 @@ Every change touching mobile viewports must be verified against the following te
    npm run test:gate
    ```
    Ensures typechecking, unit tests, Python models, and all desktop/mobile Playwright projects pass with zero regressions.
+
+---
+
+## 6. Mobile Map Basemap & Place Selection Behavior
+
+### CARTO Voyager Raster Tiles
+- The map uses CARTO's Voyager basemap:
+  `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=<CARTO_API_KEY>`
+- Subdomains `abcd`, maxZoom 20.
+- Automatic graceful fallback to Humanitarian OpenStreetMap (`https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png`) on tile load errors.
+
+### Interactive Place Centering & Highlighting
+- When a user selects any place from the search results or ranked list:
+  1. The map unclusters the venue using `clusterGroup.zoomToShowLayer`.
+  2. The map flies smoothly to the venue coordinates (`map.flyTo([lat, lng], Math.max(zoom, 15), { duration: 0.6 })`).
+  3. The active pin switches to red with a 2-second glowing CSS aura pulse (`motkarta-active-pin-pulse`) and `zIndexOffset: 1000`.
+  4. The Leaflet popup automatically opens upon animation completion (`moveend`).
+

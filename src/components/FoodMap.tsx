@@ -11,6 +11,7 @@ import { ArrowsIn, ArrowsOut, Crosshair, MapTrifold, Minus, Plus } from "@phosph
 export function FoodMap({
   places,
   activePlace,
+  focusRequest,
   userLocation,
   onSelect,
   onUserLocated,
@@ -18,6 +19,7 @@ export function FoodMap({
 }: {
   places: ScoredPlace[];
   activePlace: ScoredPlace | null;
+  focusRequest?: { id: number; timestamp: number } | null;
   userLocation?: { latitude: number; longitude: number } | null;
   onSelect: (id: number) => void;
   onUserLocated?: (loc: { latitude: number; longitude: number }) => void;
@@ -35,6 +37,8 @@ export function FoodMap({
   const lastFitKeyRef = useRef<string>("");
   const fitBoundsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevActivePlaceIdRef = useRef<number | null>(null);
+  const prevFocusKeyRef = useRef<string>("");
+  const activePlaceIdRef = useRef<number | null>(activePlace?.id ?? null);
 
   const handleLocateUser = async () => {
     if (locating) return;
@@ -98,16 +102,19 @@ export function FoodMap({
       scrollWheelZoom: true,
     });
 
-    const tileUrl = "https://tiles.openfreemap.org/styles/bright/{z}/{x}/{y}.png";
+    const cartoApiKey = "cb1_3lj2_1_a3e8aa97d669a225931f55fe";
+    const tileUrl = `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}`;
 
     const tileLayer = L.tileLayer(tileUrl, {
-      attribution: 'OpenFreeMap &copy; <a href="https://openmaptiles.org/" target="_blank" rel="noopener">OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
-      maxZoom: 19,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+      subdomains: "abcd",
+      maxZoom: 20,
     });
 
     tileLayer.on("tileerror", () => {
-      // Fallback tile URL if vector/raster tile service is unavailable
-      tileLayer.setUrl("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+      // Safe fallback to OSM HOT tiles if Carto encounters network issues
+      tileLayer.setUrl("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png");
     });
 
     tileLayer.addTo(map);
@@ -212,6 +219,12 @@ export function FoodMap({
   useEffect(() => {
     const map = mapRef.current;
     const clusterGroup = clusterGroupRef.current;
+    console.log("[DEBUG_EFFECT2] Effect 2 ran:", {
+      hasMap: Boolean(map),
+      hasCluster: Boolean(clusterGroup),
+      placesCount: places.length,
+      hasTarget: places.some((p) => p.id === 2596082244),
+    });
     if (!map) {
       return;
     }
@@ -228,7 +241,7 @@ export function FoodMap({
     const validPlaces = places.filter(hasCoordinates);
 
     validPlaces.forEach((place, index) => {
-      const isActive = place.id === activePlace?.id;
+      const isActive = place.id === activePlaceIdRef.current;
       const marker = L.marker([place.latitude, place.longitude], {
         icon: placeIcon(place, isActive),
         title: place.name,
@@ -261,13 +274,16 @@ export function FoodMap({
 
     if (bounds.isValid() && lastFitKeyRef.current !== currentKey) {
       lastFitKeyRef.current = currentKey;
-      const maxZoom = validPlaces.length <= 10 ? 15 : 13;
-      // Debounce fitBounds by 100ms so rapid search keystrokes do not trigger overlapping animations
-      fitBoundsTimeoutRef.current = setTimeout(() => {
-        if (mapRef.current) {
-          mapRef.current.fitBounds(bounds, { padding: [42, 42], maxZoom });
-        }
-      }, 100);
+      // Do NOT fit bounds to all places if an active place is selected or requested!
+      if (!activePlaceIdRef.current && !focusRequest?.id) {
+        const maxZoom = validPlaces.length <= 10 ? 15 : 13;
+        // Debounce fitBounds by 100ms so rapid search keystrokes do not trigger overlapping animations
+        fitBoundsTimeoutRef.current = setTimeout(() => {
+          if (mapRef.current && !activePlaceIdRef.current && !focusRequest?.id) {
+            mapRef.current.fitBounds(bounds, { padding: [42, 42], maxZoom });
+          }
+        }, 100);
+      }
     }
 
     return () => {
@@ -276,45 +292,125 @@ export function FoodMap({
         fitBoundsTimeoutRef.current = null;
       }
     };
-  }, [activePlace?.id, lang, onSelect, places]);
+  }, [focusRequest?.id, lang, onSelect, places]);
 
   useEffect(() => {
     const map = mapRef.current;
     const clusterGroup = clusterGroupRef.current;
     const currentActiveId = activePlace?.id ?? null;
+    activePlaceIdRef.current = currentActiveId;
 
-    // Only zoom and open popup when the selected active place ID actually changes
-    if (prevActivePlaceIdRef.current !== currentActiveId) {
+    // Track both activePlace ID change and explicit focusRequest triggers
+    const focusKey = `${currentActiveId ?? ""}_${focusRequest?.timestamp ?? ""}`;
+    const shouldFocus =
+      prevActivePlaceIdRef.current !== currentActiveId ||
+      (focusRequest && prevFocusKeyRef.current !== focusKey);
+
+    if (shouldFocus) {
       const prevId = prevActivePlaceIdRef.current;
       prevActivePlaceIdRef.current = currentActiveId;
+      prevFocusKeyRef.current = focusKey;
 
-      if (prevId !== null) {
+      // Always cancel any pending fitBounds when an active place is selected or focused
+      if (fitBoundsTimeoutRef.current) {
+        clearTimeout(fitBoundsTimeoutRef.current);
+        fitBoundsTimeoutRef.current = null;
+      }
+
+      if (prevId !== null && prevId !== currentActiveId) {
         const prevPlace = places.find((p) => p.id === prevId);
         const prevMarker = markersRef.current.get(prevId);
         if (prevPlace && prevMarker) {
           prevMarker.setIcon(placeIcon(prevPlace, false));
+          prevMarker.setZIndexOffset(0);
         }
       }
 
       if (!activePlace || !map || !hasCoordinates(activePlace)) {
+        if (!activePlace && map) {
+          map.closePopup();
+        }
         return;
       }
 
-      const activeMarker = markersRef.current.get(activePlace.id);
-      if (!activeMarker) return;
-
-      activeMarker.setIcon(placeIcon(activePlace, true));
-
-      if (clusterGroup) {
-        clusterGroup.zoomToShowLayer(activeMarker, () => {
-          activeMarker.openPopup();
+      const runFocusSequence = () => {
+        const currentMap = mapRef.current;
+        const currentCluster = clusterGroupRef.current;
+        const container = containerRef.current;
+        console.log("[DEBUG_FOCUS] runFocusSequence called:", {
+          hasMap: Boolean(currentMap),
+          hasCluster: Boolean(currentCluster),
+          clientHeight: container?.clientHeight,
+          clientWidth: container?.clientWidth,
+          activePlaceId: activePlace?.id,
+          hasActiveMarker: activePlace ? Boolean(markersRef.current.get(activePlace.id)) : false,
         });
-      } else {
-        activeMarker.openPopup();
-        map.flyTo([activePlace.latitude, activePlace.longitude], 15, { duration: 0.8 });
-      }
+        if (!currentMap) return;
+
+        if (!container || container.clientHeight === 0 || container.clientWidth === 0) {
+          window.requestAnimationFrame(() => {
+            window.setTimeout(runFocusSequence, 50);
+          });
+          return;
+        }
+
+        currentMap.invalidateSize({ animate: false });
+
+        if (!activePlace) return;
+
+        const activeMarker = markersRef.current.get(activePlace.id);
+        if (!activeMarker) {
+          window.requestAnimationFrame(() => {
+            window.setTimeout(runFocusSequence, 50);
+          });
+          return;
+        }
+
+        activeMarker.setIcon(placeIcon(activePlace, true));
+        activeMarker.setZIndexOffset(1000);
+
+        const targetLat = activePlace.latitude;
+        const targetLng = activePlace.longitude;
+        const targetZoom = Math.max(currentMap.getZoom(), 15);
+
+        const panAndOpenPopup = () => {
+          let opened = false;
+          const triggerPopup = () => {
+            if (!opened) {
+              opened = true;
+              if (currentCluster && typeof currentCluster.zoomToShowLayer === "function") {
+                currentCluster.zoomToShowLayer(activeMarker, () => {
+                  activeMarker.openPopup();
+                });
+              } else {
+                activeMarker.openPopup();
+              }
+            }
+          };
+
+          const center = currentMap.getCenter();
+          const dist = center.distanceTo(L.latLng(targetLat, targetLng));
+          if (dist < 15 && currentMap.getZoom() >= targetZoom) {
+            triggerPopup();
+            return;
+          }
+
+          currentMap.once("moveend", triggerPopup);
+          currentMap.flyTo([targetLat, targetLng], targetZoom, {
+            duration: 0.5,
+            easeLinearity: 0.25,
+          });
+
+          // Safety fallback in case flyTo did not trigger moveend
+          window.setTimeout(triggerPopup, 650);
+        };
+
+        panAndOpenPopup();
+      };
+
+      runFocusSequence();
     }
-  }, [activePlace, places]);
+  }, [activePlace, focusRequest, places]);
 
   return (
     <div className="leaflet-shell">

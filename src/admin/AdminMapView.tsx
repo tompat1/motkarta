@@ -90,14 +90,17 @@ export function AdminMapView({
       scrollWheelZoom: true,
     });
 
-    const tileUrl = "https://tiles.openfreemap.org/styles/bright/{z}/{x}/{y}.png";
+    const cartoApiKey = "cb1_3lj2_1_a3e8aa97d669a225931f55fe";
+    const tileUrl = `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}`;
     const tileLayer = L.tileLayer(tileUrl, {
-      attribution: '&copy; <a href="https://openfreemap.org/" target="_blank" rel="noopener">OpenFreeMap</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
-      maxZoom: 19,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+      subdomains: "abcd",
+      maxZoom: 20,
     });
 
     tileLayer.on("tileerror", () => {
-      tileLayer.setUrl("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+      tileLayer.setUrl("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png");
     });
 
     tileLayer.addTo(map);

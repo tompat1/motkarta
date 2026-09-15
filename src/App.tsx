@@ -173,6 +173,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number | null>(null);
   const [isMapCardMinimized, setIsMapCardMinimized] = useState(false);
+  const [mapFocusRequest, setMapFocusRequest] = useState<{ id: number; timestamp: number } | null>(null);
 
   const [mobileViewMode, setMobileViewMode] = useState<"map" | "list">("map");
   const workspaceRef = useRef<HTMLElement | null>(null);
@@ -978,7 +979,7 @@ export default function App() {
     );
   }, [recordRecommendationEvents, recommendationResultSetId, visibleRanked]);
 
-  const active = selected !== null ? (ranked.find((place) => place.id === selected) ?? null) : null;
+  const active = selected !== null ? (ranked.find((place) => place.id === selected) ?? scoredPlaces.find((place) => place.id === selected) ?? null) : null;
   const [activeCardPhoto, setActiveCardPhoto] = useState<PlacePhoto | null>(null);
 
   useEffect(() => {
@@ -1022,7 +1023,9 @@ export default function App() {
   const handleSelectPlace = useCallback(
     (id: number) => {
       setSelected(id);
+      setMapFocusRequest({ id, timestamp: Date.now() });
       setMobileViewMode("map");
+      setIsMapCardMinimized(false);
       recordRecommendationEvents([{ establishmentId: id, eventType: "profile_view", queryContext: { surface: "map" } }]);
       const isVisibleInRanked = ranked.some((p) => p.id === id);
       if (!isVisibleInRanked) {
@@ -1034,16 +1037,27 @@ export default function App() {
     [allCuisines, ranked, recordRecommendationEvents],
   );
 
-  const handleViewPlaceOnMap = useCallback((place: ScoredPlace) => {
-    setSelected(place.id);
-    setMobileViewMode("map");
-    setIsPlaceDetailOpen(false);
-    window.requestAnimationFrame(() => {
-      window.setTimeout(() => {
-        workspaceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 0);
-    });
-  }, []);
+  const handleViewPlaceOnMap = useCallback(
+    (place: ScoredPlace) => {
+      setSelected(place.id);
+      setMapFocusRequest({ id: place.id, timestamp: Date.now() });
+      setMobileViewMode("map");
+      setIsPlaceDetailOpen(false);
+      setIsMapCardMinimized(false);
+      const isVisibleInRanked = ranked.some((p) => p.id === place.id);
+      if (!isVisibleInRanked) {
+        setKind("All places");
+        setCuisine(allCuisines);
+        setQuery("");
+      }
+      window.requestAnimationFrame(() => {
+        window.setTimeout(() => {
+          workspaceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 0);
+      });
+    },
+    [allCuisines, ranked],
+  );
 
   const mapPlaces = useMemo(
     () => {
@@ -2151,6 +2165,7 @@ export default function App() {
             <FoodMap
               places={mapPlaces}
               activePlace={active}
+              focusRequest={mapFocusRequest}
               userLocation={userLocation}
               onSelect={handleSelectPlace}
               onUserLocated={(loc) => {
