@@ -1050,7 +1050,12 @@ export default function App() {
       }
       window.requestAnimationFrame(() => {
         window.setTimeout(() => {
-          workspaceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          const mapPanel = document.querySelector(".map-panel");
+          if (mapPanel && window.matchMedia("(max-width: 768px)").matches) {
+            mapPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+          } else {
+            workspaceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
         }, 0);
       });
     },

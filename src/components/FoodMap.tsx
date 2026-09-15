@@ -360,31 +360,37 @@ export function FoodMap({
         const targetLng = activePlace.longitude;
         const targetZoom = Math.max(currentMap.getZoom(), 15);
 
-        let opened = false;
+        // On mobile, offset the center downwards (southwards) so the marker appears in the visible top half above .map-card
+        let flyCenter: L.LatLngExpression = [targetLat, targetLng];
+        if (isMobileMapViewport()) {
+          // At zoom 15+, calculate precise latitude delta for ~130px upward visual shift on screen
+          const latShift = 130 * (180 / (256 * Math.pow(2, targetZoom)));
+          flyCenter = [targetLat - latShift, targetLng];
+        }
+
         const triggerPopup = () => {
-          if (!opened) {
-            opened = true;
+          try {
+            if (activeMarker.isPopupOpen && activeMarker.isPopupOpen()) return;
             activeMarker.openPopup();
+          } catch {
+            // ignore if map/marker not ready
           }
         };
 
-        if (currentCluster && typeof currentCluster.zoomToShowLayer === "function" && currentCluster.hasLayer(activeMarker)) {
-          currentCluster.zoomToShowLayer(activeMarker, () => {
-            if (currentMap.getZoom() < 15) {
-              currentMap.setView([targetLat, targetLng], 15, { animate: false });
-            }
-            triggerPopup();
-          });
-        } else {
-          currentMap.flyTo([targetLat, targetLng], targetZoom, {
-            duration: 0.4,
-            easeLinearity: 0.25,
-          });
-          currentMap.once("moveend", triggerPopup);
-        }
+        const completeFocus = () => {
+          currentMap.off("moveend", completeFocus);
+          currentMap.off("zoomend", completeFocus);
+          triggerPopup();
+        };
 
-        // Safety fallback in case zoomToShowLayer or flyTo animation was delayed
-        window.setTimeout(triggerPopup, 650);
+        currentMap.flyTo(flyCenter, targetZoom, {
+          duration: 0.35,
+          easeLinearity: 0.25,
+        });
+
+        currentMap.once("moveend", completeFocus);
+        currentMap.once("zoomend", completeFocus);
+        window.setTimeout(completeFocus, 550);
       };
 
       runFocusSequence();
