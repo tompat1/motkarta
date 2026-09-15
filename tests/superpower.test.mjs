@@ -195,3 +195,32 @@ test("searchable place filter matches places by name, area, kind, and cuisine wi
   assert.equal(czechRes.length, 1);
   assert.equal(czechRes[0].name, "Soldaten Svejk");
 });
+
+test("new place submission formats website URL and attaches uploaded photo", async () => {
+  const formatWebsite = (raw) => {
+    if (!raw || !raw.trim()) return undefined;
+    const trimmed = raw.trim();
+    return trimmed.startsWith("http://") || trimmed.startsWith("https://") ? trimmed : `https://${trimmed}`;
+  };
+
+  assert.equal(formatWebsite("https://www.belgobaren.se"), "https://www.belgobaren.se");
+  assert.equal(formatWebsite("belgobaren.se"), "https://belgobaren.se");
+  assert.equal(formatWebsite(""), undefined);
+
+  // Verify attaching photo to new place
+  const newPlaceId = 999123;
+  const newPhoto = addUserPhoto(newPlaceId, {
+    url: "data:image/jpeg;base64,/9j/4AAQSkZJRg==",
+    thumbnailUrl: "data:image/jpeg;base64,/9j/4AAQSkZJRg==",
+    caption: "Belgobaren fasad",
+    credit: "Uppladdat från enhet",
+  });
+
+  assert.equal(newPhoto.placeId, newPlaceId);
+  assert.equal(newPhoto.caption, "Belgobaren fasad");
+
+  const photos = await fetchPlacePhotos({ id: newPlaceId, name: "Belgobaren", area: "City" });
+  assert.equal(photos.length, 1);
+  assert.equal(photos[0].caption, "Belgobaren fasad");
+  assert.equal(photos[0].credit, "Uppladdat från enhet");
+});

@@ -1321,7 +1321,10 @@ export default function App() {
     }
   }
 
-  const handleAddPlaceSuperpower = (newPlace: PlaceInput) => {
+  const handleAddPlaceSuperpower = (
+    newPlace: PlaceInput,
+    initialPhoto?: { url: string; thumbnailUrl: string; caption: string; credit?: string },
+  ) => {
     setPlaces((prev) => [newPlace, ...prev]);
     setSelected(newPlace.id);
     if (typeof window !== "undefined") {
@@ -1331,7 +1334,20 @@ export default function App() {
         localStorage.setItem("motkarta_user_places", JSON.stringify([newPlace, ...list]));
       } catch {}
     }
-    setAnswer(`Superpower aktiverad. Ditt nya oberoende ställe '${newPlace.name}' i ${newPlace.area} har lagts till lokalt som kandidat för verifiering.`);
+    if (initialPhoto) {
+      addUserPhoto(newPlace.id, initialPhoto);
+      setAnswer(
+        lang === "sv"
+          ? `Superpower aktiverad. Ditt nya oberoende ställe '${newPlace.name}' i ${newPlace.area} har lagts till med foto och hemsida lokalt som kandidat för verifiering.`
+          : `Superpower activated. Your new independent venue '${newPlace.name}' in ${newPlace.area} has been added with photo and website locally as a verification candidate.`,
+      );
+    } else {
+      setAnswer(
+        lang === "sv"
+          ? `Superpower aktiverad. Ditt nya oberoende ställe '${newPlace.name}' i ${newPlace.area} har lagts till lokalt som kandidat för verifiering.`
+          : `Superpower activated. Your new independent venue '${newPlace.name}' in ${newPlace.area} has been added locally as a verification candidate.`,
+      );
+    }
   };
 
   const handleAddReviewSuperpower = (placeId: number, rev: { author: string; rating: number; content: string; source: "Community Submission" }) => {

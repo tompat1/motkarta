@@ -375,6 +375,64 @@ test.describe("Mobile Full User Flows", () => {
     await expect(dropdown).not.toBeVisible();
     await expect(placeInput).toHaveValue(/Solkant/);
   });
+
+  test("13. Add new place with website and photo upload in superpower modal", async ({ page }) => {
+    await page.goto("/");
+
+    // Open add place modal via superpower chip button
+    const addPlaceChip = page.locator('.superpower-chip-btn', { hasText: /nytt ställe/i }).first();
+    await expect(addPlaceChip).toBeVisible();
+    await addPlaceChip.click();
+
+    // Verify modal appears
+    const modal = page.locator('.superpower-modal-card');
+    await expect(modal).toBeVisible();
+    await expect(modal.locator('h3')).toContainText(/lägg till nytt ställe/i);
+
+    // Verify new website input exists
+    const websiteInput = modal.locator('[data-testid="add-place-website-input"]');
+    await expect(websiteInput).toBeVisible();
+
+    // Fill in place name and website
+    const nameInput = modal.locator('input[placeholder*="Oaxen"]').first();
+    await nameInput.fill("Belgobaren City Test");
+    await websiteInput.fill("https://www.belgobaren.se");
+
+    // Verify photo upload section exists
+    const dropzone = modal.locator('[data-testid="add-place-dropzone"]');
+    await expect(dropzone).toBeVisible();
+
+    // Upload test photo from device
+    const fileInput = modal.locator('[data-testid="add-place-file-input"]');
+    await fileInput.setInputFiles({
+      name: "belgobaren.png",
+      mimeType: "image/png",
+      buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64"),
+    });
+
+    // Verify photo preview card appears
+    const previewCard = modal.locator('.superpower-photo-preview-card');
+    await expect(previewCard).toBeVisible();
+    await expect(previewCard).toContainText("belgobaren.png");
+
+    // Enter caption
+    const captionInput = modal.locator('[data-testid="add-place-caption-input"]');
+    await expect(captionInput).toBeVisible();
+    await captionInput.fill("Belgisk öl & frites");
+
+    // Scroll preview card into view and capture screenshot
+    await previewCard.scrollIntoViewIfNeeded();
+    await modal.screenshot({ path: "test-results/add-place-website-photo-modal.png" });
+
+    // Submit new place
+    const submitBtn = modal.locator('.superpower-submit-btn');
+    await expect(submitBtn).toBeEnabled();
+    await submitBtn.click();
+
+    // Verify modal closes
+    await expect(modal).not.toBeVisible();
+  });
 });
+
 
 

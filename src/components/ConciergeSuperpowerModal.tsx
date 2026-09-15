@@ -4,6 +4,7 @@ import type { CuratedSource, Language, SuperpowerMode } from "../app/shared";
 import { curatedSourceTypes } from "../app/shared";
 import { Camera, Image, Link, PlusCircle, ShieldCheck, Sparkle, Star, Trash, UploadSimple } from "@phosphor-icons/react";
 import { SearchablePlaceSelect } from "./SearchablePlaceSelect";
+import { addUserPhoto } from "../../lib/lazy-media";
 
 export async function processImageFile(file: File): Promise<{
   dataUrl: string;
@@ -102,7 +103,10 @@ export function ConciergeSuperpowerModal({
   places: PlaceInput[];
   activePlace: PlaceInput | null;
   onClose: () => void;
-  onAddPlace: (place: PlaceInput) => void;
+  onAddPlace: (
+    place: PlaceInput,
+    initialPhoto?: { url: string; thumbnailUrl: string; caption: string; credit?: string },
+  ) => void;
   onAddReview: (placeId: number, review: { author: string; rating: number; content: string; source: "Community Submission" }) => void;
   onAddPhoto: (placeId: number, photo: { url: string; thumbnailUrl: string; caption: string; credit?: string }) => void;
   onRatePlace: (placeId: number, rating: number) => void;
@@ -118,6 +122,7 @@ export function ConciergeSuperpowerModal({
   const [cuisine, setCuisine] = useState("swedish");
   const [area, setArea] = useState("Vasastan");
   const [address, setAddress] = useState("");
+  const [website, setWebsite] = useState("");
   const [note, setNote] = useState("");
   const [rating, setRating] = useState(5);
   const [tags, setTags] = useState("");
@@ -227,6 +232,14 @@ export function ConciergeSuperpowerModal({
     e.preventDefault();
     if (!name.trim() || duplicateMatch) return;
 
+    let formattedWebsite: string | undefined = undefined;
+    if (website.trim()) {
+      const trimmed = website.trim();
+      formattedWebsite = trimmed.startsWith("http://") || trimmed.startsWith("https://")
+        ? trimmed
+        : `https://${trimmed}`;
+    }
+
     const newPlace: PlaceInput = {
       id: Date.now(),
       name: name.trim(),
@@ -234,14 +247,15 @@ export function ConciergeSuperpowerModal({
       cuisine: cuisine.trim(),
       area: area.trim(),
       address: address.trim() || `${area}, Stockholm`,
+      website: formattedWebsite,
       note: note.trim() || `Oberoende ${kind.toLowerCase()} i ${area}.`,
       tags: [...tags.split(",").map((t) => t.trim()).filter(Boolean), "Community submission", "Pending verification"],
       evidenceLabel: "Pending community submission · not independently verified",
       lifecycleState: "candidate",
-      ratingAverage: 4.1,
+      ratingAverage: rating || 4.1,
       reliableRatingCount: 0,
       reviewCount: 0,
-      categoryMeanRating: 4.1,
+      categoryMeanRating: rating || 4.1,
       categoryPopularityRaw: 0,
       localPopularityPercentile: 0.5,
       priceLevel: 2,
@@ -277,7 +291,22 @@ export function ConciergeSuperpowerModal({
       y: 50,
     };
 
-    onAddPlace(newPlace);
+    const finalPhotoUrl = photoSource === "device" ? devicePhoto?.dataUrl : photoUrl.trim();
+    let initialPhoto: { url: string; thumbnailUrl: string; caption: string; credit?: string } | undefined;
+    if (finalPhotoUrl) {
+      const credit = photoSource === "device"
+        ? (lang === "sv" ? "Uppladdat från enhet" : "Uploaded from device")
+        : (lang === "sv" ? "Officiell hemsida / Användarbild" : "Official website / User photo");
+      initialPhoto = {
+        url: finalPhotoUrl,
+        thumbnailUrl: finalPhotoUrl,
+        caption: caption.trim() || newPlace.name,
+        credit,
+      };
+      addUserPhoto(newPlace.id, initialPhoto);
+    }
+
+    onAddPlace(newPlace, initialPhoto);
     onClose();
   };
 
@@ -391,6 +420,16 @@ export function ConciergeSuperpowerModal({
               <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="t.ex. Beckholmsvägen 26" />
             </div>
             <div className="superpower-form-group">
+              <label>{lang === "sv" ? "Hemsida / Webbplats" : "Website / URL"}</label>
+              <input
+                type="url"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                placeholder="t.ex. https://www.belgobaren.se"
+                data-testid="add-place-website-input"
+              />
+            </div>
+            <div className="superpower-form-group">
               <label>Beskrivning / Notering</label>
               <textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Berätta vad som gör stället unikt..." />
             </div>
@@ -406,6 +445,170 @@ export function ConciergeSuperpowerModal({
               <label>Taggar (kommaseparerade)</label>
               <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Oberoende, Ekologiskt, Sjöutsikt" />
             </div>
+
+            {/* Photo / Image upload section (optional) */}
+            <div className="superpower-form-group">
+              <label>{lang === "sv" ? "Foto / Bild (valfritt)" : "Photo / Image (optional)"}</label>
+              <div className="superpower-source-toggle" role="tablist">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={photoSource === "device"}
+                  className={`superpower-tab-btn ${photoSource === "device" ? "is-active" : ""}`}
+                  onClick={() => setPhotoSource("device")}
+                >
+                  <UploadSimple size={15} weight="bold" />
+                  {lang === "sv" ? "Från enhet / Kamera" : "From device / Camera"}
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={photoSource === "url"}
+                  className={`superpower-tab-btn ${photoSource === "url" ? "is-active" : ""}`}
+                  onClick={() => setPhotoSource("url")}
+                >
+                  <Link size={15} weight="bold" />
+                  {lang === "sv" ? "Bild-URL" : "Image URL"}
+                </button>
+              </div>
+
+              {photoSource === "device" ? (
+                <div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={handleFileInputChange}
+                    data-testid="add-place-file-input"
+                  />
+                  {devicePhoto ? (
+                    <div className="superpower-photo-preview-card">
+                      <img
+                        src={devicePhoto.dataUrl}
+                        alt={devicePhoto.name}
+                        className="superpower-preview-thumbnail"
+                      />
+                      <div className="superpower-preview-details">
+                        <span className="superpower-preview-filename" title={devicePhoto.name}>
+                          {devicePhoto.name}
+                        </span>
+                        <span className="superpower-preview-meta">
+                          {devicePhoto.sizeKb} KB · {lang === "sv" ? "Optimerad bild redo" : "Optimized image ready"}
+                        </span>
+                      </div>
+                      <div className="superpower-preview-actions">
+                        <button
+                          type="button"
+                          className="superpower-preview-action-btn"
+                          onClick={() => fileInputRef.current?.click()}
+                          title={lang === "sv" ? "Byt bild" : "Change image"}
+                        >
+                          {lang === "sv" ? "Byt" : "Change"}
+                        </button>
+                        <button
+                          type="button"
+                          className="superpower-preview-action-btn is-delete"
+                          onClick={() => setDevicePhoto(null)}
+                          title={lang === "sv" ? "Ta bort bild" : "Remove photo"}
+                          aria-label={lang === "sv" ? "Ta bort bild" : "Remove photo"}
+                        >
+                          <Trash size={15} />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className={`superpower-dropzone ${isDragging ? "is-dragging" : ""}`}
+                      onClick={() => fileInputRef.current?.click()}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setIsDragging(true);
+                      }}
+                      onDragLeave={() => setIsDragging(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setIsDragging(false);
+                        const file = e.dataTransfer.files?.[0];
+                        if (file) handleFileSelect(file);
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          fileInputRef.current?.click();
+                        }
+                      }}
+                      data-testid="add-place-dropzone"
+                    >
+                      <div className="superpower-dropzone-icon-circle">
+                        <Camera size={24} weight="bold" />
+                      </div>
+                      <div className="superpower-dropzone-text">
+                        <strong>
+                          {isOptimizing
+                            ? (lang === "sv" ? "Optimerar bild..." : "Optimizing image...")
+                            : (lang === "sv" ? "Välj bild eller ta foto" : "Choose image or take photo")}
+                        </strong>
+                        <span>
+                          {lang === "sv"
+                            ? "Klicka för att bläddra i enheten eller dra in ett foto hit"
+                            : "Click to browse device or drag & drop a photo here"}
+                        </span>
+                      </div>
+                      <span className="superpower-dropzone-badge">
+                        {lang === "sv" ? "Kamera & Galleri · JPG, PNG, WebP" : "Camera & Gallery · JPG, PNG, WebP"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div style={{ display: "grid", gap: "6px" }}>
+                  <input
+                    type="url"
+                    value={photoUrl}
+                    onChange={(e) => setPhotoUrl(e.target.value)}
+                    placeholder="https://images.unsplash.com/... eller bildadress"
+                    data-testid="add-place-photo-url-input"
+                  />
+                  {photoUrl.trim() ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+                      <img
+                        src={photoUrl.trim()}
+                        alt="Förhandsgranskning"
+                        style={{ width: "48px", height: "48px", objectFit: "cover", border: "1px solid var(--color-mist)" }}
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = "none";
+                        }}
+                      />
+                      <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--color-charcoal)" }}>
+                        {lang === "sv" ? "Förhandsgranskning av URL-bild" : "URL image preview"}
+                      </span>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+
+              {uploadError ? (
+                <div style={{ color: "#DC2626", fontSize: "12px", fontFamily: "var(--font-mono)", marginTop: "4px" }}>
+                  ⚠️ {uploadError}
+                </div>
+              ) : null}
+            </div>
+
+            {(devicePhoto || photoUrl.trim()) && (
+              <div className="superpower-form-group">
+                <label>{lang === "sv" ? "Bildtext / Notering till bilden" : "Caption / Image description"}</label>
+                <input
+                  type="text"
+                  value={caption}
+                  onChange={(e) => setCaption(e.target.value)}
+                  placeholder={lang === "sv" ? "t.ex. Uteservering, fika eller interiör" : "e.g. Patio, fika or interior"}
+                  data-testid="add-place-caption-input"
+                />
+              </div>
+            )}
             <button type="submit" className="superpower-submit-btn" disabled={Boolean(duplicateMatch)} style={{ opacity: duplicateMatch ? 0.5 : 1, cursor: duplicateMatch ? "not-allowed" : "pointer" }}>
               <PlusCircle size={16} /> Publicera nytt ställe i kartan
             </button>
