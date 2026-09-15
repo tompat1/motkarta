@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Check, X, ArrowCounterClockwise, ForkKnife, Bread, Coffee, MapTrifold, Star, Sparkle } from "@phosphor-icons/react";
+import { SpecialtyCoffeeIcon } from "./SpecialtyCoffeeIcon";
 import {
   allCuisines,
   cuisineLabel,
@@ -98,7 +99,9 @@ export function MobileFilterBottomSheet({
                     <ForkKnife size={16} weight="bold" aria-hidden="true" />
                   ) : item === "Bakery" ? (
                     <Bread size={16} weight="bold" aria-hidden="true" />
-                  ) : item === "Café" || item === "Specialty coffee" ? (
+                  ) : item === "Specialty coffee" ? (
+                    <SpecialtyCoffeeIcon size={16} weight="bold" aria-hidden="true" />
+                  ) : item === "Café" ? (
                     <Coffee size={16} weight="bold" aria-hidden="true" />
                   ) : item === "All places" ? (
                     <MapTrifold size={16} weight="bold" aria-hidden="true" />

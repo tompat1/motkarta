@@ -121,6 +121,7 @@ import { MobileRankControlSheet, type RankSheetType } from "./components/MobileR
 import { PlaceDetailSheet } from "./components/PlaceDetailSheet";
 import { MobilePlaceCardList } from "./components/MobilePlaceCardList";
 import { MotkartaScoreWidget } from "./components/MotkartaScoreWidget";
+import { SpecialtyCoffeeIcon } from "./components/SpecialtyCoffeeIcon";
 import {
   addUserReview,
   addUserPhoto,
@@ -2044,7 +2045,8 @@ export default function App() {
               >
                 {item === "Restaurant" ? <ForkKnife size={18} weight="bold" aria-hidden="true" /> : null}
                 {item === "Bakery" ? <Bread size={18} weight="bold" aria-hidden="true" /> : null}
-                {item === "Café" || item === "Specialty coffee" ? <Coffee size={18} weight="bold" aria-hidden="true" /> : null}
+                {item === "Specialty coffee" ? <SpecialtyCoffeeIcon size={18} weight="bold" aria-hidden="true" /> : null}
+                {item === "Café" ? <Coffee size={18} weight="bold" aria-hidden="true" /> : null}
                 {item === "All places" ? <MapTrifold size={18} weight="bold" aria-hidden="true" /> : null}
                 {item === "Saved" ? <Star size={18} weight="bold" aria-hidden="true" /> : null}
                 {item === "Latest" ? <Sparkle size={18} weight="bold" aria-hidden="true" /> : null}
@@ -2193,7 +2195,7 @@ export default function App() {
               onClick={() => selectKindFilter(kind === "Specialty coffee" ? "All places" : "Specialty coffee")}
               title={lang === "sv" ? "Filtrera specialkaffe (klicka för att växla)" : "Filter specialty coffee (click to toggle)"}
             >
-              <Coffee size={14} weight="bold" style={{ color: kind === "Specialty coffee" ? "currentColor" : "var(--color-water)" }} />
+              <SpecialtyCoffeeIcon size={14} weight="bold" style={{ color: kind === "Specialty coffee" ? "currentColor" : "var(--color-water)" }} />
               <span>{t.legendSpecialty}</span>
             </button>
             <button

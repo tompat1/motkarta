@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import type { EstablishmentType, ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
 import { cuisineLabel, cuisineParts, hasCoordinates, translations } from "../app/shared";
-import { requestPosition, locationFailureMessage, type LocationResult } from '../app/geolocation';
 import { ArrowsIn, ArrowsOut, Crosshair, MapTrifold, Minus, Plus } from "@phosphor-icons/react";
+import { SPECIALTY_COFFEE_PATH } from "./SpecialtyCoffeeIcon";
 
 export function FoodMap({
   places,
@@ -497,8 +497,11 @@ function placeIcon(place: ScoredPlace, active: boolean) {
   } else if (kind === "Bakery") {
     // Bread SVG (Phosphor Bread bold - matching filter label icon)
     iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M244,80a44.05,44.05,0,0,0-44-44H48a44,44,0,0,0-20,83.17V200a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V119.17A44,44,0,0,0,244,80ZM52,123.3A12,12,0,0,0,48,100a20,20,0,0,1,0-40h92a20,20,0,0,1,0,40,12,12,0,0,0-4,23.3V196H52ZM200,100a12,12,0,0,0-4,23.3V196H160V119.17A43.92,43.92,0,0,0,179.17,60H200a20,20,0,0,1,0,40Z"/></svg>`;
+  } else if (kind === "Specialty coffee") {
+    // Specialty Coffee Takeaway Cup with Steam & Coffee Bean SVG
+    iconSvg = `<svg width="15" height="15" viewBox="0 0 256 256" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="${SPECIALTY_COFFEE_PATH}"/></svg>`;
   } else {
-    // Coffee Cup SVG (Café & Specialty Coffee)
+    // Café: Coffee Cup SVG
     iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M224,80H208V64a16,16,0,0,0-16-16H48A16,16,0,0,0,32,64V152a48.05,48.05,0,0,0,48,48h80a48.05,48.05,0,0,0,48-48V136h16a32.03,32.03,0,0,0,32-32V112A32.03,32.03,0,0,0,224,80Zm0,40H208V96h16a16,16,0,0,1,16,16V104A16,16,0,0,1,224,120Z"/></svg>`;
   }
 
