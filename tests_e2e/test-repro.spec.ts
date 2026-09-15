@@ -80,14 +80,14 @@ test("reproduce mobile list card click -> view on map", async ({ page }) => {
     const workspace = document.querySelector(".workspace");
     const topbar = document.querySelector(".topbar");
     const mobileControls = document.querySelector(".mobile-controls-bar");
-    const controlsPanel = document.querySelector(".controls-panel");
+    const countermapControls = document.querySelector(".countermap-controls");
     const hero = document.querySelector(".countermap-hero");
     return {
       windowHeight: window.innerHeight,
       scrollY: window.scrollY,
       topbar: topbar ? topbar.getBoundingClientRect() : null,
       mobileControls: mobileControls ? mobileControls.getBoundingClientRect() : null,
-      controlsPanel: controlsPanel ? controlsPanel.getBoundingClientRect() : null,
+      countermapControls: countermapControls ? countermapControls.getBoundingClientRect() : null,
       hero: hero ? hero.getBoundingClientRect() : null,
       workspace: workspace ? workspace.getBoundingClientRect() : null,
       mapPanel: mapPanel ? mapPanel.getBoundingClientRect() : null,
