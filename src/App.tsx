@@ -562,7 +562,19 @@ export default function App() {
         const payload = await fetchPlacesPayload();
 
         if (!cancelled && payload.places?.length) {
-          setPlaces(sanitizeAndAugmentPlaces(payload.places));
+          let initialPlaces = payload.places;
+          if (typeof window !== "undefined") {
+            try {
+              const stored = localStorage.getItem("motkarta_user_places");
+              if (stored) {
+                const userPlaces: PlaceInput[] = JSON.parse(stored);
+                if (Array.isArray(userPlaces) && userPlaces.length > 0) {
+                  initialPlaces = [...userPlaces, ...initialPlaces];
+                }
+              }
+            } catch {}
+          }
+          setPlaces(sanitizeAndAugmentPlaces(initialPlaces));
           setDataSource(payload.source);
         } else if (!cancelled) {
           setPlaces([]);
