@@ -381,6 +381,18 @@ export function FoodMap({
         const triggerPopup = (retries = 6) => {
           try {
             if (activeMarker.isPopupOpen && activeMarker.isPopupOpen()) return;
+            if (currentCluster && typeof (currentCluster as any).zoomToShowLayer === "function") {
+              try {
+                (currentCluster as any).zoomToShowLayer(activeMarker, () => {
+                  try {
+                    activeMarker.openPopup();
+                  } catch {}
+                });
+                return;
+              } catch {
+                // Fall back to standard retry
+              }
+            }
             if (!activeMarker.getElement() || !(activeMarker as any)._map) {
               if (retries > 0) {
                 window.setTimeout(() => triggerPopup(retries - 1), 100);

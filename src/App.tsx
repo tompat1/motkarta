@@ -14,7 +14,7 @@ import { SyncDevicesModal } from "./components/SyncDevicesModal";
 import { parseSyncDirectPlaces } from "./app/sync-utils";
 import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
 import { VerificationBar } from "./components/VerificationBar";
-import { matchesEstablishmentFilter } from "./app/place-filtering";
+import { matchesEstablishmentFilter, findDuplicatePlace } from "./app/place-filtering";
 import { sanitizeAndAugmentPlaces } from "./app/place-sanitization";
 import { requestPosition, locationFailureMessage } from "./app/geolocation";
 import {
@@ -177,6 +177,12 @@ export default function App() {
   const [selected, setSelected] = useState<number | null>(null);
   const [isMapCardMinimized, setIsMapCardMinimized] = useState(false);
   const [mapFocusRequest, setMapFocusRequest] = useState<{ id: number; timestamp: number } | null>(null);
+  const [placeAddedToast, setPlaceAddedToast] = useState<{
+    placeName: string;
+    area: string;
+  } | null>(null);
+  const placeAddedToastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(placeAddedToastTimer.current), []);
 
   const [mobileViewMode, setMobileViewMode] = useState<"map" | "list">("map");
   const workspaceRef = useRef<HTMLElement | null>(null);
@@ -1337,29 +1343,99 @@ export default function App() {
     newPlace: PlaceInput,
     initialPhoto?: { url: string; thumbnailUrl: string; caption: string; credit?: string },
   ) => {
-    setPlaces((prev) => [newPlace, ...prev]);
-    setSelected(newPlace.id);
+    // 1. Check if the new place already exists in the place list
+    const duplicate = findDuplicatePlace(newPlace.name, newPlace.area, places);
+    if (duplicate) {
+      setSelected(duplicate.id);
+      setMapFocusRequest({ id: duplicate.id, timestamp: Date.now() });
+      setMobileViewMode("map");
+      setIsPlaceDetailOpen(false);
+      setIsMapCardMinimized(false);
+      setKind("All places");
+      setCuisine(allCuisines);
+      setQuery("");
+      setMode("All recommendations");
+      setSelectedTags([]);
+      setConciergeResponse(null);
+
+      window.requestAnimationFrame(() => {
+        window.setTimeout(() => {
+          const mapPanel = document.querySelector(".map-panel");
+          if (mapPanel && window.matchMedia("(max-width: 768px)").matches) {
+            mapPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+          } else {
+            workspaceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 80);
+      });
+
+      setAnswer(
+        lang === "sv"
+          ? `Stället '${duplicate.name}' finns redan i ${duplicate.area}. Vi har markerat och zoomat in på stället i kartan åt dig.`
+          : `The venue '${duplicate.name}' is already registered in ${duplicate.area}. We have selected and zoomed to it on the map for you.`,
+      );
+      return;
+    }
+
+    // 2. Not a duplicate: sanitize and add new place
+    const [sanitizedPlace] = sanitizeAndAugmentPlaces([newPlace]);
+    const placeToAdd = sanitizedPlace ?? newPlace;
+
+    setPlaces((prev) => [placeToAdd, ...prev]);
+    setSelected(placeToAdd.id);
+    setMapFocusRequest({ id: placeToAdd.id, timestamp: Date.now() });
+    setMobileViewMode("map");
+    setIsPlaceDetailOpen(false);
+    setIsMapCardMinimized(false);
+
+    // Reset conflicting filters so the candidate venue is guaranteed visible in ranked and on map
+    setKind("All places");
+    setCuisine(allCuisines);
+    setQuery("");
+    setMode("All recommendations");
+    setSelectedTags([]);
+    setConciergeResponse(null);
+
     if (typeof window !== "undefined") {
       try {
         const stored = localStorage.getItem("motkarta_user_places");
         const list: PlaceInput[] = stored ? JSON.parse(stored) : [];
-        localStorage.setItem("motkarta_user_places", JSON.stringify([newPlace, ...list]));
+        localStorage.setItem("motkarta_user_places", JSON.stringify([placeToAdd, ...list]));
       } catch {}
     }
+
     if (initialPhoto) {
-      addUserPhoto(newPlace.id, initialPhoto);
-      setAnswer(
-        lang === "sv"
-          ? `Superpower aktiverad. Ditt nya oberoende ställe '${newPlace.name}' i ${newPlace.area} har lagts till med foto och hemsida lokalt som kandidat för verifiering.`
-          : `Superpower activated. Your new independent venue '${newPlace.name}' in ${newPlace.area} has been added with photo and website locally as a verification candidate.`,
-      );
-    } else {
-      setAnswer(
-        lang === "sv"
-          ? `Superpower aktiverad. Ditt nya oberoende ställe '${newPlace.name}' i ${newPlace.area} har lagts till lokalt som kandidat för verifiering.`
-          : `Superpower activated. Your new independent venue '${newPlace.name}' in ${newPlace.area} has been added locally as a verification candidate.`,
-      );
+      addUserPhoto(placeToAdd.id, initialPhoto);
     }
+
+    window.requestAnimationFrame(() => {
+      window.setTimeout(() => {
+        const mapPanel = document.querySelector(".map-panel");
+        if (mapPanel && window.matchMedia("(max-width: 768px)").matches) {
+          mapPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+          workspaceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 80);
+    });
+
+    setAnswer(
+      lang === "sv"
+        ? `Superpower aktiverad. Ditt nya oberoende ställe '${placeToAdd.name}' i ${placeToAdd.area} visas nu på kartan för dig och inväntar redaktionell verifiering.`
+        : `Superpower activated. Your new independent venue '${placeToAdd.name}' in ${placeToAdd.area} is now shown on the map for you and is pending verification.`,
+    );
+
+    // 3. Trigger confirmation toast with thank-you star and admin review notice
+    if (placeAddedToastTimer.current) {
+      clearTimeout(placeAddedToastTimer.current);
+    }
+    setPlaceAddedToast({
+      placeName: placeToAdd.name,
+      area: placeToAdd.area,
+    });
+    placeAddedToastTimer.current = setTimeout(() => {
+      setPlaceAddedToast(null);
+    }, 8000);
   };
 
   const handleAddReviewSuperpower = (placeId: number, rev: { author: string; rating: number; content: string; source: "Community Submission" }) => {
@@ -2861,6 +2937,43 @@ export default function App() {
             </button>
           </div>
         </div>
+      ) : null}
+
+      {placeAddedToast ? (
+        <aside
+          className="place-added-toast-banner"
+          role="status"
+          aria-live="polite"
+          data-testid="place-added-toast"
+        >
+          <span className="place-added-toast-star" aria-hidden="true">⭐</span>
+          <div className="place-added-toast-content">
+            <div className="place-added-toast-title">
+              {lang === "sv"
+                ? `Tack för ditt bidrag! ⭐`
+                : `Thank you for your contribution! ⭐`}
+            </div>
+            <div className="place-added-toast-desc">
+              {lang === "sv"
+                ? `"${placeAddedToast.placeName}" i ${placeAddedToast.area} visas nu på kartan för dig. Platsen granskas och verifieras av administratör innan den publiceras officiellt för alla användare.`
+                : `"${placeAddedToast.placeName}" in ${placeAddedToast.area} is now shown on the map for you. It will next be reviewed and verified by an admin before being available publicly.`}
+            </div>
+            <span className="place-added-toast-badge">
+              {lang === "sv" ? "🔍 Granskas & verifieras före publicering" : "🔍 Pending admin review & verification"}
+            </span>
+          </div>
+          <button
+            type="button"
+            className="place-added-toast-close"
+            onClick={() => {
+              if (placeAddedToastTimer.current) clearTimeout(placeAddedToastTimer.current);
+              setPlaceAddedToast(null);
+            }}
+            aria-label={lang === "sv" ? "Stäng bekräftelse" : "Dismiss confirmation"}
+          >
+            ✕
+          </button>
+        </aside>
       ) : null}
 
       {/* Mobile Navigation Drawer (Hamburger Menu) */}

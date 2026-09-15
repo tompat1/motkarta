@@ -4,6 +4,7 @@ import test from "node:test";
 import { retrieveAndSynthesize } from "../functions/api/concierge.ts";
 import { parseConciergeAnswer } from "../lib/concierge-parser.ts";
 import { addUserPhoto, addUserReview, fetchPlacePhotos, fetchPlaceReviews } from "../lib/lazy-media.ts";
+import { findDuplicatePlace } from "../src/app/place-filtering.ts";
 
 const mockPlaces = [
   {
@@ -142,11 +143,33 @@ test("addUserPhoto turns Instagram submissions into the Motkarta dummy image", a
   assert.ok(photos.some((photo) => photo.url === "/motkarta_drop_divided_black_red.svg"));
 });
 
-test("duplicate place check matches existing names case-insensitively", () => {
-  const existingName = "oaxen slip";
-  const match = mockPlaces.find((p) => p.name.toLowerCase() === existingName.trim().toLowerCase());
-  assert.ok(match);
-  assert.equal(match.name, "Oaxen Slip");
+test("findDuplicatePlace accurately detects duplicates across casing, accents, aliases and areas", () => {
+  const testPlaces = [
+    { id: 101, name: "Oaxen Slip", area: "Djurgården" },
+    { id: 102, name: "Café Pascal", area: "Vasastan", osmAliases: ["Pascal Café", "Pascal Vasastan"] },
+    { id: 103, name: "Belgobaren City", area: "City" },
+  ];
+
+  // 1. Exact case-insensitive match
+  assert.equal(findDuplicatePlace("oaxen slip", "Djurgården", testPlaces)?.id, 101);
+  assert.equal(findDuplicatePlace("Oaxen Slip", "", testPlaces)?.id, 101);
+
+  // 2. Normalized match stripping accents and diacritics
+  assert.equal(findDuplicatePlace("Cafe Pascal", "Vasastan", testPlaces)?.id, 102);
+  assert.equal(findDuplicatePlace("café pascal", "", testPlaces)?.id, 102);
+
+  // 3. OSM aliases match
+  assert.equal(findDuplicatePlace("Pascal Café", "", testPlaces)?.id, 102);
+
+  // 4. Area-aware substring match
+  assert.equal(findDuplicatePlace("Belgobaren", "City", testPlaces)?.id, 103);
+
+  // 5. Composite name including area
+  assert.equal(findDuplicatePlace("Café Pascal Vasastan", "Stockholm", testPlaces)?.id, 102);
+
+  // 6. Non-duplicate place returns null
+  assert.equal(findDuplicatePlace("Helt Ny Krog", "Södermalm", testPlaces), null);
+  assert.equal(findDuplicatePlace("", "", testPlaces), null);
 });
 
 test("searchable place filter matches places by name, area, kind, and cuisine with smart relevance", () => {

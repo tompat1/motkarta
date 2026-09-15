@@ -431,6 +431,59 @@ test.describe("Mobile Full User Flows", () => {
 
     // Verify modal closes
     await expect(modal).not.toBeVisible();
+
+    // Verify thank-you star toast banner appears with review notice
+    const toast = page.locator('[data-testid="place-added-toast"]');
+    await expect(toast).toBeVisible();
+    await expect(toast).toContainText("⭐");
+    await expect(toast).toContainText(/tack för ditt bidrag/i);
+    await expect(toast).toContainText(/granskas/i);
+
+    // Verify mobile view switches to map and map-panel is visible
+    const mapPanel = page.locator('.map-panel');
+    await expect(mapPanel).toBeVisible();
+    await expect(mapPanel).not.toHaveClass(/mobile-view-hidden/);
+
+    // Verify new place is active and visible on map (map-card or leaflet popup)
+    const placeTitle = page.locator('.map-card-head h2, .leaflet-popup-content strong');
+    await expect(placeTitle.filter({ hasText: "Belgobaren City Test" }).first()).toBeVisible({ timeout: 10000 });
+
+    // Capture screenshot of place added toast & focused map
+    await page.screenshot({ path: "test-results/place-added-toast-and-map.png" });
+  });
+
+  test("12. Duplicate place detection blocks submission and shows warning", async ({ page }) => {
+    await page.goto("/");
+
+    // Open add place modal
+    const addPlaceChip = page.locator('.superpower-chip-btn', { hasText: /nytt ställe/i }).first();
+    await expect(addPlaceChip).toBeVisible();
+    await addPlaceChip.click();
+
+    const modal = page.locator('.superpower-modal-card');
+    await expect(modal).toBeVisible();
+
+    // Type existing place name (e.g. "Café Pascal" with or without accents)
+    const nameInput = modal.locator('input[placeholder*="Oaxen"]').first();
+    await nameInput.fill("Cafe Pascal");
+
+    // Verify duplicate warning appears
+    const warning = modal.locator('[data-testid="duplicate-warning"]');
+    await expect(warning).toBeVisible();
+    await expect(warning).toContainText(/finns redan i kartan/i);
+
+    // Verify submit button is disabled
+    const submitBtn = modal.locator('.superpower-submit-btn');
+    await expect(submitBtn).toBeDisabled();
+    await expect(submitBtn).toContainText(/dubblett/i);
+
+    // Capture screenshot of duplicate warning in modal
+    await modal.screenshot({ path: "test-results/duplicate-place-warning.png" });
+
+    // Change to a non-existing unique name
+    await nameInput.fill("Unikt Nytt Café 2026");
+    await expect(warning).not.toBeVisible();
+    await expect(submitBtn).toBeEnabled();
   });
 });
 

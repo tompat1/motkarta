@@ -5,6 +5,33 @@ import { curatedSourceTypes } from "../app/shared";
 import { Camera, Image, Link, PlusCircle, ShieldCheck, Sparkle, Star, Trash, UploadSimple } from "@phosphor-icons/react";
 import { SearchablePlaceSelect } from "./SearchablePlaceSelect";
 import { addUserPhoto } from "../../lib/lazy-media";
+import { findDuplicatePlace } from "../app/place-filtering";
+
+export const STOCKHOLM_DISTRICT_COORDS: Record<string, { lat: number; lng: number }> = {
+  södermalm: { lat: 59.3146, lng: 18.0722 },
+  söder: { lat: 59.3146, lng: 18.0722 },
+  vasastan: { lat: 59.3444, lng: 18.0494 },
+  vasastaden: { lat: 59.3444, lng: 18.0494 },
+  östermalm: { lat: 59.3374, lng: 18.0844 },
+  norrmalm: { lat: 59.3347, lng: 18.0611 },
+  kungsholmen: { lat: 59.3312, lng: 18.0381 },
+  "gamla stan": { lat: 59.3257, lng: 18.0709 },
+  djurgården: { lat: 59.3283, lng: 18.1175 },
+  hornsberg: { lat: 59.3382, lng: 18.0123 },
+  "hornsbergs strand": { lat: 59.3382, lng: 18.0123 },
+  hammarby: { lat: 59.3039, lng: 18.1009 },
+  "hammarby sjöstad": { lat: 59.3039, lng: 18.1009 },
+  gärdet: { lat: 59.3465, lng: 18.0988 },
+  enskededalen: { lat: 59.2891, lng: 18.0967 },
+  enskede: { lat: 59.2891, lng: 18.0967 },
+  aspudden: { lat: 59.3065, lng: 18.0003 },
+  midsommarkransen: { lat: 59.3015, lng: 18.0125 },
+  liljeholmen: { lat: 59.3106, lng: 18.0229 },
+  årsta: { lat: 59.2982, lng: 18.0538 },
+  gröndal: { lat: 59.3162, lng: 18.0086 },
+  city: { lat: 59.3326, lng: 18.0649 },
+  centralen: { lat: 59.3308, lng: 18.0581 },
+};
 
 export async function processImageFile(file: File): Promise<{
   dataUrl: string;
@@ -224,9 +251,8 @@ export function ConciergeSuperpowerModal({
 
   const duplicateMatch = useMemo(() => {
     if (!name.trim() || mode !== "add_place") return null;
-    const targetName = name.trim().toLowerCase();
-    return places.find((p) => p.name.trim().toLowerCase() === targetName) ?? null;
-  }, [name, places, mode]);
+    return findDuplicatePlace(name, area, places);
+  }, [name, area, places, mode]);
 
   const handleSubmitPlace = (e: React.FormEvent) => {
     e.preventDefault();
@@ -239,6 +265,19 @@ export function ConciergeSuperpowerModal({
         ? trimmed
         : `https://${trimmed}`;
     }
+
+    const locationQuery = `${area} ${address}`.toLowerCase();
+    const districtKey = Object.keys(STOCKHOLM_DISTRICT_COORDS).find((k) =>
+      locationQuery.includes(k)
+    );
+    const baseCoords = districtKey
+      ? STOCKHOLM_DISTRICT_COORDS[districtKey]
+      : (activePlace && activePlace.latitude != null && activePlace.longitude != null
+          ? { lat: activePlace.latitude, lng: activePlace.longitude }
+          : { lat: 59.3326, lng: 18.0649 });
+
+    const latitude = baseCoords.lat + (Math.random() - 0.5) * 0.003;
+    const longitude = baseCoords.lng + (Math.random() - 0.5) * 0.003;
 
     const newPlace: PlaceInput = {
       id: Date.now(),
@@ -274,8 +313,8 @@ export function ConciergeSuperpowerModal({
         dataFreshness: 10,
         confidence: "Low",
       },
-      latitude: activePlace && activePlace.latitude != null ? activePlace.latitude + 0.002 : 59.3326 + (Math.random() - 0.5) * 0.02,
-      longitude: activePlace && activePlace.longitude != null ? activePlace.longitude + 0.002 : 18.0649 + (Math.random() - 0.5) * 0.02,
+      latitude,
+      longitude,
       engagement: {
         searchImpressions: 0,
         profileViews: 0,
@@ -382,20 +421,25 @@ export function ConciergeSuperpowerModal({
             </div>
             {duplicateMatch ? (
               <div
+                data-testid="duplicate-warning"
                 style={{
                   padding: "10px 14px",
                   background: "#FEF2F2",
                   border: "1px solid #F87171",
+                  borderRadius: "8px",
                   color: "#991B1B",
-                  fontSize: "12px",
+                  fontSize: "13px",
                   fontFamily: "var(--font-mono)",
                   fontWeight: 600,
                   display: "flex",
                   alignItems: "center",
                   gap: "8px",
+                  marginBottom: "12px",
                 }}
               >
-                ⚠️ Stället "{duplicateMatch.name}" finns redan i kartan ({duplicateMatch.area}).
+                ⚠️ {lang === "sv"
+                  ? `Stället "${duplicateMatch.name}" finns redan i kartan (${duplicateMatch.area}). Du kan inte lägga till en dubblett.`
+                  : `The place "${duplicateMatch.name}" already exists on the map (${duplicateMatch.area}). You cannot add a duplicate.`}
               </div>
             ) : null}
             <div className="superpower-form-group">
@@ -609,8 +653,19 @@ export function ConciergeSuperpowerModal({
                 />
               </div>
             )}
-            <button type="submit" className="superpower-submit-btn" disabled={Boolean(duplicateMatch)} style={{ opacity: duplicateMatch ? 0.5 : 1, cursor: duplicateMatch ? "not-allowed" : "pointer" }}>
-              <PlusCircle size={16} /> Publicera nytt ställe i kartan
+            <button
+              type="submit"
+              className="superpower-submit-btn"
+              disabled={Boolean(duplicateMatch)}
+              style={{
+                opacity: duplicateMatch ? 0.5 : 1,
+                cursor: duplicateMatch ? "not-allowed" : "pointer",
+              }}
+            >
+              <PlusCircle size={16} />{" "}
+              {duplicateMatch
+                ? (lang === "sv" ? "Dubblett - Finns redan i kartan" : "Duplicate - Already in map")
+                : (lang === "sv" ? "Publicera nytt ställe i kartan" : "Publish new place to map")}
             </button>
           </form>
         )}
