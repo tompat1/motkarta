@@ -338,5 +338,43 @@ test.describe("Mobile Full User Flows", () => {
     // Verify modal closes
     await expect(modal).not.toBeVisible();
   });
+
+  test("12. Search and select place in add photo modal dropdown", async ({ page }) => {
+    await page.goto("/");
+
+    // Open photo modal via superpower chip button
+    const photoChip = page.locator('.superpower-chip-btn', { hasText: /foto/i }).first();
+    await expect(photoChip).toBeVisible();
+    await photoChip.click();
+
+    // Verify modal appears
+    const modal = page.locator('.superpower-modal-card');
+    await expect(modal).toBeVisible();
+
+    // Verify searchable place select is present
+    const placeInput = modal.locator('[data-testid="searchable-place-input"]');
+    await expect(placeInput).toBeVisible();
+
+    // Click input to open dropdown and initiate search
+    await placeInput.click();
+    const dropdown = modal.locator('[data-testid="searchable-place-dropdown"]');
+    await expect(dropdown).toBeVisible();
+
+    // Type query to search for Solkant
+    await placeInput.fill("Solkant");
+    const solkantOption = dropdown.locator('.searchable-place-option', { hasText: /Solkant/i }).first();
+    await expect(solkantOption).toBeVisible();
+
+    // Capture screenshot of the filtered dropdown
+    await modal.screenshot({ path: "test-results/searchable-place-select-dropdown.png" });
+
+    // Select Solkant
+    await solkantOption.click();
+
+    // Dropdown closes and input reflects selected place
+    await expect(dropdown).not.toBeVisible();
+    await expect(placeInput).toHaveValue(/Solkant/);
+  });
 });
+
 

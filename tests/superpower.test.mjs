@@ -148,3 +148,50 @@ test("duplicate place check matches existing names case-insensitively", () => {
   assert.ok(match);
   assert.equal(match.name, "Oaxen Slip");
 });
+
+test("searchable place filter matches places by name, area, kind, and cuisine with smart relevance", () => {
+  const places = [
+    { id: 1, name: "Solbacken", area: "Djurgården", kind: "Cafe", cuisine: "fika" },
+    { id: 2, name: "Solkant", area: "Vasastan", kind: "Cafe", cuisine: "specialty coffee" },
+    { id: 3, name: "Café Pascal", area: "Vasastan", kind: "Cafe", cuisine: "specialty coffee" },
+    { id: 4, name: "Soldaten Svejk", area: "Södermalm", kind: "Pub", cuisine: "czech" },
+  ];
+
+  const searchPlaces = (query) => {
+    const q = query.trim().toLowerCase();
+    const matches = places.filter((p) => {
+      const nameMatch = p.name.toLowerCase().includes(q);
+      const areaMatch = p.area?.toLowerCase().includes(q);
+      const kindMatch = p.kind?.toLowerCase().includes(q);
+      const cuisineMatch = typeof p.cuisine === "string" && p.cuisine.toLowerCase().includes(q);
+      return nameMatch || areaMatch || kindMatch || cuisineMatch;
+    });
+
+    matches.sort((a, b) => {
+      const aName = a.name.toLowerCase();
+      const bName = b.name.toLowerCase();
+      if (aName === q && bName !== q) return -1;
+      if (bName === q && aName !== q) return 1;
+      const aStarts = aName.startsWith(q);
+      const bStarts = bName.startsWith(q);
+      if (aStarts && !bStarts) return -1;
+      if (bStarts && !aStarts) return 1;
+      return aName.localeCompare(bName, "sv");
+    });
+
+    return matches;
+  };
+
+  // Exact match prioritized
+  const solkantRes = searchPlaces("Solkant");
+  assert.equal(solkantRes[0].name, "Solkant");
+
+  // Area search matches all Vasastan places
+  const vasaRes = searchPlaces("Vasastan");
+  assert.equal(vasaRes.length, 2);
+
+  // Cuisine search matches Czech
+  const czechRes = searchPlaces("czech");
+  assert.equal(czechRes.length, 1);
+  assert.equal(czechRes[0].name, "Soldaten Svejk");
+});

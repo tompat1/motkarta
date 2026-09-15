@@ -9361,6 +9361,185 @@ footer {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Searchable Place Select Dropdown (Combobox)                                */
+/* -------------------------------------------------------------------------- */
+
+.searchable-place-form-group {
+  position: relative;
+}
+
+.searchable-place-select {
+  position: relative;
+  width: 100%;
+}
+
+.searchable-place-input-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+  cursor: text;
+}
+
+.searchable-place-input-wrapper:hover {
+  border-color: var(--color-ink);
+}
+
+.searchable-place-input-wrapper.is-focused {
+  border-color: var(--color-water);
+  box-shadow: 0 0 0 2px rgba(43, 107, 122, 0.2);
+}
+
+.searchable-place-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 10px;
+  color: var(--color-charcoal);
+  opacity: 0.6;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.superpower-form-group input.searchable-place-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 8px 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-ink);
+  box-shadow: none;
+}
+
+.superpower-form-group input.searchable-place-input::placeholder {
+  color: var(--color-charcoal);
+  opacity: 0.55;
+  font-family: var(--font-body);
+}
+
+.searchable-place-clear-btn,
+.searchable-place-toggle-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-charcoal);
+  flex-shrink: 0;
+  transition: color var(--motion-fast);
+}
+
+.searchable-place-clear-btn:hover,
+.searchable-place-toggle-btn:hover {
+  color: var(--color-ink);
+}
+
+.searchable-place-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+  z-index: 10005;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  overscroll-behavior: contain;
+}
+
+.searchable-place-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.searchable-place-dropdown::-webkit-scrollbar-thumb {
+  background: var(--color-mist);
+  border-radius: 3px;
+}
+
+.searchable-place-dropdown::-webkit-scrollbar-thumb:hover {
+  background: var(--color-charcoal);
+}
+
+.searchable-place-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background var(--motion-fast);
+  gap: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.searchable-place-option:last-child {
+  border-bottom: none;
+}
+
+.searchable-place-option:hover,
+.searchable-place-option.is-highlighted {
+  background: var(--color-paper);
+}
+
+.searchable-place-option.is-selected {
+  background: #f0f7f9;
+}
+
+.searchable-place-option.is-selected.is-highlighted {
+  background: #e2f0f4;
+}
+
+.searchable-place-option-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.searchable-place-option-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.searchable-place-option-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-charcoal);
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.searchable-place-check-icon {
+  color: var(--color-water);
+  flex-shrink: 0;
+}
+
+.searchable-place-empty {
+  padding: 18px 12px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-charcoal);
+  font-style: italic;
+}
+
+/* -------------------------------------------------------------------------- */
 /* Superpower Photo Upload from Device & URL                                 */
 /* -------------------------------------------------------------------------- */
 

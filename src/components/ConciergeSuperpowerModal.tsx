@@ -3,6 +3,7 @@ import type { EstablishmentType, PlaceInput } from "../../lib/scoring";
 import type { CuratedSource, Language, SuperpowerMode } from "../app/shared";
 import { curatedSourceTypes } from "../app/shared";
 import { Camera, Image, Link, PlusCircle, ShieldCheck, Sparkle, Star, Trash, UploadSimple } from "@phosphor-icons/react";
+import { SearchablePlaceSelect } from "./SearchablePlaceSelect";
 
 export async function processImageFile(file: File): Promise<{
   dataUrl: string;
@@ -413,16 +414,14 @@ export function ConciergeSuperpowerModal({
 
         {mode === "add_review" && (
           <form className="superpower-form" onSubmit={handleSubmitReview}>
-            <div className="superpower-form-group">
-              <label>Välj ställe *</label>
-              <select value={selectedPlaceId} onChange={(e) => setSelectedPlaceId(Number(e.target.value))}>
-                {places.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} ({p.area})
-                  </option>
-                ))}
-              </select>
-            </div>
+            <SearchablePlaceSelect
+              places={places}
+              selectedPlaceId={selectedPlaceId}
+              onSelectPlace={setSelectedPlaceId}
+              lang={lang}
+              label={lang === "sv" ? "Välj ställe" : "Select place"}
+              required
+            />
             <div className="superpower-form-group">
               <label>Ditt namn / Alias</label>
               <input type="text" value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="t.ex. Anna K." />
@@ -449,16 +448,14 @@ export function ConciergeSuperpowerModal({
 
         {mode === "add_photo" && (
           <form className="superpower-form" onSubmit={handleSubmitPhoto}>
-            <div className="superpower-form-group">
-              <label>{lang === "sv" ? "Välj ställe *" : "Select place *"}</label>
-              <select value={selectedPlaceId} onChange={(e) => setSelectedPlaceId(Number(e.target.value))}>
-                {places.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} ({p.area})
-                  </option>
-                ))}
-              </select>
-            </div>
+            <SearchablePlaceSelect
+              places={places}
+              selectedPlaceId={selectedPlaceId}
+              onSelectPlace={setSelectedPlaceId}
+              lang={lang}
+              label={lang === "sv" ? "Välj ställe" : "Select place"}
+              required
+            />
 
             {/* Source selector tabs */}
             <div className="superpower-source-toggle" role="tablist">
@@ -636,16 +633,14 @@ export function ConciergeSuperpowerModal({
 
         {mode === "rate_place" && (
           <form className="superpower-form" onSubmit={handleSubmitRating}>
-            <div className="superpower-form-group">
-              <label>Välj ställe *</label>
-              <select value={selectedPlaceId} onChange={(e) => setSelectedPlaceId(Number(e.target.value))}>
-                {places.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} ({p.area})
-                  </option>
-                ))}
-              </select>
-            </div>
+            <SearchablePlaceSelect
+              places={places}
+              selectedPlaceId={selectedPlaceId}
+              onSelectPlace={setSelectedPlaceId}
+              lang={lang}
+              label={lang === "sv" ? "Välj ställe" : "Select place"}
+              required
+            />
             <div className="superpower-form-group">
               <label>Sätt betyg (1–5 stjärnor)</label>
               <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
