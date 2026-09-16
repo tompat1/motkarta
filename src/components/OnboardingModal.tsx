@@ -13,6 +13,7 @@ import {
   Question,
   Star,
 } from "@phosphor-icons/react";
+import { useCms, CmsEditFlag } from "../app/cms";
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
   if (!isOpen) return null;
 
+  const { t } = useCms();
   const isSv = lang === "sv";
 
   const toggleExpand = (index: number) => {
@@ -155,7 +157,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
           <span className="onboarding-badge">
             {isSv ? "MANIFEST & PRINCIPER" : "MANIFESTO & PRINCIPLES"}
           </span>
-          <h2>MOTKARTA — {isSv ? "Stockholms Fria Matkarta" : "Stockholm Independent Food Map"}</h2>
+          <h2>
+            {t.principlesHeading ? `MOTKARTA — ${t.principlesHeading}` : `MOTKARTA — ${isSv ? "Stockholms Fria Matkarta" : "Stockholm Independent Food Map"}`}
+            <CmsEditFlag cmsKey="principlesHeading" label="Principer: Huvudrubrik" />
+          </h2>
           <p className="onboarding-subtitle">
             {isSv
               ? "Stockholm, bord för bord. En oberoende matkarta byggd på öppen data och verifierbara källor."

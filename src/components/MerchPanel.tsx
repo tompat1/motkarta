@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ShoppingBag, Check, Sparkle, ArrowRight, ShieldCheck, ShoppingCart, Plus, Minus, Trash, X } from "@phosphor-icons/react";
+import { useCms, CmsEditFlag } from "../app/cms";
 
 export type Language = "sv" | "en";
 
@@ -242,6 +243,7 @@ export function MerchPanel({
   onOpenCart,
 }: MerchPanelProps) {
   const [showCartToast, setShowCartToast] = useState<string | null>(null);
+  const { t } = useCms();
 
   const isSv = lang === "sv";
 
@@ -268,7 +270,8 @@ export function MerchPanel({
           <div className="merch-header-top">
             <div className="merch-eyebrow">
               <Sparkle size={14} weight="bold" />
-              <span>{isSv ? "OFFICIELL MERCH & PRINTS" : "OFFICIAL MERCH & PRINTS"}</span>
+              <span>{t.merchEyebrow || (isSv ? "OFFICIELL MERCH & PRINTS" : "OFFICIAL MERCH & PRINTS")}</span>
+              <CmsEditFlag cmsKey="merchEyebrow" label="Merch: Ögonbryn" />
             </div>
 
             {/* Cart Trigger Button */}
@@ -284,12 +287,14 @@ export function MerchPanel({
           </div>
 
           <h2>
-            {isSv ? "STÖD DEN OBEROENDE MATGUIDEN" : "SUPPORT INDEPENDENT FOOD CULTURE"}
+            {t.merchHeading || (isSv ? "STÖD DEN OBEROENDE MATGUIDEN" : "SUPPORT INDEPENDENT FOOD CULTURE")}
+            <CmsEditFlag cmsKey="merchHeading" label="Merch: Huvudrubrik" />
           </h2>
           <p className="merch-subtitle">
-            {isSv
+            {t.merchSubtitle || (isSv
               ? "Ingen betald ranking, inga dolda sponsorer. Varje köp finansierar vår öppna databas och direkta kvalitetsauditer i Stockholm."
-              : "No paid rankings, zero sponsored listings. Every purchase funds our open database and on-the-ground food audits in Stockholm."}
+              : "No paid rankings, zero sponsored listings. Every purchase funds our open database and on-the-ground food audits in Stockholm.")}
+            <CmsEditFlag cmsKey="merchSubtitle" label="Merch: Underrubrik" />
           </p>
         </div>
 
@@ -302,13 +307,18 @@ export function MerchPanel({
           />
           <div className="merch-hero-overlay">
             <div className="merch-hero-badge">
-              <ShieldCheck size={16} weight="bold" /> 100% INDEPENDENT & LOCAL
+              <ShieldCheck size={16} weight="bold" /> {t.merchHeroBadge || "100% INDEPENDENT & LOCAL"}
+              <CmsEditFlag cmsKey="merchHeroBadge" label="Merch: Hero Badge" />
             </div>
-            <h3>{isSv ? "Stockholm, Bord för Bord Kollektion 2026" : "Stockholm, Table by Table 2026 Collection"}</h3>
+            <h3>
+              {t.merchHeroTitle || (isSv ? "Stockholm, Bord för Bord Kollektion 2026" : "Stockholm, Table by Table 2026 Collection")}
+              <CmsEditFlag cmsKey="merchHeroTitle" label="Merch: Hero Rubrik" />
+            </h3>
             <p>
-              {isSv
+              {t.merchHeroDesc || (isSv
                 ? "T-shirts, tygkassar, kepsar och tryckta stadsdelskartor tillverkade i ekologiska premiummaterial."
-                : "T-shirts, tote bags, caps, and printed city posters crafted from sustainable organic materials."}
+                : "T-shirts, tote bags, caps, and printed city posters crafted from sustainable organic materials.")}
+              <CmsEditFlag cmsKey="merchHeroDesc" label="Merch: Hero Beskrivning" />
             </p>
           </div>
         </div>

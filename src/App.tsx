@@ -14,6 +14,7 @@ import { SyncDevicesModal } from "./components/SyncDevicesModal";
 import { parseSyncDirectPlaces } from "./app/sync-utils";
 import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
 import { VerificationBar } from "./components/VerificationBar";
+import { CmsProvider, useCms, CmsEditFlag, CmsFooterControls } from "./app/cms";
 import { matchesEstablishmentFilter, findDuplicatePlace } from "./app/place-filtering";
 import { sanitizeAndAugmentPlaces } from "./app/place-sanitization";
 import { requestPosition, locationFailureMessage } from "./app/geolocation";
@@ -165,7 +166,13 @@ const DESKTOP_HERO_STORIES = [
   },
 ] as const;
 
-export default function App() {
+function AppContent({
+  lang,
+  handleSetLang,
+}: {
+  lang: Language;
+  handleSetLang: (newLang: Language) => void;
+}) {
   const [places, setPlaces] = useState<PlaceInput[]>([]);
   const [dataSource, setDataSource] = useState<DataSource>("loading");
   const [mode, setMode] = useState<Mode>("All recommendations");
@@ -215,23 +222,8 @@ export default function App() {
 
   const [superpowerMode, setSuperpowerMode] = useState<SuperpowerMode | null>(null);
   const [superpowerInitialPlaceName, setSuperpowerInitialPlaceName] = useState<string | undefined>(undefined);
-  const [lang, setLang] = useState<Language>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("motkarta_lang");
-      if (saved === "sv" || saved === "en") return saved;
-    }
-    return "sv";
-  });
-
-  const t = translations[lang];
+  const { t } = useCms();
   const isAdminRoute = isAdminRoutePath();
-
-  const handleSetLang = (newLang: Language) => {
-    setLang(newLang);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("motkarta_lang", newLang);
-    }
-  };
 
   const [userRatings, setUserRatings] = useState<Record<number, number>>(() => {
     if (typeof window !== "undefined") {
@@ -1598,9 +1590,11 @@ export default function App() {
         <nav>
           <a href="#map" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <Compass size={14} weight="bold" /> {t.navMap}
+            <CmsEditFlag cmsKey="navMap" label="Nav: Karta" />
           </a>
           <a href="#method" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <ShieldCheck size={14} weight="bold" /> {t.navMethod}
+            <CmsEditFlag cmsKey="navMethod" label="Nav: Metod" />
           </a>
           <a
             href="#concierge"
@@ -1611,18 +1605,23 @@ export default function App() {
             }}
           >
             <MagnifyingGlass size={14} weight="bold" /> {t.navConcierge}
+            <CmsEditFlag cmsKey="navConcierge" label="Nav: Concierge" />
           </a>
           <a href="#merch" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <ShoppingBag size={14} weight="bold" /> Merch
+            <ShoppingBag size={14} weight="bold" /> {t.navMerch || "Merch"}
+            <CmsEditFlag cmsKey="navMerch" label="Nav: Merch" />
           </a>
-          <button
-            type="button"
-            className="onboarding-trigger-btn"
-            onClick={() => setShowOnboarding(true)}
-            style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "none", border: "none", font: "inherit", color: "inherit", cursor: "pointer" }}
-          >
-            <Sparkle size={14} weight="bold" /> {lang === "sv" ? "Principer" : "Principles"}
-          </button>
+          <div style={{ display: "inline-flex", alignItems: "center" }}>
+            <button
+              type="button"
+              className="onboarding-trigger-btn"
+              onClick={() => setShowOnboarding(true)}
+              style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "none", border: "none", font: "inherit", color: "inherit", cursor: "pointer" }}
+            >
+              <Sparkle size={14} weight="bold" /> {t.navPrinciples || (lang === "sv" ? "Principer" : "Principles")}
+            </button>
+            <CmsEditFlag cmsKey="navPrinciples" label="Nav: Principer" />
+          </div>
         </nav>
         <div className="topbar-actions">
           {adminSession?.admin ? (
@@ -1746,14 +1745,21 @@ export default function App() {
           <div className="countermap-hero-eyebrow">
             <span className="countermap-hero-badge-square" aria-hidden="true" />
             <span className="countermap-hero-badge-text">{t.heroBadge}</span>
+            <CmsEditFlag cmsKey="heroBadge" label="Hero: Badge" />
           </div>
           <h1 id="countermap-hero-heading">
-            <span className="countermap-hero-line">{t.titleMain}</span>
+            <span className="countermap-hero-line">
+              {t.titleMain}
+              <CmsEditFlag cmsKey="titleMain" label="Hero: Huvudrubrik" />
+            </span>
             <span className="countermap-hero-line">
               {t.titleSubPrefix ? <span>{t.titleSubPrefix}</span> : null}
               <span className="countermap-hero-highlight">{t.titleSubHighlight}</span>
             </span>
-            <span className="countermap-hero-line countermap-hero-highlight">{t.titleSubEnd}</span>
+            <span className="countermap-hero-line countermap-hero-highlight">
+              {t.titleSubEnd}
+              <CmsEditFlag cmsKey="titleSub" label="Hero: Underrubrik" />
+            </span>
           </h1>
           <div className="countermap-hero-copy-foot">
             <div
@@ -1765,10 +1771,17 @@ export default function App() {
               <div className="countermap-hero-manifest-eyebrow">
                 <span className="countermap-hero-manifest-pip" aria-hidden="true" />
                 <span className="countermap-hero-manifest-badge">{t.heroManifestBadge}</span>
+                <CmsEditFlag cmsKey="heroManifestBadge" label="Manifest: Badge" />
               </div>
               <div className="countermap-hero-manifest-body">
-                <p className="countermap-hero-manifest-primary">{t.heroManifestPrimary}</p>
-                <p className="countermap-hero-manifest-secondary">{t.heroManifestSecondary}</p>
+                <p className="countermap-hero-manifest-primary">
+                  {t.heroManifestPrimary}
+                  <CmsEditFlag cmsKey="heroManifestPrimary" label="Manifest: Primär" />
+                </p>
+                <p className="countermap-hero-manifest-secondary">
+                  {t.heroManifestSecondary}
+                  <CmsEditFlag cmsKey="heroManifestSecondary" label="Manifest: Sekundär" />
+                </p>
               </div>
             </div>
             <p className="lede">
@@ -1782,6 +1795,7 @@ export default function App() {
               ) : (
                 t.lede
               )}
+              <CmsEditFlag cmsKey="lede" label="Hero: Ingress (Lede)" />
             </p>
             <a className="countermap-hero-jump" href="#map">
               <span>{lang === "sv" ? "Börja upptäcka" : "Start discovering"}</span>
@@ -1873,7 +1887,10 @@ export default function App() {
       <section className="controls countermap-controls" id="map" aria-labelledby="countermap-controls-title">
         <header className="countermap-controls-head">
           <div className="countermap-controls-head-title-row">
-            <h2 id="countermap-controls-title">{t.controlsHeading}</h2>
+            <h2 id="countermap-controls-title">
+              {t.controlsHeading}
+              <CmsEditFlag cmsKey="controlsHeading" label="Vad låter gott? (Rubrik)" />
+            </h2>
             <div className="countermap-selection-readout" aria-live="polite">
               <strong>{ranked.length.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</strong>
               <span>{lang === "sv" ? "ställen i urvalet" : "places in selection"}</span>
@@ -1881,6 +1898,7 @@ export default function App() {
           </div>
           <p data-subparagraph-en="Tell us what you're in the mood for. Ask freely or use a few preferences – we'll find great places based on transparent signals.">
             {t.controlsSubparagraph}
+            <CmsEditFlag cmsKey="controlsSubparagraph" label="Vad låter gott? (Underrubrik)" />
           </p>
         </header>
 
@@ -2612,15 +2630,18 @@ export default function App() {
                       ? t.formulaMostVerified
                   : t.formulaDefault}
           </p>
-          <div className="principles" aria-label="Ranking principles">
+          <div className="principles" id="principles" aria-label="Ranking principles">
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
               <Check size={13} weight="bold" style={{ color: "var(--color-water)" }} /> {t.principle1}
+              <CmsEditFlag cmsKey="principle1" label="Princip 1: Ingen betald ranking" />
             </span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
               <Check size={13} weight="bold" style={{ color: "var(--color-water)" }} /> {t.principle2}
+              <CmsEditFlag cmsKey="principle2" label="Princip 2: Recensionsvolym" />
             </span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
               <Check size={13} weight="bold" style={{ color: "var(--color-water)" }} /> {t.principle3}
+              <CmsEditFlag cmsKey="principle3" label="Princip 3: Klickpopularitet" />
             </span>
           </div>
           <div className="list">
@@ -2702,13 +2723,20 @@ export default function App() {
 
       <section className="concierge" id="concierge">
         <div>
-          <p className="eyebrow">{t.conciergeEyebrow}</p>
+          <p className="eyebrow">
+            {t.conciergeEyebrow}
+            <CmsEditFlag cmsKey="conciergeEyebrow" label="Concierge: Ögonbryn" />
+          </p>
           <h2>
             {t.conciergeHeadingMain} <i>{t.conciergeHeadingItalic}</i>
             <br />
             {t.conciergeHeadingSub}
+            <CmsEditFlag cmsKey="conciergeHeadingMain" label="Concierge: Rubrik" />
           </h2>
-          <p>{t.conciergeDesc}</p>
+          <p>
+            {t.conciergeDesc}
+            <CmsEditFlag cmsKey="conciergeDesc" label="Concierge: Beskrivning" />
+          </p>
           <div className="superpower-chips" aria-label="Concierge superpowers">
             <button type="button" className="superpower-chip-btn" onClick={() => setSuperpowerMode("add_place")}>
               <PlusCircle size={14} weight="bold" /> {lang === "sv" ? "➕ Lägg till nytt ställe" : "➕ Add new place"}
@@ -2727,7 +2755,8 @@ export default function App() {
         <div className="concierge-showcase-box">
           <div className="concierge-showcase-header">
             <Sparkle size={14} weight="bold" style={{ color: "var(--color-water)" }} />
-            <span>{lang === "sv" ? "Populära frågor att ställa i sökfältet" : "Popular questions to ask in the search bar"}</span>
+            <span>{t.conciergeShowcaseHeader || (lang === "sv" ? "Populära frågor att ställa i sökfältet" : "Popular questions to ask in the search bar")}</span>
+            <CmsEditFlag cmsKey="conciergeShowcaseHeader" label="Concierge: Frågemoln Rubrik" />
           </div>
           <div className="concierge-prompt-cloud">
             {getPopularConciergePrompts(lang).slice(0, 6).map((promptText) => (
@@ -2752,11 +2781,15 @@ export default function App() {
 
       <section className="method" id="method">
         <div>
-          <p className="eyebrow">{t.methodEyebrow}</p>
+          <p className="eyebrow">
+            {t.methodEyebrow}
+            <CmsEditFlag cmsKey="methodEyebrow" label="Metod: Ögonbryn" />
+          </p>
           <h2>
             {t.methodHeadingMain}
             <br />
             {t.methodHeadingSub}
+            <CmsEditFlag cmsKey="methodHeadingMain" label="Metod: Huvudrubrik" />
           </h2>
         </div>
         <div className="method-grid">
@@ -2765,37 +2798,62 @@ export default function App() {
               <b>01</b>
               <Sliders size={20} weight="bold" style={{ color: "var(--color-water)" }} />
             </div>
-            <h3>{t.method01Title}</h3>
-            <p>{t.method01Desc}</p>
+            <h3>
+              {t.method01Title}
+              <CmsEditFlag cmsKey="method01Title" label="Metod 01: Rubrik" />
+            </h3>
+            <p>
+              {t.method01Desc}
+              <CmsEditFlag cmsKey="method01Desc" label="Metod 01: Beskrivning" />
+            </p>
           </article>
           <article>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
               <b>02</b>
               <Scales size={20} weight="bold" style={{ color: "var(--color-water)" }} />
             </div>
-            <h3>{t.method02Title}</h3>
-            <p>{t.method02Desc}</p>
+            <h3>
+              {t.method02Title}
+              <CmsEditFlag cmsKey="method02Title" label="Metod 02: Rubrik" />
+            </h3>
+            <p>
+              {t.method02Desc}
+              <CmsEditFlag cmsKey="method02Desc" label="Metod 02: Beskrivning" />
+            </p>
           </article>
           <article>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
               <b>03</b>
               <Certificate size={20} weight="bold" style={{ color: "var(--color-water)" }} />
             </div>
-            <h3>{t.method03Title}</h3>
-            <p>{t.method03Desc}</p>
+            <h3>
+              {t.method03Title}
+              <CmsEditFlag cmsKey="method03Title" label="Metod 03: Rubrik" />
+            </h3>
+            <p>
+              {t.method03Desc}
+              <CmsEditFlag cmsKey="method03Desc" label="Metod 03: Beskrivning" />
+            </p>
           </article>
           <article>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
               <b>04</b>
               <Sparkle size={20} weight="bold" style={{ color: "var(--color-water)" }} />
             </div>
-            <h3>{t.method04Title}</h3>
-            <p>{t.method04Desc}</p>
+            <h3>
+              {t.method04Title}
+              <CmsEditFlag cmsKey="method04Title" label="Metod 04: Rubrik" />
+            </h3>
+            <p>
+              {t.method04Desc}
+              <CmsEditFlag cmsKey="method04Desc" label="Metod 04: Beskrivning" />
+            </p>
           </article>
         </div>
         <div className="disclaimer">
           {t.dataNoteLabel}
           <span>{t.dataNoteText}</span>
+          <CmsEditFlag cmsKey="dataNoteText" label="Källnotering: Text" />
         </div>
       </section>
 
@@ -2999,10 +3057,12 @@ export default function App() {
               <a href="#map" onClick={() => setIsMobileMenuOpen(false)}>
                 <Compass size={18} weight="bold" />
                 <span>{t.navMap}</span>
+                <CmsEditFlag cmsKey="navMap" label="Nav: Karta" />
               </a>
               <a href="#method" onClick={() => setIsMobileMenuOpen(false)}>
                 <ShieldCheck size={18} weight="bold" />
                 <span>{t.navMethod}</span>
+                <CmsEditFlag cmsKey="navMethod" label="Nav: Metod" />
               </a>
               <a
                 href="#concierge"
@@ -3014,22 +3074,28 @@ export default function App() {
               >
                 <MagnifyingGlass size={18} weight="bold" />
                 <span>{t.navConcierge}</span>
+                <CmsEditFlag cmsKey="navConcierge" label="Nav: Concierge" />
               </a>
               <a href="#merch" onClick={() => setIsMobileMenuOpen(false)}>
                 <ShoppingBag size={18} weight="bold" />
-                <span>Merch & Store</span>
+                <span>{t.navMerch || "Merch & Store"}</span>
+                <CmsEditFlag cmsKey="navMerch" label="Nav: Merch" />
               </a>
-              <button
-                type="button"
-                className="mobile-menu-action-btn"
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setShowOnboarding(true);
-                }}
-              >
-                <Sparkle size={18} weight="bold" />
-                <span>{lang === "sv" ? "Principer & Charters" : "Principles & Charters"}</span>
-              </button>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <button
+                  type="button"
+                  className="mobile-menu-action-btn"
+                  style={{ flex: 1 }}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setShowOnboarding(true);
+                  }}
+                >
+                  <Sparkle size={18} weight="bold" />
+                  <span>{t.navPrinciples || (lang === "sv" ? "Principer & Charters" : "Principles & Charters")}</span>
+                </button>
+                <CmsEditFlag cmsKey="navPrinciples" label="Nav: Principer" />
+              </div>
               <button
                 type="button"
                 className="mobile-menu-action-btn"
@@ -3103,13 +3169,42 @@ export default function App() {
       </div>
 
       <footer>
-
         <div style={{ display: "inline-flex", alignItems: "center", gap: "10px" }}>
           <img src="/logo.webp" alt="MOTKARTA" className="footer-logo" />
           <span>/ {t.footerLeft.replace(/^MOTKARTA \/ /, "")}</span>
+          <CmsEditFlag cmsKey="footerLeft" label="Footer: Vänstertext" />
         </div>
-        <span>{t.footerRight}</span>
+        <div className="footer-cms-anchor">
+          <CmsFooterControls />
+        </div>
+        <span>
+          {t.footerRight}
+          <CmsEditFlag cmsKey="footerRight" label="Footer: Högertext" />
+        </span>
       </footer>
     </main>
+  );
+}
+
+export default function App() {
+  const [lang, setLang] = useState<Language>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("motkarta_lang");
+      if (saved === "sv" || saved === "en") return saved;
+    }
+    return "sv";
+  });
+
+  const handleSetLang = useCallback((newLang: Language) => {
+    setLang(newLang);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("motkarta_lang", newLang);
+    }
+  }, []);
+
+  return (
+    <CmsProvider lang={lang}>
+      <AppContent lang={lang} handleSetLang={handleSetLang} />
+    </CmsProvider>
   );
 }
