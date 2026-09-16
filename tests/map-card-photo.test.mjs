@@ -25,6 +25,17 @@ test("App.tsx removes note paragraph from map card", () => {
   assert.ok(!appSource.includes('<p className="note">{active.note}</p>'), "App.tsx map card should not contain <p className=\"note\">{active.note}</p>");
 });
 
+test("map card exposes a user photo upload flow", async () => {
+  const uploadSource = await readFile(new URL("../src/components/UserPhotoUploadModal.tsx", import.meta.url), "utf8");
+
+  assert.match(appSource, /className="map-card-add-photo-btn"/);
+  assert.match(appSource, /setIsUserPhotoUploadOpen\(true\)/);
+  assert.match(appSource, /<UserPhotoUploadModal/);
+  assert.match(uploadSource, /processImageFile/);
+  assert.match(uploadSource, /addUserPhoto\(placeId/);
+  assert.match(uploadSource, /accept="image\/jpeg,image\/png,image\/webp"/);
+});
+
 test("PlaceDetailSheet filters out raw OpenStreetMap notes", () => {
   assert.match(detailSheetSource, /place\.note && !place\.note\.toLowerCase\(\)\.includes\("from openstreetmap"\)/);
 });

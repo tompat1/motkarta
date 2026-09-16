@@ -77,6 +77,7 @@ import { MerchPanel } from "./components/MerchPanel";
 import { PreloaderModal } from "./components/PreloaderModal";
 import {
   Bread,
+  Camera,
   Certificate,
   Check,
   CaretUp,
@@ -120,6 +121,7 @@ import {
 } from "./components/MobileFilterBottomSheet";
 import { MobileRankControlSheet, type RankSheetType } from "./components/MobileRankControlSheet";
 import { PlaceDetailSheet } from "./components/PlaceDetailSheet";
+import { UserPhotoUploadModal } from "./components/UserPhotoUploadModal";
 import { MobilePlaceCardList } from "./components/MobilePlaceCardList";
 import { MotkartaScoreWidget } from "./components/MotkartaScoreWidget";
 import { SpecialtyCoffeeIcon } from "./components/SpecialtyCoffeeIcon";
@@ -184,6 +186,7 @@ function AppContent({
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number | null>(null);
   const [isMapCardMinimized, setIsMapCardMinimized] = useState(false);
+  const [isUserPhotoUploadOpen, setIsUserPhotoUploadOpen] = useState(false);
   const [mapFocusRequest, setMapFocusRequest] = useState<{ id: number; timestamp: number } | null>(null);
   const [placeAddedToast, setPlaceAddedToast] = useState<{
     placeName: string;
@@ -2455,6 +2458,14 @@ function AppContent({
                     <span key={tag}>{tag}</span>
                   ))}
                 </div>
+                <button
+                  type="button"
+                  className="map-card-add-photo-btn"
+                  onClick={() => setIsUserPhotoUploadOpen(true)}
+                >
+                  <Camera size={15} weight="bold" />
+                  {lang === "sv" ? "Lägg till bild" : "Add a photo"}
+                </button>
                 <MotkartaScoreWidget
                   scores={active.scores}
                   overallScore={modeScore(active, mode)}
@@ -2967,6 +2978,15 @@ function AppContent({
           onToggleSave={handleToggleSavePlace}
           onRatePlace={handleRatePlace}
           onViewOnMap={handleViewPlaceOnMap}
+        />
+      ) : null}
+
+      {active && isUserPhotoUploadOpen ? (
+        <UserPhotoUploadModal
+          placeId={active.id}
+          placeName={active.name}
+          lang={lang}
+          onClose={() => setIsUserPhotoUploadOpen(false)}
         />
       ) : null}
 
