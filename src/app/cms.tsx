@@ -534,7 +534,7 @@ function CmsEditorModal({
             </button>
           )}
           <div style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
-            <button type="button" className="cms-btn-secondary" onClick={onClose}>
+            <button type="button" className="cms-btn-secondary" onClick={onClose} data-testid="cms-cancel-btn">
               Avbryt
             </button>
             <button
