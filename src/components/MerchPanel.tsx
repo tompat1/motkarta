@@ -275,16 +275,18 @@ export function MerchPanel({
             </div>
 
             {/* Cart Trigger Button */}
-            <button
-              type="button"
-              className={`merch-cart-header-btn ${totalCount > 0 ? "has-items" : ""}`}
-              onClick={() => onOpenCart?.()}
-            >
-              <ShoppingCart size={18} weight="bold" />
-              <span>{t.merchCartBtn || (isSv ? "Varukorg" : "Cart")}</span>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <button
+                type="button"
+                className={`merch-cart-header-btn ${totalCount > 0 ? "has-items" : ""}`}
+                onClick={() => onOpenCart?.()}
+              >
+                <ShoppingCart size={18} weight="bold" />
+                <span>{t.merchCartBtn || (isSv ? "Varukorg" : "Cart")}</span>
+                <span className="merch-cart-count-badge">{totalCount}</span>
+              </button>
               <CmsEditFlag cmsKey="merchCartBtn" label="Merch: Varukorg-knapp" />
-              <span className="merch-cart-count-badge">{totalCount}</span>
-            </button>
+            </div>
           </div>
 
           <h2>
