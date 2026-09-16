@@ -54,3 +54,13 @@ test("dog friendly filter returns verified venues across Stockholm", () => {
   const sampleNames = dogVenues.map((p) => p.name.toLowerCase());
   assert.ok(sampleNames.some((n) => n.includes("drop coffee") || n.includes("bambino") || n.includes("kvarnen")));
 });
+
+test("Wi-Fi feature filter is exposed in desktop and mobile controls", async () => {
+  const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+  const mobileSource = await readFile(new URL("../src/components/MobileFilterBottomSheet.tsx", import.meta.url), "utf8");
+
+  assert.match(appSource, /selectedTags\.includes\("Wi-Fi"\)/);
+  assert.match(appSource, /toggleFeatureFilter\("Wi-Fi"\)/);
+  assert.match(mobileSource, /onToggleFeature: \(feature: "Dog friendly" \| "Wi-Fi"\)/);
+  assert.match(mobileSource, /<span>Wi-Fi<\/span>/);
+});

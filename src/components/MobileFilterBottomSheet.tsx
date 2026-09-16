@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Check, X, ArrowCounterClockwise, ForkKnife, Bread, Coffee, MapTrifold, Star, Sparkle } from "@phosphor-icons/react";
+import { Check, X, ArrowCounterClockwise, ForkKnife, Bread, Coffee, MapTrifold, Star, Sparkle, PawPrint, WifiHigh } from "@phosphor-icons/react";
 import { SpecialtyCoffeeIcon } from "./SpecialtyCoffeeIcon";
 import {
   allCuisines,
@@ -19,6 +19,8 @@ interface MobileFilterBottomSheetProps {
   cuisine: string;
   cuisineOptions: string[];
   onSelectCuisine: (cuisine: string) => void;
+  selectedTags: string[];
+  onToggleFeature: (feature: "Dog friendly" | "Wi-Fi") => void;
   hasActiveFilters: boolean;
   onResetFilters: () => void;
   matchingCount: number;
@@ -28,6 +30,7 @@ interface MobileFilterBottomSheetProps {
 export function MobileFilterBottomSheet({
   isOpen, onClose, kind, establishmentTypes, onSelectKind,
   cuisine, cuisineOptions, onSelectCuisine,
+  selectedTags, onToggleFeature,
   hasActiveFilters, onResetFilters, matchingCount, lang,
 }: MobileFilterBottomSheetProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -127,6 +130,19 @@ export function MobileFilterBottomSheet({
                   <span>{item === allCuisines ? t.allCuisines : cuisineLabel(item, lang)}</span>
                 </button>
               ))}
+            </div>
+          </section>
+          <section className="filter-sheet-section">
+            <h3 className="filter-sheet-section-title">{lang === "sv" ? "Egenskaper" : "Features"}</h3>
+            <div className="filter-sheet-grid" role="group" aria-label={lang === "sv" ? "Egenskaper" : "Features"}>
+              <button type="button" className={`filter-pill-button ${selectedTags.includes("Dog friendly") ? "is-selected" : ""}`} aria-pressed={selectedTags.includes("Dog friendly")} onClick={() => onToggleFeature("Dog friendly")}>
+                {selectedTags.includes("Dog friendly") ? <Check size={14} weight="bold" className="filter-pill-check" /> : <PawPrint size={16} weight="bold" />}
+                <span>{lang === "sv" ? "Hundvänligt" : "Dog Friendly"}</span>
+              </button>
+              <button type="button" className={`filter-pill-button ${selectedTags.includes("Wi-Fi") ? "is-selected" : ""}`} aria-pressed={selectedTags.includes("Wi-Fi")} onClick={() => onToggleFeature("Wi-Fi")}>
+                {selectedTags.includes("Wi-Fi") ? <Check size={14} weight="bold" className="filter-pill-check" /> : <WifiHigh size={16} weight="bold" />}
+                <span>Wi-Fi</span>
+              </button>
             </div>
           </section>
         </div>

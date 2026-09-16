@@ -19,6 +19,12 @@ test("extractStructuredFilters parses family-run, Polish/Eastern European, not e
   assert.equal(filters.near_public_transport, true);
 });
 
+test("extractStructuredFilters detects Wi-Fi requests in Swedish and English", () => {
+  assert.equal(extractStructuredFilters("wifi café").wifi, true);
+  assert.equal(extractStructuredFilters("café med trådlöst internet").wifi, true);
+  assert.equal(extractStructuredFilters("coffee shop with free Wi-Fi").wifi, true);
+});
+
 test("extractStructuredFilters canonicalizes bilingual cuisine filter words", () => {
   assert.deepEqual(extractStructuredFilters("Belgian").cuisines, ["belgian"]);
   assert.deepEqual(extractStructuredFilters("Belgisk").cuisines, ["belgian"]);

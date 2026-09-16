@@ -5,6 +5,7 @@ export type StructuredFilters = {
   tourist_centre: boolean;
   near_public_transport: boolean;
   dog_friendly?: boolean;
+  wifi?: boolean;
 };
 
 export function extractStructuredFilters(query: string): StructuredFilters {
@@ -203,6 +204,9 @@ export function extractStructuredFilters(query: string): StructuredFilters {
   const dogFriendly = ["dog", "dogs", "hund", "hundar", "hundvänlig", "hundvänligt", "tasstipset", "dog-friendly"].some(
     (kw) => qLower.includes(kw),
   );
+  const wifi = ["wifi", "wi-fi", "wi fi", "wireless internet", "free internet", "free wifi", "trådlöst internet", "trådlöst nätverk"].some(
+    (kw) => qLower.includes(kw),
+  );
 
   return {
     cuisines: [...new Set(cuisines)],
@@ -211,6 +215,7 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     tourist_centre: touristCentre,
     near_public_transport: nearPublicTransport,
     dog_friendly: dogFriendly,
+    wifi,
   };
 }
 

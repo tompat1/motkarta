@@ -72,6 +72,7 @@ export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent,
   if (intent.cuisineKinds.length && !intent.cuisineKinds.some((cuisine) => tokenAlternatives(normalize(cuisine)).some((term) => includesPhrase(attributes, term)))) return false;
   if (intent.dishes.some((dish) => !(DISH_TERMS[dish] ?? [dish]).some((term) => includesPhrase(attributes, term)))) return false;
   if (intent.filters.dog_friendly && !facts.facts.some((f) => (f.field === 'dogFriendly' && f.value === 'true') || (f.field === 'tags' && ['dog friendly', 'hundvanlig', 'hundvanligt'].some((t) => includesPhrase(f.value, t))))) return false;
+  if (intent.filters.wifi && !facts.facts.some((f) => f.field === 'tags' && ['wifi', 'wi-fi', 'wi fi', 'wireless internet', 'free internet', 'free wifi', 'tradlost internet', 'tradlost natverk'].some((t) => includesPhrase(f.value, t)))) return false;
   if (intent.priceMax !== null && !facts.facts.some((f) => f.field === 'priceSEK' && parsePriceMaxMatch(f.value, intent.priceMax!))) return false;
   if (intent.filters.near_public_transport && !facts.facts.some((f) => f.field === 'transit')) return false;
   if (intent.near || context.radiusKm !== undefined) {

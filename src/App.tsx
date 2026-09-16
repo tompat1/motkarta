@@ -104,6 +104,7 @@ import {
   ListDashes,
   X,
   PawPrint,
+  WifiHigh,
   DeviceMobile,
   QrCode,
   ArrowRight,
@@ -510,6 +511,13 @@ function AppContent({
     setCuisine(allCuisines);
   }, [clearConciergeState]);
 
+  const toggleFeatureFilter = useCallback((feature: "Dog friendly" | "Wi-Fi") => {
+    clearConciergeState();
+    setSelectedTags((previous) => previous.includes(feature)
+      ? previous.filter((tag) => tag !== feature)
+      : [...previous, feature]);
+  }, [clearConciergeState]);
+
   const [isSourcesLoading, setIsSourcesLoading] = useState(false);
   const [isPromptsLoading, setIsPromptsLoading] = useState(false);
   const [adminSession, setAdminSession] = useState<AdminSessionStatus | null>(null);
@@ -824,6 +832,10 @@ function AppContent({
                 pt.includes("hund")
               )
             );
+          }
+          if (tLower === "wi-fi" || tLower === "wifi") {
+            return ["wifi", "wi-fi", "wi fi", "wireless internet", "free internet", "free wifi", "trådlöst internet", "trådlöst nätverk"]
+              .some((term) => searchStr.includes(term) || noteLower.includes(term) || placeTags.some((pt) => pt.includes(term)));
           }
           return (
             searchStr.includes(tLower) ||
@@ -2244,18 +2256,19 @@ function AppContent({
           <div className="chip-row">
             <button
               className={selectedTags.includes("Dog friendly") ? "active" : ""}
-              onClick={() => {
-                const exists = selectedTags.includes("Dog friendly");
-                const updated = exists
-                  ? selectedTags.filter((t) => t !== "Dog friendly")
-                  : [...selectedTags, "Dog friendly"];
-                clearConciergeState();
-                setSelectedTags(updated);
-              }}
+              onClick={() => toggleFeatureFilter("Dog friendly")}
               type="button"
             >
               <PawPrint size={18} weight={selectedTags.includes("Dog friendly") ? "fill" : "bold"} />
               <span>{lang === "sv" ? "Hundvänligt" : "Dog Friendly"}</span>
+            </button>
+            <button
+              className={selectedTags.includes("Wi-Fi") ? "active" : ""}
+              onClick={() => toggleFeatureFilter("Wi-Fi")}
+              type="button"
+            >
+              <WifiHigh size={18} weight={selectedTags.includes("Wi-Fi") ? "fill" : "bold"} />
+              <span>Wi-Fi</span>
             </button>
           </div>
         </div>
@@ -2969,6 +2982,8 @@ function AppContent({
         cuisine={cuisine}
         cuisineOptions={cuisineOptions}
         onSelectCuisine={selectCuisineFilter}
+        selectedTags={selectedTags}
+        onToggleFeature={toggleFeatureFilter}
         hasActiveFilters={activeFilterCount > 0 || Boolean(query.trim())}
         onResetFilters={handleResetMobileFilters}
         matchingCount={ranked.length}
