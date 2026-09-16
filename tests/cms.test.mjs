@@ -82,10 +82,24 @@ test("CMS_CATALOG contains all essential sections and keys", () => {
   assert.ok(keys.has("merchHeroBadge"));
   assert.ok(keys.has("merchHeroTitle"));
   assert.ok(keys.has("merchHeroDesc"));
+  assert.ok(keys.has("merchCartBtn"));
+  assert.ok(keys.has("merchDrawerTitle"));
+  assert.ok(keys.has("merchDrawerEmpty"));
+  assert.ok(keys.has("merchDrawerCheckout"));
+  assert.ok(keys.has("merchItem_tshirt_black_title"));
+  assert.ok(keys.has("merchItem_tshirt_black_tagline"));
+  assert.ok(keys.has("merchItem_tshirt_pin_white_title"));
+  assert.ok(keys.has("merchItem_tshirt_grid_motkarta_title"));
   assert.ok(keys.has("principlesHeading"));
+  assert.ok(keys.has("onboardingBadge"));
+  assert.ok(keys.has("onboardingSubtitle"));
   assert.ok(keys.has("principle1"));
   assert.ok(keys.has("principle2"));
   assert.ok(keys.has("principle3"));
+  assert.ok(keys.has("principle1Title"));
+  assert.ok(keys.has("principle1Desc"));
+  assert.ok(keys.has("principle6Title"));
+  assert.ok(keys.has("onboardingExploreMap"));
   assert.ok(keys.has("footerLeft"));
   assert.ok(keys.has("footerRight"));
 });
@@ -145,6 +159,7 @@ test("App.tsx, MerchPanel.tsx and OnboardingModal.tsx integrate CmsEditFlag and 
   const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
   const merchSource = await readFile(new URL("../src/components/MerchPanel.tsx", import.meta.url), "utf8");
   const onboardingSource = await readFile(new URL("../src/components/OnboardingModal.tsx", import.meta.url), "utf8");
+  const cartDrawerSource = await readFile(new URL("../src/components/CartDrawer.tsx", import.meta.url), "utf8");
 
   // App integration
   assert.match(appSource, /<CmsFooterControls/);
@@ -164,8 +179,18 @@ test("App.tsx, MerchPanel.tsx and OnboardingModal.tsx integrate CmsEditFlag and 
   assert.match(merchSource, /useCms\(\)/);
   assert.match(merchSource, /<CmsEditFlag cmsKey="merchHeading"/);
   assert.match(merchSource, /<CmsEditFlag cmsKey="merchSubtitle"/);
+  assert.match(merchSource, /<CmsEditFlag cmsKey="merchCartBtn"/);
+  assert.match(merchSource, /<CmsEditFlag cmsKey={itemTitleKey}/);
 
   // OnboardingModal integration
   assert.match(onboardingSource, /useCms\(\)/);
   assert.match(onboardingSource, /<CmsEditFlag cmsKey="principlesHeading"/);
+  assert.match(onboardingSource, /<CmsEditFlag cmsKey="onboardingBadge"/);
+  assert.match(onboardingSource, /<CmsEditFlag cmsKey="onboardingSubtitle"/);
+  assert.match(onboardingSource, /<CmsEditFlag cmsKey={p\.titleKey}/);
+
+  // CartDrawer integration
+  assert.match(cartDrawerSource, /useCms\(\)/);
+  assert.match(cartDrawerSource, /<CmsEditFlag cmsKey="merchDrawerTitle"/);
+  assert.match(cartDrawerSource, /<CmsEditFlag cmsKey="merchDrawerCheckout"/);
 });

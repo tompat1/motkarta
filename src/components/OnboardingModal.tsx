@@ -54,50 +54,80 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   const principles = [
     {
       id: "counter-stream",
-      title: isSv ? "1. Motström — Opartisk & Fri" : "1. Counter-Stream — Unbiased & Free",
-      tagline: isSv ? "MOTSTRÖM APPAREL" : "COUNTER MOVEMENT",
-      description: isSv
+      titleKey: "principle1Title",
+      titleLabel: "Panel 1: Motström (Rubrik)",
+      title: t.principle1Title || (isSv ? "1. Motström — Opartisk & Fri" : "1. Counter-Stream — Unbiased & Free"),
+      taglineKey: "principle1Tagline",
+      taglineLabel: "Panel 1: Tagline",
+      tagline: t.principle1Tagline || (isSv ? "MOTSTRÖM APPAREL" : "COUNTER MOVEMENT"),
+      descKey: "principle1Desc",
+      descLabel: "Panel 1: Beskrivning",
+      description: t.principle1Desc || (isSv
         ? "Ingen betald ranking, inga köpta placeringar och inga sponsrade avgifter. Alla ställen rankas strikt på verifierbar kvalitet och transparens."
-        : "No paid rankings, no sponsored placements, no hidden fees. Places are ranked strictly on audited quality and transparency.",
+        : "No paid rankings, no sponsored placements, no hidden fees. Places are ranked strictly on audited quality and transparency."),
       icon: ShieldCheck,
     },
     {
       id: "auditable-data",
-      title: isSv ? "2. Auditerbar Data & Kontroll" : "2. Auditable Data & Inspections",
-      tagline: isSv ? "RÅDATA LOGO SHEET" : "PRECISION AUDIT",
-      description: isSv
+      titleKey: "principle2Title",
+      titleLabel: "Panel 2: Auditerbar Data (Rubrik)",
+      title: t.principle2Title || (isSv ? "2. Auditerbar Data & Kontroll" : "2. Auditable Data & Inspections"),
+      taglineKey: "principle2Tagline",
+      taglineLabel: "Panel 2: Tagline",
+      tagline: t.principle2Tagline || (isSv ? "RÅDATA LOGO SHEET" : "PRECISION AUDIT"),
+      descKey: "principle2Desc",
+      descLabel: "Panel 2: Beskrivning",
+      description: t.principle2Desc || (isSv
         ? "Kombinerar officiella kommunala miljö- och livsmedelsinspektioner, serveringstillstånd och oberoende redaktionella guider."
-        : "Integrates official municipal food control inspections, liquor permits, and independent editorial restaurant guides.",
+        : "Integrates official municipal food control inspections, liquor permits, and independent editorial restaurant guides."),
       icon: CheckCircle,
     },
     {
       id: "open-data",
-      title: isSv ? "3. Öppen Grunddata" : "3. Open Data Baseline",
-      tagline: isSv ? "RÅDATA BASELINE" : "RAW DATA BASELINE",
-      description: isSv
+      titleKey: "principle3Title",
+      titleLabel: "Panel 3: Öppen Grunddata (Rubrik)",
+      title: t.principle3Title || (isSv ? "3. Öppen Grunddata" : "3. Open Data Baseline"),
+      taglineKey: "principle3Tagline",
+      taglineLabel: "Panel 3: Tagline",
+      tagline: t.principle3Tagline || (isSv ? "RÅDATA BASELINE" : "RAW DATA BASELINE"),
+      descKey: "principle3Desc",
+      descLabel: "Panel 3: Beskrivning",
+      description: t.principle3Desc || (isSv
         ? "Öppen källkod och geografisk baseline från OpenStreetMap och Stockholms stad — tillgängligt för alla."
-        : "Open source and geographical baseline from OpenStreetMap and the City of Stockholm — accessible to everyone.",
+        : "Open source and geographical baseline from OpenStreetMap and the City of Stockholm — accessible to everyone."),
       icon: Sparkle,
     },
     {
       id: "neighborhood",
-      title: isSv ? "4. Nollpunkt & Kvarter" : "4. Neighborhood Precision",
-      tagline: isSv ? "NOLLPUNKT STREET" : "STREET LEVEL GRID",
-      description: isSv
+      titleKey: "principle4Title",
+      titleLabel: "Panel 4: Nollpunkt (Rubrik)",
+      title: t.principle4Title || (isSv ? "4. Nollpunkt & Kvarter" : "4. Neighborhood Precision"),
+      taglineKey: "principle4Tagline",
+      taglineLabel: "Panel 4: Tagline",
+      tagline: t.principle4Tagline || (isSv ? "NOLLPUNKT STREET" : "STREET LEVEL GRID"),
+      descKey: "principle4Desc",
+      descLabel: "Panel 4: Beskrivning",
+      description: t.principle4Desc || (isSv
         ? "Precision på gatunivå. Hitta dolda pärlor, specialty coffee och kvarterskrogar från Södermalm och Vasastan till Gamla Stan."
-        : "Street-level accuracy. Discover hidden gems, specialty coffee, and local bistros from Södermalm to Vasastan.",
+        : "Street-level accuracy. Discover hidden gems, specialty coffee, and local bistros from Södermalm to Vasastan."),
       icon: MapPin,
     },
     {
       id: "table-by-table",
-      title: isSv ? "5. Stockholm, Bord för Bord" : "5. Stockholm, Table by Table",
-      tagline: isSv ? "STOCKHOLM, BORD FÖR BORD" : "STOCKHOLM, TABLE BY TABLE",
-      description: isSv
+      titleKey: "principle5Title",
+      titleLabel: "Panel 5: Stockholm Bord för Bord (Rubrik)",
+      title: t.principle5Title || (isSv ? "5. Stockholm, Bord för Bord" : "5. Stockholm, Table by Table"),
+      taglineKey: "principle5Tagline",
+      taglineLabel: "Panel 5: Tagline",
+      tagline: t.principle5Tagline || (isSv ? "STOCKHOLM, BORD FÖR BORD" : "STOCKHOLM, TABLE BY TABLE"),
+      descKey: "principle5Desc",
+      descLabel: "Panel 5: Beskrivning",
+      description: t.principle5Desc || (isSv
         ? "Kurerat urval över 3 190+ restauranger, caféer, bagerier och baristabarer i hela Stockholm."
-        : "Curated directory of over 3,190+ restaurants, bakeries, cafes, and roasteries across Stockholm.",
+        : "Curated directory of over 3,190+ restaurants, bakeries, cafes, and roasteries across Stockholm."),
       icon: Compass,
       action: {
-        label: isSv ? "Fråga Conciergen" : "Ask Concierge",
+        label: t.onboardingAskConcierge || (isSv ? "Fråga Conciergen" : "Ask Concierge"),
         icon: MagnifyingGlass,
         onClick: () => {
           onClose();
@@ -108,11 +138,17 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     {
       id: "qr-sync",
       isSyncCard: true,
-      title: isSv ? "6. Privatsynk & QR-kod" : "6. Zero-Login QR Sync",
-      tagline: isSv ? "ENHETSSYNKRONISERING" : "CROSS-DEVICE SYNC",
-      description: isSv
+      titleKey: "principle6Title",
+      titleLabel: "Panel 6: Privatsynk & QR (Rubrik)",
+      title: t.principle6Title || (isSv ? "6. Privatsynk & QR-kod" : "6. Zero-Login QR Sync"),
+      taglineKey: "principle6Tagline",
+      taglineLabel: "Panel 6: Tagline",
+      tagline: t.principle6Tagline || (isSv ? "ENHETSSYNKRONISERING" : "CROSS-DEVICE SYNC"),
+      descKey: "principle6Desc",
+      descLabel: "Panel 6: Beskrivning",
+      description: t.principle6Desc || (isSv
         ? "Synka dina sparade favoritställen sömlöst mellan alla dina enheter via QR-kod eller 6-ställig kod — helt utan konto eller e-post."
-        : "Seamlessly sync your saved favorite places across all your devices using a QR code or 6-character code — zero login or email required.",
+        : "Seamlessly sync your saved favorite places across all your devices using a QR code or 6-character code — zero login or email required."),
       icon: QrCode,
       stepsTitle: isSv ? "💡 Hur funkar det? (3 enkla steg)" : "💡 How does it work? (3 simple steps)",
       steps: [
@@ -155,16 +191,18 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
         <div className="onboarding-header">
           <span className="onboarding-badge">
-            {isSv ? "MANIFEST & PRINCIPER" : "MANIFESTO & PRINCIPLES"}
+            {t.onboardingBadge || (isSv ? "MANIFEST & PRINCIPER" : "MANIFESTO & PRINCIPLES")}
+            <CmsEditFlag cmsKey="onboardingBadge" label="Principer: Modal Ögonbryn" />
           </span>
           <h2>
             {t.principlesHeading ? `MOTKARTA — ${t.principlesHeading}` : `MOTKARTA — ${isSv ? "Stockholms Fria Matkarta" : "Stockholm Independent Food Map"}`}
             <CmsEditFlag cmsKey="principlesHeading" label="Principer: Huvudrubrik" />
           </h2>
           <p className="onboarding-subtitle">
-            {isSv
+            {t.onboardingSubtitle || (isSv
               ? "Stockholm, bord för bord. En oberoende matkarta byggd på öppen data och verifierbara källor."
-              : "Stockholm, table by table. An independent food map built on open data and auditable evidence."}
+              : "Stockholm, table by table. An independent food map built on open data and auditable evidence.")}
+            <CmsEditFlag cmsKey="onboardingSubtitle" label="Principer: Modal Underrubrik" />
           </p>
         </div>
 
@@ -177,9 +215,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
           />
           <div className="onboarding-banner-caption">
             <span>
-              {isSv
+              {t.onboardingBannerCaption || (isSv
                 ? "🎨 Klicka på korten nedan för att fälla ut eller ihop text och källor."
-                : "🎨 Click cards below to collapse or extend text and sources."}
+                : "🎨 Click cards below to collapse or extend text and sources.")}
+              <CmsEditFlag cmsKey="onboardingBannerCaption" label="Principer: Banner Bildtext" />
             </span>
           </div>
         </div>
@@ -193,7 +232,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
             return (
               <div
-                key={p.tagline}
+                key={p.taglineKey}
                 className={`onboarding-principle-card ${isExpanded ? "expanded" : "collapsed"} ${
                   isSync ? "sync-featured-card" : ""
                 }`}
@@ -209,9 +248,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                 aria-expanded={isExpanded}
               >
                 <div className="principle-card-header">
-                  <div className="principle-card-icon-tag">
+                  <div className="principle-card-icon-tag" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                     <IconComponent size={18} weight="bold" />
                     <span className="principle-card-tagline">{p.tagline}</span>
+                    <CmsEditFlag cmsKey={p.taglineKey} label={p.taglineLabel} />
                   </div>
                   <button
                     type="button"
@@ -226,11 +266,17 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                   </button>
                 </div>
 
-                <h4>{p.title}</h4>
+                <h4 style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "6px" }}>
+                  <span>{p.title}</span>
+                  <CmsEditFlag cmsKey={p.titleKey} label={p.titleLabel} />
+                </h4>
 
                 {isExpanded ? (
                   <div className="principle-card-body">
-                    <p>{p.description}</p>
+                    <p>
+                      {p.description}
+                      <CmsEditFlag cmsKey={p.descKey} label={p.descLabel} />
+                    </p>
 
                     {isSync ? (
                       <div className="sync-how-it-works-container" onClick={(e) => e.stopPropagation()}>
@@ -305,38 +351,48 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
         {/* Footer Action Buttons */}
         <div className="onboarding-actions">
           {onOpenSyncModal ? (
-            <button
-              type="button"
-              className="onboarding-sync-btn"
-              onClick={() => {
-                onClose();
-                onOpenSyncModal();
-              }}
-            >
-              <QrCode size={18} weight="bold" />
-              {isSv ? "Synka Enheter (QR-kod)" : "Sync Devices (QR Code)"}
-            </button>
+            <div style={{ display: "inline-flex", alignItems: "center" }}>
+              <button
+                type="button"
+                className="onboarding-sync-btn"
+                onClick={() => {
+                  onClose();
+                  onOpenSyncModal();
+                }}
+              >
+                <QrCode size={18} weight="bold" />
+                {t.onboardingSyncDevices || (isSv ? "Synka Enheter (QR-kod)" : "Sync Devices (QR Code)")}
+              </button>
+              <CmsEditFlag cmsKey="onboardingSyncDevices" label="Principer: Synka Enheter knapp" />
+            </div>
           ) : null}
 
-          <button
-            type="button"
-            className="onboarding-primary-btn"
-            onClick={onClose}
-          >
-            <Compass size={18} weight="bold" />
-            {isSv ? "Utforska Kartan" : "Explore Map"}
-          </button>
-          <button
-            type="button"
-            className="onboarding-secondary-btn"
-            onClick={() => {
-              onClose();
-              onOpenConcierge();
-            }}
-          >
-            <MagnifyingGlass size={18} weight="bold" />
-            {isSv ? "Fråga Conciergen" : "Ask Concierge"}
-          </button>
+          <div style={{ display: "inline-flex", alignItems: "center" }}>
+            <button
+              type="button"
+              className="onboarding-primary-btn"
+              onClick={onClose}
+            >
+              <Compass size={18} weight="bold" />
+              {t.onboardingExploreMap || (isSv ? "Utforska Kartan" : "Explore Map")}
+            </button>
+            <CmsEditFlag cmsKey="onboardingExploreMap" label="Principer: Utforska Kartan knapp" />
+          </div>
+
+          <div style={{ display: "inline-flex", alignItems: "center" }}>
+            <button
+              type="button"
+              className="onboarding-secondary-btn"
+              onClick={() => {
+                onClose();
+                onOpenConcierge();
+              }}
+            >
+              <MagnifyingGlass size={18} weight="bold" />
+              {t.onboardingAskConcierge || (isSv ? "Fråga Conciergen" : "Ask Concierge")}
+            </button>
+            <CmsEditFlag cmsKey="onboardingAskConcierge" label="Principer: Fråga Conciergen knapp" />
+          </div>
         </div>
       </div>
     </div>

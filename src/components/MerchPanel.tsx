@@ -281,7 +281,8 @@ export function MerchPanel({
               onClick={() => onOpenCart?.()}
             >
               <ShoppingCart size={18} weight="bold" />
-              <span>{isSv ? "Varukorg" : "Cart"}</span>
+              <span>{t.merchCartBtn || (isSv ? "Varukorg" : "Cart")}</span>
+              <CmsEditFlag cmsKey="merchCartBtn" label="Merch: Varukorg-knapp" />
               <span className="merch-cart-count-badge">{totalCount}</span>
             </button>
           </div>
@@ -326,8 +327,10 @@ export function MerchPanel({
         {/* Product Cards Grid */}
         <div className="merch-grid">
           {MERCH_ITEMS.map((item) => {
-            const name = isSv ? item.nameSv : item.nameEn;
-            const tagline = isSv ? item.taglineSv : item.taglineEn;
+            const itemTitleKey = `merchItem_${item.id.replace(/-/g, "_")}_title` as keyof typeof t;
+            const itemTaglineKey = `merchItem_${item.id.replace(/-/g, "_")}_tagline` as keyof typeof t;
+            const name = (t[itemTitleKey] as string) || (isSv ? item.nameSv : item.nameEn);
+            const tagline = (t[itemTaglineKey] as string) || (isSv ? item.taglineSv : item.taglineEn);
             const badge = isSv ? item.badgeSv : item.badgeEn;
             const desc = isSv ? item.descSv : item.descEn;
             const stock = isSv ? item.stockStatusSv : item.stockStatusEn;
@@ -348,8 +351,14 @@ export function MerchPanel({
                   </span>
                 </div>
 
-                <h4 className="merch-card-title">{name}</h4>
-                <p className="merch-card-tagline">{tagline}</p>
+                <h4 className="merch-card-title" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "6px" }}>
+                  <span>{name}</span>
+                  <CmsEditFlag cmsKey={itemTitleKey} label={`Produkt: ${item.nameSv} (Rubrik)`} />
+                </h4>
+                <p className="merch-card-tagline" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "6px" }}>
+                  <span>{tagline}</span>
+                  <CmsEditFlag cmsKey={itemTaglineKey} label={`Produkt: ${item.nameSv} (Tagline)`} />
+                </p>
                 <p className="merch-card-desc">{desc}</p>
 
                 <ul className="merch-card-specs">
@@ -372,13 +381,13 @@ export function MerchPanel({
                       <>
                         <Check size={14} weight="bold" />
                         <span>
-                          {isSv ? "Tillagd" : "Added"} ({inCart})
+                          {t.merchAdded || (isSv ? "Tillagd" : "Added")} ({inCart})
                         </span>
                       </>
                     ) : (
                       <>
                         <ShoppingBag size={14} weight="bold" />
-                        <span>{isSv ? "Lägg i varukorg" : "Add to cart"}</span>
+                        <span>{t.merchAddToCart || (isSv ? "Lägg i varukorg" : "Add to cart")}</span>
                       </>
                     )}
                   </button>
@@ -395,26 +404,32 @@ export function MerchPanel({
               <ShoppingBag size={20} weight="fill" style={{ color: "var(--color-paper)" }} />
               <div>
                 <b>
-                  {totalCount} {isSv ? "artiklar i din varukorg" : "items in your order"} ({totalPriceSek} SEK)
+                  {totalCount} {t.merchSummaryItems || (isSv ? "artiklar i din varukorg" : "items in your order")} ({totalPriceSek} SEK)
                 </b>
-                <span>
-                  {isSv
-                    ? "Fri frakt inom Sverige vid köp över 500 kr"
-                    : "Free shipping in Sweden on orders over 500 SEK"}
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                  <span>
+                    {t.merchShippingFree || (isSv
+                      ? "Fri frakt inom Sverige vid köp över 500 kr"
+                      : "Free shipping in Sweden on orders over 500 SEK")}
+                  </span>
+                  <CmsEditFlag cmsKey="merchShippingFree" label="Merch: Fri frakt text" />
                 </span>
               </div>
             </div>
-            <button
-              type="button"
-              className="checkout-proceed-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenCart?.();
-              }}
-            >
-              <span>{isSv ? "Visa varukorg" : "View Cart"}</span>
-              <ArrowRight size={16} weight="bold" />
-            </button>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <button
+                type="button"
+                className="checkout-proceed-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenCart?.();
+                }}
+              >
+                <span>{t.merchViewCart || (isSv ? "Visa varukorg" : "View Cart")}</span>
+                <ArrowRight size={16} weight="bold" />
+              </button>
+              <CmsEditFlag cmsKey="merchViewCart" label="Merch: Visa varukorg knapp" />
+            </div>
           </div>
         ) : null}
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { ShoppingBag, ShoppingCart, Plus, Minus, Trash, X, ArrowRight } from "@phosphor-icons/react";
 import { MERCH_ITEMS, type Language, type MerchItem } from "./MerchPanel";
+import { useCms, CmsEditFlag } from "../app/cms";
 
 export type CartDrawerProps = {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export function CartDrawer({
 }: CartDrawerProps) {
   if (!isOpen) return null;
 
+  const { t } = useCms();
   const isSv = lang === "sv";
   const totalCount = Object.values(cart).reduce((sum, count) => sum + count, 0);
   const totalPriceSek = Object.entries(cart).reduce((sum, [id, qty]) => {
@@ -32,9 +34,10 @@ export function CartDrawer({
     <div className="merch-drawer-overlay" onClick={onClose}>
       <aside className="merch-drawer-panel" onClick={(e) => e.stopPropagation()}>
         <div className="merch-drawer-header">
-          <div className="merch-drawer-title">
+          <div className="merch-drawer-title" style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
             <ShoppingCart size={20} weight="bold" />
-            <h3>{isSv ? "Din Varukorg" : "Your Shopping Cart"}</h3>
+            <h3>{t.merchDrawerTitle || (isSv ? "Din Varukorg" : "Your Shopping Cart")}</h3>
+            <CmsEditFlag cmsKey="merchDrawerTitle" label="Varukorg: Rubrik" />
             <span className="merch-drawer-count">({totalCount})</span>
           </div>
           <button
@@ -51,11 +54,17 @@ export function CartDrawer({
           {totalCount === 0 ? (
             <div className="merch-empty-cart">
               <ShoppingBag size={48} weight="thin" style={{ color: "var(--color-stone)" }} />
-              <p>{isSv ? "Din varukorg är tom" : "Your shopping cart is empty"}</p>
-              <small>
-                {isSv
-                  ? "Utforska vår kurerade kollektion i merch-sektionen och lägg till din favorit-artikel."
-                  : "Explore our collection in the merch section to add your favorite items."}
+              <p style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <span>{t.merchDrawerEmpty || (isSv ? "Din varukorg är tom" : "Your shopping cart is empty")}</span>
+                <CmsEditFlag cmsKey="merchDrawerEmpty" label="Varukorg: Tom varukorg rubrik" />
+              </p>
+              <small style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <span>
+                  {t.merchDrawerEmptyDesc || (isSv
+                    ? "Utforska vår kurerade kollektion i merch-sektionen och lägg till din favorit-artikel."
+                    : "Explore our collection in the merch section to add your favorite items.")}
+                </span>
+                <CmsEditFlag cmsKey="merchDrawerEmptyDesc" label="Varukorg: Tom varukorg beskrivning" />
               </small>
             </div>
           ) : (
@@ -112,33 +121,43 @@ export function CartDrawer({
         {totalCount > 0 ? (
           <div className="merch-drawer-footer">
             <div className="merch-subtotal-row">
-              <span>{isSv ? "Totalt belopp:" : "Subtotal:"}</span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <span>{t.merchDrawerSubtotal || (isSv ? "Totalt belopp:" : "Subtotal:")}</span>
+                <CmsEditFlag cmsKey="merchDrawerSubtotal" label="Varukorg: Delsumma etikett" />
+              </span>
               <b>{totalPriceSek} SEK</b>
             </div>
             <p className="shipping-info">
               {totalPriceSek >= 500
-                ? isSv
-                  ? "✨ Fri frakt i Sverige kvalificerad!"
-                  : "✨ Free shipping in Sweden qualified!"
+                ? (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                    <span>{t.merchDrawerFreeShippingQualified || (isSv ? "✨ Fri frakt i Sverige kvalificerad!" : "✨ Free shipping in Sweden qualified!")}</span>
+                    <CmsEditFlag cmsKey="merchDrawerFreeShippingQualified" label="Varukorg: Fri frakt kvalificerad" />
+                  </span>
+                )
                 : isSv
                   ? `Handla för ${500 - totalPriceSek} kr till för fri frakt`
                   : `Add ${500 - totalPriceSek} SEK more for free shipping`}
             </p>
-            <button
-              type="button"
-              className="drawer-checkout-btn"
-              onClick={() => {
-                alert(
-                  isSv
-                    ? `Tack för ditt stöd! Din order på ${totalCount} artiklar (${totalPriceSek} kr) behandlas nu. För förhandsbeställningar och direkt hämtning i Vasastan/Södermalm, kontakta merch@motkarta.se.`
-                    : `Thank you for supporting independent food guide! Your order of ${totalCount} items (${totalPriceSek} SEK) is ready. Contact merch@motkarta.se for pre-orders and local pickup.`,
-                );
-                onClose();
-              }}
-            >
-              <span>{isSv ? "Gå till kassan" : "Proceed to checkout"}</span>
-              <ArrowRight size={16} weight="bold" />
-            </button>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", width: "100%" }}>
+              <button
+                type="button"
+                className="drawer-checkout-btn"
+                style={{ flex: 1 }}
+                onClick={() => {
+                  alert(
+                    isSv
+                      ? `Tack för ditt stöd! Din order på ${totalCount} artiklar (${totalPriceSek} kr) behandlas nu. För förhandsbeställningar och direkt hämtning i Vasastan/Södermalm, kontakta merch@motkarta.se.`
+                      : `Thank you for supporting independent food guide! Your order of ${totalCount} items (${totalPriceSek} SEK) is ready. Contact merch@motkarta.se for pre-orders and local pickup.`,
+                  );
+                  onClose();
+                }}
+              >
+                <span>{t.merchDrawerCheckout || (isSv ? "Gå till kassan" : "Proceed to checkout")}</span>
+                <ArrowRight size={16} weight="bold" />
+              </button>
+              <CmsEditFlag cmsKey="merchDrawerCheckout" label="Varukorg: Kassa knapp" />
+            </div>
           </div>
         ) : null}
       </aside>
