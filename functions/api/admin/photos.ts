@@ -1,3 +1,4 @@
+import { uploadedPhotos } from "../../../lib/photo-uploads.ts";
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
 
 type D1Statement = {
@@ -35,7 +36,7 @@ export async function onRequestGet(context: Context) {
     `SELECT id, place_id AS placeId, url, thumbnail_url AS thumbnailUrl, caption, credit, width, height
      FROM place_photos WHERE place_id = ? ORDER BY id DESC`,
   ).bind(placeId).all<AdminPhoto>();
-  return Response.json({ placeId, photos: results ?? [] }, { headers });
+  return Response.json({ placeId, photos: [...await uploadedPhotos(db, placeId), ...(results ?? [])] }, { headers });
 }
 
 export async function onRequestDelete(context: Context) {
@@ -47,7 +48,8 @@ export async function onRequestDelete(context: Context) {
   const db = context.env.DB as D1Database | undefined;
   if (!db) return Response.json({ error: "No production D1 dataset is bound." }, { status: 503, headers });
 
-  const result = await db.prepare("DELETE FROM place_photos WHERE id = ? AND place_id = ?").bind(photoId, placeId).run();
+  const table = photoId.startsWith("upload-") ? "place_photo_uploads" : "place_photos";
+  const result = await db.prepare(`DELETE FROM ${table} WHERE id = ? AND place_id = ?`).bind(photoId, placeId).run();
   if (!result.meta?.changes) return Response.json({ error: "Photo not found." }, { status: 404, headers });
   return Response.json({ success: true, placeId, photoId }, { headers });
 }

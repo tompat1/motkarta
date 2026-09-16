@@ -1,3 +1,4 @@
+import { parsePhotoIdentity, photoPlaceId, uploadedPhotos, type PhotoDatabase } from "../../lib/photo-uploads.ts";
 import type { PlacePhoto } from "../../lib/lazy-media.ts";
 
 type EventContext<Env> = {
@@ -5,19 +6,11 @@ type EventContext<Env> = {
   env: Env;
 };
 
-type Env = {
-  DB?: {
-    prepare(query: string): {
-      bind(...values: unknown[]): {
-        all<T = Record<string, unknown>>(): Promise<{ results?: T[] }>;
-      };
-    };
-  };
-};
+type Env = { DB?: unknown };
 
 const jsonHeaders = {
   "content-type": "application/json; charset=utf-8",
-  "cache-control": "public, max-age=86400, s-maxage=604800",
+  "cache-control": "no-store",
 };
 
 export async function onRequestGet(context: EventContext<Env>) {
@@ -31,15 +24,19 @@ export async function onRequestGet(context: EventContext<Env>) {
     );
   }
 
-  const placeId = parseInt(placeIdParam, 10);
-  if (isNaN(placeId)) {
+  const placeId = photoPlaceId(placeIdParam);
+  if (placeId === null) {
     return Response.json(
       { error: "Invalid place_id" },
       { status: 400, headers: jsonHeaders },
     );
   }
 
-  const db = context.env.DB;
+  const osmIdentity = url.searchParams.get("osm_identity");
+  if (osmIdentity && !parsePhotoIdentity(osmIdentity)) {
+    return Response.json({ error: "Invalid place identity" }, { status: 400, headers: jsonHeaders });
+  }
+  const db = context.env.DB as PhotoDatabase | undefined;
   if (db) {
     try {
       const { results } = await db
@@ -49,12 +46,11 @@ export async function onRequestGet(context: EventContext<Env>) {
         .bind(placeId)
         .all<PlacePhoto>();
 
-      if (results && results.length > 0) {
-        return Response.json(
-          { source: "d1", placeId, photos: results },
-          { headers: jsonHeaders },
-        );
-      }
+      const uploads = await uploadedPhotos(db, placeId, osmIdentity);
+      return Response.json(
+        { source: "d1", placeId, photos: [...uploads, ...(results ?? [])] },
+        { headers: jsonHeaders },
+      );
     } catch (error) {
       console.error("Failed to query D1 place_photos", error);
     }

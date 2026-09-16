@@ -3034,6 +3034,7 @@ function AppContent({
       {active && isUserPhotoUploadOpen ? (
         <UserPhotoUploadModal
           placeId={active.id}
+          osmIdentity={active.osmIdentity}
           placeName={active.name}
           lang={lang}
           onClose={() => setIsUserPhotoUploadOpen(false)}

@@ -22,6 +22,7 @@ export type PlacePhoto = {
 
 export type PlaceContext = {
   id: number;
+  osmIdentity?: string;
   name: string;
   kind?: string;
   cuisine?: string | null;
@@ -172,48 +173,44 @@ export async function fetchPlacePhotos(input: PlaceContext | number): Promise<Pl
 async function loadPlacePhotos(input: PlaceContext | number): Promise<PlacePhoto[]> {
   const ctx = parseContext(input);
   loadUserStoredMedia();
-  if (photosCache.has(ctx.id)) {
-    return photosCache.get(ctx.id)!;
-  }
-
-  // 1. Try static place_photos dataset
+  const localPhotos = photosCache.get(ctx.id) ?? [];
+  // Always check persistent photos, even for venues with static or local images.
+  // Only in-flight calls are cached so Admin deletions survive reopening a card.
+  const staticRequest = loadStaticPhotosDataset().catch(() => ({} as Record<string, PlacePhoto[]>));
   try {
-    const dataset = await loadStaticPhotosDataset();
-    const photos = dataset[String(ctx.id)];
-    if (photos && photos.length > 0) {
-      photosCache.set(ctx.id, photos);
-      return photos;
-    }
-  } catch {
-    // Continue to API fetch
-  }
-
-  // 2. Try API endpoint
-  try {
-    const params = new URLSearchParams({
-      place_id: String(ctx.id),
-      name: ctx.name || "",
-      kind: ctx.kind || "",
-      cuisine: ctx.cuisine || "",
-      area: ctx.area || "",
-      tags: (ctx.tags || []).join(","),
-    });
-
-    const res = await fetch(`/api/photos?${params.toString()}`);
+    const params = new URLSearchParams({ place_id: String(ctx.id) });
+    if (ctx.osmIdentity) params.set("osm_identity", ctx.osmIdentity);
+    const res = await fetch(`/api/photos?${params}`, { cache: "no-store" });
     if (res.ok) {
-      const data = (await res.json()) as { photos?: PlacePhoto[] };
-      const photos = withoutDisallowedPhotos(data.photos ?? []);
-      if (photos.length > 0) {
-        photosCache.set(ctx.id, photos);
-        return photos;
+      const data = await res.json() as { source?: string; photos?: PlacePhoto[] };
+      if (data.source === "d1") {
+        const dataset = await staticRequest;
+        const photos = [...withoutDisallowedPhotos(data.photos ?? []), ...localPhotos, ...(dataset[String(ctx.id)] ?? [])];
+        return photos.filter((photo, index) => photos.findIndex((other) => other.id === photo.id || other.url === photo.url) === index);
       }
     }
   } catch {
-    // Endpoint fallback below
+    // Keep static website images available when the API is offline.
   }
+  const dataset = await staticRequest;
+  return [...localPhotos, ...(dataset[String(ctx.id)] ?? [])];
+}
 
-  const fallbackPhotos: PlacePhoto[] = [];
-  return fallbackPhotos;
+/** Save public map uploads remotely. Never report success or write localStorage on failure. */
+export async function uploadUserPhoto(placeId: number, dataUrl: string, caption: string, osmIdentity?: string): Promise<PlacePhoto> {
+  const response = await fetch("/api/photo-upload", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ placeId, dataUrl, caption, osmIdentity }),
+  });
+  const payload = await response.json() as { photo?: PlacePhoto; error?: string };
+  if (!response.ok || !payload.photo) throw new Error(payload.error || "Could not save the photo.");
+  // Let any pre-upload lookup finish before listeners request the updated list.
+  await pendingPhotos.get(placeId);
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("motkarta:photo_added", { detail: { placeId, photo: payload.photo } }));
+  }
+  return payload.photo;
 }
 
 export function getFallbackPhotos(input: PlaceContext | number): PlacePhoto[] {

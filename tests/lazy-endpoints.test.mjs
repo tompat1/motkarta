@@ -41,12 +41,20 @@ test("fetchPlaceReviews caches results in-memory", async () => {
   assert.equal(reviews1, reviews2);
 });
 
-test("fetchPlacePhotos caches successful results in-memory", async (t) => {
-  t.mock.method(globalThis, "fetch", async () => Response.json({
-    photosByPlace: { 42: [{ id: "42", placeId: 42, url: "https://venue.se/photo.jpg", caption: "Venue" }] },
-  }));
+test("fetchPlacePhotos shares static data but refreshes mutable server photos", async (t) => {
+  let staticRequests = 0;
+  let apiRequests = 0;
+  t.mock.method(globalThis, "fetch", async (url) => {
+    if (url === "/data/place_photos.json") {
+      staticRequests++;
+      return Response.json({ photosByPlace: { 42: [{ id: "42", placeId: 42, url: "https://venue.se/photo.jpg", caption: "Venue" }] } });
+    }
+    apiRequests++;
+    return Response.json({ source: "d1", photos: [] });
+  });
   const photos1 = await fetchPlacePhotos(42);
   const photos2 = await fetchPlacePhotos(42);
-
-  assert.equal(photos1, photos2);
+  assert.deepEqual(photos1, photos2);
+  assert.equal(staticRequests, 1);
+  assert.equal(apiRequests, 2);
 });

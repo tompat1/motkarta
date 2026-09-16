@@ -1,3 +1,44 @@
+# Persistent public map-card photo uploads — 2026-09-16
+
+The public map-card uploader now saves image bytes and metadata in D1 through
+`POST /api/photo-upload`. It waits for a successful write before showing success
+and leaves a failed submission available for retry. New map uploads no longer
+write image data to browser storage.
+
+- Added the additive, rerunnable `drizzle/0011_public_photo_uploads.sql` migration
+  and the matching Drizzle schema. A separate upload table prevents website
+  scraper seeds and cleanup jobs from erasing community images.
+- Added size-bounded request reading, JPG/PNG/WebP signature checks, caption
+  validation, cross-origin checks and an atomic limit of 20 uploads per venue
+  in a rolling day. Images are limited to 1 MiB after browser optimization.
+- Resolved public/D1 ID differences through full OSM identity. Admin lists
+  uploaded and scraped photos together; authenticated upload deletion removes
+  the bytes and metadata in one operation.
+- Added an image-serving endpoint and fresh API lookups alongside static photos.
+  New uploads are visible across browsers, and deleted uploads are not retained
+  in a static or local image cache.
+- Added SQLite endpoint tests for persistence, Admin access/deletion, identity,
+  validation, limits and unavailable storage. Added browser coverage for failed
+  upload/retry, a venue with an existing static photo, a fresh browser context
+  and deletion visibility. Updated the old permanent-cache test to verify the
+  new refresh contract.
+
+Verification: full four-tier gate in progress. The initial browser launch was
+blocked by the sandbox's local-port restriction; the gate is being rerun with
+local-server access. `git diff --check` passed.
+
+Rollout: apply `drizzle/0011_public_photo_uploads.sql` before deploying the API
+and client together. The existing D1 binding is sufficient. No production
+migration, deployment, commit or push has been performed. Detailed commands
+and limits are in `docs/media_enrichment_and_photo_policy.md`.
+
+Previously stored local-only photos require re-uploading through the map card.
+The legacy concierge/new-place photo attachment flows retain their existing
+behavior. Uploads are public immediately; Admin can delete them, but this change
+does not introduce a pre-publication approval queue.
+
+---
+
 # Cloudflare build import repair — 2026-09-16
 
 The supplied Cloudflare build log failed in `tests/place-filtering.test.mjs`

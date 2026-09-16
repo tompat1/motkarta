@@ -34,7 +34,7 @@ test("map card exposes a user photo upload flow", async () => {
   assert.match(appSource, /setIsUserPhotoUploadOpen\(true\)/);
   assert.match(appSource, /<UserPhotoUploadModal/);
   assert.match(uploadSource, /processImageFile/);
-  assert.match(uploadSource, /addUserPhoto\(placeId/);
+  assert.match(uploadSource, /await uploadUserPhoto\(placeId/);
   assert.match(uploadSource, /accept="image\/jpeg,image\/png,image\/webp"/);
 });
 

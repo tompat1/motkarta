@@ -188,3 +188,15 @@ export const scoreSnapshots = sqliteTable(
   },
   (table) => [index("scores_establishment_idx").on(table.establishmentId)],
 );
+
+/** User images are isolated from replaceable website-photo seed data. */
+export const placePhotoUploads = sqliteTable("place_photo_uploads", {
+  id: text("id").primaryKey(),
+  placeId: integer("place_id").notNull().references(() => establishments.id, { onDelete: "cascade" }),
+  caption: text("caption").notNull(),
+  contentType: text("content_type", { enum: ["image/jpeg", "image/png", "image/webp"] }).notNull(),
+  imageBase64: text("image_base64").notNull(),
+  createdAt: text("created_at").notNull(),
+}, (table) => [
+  index("photo_upload_place_idx").on(table.placeId, table.createdAt),
+]);

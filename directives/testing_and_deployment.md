@@ -85,3 +85,15 @@ SQLite and browser fixtures for removal/restoration; never modify production
 venues as a test. Verify full OSM identity across differing public/D1 IDs and
 that a failed status read cannot resurrect a stale static record. Deploy the
 visibility endpoint and its client together. See `docs/ml/operations-runbook.md`.
+
+## Public photo persistence
+
+For map-card uploads, verify the actual handlers against isolated SQLite:
+image bytes and metadata must persist together, a different public/D1 ID must
+resolve through full OSM identity, authenticated Admin deletion must remove the
+bytes, and malformed/oversized/over-limit uploads must fail without a success
+response. Never test uploads against production venues. Browser fixtures must
+exercise failed upload/retry and retrieval from a new browser context, including
+a venue that already has a static website photo. Do not assert permanent
+in-memory caching of public photo lists: those lists must refresh to observe
+uploads and Admin deletions. Run `npm run test:gate` after changes.

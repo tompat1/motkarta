@@ -131,3 +131,63 @@ verified source endpoints and venue matching before it can be enabled. Venues
 without websites still need a separate website-discovery pass. The standalone
 cleanup script can remove existing entries and should not be used as an additive
 recovery command.
+
+## Public map-card uploads (September 2026)
+
+The map-card upload modal now sends the optimized image and caption to
+`POST /api/photo-upload`. Success is shown only after D1 confirms the write;
+failures keep the selected image available for retry. These new uploads do not
+write image data to `localStorage`.
+
+`place_photo_uploads` holds the image as base64, its MIME type, caption,
+creation timestamp and canonical D1 venue ID in one atomic insert. This table is
+separate from `place_photos`, so scraped-photo seeding and cleanup cannot erase
+community uploads. The existing `DB` binding is sufficient; no R2 bucket or
+external storage credentials are required. Each decoded image is limited to
+1 MiB, keeping the base64 row below D1's 2 MB row limit
+([Cloudflare D1 limits](https://developers.cloudflare.com/d1/platform/limits/)).
+R2 is the natural next step if upload volume or image sizes outgrow this bounded
+D1 implementation.
+
+The endpoint bounds the request stream, validates JPG/PNG/WebP signatures and
+caption length, rejects cross-origin browser writes, verifies the venue exists,
+and permits at most 20 stored uploads per venue in a rolling 24-hour window.
+The cap is checked inside the insert, without storing visitor IP addresses.
+Signature checks do not constitute full image decoding or content moderation.
+Uploads are public immediately and Admin can remove them; there is no new
+approval queue. Upload bytes are served only through `GET /api/photo-upload?id=…`
+with the stored raster MIME type, `nosniff` and `no-store` headers.
+
+Public catalog IDs can differ from D1 IDs. When a card has `osmIdentity`, both
+upload and photo listing resolve the full `node/way/relation:id` identity to the
+D1 venue. Without that identity, the public ID must already exist in D1. Unknown
+venues produce an error rather than an orphaned upload. Admin uses canonical D1
+IDs to list and delete both uploaded and scraped images. Deleting an upload
+removes its bytes and metadata together; its image endpoint then returns 404.
+
+`fetchPlacePhotos` always checks the live API and merges its results with static
+website images and any legacy local-only photos, deduplicating by ID or URL.
+Only in-flight lookups and the static dataset are cached. Uploaded photos are
+never put in the persistent static/local caches, so reopening or reloading a
+card observes server additions and deletions. Existing static website images
+remain an offline fallback. Deletion of a website photo that also exists in the
+static dataset still requires updating that dataset; this upload change does
+not add static-photo tombstones.
+
+Apply the additive migration before deploying the updated API and client:
+
+```bash
+# After the mandatory test gate, during the authorized production rollout:
+npx wrangler d1 execute motkarta-prod --remote --file=drizzle/0011_public_photo_uploads.sql
+npm run deploy:cloudflare
+```
+
+The migration is safe to rerun and also creates the legacy `place_photos` table
+if it was never provisioned. Plain `npm run dev` does not run Cloudflare Pages
+Functions; use a Pages/D1 preview for real uploads. Browser tests use isolated
+route fixtures, while endpoint tests execute the actual handlers against SQLite.
+
+Previously saved browser-only photos are not uploaded automatically: users must
+select those files again through the map-card uploader. Other legacy photo
+submission flows, including new-place/concierge attachments, still use their
+existing local behavior; this change covers the public map-card flow.
