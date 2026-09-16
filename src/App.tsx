@@ -1020,15 +1020,30 @@ function AppContent({
 
   useEffect(() => {
     const controller = new AbortController();
-    setActiveCardPhoto(null);
-    if (active) {
+    const refreshActiveCardPhoto = () => {
+      if (!active) {
+        setActiveCardPhoto(null);
+        return;
+      }
       void fetchPlacePhotos(active)
         .then((photos) => firstAvailablePhoto(photos, controller.signal))
         .then((photo) => {
           if (!controller.signal.aborted) setActiveCardPhoto(photo);
         });
-    }
-    return () => controller.abort();
+    };
+
+    setActiveCardPhoto(null);
+    refreshActiveCardPhoto();
+    const handlePhotoAdded = (event: Event) => {
+      const detail = (event as CustomEvent<{ placeId?: number }>).detail;
+      if (active && detail?.placeId === active.id) refreshActiveCardPhoto();
+    };
+    window.addEventListener("motkarta:photo_added", handlePhotoAdded);
+
+    return () => {
+      controller.abort();
+      window.removeEventListener("motkarta:photo_added", handlePhotoAdded);
+    };
   }, [active?.id]);
 
   useEffect(() => {

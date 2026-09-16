@@ -18,6 +18,8 @@ test("App.tsx replaces recommendation paragraph with map card photo container", 
 
   // Clicking photo opens place detail sheet
   assert.match(appSource, /onClick=\{\(\) => setIsPlaceDetailOpen\(true\)\}/);
+  assert.match(appSource, /window\.addEventListener\("motkarta:photo_added", handlePhotoAdded\)/);
+  assert.match(appSource, /detail\?\.placeId === active\.id/);
 });
 
 test("App.tsx removes note paragraph from map card", () => {
