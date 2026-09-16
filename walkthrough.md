@@ -23,14 +23,17 @@ write image data to browser storage.
   and deletion visibility. Updated the old permanent-cache test to verify the
   new refresh contract.
 
-Verification: full four-tier gate in progress. The initial browser launch was
-blocked by the sandbox's local-port restriction; the gate is being rerun with
-local-server access. `git diff --check` passed.
+Verification: `npm run test:gate` passed TypeScript checking, all 362 JavaScript
+tests, all 146 Python tests and all 87 Playwright tests across desktop Chrome,
+mobile Chrome and mobile Safari (zero failures). The initial browser launch
+was blocked by the sandbox's local-port restriction; the complete gate passed
+with local-server access. `git diff --check` passed.
 
 Rollout: apply `drizzle/0011_public_photo_uploads.sql` before deploying the API
 and client together. The existing D1 binding is sufficient. No production
-migration, deployment, commit or push has been performed. Detailed commands
-and limits are in `docs/media_enrichment_and_photo_policy.md`.
+migration or deployment was performed during this task. The implementation is
+now in commit `47b41fe`; this final verification update was written afterward.
+Detailed commands and limits are in `docs/media_enrichment_and_photo_policy.md`.
 
 Previously stored local-only photos require re-uploading through the map card.
 The legacy concierge/new-place photo attachment flows retain their existing
