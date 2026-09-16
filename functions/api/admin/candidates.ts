@@ -1,5 +1,6 @@
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
 import type { PlaceInput, PlaceLifecycleState } from "../../../lib/scoring.ts";
+import { resolveStockholmRegion } from "../../../lib/stockholm-regions.ts";
 
 type D1RunResult = {
   success?: boolean;
@@ -983,11 +984,19 @@ async function recordReviewEvent(
 }
 
 function candidateFromRow(row: CandidateRow) {
+  const area = resolveStockholmRegion({
+    name: row.name,
+    area: row.area,
+    address: row.address ?? undefined,
+    latitude: row.latitude ?? undefined,
+    longitude: row.longitude ?? undefined,
+  });
+
   return {
     id: row.id,
     name: row.name,
     kind: row.kind,
-    area: row.area,
+    area,
     address: row.address,
     website: row.website,
     latitude: typeof row.latitude === "number" ? row.latitude : null,

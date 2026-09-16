@@ -66,6 +66,29 @@ test("admin candidates endpoint lists candidate records only by default", async 
   assert.equal(payload.candidates[0].communityNominationCount, 0);
 });
 
+test("admin candidates resolve Kista default districts to Västerort", async () => {
+  const db = fakeAdminD1([
+    candidateRow({
+      name: "Kista Garden",
+      area: "North Stockholm",
+      address: "North Stockholm, Stockholm",
+      latitude: 59.401941,
+      longitude: 17.9418648,
+    }),
+  ]);
+
+  const response = await getAdminCandidates({
+    request: new Request("https://motkarta.test/api/admin/candidates", {
+      headers: { "x-motkarta-admin-token": adminToken },
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.candidates[0].area, "Västerort");
+});
+
 test("admin candidates endpoint returns community nomination count when present", async () => {
   const db = fakeAdminD1([
     candidateRow({
