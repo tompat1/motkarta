@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { cuisineOptionsFromPlaces } from "../src/app/cuisine-options.ts";
 import { isLatestAddedPlace, matchesEstablishmentFilter } from "../src/app/place-filtering.ts";
+import { cuisineLabel } from "../src/app/shared.ts";
 
 function place(overrides = {}) {
   return {
@@ -47,16 +48,30 @@ test("visible establishment filters omit low-value curated shortcut", async () =
   assert.equal(appSource.includes("establishmentTypes.map"), false);
 });
 
-test("cuisine filters omit venue-type placeholders", () => {
+test("cuisine filters omit venue-type placeholders (restaurant, hotel, coffee shop, kaffebar)", () => {
   const options = cuisineOptionsFromPlaces([
     place({ cuisine: "restaurant" }),
     place({ cuisine: "italian;restaurant" }),
     place({ cuisine: "thai" }),
+    place({ cuisine: "coffee shop" }),
+    place({ cuisine: "kaffebar;coffee" }),
+    place({ name: "Belgobarens bakficka", cuisine: "belgian" }),
   ]);
 
   assert.equal(options.includes("restaurant"), false);
+  assert.equal(options.includes("coffee shop"), false);
+  assert.equal(options.includes("kaffebar"), false);
+  assert.equal(options.includes("coffee"), false);
   assert.equal(options.includes("italian"), true);
   assert.equal(options.includes("thai"), true);
+  assert.equal(options.includes("belgian"), true);
+});
+
+test("cuisineLabel formats Belgian cuisine as Belgiskt in SV and Belgian in EN", () => {
+  assert.equal(cuisineLabel("belgian", "sv"), "Belgiskt");
+  assert.equal(cuisineLabel("belgian", "en"), "Belgian");
+  assert.equal(cuisineLabel("belgiskt", "sv"), "Belgiskt");
+  assert.equal(cuisineLabel("belgiskt", "en"), "Belgian");
 });
 
 test("selecting any filter clears concierge state in App.tsx", async () => {

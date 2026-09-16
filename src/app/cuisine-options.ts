@@ -8,6 +8,7 @@ const FEATURED_CUISINES = [
   "polish",
   "hungarian",
   "austrian",
+  "belgian",
   "italian",
   "pizza",
   "sushi",
@@ -19,16 +20,40 @@ const FEATURED_CUISINES = [
   "chinese",
 ];
 
-const NON_CUISINE_OPTION_VALUES = new Set(["restaurant", "hotel"]);
+const NON_CUISINE_OPTION_VALUES = new Set([
+  "restaurant",
+  "hotel",
+  "coffee shop",
+  "coffee_shop",
+  "coffee",
+  "kaffebar",
+  "café",
+  "cafe",
+]);
 
-export function cuisineParts(place: Pick<PlaceInput, "cuisine" | "tags">) {
-  return (place.cuisine ?? "")
+export function cuisineParts(place: Pick<PlaceInput, "cuisine" | "tags"> & { name?: string }) {
+  const parts = (place.cuisine ?? "")
     .split(";")
     .map((item) => {
       const trimmed = item.trim().toLowerCase();
-      return trimmed === "regional" ? "swedish" : trimmed;
+      if (trimmed === "regional") return "swedish";
+      if (trimmed === "belgiskt") return "belgian";
+      return trimmed;
     })
-    .filter(Boolean);
+    .filter((item) => item && !NON_CUISINE_OPTION_VALUES.has(item));
+
+  const nameLower = place.name?.toLowerCase() ?? "";
+  const tagsLower = place.tags?.map((t) => t.toLowerCase()) ?? [];
+  const isBelgian =
+    nameLower.includes("belgo") ||
+    nameLower.includes("belgian") ||
+    tagsLower.some((t) => t.includes("belgian") || t.includes("belgiskt") || t === "waffle" || t === "waffles");
+
+  if (isBelgian && !parts.includes("belgian")) {
+    parts.push("belgian");
+  }
+
+  return parts;
 }
 
 export function cuisineOptionsFromPlaces(places: PlaceInput[]) {

@@ -197623,10 +197623,11 @@
       "id": 705950052,
       "name": "Belgobarens bakficka",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "belgian",
       "area": "Kungsholmen",
-      "note": "Restaurant from OpenStreetMap.",
+      "note": "Restaurant from OpenStreetMap. Belgian brasserie & moules-frites.",
       "tags": [
+        "Belgian",
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
