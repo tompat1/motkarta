@@ -77,4 +77,65 @@ test.describe("Admin Light CMS and Live Copy Editing Flow", () => {
     await page.reload();
     await expect(methodHeading).toContainText("OUR REVOLUTIONARY MAPPING METHOD 2026");
   });
+
+  test("admin can add and remove merch product cards with instant reactivity and persistence", async ({ page }) => {
+    // Enable dialog auto-accept for delete confirmation
+    page.on("dialog", (dialog) => dialog.accept());
+
+    // Pre-authenticate CMS
+    await page.addInitScript(() => {
+      window.localStorage.setItem("motkarta_cms_auth", "true");
+      window.localStorage.setItem("motkarta_cms_edit_mode", "true");
+    });
+
+    await page.goto("/");
+
+    // 1. Verify admin merch toolbar is visible
+    const merchAdminBar = page.locator(".cms-merch-admin-bar");
+    await expect(merchAdminBar).toBeVisible();
+
+    // 2. Open Add Product Modal
+    const addProductBtn = page.locator('[data-testid="cms-add-product-btn"]');
+    await expect(addProductBtn).toBeVisible();
+    await addProductBtn.click();
+
+    const productModal = page.locator(".cms-product-modal-card");
+    await expect(productModal).toBeVisible();
+
+    // 3. Fill product form fields
+    await page.locator('[data-testid="cms-input-product-name-sv"]').fill("Egen Motkarta Hoodie");
+    await page.locator('[data-testid="cms-input-product-name-en"]').fill("Custom Motkarta Hoodie");
+    await page.locator('[data-testid="cms-input-product-price-sek"]').fill("750");
+
+    // 4. Submit product
+    await page.locator('[data-testid="cms-add-product-submit-btn"]').click();
+    await expect(productModal).not.toBeVisible();
+
+    // 5. Verify the new product appears in the merch grid with title and price
+    const merchSection = page.locator("#merch");
+    await expect(merchSection).toContainText("Egen Motkarta Hoodie");
+    await expect(merchSection).toContainText("750 SEK");
+
+    // 6. Delete a product card (e.g. the stickers-pack)
+    const stickersCard = page.locator('[data-testid="merch-card-stickers-pack"]');
+    await expect(stickersCard).toBeVisible();
+    const deleteStickersBtn = page.locator('[data-testid="cms-delete-product-stickers-pack"]');
+    await deleteStickersBtn.click();
+
+    // 7. Verify stickers card is removed
+    await expect(stickersCard).not.toBeVisible();
+
+    // 8. Reload page and verify persistence of added item and deleted item
+    await page.reload();
+    await expect(page.locator("#merch")).toContainText("Egen Motkarta Hoodie");
+    await expect(page.locator('[data-testid="merch-card-stickers-pack"]')).not.toBeVisible();
+
+    // 9. Reset products to defaults
+    const resetBtn = page.locator('[data-testid="cms-reset-products-btn"]');
+    await resetBtn.click();
+
+    // 10. Verify standard items are restored
+    await expect(page.locator('[data-testid="merch-card-stickers-pack"]')).toBeVisible();
+  });
 });
+

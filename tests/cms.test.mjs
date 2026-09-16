@@ -6,11 +6,15 @@ import {
   CMS_STORAGE_KEY,
   CMS_AUTH_KEY,
   CMS_EDIT_MODE_KEY,
+  CMS_MERCH_STORAGE_KEY,
   readStoredCmsOverrides,
   writeStoredCmsOverrides,
   readStoredCmsAuth,
   readStoredCmsEditMode,
   isCmsPasscodeValid,
+  readStoredMerchItems,
+  writeStoredMerchItems,
+  resetStoredMerchItems,
 } from "../src/app/cms-store.ts";
 
 // Setup mock window and localStorage for node environment
@@ -194,3 +198,63 @@ test("App.tsx, MerchPanel.tsx and OnboardingModal.tsx integrate CmsEditFlag and 
   assert.match(cartDrawerSource, /<CmsEditFlag cmsKey="merchDrawerTitle"/);
   assert.match(cartDrawerSource, /<CmsEditFlag cmsKey="merchDrawerCheckout"/);
 });
+
+test("readStoredMerchItems returns default items when storage is empty", () => {
+  globalThis.localStorage.clear();
+  const defaults = [
+    { id: "test-1", nameSv: "Tischa", nameEn: "Tee", priceSek: 390, priceEur: 35 },
+  ];
+  const items = readStoredMerchItems(defaults);
+  assert.deepEqual(items, defaults);
+});
+
+test("writeStoredMerchItems and readStoredMerchItems persist and load custom merch items", () => {
+  globalThis.localStorage.clear();
+  const customItems = [
+    { id: "custom-hoodie", nameSv: "Motkarta Hoodie", nameEn: "Motkarta Hoodie", priceSek: 790, priceEur: 70 },
+  ];
+  writeStoredMerchItems(customItems);
+  const loaded = readStoredMerchItems([]);
+  assert.equal(loaded.length, 1);
+  assert.equal(loaded[0].id, "custom-hoodie");
+  assert.equal(loaded[0].nameSv, "Motkarta Hoodie");
+  assert.equal(loaded[0].priceSek, 790);
+});
+
+test("resetStoredMerchItems removes stored merch items and returns defaults", () => {
+  globalThis.localStorage.clear();
+  const customItems = [{ id: "custom-1", nameSv: "Custom", nameEn: "Custom", priceSek: 100, priceEur: 10 }];
+  writeStoredMerchItems(customItems);
+  assert.ok(globalThis.localStorage.getItem(CMS_MERCH_STORAGE_KEY));
+
+  resetStoredMerchItems();
+  assert.equal(globalThis.localStorage.getItem(CMS_MERCH_STORAGE_KEY), null);
+  const fallback = [{ id: "default-1", nameSv: "Default", nameEn: "Default", priceSek: 200, priceEur: 20 }];
+  assert.deepEqual(readStoredMerchItems(fallback), fallback);
+});
+
+test("MerchPanel.tsx contains CMS product add and remove handlers and UI elements", async () => {
+  const merchSource = await readFile(new URL("../src/components/MerchPanel.tsx", import.meta.url), "utf8");
+
+  // Admin merch bar and actions
+  assert.match(merchSource, /cms-merch-admin-bar/);
+  assert.match(merchSource, /data-testid="cms-add-product-btn"/);
+  assert.match(merchSource, /data-testid="cms-reset-products-btn"/);
+
+  // Delete product button on cards
+  assert.match(merchSource, /cms-product-delete-btn/);
+  assert.match(merchSource, /handleDeleteProduct/);
+  assert.match(merchSource, /data-testid=\{`cms-delete-product-\$\{item\.id\}`\}/);
+
+  // Add product placeholder in grid
+  assert.match(merchSource, /merch-card-add-placeholder/);
+  assert.match(merchSource, /data-testid="cms-add-product-card-placeholder"/);
+
+  // Add product modal
+  assert.match(merchSource, /function CmsAddProductModal/);
+  assert.match(merchSource, /data-testid="cms-input-product-name-sv"/);
+  assert.match(merchSource, /data-testid="cms-input-product-name-en"/);
+  assert.match(merchSource, /data-testid="cms-input-product-price-sek"/);
+  assert.match(merchSource, /data-testid="cms-add-product-submit-btn"/);
+});
+

@@ -5,6 +5,8 @@ import {
   CMS_STORAGE_KEY,
   CMS_AUTH_KEY,
   CMS_EDIT_MODE_KEY,
+  CMS_MERCH_STORAGE_KEY,
+  type MerchItem,
   type CmsCopyMap,
   type CmsOverrides,
   type CmsKeyMetadata,
@@ -14,12 +16,17 @@ import {
   readStoredCmsAuth,
   readStoredCmsEditMode,
   isCmsPasscodeValid,
+  readStoredMerchItems,
+  writeStoredMerchItems,
+  resetStoredMerchItems,
 } from "./cms-store";
 
 export {
   CMS_STORAGE_KEY,
   CMS_AUTH_KEY,
   CMS_EDIT_MODE_KEY,
+  CMS_MERCH_STORAGE_KEY,
+  type MerchItem,
   type CmsCopyMap,
   type CmsOverrides,
   type CmsKeyMetadata,
@@ -29,6 +36,9 @@ export {
   readStoredCmsAuth,
   readStoredCmsEditMode,
   isCmsPasscodeValid,
+  readStoredMerchItems,
+  writeStoredMerchItems,
+  resetStoredMerchItems,
 };
 
 export function getBaseCopy(lang: Language, key: string): string {

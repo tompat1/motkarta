@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ShoppingBag, ShoppingCart, Plus, Minus, Trash, X, ArrowRight } from "@phosphor-icons/react";
 import { MERCH_ITEMS, type Language, type MerchItem } from "./MerchPanel";
-import { useCms, CmsEditFlag } from "../app/cms";
+import { useCms, CmsEditFlag, readStoredMerchItems } from "../app/cms";
 
 export type CartDrawerProps = {
   isOpen: boolean;
@@ -10,6 +10,7 @@ export type CartDrawerProps = {
   onUpdateQuantity: (itemId: string, delta: number) => void;
   onRemoveItem: (itemId: string) => void;
   lang?: Language;
+  items?: MerchItem[];
 };
 
 export function CartDrawer({
@@ -19,14 +20,35 @@ export function CartDrawer({
   onUpdateQuantity,
   onRemoveItem,
   lang = "sv",
+  items,
 }: CartDrawerProps) {
   if (!isOpen) return null;
 
   const { t } = useCms();
   const isSv = lang === "sv";
+
+  const [activeItems, setActiveItems] = useState<MerchItem[]>(() => items || readStoredMerchItems(MERCH_ITEMS));
+
+  useEffect(() => {
+    if (items) {
+      setActiveItems(items);
+      return;
+    }
+    const handleUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<MerchItem[] | null>;
+      if (customEvent.detail) {
+        setActiveItems(customEvent.detail);
+      } else {
+        setActiveItems(readStoredMerchItems(MERCH_ITEMS));
+      }
+    };
+    window.addEventListener("motkarta-merch-updated", handleUpdate);
+    return () => window.removeEventListener("motkarta-merch-updated", handleUpdate);
+  }, [items]);
+
   const totalCount = Object.values(cart).reduce((sum, count) => sum + count, 0);
   const totalPriceSek = Object.entries(cart).reduce((sum, [id, qty]) => {
-    const item = MERCH_ITEMS.find((m) => m.id === id);
+    const item = activeItems.find((m) => m.id === id);
     return sum + (item ? item.priceSek * qty : 0);
   }, 0);
 
@@ -70,7 +92,7 @@ export function CartDrawer({
           ) : (
             <ul className="merch-drawer-item-list">
               {Object.entries(cart).map(([id, qty]) => {
-                const item = MERCH_ITEMS.find((m) => m.id === id);
+                const item = activeItems.find((m) => m.id === id);
                 if (!item) return null;
                 const name = isSv ? item.nameSv : item.nameEn;
 

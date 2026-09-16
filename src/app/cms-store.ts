@@ -3,6 +3,25 @@ export type Language = "sv" | "en";
 export const CMS_STORAGE_KEY = "motkarta_cms_overrides";
 export const CMS_AUTH_KEY = "motkarta_cms_auth";
 export const CMS_EDIT_MODE_KEY = "motkarta_cms_edit_mode";
+export const CMS_MERCH_STORAGE_KEY = "motkarta_cms_merch_items";
+
+export type MerchItem = {
+  id: string;
+  nameSv: string;
+  nameEn: string;
+  taglineSv: string;
+  taglineEn: string;
+  priceSek: number;
+  priceEur: number;
+  badgeSv: string;
+  badgeEn: string;
+  descSv: string;
+  descEn: string;
+  specs: string[];
+  stockStatusSv: string;
+  stockStatusEn: string;
+  image: string;
+};
 
 export type CmsCopyMap = Record<string, string>;
 export type CmsOverrides = {
@@ -211,3 +230,41 @@ export function isCmsPasscodeValid(passcode: string, storedToken?: string | null
     trimmed.length >= 6
   );
 }
+
+export function readStoredMerchItems(defaultItems: MerchItem[]): MerchItem[] {
+  if (typeof window === "undefined") {
+    return defaultItems;
+  }
+  try {
+    const raw = localStorage.getItem(CMS_MERCH_STORAGE_KEY);
+    if (!raw) return defaultItems;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed as MerchItem[];
+    }
+    return defaultItems;
+  } catch {
+    return defaultItems;
+  }
+}
+
+export function writeStoredMerchItems(items: MerchItem[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(CMS_MERCH_STORAGE_KEY, JSON.stringify(items));
+    if (typeof window.dispatchEvent === "function") {
+      window.dispatchEvent(new CustomEvent("motkarta-merch-updated", { detail: items }));
+    }
+  } catch {}
+}
+
+export function resetStoredMerchItems(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(CMS_MERCH_STORAGE_KEY);
+    if (typeof window.dispatchEvent === "function") {
+      window.dispatchEvent(new CustomEvent("motkarta-merch-updated", { detail: null }));
+    }
+  } catch {}
+}
+

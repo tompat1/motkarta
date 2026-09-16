@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { ShoppingBag, Check, Sparkle, ArrowRight, ShieldCheck, ShoppingCart, Plus, Minus, Trash, X } from "@phosphor-icons/react";
-import { useCms, CmsEditFlag } from "../app/cms";
+import { useState, useEffect } from "react";
+import { ShoppingBag, Check, Sparkle, ArrowRight, ShieldCheck, ShoppingCart, Plus, Minus, Trash, X, ArrowCounterClockwise } from "@phosphor-icons/react";
+import { useCms, CmsEditFlag, readStoredMerchItems, writeStoredMerchItems, resetStoredMerchItems } from "../app/cms";
 
 export type Language = "sv" | "en";
 
@@ -243,9 +243,24 @@ export function MerchPanel({
   onOpenCart,
 }: MerchPanelProps) {
   const [showCartToast, setShowCartToast] = useState<string | null>(null);
-  const { t } = useCms();
+  const [items, setItems] = useState<MerchItem[]>(() => readStoredMerchItems(MERCH_ITEMS));
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const { t, isCmsEditMode, setActiveToast } = useCms();
 
   const isSv = lang === "sv";
+
+  useEffect(() => {
+    const handleUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<MerchItem[] | null>;
+      if (customEvent.detail) {
+        setItems(customEvent.detail);
+      } else {
+        setItems(readStoredMerchItems(MERCH_ITEMS));
+      }
+    };
+    window.addEventListener("motkarta-merch-updated", handleUpdate);
+    return () => window.removeEventListener("motkarta-merch-updated", handleUpdate);
+  }, []);
 
   const handleAddToCart = (item: MerchItem) => {
     if (onAddToCart) {
@@ -256,10 +271,53 @@ export function MerchPanel({
     setTimeout(() => setShowCartToast(null), 2500);
   };
 
+  const handleDeleteProduct = (itemId: string, name: string) => {
+    const confirmed = typeof window === "undefined" || window.confirm(
+      isSv
+        ? `Är du säker på att du vill ta bort "${name}" från produktutbudet?`
+        : `Are you sure you want to remove "${name}" from the store catalog?`
+    );
+    if (!confirmed) return;
+
+    const nextItems = items.filter((item) => item.id !== itemId);
+    setItems(nextItems);
+    writeStoredMerchItems(nextItems);
+    setActiveToast(
+      isSv ? `🗑️ Produkten "${name}" har tagits bort!` : `🗑️ Product "${name}" was removed!`
+    );
+  };
+
+  const handleAddProduct = (newItem: MerchItem) => {
+    const nextItems = [newItem, ...items];
+    setItems(nextItems);
+    writeStoredMerchItems(nextItems);
+    setIsAddModalOpen(false);
+    setActiveToast(
+      isSv
+        ? `✨ Ny produkt "${isSv ? newItem.nameSv : newItem.nameEn}" har lagts till i butiken!`
+        : `✨ New product "${newItem.nameEn}" added to the store!`
+    );
+  };
+
+  const handleResetProducts = () => {
+    const confirmed = typeof window === "undefined" || window.confirm(
+      isSv
+        ? "Vill du återställa produktkatalogen till standardutbudet?"
+        : "Reset the product catalog to standard defaults?"
+    );
+    if (!confirmed) return;
+
+    resetStoredMerchItems();
+    setItems(MERCH_ITEMS);
+    setActiveToast(
+      isSv ? "↺ Standardprodukter har återställts!" : "↺ Default products restored!"
+    );
+  };
+
   const totalCount = Object.values(cart).reduce((sum, count) => sum + count, 0);
 
   const totalPriceSek = Object.entries(cart).reduce((sum, [id, qty]) => {
-    const item = MERCH_ITEMS.find((m) => m.id === id);
+    const item = items.find((m) => m.id === id);
     return sum + (item ? item.priceSek * qty : 0);
   }, 0);
 
@@ -299,6 +357,38 @@ export function MerchPanel({
               : "No paid rankings, zero sponsored listings. Every purchase funds our open database and on-the-ground food audits in Stockholm.")}
             <CmsEditFlag cmsKey="merchSubtitle" label="Merch: Underrubrik" />
           </p>
+
+          {/* CMS Admin Merch Management Toolbar */}
+          {isCmsEditMode && (
+            <div className="cms-merch-admin-bar">
+              <div className="cms-merch-admin-badge">
+                <span className="cms-badge-dot">●</span>
+                <span>CMS PRODUKTHANTERING</span>
+                <span className="cms-merch-count-pill">{items.length} st</span>
+              </div>
+              <div className="cms-merch-admin-actions">
+                <button
+                  type="button"
+                  className="cms-add-product-btn"
+                  onClick={() => setIsAddModalOpen(true)}
+                  data-testid="cms-add-product-btn"
+                >
+                  <Plus size={15} weight="bold" />
+                  <span>{isSv ? "Lägg till ny produkt" : "Add new product"}</span>
+                </button>
+                <button
+                  type="button"
+                  className="cms-reset-products-btn"
+                  onClick={handleResetProducts}
+                  data-testid="cms-reset-products-btn"
+                  title={isSv ? "Återställ till standardprodukter" : "Reset to default products"}
+                >
+                  <ArrowCounterClockwise size={14} weight="bold" />
+                  <span>{isSv ? "Återställ produkter" : "Reset products"}</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Hero Banner Showcase */}
@@ -328,7 +418,7 @@ export function MerchPanel({
 
         {/* Product Cards Grid */}
         <div className="merch-grid">
-          {MERCH_ITEMS.map((item) => {
+          {items.map((item) => {
             const itemTitleKey = `merchItem_${item.id.replace(/-/g, "_")}_title` as keyof typeof t;
             const itemTaglineKey = `merchItem_${item.id.replace(/-/g, "_")}_tagline` as keyof typeof t;
             const name = (t[itemTitleKey] as string) || (isSv ? item.nameSv : item.nameEn);
@@ -339,7 +429,7 @@ export function MerchPanel({
             const inCart = cart[item.id] || 0;
 
             return (
-              <article key={item.id} className="merch-card">
+              <article key={item.id} className="merch-card" data-testid={`merch-card-${item.id}`}>
                 {/* Product Image Placeholder Box */}
                 <div className="merch-card-image-wrap">
                   <img src={item.image} alt={name} className="merch-card-img" />
@@ -351,6 +441,22 @@ export function MerchPanel({
                   <span className="merch-card-price">
                     {item.priceSek} SEK <small>({item.priceEur} €)</small>
                   </span>
+                  {isCmsEditMode && (
+                    <button
+                      type="button"
+                      className="cms-product-delete-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteProduct(item.id, name);
+                      }}
+                      data-testid={`cms-delete-product-${item.id}`}
+                      title={isSv ? `Ta bort "${name}"` : `Remove "${name}"`}
+                      aria-label={isSv ? `Ta bort ${name}` : `Remove ${name}`}
+                    >
+                      <Trash size={13} weight="bold" />
+                      <span>{isSv ? "Ta bort" : "Remove"}</span>
+                    </button>
+                  )}
                 </div>
 
                 <h4 className="merch-card-title" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "6px" }}>
@@ -397,6 +503,33 @@ export function MerchPanel({
               </article>
             );
           })}
+
+          {/* Add Product Card Placeholder when in CMS Edit Mode */}
+          {isCmsEditMode && (
+            <div
+              className="merch-card merch-card-add-placeholder"
+              onClick={() => setIsAddModalOpen(true)}
+              data-testid="cms-add-product-card-placeholder"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setIsAddModalOpen(true);
+                }
+              }}
+            >
+              <div className="merch-add-placeholder-icon">
+                <Plus size={36} weight="bold" />
+              </div>
+              <h4>{isSv ? "+ Lägg till ny produkt" : "+ Add new product"}</h4>
+              <p>
+                {isSv
+                  ? "Skapa ett nytt produktkort i butiken med bild, priser och tvåspråkig text (SV / EN)."
+                  : "Create a new product card in the store with image, prices, and dual-language copy."}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Cart Bottom Summary Bar */}
@@ -445,6 +578,398 @@ export function MerchPanel({
           </div>
         ) : null}
       </div>
+
+      {/* Add Product Modal */}
+      {isAddModalOpen && (
+        <CmsAddProductModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onAdd={handleAddProduct}
+          lang={lang}
+        />
+      )}
     </section>
+  );
+}
+
+function CmsAddProductModal({
+  isOpen,
+  onClose,
+  onAdd,
+  lang,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onAdd: (item: MerchItem) => void;
+  lang: Language;
+}) {
+  if (!isOpen) return null;
+
+  const isSv = lang === "sv";
+
+  const [nameSv, setNameSv] = useState("");
+  const [nameEn, setNameEn] = useState("");
+  const [taglineSv, setTaglineSv] = useState("");
+  const [taglineEn, setTaglineEn] = useState("");
+  const [priceSek, setPriceSek] = useState("390");
+  const [priceEur, setPriceEur] = useState("35");
+  const [badgeSv, setBadgeSv] = useState("NYHET");
+  const [badgeEn, setBadgeEn] = useState("NEW");
+  const [descSv, setDescSv] = useState("");
+  const [descEn, setDescEn] = useState("");
+  const [specsText, setSpecsText] = useState(
+    "100% Ekologisk bomull (GOTS)\nFit: Relaxed unisex\nScreentryckt i Södermalm"
+  );
+  const [stockStatusSv, setStockStatusSv] = useState("I lager (S, M, L, XL)");
+  const [stockStatusEn, setStockStatusEn] = useState("In stock (S, M, L, XL)");
+  const [selectedImage, setSelectedImage] = useState("/merch/tshirt.jpg");
+  const [customImageUrl, setCustomImageUrl] = useState("");
+
+  const PRESET_IMAGES = [
+    { label: "T-Shirt Svart", url: "/merch/tshirt.jpg" },
+    { label: "T-Shirt Pin Vit", url: "/merch/flux-reference-image-branch.webp" },
+    { label: "T-Shirt Grid", url: "/merch/flux-reference-image-branch (1).webp" },
+    { label: "T-Shirt Nollpunkt", url: "/merch/flux-reference-image-branch (2).webp" },
+    { label: "T-Shirt Pin Skugga", url: "/merch/flux-reference-image-branch (3).webp" },
+    { label: "T-Shirt Radar Rosa", url: "/merch/flux-reference-image-branch (7).webp" },
+    { label: "Tygkasse Karta", url: "/merch/tote.jpg" },
+    { label: "Dad Cap Vit", url: "/merch/flux-reference-image-branch (8).webp" },
+    { label: "Dad Cap Blå/Svart", url: "/merch/flux-reference-image-branch (9).webp" },
+    { label: "Dad Cap Blå/Vit", url: "/merch/flux-reference-image-branch (10).webp" },
+    { label: "Konstposter", url: "/merch/poster.jpg" },
+    { label: "Stickers 3-pack", url: "/merch/stickers.jpg" },
+  ];
+
+  const activeImage = customImageUrl.trim() || selectedImage;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const finalNameSv = nameSv.trim() || (isSv ? "Ny Motkarta Produkt" : "New Motkarta Product");
+    const finalNameEn = nameEn.trim() || finalNameSv;
+
+    const slug = (finalNameEn || finalNameSv)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+    const id = `${slug || "product"}-${Date.now().toString(36)}`;
+
+    const specs = specsText
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    const parsedPriceSek = parseInt(priceSek, 10) || 390;
+    const parsedPriceEur = parseInt(priceEur, 10) || Math.round(parsedPriceSek / 11);
+
+    const newItem: MerchItem = {
+      id,
+      nameSv: finalNameSv,
+      nameEn: finalNameEn,
+      taglineSv: taglineSv.trim() || finalNameSv,
+      taglineEn: taglineEn.trim() || finalNameEn,
+      priceSek: parsedPriceSek,
+      priceEur: parsedPriceEur,
+      badgeSv: badgeSv.trim() || "NYHET",
+      badgeEn: badgeEn.trim() || "NEW",
+      descSv: descSv.trim() || "Tillverkad i hållbara ekologiska material i Stockholm.",
+      descEn: descEn.trim() || "Crafted with sustainable organic materials in Stockholm.",
+      specs: specs.length ? specs : ["100% Ekologisk bomull", "Tillverkad i Stockholm"],
+      stockStatusSv: stockStatusSv.trim() || "I lager",
+      stockStatusEn: stockStatusEn.trim() || "In stock",
+      image: activeImage,
+    };
+
+    onAdd(newItem);
+  };
+
+  return (
+    <div className="cms-modal-overlay" onClick={onClose}>
+      <div
+        className="cms-modal-card cms-product-modal-card"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cms-add-product-title"
+      >
+        <div className="cms-modal-header">
+          <div className="cms-modal-title-group">
+            <span className="cms-modal-badge">🛍️ CMS PRODUKTHANTERING</span>
+            <h3 id="cms-add-product-title">
+              {isSv ? "Lägg till ny produkt i butiken" : "Add new merch product"}
+            </h3>
+          </div>
+          <button
+            type="button"
+            className="icon-btn cms-close-btn"
+            onClick={onClose}
+            aria-label={isSv ? "Stäng" : "Close"}
+          >
+            <X size={18} weight="bold" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="cms-product-form">
+          <div className="cms-product-form-body">
+            {/* Image Preview & Selection */}
+            <div className="cms-product-image-picker">
+              <label className="cms-field-label">
+                {isSv ? "Produktbild & Förhandsvisning" : "Product Image & Preview"}
+              </label>
+              <div className="cms-image-preview-box">
+                <img src={activeImage} alt="Förhandsvisning" className="cms-image-preview-thumb" />
+                <div className="cms-image-preview-details">
+                  <span className="cms-preview-badge">{badgeSv || "NYHET"}</span>
+                  <strong>{nameSv || (isSv ? "Produktnamn" : "Product Name")}</strong>
+                  <span>{priceSek} SEK ({priceEur} €)</span>
+                </div>
+              </div>
+
+              <div className="cms-image-presets-grid">
+                {PRESET_IMAGES.map((preset) => (
+                  <button
+                    key={preset.url}
+                    type="button"
+                    className={`cms-image-preset-btn ${selectedImage === preset.url && !customImageUrl ? "active" : ""}`}
+                    onClick={() => {
+                      setSelectedImage(preset.url);
+                      setCustomImageUrl("");
+                    }}
+                    title={preset.label}
+                  >
+                    <img src={preset.url} alt={preset.label} />
+                    <span>{preset.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="cms-form-group" style={{ marginTop: "8px" }}>
+                <label className="cms-sub-label">
+                  {isSv ? "Eller ange egen bild-URL / data-URL:" : "Or provide custom image URL:"}
+                </label>
+                <input
+                  type="text"
+                  className="cms-input"
+                  placeholder="https://... eller /merch/..."
+                  value={customImageUrl}
+                  onChange={(e) => setCustomImageUrl(e.target.value)}
+                  data-testid="cms-input-product-image"
+                />
+              </div>
+            </div>
+
+            {/* Form Fields: Two Columns (SV & EN) */}
+            <div className="cms-dual-col-grid">
+              {/* Svenska */}
+              <div className="cms-lang-column">
+                <div className="cms-lang-column-header">
+                  <span className="cms-lang-flag">🇸🇪</span>
+                  <h4>Svenska</h4>
+                </div>
+
+                <div className="cms-form-group">
+                  <label className="cms-field-label">Produktnamn (SV) *</label>
+                  <input
+                    type="text"
+                    required
+                    className="cms-input"
+                    placeholder="t.ex. MOTKARTA Zip Hoodie"
+                    value={nameSv}
+                    onChange={(e) => setNameSv(e.target.value)}
+                    data-testid="cms-input-product-name-sv"
+                  />
+                </div>
+
+                <div className="cms-form-group">
+                  <label className="cms-field-label">Tagline (SV)</label>
+                  <input
+                    type="text"
+                    className="cms-input"
+                    placeholder="Kort sammanfattning under titeln"
+                    value={taglineSv}
+                    onChange={(e) => setTaglineSv(e.target.value)}
+                    data-testid="cms-input-product-tagline-sv"
+                  />
+                </div>
+
+                <div className="cms-form-group">
+                  <label className="cms-field-label">Beskrivning (SV)</label>
+                  <textarea
+                    rows={3}
+                    className="cms-textarea"
+                    placeholder="Detaljerad produktbeskrivning och material..."
+                    value={descSv}
+                    onChange={(e) => setDescSv(e.target.value)}
+                    data-testid="cms-input-product-desc-sv"
+                  />
+                </div>
+
+                <div className="cms-form-row">
+                  <div className="cms-form-group" style={{ flex: 1 }}>
+                    <label className="cms-field-label">Badge (SV)</label>
+                    <input
+                      type="text"
+                      className="cms-input"
+                      value={badgeSv}
+                      onChange={(e) => setBadgeSv(e.target.value)}
+                      placeholder="NYHET"
+                      data-testid="cms-input-product-badge-sv"
+                    />
+                  </div>
+                  <div className="cms-form-group" style={{ flex: 1.5 }}>
+                    <label className="cms-field-label">Lagerstatus (SV)</label>
+                    <input
+                      type="text"
+                      className="cms-input"
+                      value={stockStatusSv}
+                      onChange={(e) => setStockStatusSv(e.target.value)}
+                      placeholder="I lager (S, M, L)"
+                      data-testid="cms-input-product-stock-sv"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Engelska */}
+              <div className="cms-lang-column">
+                <div className="cms-lang-column-header">
+                  <span className="cms-lang-flag">🇬🇧</span>
+                  <h4>English</h4>
+                </div>
+
+                <div className="cms-form-group">
+                  <label className="cms-field-label">Product Name (EN) *</label>
+                  <input
+                    type="text"
+                    required
+                    className="cms-input"
+                    placeholder="e.g. MOTKARTA Zip Hoodie"
+                    value={nameEn}
+                    onChange={(e) => setNameEn(e.target.value)}
+                    data-testid="cms-input-product-name-en"
+                  />
+                </div>
+
+                <div className="cms-form-group">
+                  <label className="cms-field-label">Tagline (EN)</label>
+                  <input
+                    type="text"
+                    className="cms-input"
+                    placeholder="Short summary under title"
+                    value={taglineEn}
+                    onChange={(e) => setTaglineEn(e.target.value)}
+                    data-testid="cms-input-product-tagline-en"
+                  />
+                </div>
+
+                <div className="cms-form-group">
+                  <label className="cms-field-label">Description (EN)</label>
+                  <textarea
+                    rows={3}
+                    className="cms-textarea"
+                    placeholder="Detailed description and materials..."
+                    value={descEn}
+                    onChange={(e) => setDescEn(e.target.value)}
+                    data-testid="cms-input-product-desc-en"
+                  />
+                </div>
+
+                <div className="cms-form-row">
+                  <div className="cms-form-group" style={{ flex: 1 }}>
+                    <label className="cms-field-label">Badge (EN)</label>
+                    <input
+                      type="text"
+                      className="cms-input"
+                      value={badgeEn}
+                      onChange={(e) => setBadgeEn(e.target.value)}
+                      placeholder="NEW"
+                      data-testid="cms-input-product-badge-en"
+                    />
+                  </div>
+                  <div className="cms-form-group" style={{ flex: 1.5 }}>
+                    <label className="cms-field-label">Stock Status (EN)</label>
+                    <input
+                      type="text"
+                      className="cms-input"
+                      value={stockStatusEn}
+                      onChange={(e) => setStockStatusEn(e.target.value)}
+                      placeholder="In stock (S, M, L)"
+                      data-testid="cms-input-product-stock-en"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Price & Specs row */}
+            <div className="cms-product-extra-row">
+              <div className="cms-form-group" style={{ flex: 1 }}>
+                <label className="cms-field-label">{isSv ? "Pris SEK *" : "Price SEK *"}</label>
+                <input
+                  type="number"
+                  required
+                  min={1}
+                  className="cms-input"
+                  value={priceSek}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setPriceSek(val);
+                    const num = parseInt(val, 10);
+                    if (!isNaN(num)) {
+                      setPriceEur(String(Math.round(num / 11)));
+                    }
+                  }}
+                  data-testid="cms-input-product-price-sek"
+                />
+              </div>
+
+              <div className="cms-form-group" style={{ flex: 1 }}>
+                <label className="cms-field-label">{isSv ? "Pris EUR (€)" : "Price EUR (€)"}</label>
+                <input
+                  type="number"
+                  min={1}
+                  className="cms-input"
+                  value={priceEur}
+                  onChange={(e) => setPriceEur(e.target.value)}
+                  data-testid="cms-input-product-price-eur"
+                />
+              </div>
+
+              <div className="cms-form-group" style={{ flex: 2 }}>
+                <label className="cms-field-label">
+                  {isSv ? "Specifikationer (en per rad)" : "Specifications (one per line)"}
+                </label>
+                <textarea
+                  rows={2}
+                  className="cms-textarea"
+                  value={specsText}
+                  onChange={(e) => setSpecsText(e.target.value)}
+                  placeholder="100% Ekologisk bomull&#10;Fit: Relaxed unisex"
+                  data-testid="cms-input-product-specs"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="cms-modal-footer">
+            <button
+              type="button"
+              className="cms-btn-secondary"
+              onClick={onClose}
+              data-testid="cms-add-product-cancel-btn"
+            >
+              {isSv ? "Avbryt" : "Cancel"}
+            </button>
+            <button
+              type="submit"
+              className="cms-btn-primary"
+              data-testid="cms-add-product-submit-btn"
+            >
+              <Check size={16} weight="bold" />
+              <span>{isSv ? "Publicera produkt" : "Publish product"}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
