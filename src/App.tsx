@@ -29,7 +29,6 @@ import {
   cuisineLabel,
   cuisineOptionsFromPlaces,
   cuisineParts,
-  resolveCuisineFilter,
   distanceFromPoint,
   filterPlacesByRankingMode,
   formatDistance,
@@ -460,6 +459,7 @@ function AppContent({
   };
   const [answer, setAnswer] = useState<string | null>(null);
   const [conciergeResponse, setConciergeResponse] = useState<ConciergeResponse | null>(null);
+  const [conciergeMainListIds, setConciergeMainListIds] = useState<number[]>([]);
   const conciergeRequest = useRef<AbortController | null>(null);
   useEffect(() => () => conciergeRequest.current?.abort(), []);
   const [asking, setAsking] = useState(false);
@@ -478,6 +478,7 @@ function AppContent({
     conciergeRequest.current?.abort();
     setAnswer(null);
     setConciergeResponse(null);
+    setConciergeMainListIds([]);
     setConciergeChatMessages([]);
     setConcierge("");
     setQuery("");
@@ -761,6 +762,13 @@ function AppContent({
   }, [conciergeCards, conciergeResponse, preferences, scoredPlaces]);
 
   const ranked = useMemo(() => {
+    if (conciergeMainListIds.length > 0) {
+      const byId = new Map(scoredPlaces.map((place) => [place.id, place]));
+      return conciergeMainListIds.flatMap((id) => {
+        const place = byId.get(id);
+        return place ? [place] : [];
+      });
+    }
     if (conciergePlaces.length > 0) {
       return conciergePlaces;
     }
@@ -851,6 +859,7 @@ function AppContent({
     [
       allCuisines,
       conciergePlaces,
+      conciergeMainListIds,
       cuisine,
       kind,
       selectedTags,
@@ -1254,6 +1263,16 @@ function AppContent({
 
   const [conciergeChatMessages, setConciergeChatMessages] = useState<import("../lib/concierge/contracts").ChatMessage[]>([]);
 
+  const resolveConciergeMainListIds = useCallback(
+    (response: ConciergeResponse) => response.recommendedPlaces.flatMap((recommended) => {
+      const match = scoredPlaces.find(
+        (place) => place.id === recommended.id || normalize(place.name) === normalize(recommended.name),
+      );
+      return match ? [match.id] : [];
+    }),
+    [scoredPlaces],
+  );
+
   async function askWithQuery(queryText: string) {
     if (!queryText.trim()) return;
 
@@ -1263,6 +1282,7 @@ function AppContent({
     setAsking(true);
     setAnswer(null);
     setConciergeResponse(null);
+    setConciergeMainListIds([]);
     let queryLocation = userLocation;
     if (DISTANCE_INTENT_REGEX.test(queryText)) {
       if (!queryLocation) queryLocation = await requestUserLocation(true);
@@ -1290,12 +1310,10 @@ function AppContent({
       if (payload.status === 'unavailable') throw new Error('catalog_unavailable');
       if (payload.schemaVersion !== 'concierge-response-v1' || typeof payload.answer !== 'string' || !Array.isArray(payload.cards)) throw new Error('invalid_response');
       if (conciergeRequest.current !== controller || controller.signal.aborted) return;
-      setConciergeResponse(payload);
-      setAnswer(payload.answer);
-      const cuisineFilter = payload.structuredFilters?.cuisines?.length === 1
-        ? resolveCuisineFilter(payload.structuredFilters.cuisines, cuisineOptions)
-        : undefined;
-      if (cuisineFilter) selectCuisineFilter(cuisineFilter);
+      setConciergeMainListIds(resolveConciergeMainListIds(payload));
+      setAnswer(null);
+      setConciergeResponse(null);
+      setConciergeChatMessages([]);
       if (payload.action) setSuperpowerMode(payload.action);
       setConciergeChatMessages((prev) => [
         ...prev,
@@ -1314,12 +1332,10 @@ function AppContent({
           }
           if (conciergeRequest.current !== controller || controller.signal.aborted) return;
           const result = retrieveAndSynthesize(queryText, catalog, { language: lang, messages: currentMessages, ...(queryLocation ? { location: queryLocation } : {}) });
-          setConciergeResponse(result);
-          setAnswer(result.answer);
-          const cuisineFilter = result.structuredFilters?.cuisines?.length === 1
-            ? resolveCuisineFilter(result.structuredFilters.cuisines, cuisineOptions)
-            : undefined;
-          if (cuisineFilter) selectCuisineFilter(cuisineFilter);
+          setConciergeMainListIds(resolveConciergeMainListIds(result));
+          setAnswer(null);
+          setConciergeResponse(null);
+          setConciergeChatMessages([]);
           if (result.action) setSuperpowerMode(result.action);
           setConciergeChatMessages((prev) => [
             ...prev,
