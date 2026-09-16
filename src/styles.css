@@ -810,7 +810,7 @@ button.search-clear-btn:hover {
   font-stretch: 62%;
   font-size: clamp(3.25rem, 5vw, 5.65rem);
   font-weight: 800;
-  letter-spacing: -0.025em;
+  letter-spacing: 0;
   line-height: 0.86;
   margin: 0 0 clamp(20px, 3vh, 32px);
   max-width: none;
