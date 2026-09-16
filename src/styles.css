@@ -7657,6 +7657,90 @@ button.concierge-clear-btn:hover {
   margin: 0 0 11px;
 }
 
+.admin-photo-manager {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-mist);
+  color: var(--color-stone);
+  font-size: 12px;
+}
+
+.admin-photo-manager-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.admin-photo-manager-head strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-ink);
+}
+
+.admin-photo-manager-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 8px;
+}
+
+.admin-photo-manager-item {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-mist);
+  background: var(--color-paper);
+}
+
+.admin-photo-manager-item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.admin-photo-manager-item figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 5px;
+  background: var(--color-white);
+  font-size: 10px;
+}
+
+.admin-photo-manager-item figcaption span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-photo-manager-item button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  padding: 3px;
+  border: 0;
+  background: transparent;
+  color: #991b1b;
+  cursor: pointer;
+}
+
+.admin-photo-manager-item button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+
+.admin-photo-manager-error {
+  margin: 0;
+  color: #991b1b;
+}
+
 .admin-evidence-strip {
   gap: 6px;
 }

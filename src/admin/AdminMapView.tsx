@@ -3,6 +3,7 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import React, { useEffect, useRef, useState } from "react";
 import type { Language } from "../app/shared";
+import { AdminPhotoManager } from "./AdminPhotoManager";
 import { STOCKHOLM_REGIONS as STOCKHOLM_REGION_NAMES, isBroadStockholmArea } from "../../lib/stockholm-regions";
 import {
   ArrowsIn,
@@ -51,6 +52,7 @@ interface AdminMapViewProps {
   onPromoteHiddenGem?: (candidate: AdminMapCandidate) => void;
   onMarkClosed?: (candidate: AdminMapCandidate) => void;
   onRestore?: (candidate: AdminMapCandidate) => void;
+    adminHeaders?: (tokenOverride?: string, extraHeaders?: Record<string, string>) => Record<string, string>;
   busyId?: number | null;
   lang?: Language;
 }
@@ -64,6 +66,7 @@ export function AdminMapView({
   onPromoteHiddenGem,
   onMarkClosed,
   onRestore,
+    adminHeaders,
   busyId,
   lang = "sv",
 }: AdminMapViewProps) {
@@ -497,6 +500,8 @@ export function AdminMapView({
                   <span>{selectedPlace.priceSEK} SEK</span>
                 </div>
               ) : null}
+
+              {adminHeaders ? <AdminPhotoManager placeId={selectedPlace.id} lang={lang} adminHeaders={adminHeaders} /> : null}
 
               {onUpdateDistrict ? (
                 <div className="inspector-region-selector">

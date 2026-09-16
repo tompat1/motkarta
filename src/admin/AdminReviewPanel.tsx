@@ -8,6 +8,7 @@ import { AdminMlDashboard } from "./AdminMlDashboard";
 import { AdminGuidePanel } from "./AdminGuidePanel";
 import { AdminToastContainer, type AdminToast } from "./AdminToastContainer";
 import { AdminMapView, type AdminMapCandidate } from "./AdminMapView";
+import { AdminPhotoManager } from "./AdminPhotoManager";
 import {
   ArrowClockwise,
   ArrowRight,
@@ -1678,6 +1679,7 @@ export function AdminReviewPanel({
             const found = candidates.find((c) => c.id === candidate.id);
             if (found) void promoteCandidate(found, "baseline", null);
           }}
+          adminHeaders={adminHeaders}
           busyId={busyId}
           lang={lang}
         />
@@ -1746,6 +1748,7 @@ export function AdminReviewPanel({
                     ))}
                   </div>
                 ) : null}
+                <AdminPhotoManager placeId={candidate.id} lang={lang} adminHeaders={adminHeaders} />
                 {candidate.possibleDuplicates.length ? (
                   <div className="admin-duplicate-box">
                     <div className="admin-duplicate-title">
