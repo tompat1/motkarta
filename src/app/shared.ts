@@ -1,13 +1,13 @@
-import { DEFAULT_CONCIERGE_PROMPTS, DEFAULT_CONCIERGE_PROMPTS_EN, DEFAULT_CURATED_SOURCES } from "../../lib/db-sources-prompts";
-import {
-  type EstablishmentType,
-  type PlaceInput,
-  type ScoredPlace,
-  type UserPreferences,
-} from "../../lib/scoring";
-import { isBroadStockholmArea, resolveStockholmRegion } from "../../lib/stockholm-regions";
-import type { Mode, SortMode } from "./place-ranking";
-export { cuisineOptionsFromPlaces, cuisineParts } from "./cuisine-options";
+import { DEFAULT_CONCIERGE_PROMPTS, DEFAULT_CONCIERGE_PROMPTS_EN, DEFAULT_CURATED_SOURCES } from "../../lib/db-sources-prompts.ts";
+import type {
+  EstablishmentType,
+  PlaceInput,
+  ScoredPlace,
+  UserPreferences,
+} from "../../lib/scoring.ts";
+import { isBroadStockholmArea, resolveStockholmRegion } from "../../lib/stockholm-regions.ts";
+import type { Mode, SortMode } from "./place-ranking.ts";
+export { cuisineOptionsFromPlaces, cuisineParts } from "./cuisine-options.ts";
 export {
   comparePlaces,
   distanceFromPoint,
@@ -17,8 +17,8 @@ export {
   sortModes,
   stockholmCenter,
   visibleModes,
-} from "./place-ranking";
-export type { Mode, SortMode } from "./place-ranking";
+} from "./place-ranking.ts";
+export type { Mode, SortMode } from "./place-ranking.ts";
 
 export const establishmentTypes = [
   "All places",

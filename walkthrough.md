@@ -1,3 +1,29 @@
+# Cloudflare build import repair — 2026-09-16
+
+The supplied Cloudflare build log failed in `tests/place-filtering.test.mjs`
+with `ERR_MODULE_NOT_FOUND` for `lib/db-sources-prompts`. The Belgian cuisine
+test imports `src/app/shared.ts` directly through Node, exposing extensionless
+runtime imports that TypeScript's bundler resolution accepts.
+
+Added explicit `.ts` extensions to the shared module's local imports and
+re-exports, and changed the scoring types to a declaration-level `import type`
+so they are erased at runtime. Documented this requirement in the testing and
+deployment directive. The existing six place-filtering tests reproduce the
+failure before the fix and all pass afterward; no new test is needed.
+
+Verification: `npm run test:gate` passed TypeScript checking, 338 JavaScript
+tests, 146 Python tests, and all 81 Playwright tests across desktop Chromium,
+mobile Chrome, and mobile Safari. Local verification used Node 26.7.0; the
+supplied Cloudflare log used Node 22.16.0. The initial sandboxed browser run could
+not bind port 4173; the full gate passed with local server access enabled.
+
+`npm run build` also passed its repeated four-tier gate, Vite production build,
+Pages worker compilation, and artifact validation. The existing large JavaScript
+chunk warning remains. `git diff --check` passed. Changes are local; no commit,
+push, or deployment was performed.
+
+---
+
 # Venue photo loading and enrichment repair
 
 Mobile cards now request photos as they approach the viewport instead of stopping

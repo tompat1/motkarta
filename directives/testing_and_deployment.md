@@ -65,3 +65,14 @@ application code ran; inspect browser network errors when a page stays blank.
 Keep screenshots under `testInfo.outputPath(...)`, not absolute paths in a
 developer home directory. Photo-loading regressions use local image fixtures
 with one failing URL and one working URL, and scroll beyond result 25.
+
+## Node TypeScript import resolution
+
+The JavaScript unit suite runs with Node's native TypeScript stripping, without
+Vite's module resolver. Modules imported by these tests (including transitive
+imports and re-exports) must use explicit `.ts` extensions for local runtime
+dependencies. Use `import type` for type-only dependencies. TypeScript's
+`moduleResolution: bundler` can accept extensionless imports that fail at runtime
+with `ERR_MODULE_NOT_FOUND`; a passing typecheck alone does not verify them.
+The cuisine-label tests in `tests/place-filtering.test.mjs` exercise a direct
+import of `src/app/shared.ts` and catch this build regression.
