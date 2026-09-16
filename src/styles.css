@@ -15246,8 +15246,8 @@ footer {
 /* Toast */
 .cms-toast {
   position: fixed;
-  top: 24px;
-  right: 24px;
+  bottom: 84px;
+  left: 24px;
   z-index: 10010;
   background: #0f172a;
   color: #ffffff;
@@ -15266,7 +15266,7 @@ footer {
 @keyframes cmsToastSlide {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
