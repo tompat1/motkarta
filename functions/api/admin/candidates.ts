@@ -28,7 +28,7 @@ type Env = {
 } & AdminAuthEnv;
 
 type ValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
-type CandidateStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all";
+type CandidateStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all" | "removed";
 type AdminAction = "promote" | "merge_duplicate" | "keep_separate" | "update_district" | "update_website" | "create_place" | "mark_closed";
 
 type CandidateRow = {
@@ -67,7 +67,7 @@ type EstablishmentLookupRow = {
 };
 
 const lifecycleStates: PlaceLifecycleState[] = ["baseline", "candidate", "verified", "featured"];
-const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "unresolved_region", "needs_input", "ml_dashboard", "all"];
+const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "unresolved_region", "needs_input", "ml_dashboard", "all", "removed"];
 const adminActions: AdminAction[] = ["promote", "merge_duplicate", "keep_separate", "update_district", "update_website", "create_place", "mark_closed"];
 const validationLabels: ValidationLabel[] = [
   "known_mainstream",
@@ -452,6 +452,14 @@ async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit
   }
 
   const trimmedQuery = query.trim();
+
+  if (state === "removed") {
+    const { results } = await db.prepare(`${select}
+      WHERE e.validation_label = 'closed_wrong_category'
+        AND (e.name LIKE ? OR e.address LIKE ? OR e.district LIKE ? OR CAST(e.id AS TEXT) = ?)
+      ${order}`).bind(`%${trimmedQuery}%`, `%${trimmedQuery}%`, `%${trimmedQuery}%`, trimmedQuery, limit).all<CandidateRow>();
+    return results ?? [];
+  }
 
   if (trimmedQuery) {
     const qPattern = `%${trimmedQuery}%`;

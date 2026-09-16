@@ -67,6 +67,30 @@ venue lifecycle or hidden-gem status.
 
 ## Data classes
 
+### Publication controls v1
+
+`GET /api/place-visibility` returns `{ blocked: PlaceIdentity[] }` from D1 rows
+marked `closed_wrong_category`, with `Cache-Control: no-store`. The public
+response contains only venue ID, namespace, name, full OSM identity when known,
+and coordinates; private review notes and reviewer data are not exposed.
+Missing D1 or failed status reads return 503, never an empty successful exclusion
+list. Vite's local development endpoint explicitly has no D1 overrides; source
+closure labels still apply.
+
+Matching uses a shared namespace plus ID, full OSM identities/recorded aliases,
+or (only when an OSM identity is missing) an exact normalized name with latitude
+and longitude each within 0.0001 degrees. Names alone and numeric IDs across
+namespaces cannot suppress a venue. Conflicting full OSM identities do not match
+through proximity. Ambiguous legacy records without a usable identity/location
+need manual identity repair before cross-catalog removal can be guaranteed.
+
+Static `lifecycleState: closed` and `validationLabel: closed_wrong_category`
+exclude records before map/list/saved rendering. Duplicate-merged records are
+excluded individually without suppressing their surviving canonical venue.
+Admin removal/restore remain `promote` review events with existing lifecycle and
+validation-label meanings. This does not introduce preference labels, train a
+model, or change the scorer or event version.
+
 | Class | Examples | Allowed use |
 | --- | --- | --- |
 | Neutral facts | name, address, coordinates, hours, website | Display, matching, context |
@@ -334,4 +358,3 @@ only records; the importer’s broader fallback is not sufficient RAG scope evid
    - Rate limit of 0.5s pause per request; responses cached in `.tmp/scraped_html_cache/`.
    - Facts extracted from venue websites are marked `verification: "listed"` (self-reported), never `verified`.
 4. **Core Values Protection**: No commercial platform ratings or popularity metrics are ever admitted. Unverified commercial claims or paid promotion are strictly rejected.
-

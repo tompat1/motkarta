@@ -136,6 +136,7 @@ import {
   scorePlace,
 } from "../lib/scoring";
 import { fetchPlacesPayload, type DataSource } from "../lib/place-payload";
+import { filterPublishedPlaces } from "../lib/place-visibility";
 
 const DESKTOP_HERO_STORIES = [
   {
@@ -559,7 +560,7 @@ function AppContent({
       try {
         const payload = await fetchPlacesPayload();
 
-        if (!cancelled && payload.places?.length) {
+        if (!cancelled) {
           let initialPlaces = payload.places;
           if (typeof window !== "undefined") {
             try {
@@ -572,11 +573,8 @@ function AppContent({
               }
             } catch {}
           }
-          setPlaces(sanitizeAndAugmentPlaces(initialPlaces));
+          setPlaces(sanitizeAndAugmentPlaces(filterPublishedPlaces(initialPlaces, payload.blocked)));
           setDataSource(payload.source);
-        } else if (!cancelled) {
-          setPlaces([]);
-          setDataSource("unavailable");
         }
       } catch {
         if (!cancelled) {

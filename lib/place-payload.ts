@@ -1,4 +1,5 @@
 import type { PlaceInput } from "./scoring.ts";
+import { filterPublishedPlaces, type PlaceIdentity } from "./place-visibility.ts";
 
 export type DataSource = "loading" | "d1" | "osm" | "unavailable";
 
@@ -7,7 +8,13 @@ type PlacesPayload = {
   places?: PlaceInput[];
 };
 
-export async function fetchPlacesPayload(): Promise<{ source: DataSource; places: PlaceInput[] }> {
+export async function fetchPlacesPayload(): Promise<{ source: DataSource; places: PlaceInput[]; blocked: PlaceIdentity[] }> {
+  // Read current admin exclusions even when the primary dataset is a static asset.
+  // Fail closed if unavailable: falling back must not resurrect removed venues.
+  const visibilityResponse = await fetch("/api/place-visibility", { cache: "no-store", signal: AbortSignal.timeout(5000) });
+  if (!visibilityResponse.ok) throw new Error("Publication status is unavailable");
+  const visibility = await visibilityResponse.json() as { blocked?: PlaceIdentity[] };
+  if (!Array.isArray(visibility.blocked)) throw new Error("Invalid publication status");
   let staticError: unknown;
 
   try {
@@ -18,7 +25,7 @@ export async function fetchPlacesPayload(): Promise<{ source: DataSource; places
 
     const payload = (await staticResponse.json()) as PlacesPayload;
     if (payload.places?.length) {
-      return { source: sourceFromPayload(payload.source, "osm"), places: payload.places };
+      return { source: sourceFromPayload(payload.source, "osm"), places: filterPublishedPlaces(payload.places, visibility.blocked), blocked: visibility.blocked };
     }
 
     throw new Error("Static places returned no places");
@@ -31,7 +38,7 @@ export async function fetchPlacesPayload(): Promise<{ source: DataSource; places
     if (apiResponse.ok) {
       const payload = (await apiResponse.json()) as PlacesPayload;
       if (payload.places?.length) {
-        return { source: sourceFromPayload(payload.source, "d1"), places: payload.places };
+        return { source: sourceFromPayload(payload.source, "d1"), places: filterPublishedPlaces(payload.places, visibility.blocked), blocked: visibility.blocked };
       }
     }
   } catch {

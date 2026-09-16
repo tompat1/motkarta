@@ -13,6 +13,7 @@ test("places payload loads static dataset before D1 API", async () => {
   const calls = [];
   globalThis.fetch = async (url) => {
     calls.push(String(url));
+    if (url === "/api/place-visibility") return jsonResponse({ blocked: [] });
     assert.equal(url, "/data/places.json");
     return jsonResponse({
       source: "osm_curated_open_sources",
@@ -22,7 +23,7 @@ test("places payload loads static dataset before D1 API", async () => {
 
   const payload = await fetchPlacesPayload();
 
-  assert.deepEqual(calls, ["/data/places.json"]);
+  assert.deepEqual(calls, ["/api/place-visibility", "/data/places.json"]);
   assert.equal(payload.source, "osm");
   assert.equal(payload.places[0].name, "Static Place");
 });
@@ -31,6 +32,7 @@ test("places payload uses D1 API only when static dataset is unavailable", async
   const calls = [];
   globalThis.fetch = async (url) => {
     calls.push(String(url));
+    if (url === "/api/place-visibility") return jsonResponse({ blocked: [] });
     if (url === "/data/places.json") {
       return new Response("missing", { status: 503 });
     }
@@ -45,9 +47,27 @@ test("places payload uses D1 API only when static dataset is unavailable", async
 
   const payload = await fetchPlacesPayload();
 
-  assert.deepEqual(calls, ["/data/places.json", "/api/places"]);
+  assert.deepEqual(calls, ["/api/place-visibility", "/data/places.json", "/api/places"]);
   assert.equal(payload.source, "d1");
   assert.equal(payload.places[0].name, "D1 Fallback Place");
+});
+
+test("static catalog applies live admin exclusions with separate D1 IDs", async () => {
+  const venue = { ...place(200, "Belgobarens bakficka"), idNamespace: "public", osmIdentity: "node:3845015364" };
+  globalThis.fetch = async (url) => url === "/api/place-visibility"
+    ? jsonResponse({ blocked: [{ id: 42, idNamespace: "d1", osmIdentity: venue.osmIdentity }] })
+    : jsonResponse({ places: [venue] });
+  assert.deepEqual((await fetchPlacesPayload()).places, []);
+});
+
+test("visibility errors stop loading instead of bypassing admin removals", async () => {
+  for (const response of [new Response("Unavailable", { status: 503 }), jsonResponse({})]) {
+    globalThis.fetch = async (url) => {
+      assert.equal(url, "/api/place-visibility");
+      return response;
+    };
+    await assert.rejects(fetchPlacesPayload(), /[Pp]ublication status/);
+  }
 });
 
 function jsonResponse(body) {

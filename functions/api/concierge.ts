@@ -1,4 +1,5 @@
 import { loadPlacesFromD1 } from '../../lib/place-records.ts';
+import { filterPublishedPlaces, isClosedPlace, type PlaceIdentity } from '../../lib/place-visibility.ts';
 import { VERSIONS, type AiBinding, type ConciergePlace, type QueryContext, type VectorBinding } from '../../lib/concierge/contracts.ts';
 import { coordinates } from '../../lib/concierge/gates.ts';
 import { plainText, safeUrl, normalize } from '../../lib/concierge/facts.ts';
@@ -194,9 +195,14 @@ export async function requestAiPermit(env: Env, key: string, units: number) {
 export async function processConciergeQuery(query: string, env: Env = {}, context: QueryContext = {}, allowAI = false, requestUrl?: string) {
   const started = Date.now(), deadline = started + 4500;
   let places: ConciergePlace[] = [];
+  let blocked: PlaceIdentity[] = [];
+  let publicationAvailable = true;
   let sourceNamespace = 'd1';
   if (parseAction(query)) return Response.json(buildResponse(query, [], 0, context, 'action'), { headers });
-  try { if (env.DB) places = await withinDeadline(loadPlacesFromD1(env.DB), 1200); } catch { /* bounded unavailable response below */ }
+  try {
+    if (env.DB) places = await withinDeadline(loadPlacesFromD1(env.DB), 1200);
+    blocked = places.filter(isClosedPlace);
+  } catch { publicationAvailable = false; }
   if (env.ASSETS && requestUrl) {
     try {
       const assetRes = await env.ASSETS.fetch(new URL('/data/places.json', requestUrl).toString());
@@ -204,6 +210,7 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
         const json = await assetRes.json() as ConciergePlace[] | { places?: ConciergePlace[] };
         const assetPlaces = Array.isArray(json) ? json : json.places;
         if (Array.isArray(assetPlaces) && assetPlaces.length > 0) {
+          blocked.push(...assetPlaces.filter(isClosedPlace));
           if (!places.length) {
             places = assetPlaces;
             sourceNamespace = 'published_dataset';
@@ -229,6 +236,7 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
       // bounded unavailable response below
     }
   }
+  places = publicationAvailable ? filterPublishedPlaces(places, blocked) : [];
   if (!places.length) {
     const result = buildResponse(query, [], 0, context, 'unavailable');
     result.status = 'unavailable';

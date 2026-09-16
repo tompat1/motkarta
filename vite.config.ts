@@ -132,6 +132,12 @@ function viteAdminDevPlugin(): Plugin {
     name: "vite-plugin-admin-dev-api",
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
+        if (req.url === "/api/place-visibility" && req.method === "GET") {
+          // Local Vite has no D1 binding. Intrinsic static closure labels still apply.
+          res.setHeader("Content-Type", "application/json");
+          res.setHeader("Cache-Control", "no-store");
+          return res.end(JSON.stringify({ blocked: [] }));
+        }
         if (!req.url?.startsWith("/api/admin")) {
           return next();
         }
@@ -453,4 +459,3 @@ export default defineConfig({
       : {}),
   },
 });
-

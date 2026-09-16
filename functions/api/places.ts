@@ -1,6 +1,8 @@
 import { loadPlacesFromD1 } from "../../lib/place-records.ts";
 import { normalize } from "../../lib/concierge/facts.ts";
 import { isExcludedCatalogPlace } from "../../lib/catalog-exclusions.ts";
+import { filterPublishedPlaces, isClosedPlace, loadUnpublishedPlaces, type PlaceIdentity, type VisibilityDatabase } from "../../lib/place-visibility.ts";
+import type { PlaceInput } from "../../lib/scoring.ts";
 
 type EventContext<Env> = {
   request?: Request;
@@ -14,7 +16,7 @@ type Env = {
 
 const jsonHeaders = {
   "content-type": "application/json; charset=utf-8",
-  "cache-control": "public, max-age=60",
+  "cache-control": "no-store",
 };
 
 async function loadFallbackPlaces(context: EventContext<Env>) {
@@ -36,12 +38,21 @@ async function loadFallbackPlaces(context: EventContext<Env>) {
 
 export async function onRequestGet(context: EventContext<Env>) {
   const db = context.env.DB;
+  let blocked: PlaceIdentity[] = [];
+  if (db) {
+    try {
+      blocked = await loadUnpublishedPlaces(db as VisibilityDatabase);
+    } catch {
+      return Response.json({ source: "unavailable", places: [], error: "Publication status is unavailable." }, { headers: jsonHeaders, status: 503 });
+    }
+  }
+  const publish = (places: PlaceInput[]) => filterPublishedPlaces(places, blocked);
 
   if (!db) {
     const fallbackPlaces = await loadFallbackPlaces(context);
     if (fallbackPlaces) {
       return Response.json(
-        { source: "published_dataset", places: fallbackPlaces },
+        { source: "published_dataset", places: publish(fallbackPlaces) },
         { headers: jsonHeaders },
       );
     }
@@ -57,7 +68,7 @@ export async function onRequestGet(context: EventContext<Env>) {
     const fallbackPlaces = await loadFallbackPlaces(context);
     if (!places.length && fallbackPlaces) {
       return Response.json(
-        { source: "published_dataset", places: fallbackPlaces },
+        { source: "published_dataset", places: publish(fallbackPlaces) },
         { headers: jsonHeaders },
       );
     }
@@ -80,7 +91,7 @@ export async function onRequestGet(context: EventContext<Env>) {
       }
     }
     return Response.json(
-      { source: "d1", places },
+      { source: "d1", places: filterPublishedPlaces(places, [...blocked, ...(fallbackPlaces ?? []).filter(isClosedPlace)]) },
       { headers: jsonHeaders },
     );
   } catch (error) {
@@ -88,7 +99,7 @@ export async function onRequestGet(context: EventContext<Env>) {
     const fallbackPlaces = await loadFallbackPlaces(context);
     if (fallbackPlaces) {
       return Response.json(
-        { source: "published_dataset", places: fallbackPlaces },
+        { source: "published_dataset", places: publish(fallbackPlaces) },
         { headers: jsonHeaders },
       );
     }

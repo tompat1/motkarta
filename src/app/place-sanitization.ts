@@ -1,5 +1,6 @@
 import type { PlaceInput } from "../../lib/scoring";
 import { isExcludedCatalogPlace } from "../../lib/catalog-exclusions.ts";
+import { filterPublishedPlaces } from "../../lib/place-visibility.ts";
 import { isBroadStockholmArea, resolveStockholmRegion } from "../../lib/stockholm-regions.ts";
 
 const EXCLUDED_COMMERCIAL_CHAINS = [
@@ -63,7 +64,7 @@ const RESTAURANT_GRILL_KEYWORDS = [
 
 export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[] {
   // 1. Purge commercial chains
-  const filtered = inputPlaces.filter((p) => {
+  const filtered = filterPublishedPlaces(inputPlaces).filter((p) => {
     const n = p.name.toLowerCase();
     return !isExcludedCatalogPlace(p) && !EXCLUDED_COMMERCIAL_CHAINS.some((chain) => n.includes(chain));
   });

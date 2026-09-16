@@ -76,3 +76,12 @@ dependencies. Use `import type` for type-only dependencies. TypeScript's
 with `ERR_MODULE_NOT_FOUND`; a passing typecheck alone does not verify them.
 The cuisine-label tests in `tests/place-filtering.test.mjs` exercise a direct
 import of `src/app/shared.ts` and catch this build regression.
+
+## Admin publication controls
+
+Removal must be tested across the static-first public loader, D1/API fallback,
+and concierge union. Do not verify only the admin success message. Use isolated
+SQLite and browser fixtures for removal/restoration; never modify production
+venues as a test. Verify full OSM identity across differing public/D1 IDs and
+that a failed status read cannot resurrect a stale static record. Deploy the
+visibility endpoint and its client together. See `docs/ml/operations-runbook.md`.

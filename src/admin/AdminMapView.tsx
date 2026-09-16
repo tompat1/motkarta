@@ -50,6 +50,8 @@ interface AdminMapViewProps {
   onBatchUpdateDistrict?: (candidates: AdminMapCandidate[], district: string) => Promise<void> | void;
   onPromoteHiddenGem?: (candidate: AdminMapCandidate) => void;
   onMarkClosed?: (candidate: AdminMapCandidate) => void;
+  onRestore?: (candidate: AdminMapCandidate) => void;
+  busyId?: number | null;
   lang?: Language;
 }
 
@@ -61,6 +63,8 @@ export function AdminMapView({
   onBatchUpdateDistrict,
   onPromoteHiddenGem,
   onMarkClosed,
+  onRestore,
+  busyId,
   lang = "sv",
 }: AdminMapViewProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -560,9 +564,16 @@ export function AdminMapView({
                   <button
                     type="button"
                     className="inspector-btn inspector-btn-danger"
+                    disabled={busyId === selectedPlace.id}
                     onClick={() => onMarkClosed(selectedPlace)}
                   >
-                    {lang === "sv" ? "Stängd" : "Closed"}
+                    {lang === "sv" ? "Ta bort från kartan" : "Remove from map"}
+                  </button>
+                ) : null}
+                {onRestore && selectedPlace.validationLabel === "closed_wrong_category" ? (
+                  <button type="button" className="inspector-btn inspector-btn-secondary"
+                    disabled={busyId === selectedPlace.id} onClick={() => onRestore(selectedPlace)}>
+                    {lang === "sv" ? "Återställ" : "Restore"}
                   </button>
                 ) : null}
               </div>
@@ -573,4 +584,3 @@ export function AdminMapView({
     </div>
   );
 }
-

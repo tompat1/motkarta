@@ -31,7 +31,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 
-type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all";
+type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all" | "removed";
 type AdminValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
 
 export type AdminCandidate = {
@@ -156,7 +156,7 @@ export {
   localizeD1QuotaMessage,
 };
 
-const adminStateFilters: AdminStateFilter[] = ["candidate", "baseline", "verified", "featured", "unresolved_region", "needs_input", "ml_dashboard", "all"];
+const adminStateFilters: AdminStateFilter[] = ["all", "removed", "candidate", "baseline", "verified", "featured", "unresolved_region", "needs_input", "ml_dashboard"];
 
 export function AdminReviewPanel({
   lang = "sv",
@@ -171,7 +171,7 @@ export function AdminReviewPanel({
 }) {
   const [tokenInput, setTokenInput] = useState(readStoredAdminToken);
   const [adminToken, setAdminToken] = useState(readStoredAdminToken);
-  const [stateFilter, setStateFilter] = useState<AdminStateFilter>("candidate");
+  const [stateFilter, setStateFilter] = useState<AdminStateFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [selectedCandidateId, setSelectedCandidateId] = useState<number | null>(null);
@@ -656,9 +656,16 @@ export function AdminReviewPanel({
   const promoteCandidate = async (
     candidate: AdminCandidate,
     lifecycleState: PlaceLifecycleState,
-    validationLabel: AdminValidationLabel,
+    validationLabel: AdminValidationLabel | null,
   ) => {
     if (!hasAdminAuth) return;
+
+    if (validationLabel === "closed_wrong_category" && !window.confirm(lang === "sv"
+      ? `Ta bort ${candidate.name} från publik karta, listor och concierge som stängd/fel kategori? Posten sparas under Borttagna och kan återställas.`
+      : `Remove ${candidate.name} from the public map, lists and concierge as closed/wrong category? The record is kept under Removed and can be restored.`)) return;
+    if (validationLabel === null && !window.confirm(lang === "sv"
+      ? `Återställ ${candidate.name} till Baseline? Bekräfta att stället är öppet och hör hemma i katalogen. En separat stängningsmarkering i källdatan måste också rättas.`
+      : `Restore ${candidate.name} to Baseline? Confirm it is open and belongs in the catalog. Any separate closure in the source dataset must also be corrected.`)) return;
 
     const validationNotes = (reviewNotes[candidate.id] ?? candidate.validationNotes ?? "").trim();
     setBusyId(candidate.id);
@@ -698,7 +705,7 @@ export function AdminReviewPanel({
             return [row];
           }
 
-          if (stateFilter !== "all" && lifecycleState !== stateFilter) {
+          if (stateFilter !== "all" && (stateFilter === "removed" ? validationLabel !== "closed_wrong_category" : lifecycleState !== stateFilter)) {
             return [];
           }
 
@@ -711,7 +718,18 @@ export function AdminReviewPanel({
           : `${candidate.name} updated to ${lifecycleStateLabel(lifecycleState, lang)}.`,
       );
 
-      if (validationLabel === "known_hidden_gem") {
+      if (validationLabel === "closed_wrong_category" || validationLabel === null) {
+        addToast({
+          type: "success",
+          title: validationLabel === null
+            ? (lang === "sv" ? "Återställd till Baseline" : "Restored to Baseline")
+            : (lang === "sv" ? "Borttagen från publicering" : "Removed from publication"),
+          message: candidate.name,
+          detail: lang === "sv"
+            ? "Gäller nya sidladdningar och conciergefrågor. Historik och källdata finns kvar."
+            : "Applies to new page loads and concierge queries. History and source data are retained.",
+        });
+      } else if (validationLabel === "known_hidden_gem") {
         addToast({
           type: "ml_event",
           title: lang === "sv" ? "✨ Promoverad: Dold Pärla" : "✨ Promoted: Hidden Gem",
@@ -1507,8 +1525,8 @@ export function AdminReviewPanel({
               </h5>
               <p className="admin-sync-desc">
                 {lang === "sv"
-                  ? "Alla granskningsbeslut sparas direkt i Cloudflare D1 i realtid. Du behöver inte exportera manuellt för att ändringar ska synas på sajten; ML-pipelinen synkar automatiskt via npm run sync:labels vid modellträning."
-                  : "All review decisions are saved directly to Cloudflare D1 in real-time. You don't need to manually export for changes to appear live; the ML pipeline auto-syncs via npm run sync:labels during model training."}
+                  ? "Granskningsbeslut sparas direkt. Borttagna ställen döljs vid nästa sidladdning och conciergefråga. Välj Alla för att söka i hela granskningskatalogen och Borttagna för att återställa. Ändringar av övrig källdata kräver katalogsynk."
+                  : "Review decisions are saved directly. Removed places are hidden on the next page load and concierge query. Choose All to search the review catalog and Removed to restore. Other source-data edits require a catalog sync."}
               </p>
             </div>
           </div>
@@ -1656,6 +1674,11 @@ export function AdminReviewPanel({
             const found = candidates.find((c) => c.id === candidate.id);
             if (found) void promoteCandidate(found, "candidate", "closed_wrong_category");
           }}
+          onRestore={(candidate) => {
+            const found = candidates.find((c) => c.id === candidate.id);
+            if (found) void promoteCandidate(found, "baseline", null);
+          }}
+          busyId={busyId}
           lang={lang}
         />
       ) : filteredCandidates.length ? (
@@ -1910,12 +1933,16 @@ export function AdminReviewPanel({
                 </button>
                 <button
                   type="button"
-                  className="admin-action-btn danger"
+                  className={`admin-action-btn ${candidate.validationLabel === "closed_wrong_category" ? "" : "danger"}`}
                   disabled={busyId === candidate.id}
-                  onClick={() => void promoteCandidate(candidate, "candidate", "closed_wrong_category")}
+                  onClick={() => void promoteCandidate(candidate,
+                    candidate.validationLabel === "closed_wrong_category" ? "baseline" : "candidate",
+                    candidate.validationLabel === "closed_wrong_category" ? null : "closed_wrong_category")}
                 >
-                  <X size={14} weight="bold" />
-                  {lang === "sv" ? "Stäng" : "Close"}
+                  {candidate.validationLabel === "closed_wrong_category" ? <ArrowClockwise size={14} weight="bold" /> : <X size={14} weight="bold" />}
+                  {candidate.validationLabel === "closed_wrong_category"
+                    ? (lang === "sv" ? "Återställ" : "Restore")
+                    : (lang === "sv" ? "Ta bort från kartan" : "Remove from map")}
                 </button>
               </div>
             </article>
@@ -2126,6 +2153,7 @@ function lifecycleStateLabel(state: AdminStateFilter | string, lang: Language) {
     needs_input: { sv: "Saknar uppgifter", en: "Needs Info" },
     ml_dashboard: { sv: "🤖 ML & Modeller", en: "🤖 ML & Models" },
     all: { sv: "Alla", en: "All" },
+    removed: { sv: "Borttagna", en: "Removed" },
   };
   return labels[state as AdminStateFilter]?.[lang] ?? state;
 }
@@ -2194,6 +2222,10 @@ function stateFilterHelpText(filter: AdminStateFilter, lang: Language): string {
       return lang === "sv"
         ? "Featured: Särskilt utvalda ställen med högsta synlighet i filter, startsidans kartsnabbval och concierge."
         : "Featured: Curated standout venues with highest visibility in filters, hero shortcuts, and concierge.";
+    case "removed":
+      return lang === "sv"
+        ? "Borttagna: Stängda eller felkategoriserade ställen. Återställ till Baseline efter kontroll. Separata stängningsmarkeringar i källdatan måste också rättas."
+        : "Removed: Closed or wrong-category places. Restore to Baseline after review. Separate source-dataset closure labels must also be corrected.";
     case "all":
     default:
       return lang === "sv"
@@ -2201,4 +2233,3 @@ function stateFilterHelpText(filter: AdminStateFilter, lang: Language): string {
         : "All places: Every establishment in D1 regardless of review or lifecycle state.";
   }
 }
-

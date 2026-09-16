@@ -266,6 +266,23 @@ before public rendering or concierge retrieval. See the
 
 ## Source-of-truth hierarchy
 
+### Live publication exclusions (2026-09-16)
+
+`lib/place-visibility.ts` owns the `publication-controls-v1` admission contract.
+The static-first browser loader reads `/api/place-visibility` before using the
+catalog and applies current D1 closure exclusions to static and locally saved
+venue records. The places API and concierge enforce the same identity rules;
+closures in the published snapshot remain authoritative across the D1/static
+union. A configured but unreadable D1 cannot fall back to stale public venues.
+This is a publication bug fix, not a scoring formula or trained-model change.
+Existing scorer/model versions, evidence gates and telemetry remain unchanged.
+
+Admin removal uses the existing authenticated lifecycle review API and
+`closed_wrong_category` label, retaining the record and review history. Restore
+returns it to baseline with no validation label; it does not confer verified or
+hidden-gem status, nor override independent static closure labels. See the
+[runbook](operations-runbook.md#removing-and-restoring-places-2026-09-16).
+
 When documentation and code disagree:
 
 1. Database migration and current schema determine stored structure.

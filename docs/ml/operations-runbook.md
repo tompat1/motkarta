@@ -79,6 +79,39 @@ while leaving contradictory import or public admission rules in place.
 
 ## Environment setup
 
+### Removing and restoring places (2026-09-16)
+
+1. Open `/admin` with an authenticated admin session. The queue defaults to
+   **Alla / All**; search by name, address or D1 ID (Enter submits the search).
+2. Check the identity and enter a review note. **Ta bort från kartan / Remove
+   from map** confirms the named venue as closed/wrong category. This sets
+   `candidate` + `closed_wrong_category` through the existing review endpoint.
+3. **Borttagna / Removed** lists those records. **Återställ / Restore** confirms
+   returning one to baseline and clears the D1 validation label. Evidence and
+   review history remain. Recheck any independent closure in the static source;
+   restoration cannot override that closure or grant hidden-gem status.
+
+Removal affects new public page loads and concierge requests without a static
+catalog rebuild. Already-open pages need a reload. Search operates on D1 records;
+static-only venues need an identity-preserving D1 import before admin review.
+The supplied catalog already labels Arirang closed, so the public sanitizer now
+excludes it. Belgobarens bakficka has no static closure label; this change adds
+the removal capability without changing that venue's production status.
+
+The public loader performs one small, uncached D1 status query per page load.
+If D1/status is unavailable (including quota exhaustion), the public catalog
+shows unavailable rather than bypassing removals. Monitor availability and D1
+read usage. Deploy the frontend and `/api/place-visibility` function together;
+no new schema migration is required beyond the existing lifecycle/admin schema.
+The concierge preview continues to use its existing SELECT-only query allowlist.
+
+Tests cover actual SQLite migrations and remove/restore review writes, auth,
+404s, audit retention, search within removed records, separate ID namespaces,
+branches, aliases, stale snapshots, read failures, and desktop/mobile controls.
+No production data writes, paid inference or deployment are part of this repair.
+Rollback requires reverting both public admission code and its client/endpoint
+callers together; a code rollback must not be used to bypass a valid closure.
+
 From the repository root:
 
 ```bash

@@ -47,7 +47,7 @@ for (const mode of ["unbound", "empty", "populated", "failed"]) {
       request: new Request("https://motkarta.test/api/places"),
       env: { DB, ASSETS: { fetch: async () => Response.json({ places }) } },
     });
-    assert.equal(response.status, 200);
-    assert.deepEqual((await response.json()).places.map((place) => place.name), fixture.included);
+    assert.equal(response.status, mode === "failed" ? 503 : 200);
+    assert.deepEqual((await response.json()).places.map((place) => place.name), mode === "failed" ? [] : fixture.included);
   });
 }
