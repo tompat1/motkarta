@@ -1420,6 +1420,26 @@ function AppContent({
         const list: PlaceInput[] = stored ? JSON.parse(stored) : [];
         localStorage.setItem("motkarta_user_places", JSON.stringify([placeToAdd, ...list]));
       } catch {}
+
+      // Keep the local-first experience, but also persist the submission in D1
+      // so editors can review it from the admin Candidates page.
+      void fetch("/api/submissions", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: placeToAdd.name,
+          kind: placeToAdd.kind,
+          cuisine: placeToAdd.cuisine,
+          area: placeToAdd.area,
+          address: placeToAdd.address,
+          website: placeToAdd.website,
+          note: placeToAdd.note,
+          latitude: placeToAdd.latitude,
+          longitude: placeToAdd.longitude,
+        }),
+      }).catch(() => {
+        // The place remains available locally when the network is unavailable.
+      });
     }
 
     if (initialPhoto) {
