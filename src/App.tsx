@@ -29,6 +29,7 @@ import {
   cuisineLabel,
   cuisineOptionsFromPlaces,
   cuisineParts,
+  resolveCuisineFilter,
   distanceFromPoint,
   filterPlacesByRankingMode,
   formatDistance,
@@ -1291,6 +1292,10 @@ function AppContent({
       if (conciergeRequest.current !== controller || controller.signal.aborted) return;
       setConciergeResponse(payload);
       setAnswer(payload.answer);
+      const cuisineFilter = payload.structuredFilters?.cuisines?.length === 1
+        ? resolveCuisineFilter(payload.structuredFilters.cuisines, cuisineOptions)
+        : undefined;
+      if (cuisineFilter) selectCuisineFilter(cuisineFilter);
       if (payload.action) setSuperpowerMode(payload.action);
       setConciergeChatMessages((prev) => [
         ...prev,
@@ -1311,6 +1316,10 @@ function AppContent({
           const result = retrieveAndSynthesize(queryText, catalog, { language: lang, messages: currentMessages, ...(queryLocation ? { location: queryLocation } : {}) });
           setConciergeResponse(result);
           setAnswer(result.answer);
+          const cuisineFilter = result.structuredFilters?.cuisines?.length === 1
+            ? resolveCuisineFilter(result.structuredFilters.cuisines, cuisineOptions)
+            : undefined;
+          if (cuisineFilter) selectCuisineFilter(cuisineFilter);
           if (result.action) setSuperpowerMode(result.action);
           setConciergeChatMessages((prev) => [
             ...prev,

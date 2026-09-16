@@ -78,3 +78,24 @@ export function cuisineOptionsFromPlaces(places: PlaceInput[]) {
 
   return [...new Set([...featured, ...sortedOthers])].slice(0, 24);
 }
+
+export function resolveCuisineFilter(cuisines: string[], availableOptions: string[]) {
+  const aliases: Record<string, string[]> = {
+    belgian: ["belgian", "belgisk", "belgiskt", "belgiska"],
+    chinese: ["chinese", "kinesisk", "kinesiska", "kinesiskt"],
+    french: ["french", "fransk", "franskt"],
+    german: ["german", "tysk", "tyskt", "tyska"],
+  };
+  const normalizedOptions = availableOptions.map((option) => ({
+    option,
+    normalized: option.trim().toLowerCase().replaceAll("_", " "),
+  }));
+
+  for (const cuisine of cuisines) {
+    const normalizedCuisine = cuisine.trim().toLowerCase().replaceAll("_", " ");
+    const candidates = aliases[normalizedCuisine] ?? [normalizedCuisine];
+    const match = normalizedOptions.find(({ normalized }) => candidates.includes(normalized));
+    if (match) return match.option;
+  }
+  return undefined;
+}

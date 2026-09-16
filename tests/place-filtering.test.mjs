@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { cuisineOptionsFromPlaces } from "../src/app/cuisine-options.ts";
+import { cuisineOptionsFromPlaces, resolveCuisineFilter } from "../src/app/cuisine-options.ts";
 import { isLatestAddedPlace, matchesEstablishmentFilter } from "../src/app/place-filtering.ts";
 import { cuisineLabel } from "../src/app/shared.ts";
 
@@ -72,6 +72,16 @@ test("cuisineLabel formats Belgian cuisine as Belgiskt in SV and Belgian in EN",
   assert.equal(cuisineLabel("belgian", "en"), "Belgian");
   assert.equal(cuisineLabel("belgiskt", "sv"), "Belgiskt");
   assert.equal(cuisineLabel("belgiskt", "en"), "Belgian");
+});
+
+test("concierge cuisine intent resolves to an available main-list filter", () => {
+  const options = ["belgian", "chinese", "french", "german"];
+
+  assert.equal(resolveCuisineFilter(["belgian"], options), "belgian");
+  assert.equal(resolveCuisineFilter(["chinese"], options), "chinese");
+  assert.equal(resolveCuisineFilter(["french"], options), "french");
+  assert.equal(resolveCuisineFilter(["german"], options), "german");
+  assert.equal(resolveCuisineFilter(["unknown"], options), undefined);
 });
 
 test("selecting any filter clears concierge state in App.tsx", async () => {

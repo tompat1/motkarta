@@ -19,6 +19,17 @@ test("extractStructuredFilters parses family-run, Polish/Eastern European, not e
   assert.equal(filters.near_public_transport, true);
 });
 
+test("extractStructuredFilters canonicalizes bilingual cuisine filter words", () => {
+  assert.deepEqual(extractStructuredFilters("Belgian").cuisines, ["belgian"]);
+  assert.deepEqual(extractStructuredFilters("Belgisk").cuisines, ["belgian"]);
+  assert.deepEqual(extractStructuredFilters("Chinese").cuisines, ["chinese"]);
+  assert.deepEqual(extractStructuredFilters("Kinesiskt").cuisines, ["chinese"]);
+  assert.deepEqual(extractStructuredFilters("French").cuisines, ["french"]);
+  assert.deepEqual(extractStructuredFilters("Franskt").cuisines, ["french"]);
+  assert.deepEqual(extractStructuredFilters("German").cuisines, ["german"]);
+  assert.deepEqual(extractStructuredFilters("Tyskt").cuisines, ["german"]);
+});
+
 test("RAG retrieveAndSynthesize ranks relevant places and synthesizes grounded answer", () => {
   const result = retrieveAndSynthesize("cardamom bun and filter coffee", livePlaces);
 
