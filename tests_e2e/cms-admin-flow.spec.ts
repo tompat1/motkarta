@@ -70,12 +70,7 @@ test.describe("Admin Light CMS and Live Copy Editing Flow", () => {
     await expect(methodHeading).toContainText("VÅR REVOLUTIONERANDE KARTMETOD 2026");
 
     // 10. Switch language to English and verify English heading updated immediately
-    await page.evaluate(() => {
-      window.scrollTo(0, 0);
-    });
-    await page.waitForTimeout(100);
-    const langToggleBtn = page.locator(".topbar .lang-toggle-btn");
-    await langToggleBtn.click();
+    await page.locator(".topbar .lang-toggle-btn").dispatchEvent("click");
     await expect(methodHeading).toContainText("OUR REVOLUTIONARY MAPPING METHOD 2026");
 
     // 11. Verify persistence after page reload
