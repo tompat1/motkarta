@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import { onRequestGet as getAdminSession } from "../functions/api/admin/session.ts";
@@ -29,4 +30,11 @@ test("admin session endpoint reports closed admin access", async () => {
   assert.equal(response.status, 503);
   assert.equal(payload.admin, false);
   assert.match(payload.reason, /not configured/i);
+});
+
+test("token admin logout returns to the public site with the dog-friendly control", async () => {
+  const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+
+  assert.match(appSource, /if \(mode === "token"\) \{[\s\S]*window\.location\.assign\("\/"\)/);
+  assert.match(appSource, /<PawPrint size=\{18\} weight=\{selectedTags\.includes\("Dog friendly"\) \? "fill" : "bold"\}/);
 });

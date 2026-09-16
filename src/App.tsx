@@ -543,7 +543,7 @@ function AppContent({
     const mode = adminSession?.authMode;
     setAdminSession(null);
     if (mode === "token") {
-      void checkGlobalAdminSession("");
+      window.location.assign("/");
       return;
     }
     if (typeof window !== "undefined") {
