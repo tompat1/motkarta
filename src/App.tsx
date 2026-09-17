@@ -1567,12 +1567,34 @@ function AppContent({
     if (!searchText) return;
 
     setConcierge(searchText);
+    setQuery(searchText);
+
+    if (typeof window !== "undefined") {
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        setMobileViewMode("list");
+      } else {
+        setMobileViewMode("map");
+      }
+      setActiveDesktopNav("map");
+      const scrollToPlaces = () => {
+        const target = document.getElementById("places") || document.getElementById("map");
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      };
+      window.requestAnimationFrame(scrollToPlaces);
+      setTimeout(scrollToPlaces, 80);
+    }
+
     await askWithQuery(searchText);
 
     if (typeof window !== "undefined") {
       setTimeout(() => {
-        document.getElementById("concierge-answer")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }, 100);
+        const target = document.getElementById("places") || document.getElementById("map");
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 150);
     }
   }
 
@@ -1864,23 +1886,52 @@ function AppContent({
           <p className="editorial-hero-deck">
             {lang === "sv" ? "Ingen betald placering. Öppen ranking." : "No paid placement. Open ranking."}
           </p>
-          <div className="editorial-hero-search">
-            <MagnifyingGlass size={24} weight="regular" aria-hidden="true" />
+          <form
+            className="editorial-hero-search"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void askFromSearch();
+            }}
+          >
+            <MagnifyingGlass size={22} weight="regular" aria-hidden="true" />
             <input
-              aria-label={lang === "sv" ? "Hitta mat och platser" : "Find food and places"}
+              aria-label={lang === "sv" ? "Fråga concierge om mat och platser" : "Ask concierge about food and places"}
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key !== "Enter") return;
-                document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+              onChange={(event) => {
+                const val = event.target.value;
+                setQuery(val);
+                setConcierge(val);
               }}
               placeholder={lang === "sv" ? "Vad är du sugen på?" : "What are you in the mood for?"}
             />
-            <button type="button" onClick={() => document.getElementById("map")?.scrollIntoView({ behavior: "smooth" })}>
-              {lang === "sv" ? "Hitta ställen" : "Find places"}
-              <ArrowRight size={20} weight="bold" />
+            {query.trim() ? (
+              <button
+                type="button"
+                className="editorial-hero-search-clear"
+                onClick={() => {
+                  setQuery("");
+                  clearConciergeState();
+                }}
+                aria-label={lang === "sv" ? "Rensa sökning" : "Clear search"}
+                title={lang === "sv" ? "Rensa" : "Clear"}
+              >
+                <X size={16} weight="bold" />
+              </button>
+            ) : null}
+            <button
+              type="submit"
+              className="editorial-hero-concierge-btn"
+              disabled={asking || !query.trim()}
+              title={lang === "sv" ? "Ställ fråga till AI-Concierge" : "Ask AI Concierge"}
+            >
+              {asking ? (
+                <CircleNotch size={15} className="animate-spin" />
+              ) : (
+                <Sparkle size={15} weight="bold" />
+              )}
+              <span>{lang === "sv" ? "FRÅGA CONCIERGE" : "ASK CONCIERGE"}</span>
             </button>
-          </div>
+          </form>
           <div className="editorial-category-row" aria-label={t.typeFilterLabel}>
             {visibleEstablishmentTypes.filter((item) => ["Restaurant", "Bakery", "Café", "Specialty coffee"].includes(item)).map((item) => (
               <button key={item} type="button" onClick={() => { selectKindFilter(item); document.getElementById("map")?.scrollIntoView({ behavior: "smooth" }); }}>
@@ -2798,7 +2849,7 @@ function AppContent({
           ) : null}
         </div>
 
-        <aside className="results">
+        <aside className="results" id="places">
 
           <div className="results-head">
             <div className="results-summary">
