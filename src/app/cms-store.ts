@@ -38,6 +38,7 @@ export type CmsKeyMetadata = {
 
 export const CMS_CATALOG: CmsKeyMetadata[] = [
   // Navigation
+  { key: "topbarSlogan", label: "Toppbar: Slogan", section: "Navigation" },
   { key: "navMap", label: "Nav: Karta", section: "Navigation" },
   { key: "navMethod", label: "Nav: Metod", section: "Navigation" },
   { key: "navReview", label: "Nav: Granskning", section: "Navigation" },
@@ -46,7 +47,23 @@ export const CMS_CATALOG: CmsKeyMetadata[] = [
   { key: "navPrinciples", label: "Nav: Principer", section: "Navigation" },
   { key: "navAbout", label: "Nav: Om", section: "Navigation" },
 
-  // Hero & Manifesto
+  // Redaktionell Hero (Ny design)
+  { key: "heroKicker", label: "Redaktionell Hero: Kicker", section: "Redaktionell Hero" },
+  { key: "heroTitle", label: "Redaktionell Hero: Huvudrubrik", section: "Redaktionell Hero", multiline: true },
+  { key: "heroDeck", label: "Redaktionell Hero: Ingress / Deck", section: "Redaktionell Hero" },
+  { key: "heroSearchPlaceholder", label: "Hero Sök: Platshållare", section: "Redaktionell Hero" },
+  { key: "heroSearchBtn", label: "Hero Sök: Concierge-knapp", section: "Redaktionell Hero" },
+  { key: "heroNoteLine1", label: "Hero Notis: Rad 1 (Samma stad.)", section: "Redaktionell Hero" },
+  { key: "heroNoteLine2", label: "Hero Notis: Rad 2 (Fler goda omvägar.)", section: "Redaktionell Hero" },
+  { key: "heroSyncBtn", label: "Hero Synk: Knappetikett", section: "Redaktionell Hero" },
+
+  // Utvalda Omvägar (Feature-sektion)
+  { key: "featureKicker", label: "Utvalda Omvägar: Kicker", section: "Utvalda Omvägar" },
+  { key: "featureHeading", label: "Utvalda Omvägar: Rubrik (Ta en annan väg.)", section: "Utvalda Omvägar" },
+  { key: "featureDesc", label: "Utvalda Omvägar: Beskrivning", section: "Utvalda Omvägar", multiline: true },
+  { key: "featureLink", label: "Utvalda Omvägar: Länk (Visa på karta)", section: "Utvalda Omvägar" },
+
+  // Hero & Manifesto (Klassisk)
   { key: "brandDescriptor", label: "Varumärkesdescriptor", section: "Hero & Manifest" },
   { key: "eyebrow", label: "Ögonbryn / Topprad", section: "Hero & Manifest" },
   { key: "heroBadge", label: "Hero Badge", section: "Hero & Manifest" },
@@ -61,10 +78,13 @@ export const CMS_CATALOG: CmsKeyMetadata[] = [
   // Controls & Preferences
   { key: "controlsHeading", label: "Vad låter gott? (Rubrik)", section: "Sök & Filter" },
   { key: "controlsSubparagraph", label: "Vad låter gott? (Underrubrik)", section: "Sök & Filter", multiline: true },
+  { key: "selectionReadoutPlaces", label: "Listrubrik: 'ställen i urvalet'", section: "Sök & Filter" },
   { key: "allPlaces", label: "Alla ställen (Filteretikett)", section: "Sök & Filter" },
   { key: "allCuisines", label: "Alla kök (Filteretikett)", section: "Sök & Filter" },
   { key: "whyItAppears", label: "Varför den syns här", section: "Sök & Filter" },
   { key: "transparencyFooter", label: "Transparensrad i filter", section: "Sök & Filter" },
+  { key: "attributionTitle", label: "Källtillskrivning: Rubrik", section: "Källtillskrivning" },
+  { key: "attributionBody", label: "Källtillskrivning: Text", section: "Källtillskrivning", multiline: true },
 
   // Concierge (#concierge)
   { key: "conciergeEyebrow", label: "Concierge: Ögonbryn", section: "Concierge (#concierge)" },

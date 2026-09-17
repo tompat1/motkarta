@@ -408,6 +408,7 @@ export function CmsProvider({
           onResetAll={resetAllCopy}
           onExport={exportCmsJson}
           onImport={importCmsJson}
+          onLogout={logoutCms}
           lang={lang}
         />
       )}
@@ -418,6 +419,7 @@ export function CmsProvider({
           overridesCount={Object.keys(overrides.sv || {}).length + Object.keys(overrides.en || {}).length}
           onOpenOverview={() => setIsOverviewOpen(true)}
           onHideFlags={() => setIsCmsEditModeState(false)}
+          onLogout={logoutCms}
           lang={lang}
         />
       )}
@@ -735,6 +737,7 @@ function CmsOverviewModal({
   onResetAll,
   onExport,
   onImport,
+  onLogout,
   lang,
 }: {
   onClose: () => void;
@@ -743,6 +746,7 @@ function CmsOverviewModal({
   onResetAll: () => void;
   onExport: () => string;
   onImport: (json: string) => boolean;
+  onLogout: () => void;
   lang: Language;
 }) {
   const [filter, setFilter] = useState("");
@@ -830,6 +834,19 @@ function CmsOverviewModal({
                 <ArrowCounterClockwise size={14} weight="bold" /> Återställ alla
               </button>
             )}
+            <button
+              type="button"
+              className="cms-btn-secondary is-logout"
+              onClick={() => {
+                onClose();
+                onLogout();
+              }}
+              data-testid="cms-overview-logout-btn"
+              title={lang === "sv" ? "Logga ut från CMS" : "Sign out from CMS"}
+              style={{ color: "#dc2626", borderColor: "#fecaca" }}
+            >
+              <SignOut size={14} weight="bold" /> {lang === "sv" ? "Logga ut" : "Sign out"}
+            </button>
           </div>
         </div>
 
@@ -922,11 +939,13 @@ function CmsFloatingBar({
   overridesCount,
   onOpenOverview,
   onHideFlags,
+  onLogout,
   lang,
 }: {
   overridesCount: number;
   onOpenOverview: () => void;
   onHideFlags: () => void;
+  onLogout: () => void;
   lang: Language;
 }) {
   const isSv = lang === "sv";
@@ -959,6 +978,15 @@ function CmsFloatingBar({
           title={isSv ? "Dölj flaggor tillfälligt" : "Hide flags temporarily"}
         >
           <EyeSlash size={14} weight="bold" /> {isSv ? "Dölj flaggor" : "Hide flags"}
+        </button>
+        <button
+          type="button"
+          className="cms-floating-btn-logout"
+          onClick={onLogout}
+          data-testid="cms-floating-logout-btn"
+          title={isSv ? "Logga ut från CMS" : "Sign out from CMS"}
+        >
+          <SignOut size={14} weight="bold" /> {isSv ? "Logga ut" : "Sign out"}
         </button>
       </div>
     </aside>

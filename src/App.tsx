@@ -2,7 +2,7 @@
 
 import { firstAvailablePhoto } from "../lib/photo-loading";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { OnboardingModal } from "./components/OnboardingModal";
 import { AdminReviewPanel, isAdminRoutePath, readStoredAdminToken, type AdminSessionStatus } from "./admin/AdminReviewPanel";
 import { ConciergeAnswerView } from "./components/ConciergeAnswerView";
@@ -1757,7 +1757,10 @@ function AppContent({
         <div className="topbar-actions">
           <p className="editorial-desktop-nav-note">
             <span>{lang === "sv" ? "Ingen betald placering." : "No paid placement."}</span>
-            <strong>{lang === "sv" ? "Bara bra mat, på riktigt." : "Just good food, for real."}</strong>
+            <strong>
+              {t.topbarSlogan}
+              <CmsEditFlag cmsKey="topbarSlogan" label="Toppbar: Slogan" />
+            </strong>
           </p>
           {adminSession?.admin ? (
             <div className="admin-session-auth topbar-session-auth" aria-live="polite">
@@ -1889,13 +1892,23 @@ function AppContent({
         <div className="editorial-hero-copy">
           <p className="editorial-kicker">
             <span aria-hidden="true" />
-            {lang === "sv" ? "Äkta mat. Riktiga platser. Ett friare Stockholm." : "Real food. Real places. A freer Stockholm."}
+            {t.heroKicker}
+            <CmsEditFlag cmsKey="heroKicker" label="Redaktionell Hero: Kicker" />
           </p>
           <h1 id="editorial-home-title">
-            {lang === "sv" ? <>Stockholm,<br />ett kvarter i taget.</> : <>Stockholm,<br />one neighborhood at a time.</>}
+            {t.heroTitle.includes("\n")
+              ? t.heroTitle.split("\n").map((part: string, i: number) => (
+                  <Fragment key={i}>
+                    {i > 0 && <br />}
+                    {part}
+                  </Fragment>
+                ))
+              : t.heroTitle}
+            <CmsEditFlag cmsKey="heroTitle" label="Redaktionell Hero: Huvudrubrik" />
           </h1>
           <p className="editorial-hero-deck">
-            {lang === "sv" ? "Ingen betald placering. Öppen ranking." : "No paid placement. Open ranking."}
+            {t.heroDeck}
+            <CmsEditFlag cmsKey="heroDeck" label="Redaktionell Hero: Ingress / Deck" />
           </p>
           <form
             className="editorial-hero-search"
@@ -1913,7 +1926,7 @@ function AppContent({
                 setQuery(val);
                 setConcierge(val);
               }}
-              placeholder={lang === "sv" ? "Vad är du sugen på?" : "What are you in the mood for?"}
+              placeholder={t.heroSearchPlaceholder}
             />
             {query.trim() ? (
               <button
@@ -1940,8 +1953,9 @@ function AppContent({
               ) : (
                 <Sparkle size={15} weight="bold" />
               )}
-              <span>{lang === "sv" ? "FRÅGA CONCIERGE" : "ASK CONCIERGE"}</span>
+              <span>{t.heroSearchBtn}</span>
             </button>
+            <CmsEditFlag cmsKey="heroSearchBtn" label="Hero Sök: Concierge-knapp" />
           </form>
           <div className="editorial-category-row" aria-label={t.typeFilterLabel}>
             {visibleEstablishmentTypes.filter((item) => ["Restaurant", "Bakery", "Café", "Specialty coffee"].includes(item)).map((item) => (
@@ -1956,27 +1970,52 @@ function AppContent({
           </div>
         </div>
         <div className="editorial-hero-note">
-          <span>{lang === "sv" ? "Samma stad." : "Same city."}</span>
-          <strong>{lang === "sv" ? "Fler goda omvägar." : "More worthwhile detours."}</strong>
-          <button
-            type="button"
-            className="countermap-sync-button editorial-hero-sync-btn"
-            onClick={() => setIsSyncModalOpen(true)}
-            title={lang === "sv" ? "Synka dina enheter utan konto eller inloggning" : "Sync devices without account or login"}
-          >
-            <QrCode size={18} weight="bold" aria-hidden="true" />
-            <span>{lang === "sv" ? "Synka sparade ställen" : "Sync saved places"}</span>
-            <ArrowRight size={15} weight="bold" aria-hidden="true" />
-          </button>
+          <span>
+            {t.heroNoteLine1}
+            <CmsEditFlag cmsKey="heroNoteLine1" label="Hero Notis: Rad 1" />
+          </span>
+          <strong>
+            {t.heroNoteLine2}
+            <CmsEditFlag cmsKey="heroNoteLine2" label="Hero Notis: Rad 2" />
+          </strong>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <button
+              type="button"
+              className="countermap-sync-button editorial-hero-sync-btn"
+              onClick={() => setIsSyncModalOpen(true)}
+              title={lang === "sv" ? "Synka dina enheter utan konto eller inloggning" : "Sync devices without account or login"}
+            >
+              <QrCode size={18} weight="bold" aria-hidden="true" />
+              <span>{t.heroSyncBtn}</span>
+              <ArrowRight size={15} weight="bold" aria-hidden="true" />
+            </button>
+            <CmsEditFlag cmsKey="heroSyncBtn" label="Hero Synk: Knappetikett" />
+          </div>
         </div>
       </section>
 
       <section className="editorial-desktop-feature" aria-label={lang === "sv" ? "Utvalda omvägar" : "Selected detours"}>
         <div className="editorial-feature-copy">
-          <p className="editorial-kicker"><span aria-hidden="true" />{lang === "sv" ? "Inspiration för nyfikna magar" : "Inspiration for curious appetites"}</p>
-          <h2>{lang === "sv" ? "Ta en annan väg." : "Take another route."}</h2>
-          <p>{lang === "sv" ? "Små omvägar leder ofta till de bästa måltiderna. Utvalda för sin karaktär, inte sin marknadsföring." : "Small detours often lead to the best meals. Chosen for character, not marketing."}</p>
-          <a href="#map">{lang === "sv" ? "Visa på karta" : "View on map"}<ArrowRight size={16} weight="bold" /></a>
+          <p className="editorial-kicker">
+            <span aria-hidden="true" />
+            {t.featureKicker}
+            <CmsEditFlag cmsKey="featureKicker" label="Utvalda Omvägar: Kicker" />
+          </p>
+          <h2>
+            {t.featureHeading}
+            <CmsEditFlag cmsKey="featureHeading" label="Utvalda Omvägar: Rubrik" />
+          </h2>
+          <p>
+            {t.featureDesc}
+            <CmsEditFlag cmsKey="featureDesc" label="Utvalda Omvägar: Beskrivning" />
+          </p>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <a href="#map">
+              {t.featureLink}
+              <ArrowRight size={16} weight="bold" />
+            </a>
+            <CmsEditFlag cmsKey="featureLink" label="Utvalda Omvägar: Länk" />
+          </div>
         </div>
         <div className="editorial-feature-grid">
           {DESKTOP_HERO_STORIES.slice(0, 3).map((story, index) => (
@@ -2145,7 +2184,10 @@ function AppContent({
             </h2>
             <div className="countermap-selection-readout" aria-live="polite">
               <strong>{ranked.length.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</strong>
-              <span>{lang === "sv" ? "ställen i urvalet" : "places in selection"}</span>
+              <span>
+                {t.selectionReadoutPlaces}
+                <CmsEditFlag cmsKey="selectionReadoutPlaces" label="Listrubrik: 'ställen i urvalet'" />
+              </span>
             </div>
           </div>
           <p data-subparagraph-en="Tell us what you're in the mood for. Ask freely or use a few preferences – we'll find great places based on transparent signals.">
@@ -2824,12 +2866,12 @@ function AppContent({
                 <div className="curated-attribution-box">
                   <div className="curated-attribution-title">
                     <ShieldCheck size={14} style={{ color: "var(--color-water)" }} />
-                    {lang === "sv" ? "KÄLLTILLSKRIVNING & UPPHOVSRÄTT" : "SOURCE ATTRIBUTION & COPYRIGHT"}
+                    {t.attributionTitle}
+                    <CmsEditFlag cmsKey="attributionTitle" label="Källtillskrivning: Rubrik" />
                   </div>
                   <div className="curated-attribution-body">
-                    {lang === "sv"
-                      ? "Kurerade källor används som källhänvisad plats- och evidensdata, inte som importerade betyg. Guidedata kan komma från Anders Husa & Kaitlin Orr Guide, White Guide Nordic, Specialty Coffee Sweden Registry och Visit Stockholm. Tillsynsdata från Stockholms stad (CC0). Kartdata från OpenStreetMap (ODbL)."
-                      : "Curated sources are used as attributed place and evidence data, not imported ratings. Guide data may come from Anders Husa & Kaitlin Orr Guide, White Guide Nordic, Specialty Coffee Sweden Registry, and Visit Stockholm. Inspection data from Stockholm City (CC0). Map data from OpenStreetMap (ODbL)."}
+                    {t.attributionBody}
+                    <CmsEditFlag cmsKey="attributionBody" label="Källtillskrivning: Text" />
                   </div>
                 </div>
                 <ExternalMapLinks
@@ -3361,33 +3403,42 @@ function AppContent({
             </div>
 
             <nav className="mobile-menu-links">
-              <a href="#map" onClick={() => setIsMobileMenuOpen(false)}>
-                <Compass size={18} weight="bold" />
-                <span>{t.navMap}</span>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <a href="#map" onClick={() => setIsMobileMenuOpen(false)} style={{ flex: 1 }}>
+                  <Compass size={18} weight="bold" />
+                  <span>{t.navMap}</span>
+                </a>
                 <CmsEditFlag cmsKey="navMap" label="Nav: Karta" />
-              </a>
-              <a href="#method" onClick={() => setIsMobileMenuOpen(false)}>
-                <ShieldCheck size={18} weight="bold" />
-                <span>{t.navMethod}</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <a href="#method" onClick={() => setIsMobileMenuOpen(false)} style={{ flex: 1 }}>
+                  <ShieldCheck size={18} weight="bold" />
+                  <span>{t.navMethod}</span>
+                </a>
                 <CmsEditFlag cmsKey="navMethod" label="Nav: Metod" />
-              </a>
-              <a
-                href="#concierge"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMobileMenuOpen(false);
-                  focusSearchInput();
-                }}
-              >
-                <MagnifyingGlass size={18} weight="bold" />
-                <span>{t.navConcierge}</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <a
+                  href="#concierge"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsMobileMenuOpen(false);
+                    focusSearchInput();
+                  }}
+                  style={{ flex: 1 }}
+                >
+                  <MagnifyingGlass size={18} weight="bold" />
+                  <span>{t.navConcierge}</span>
+                </a>
                 <CmsEditFlag cmsKey="navConcierge" label="Nav: Concierge" />
-              </a>
-              <a href="#merch" onClick={() => setIsMobileMenuOpen(false)}>
-                <ShoppingBag size={18} weight="bold" />
-                <span>{t.navMerch || "Merch & Store"}</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <a href="#merch" onClick={() => setIsMobileMenuOpen(false)} style={{ flex: 1 }}>
+                  <ShoppingBag size={18} weight="bold" />
+                  <span>{t.navMerch || "Merch & Store"}</span>
+                </a>
                 <CmsEditFlag cmsKey="navMerch" label="Nav: Merch" />
-              </a>
+              </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
                 <button
                   type="button"

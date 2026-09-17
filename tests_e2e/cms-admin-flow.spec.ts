@@ -77,6 +77,17 @@ test.describe("Admin Light CMS and Live Copy Editing Flow", () => {
     // 11. Verify persistence after page reload
     await page.reload();
     await expect(methodHeading).toContainText("OUR REVOLUTIONARY MAPPING METHOD 2026");
+
+    // 12. Verify new editorial hero and header edit flags exist
+    await expect(page.locator('[data-testid="cms-flag-heroTitle"]').first()).toBeVisible();
+    await expect(page.locator('[data-testid="cms-flag-heroKicker"]').first()).toBeVisible();
+
+    // 13. Test logout from floating CMS bar
+    const logoutBtn = page.locator('[data-testid="cms-floating-logout-btn"]');
+    await expect(logoutBtn).toBeVisible();
+    await logoutBtn.click();
+    await expect(page.locator(".cms-floating-bar")).toHaveCount(0);
+    await expect(page.locator(".cms-edit-flag")).toHaveCount(0);
   });
 
   test("admin can add and remove merch product cards with instant reactivity and persistence", async ({ page }) => {

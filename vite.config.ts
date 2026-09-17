@@ -147,6 +147,12 @@ function viteAdminDevPlugin(): Plugin {
         res.setHeader("Content-Type", "application/json");
 
         if (pathname === "/api/admin/session" || pathname === "/api/cms-session") {
+          const sentToken = req.headers["x-motkarta-admin-token"];
+          const validToken = process.env.MOTKARTA_ADMIN_TOKEN?.trim() || "test-admin-token";
+          if (sentToken && sentToken !== validToken) {
+            res.statusCode = 401;
+            return res.end(JSON.stringify({ admin: false, reason: "invalid_token" }));
+          }
           res.statusCode = 200;
           return res.end(
             JSON.stringify({
