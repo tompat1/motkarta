@@ -8,7 +8,7 @@ test.describe("Hero Manifesto Verification", () => {
     });
   });
 
-  test("desktop hero renders the independent discovery manifesto in both languages", async ({ page }, testInfo) => {
+  test("desktop hero renders the editorial independent-discovery message in both languages", async ({ page }, testInfo) => {
     const isMobile = testInfo.project.name.startsWith("mobile");
     if (isMobile) {
       // Mobile intentionally skips the editorial desktop hero for fullscreen map/list
@@ -21,28 +21,17 @@ test.describe("Hero Manifesto Verification", () => {
     });
     await page.goto("/");
 
-    const heroManifest = page.locator(".countermap-hero-manifest");
-    await expect(heroManifest).toBeVisible({ timeout: 15000 });
-
-    const badge = heroManifest.locator(".countermap-hero-manifest-badge");
-    await expect(badge).toHaveText("MANIFESTO");
-
-    const primaryEn = heroManifest.locator(".countermap-hero-manifest-primary");
-    await expect(primaryEn).toHaveText("A MORE DELICIOUS, MORE HUMAN STOCKHOLM.");
-
-    const secondaryEn = heroManifest.locator(".countermap-hero-manifest-secondary");
-    await expect(secondaryEn).toHaveText("INDEPENDENT DISCOVERY FOR A BRIGHTER CITY.");
+    const editorialHero = page.locator(".editorial-desktop-home");
+    await expect(editorialHero).toBeVisible({ timeout: 15000 });
+    await expect(editorialHero.locator("h1")).toContainText("Stockholm,one neighborhood at a time.");
+    await expect(editorialHero.locator(".editorial-hero-deck")).toHaveText("No paid placement. Open ranking.");
 
     // 2. Test switching to Swedish
     const svSwitch = page.getByRole("button", { name: "SV", exact: true });
     if (await svSwitch.isVisible()) {
       await svSwitch.click();
-      await expect(badge).toHaveText("MANIFEST");
-      const primarySv = heroManifest.locator(".countermap-hero-manifest-primary");
-      await expect(primarySv).toHaveText("ETT GODARE, MER MÄNSKLIGT STOCKHOLM.");
-      const secondarySv = heroManifest.locator(".countermap-hero-manifest-secondary");
-      await expect(secondarySv).toHaveText("OBEROENDE UPPTÄCKT FÖR EN LJUSARE STAD.");
-      await expect(heroManifest).toHaveAttribute("data-manifest-en", /A MORE DELICIOUS, MORE HUMAN STOCKHOLM/);
+      await expect(editorialHero.locator("h1")).toContainText("Stockholm,ett kvarter i taget.");
+      await expect(editorialHero.locator(".editorial-hero-deck")).toHaveText("Ingen betald placering. Öppen ranking.");
     }
   });
 });

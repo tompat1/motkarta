@@ -77,6 +77,7 @@ import { MerchPanel } from "./components/MerchPanel";
 import { PreloaderModal } from "./components/PreloaderModal";
 import {
   Bread,
+  BookmarkSimple,
   Camera,
   Certificate,
   Check,
@@ -1674,43 +1675,22 @@ function AppContent({
           <img src="/logo.webp" alt="MOTKARTA" className="brand-logo" />
           <span className="brand-descriptor">{t.brandDescriptor}</span>
         </a>
-        <nav>
-          <a href="#map" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <Compass size={14} weight="bold" /> {t.navMap}
-            <CmsEditFlag cmsKey="navMap" label="Nav: Karta" />
+        <nav className="editorial-desktop-nav">
+          <a href="#" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+            <Compass size={18} weight="bold" /> {lang === "sv" ? "Upptäck" : "Discover"}
           </a>
-          <a href="#method" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <ShieldCheck size={14} weight="bold" /> {t.navMethod}
-            <CmsEditFlag cmsKey="navMethod" label="Nav: Metod" />
+          <a className="is-active" href="#map">
+            <MapTrifold size={18} weight="fill" /> {lang === "sv" ? "Kartan" : "Map"}
           </a>
-          <a
-            href="#concierge"
-            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
-            onClick={(e) => {
-              e.preventDefault();
-              focusSearchInput();
-            }}
-          >
-            <MagnifyingGlass size={14} weight="bold" /> {t.navConcierge}
-            <CmsEditFlag cmsKey="navConcierge" label="Nav: Concierge" />
+          <a href="#map" onClick={() => selectKindFilter("Saved")}>
+            <BookmarkSimple size={18} weight="bold" /> {lang === "sv" ? "Sparade" : "Saved"}
           </a>
-          <a href="#merch" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <ShoppingBag size={14} weight="bold" /> {t.navMerch || "Merch"}
-            <CmsEditFlag cmsKey="navMerch" label="Nav: Merch" />
-          </a>
-          <div style={{ display: "inline-flex", alignItems: "center" }}>
-            <button
-              type="button"
-              className="onboarding-trigger-btn"
-              onClick={() => setShowOnboarding(true)}
-              style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "none", border: "none", font: "inherit", color: "inherit", cursor: "pointer" }}
-            >
-              <Sparkle size={14} weight="bold" /> {t.navPrinciples || (lang === "sv" ? "Principer" : "Principles")}
-            </button>
-            <CmsEditFlag cmsKey="navPrinciples" label="Nav: Principer" />
-          </div>
         </nav>
         <div className="topbar-actions">
+          <p className="editorial-desktop-nav-note">
+            <span>{lang === "sv" ? "Ingen betald placering." : "No paid placement."}</span>
+            <strong>{lang === "sv" ? "Bara bra mat, på riktigt." : "Just good food, for real."}</strong>
+          </p>
           {adminSession?.admin ? (
             <div className="admin-session-auth topbar-session-auth" aria-live="polite">
               <ShieldCheck size={14} weight="bold" />
@@ -1822,6 +1802,71 @@ function AppContent({
           </div>
         </div>
       </div>
+
+      <section className="editorial-desktop-home" aria-labelledby="editorial-home-title">
+        <div className="editorial-hero-media" aria-hidden="true" />
+        <div className="editorial-hero-copy">
+          <p className="editorial-kicker">
+            <span aria-hidden="true" />
+            {lang === "sv" ? "Äkta mat. Riktiga platser. Ett friare Stockholm." : "Real food. Real places. A freer Stockholm."}
+          </p>
+          <h1 id="editorial-home-title">
+            {lang === "sv" ? <>Stockholm,<br />ett kvarter i taget.</> : <>Stockholm,<br />one neighborhood at a time.</>}
+          </h1>
+          <p className="editorial-hero-deck">
+            {lang === "sv" ? "Ingen betald placering. Öppen ranking." : "No paid placement. Open ranking."}
+          </p>
+          <div className="editorial-hero-search">
+            <MagnifyingGlass size={24} weight="regular" aria-hidden="true" />
+            <input
+              aria-label={lang === "sv" ? "Hitta mat och platser" : "Find food and places"}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key !== "Enter") return;
+                document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              placeholder={lang === "sv" ? "Vad är du sugen på?" : "What are you in the mood for?"}
+            />
+            <button type="button" onClick={() => document.getElementById("map")?.scrollIntoView({ behavior: "smooth" })}>
+              {lang === "sv" ? "Hitta ställen" : "Find places"}
+              <ArrowRight size={20} weight="bold" />
+            </button>
+          </div>
+          <div className="editorial-category-row" aria-label={t.typeFilterLabel}>
+            {visibleEstablishmentTypes.filter((item) => ["Restaurant", "Bakery", "Café", "Specialty coffee"].includes(item)).map((item) => (
+              <button key={item} type="button" onClick={() => { selectKindFilter(item); document.getElementById("map")?.scrollIntoView({ behavior: "smooth" }); }}>
+                {item === "Restaurant" ? <ForkKnife size={20} weight="bold" /> : null}
+                {item === "Bakery" ? <Bread size={20} weight="bold" /> : null}
+                {item === "Café" ? <Coffee size={20} weight="bold" /> : null}
+                {item === "Specialty coffee" ? <SpecialtyCoffeeIcon size={20} weight="bold" /> : null}
+                {kindFilterLabel(item, lang)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="editorial-hero-note">
+          <span>{lang === "sv" ? "Samma stad." : "Same city."}</span>
+          <strong>{lang === "sv" ? "Fler goda omvägar." : "More worthwhile detours."}</strong>
+        </div>
+      </section>
+
+      <section className="editorial-desktop-feature" aria-label={lang === "sv" ? "Utvalda omvägar" : "Selected detours"}>
+        <div className="editorial-feature-copy">
+          <p className="editorial-kicker"><span aria-hidden="true" />{lang === "sv" ? "Inspiration för nyfikna magar" : "Inspiration for curious appetites"}</p>
+          <h2>{lang === "sv" ? "Ta en annan väg." : "Take another route."}</h2>
+          <p>{lang === "sv" ? "Små omvägar leder ofta till de bästa måltiderna. Utvalda för sin karaktär, inte sin marknadsföring." : "Small detours often lead to the best meals. Chosen for character, not marketing."}</p>
+          <a href="#map">{lang === "sv" ? "Visa på karta" : "View on map"}<ArrowRight size={16} weight="bold" /></a>
+        </div>
+        <div className="editorial-feature-grid">
+          {DESKTOP_HERO_STORIES.slice(0, 3).map((story, index) => (
+            <button key={story.id} type="button" className={`editorial-feature-card editorial-feature-card-${index + 1}`} onClick={() => { handleSelectPlace(story.id); document.getElementById("map")?.scrollIntoView({ behavior: "smooth" }); }}>
+              <img src={story.imageUrl} alt="" referrerPolicy="no-referrer" />
+              <span><strong>{story.name}</strong><small>{story.area}</small></span>
+            </button>
+          ))}
+        </div>
+      </section>
 
       <section
         className="intro countermap-hero"
@@ -2219,6 +2264,18 @@ function AppContent({
             </>
           )}
         </div>
+
+        <button
+          type="button"
+          className="editorial-desktop-filter-button"
+          onClick={() => setIsFilterSheetOpen(true)}
+          aria-haspopup="dialog"
+          aria-expanded={isFilterSheetOpen}
+        >
+          <Faders size={22} weight="bold" aria-hidden="true" />
+          <span>{lang === "sv" ? "Filter" : "Filters"}</span>
+          {activeFilterCount > 0 ? <strong>{activeFilterCount}</strong> : null}
+        </button>
 
         <div className="countermap-filter-panel">
           <div className="countermap-filter-head">

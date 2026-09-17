@@ -74,12 +74,8 @@ test.describe("Map Card Fullscreen & Mobile Viewport Tests", () => {
     expect(fsStyles?.top).toBe("0px");
     expect(fsStyles?.bottom).toBe("0px");
 
-    // Verify legend offset on desktop so it is not hidden under card
-    const legendLeft = await page.evaluate(() => {
-      const leg = document.querySelector(".map-legend");
-      return leg ? window.getComputedStyle(leg).left : null;
-    });
-    expect(parseFloat(legendLeft || "0")).toBeGreaterThan(320);
+      // The editorial desktop map intentionally omits the legacy floating legend.
+      await expect(page.locator(".map-legend")).toBeHidden();
 
     // Verify minimize in desktop fullscreen
     const toggleBtn = mapCard.locator(".map-card-toggle-btn");
