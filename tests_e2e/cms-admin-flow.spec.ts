@@ -9,25 +9,21 @@ test.describe("Admin Light CMS and Live Copy Editing Flow", () => {
     await page.route("**/api/admin/session", route => route.fulfill({ status: 401, json: { admin: false } }));
   });
 
-  test("unauthenticated visitors do not see edit flags; footer has Admin Light CMS trigger", async ({ page }) => {
+  test("unauthenticated visitors do not see edit flags or footer login button", async ({ page }) => {
     await page.goto("/");
 
-    // Verify footer login button is visible
+    // Verify footer login button is not visible
     const footerLoginBtn = page.locator('[data-testid="footer-cms-login-btn"]');
-    await expect(footerLoginBtn).toBeVisible();
+    await expect(footerLoginBtn).toHaveCount(0);
 
     // Verify edit flags are hidden
     const flagCount = await page.locator(".cms-edit-flag").count();
     expect(flagCount).toBe(0);
   });
 
-  test("logging in via footer enables edit flags, live copy editing in SV & EN, and instant reactive updates", async ({ page }) => {
-    await page.goto("/");
-
-    // 1. Click footer login button
-    const footerLoginBtn = page.locator('[data-testid="footer-cms-login-btn"]');
-    await expect(footerLoginBtn).toBeVisible();
-    await footerLoginBtn.click();
+  test("navigating to /cms triggers Admin Light CMS login, enables edit flags, live copy editing in SV & EN, and instant reactive updates", async ({ page }) => {
+    // 1. Navigate to /cms route
+    await page.goto("/cms");
 
     // 2. Login modal should appear
     const loginModal = page.locator(".cms-login-card");
@@ -154,9 +150,10 @@ test("CMS ignores forged local auth and demo passwords, and exposes Cloudflare l
     sessionStorage.setItem("motkarta_admin_token", "forged");
   });
   await page.route("**/api/admin/session", route => route.fulfill({ status: 401, json: { admin: false } }));
-  await page.goto("/");
+  await page.goto("/cms");
   await expect(page.locator(".cms-edit-flag")).toHaveCount(0);
-  await page.getByTestId("footer-cms-login-btn").click();
+  const loginModal = page.locator(".cms-login-card");
+  await expect(loginModal).toBeVisible();
   await expect(page.getByTestId("cms-quick-login-btn")).toHaveCount(0);
   await page.getByTestId("cms-login-passcode-input").fill("motkarta");
   await page.getByTestId("cms-login-submit-btn").click();
@@ -179,8 +176,9 @@ test("verified Cloudflare return enables editing and expired sessions do not res
   await expect(page).not.toHaveURL(/cms_login/);
   authenticated = false;
   await page.reload();
-  await expect(page.getByTestId("footer-cms-login-btn")).toBeVisible();
+  await expect(page.getByTestId("footer-cms-login-btn")).toHaveCount(0);
   await expect(page.locator(".cms-edit-flag")).toHaveCount(0);
-  await page.getByTestId("footer-cms-login-btn").click();
+  await page.goto("/cms");
+  await expect(page.locator(".cms-login-card")).toBeVisible();
   await page.locator(".cms-login-card").screenshot({ path: testInfo.outputPath("cloudflare-cms-login.png") });
 });

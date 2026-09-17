@@ -16,8 +16,15 @@ function hasAccessAuthorizationCookie(request: Request) {
 }
 
 export async function onRequestGet(context: EventContext<Env>) {
+  const url = new URL(context.request.url);
+  if (url.searchParams.has("cms_login")) {
+    if (!context.env.ASSETS) {
+      return new Response("Site assets are unavailable.", { status: 503 });
+    }
+    return context.env.ASSETS.fetch(context.request);
+  }
+
   if (hasAccessAuthorizationCookie(context.request)) {
-    const url = new URL(context.request.url);
     url.pathname = "/admin";
     url.search = "";
     url.hash = "";

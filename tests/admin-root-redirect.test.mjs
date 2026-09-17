@@ -54,3 +54,46 @@ test("root ignores transient Access app session cookies", async () => {
   assert.equal(response.status, 200);
   assert.equal(assetFetched, true);
 });
+
+test("root does not redirect to /admin when returning with cms_login", async () => {
+  let assetFetched = false;
+  const response = await serveRoot({
+    request: new Request("https://motkarta.test/?cms_login=success", {
+      headers: { cookie: "CF_Authorization=signed-access-jwt; other=value" },
+    }),
+    env: {
+      ASSETS: {
+        async fetch() {
+          assetFetched = true;
+          return new Response("<html>cms-login-success</html>");
+        },
+      },
+    },
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(assetFetched, true);
+});
+
+test("/cms serves public root SPA without redirecting to /admin", async () => {
+  const { onRequestGet: serveCms } = await import("../functions/cms.ts");
+  let assetUrl = "";
+  const response = await serveCms({
+    request: new Request("https://motkarta.test/cms", {
+      headers: { cookie: "CF_Authorization=signed-access-jwt; other=value" },
+    }),
+    env: {
+      ASSETS: {
+        async fetch(input) {
+          assetUrl = input instanceof Request ? input.url : String(input);
+          return new Response("<html>public-spa</html>", {
+            headers: { "content-type": "text/html" },
+          });
+        },
+      },
+    },
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(new URL(assetUrl).pathname, "/");
+});

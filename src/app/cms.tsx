@@ -110,8 +110,29 @@ export function CmsProvider({
   const authMode = useRef<AdminAuthMode | undefined>(undefined);
   const authGeneration = useRef(0);
 
+  const isCmsRoute = useCallback(() => {
+    if (typeof window === "undefined") return false;
+    const url = new URL(window.location.href);
+    return (
+      url.pathname === "/cms" ||
+      url.pathname.startsWith("/cms/") ||
+      url.searchParams.has("cms") ||
+      window.location.hash === "#cms"
+    );
+  }, []);
+
   const [editingItem, setEditingItem] = useState<{ key: string; label: string } | null>(null);
-  const [isLoginOpen, setIsLoginOpen] = useState(() => new URL(window.location.href).searchParams.get("cms_login") === "failed");
+  const [isLoginOpen, setIsLoginOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const url = new URL(window.location.href);
+    return (
+      url.searchParams.get("cms_login") === "failed" ||
+      url.pathname === "/cms" ||
+      url.pathname.startsWith("/cms/") ||
+      url.searchParams.has("cms") ||
+      window.location.hash === "#cms"
+    );
+  });
   const [isOverviewOpen, setIsOverviewOpen] = useState(false);
   const [activeToast, setActiveToast] = useState<string | null>(null);
 
@@ -119,18 +140,24 @@ export function CmsProvider({
     let active = true;
     const verify = async () => {
       const generation = ++authGeneration.current;
+      const onCmsRoute = isCmsRoute();
       try {
         const session = await fetchAdminSession(sessionStorage.getItem("motkarta_admin_token") || "");
         if (!active || generation !== authGeneration.current) return;
         authMode.current = session.authMode;
         setIsCmsAdmin(true);
         const returning = new URL(window.location.href).searchParams.get("cms_login") === "success";
-        setIsCmsEditModeState(returning || readStoredCmsEditMode());
-        if (returning) {
+        setIsCmsEditModeState(returning || onCmsRoute || readStoredCmsEditMode());
+        if (returning || onCmsRoute) {
           localStorage.setItem(CMS_EDIT_MODE_KEY, "true");
+        }
+        if (returning) {
           const url = new URL(window.location.href);
           url.searchParams.delete("cms_login");
           window.history.replaceState(null, "", url);
+        }
+        if (onCmsRoute) {
+          setIsLoginOpen(false);
         }
       } catch {
         if (active && generation === authGeneration.current) {
@@ -138,18 +165,23 @@ export function CmsProvider({
           setIsCmsEditModeState(false);
           setEditingItem(null);
           setIsOverviewOpen(false);
+          if (onCmsRoute) {
+            setIsLoginOpen(true);
+          }
         }
       }
     };
     void verify();
     window.addEventListener("motkarta:admin-session-changed", verify);
     window.addEventListener("focus", verify);
+    window.addEventListener("popstate", verify);
     return () => {
       active = false;
       window.removeEventListener("motkarta:admin-session-changed", verify);
       window.removeEventListener("focus", verify);
+      window.removeEventListener("popstate", verify);
     };
-  }, []);
+  }, [isCmsRoute]);
 
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
@@ -341,10 +373,26 @@ export function CmsProvider({
       {/* Login Modal */}
       {isLoginOpen && (
         <CmsLoginModal
-          onClose={() => setIsLoginOpen(false)}
+          onClose={() => {
+            setIsLoginOpen(false);
+            if (isCmsRoute()) {
+              const url = new URL(window.location.href);
+              if (url.pathname === "/cms" || url.pathname.startsWith("/cms/")) {
+                window.history.replaceState(null, "", "/" + (url.search || ""));
+              }
+            }
+          }}
           onLogin={async (pass) => {
             const ok = await loginCms(pass);
-            if (ok) setIsLoginOpen(false);
+            if (ok) {
+              setIsLoginOpen(false);
+              if (isCmsRoute()) {
+                const url = new URL(window.location.href);
+                if (url.pathname === "/cms" || url.pathname.startsWith("/cms/")) {
+                  window.history.replaceState(null, "", "/" + (url.search || ""));
+                }
+              }
+            }
             return ok;
           }}
           lang={lang}
@@ -931,19 +979,7 @@ export function CmsFooterControls() {
   const isSv = lang === "sv";
 
   if (!isCmsAdmin) {
-    return (
-      <div className="footer-cms-box" data-testid="footer-cms-box">
-        <button
-          type="button"
-          className="footer-cms-login-btn"
-          onClick={() => setIsLoginOpen(true)}
-          data-testid="footer-cms-login-btn"
-          title={isSv ? "Öppna Admin Light CMS" : "Open Admin Light CMS"}
-        >
-          <LockKey size={13} weight="bold" /> {isSv ? "Admin Light CMS" : "Admin Light CMS"}
-        </button>
-      </div>
-    );
+    return null;
   }
 
   return (
