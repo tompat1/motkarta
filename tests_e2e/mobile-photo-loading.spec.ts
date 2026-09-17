@@ -45,10 +45,13 @@ test('loads photos past result 25 on scroll and falls back from broken images', 
   await expect(later.locator('.mobile-photo-card-bg')).toHaveCSS('background-image', new RegExp(`working-${laterId}`));
   expect(datasetRequests).toBe(1);
   await later.screenshot({ path: testInfo.outputPath("loaded-card-after-25.png") });
-  // Opening a card and returning to the map also uses a working photo.
+  // Opening a card uses the working photo; returning to the map uses the compact popup.
   await later.locator('h2').click();
   await expect(page.locator('.place-detail-hero-photo')).toHaveAttribute('src', new RegExp(`working-${laterId}`));
   await page.locator('.place-detail-primary-cta').click();
-  await expect(page.locator('.map-card-hero-photo')).toHaveAttribute('src', new RegExp(`working-${laterId}`));
-  await page.locator('.map-card-hero-photo').screenshot({ path: testInfo.outputPath('photo-fallback.png') });
+  await expect(page.locator('article.map-card')).toBeHidden();
+  const popup = page.locator('.leaflet-popup');
+  await expect(popup).toBeVisible();
+  await expect(popup).toContainText(`Photo venue ${String(Number(laterId) - 800000).padStart(2, '0')}`);
+  await popup.screenshot({ path: testInfo.outputPath('mobile-map-popup.png') });
 });

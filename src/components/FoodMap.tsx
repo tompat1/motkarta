@@ -15,6 +15,7 @@ export function FoodMap({
   focusRequest,
   userLocation,
   onSelect,
+  onOpenPlaceDetails,
   onUserLocated,
   lang,
 }: {
@@ -23,6 +24,7 @@ export function FoodMap({
   focusRequest?: { id: number; timestamp: number } | null;
   userLocation?: { latitude: number; longitude: number } | null;
   onSelect: (id: number) => void;
+  onOpenPlaceDetails?: (id: number) => void;
   onUserLocated?: (loc: { latitude: number; longitude: number }) => void;
   lang: Language;
 }) {
@@ -239,7 +241,7 @@ export function FoodMap({
         title: place.name,
       }).on("click", () => {
         onSelect(place.id);
-        marker.openPopup();
+        if (isMobileMapViewport()) marker.openPopup();
       });
 
       if (isActive) {
@@ -250,6 +252,36 @@ export function FoodMap({
         maxWidth: 280,
         autoPan: true,
         autoPanPadding: [50, 50],
+      });
+
+      marker.on("popupopen", (event) => {
+        if (!isMobileMapViewport()) {
+          marker.closePopup();
+          return;
+        }
+
+        const content = event.popup.getElement()?.querySelector<HTMLElement>(".leaflet-popup-content");
+        if (!content) return;
+
+        content.classList.add("motkarta-place-popup");
+        content.tabIndex = 0;
+        content.setAttribute("role", "button");
+        content.setAttribute(
+          "aria-label",
+          lang === "sv" ? `Visa detaljer för ${place.name}` : `View details for ${place.name}`,
+        );
+
+        const openDetails = (target: EventTarget | null) => {
+          if (target instanceof Element && target.closest("a")) return;
+          onSelect(place.id);
+          onOpenPlaceDetails?.(place.id);
+        };
+        content.addEventListener("click", (clickEvent) => openDetails(clickEvent.target));
+        content.addEventListener("keydown", (keyEvent) => {
+          if (keyEvent.key !== "Enter" && keyEvent.key !== " ") return;
+          keyEvent.preventDefault();
+          openDetails(keyEvent.target);
+        });
       });
 
       if (clusterGroup) {
@@ -288,7 +320,7 @@ export function FoodMap({
         fitBoundsTimeoutRef.current = null;
       }
     };
-  }, [lang, onSelect, places]);
+  }, [lang, onOpenPlaceDetails, onSelect, places]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -379,6 +411,10 @@ export function FoodMap({
         }
 
         const triggerPopup = (retries = 6) => {
+          if (!isMobileMapViewport()) {
+            currentMap.closePopup();
+            return;
+          }
           try {
             if (activeMarker.isPopupOpen && activeMarker.isPopupOpen()) return;
             if (currentCluster && typeof (currentCluster as any).zoomToShowLayer === "function") {

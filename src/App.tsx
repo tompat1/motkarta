@@ -1093,6 +1093,11 @@ function AppContent({
     [allCuisines, ranked, recordRecommendationEvents],
   );
 
+  const handleOpenPlaceDetails = useCallback((id: number) => {
+    setSelected(id);
+    setIsPlaceDetailOpen(true);
+  }, []);
+
   const handleViewPlaceOnMap = useCallback(
     (place: ScoredPlace) => {
       setSelected(place.id);
@@ -2379,6 +2384,7 @@ function AppContent({
               focusRequest={mapFocusRequest}
               userLocation={userLocation}
               onSelect={handleSelectPlace}
+              onOpenPlaceDetails={handleOpenPlaceDetails}
               onUserLocated={(loc) => {
                 setUserLocation(loc);
                 setSortMode("Distance");

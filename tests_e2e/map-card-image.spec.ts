@@ -9,25 +9,17 @@ test.describe("Map Place Card Image Placeholder & Clean Note", () => {
   });
 
   test("map place card renders image placeholder and removes red-line and raw note lines", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name.startsWith("mobile"), "The large map card is desktop-only.");
     await page.goto("/");
 
-    const isMobile = testInfo.project.name.startsWith("mobile");
-
-    if (isMobile) {
-      // On mobile, the map view is active by default; dispatch click on a marker to select place
-      const marker = page.locator(".leaflet-marker-icon").first();
-      await marker.waitFor({ state: "attached", timeout: 15000 });
-      await marker.dispatchEvent("click");
-    } else {
-      // Desktop results list
-      const placeItem = page.locator(".place").first();
-      await expect(placeItem).toBeVisible({ timeout: 15000 });
-      await placeItem.click();
-    }
+    const placeItem = page.locator(".place").first();
+    await expect(placeItem).toBeVisible({ timeout: 15000 });
+    await placeItem.click();
 
     // Verify map card appears
     const mapCard = page.locator("article.map-card");
     await expect(mapCard).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(".leaflet-popup")).toBeHidden();
 
     // Verify the red-line recommendation paragraph is NOT present
     await expect(mapCard.locator("p.recommendation")).toHaveCount(0);

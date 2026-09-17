@@ -157,9 +157,13 @@ test.describe("Mobile Full User Flows", () => {
 
     const leafletPopup = page.locator(".leaflet-popup");
     await expect(leafletPopup).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("article.map-card")).toBeHidden();
     if (expectedName) {
       await expect(leafletPopup).toContainText(expectedName);
     }
+
+    await leafletPopup.locator(".leaflet-popup-content").click({ position: { x: 12, y: 12 } });
+    await expect(page.locator(".place-detail-sheet-overlay")).toBeVisible({ timeout: 10000 });
   });
 
   test("6. Device sync modal flow", async ({ page }) => {
@@ -486,6 +490,5 @@ test.describe("Mobile Full User Flows", () => {
     await expect(submitBtn).toBeEnabled();
   });
 });
-
 
 

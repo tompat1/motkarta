@@ -15,6 +15,7 @@ async function openCard(page: Page) {
 }
 
 test('map upload waits for server, supports retry, and survives a fresh browser session', async ({ page, context, browser }, testInfo) => {
+  test.skip(testInfo.project.name.startsWith('mobile'), 'Map-card photo uploads are desktop-only.');
   let saved = false;
   let attempts = 0;
   let submittedData: Record<string, unknown> | null = null;

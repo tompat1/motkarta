@@ -23,14 +23,26 @@ test.describe("Map Card Fullscreen & Mobile Viewport Tests", () => {
     }
 
     const mapCard = page.locator("article.map-card");
+    if (isMobile) {
+      await expect(mapCard).toBeHidden();
+      await expect(page.locator(".leaflet-popup")).toBeVisible({ timeout: 10000 });
+
+      const fsBtn = page.locator(
+        ".map-control-btn[title*='Helskärm'], .map-control-btn[title*='Fullscreen'], .map-control-btn[aria-label*='Helskärm'], .map-control-btn[aria-label*='Fullscreen']"
+      ).first();
+      await expect(fsBtn).toBeVisible();
+      await fsBtn.click();
+      await expect(mapCard).toBeHidden();
+      await expect(page.locator(".leaflet-popup")).toBeVisible();
+      return;
+    }
+
     await expect(mapCard).toBeVisible({ timeout: 10000 });
 
     // Click fullscreen button
     const fsBtn = page.locator(
-      isMobile
-        ? ".map-control-btn[title*='Helskärm'], .map-control-btn[title*='Fullscreen'], .map-control-btn[aria-label*='Helskärm'], .map-control-btn[aria-label*='Fullscreen']"
-        : ".map-control-btn"
-    ).filter({ hasText: isMobile ? undefined : /Helskärm|Fullscreen/i }).first();
+      ".map-control-btn"
+    ).filter({ hasText: /Helskärm|Fullscreen/i }).first();
 
     await expect(fsBtn).toBeVisible();
     await fsBtn.click();
@@ -55,52 +67,31 @@ test.describe("Map Card Fullscreen & Mobile Viewport Tests", () => {
       };
     });
 
-    if (!isMobile) {
-      // Desktop assertions: Full height verification
-      const panelHeight = await page.evaluate(() => document.querySelector(".map-panel")?.clientHeight || 0);
-      expect(fsBox!.height).toBeGreaterThanOrEqual(panelHeight * 0.98);
-      expect(fsStyles?.maxHeight).toBe("100%");
-      expect(fsStyles?.top).toBe("0px");
-      expect(fsStyles?.bottom).toBe("0px");
+    // Desktop assertions: Full height verification
+    const panelHeight = await page.evaluate(() => document.querySelector(".map-panel")?.clientHeight || 0);
+    expect(fsBox!.height).toBeGreaterThanOrEqual(panelHeight * 0.98);
+    expect(fsStyles?.maxHeight).toBe("100%");
+    expect(fsStyles?.top).toBe("0px");
+    expect(fsStyles?.bottom).toBe("0px");
 
-      // Verify legend offset on desktop so it is not hidden under card
-      const legendLeft = await page.evaluate(() => {
-        const leg = document.querySelector(".map-legend");
-        return leg ? window.getComputedStyle(leg).left : null;
-      });
-      expect(parseFloat(legendLeft || "0")).toBeGreaterThan(320);
+    // Verify legend offset on desktop so it is not hidden under card
+    const legendLeft = await page.evaluate(() => {
+      const leg = document.querySelector(".map-legend");
+      return leg ? window.getComputedStyle(leg).left : null;
+    });
+    expect(parseFloat(legendLeft || "0")).toBeGreaterThan(320);
 
-      // Verify minimize in desktop fullscreen
-      const toggleBtn = mapCard.locator(".map-card-toggle-btn");
-      await toggleBtn.click();
-      await page.waitForTimeout(300);
-      const minBox = await mapCard.boundingBox();
-      expect(minBox!.height).toBeLessThanOrEqual(85);
+    // Verify minimize in desktop fullscreen
+    const toggleBtn = mapCard.locator(".map-card-toggle-btn");
+    await toggleBtn.click();
+    await page.waitForTimeout(300);
+    const minBox = await mapCard.boundingBox();
+    expect(minBox!.height).toBeLessThanOrEqual(85);
 
-      // Restore
-      await toggleBtn.click();
-      await page.waitForTimeout(300);
-      const restoredBox = await mapCard.boundingBox();
-      expect(restoredBox!.height).toBeGreaterThanOrEqual(panelHeight * 0.98);
-    } else {
-      // Mobile assertions: bottom-docked card
-      expect(parseFloat(fsStyles?.bottom || "0")).toBeGreaterThanOrEqual(10);
-      expect(parseFloat(fsStyles?.left || "0")).toBeGreaterThanOrEqual(10);
-      expect(fsBox!.height).toBeGreaterThan(200);
-      expect(fsBox!.height).toBeLessThan(400);
-
-      // Verify mobile minimize
-      const toggleBtn = mapCard.locator(".map-card-toggle-btn");
-      await toggleBtn.click();
-      await page.waitForTimeout(300);
-      const minBox = await mapCard.boundingBox();
-      expect(minBox!.height).toBeLessThanOrEqual(86);
-
-      // Restore
-      await toggleBtn.click();
-      await page.waitForTimeout(300);
-      const restoredBox = await mapCard.boundingBox();
-      expect(restoredBox!.height).toBeGreaterThan(200);
-    }
+    // Restore
+    await toggleBtn.click();
+    await page.waitForTimeout(300);
+    const restoredBox = await mapCard.boundingBox();
+    expect(restoredBox!.height).toBeGreaterThanOrEqual(panelHeight * 0.98);
   });
 });

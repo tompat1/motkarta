@@ -12272,15 +12272,7 @@ footer {
   }
 
   .map-card {
-    border: 2px solid var(--color-ink);
-    bottom: max(12px, env(safe-area-inset-bottom, 12px));
-    left: max(12px, env(safe-area-inset-left, 12px));
-    right: max(12px, env(safe-area-inset-right, 12px));
-    max-height: min(44dvh, 340px);
-    overflow-y: auto;
-    padding: 12px;
-    top: auto;
-    width: auto;
+    display: none;
   }
 
   .map-card.is-minimized {
@@ -12704,16 +12696,7 @@ footer {
 
 @media (max-width: 768px) {
   :is(.map-panel:fullscreen, .map-panel.is-fullscreen) .map-card {
-    bottom: max(12px, env(safe-area-inset-bottom, 12px));
-    left: max(12px, env(safe-area-inset-left, 12px));
-    right: max(12px, env(safe-area-inset-right, 12px));
-    top: auto;
-    width: auto;
-    border: 2px solid var(--color-ink);
-    border-radius: var(--radius-sm, 4px);
-    max-height: min(44dvh, 340px);
-    overflow-y: auto;
-    z-index: 100;
+    display: none;
   }
 
   :is(.map-panel:fullscreen, .map-panel.is-fullscreen) .map-card.is-minimized {
@@ -12723,6 +12706,21 @@ footer {
     padding: 10px 12px;
     width: auto;
     overflow: hidden;
+  }
+}
+
+.motkarta-place-popup {
+  cursor: pointer;
+}
+
+.motkarta-place-popup:focus-visible {
+  outline: 2px solid var(--color-water);
+  outline-offset: 3px;
+}
+
+@media (min-width: 769px) {
+  .leaflet-popup {
+    display: none;
   }
 }
 
@@ -15970,4 +15968,3 @@ footer {
   align-items: flex-start;
   flex-wrap: wrap;
 }
-

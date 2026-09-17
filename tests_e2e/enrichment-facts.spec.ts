@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 const seed = JSON.parse(readFileSync('public/data/places.json', 'utf8')).places[0];
 
 test('venue card displays explicit price symbols and free Wi-Fi without inventing unknown prices', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name.startsWith('mobile'), 'The large map card is desktop-only.');
   let price: string | undefined = '$$$$';
   await page.addInitScript(() => {
     localStorage.setItem('motkarta_preloader_seen', 'true');
