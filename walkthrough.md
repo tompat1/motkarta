@@ -1,3 +1,19 @@
+# Core enrichment investigation — 2026-09-17
+
+Audited the enrichment code, live public catalog and production D1 with read-only
+queries. The catalog has major image and usable-address gaps, generated hours
+and prices inflate completeness, and Wi-Fi ingestion is absent. D1 has no hours
+or prices and neither photo table has been provisioned. Admin coverage replaces
+some real zero counts with historical figures.
+
+Reproduced six extraction/update failures using isolated fixtures. Detailed
+measurements, limitations and repair priorities are in
+[`docs/enrichment-audit-2026-09-17.md`](docs/enrichment-audit-2026-09-17.md).
+No enrichment code or production data was changed. The current code's full gate
+and production build passed in this session, as recorded below.
+
+---
+
 # Cloudflare CMS login repair — 2026-09-16
 
 The screenshot's CMS dialog used hard-coded demo passwords and local browser
@@ -24,11 +40,12 @@ tests, all 146 Python tests and all 93 browser tests across desktop Chrome,
 mobile Chrome and mobile Safari. The new browser coverage includes successful
 token login, forged local flags, rejected demo passwords, the Cloudflare login
 button, verified return to the editor and expired-session rejection. The
-production build and its required repeated verification gate are running.
+production build and its required repeated verification gate also passed.
 
-No production deployment, credential change or Access-policy write has been
-performed. Deploy the API and frontend together through the normal Pages release
-workflow to activate the new public CMS login button.
+No manual production deployment, credential change or Access-policy write was
+performed. After commit `7c3aea3`, the live page was verified on September 17 to
+reference the same JavaScript asset as the successful local build
+(`/assets/index-C-C0mN_p.js`). An interactive account login was not exercised.
 
 ---
 
