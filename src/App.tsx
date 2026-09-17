@@ -1,4 +1,3 @@
-import { priceDisplay } from "../lib/price-display";
 "use client";
 
 import { firstAvailablePhoto } from "../lib/photo-loading";
@@ -81,6 +80,7 @@ import {
   Camera,
   Certificate,
   Check,
+  Clock,
   CaretUp,
   CaretDown,
   CircleNotch,
@@ -111,6 +111,7 @@ import {
   ArrowRight,
   ArrowUp,
   Info,
+  CurrencyCircleDollar,
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../lib/concierge/response";
@@ -141,6 +142,7 @@ import {
 } from "../lib/scoring";
 import { fetchPlacesPayload, type DataSource } from "../lib/place-payload";
 import { filterPublishedPlaces } from "../lib/place-visibility";
+import { openingHoursFact, priceFact, visibleTagLabels, wifiFact } from "./app/place-card-facts";
 
 const DESKTOP_HERO_STORIES = [
   {
@@ -2510,10 +2512,27 @@ function AppContent({
                 </div>
                 <div className="tag-row">
                   {(() => {
-                    const price = priceDisplay(active.priceSEK);
-                    return price ? <span title={`${lang === "sv" ? "Prisnivå" : "Price tier"} ${price.symbol}${price.amount ? ` (${price.amount})` : ""}`}>{price.symbol}</span> : null;
+                    const hours = openingHoursFact(active, lang);
+                    const price = priceFact(active, lang);
+                    const wifi = wifiFact(active, lang);
+                    return (
+                      <>
+                        <span className={`place-fact-chip ${hours.isPlaceholder ? "is-placeholder" : ""}`} title={hours.title}>
+                          <Clock size={13} weight="bold" aria-hidden="true" />
+                          <span>{hours.label}</span>
+                        </span>
+                        <span className={`place-fact-chip ${price.isPlaceholder ? "is-placeholder" : ""}`} title={price.title}>
+                          <CurrencyCircleDollar size={13} weight="bold" aria-hidden="true" />
+                          <span>{price.label}</span>
+                        </span>
+                        <span className={`place-fact-chip ${wifi.isPlaceholder ? "is-placeholder" : ""}`} title={wifi.title}>
+                          <WifiHigh size={13} weight="bold" aria-hidden="true" />
+                          <span>{wifi.label}</span>
+                        </span>
+                      </>
+                    );
                   })()}
-                  {active.tags.map((tag: string) => (
+                  {visibleTagLabels(active.tags).map((tag: string) => (
                     <span key={tag}>{tag}</span>
                   ))}
                 </div>

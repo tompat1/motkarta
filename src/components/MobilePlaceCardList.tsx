@@ -8,12 +8,16 @@ import {
   Compass,
   ThumbsUp,
   ThumbsDown,
+  Clock,
+  CurrencyCircleDollar,
+  WifiHigh,
 } from "@phosphor-icons/react";
 import type { ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
 import { DUMMY_PLACE_IMAGE_URL, fetchPlacePhotos } from "../../lib/lazy-media";
 import { formatDistance, distanceFromPoint, hasCoordinates } from "../app/shared";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
+import { openingHoursFact, priceFact, wifiFact } from "../app/place-card-facts";
 
 import { firstAvailablePhoto } from "../../lib/photo-loading";
 
@@ -189,6 +193,29 @@ export function MobilePlaceCardList({
               {/* Card Meta & Title */}
               <div className="mobile-photo-card-content">
                 <h2 className="mobile-photo-card-title">{place.name}</h2>
+                <div className="mobile-photo-card-facts" aria-label={lang === "sv" ? "Platsfakta" : "Place facts"}>
+                  {(() => {
+                    const hours = openingHoursFact(place, lang);
+                    const price = priceFact(place, lang);
+                    const wifi = wifiFact(place, lang);
+                    return (
+                      <>
+                        <span className={hours.isPlaceholder ? "is-placeholder" : ""} title={hours.title}>
+                          <Clock size={13} weight="bold" aria-hidden="true" />
+                          <span>{hours.label}</span>
+                        </span>
+                        <span className={price.isPlaceholder ? "is-placeholder" : ""} title={price.title}>
+                          <CurrencyCircleDollar size={13} weight="bold" aria-hidden="true" />
+                          <span>{price.label}</span>
+                        </span>
+                        <span className={wifi.isPlaceholder ? "is-placeholder" : ""} title={wifi.title}>
+                          <WifiHigh size={13} weight="bold" aria-hidden="true" />
+                          <span>{wifi.label}</span>
+                        </span>
+                      </>
+                    );
+                  })()}
+                </div>
                 <div className="mobile-photo-card-meta">
                   <MapPin size={14} weight="fill" className="meta-pin-icon" />
                   <span>
