@@ -1799,6 +1799,17 @@ function AppContent({
             <span className="topbar-cart-badge">{totalCartCount}</span>
           </button>
 
+          {/* Sync Devices Icon Button */}
+          <button
+            type="button"
+            className="topbar-sync-btn"
+            onClick={() => setIsSyncModalOpen(true)}
+            title={lang === "sv" ? "Synka sparade ställen mellan enheter" : "Sync saved places across devices"}
+            aria-label={lang === "sv" ? "Synka sparade ställen mellan enheter" : "Sync saved places across devices"}
+          >
+            <QrCode size={18} weight="bold" />
+          </button>
+
           {/* Compact Single Language Toggle Button */}
           <button
             type="button"
