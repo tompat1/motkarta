@@ -222,6 +222,25 @@ function AppContent({
   const [mobileRankSheet, setMobileRankSheet] = useState<RankSheetType>(null);
   const [isPlaceDetailOpen, setIsPlaceDetailOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [activeDesktopNav, setActiveDesktopNav] = useState<"discover" | "map" | "saved">("discover");
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (kind === "Saved") return;
+      const mapElement = document.getElementById("map");
+      if (!mapElement) return;
+      const rect = mapElement.getBoundingClientRect();
+      if (rect.top <= 140) {
+        setActiveDesktopNav("map");
+      } else {
+        setActiveDesktopNav("discover");
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [kind]);
+
+  const currentDesktopNav = kind === "Saved" ? "saved" : activeDesktopNav;
   const activeFilterCount = Number(kind !== "All places") +
     Number(cuisine !== allCuisines) + selectedTags.length;
 
@@ -1669,6 +1688,8 @@ function AppContent({
           onClick={(e) => {
             e.preventDefault();
             handleResetMobileFilters();
+            setActiveDesktopNav("discover");
+            window.scrollTo({ top: 0, behavior: "smooth" });
           }}
         >
           <img src="/motkarta_drop_divided_black_red.svg" alt="MOTKARTA Pin" className="brand-counter-pin" />
@@ -1676,14 +1697,39 @@ function AppContent({
           <span className="brand-descriptor">{t.brandDescriptor}</span>
         </a>
         <nav className="editorial-desktop-nav">
-          <a href="#" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
-            <Compass size={18} weight="bold" /> {lang === "sv" ? "Upptäck" : "Discover"}
+          <a
+            className={currentDesktopNav === "discover" ? "is-active" : ""}
+            href="#"
+            onClick={(event) => {
+              event.preventDefault();
+              setActiveDesktopNav("discover");
+              if (kind === "Saved") selectKindFilter("All places");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          >
+            <Compass size={18} weight={currentDesktopNav === "discover" ? "fill" : "bold"} /> {lang === "sv" ? "Upptäck" : "Discover"}
           </a>
-          <a className="is-active" href="#map">
-            <MapTrifold size={18} weight="fill" /> {lang === "sv" ? "Kartan" : "Map"}
+          <a
+            className={currentDesktopNav === "map" ? "is-active" : ""}
+            href="#map"
+            onClick={() => {
+              setActiveDesktopNav("map");
+              if (kind === "Saved") selectKindFilter("All places");
+              document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            <MapTrifold size={18} weight={currentDesktopNav === "map" ? "fill" : "bold"} /> {lang === "sv" ? "Kartan" : "Map"}
           </a>
-          <a href="#map" onClick={() => selectKindFilter("Saved")}>
-            <BookmarkSimple size={18} weight="bold" /> {lang === "sv" ? "Sparade" : "Saved"}
+          <a
+            className={currentDesktopNav === "saved" ? "is-active" : ""}
+            href="#map"
+            onClick={() => {
+              setActiveDesktopNav("saved");
+              selectKindFilter("Saved");
+              document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            <BookmarkSimple size={18} weight={currentDesktopNav === "saved" ? "fill" : "bold"} /> {lang === "sv" ? "Sparade" : "Saved"}
           </a>
         </nav>
         <div className="topbar-actions">
@@ -1739,7 +1785,9 @@ function AppContent({
             title={lang === "sv" ? "Switch to English" : "Byt till svenska"}
             aria-label={lang === "sv" ? "Switch to English" : "Byt till svenska"}
           >
-            {lang === "sv" ? "EN" : "SV"}
+            <span className={`lang-opt ${lang === "sv" ? "is-active" : ""}`}>SV</span>
+            <span className="lang-sep">/</span>
+            <span className={`lang-opt ${lang === "en" ? "is-active" : ""}`}>EN</span>
           </button>
 
           {/* Mobile Hamburger Menu Button at Far Right */}
@@ -3311,7 +3359,9 @@ function AppContent({
                   onClick={() => handleSetLang(lang === "sv" ? "en" : "sv")}
                   title={lang === "sv" ? "Switch to English" : "Byt till svenska"}
                 >
-                  {lang === "sv" ? "EN" : "SV"}
+                  <span className={`lang-opt ${lang === "sv" ? "is-active" : ""}`}>SV</span>
+                  <span className="lang-sep">/</span>
+                  <span className={`lang-opt ${lang === "en" ? "is-active" : ""}`}>EN</span>
                 </button>
               </div>
               <div className="mobile-menu-status">

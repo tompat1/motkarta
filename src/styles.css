@@ -12116,6 +12116,7 @@ footer {
   }
 
   .brand span,
+  .topbar .lang-toggle-btn,
   .topbar-cart-btn span:not(.topbar-cart-badge) {
     display: none;
   }
@@ -13716,6 +13717,7 @@ footer {
   }
 
   .topbar .brand .brand-descriptor,
+  .topbar .lang-toggle-btn,
   .topbar .about {
     display: none !important;
   }
@@ -14208,6 +14210,23 @@ footer {
 .lang-toggle-btn:active {
   background: var(--color-ink, #111111);
   color: var(--color-paper, #f4f0e7);
+}
+
+.lang-toggle-btn .lang-opt {
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.lang-toggle-btn .lang-opt.is-active {
+  opacity: 1;
+  font-weight: 800;
+}
+
+.lang-toggle-btn .lang-sep {
+  color: inherit;
+  opacity: 0.45;
+  margin: 0 1px;
 }
 
 /* ==========================================================================
@@ -15976,16 +15995,23 @@ footer {
   :root { --editorial-blue: #2864f0; --editorial-red: #f4483a; --editorial-paper: #faf9f5; }
   body { background: var(--editorial-paper); color: #101010; }
   .topbar { background: rgba(250,249,245,.97); border-bottom: 1px solid #deddd8; height: 74px; padding: 0 3.6vw; position: sticky; top: 0; z-index: 1200; }
-  .brand-counter-pin { height: 38px; width: 38px; }
-  .brand-logo { height: 34px; }
-  .brand-descriptor { color: #77736c; font-size: 9px; letter-spacing: .14em; }
-  .topbar nav { align-self: stretch; gap: 44px; }
-  .topbar nav a { align-items: center; border-bottom: 4px solid transparent !important; display: inline-flex; font: 650 16px var(--font-body); gap: 9px; height: 100%; letter-spacing: 0; padding: 0 2px !important; text-transform: none; }
-  .topbar nav a.is-active { border-color: var(--editorial-blue) !important; color: var(--editorial-blue); }
+  .brand { display: flex; align-items: center; }
+  .brand-counter-pin { height: 72px; width: auto; object-fit: contain; margin-right: -10px; display: inline-block; flex-shrink: 0; }
+  .brand-logo { height: 34px; width: auto; object-fit: contain; display: inline-block; flex-shrink: 0; }
+  .brand-descriptor { color: #77736c; font-size: 9px; letter-spacing: .14em; white-space: nowrap; }
+  .topbar nav { align-self: stretch; display: flex; align-items: stretch; gap: clamp(24px, 2.8vw, 44px); margin-left: clamp(28px, 3.5vw, 56px); }
+  .topbar nav a { align-items: center; border-bottom: 3px solid transparent !important; box-sizing: border-box; color: #1e1d1b; cursor: pointer; display: inline-flex; font: 650 15px/1 var(--font-body); gap: 8px; height: 100%; letter-spacing: 0; margin-bottom: -1px; padding: 0 4px !important; position: relative; text-decoration: none; text-transform: none; transition: color 0.15s ease, border-color 0.15s ease; }
+  .topbar nav a:hover { border-bottom-color: var(--editorial-blue) !important; color: var(--editorial-blue); }
+  .topbar nav a.is-active { border-bottom-color: var(--editorial-blue) !important; color: var(--editorial-blue); }
   .topbar nav a::after, .topbar-actions .topbar-cart-btn { display: none !important; }
-  .topbar-actions { margin-left: auto; }
+  .topbar-actions { align-items: center; display: flex; gap: 24px; margin-left: auto; }
   .topbar-session-auth { display: none !important; }
-  .lang-toggle-btn, .about { display: none !important; }
+  .about { display: none !important; }
+  .lang-toggle-btn { align-items: center; background: #fff; border: 1px solid #d4d2cc; border-radius: 6px; box-sizing: border-box; cursor: pointer; display: inline-flex !important; gap: 3px; height: 34px; padding: 0 11px; transition: all 0.15s ease; }
+  .lang-toggle-btn:hover { background: #fdfdfc; border-color: #111; color: #111; }
+  .lang-toggle-btn .lang-opt { color: #8a8780; font-family: var(--font-mono, monospace); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; opacity: 1; transition: color 0.15s ease; }
+  .lang-toggle-btn .lang-opt.is-active { color: var(--editorial-blue, #2864f0); font-weight: 800; }
+  .lang-toggle-btn .lang-sep { color: #c4c1ba; font-family: var(--font-mono, monospace); font-size: 11px; opacity: 1; }
   .editorial-desktop-nav-note { color: #8a8780; display: flex; flex-direction: column; font: 13px/1.35 var(--font-body); margin: 0; text-align: left; }
   .editorial-desktop-nav-note strong { font-weight: 500; }
 
