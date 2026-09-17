@@ -1,3 +1,101 @@
+# Core enrichment audit repair — step one — 2026-09-17
+
+Implemented the first two tiers of the [enrichment audit repair plan](docs/enrichment-repair.md).
+Every reproduced defect from the audit has been corrected and regression-tested.
+No production data, credentials or enrichment services were modified.
+
+## What was fixed
+
+### Generated values removed
+
+- `execution/apply_enrichment.py`: `remove_unsupported_defaults` strips legacy
+  generated `openingHours` and `priceSEK` values whose defaults match the known
+  fabricated sets (`"Mo-Sa 17:00-23:00"`, generic price brackets). Values without
+  a corroborating source URL are removed. Refresh semantics now update a value
+  when the place still holds the previous fact's value, so a real scrape can
+  always override an earlier one, including one just applied.
+- `scripts/fetch_place_hours_and_prices.py`: Failed or unrequested website
+  scrapes no longer mutate records. Default hours and prices are never generated
+  for unscraped venues. The CLI no longer raises `KeyError('total_with_price_level')`.
+- `scripts/generate_seed_sql.mjs`: `derivePriceLevel` no longer guesses a tier
+  from a digit in `priceSEK`; the column seeds as NULL.
+- `scripts/enrich_coverage.py`: The `area, Stockholm` address fallback for
+  coordinate-only lookups is removed. Unknown street addresses remain unknown.
+- Public catalog (`public/data/places.json`): all 3,189 unsourced price values
+  removed. 2,184 sourced opening-hours values remain; zero generated hours remain.
+
+### Extraction defects corrected
+
+- **JSON-LD `@graph` traversal**: `schema_items()` in `fetch_place_hours_and_prices.py`
+  now recursively yields items from `@graph` arrays, so venues that embed their
+  hours inside a `@graph` wrapper are no longer silently skipped.
+- **Split daily hours** (e.g. lunch 11–14, dinner 17–22): `format_osm_opening_hours`
+  accumulates all time slots per day in a `set`, then formats them comma-joined
+  (`Mo 11:00-14:00,17:00-22:00`). Previously only the last interval survived.
+- **Numeric SEK prices**: `determine_venue_price` now requires an explicit `SEK`
+  or `kr` currency marker before parsing a number as an amount. A bare digit
+  string like `"4"` is no longer misread as tier 4.
+- **`24/7` hours**: OSM `opening_hours` values are passed through directly; the
+  previous code silently dropped them because they failed the OpeningHoursSpecification
+  format parser.
+- **Identity matching** (`execution/enrich_catalog.py`): Name-fallback matching
+  now requires a unique match within 100 metres and refuses to override a place
+  that already has a different known OSM identity. Two distant same-name venues
+  can no longer receive facts from a single OSM element.
+- **OSM Wi-Fi extraction**: `extract_osm_facts` now reads `internet_access` and
+  `internet_access:fee` tags and emits typed Wi-Fi facts (`Free Wi-Fi`, `Wi-Fi
+  free for customers`, `Paid Wi-Fi`, `Wi-Fi`, `No Wi-Fi`, `Internet access (type
+  unknown)`). The `apply_enrichment.py` overlay replaces old Wi-Fi tags atomically.
+
+### Admin coverage reporting
+
+- `functions/api/admin/coverage.ts` now reads actual D1 counts only. No historical
+  fallback when counts are zero or table queries fail. Missing `place_photos` or
+  `place_photo_uploads` tables are reported as explicit errors. The POST action
+  label is `audit`, not a pretend sync.
+
+### D1 sync infrastructure
+
+- `execution/repair_enrichment.py` (new): dry-run by default, writes a before
+  snapshot, proposed catalog, SQL and review exclusions. The generated SQL is
+  additive and guarded by exact identity, name, location, timestamp and lifecycle.
+  It fills only missing fields supported by source facts and never deletes existing
+  photos or community uploads. Stale retries cannot restore overwritten Wi-Fi claims.
+- `drizzle/0012_place_source_facts.sql` (new): additive `place_source_facts` table
+  for neutral provenance storage, separate from scoring evidence.
+- `lib/place-records.ts`: `sourcePriceLevel` uses `?? null` to avoid scoring
+  bias from a missing price; the display field still defaults to 2 for the scorer.
+- `lib/price-display.ts` (new): display-only price helper. Dollar symbols pass
+  through; numeric amounts derive a tier from the mean. Returns `null` for unknown.
+- `src/components/PlaceDetailSheet.tsx`: uses `priceDisplay()` — no price badge
+  rendered when `priceSEK` is absent or unrecognised.
+
+## Verification
+
+Regression fixtures were added for all six reproduced defects. All four test tiers
+passed with zero failures:
+
+- TypeScript: 0 errors
+- JavaScript: 367 tests pass
+- Python: 154 tests pass
+- Playwright E2E: 96 tests pass (desktop Chromium, mobile Chrome, mobile Safari)
+
+The repair tool dry-run (`python -m execution.repair_enrichment`) confirms:
+3,198 places · 2,184 sourced hours · 0 prices · 59 Wi-Fi tagged · 23 Free Wi-Fi.
+
+## Remaining work (steps 3–5)
+
+- **Step 3** — OSM Wi-Fi ingest is complete. Address restoration via the guarded
+  `repair_enrichment` dry-run requires a fresh D1 snapshot export and manual review
+  before `--write`. Missing website discovery is a separate scrape run.
+- **Step 4** — Apply `drizzle/0011_public_photo_uploads.sql` and
+  `0012_place_source_facts.sql` before the D1 sync. The sync SQL from
+  `repair_enrichment.py --d1-snapshot` must be reviewed and applied manually.
+- **Step 5** — Photo freshness, batch retry and review queue are a future
+  enrichment pipeline phase.
+
+---
+
 # Core enrichment investigation — 2026-09-17
 
 Audited the enrichment code, live public catalog and production D1 with read-only
