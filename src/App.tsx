@@ -1947,6 +1947,16 @@ function AppContent({
         <div className="editorial-hero-note">
           <span>{lang === "sv" ? "Samma stad." : "Same city."}</span>
           <strong>{lang === "sv" ? "Fler goda omvägar." : "More worthwhile detours."}</strong>
+          <button
+            type="button"
+            className="countermap-sync-button editorial-hero-sync-btn"
+            onClick={() => setIsSyncModalOpen(true)}
+            title={lang === "sv" ? "Synka dina enheter utan konto eller inloggning" : "Sync devices without account or login"}
+          >
+            <QrCode size={18} weight="bold" aria-hidden="true" />
+            <span>{lang === "sv" ? "Synka sparade ställen" : "Sync saved places"}</span>
+            <ArrowRight size={15} weight="bold" aria-hidden="true" />
+          </button>
         </div>
       </section>
 
