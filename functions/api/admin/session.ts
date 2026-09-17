@@ -9,7 +9,7 @@ type Env = AdminAuthEnv;
 
 const jsonHeaders = {
   "content-type": "application/json; charset=utf-8",
-  "cache-control": "no-cache",
+  "cache-control": "no-store",
 };
 
 export async function onRequestGet(context: EventContext<Env>) {

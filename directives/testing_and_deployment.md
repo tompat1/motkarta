@@ -97,3 +97,13 @@ exercise failed upload/retry and retrieval from a new browser context, including
 a venue that already has a static website photo. Do not assert permanent
 in-memory caching of public photo lists: those lists must refresh to observe
 uploads and Admin deletions. Run `npm run test:gate` after changes.
+
+## CMS authentication
+
+CMS tests must authorize through `/api/admin/session` fixtures, never by seeding
+`motkarta_cms_auth` or using a demo password. Keep explicit negative coverage for
+forged localStorage/sessionStorage, failed/redirected session responses and
+expired sessions. Cloudflare return parameters are navigation state only; test
+that the server must still authorize editing. Use locally generated signing
+keys for JWT tests, including missing issuer/expiration and invalid signatures;
+do not generate real login emails or change production Access policies in tests.

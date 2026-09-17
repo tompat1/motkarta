@@ -9,9 +9,7 @@ import {
   CMS_MERCH_STORAGE_KEY,
   readStoredCmsOverrides,
   writeStoredCmsOverrides,
-  readStoredCmsAuth,
   readStoredCmsEditMode,
-  isCmsPasscodeValid,
   readStoredMerchItems,
   writeStoredMerchItems,
   resetStoredMerchItems,
@@ -136,27 +134,11 @@ test("writeStoredCmsOverrides and readStoredCmsOverrides persist and load custom
   assert.equal(loaded.en.navMerch, "Gear & Prints");
 });
 
-test("CMS auth and edit mode storage helpers read and persist state", () => {
+test("CMS edit-mode preference is separate from server authorization", () => {
   globalThis.localStorage.clear();
-  assert.equal(readStoredCmsAuth(), false);
   assert.equal(readStoredCmsEditMode(), false);
-
-  globalThis.localStorage.setItem(CMS_AUTH_KEY, "true");
   globalThis.localStorage.setItem(CMS_EDIT_MODE_KEY, "true");
-
-  assert.equal(readStoredCmsAuth(), true);
   assert.equal(readStoredCmsEditMode(), true);
-});
-
-test("isCmsPasscodeValid authenticates standard passcodes and admin tokens", () => {
-  assert.equal(isCmsPasscodeValid("motkarta"), true);
-  assert.equal(isCmsPasscodeValid("  MOTKARTA  "), true);
-  assert.equal(isCmsPasscodeValid("admin"), true);
-  assert.equal(isCmsPasscodeValid("motkarta-admin"), true);
-  assert.equal(isCmsPasscodeValid("motkarta2026"), true);
-  assert.equal(isCmsPasscodeValid("custom-admin-secret-token", "custom-admin-secret-token"), true);
-  assert.equal(isCmsPasscodeValid("wrong", null), false);
-  assert.equal(isCmsPasscodeValid("123", null), false);
 });
 
 test("App.tsx, MerchPanel.tsx and OnboardingModal.tsx integrate CmsEditFlag and CmsFooterControls", async () => {

@@ -547,6 +547,12 @@ function AppContent({
     }
   }, []);
 
+  useEffect(() => {
+    const refresh = () => { void checkGlobalAdminSession(); };
+    window.addEventListener("motkarta:admin-session-changed", refresh);
+    return () => window.removeEventListener("motkarta:admin-session-changed", refresh);
+  }, [checkGlobalAdminSession]);
+
   const handleGlobalAdminLogout = () => {
     if (typeof window !== "undefined") {
       window.sessionStorage.removeItem("motkarta_admin_token");

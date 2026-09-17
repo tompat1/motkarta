@@ -1,4 +1,6 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { fetchAdminSession } from "../../lib/admin-session-client.ts";
+import type { AdminAuthMode } from "../../lib/admin-auth.ts";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { Language } from "./shared";
 import { translations } from "./shared";
 import {
@@ -13,9 +15,7 @@ import {
   CMS_CATALOG,
   readStoredCmsOverrides,
   writeStoredCmsOverrides,
-  readStoredCmsAuth,
   readStoredCmsEditMode,
-  isCmsPasscodeValid,
   readStoredMerchItems,
   writeStoredMerchItems,
   resetStoredMerchItems,
@@ -33,9 +33,7 @@ export {
   CMS_CATALOG,
   readStoredCmsOverrides,
   writeStoredCmsOverrides,
-  readStoredCmsAuth,
   readStoredCmsEditMode,
-  isCmsPasscodeValid,
   readStoredMerchItems,
   writeStoredMerchItems,
   resetStoredMerchItems,
@@ -70,7 +68,7 @@ export interface CmsContextType {
   overrides: CmsOverrides;
   isCmsAdmin: boolean;
   isCmsEditMode: boolean;
-  loginCms: (passcode: string) => boolean;
+  loginCms: (passcode: string) => Promise<boolean>;
   logoutCms: () => void;
   toggleCmsEditMode: () => void;
   setIsCmsEditMode: (active: boolean) => void;
@@ -102,42 +100,64 @@ export function useCms(): CmsContextType {
 export function CmsProvider({
   children,
   lang,
-  initialAdmin = false,
 }: {
   children: React.ReactNode;
   lang: Language;
-  initialAdmin?: boolean;
 }) {
   const [overrides, setOverrides] = useState<CmsOverrides>(readStoredCmsOverrides);
-  const [isCmsAdmin, setIsCmsAdmin] = useState<boolean>(() => initialAdmin || readStoredCmsAuth());
-  const [isCmsEditMode, setIsCmsEditModeState] = useState<boolean>(() => {
-    return (initialAdmin || readStoredCmsAuth()) && readStoredCmsEditMode();
-  });
+  const [isCmsAdmin, setIsCmsAdmin] = useState(false);
+  const [isCmsEditMode, setIsCmsEditModeState] = useState(false);
+  const authMode = useRef<AdminAuthMode | undefined>(undefined);
+  const authGeneration = useRef(0);
 
   const [editingItem, setEditingItem] = useState<{ key: string; label: string } | null>(null);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(() => new URL(window.location.href).searchParams.get("cms_login") === "failed");
   const [isOverviewOpen, setIsOverviewOpen] = useState(false);
   const [activeToast, setActiveToast] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initialAdmin && !isCmsAdmin) {
-      setIsCmsAdmin(true);
-      if (typeof window !== "undefined") {
-        localStorage.setItem(CMS_AUTH_KEY, "true");
+    let active = true;
+    const verify = async () => {
+      const generation = ++authGeneration.current;
+      try {
+        const session = await fetchAdminSession(sessionStorage.getItem("motkarta_admin_token") || "");
+        if (!active || generation !== authGeneration.current) return;
+        authMode.current = session.authMode;
+        setIsCmsAdmin(true);
+        const returning = new URL(window.location.href).searchParams.get("cms_login") === "success";
+        setIsCmsEditModeState(returning || readStoredCmsEditMode());
+        if (returning) {
+          localStorage.setItem(CMS_EDIT_MODE_KEY, "true");
+          const url = new URL(window.location.href);
+          url.searchParams.delete("cms_login");
+          window.history.replaceState(null, "", url);
+        }
+      } catch {
+        if (active && generation === authGeneration.current) {
+          setIsCmsAdmin(false);
+          setIsCmsEditModeState(false);
+          setEditingItem(null);
+          setIsOverviewOpen(false);
+        }
       }
-    }
-  }, [initialAdmin, isCmsAdmin]);
+    };
+    void verify();
+    window.addEventListener("motkarta:admin-session-changed", verify);
+    window.addEventListener("focus", verify);
+    return () => {
+      active = false;
+      window.removeEventListener("motkarta:admin-session-changed", verify);
+      window.removeEventListener("focus", verify);
+    };
+  }, []);
 
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
       if (e.key === CMS_STORAGE_KEY) {
         setOverrides(readStoredCmsOverrides());
       }
-      if (e.key === CMS_AUTH_KEY) {
-        setIsCmsAdmin(readStoredCmsAuth());
-      }
       if (e.key === CMS_EDIT_MODE_KEY) {
-        setIsCmsEditModeState(readStoredCmsEditMode());
+        setIsCmsEditModeState(isCmsAdmin && readStoredCmsEditMode());
       }
     };
     const handleCustom = (e: Event) => {
@@ -152,42 +172,40 @@ export function CmsProvider({
       window.removeEventListener("storage", handleStorage);
       window.removeEventListener("motkarta-cms-update", handleCustom);
     };
-  }, []);
+  }, [isCmsAdmin]);
 
-  const loginCms = useCallback((passcode: string): boolean => {
-    const trimmed = passcode.trim().toLowerCase();
-    const storedToken = (typeof window !== "undefined" ? window.sessionStorage.getItem("motkarta_admin_token") : "")?.trim();
-    // Support admin token, common admin passcodes or demo quick-access
-    const isValid =
-      Boolean(storedToken && passcode.trim() === storedToken) ||
-      trimmed === "admin" ||
-      trimmed === "motkarta" ||
-      trimmed === "motkarta-admin" ||
-      trimmed === "motkarta2026";
-
-    if (isValid) {
+  const loginCms = useCallback(async (passcode: string): Promise<boolean> => {
+    const generation = ++authGeneration.current;
+    try {
+      const session = await fetchAdminSession(passcode.trim());
+      if (generation !== authGeneration.current) return false;
+      authMode.current = session.authMode;
+      if (session.authMode === "token") sessionStorage.setItem("motkarta_admin_token", passcode.trim());
+      localStorage.setItem(CMS_EDIT_MODE_KEY, "true");
       setIsCmsAdmin(true);
       setIsCmsEditModeState(true);
-      if (typeof window !== "undefined") {
-        localStorage.setItem(CMS_AUTH_KEY, "true");
-        localStorage.setItem(CMS_EDIT_MODE_KEY, "true");
-      }
-      setActiveToast("Inloggad som CMS Admin! Redigeringsläge aktiverat. ⭐");
+      window.dispatchEvent(new Event("motkarta:admin-session-changed"));
+      setActiveToast(lang === "sv" ? "Inloggad. Redigeringsläge aktiverat." : "Signed in. Editing enabled.");
       return true;
+    } catch {
+      return false;
     }
-    return false;
-  }, []);
+  }, [lang]);
 
   const logoutCms = useCallback(() => {
+    ++authGeneration.current;
     setIsCmsAdmin(false);
     setIsCmsEditModeState(false);
     setEditingItem(null);
-    if (typeof window !== "undefined") {
-      localStorage.removeItem(CMS_AUTH_KEY);
-      localStorage.removeItem(CMS_EDIT_MODE_KEY);
-    }
-    setActiveToast("Utloggad från Admin Light CMS.");
-  }, []);
+    localStorage.removeItem(CMS_AUTH_KEY);
+    localStorage.removeItem(CMS_EDIT_MODE_KEY);
+    sessionStorage.removeItem("motkarta_admin_token");
+    const mode = authMode.current;
+    authMode.current = undefined;
+    window.dispatchEvent(new Event("motkarta:admin-session-changed"));
+    if (mode === "access_jwt" || mode === "access_header") window.location.assign("/cdn-cgi/access/logout");
+    setActiveToast(lang === "sv" ? "Utloggad." : "Signed out.");
+  }, [lang]);
 
   const toggleCmsEditMode = useCallback(() => {
     setIsCmsEditModeState((prev) => {
@@ -324,8 +342,8 @@ export function CmsProvider({
       {isLoginOpen && (
         <CmsLoginModal
           onClose={() => setIsLoginOpen(false)}
-          onLogin={(pass) => {
-            const ok = loginCms(pass);
+          onLogin={async (pass) => {
+            const ok = await loginCms(pass);
             if (ok) setIsLoginOpen(false);
             return ok;
           }}
@@ -568,15 +586,19 @@ function CmsLoginModal({
   lang,
 }: {
   onClose: () => void;
-  onLogin: (passcode: string) => boolean;
+  onLogin: (passcode: string) => Promise<boolean>;
   lang: Language;
 }) {
   const [passcode, setPasscode] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(() => new URL(window.location.href).searchParams.get("cms_login") === "failed");
+  const [busy, setBusy] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = onLogin(passcode);
+    if (busy) return;
+    setBusy(true);
+    const ok = await onLogin(passcode);
+    setBusy(false);
     if (!ok) {
       setError(true);
     }
@@ -606,13 +628,13 @@ function CmsLoginModal({
         <form onSubmit={handleSubmit} className="cms-login-form">
           <p className="cms-login-desc">
             {isSv
-              ? "Logga in för att redigera rubriker, texter, navigering och sektioner direkt på webbplatsen på både svenska och engelska i realtid."
-              : "Log in to edit headlines, paragraphs, navigation, and section copy directly on the live website across Swedish and English in real-time."}
+              ? "Logga in med ditt godkända Cloudflare Access-konto. Textändringar sparas i den här webbläsaren och kan exporteras."
+              : "Sign in with your approved Cloudflare Access account. Copy edits are saved in this browser and can be exported."}
           </p>
 
           <div className="cms-form-group">
             <label htmlFor="cms-passcode-input">
-              {isSv ? "Admin lösenord / Token" : "Admin Passcode / Token"}
+              {isSv ? "Admin-token (alternativ)" : "Admin token (alternative)"}
             </label>
             <input
               id="cms-passcode-input"
@@ -623,13 +645,13 @@ function CmsLoginModal({
                 setPasscode(e.target.value);
                 setError(false);
               }}
-              placeholder={isSv ? "t.ex. motkarta eller admin token..." : "e.g. motkarta or admin token..."}
+              placeholder={isSv ? "Din serverkonfigurerade admin-token" : "Your server-configured admin token"}
               autoFocus
               data-testid="cms-login-passcode-input"
             />
             {error && (
-              <span className="cms-error-msg">
-                {isSv ? "Felaktigt lösenord. Prova 'motkarta' eller admin token." : "Invalid passcode. Try 'motkarta' or admin token."}
+              <span className="cms-error-msg" role="alert">
+                {isSv ? "Inloggningen kunde inte verifieras. Använd Cloudflare-inloggningen eller en giltig admin-token." : "Sign-in could not be verified. Use Cloudflare sign-in or a valid admin token."}
               </span>
             )}
           </div>
@@ -638,17 +660,18 @@ function CmsLoginModal({
             <button
               type="button"
               className="cms-btn-ghost-demo"
-              onClick={() => onLogin("motkarta")}
-              data-testid="cms-quick-login-btn"
+              onClick={() => window.location.assign("/api/admin/login")}
+              data-testid="cms-cloudflare-login-btn"
             >
-              <Sparkle size={14} weight="bold" /> {isSv ? "Snabbåtkomst Redaktör" : "Quick Access Editor"}
+              <LockKey size={14} weight="bold" /> {isSv ? "Logga in med Cloudflare" : "Sign in with Cloudflare"}
             </button>
             <button
               type="submit"
               className="cms-btn-primary"
+              disabled={busy || !passcode.trim()}
               data-testid="cms-login-submit-btn"
             >
-              <LockKey size={16} weight="bold" /> {isSv ? "Logga in & Aktivera" : "Log In & Activate"}
+              <LockKey size={16} weight="bold" /> {busy ? (isSv ? "Verifierar..." : "Verifying...") : (isSv ? "Logga in med token" : "Sign in with token")}
             </button>
           </div>
         </form>

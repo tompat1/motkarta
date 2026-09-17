@@ -46,7 +46,7 @@ type AccessJwks = {
 
 const jsonHeaders = {
   "content-type": "application/json; charset=utf-8",
-  "cache-control": "no-cache",
+  "cache-control": "no-store",
 };
 
 const jwksCache = new Map<string, { expiresAt: number; keys: AccessJsonWebKey[] }>();
@@ -181,7 +181,7 @@ function cookieValue(cookieHeader: string | null, name: string) {
   for (const cookie of String(cookieHeader ?? "").split(";")) {
     const trimmed = cookie.trim();
     if (trimmed.startsWith(prefix)) {
-      return decodeURIComponent(trimmed.slice(prefix.length));
+      try { return decodeURIComponent(trimmed.slice(prefix.length)); } catch { return ""; }
     }
   }
   return "";
@@ -197,8 +197,9 @@ function constantTimeEqual(left: string, right: string) {
 }
 
 async function verifyAccessJwt(token: string, env: AdminAuthEnv): Promise<AccessJwtPayload> {
-  const [headerPart, payloadPart, signaturePart] = token.split(".");
-  if (!headerPart || !payloadPart || !signaturePart) {
+  const parts = token.split(".");
+  const [headerPart, payloadPart, signaturePart] = parts;
+  if (parts.length !== 3 || !headerPart || !payloadPart || !signaturePart) {
     throw new Error("Cloudflare Access session is malformed.");
   }
 
@@ -214,7 +215,7 @@ async function verifyAccessJwt(token: string, env: AdminAuthEnv): Promise<Access
     throw new Error("Cloudflare Access verification is not configured.");
   }
 
-  if (payload.iss && normalizeTeamDomain(payload.iss) !== teamDomain) {
+  if (typeof payload.iss !== "string" || normalizeTeamDomain(payload.iss) !== teamDomain) {
     throw new Error("Cloudflare Access session issuer does not match this app.");
   }
 
@@ -223,10 +224,10 @@ async function verifyAccessJwt(token: string, env: AdminAuthEnv): Promise<Access
   }
 
   const now = Math.floor(Date.now() / 1000);
-  if (typeof payload.exp === "number" && payload.exp <= now) {
+  if (typeof payload.exp !== "number" || !Number.isFinite(payload.exp) || payload.exp <= now) {
     throw new Error("Cloudflare Access session has expired.");
   }
-  if (typeof payload.nbf === "number" && payload.nbf > now + 30) {
+  if (payload.nbf !== undefined && (typeof payload.nbf !== "number" || !Number.isFinite(payload.nbf) || payload.nbf > now + 30)) {
     throw new Error("Cloudflare Access session is not active yet.");
   }
 
@@ -259,7 +260,7 @@ async function loadAccessKeys(teamDomain: string) {
     return cached.keys;
   }
 
-  const response = await fetch(`${teamDomain}/cdn-cgi/access/certs`);
+  const response = await fetch(`${teamDomain}/cdn-cgi/access/certs`, { signal: AbortSignal.timeout(10000) });
   if (!response.ok) {
     throw new Error("Cloudflare Access signing keys could not be loaded.");
   }

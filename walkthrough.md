@@ -1,3 +1,37 @@
+# Cloudflare CMS login repair — 2026-09-16
+
+The screenshot's CMS dialog used hard-coded demo passwords and local browser
+flags. It now offers **Sign in with Cloudflare**, using the site's existing
+Access-protected `/api/admin/login` path and a verified return to the public
+editor. The token alternative also verifies credentials against the server.
+
+Removed the demo bypass and local-storage authorization helpers. CMS checks its
+session on load, focus and authentication changes; expired sessions disable
+editing. Token login synchronizes the public Admin controls. Cloudflare logout
+clears the Access session. JWT verification now requires issuer and expiration,
+rejects malformed tokens and safely handles malformed cookies. Session responses
+are not cached. The dialog accurately states that CMS copy edits remain local
+to the browser; this change does not add shared CMS publishing.
+
+Read-only production checks confirmed that the custom domain already redirects
+Admin paths to Cloudflare Access and has JWT verification and an email allowlist
+configured. No new account or policy is needed for the integration. Existing
+allowed-email settings were not changed. See `docs/admin-login.md` for login,
+configuration and rollout details.
+
+Verification: `npm run test:gate` passed TypeScript checking, all 365 JavaScript
+tests, all 146 Python tests and all 93 browser tests across desktop Chrome,
+mobile Chrome and mobile Safari. The new browser coverage includes successful
+token login, forged local flags, rejected demo passwords, the Cloudflare login
+button, verified return to the editor and expired-session rejection. The
+production build and its required repeated verification gate are running.
+
+No production deployment, credential change or Access-policy write has been
+performed. Deploy the API and frontend together through the normal Pages release
+workflow to activate the new public CMS login button.
+
+---
+
 # Persistent public map-card photo uploads — 2026-09-16
 
 The public map-card uploader now saves image bytes and metadata in D1 through

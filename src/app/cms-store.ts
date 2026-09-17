@@ -197,17 +197,6 @@ export function writeStoredCmsOverrides(overrides: CmsOverrides): void {
   } catch {}
 }
 
-export function readStoredCmsAuth(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    const direct = localStorage.getItem(CMS_AUTH_KEY) === "true";
-    const sessionAdmin = typeof sessionStorage !== "undefined" && Boolean(sessionStorage.getItem("motkarta_admin_token"));
-    return direct || sessionAdmin;
-  } catch {
-    return false;
-  }
-}
-
 export function readStoredCmsEditMode(): boolean {
   if (typeof window === "undefined") return false;
   try {
@@ -215,20 +204,6 @@ export function readStoredCmsEditMode(): boolean {
   } catch {
     return false;
   }
-}
-
-export function isCmsPasscodeValid(passcode: string, storedToken?: string | null): boolean {
-  const trimmed = passcode.trim().toLowerCase();
-  const token = (storedToken || "").trim().toLowerCase();
-  return (
-    trimmed === "motkarta" ||
-    trimmed === "admin" ||
-    trimmed === "motkarta-admin" ||
-    trimmed === "motkarta2026" ||
-    (Boolean(token) && trimmed === token) ||
-    trimmed === "token" ||
-    trimmed.length >= 6
-  );
 }
 
 export function readStoredMerchItems(defaultItems: MerchItem[]): MerchItem[] {
