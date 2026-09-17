@@ -143,9 +143,7 @@ def enrich_addresses_and_photos(
                     found_addr = g_res.get("address")
                     found_website = g_res.get("website")
 
-            # Fallback: Coordinate-based area resolution
-            if not found_addr and p_lat and p_lon:
-                found_addr = f"{p_area}, Stockholm"
+            # Unknown street addresses remain unknown; an area is not an address.
 
             if found_addr:
                 p["address"] = found_addr

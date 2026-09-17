@@ -2,54 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import type { Language } from "../app/shared";
 import { ArrowClockwise, Camera, CircleNotch, Clock, CurrencyCircleDollar, Globe, HouseLine, ShieldCheck } from "@phosphor-icons/react";
 
-export type AdminCoverageData = {
-  generatedAt: string;
-  totalPlaces: number;
-  catalogPlaces?: number;
-  activePublishedPlaces?: number;
-  address: {
-    count: number;
-    percentage: number;
-    target: number;
-    status: "PASS" | "PROGRESSING";
-  };
-  photos: {
-    count: number;
-    totalPhotos: number;
-    percentage: number;
-    target: number;
-    status: "PASS" | "PROGRESSING";
-    placeholderCount?: number;
-  };
-  openingHours?: {
-    count: number;
-    percentage: number;
-    target: number;
-    status: "PASS" | "PROGRESSING";
-  };
-  priceInfo?: {
-    count: number;
-    percentage: number;
-    target: number;
-    status: "PASS" | "PROGRESSING";
-  };
-  websites: {
-    count: number;
-    percentage: number;
-  };
-  coordinates: {
-    count: number;
-    percentage: number;
-    status: "PASS";
-  };
-  curatedSources: {
-    totalSources: number;
-    passingSources: number;
-    percentage: number;
-    status: "PASS";
-  };
-  lastEnrichedAt: string;
-};
+import type { CoverageReport } from "../../functions/api/admin/coverage";
+export type AdminCoverageData = CoverageReport;
 
 export function AdminCoveragePanel({
   lang = "sv",
@@ -71,54 +25,17 @@ export function AdminCoveragePanel({
         const text = await res.text();
         if (text.startsWith("{")) {
           const data = JSON.parse(text) as AdminCoverageData;
-          if (data && data.totalPlaces > 0) {
-            // Safeguard against unmigrated/unseeded D1 instances returning zeroes
-            const safeData: AdminCoverageData = {
-              ...data,
-              openingHours: {
-                count: (data.openingHours?.count ?? 0) > 0 ? data.openingHours!.count : 3246,
-                percentage: (data.openingHours?.percentage ?? 0) > 0 ? data.openingHours!.percentage : 100.0,
-                target: 100,
-                status: "PASS",
-              },
-              priceInfo: {
-                count: (data.priceInfo?.count ?? 0) > 0 ? data.priceInfo!.count : 3246,
-                percentage: (data.priceInfo?.percentage ?? 0) > 0 ? data.priceInfo!.percentage : 100.0,
-                target: 100,
-                status: "PASS",
-              },
-              photos: {
-                ...data.photos,
-                count: (data.photos?.count ?? 0) > 0 ? data.photos.count : 1213,
-                totalPhotos: (data.photos?.totalPhotos ?? 0) > 0 ? data.photos.totalPhotos : 2945,
-                percentage: (data.photos?.percentage ?? 0) > 0 ? data.photos.percentage : 37.4,
-                target: 100,
-                status: "PASS",
-                placeholderCount: data.photos?.placeholderCount ?? Math.max(0, (data.totalPlaces ?? 3256) - 1213),
-              },
-              address: {
-                ...data.address,
-                count: (data.address?.count ?? 0) > 0 ? data.address.count : 854,
-                percentage: (data.address?.percentage ?? 0) > 0 ? data.address.percentage : 26.2,
-                target: 100,
-                status: "PROGRESSING",
-              },
-            };
-            setCoverage(safeData);
+          if (data && typeof data.totalPlaces === "number") {
+            setCoverage(data);
             return;
           }
         }
       }
     } catch {}
 
-    try {
-      const res = await fetch("/data/coverage_stats.json");
-      if (res.ok) {
-        const data = (await res.json()) as AdminCoverageData;
-        setCoverage(data);
-      }
-    } catch {}
-  }, [adminToken]);
+    setCoverage(null);
+    setActionMessage(lang === "sv" ? "Täckningsdata är inte tillgänglig." : "Coverage data is unavailable.");
+  }, [adminToken, lang]);
 
   useEffect(() => {
     void fetchCoverage();
@@ -141,8 +58,8 @@ export function AdminCoveragePanel({
         setCoverage(data.report);
         setActionMessage(
           lang === "sv"
-            ? `✅ ${data.message ?? "Berikning slutförd!"}`
-            : `✅ ${data.message ?? "Enrichment completed!"}`,
+            ? `✅ ${data.message ?? "Täckning uppmätt."}`
+            : `✅ ${data.message ?? "Coverage measured."}`,
         );
       } else {
         setActionMessage(data.error ?? (lang === "sv" ? "Kunde inte köra berikning." : "Could not run enrichment."));
@@ -154,26 +71,15 @@ export function AdminCoveragePanel({
     }
   };
 
-  const c = coverage ?? {
-    generatedAt: new Date().toISOString(),
-    totalPlaces: 3256,
-    catalogPlaces: 3256,
-    activePublishedPlaces: 2996,
-    address: { count: 849, percentage: 26.2, target: 100, status: "PROGRESSING" as const },
-    photos: { count: 1213, totalPhotos: 2945, percentage: 37.3, target: 100, status: "PROGRESSING" as const, placeholderCount: 2043 },
-    openingHours: { count: 3246, percentage: 99.7, target: 100, status: "PASS" as const },
-    priceInfo: { count: 3245, percentage: 99.7, target: 100, status: "PASS" as const },
-    websites: { count: 2001, percentage: 61.5 },
-    coordinates: { count: 3246, percentage: 99.7, status: "PASS" as const },
-    curatedSources: { totalSources: 7, passingSources: 7, percentage: 100.0, status: "PASS" as const },
-    lastEnrichedAt: new Date().toISOString(),
-  };
+  if (!coverage) return <p role="status">{actionMessage ?? (lang === "sv" ? "Läser täckningsdata…" : "Loading coverage…")}</p>;
+  const c = coverage;
 
   const catalogCount = c.catalogPlaces ?? c.totalPlaces;
-  const activeCount = c.activePublishedPlaces ?? 2900;
+  const activeCount = c.activePublishedPlaces ?? 0;
 
   return (
     <section className="admin-coverage-dashboard" aria-label={lang === "sv" ? "Datatäckning & Berikning" : "Data Coverage & Enrichment"}>
+      {(c.errors ?? []).map((error) => <p role="status" key={error}>{error}</p>)}
       <div className="admin-coverage-head">
         <div>
           <span className="admin-coverage-badge">
@@ -190,47 +96,17 @@ export function AdminCoveragePanel({
           </p>
           <div className="admin-coverage-scope-pill">
             <b>{catalogCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b> {lang === "sv" ? "i redaktörskatalogen (D1)" : "in catalog (D1)"} ·{" "}
-            <b>~{activeCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b> {lang === "sv" ? "aktiva oberoende ställen i kartan (exkluderar kedjor och stängda ställen)" : "active independent places in map (excluding chains and closed places)"}
+            <b>~{activeCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b> {lang === "sv" ? "D1-poster utan kedje- eller stängningsmarkering" : "D1 records without chain or closure flags"}
           </div>
         </div>
 
         <div className="admin-coverage-actions">
           <button
             type="button"
-            className="admin-coverage-btn"
-            onClick={() => void handleRunEnrichment("enrich_addresses")}
-            disabled={runningAction !== null}
-            title={lang === "sv" ? "Synka gatuadresser via Google Places & OSM" : "Sync street addresses via Google Places & OSM"}
-          >
-            {runningAction === "enrich_addresses" ? <CircleNotch size={14} className="animate-spin" /> : <HouseLine size={14} weight="bold" />}
-            {lang === "sv" ? "Synka adresser" : "Sync addresses"}
-          </button>
-          <button
-            type="button"
-            className="admin-coverage-btn"
-            onClick={() => void handleRunEnrichment("enrich_photos")}
-            disabled={runningAction !== null}
-            title={lang === "sv" ? "Berika fotogallerier & webb-media" : "Enrich photo galleries & web media"}
-          >
-            {runningAction === "enrich_photos" ? <CircleNotch size={14} className="animate-spin" /> : <Camera size={14} weight="bold" />}
-            {lang === "sv" ? "Berika foton" : "Enrich photos"}
-          </button>
-          <button
-            type="button"
-            className="admin-coverage-btn"
-            onClick={() => void handleRunEnrichment("enrich_hours_prices")}
-            disabled={runningAction !== null}
-            title={lang === "sv" ? "Prioritera och berika öppettider & priser" : "Prioritize and enrich opening hours & prices"}
-          >
-            {runningAction === "enrich_hours_prices" ? <CircleNotch size={14} className="animate-spin" /> : <Clock size={14} weight="bold" />}
-            {lang === "sv" ? "Prioritera tider & priser" : "Prioritize hours & prices"}
-          </button>
-          <button
-            type="button"
             className="admin-coverage-btn admin-coverage-btn-primary"
             onClick={() => void handleRunEnrichment("full_sync")}
             disabled={runningAction !== null}
-            title={lang === "sv" ? "Kör fullständig täckningsaudit & synk" : "Run full coverage audit & sync"}
+            title={lang === "sv" ? "Kör fullständig täckningsaudit" : "Run full coverage audit"}
           >
             {runningAction === "full_sync" ? <CircleNotch size={14} className="animate-spin" /> : <ArrowClockwise size={14} weight="bold" />}
             {lang === "sv" ? "Kör full audit" : "Run full audit"}
@@ -320,7 +196,7 @@ export function AdminCoveragePanel({
                   <Camera size={16} weight="bold" /> {lang === "sv" ? "Bilder & Gallerier" : "Photos & Media"}
                 </span>
                 <span className={`admin-coverage-status-tag ${photoPct >= 95 ? "tag-pass" : "tag-progressing"}`}>
-                  {photoPct}% {lang === "sv" ? "Verifierat" : "Verified"}
+                  {photoPct}% {lang === "sv" ? "Registrerat" : "Recorded"}
                 </span>
               </div>
               <div className="admin-coverage-bar-track">
@@ -328,11 +204,11 @@ export function AdminCoveragePanel({
               </div>
               <div className="admin-coverage-card-meta">
                 <b>{photoCount.toLocaleString(locale)} / {total.toLocaleString(locale)}</b>
-                <small>{lang === "sv" ? "ställen med verifierad webbfoto" : "places with verified web photos"}</small>
+                <small>{lang === "sv" ? "ställen med lagrade foton" : "places with stored photos"}</small>
                 <span className="admin-coverage-subhint">
                   {lang === "sv"
-                    ? `${(total - photoCount).toLocaleString(locale)} ställen visar Motkarta-badge (inga stockfoton)`
-                    : `${(total - photoCount).toLocaleString(locale)} places show Motkarta badge (no stock photos)`}
+                    ? `${(total - photoCount).toLocaleString(locale)} ställen saknar foton i D1`
+                    : `${(total - photoCount).toLocaleString(locale)} places lack photos in D1`}
                 </span>
               </div>
             </div>
@@ -351,7 +227,7 @@ export function AdminCoveragePanel({
               </div>
               <div className="admin-coverage-card-meta">
                 <b>{webCount.toLocaleString(locale)} / {total.toLocaleString(locale)}</b>
-                <small>{lang === "sv" ? "platser med verifierad länk" : "places with verified URL"}</small>
+                <small>{lang === "sv" ? "platser med registrerad länk" : "places with recorded URL"}</small>
               </div>
             </div>
 
@@ -361,11 +237,11 @@ export function AdminCoveragePanel({
                   <ShieldCheck size={16} weight="bold" /> {lang === "sv" ? "Kurerade Källor" : "Curated Sources"}
                 </span>
                 <span className="admin-coverage-status-tag tag-pass">
-                  7 / 7 PASS
+                  {lang === "sv" ? "Inte uppmätt" : "Not measured"}
                 </span>
               </div>
               <div className="admin-coverage-bar-track">
-                <div className="admin-coverage-bar-fill fill-pass" style={{ width: "100%" }} />
+                <div className="admin-coverage-bar-fill fill-pass" style={{ width: `${c.curatedSources.percentage}%` }} />
               </div>
               <div className="admin-coverage-card-meta">
                 <b>{c.curatedSources.passingSources} / {c.curatedSources.totalSources}</b>

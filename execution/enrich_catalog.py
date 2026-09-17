@@ -114,10 +114,11 @@ ATMOSPHERE_KEYWORDS: dict[str, list[str]] = {
 def extract_osm_facts(
     osm_elements: list[dict[str, Any]],
     place_index: dict[str, list[dict[str, Any]]],
+    captured_at: str | None = None,
 ) -> dict[int, list[dict[str, Any]]]:
     """Extract SourceFacts from raw OSM elements, matched to public catalog IDs."""
     facts_by_id: dict[int, list[dict[str, Any]]] = {}
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = captured_at
 
     for el in osm_elements:
         tags = el.get("tags", {})
@@ -134,7 +135,23 @@ def extract_osm_facts(
         if not matched_places:
             # Fallback: match by normalized name + proximity
             norm = normalize_name(osm_name)
-            matched_places = place_index.get(norm, [])
+            candidates = place_index.get(norm, [])
+            center = el.get("center", el)
+            from scripts.enrich_street_addresses import haversine_distance
+            matched_places = []
+            for candidate in candidates:
+                # Never override a different known identity based on its name.
+                if candidate.get("osmIdentity") and candidate["osmIdentity"] != osm_identity:
+                    continue
+                try:
+                    distance = haversine_distance(float(center["lat"]), float(center["lon"]),
+                                                  float(candidate["latitude"]), float(candidate["longitude"]))
+                    if distance <= 100:
+                        matched_places.append(candidate)
+                except (KeyError, TypeError, ValueError):
+                    continue
+            if len(matched_places) != 1:
+                matched_places = []
 
         if not matched_places:
             continue
@@ -149,18 +166,31 @@ def extract_osm_facts(
                 "source": "OpenStreetMap",
                 "url": f"https://www.openstreetmap.org/{osm_type}/{osm_id}",
                 "verification": "listed",
-                "capturedAt": timestamp,
+                "capturedAt": timestamp or el.get("timestamp", ""),
             }
 
             # Opening hours
             hours = tags.get("opening_hours")
-            if hours and hours not in ("24/7",):
+            if hours:
                 facts_by_id[pid].append({
                     **fact_base,
                     "id": f"{pid}:osm:openingHours",
                     "field": "openingHours",
                     "value": hours,
                 })
+
+            # Availability and fees are separate: unknown fee is never "free".
+            access = tags.get("internet_access", "").lower()
+            fee = tags.get("internet_access:fee", "").lower()
+            wifi = None
+            if access == "wlan":
+                wifi = {"no": "Free Wi-Fi", "customers": "Wi-Fi free for customers", "yes": "Paid Wi-Fi"}.get(fee, "Wi-Fi")
+            elif access == "no":
+                wifi = "No Wi-Fi"
+            elif access == "yes":
+                wifi = "Internet access (type unknown)"
+            if wifi:
+                facts_by_id[pid].append({**fact_base, "id": f"{pid}:osm:wifi", "field": "tags", "value": wifi})
 
             # Website (contact:website takes precedence)
             website = tags.get("contact:website") or tags.get("website")
@@ -975,7 +1005,9 @@ def main() -> None:
         print(f"Extracting facts from OSM raw data ({OSM_RAW})...")
         osm_data = json.loads(OSM_RAW.read_text(encoding="utf-8"))
         elements = osm_data.get("elements", [])
-        osm_facts = extract_osm_facts(elements, index)
+        metadata_path = OSM_RAW.with_name("osm_stockholm_food_places.metadata.json")
+        metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else {}
+        osm_facts = extract_osm_facts(elements, index, metadata.get("fetched_at"))
         print(f"  OSM: {sum(len(v) for v in osm_facts.values())} facts for {len(osm_facts)} places")
     else:
         print(f"WARN: OSM raw file not found: {OSM_RAW}")

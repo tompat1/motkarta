@@ -27,6 +27,7 @@ import sys
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -100,11 +101,13 @@ def format_osm_opening_hours(specs: list[dict[str, Any]]) -> str | None:
         return None
 
     # Map Day -> "HH:MM-HH:MM"
-    day_times: dict[str, str] = {}
+    day_times: dict[str, set[str]] = {}
     for spec in specs:
+        if not isinstance(spec, dict) or spec.get("validFrom") or spec.get("validThrough"):
+            continue
         opens = str(spec.get("opens", "")).strip()[:5]
         closes = str(spec.get("closes", "")).strip()[:5]
-        if not opens or not closes:
+        if not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", opens) or not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", closes):
             continue
         time_slot = f"{opens}-{closes}"
         day_raw = spec.get("dayOfWeek", [])
@@ -117,7 +120,7 @@ def format_osm_opening_hours(specs: list[dict[str, Any]]) -> str | None:
             d_norm = str(d).strip().lower().split("/")[-1]
             short_day = DAY_MAP.get(d_norm)
             if short_day:
-                day_times[short_day] = time_slot
+                day_times.setdefault(short_day, set()).add(time_slot)
 
     if not day_times:
         return None
@@ -128,7 +131,7 @@ def format_osm_opening_hours(specs: list[dict[str, Any]]) -> str | None:
     current_slot: str | None = None
 
     for day in ORDERED_DAYS:
-        slot = day_times.get(day)
+        slot = ",".join(sorted(day_times.get(day, set())))
         if slot:
             if slot == current_slot:
                 current_days.append(day)
@@ -162,6 +165,15 @@ def format_osm_opening_hours(specs: list[dict[str, Any]]) -> str | None:
     return "; ".join(formatted_parts)
 
 
+def schema_items(data: Any):
+    if isinstance(data, list):
+        for item in data:
+            yield from schema_items(item)
+    elif isinstance(data, dict):
+        yield data
+        yield from schema_items(data.get("@graph", []))
+
+
 def parse_schema_json_ld(html: str) -> dict[str, Any]:
     """Extract opening hours, price range, and address from Schema.org JSON-LD scripts."""
     result: dict[str, Any] = {
@@ -179,7 +191,7 @@ def parse_schema_json_ld(html: str) -> dict[str, Any]:
     for script_content in scripts:
         try:
             data = json.loads(script_content.strip())
-            items = data if isinstance(data, list) else [data]
+            items = schema_items(data)
             for item in items:
                 if not isinstance(item, dict):
                     continue
@@ -199,7 +211,7 @@ def parse_schema_json_ld(html: str) -> dict[str, Any]:
                 )
 
                 # 1. Price Range
-                if "priceRange" in item and not result["price_range"]:
+                if is_food_venue and "priceRange" in item and not result["price_range"]:
                     pr = str(item["priceRange"]).strip()
                     if pr:
                         result["price_range"] = pr
@@ -208,6 +220,8 @@ def parse_schema_json_ld(html: str) -> dict[str, Any]:
                 if is_food_venue and not result["opening_hours"]:
                     if "openingHoursSpecification" in item:
                         specs = item["openingHoursSpecification"]
+                        if isinstance(specs, dict):
+                            specs = [specs]
                         if isinstance(specs, list):
                             hours = format_osm_opening_hours(specs)
                             if hours:
@@ -254,11 +268,6 @@ def parse_menu_prices_from_text(html: str) -> tuple[int | None, str | None]:
     main_prices = [int(p) for p in main_matches if 120 <= int(p) <= 650]
 
     all_prices = lunch_prices + main_prices
-    if not all_prices:
-        # Generic price pattern
-        generic = re.findall(r"\b(\d{2,3})\s*(?:kr|sek|:-)", text)
-        all_prices = [int(p) for p in generic if 85 <= int(p) <= 650]
-
     if all_prices:
         min_p = min(all_prices)
         max_p = max(all_prices)
@@ -274,39 +283,20 @@ def determine_venue_price(
     place: dict[str, Any],
     price_range_str: str | None,
     menu_prices: tuple[int | None, str | None],
-) -> tuple[int, str]:
-    """Determine final price level (1-4) and SEK range for a place."""
-    # 1. From website Schema.org priceRange
-    if price_range_str:
-        norm_pr = price_range_str.replace(" ", "")
-        if "$$$$" in norm_pr or "4" in norm_pr:
-            return 4, "750–1600"
-        elif "$$$" in norm_pr or "3" in norm_pr:
-            return 3, "380–680"
-        elif "$$" in norm_pr or "2" in norm_pr:
-            return 2, "160–320"
-        elif "$" in norm_pr or "1" in norm_pr:
-            return 1, "45–140"
-
-    # 2. From menu text prices
+) -> tuple[int | None, str | None]:
+    """Return sourced symbols or SEK amounts; never infer prices from category."""
+    raw = str(price_range_str or "").strip()
+    if re.fullmatch(r"\${1,4}", raw):
+        return len(raw), raw
+    # Numeric amounts need an explicit SEK currency, not a digit interpreted as a tier.
+    match = re.fullmatch(r"(?:SEK\s*)?(\d{2,4})(?:\s*[-–]\s*(\d{2,4}))?\s*(?:SEK|kr|:-)?", raw, re.I)
+    if match and re.search(r"SEK|kr|:-", raw, re.I):
+        low, high = int(match[1]), int(match[2] or match[1])
+        if 0 < low <= high <= 9999:
+            return classify_price_level((low + high) / 2), f"{low}–{high}" if low != high else str(low)
     if menu_prices[0] is not None and menu_prices[1] is not None:
-        return menu_prices[0], menu_prices[1]
-
-    # 3. From Curated tags / White Guide
-    tags = str(place.get("tags", [])).lower()
-    if "fine dining" in tags or "tasting menu" in tags or "michelin" in tags:
-        return 4, "750–1600"
-    if "white guide" in tags and "lyx" in tags:
-        return 3, "380–680"
-
-    # 4. From Venue category
-    kind = str(place.get("kind", "")).lower()
-    is_fika = any(k in kind for k in ["coffee", "café", "bakery", "bageri"])
-    if is_fika:
-        return 1, "45–140"
-
-    # Default for Swedish restaurants / bistros
-    return 2, "160–320"
+        return menu_prices
+    return None, None
 
 
 def fetch_website_metadata(url: str, timeout: int = 5) -> dict[str, Any] | None:
@@ -377,37 +367,28 @@ def enrich_hours_and_prices(
         schema = meta.get("schema", {}) if meta else {}
         menu_prices = meta.get("menu_prices", (None, None)) if meta else (None, None)
 
-        # 1. Opening hours:
-        current_hours = place.get("openingHours", "")
-        is_synthetic = (
-            not current_hours
-            or current_hours == "Mo-Sa 17:00-23:00"
-            or current_hours == "Mo-Fr 07:30-18:00; Sa-Su 08:00-17:00"
-        )
+        if not meta:
+            continue  # Failed or unrequested websites must not mutate existing facts.
+        updates = {}
         if schema.get("opening_hours"):
-            place["openingHours"] = schema["opening_hours"]
+            updates["openingHours"] = schema["opening_hours"]
             hours_scraped += 1
-        elif is_synthetic and not current_hours:
-            kind = str(place.get("kind", "")).lower()
-            place["openingHours"] = (
-                "Mo-Fr 07:30-18:00; Sa-Su 08:00-17:00"
-                if any(k in kind for k in ["coffee", "café", "bakery"])
-                else "Mo-Sa 17:00-23:00"
-            )
-
-        # 2. Street address from website Schema.org if still missing
-        if schema.get("street_address") and not any(c.isdigit() for c in place.get("address", "").split(",")[0]):
-            place["address"] = schema["street_address"]
+        if schema.get("street_address") and not any(c.isdigit() for c in (place.get("address") or "").split(",")[0]):
+            updates["address"] = schema["street_address"]
             addresses_scraped += 1
-
-        # 3. Standardize Price Level & SEK
-        lvl, sek = determine_venue_price(place, schema.get("price_range"), menu_prices)
-        # Keep priceLevel 0 in static places.json to preserve open-data neutrality required by validate-artifact.sh
-        # while priceSEK stores the authentic price range and D1 seed SQL derives the numeric tier.
-        place["priceLevel"] = 0
-        place["priceSEK"] = sek
-        if schema.get("price_range") or menu_prices[0] is not None:
+        _, price = determine_venue_price(place, schema.get("price_range"), menu_prices)
+        if price:
+            updates["priceSEK"] = price
             prices_scraped += 1
+        facts = {f["id"]: f for f in place.get("sourceFacts", [])}
+        for field, value in updates.items():
+            place[field] = value
+            fid = f"{place['id']}:website:{field}"
+            facts[fid] = {"id": fid, "placeId": place["id"], "field": field,
+                          "value": value, "source": "Venue website", "url": place["website"],
+                          "verification": "listed", "capturedAt": datetime.now(timezone.utc).isoformat()}
+        if updates:
+            place["sourceFacts"] = list(facts.values())
 
     payload["places"] = places
     payload["totalPlaces"] = len(places)
@@ -426,7 +407,7 @@ def enrich_hours_and_prices(
         print(f"  Opening Hours Scraped:         +{hours_scraped}")
         print(f"  Price Signals Scraped:         +{prices_scraped}")
         print(f"  Addresses Scraped:             +{addresses_scraped}")
-        print(f"  Places with Standardized Tier: {stats['total_with_price_level']}/{stats['total_places']} (100%)")
+        print(f"  Places with sourced price: {stats['total_with_price_sek']}/{stats['total_places']}")
 
     return stats
 

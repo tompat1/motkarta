@@ -115,18 +115,16 @@ def test_parse_menu_prices_from_text():
 def test_determine_venue_price():
     bakery = {"name": "Lilla Bageriet", "kind": "Bakery", "tags": ["Bakery", "Fika"]}
     lvl, sek = determine_venue_price(bakery, None, (None, None))
-    assert lvl == 1
-    assert "45" in sek
+    assert (lvl, sek) == (None, None)
 
     michelin = {"name": "Frantzén", "kind": "Restaurant", "tags": ["Michelin", "Fine dining"]}
     lvl, sek = determine_venue_price(michelin, None, (None, None))
-    assert lvl == 4
-    assert "750" in sek
+    assert (lvl, sek) == (None, None)
 
     trattoria = {"name": "Pasta Uno", "kind": "Restaurant", "tags": ["Italian"]}
     lvl, sek = determine_venue_price(trattoria, "$$", (None, None))
     assert lvl == 2
-    assert "160" in sek
+    assert sek == "$$"
 
 
 def test_has_street_number():
@@ -149,3 +147,64 @@ def test_haversine_distance():
     # Known distance: Sergels Torg (59.3326, 18.0649) to Hötorget (59.3346, 18.0628) ~ 250m
     dist = haversine_distance(59.3326, 18.0649, 59.3346, 18.0628)
     assert 200 < dist < 300
+
+
+def test_numeric_prices_are_not_tier_digits():
+    assert determine_venue_price({}, '145 SEK', (None, None)) == (1, '145')
+    assert determine_venue_price({}, 'SEK 200–400', (None, None)) == (2, '200–400')
+    assert determine_venue_price({}, '4', (None, None)) == (None, None)
+    assert determine_venue_price({}, '$$$$', (None, None)) == (4, '$$$$')
+
+
+def test_graph_and_split_hours():
+    import json
+    venue = {'@type': 'Restaurant', 'openingHoursSpecification': [
+        {'dayOfWeek': 'Monday', 'opens': '11:00', 'closes': '14:00'},
+        {'dayOfWeek': 'Monday', 'opens': '17:00', 'closes': '22:00'},
+    ]}
+    html = '<script type="application/ld+json">' + json.dumps({'@graph': [venue]}) + '</script>'
+    assert parse_schema_json_ld(html)['opening_hours'] == 'Mo 11:00-14:00,17:00-22:00'
+
+
+def test_failed_scrape_and_limit_preserve_existing_values(tmp_path, monkeypatch):
+    import json
+    import scripts.fetch_place_hours_and_prices as module
+    rows = [{'id': i, 'website': f'https://example.org/{i}', 'openingHours': '24/7', 'priceSEK': '250'} for i in range(2)]
+    target = tmp_path / 'places.json'
+    target.write_text(json.dumps({'places': rows}))
+    calls = []
+    monkeypatch.setattr(module, 'fetch_website_metadata', lambda url: calls.append(url))
+    module.enrich_hours_and_prices(target, limit_sites=1)
+    assert len(calls) == 1
+    assert json.loads(target.read_text())['places'] == rows
+
+
+def test_overlay_clears_only_unsupported_defaults_and_refreshes_owned_facts():
+    from execution.apply_enrichment import apply_overlay
+    rows = [{'id': 1, 'openingHours': 'Mo-Sa 17:00-23:00', 'priceSEK': '160–320'}]
+    fact = {'id': '1:osm:openingHours', 'placeId': 1, 'field': 'openingHours', 'value': '24/7', 'source': 'OpenStreetMap', 'url': 'https://www.openstreetmap.org/node/1', 'capturedAt': '2026-09-17T00:00:00Z'}
+    apply_overlay(rows, {'1': [fact]})
+    assert rows[0]['openingHours'] == '24/7'
+    assert 'priceSEK' not in rows[0]
+    next_fact = {**fact, 'value': 'Mo-Fr 12:00-14:00', 'capturedAt': '2026-09-18T00:00:00Z'}
+    apply_overlay(rows, {'1': [next_fact]})
+    apply_overlay(rows, {'1': [fact]})
+    assert rows[0]['openingHours'] == next_fact['value']
+    assert len(rows[0]['sourceFacts']) == 1
+
+
+def test_osm_matching_and_wifi_fee_semantics():
+    from execution.enrich_catalog import build_place_index, extract_osm_facts
+    places = [{'id': 1, 'name': 'Cafe', 'latitude': 59.3, 'longitude': 18}, {'id': 2, 'name': 'Cafe', 'latitude': 60.3, 'longitude': 19}]
+    element = {'type': 'node', 'id': 5, 'lat': 59.3, 'lon': 18, 'tags': {'name': 'Cafe', 'opening_hours': '24/7', 'internet_access': 'wlan'}}
+    facts = extract_osm_facts([element], build_place_index(places))
+    assert set(facts) == {1}
+    assert any(f['value'] == '24/7' for f in facts[1])
+    assert any(f['value'] == 'Wi-Fi' for f in facts[1])
+    for fee, expected in [('no', 'Free Wi-Fi'), ('customers', 'Wi-Fi free for customers'), ('yes', 'Paid Wi-Fi')]:
+        element['tags']['internet_access:fee'] = fee
+        facts = extract_osm_facts([element], build_place_index(places))
+        assert any(f['value'] == expected for f in facts[1])
+    element['tags']['internet_access'] = 'yes'
+    facts = extract_osm_facts([element], build_place_index(places))
+    assert not any(f['value'] == 'Free Wi-Fi' for f in facts[1])

@@ -107,3 +107,13 @@ expired sessions. Cloudflare return parameters are navigation state only; test
 that the server must still authorize editing. Use locally generated signing
 keys for JWT tests, including missing issuer/expiration and invalid signatures;
 do not generate real login emails or change production Access policies in tests.
+
+## Enrichment accuracy and synchronization
+
+Test numeric SEK prices separately from dollar symbols, split daily hours,
+JSON-LD graphs, same-name branches, failed/limited scrapes, stale fact refreshes,
+and OSM Wi-Fi fee states. Coverage zeroes and missing tables must remain visible
+in both API and browser. Validate D1 repair SQL against isolated SQLite, including
+idempotency, ID remapping, admin-edit guards and stale Wi-Fi retries. Use additive
+photo migrations and guarded updates; never use the full destructive seed as an
+enrichment repair. See `docs/enrichment-repair.md`.

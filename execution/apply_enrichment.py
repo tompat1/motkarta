@@ -23,72 +23,58 @@ DEFAULT_OVERLAY = ROOT / "data" / "enrichment_overlay.json"
 DEFAULT_PLACES = ROOT / "public" / "data" / "places.json"
 
 
+DEFAULT_HOURS = {"Mo-Sa 17:00-23:00", "Mo-Fr 07:30-18:00; Sa-Su 08:00-17:00"}
+DEFAULT_PRICES = {"45–145", "160–350", "45–140", "160–320", "380–680", "750–1600"}
+WIFI_TAGS = {"Wi-Fi", "Free Wi-Fi", "Wi-Fi free for customers", "Paid Wi-Fi", "No Wi-Fi", "Internet access (type unknown)"}
+
+
+def remove_unsupported_defaults(place: dict[str, Any]) -> None:
+    for field, defaults in [("openingHours", DEFAULT_HOURS), ("priceSEK", DEFAULT_PRICES)]:
+        value = place.get(field)
+        supported = any(f.get("field") == field and f.get("value") == value
+                        and f.get("source") and f.get("url") for f in place.get("sourceFacts", []))
+        if value in defaults and not supported:
+            place.pop(field, None)
+
+
 def apply_overlay(
     places: list[dict[str, Any]],
     overlay_facts: dict[str, list[dict[str, Any]]],
 ) -> tuple[int, int]:
-    """Apply enrichment facts to place records. Returns (enriched, total_facts)."""
-    enriched = 0
-    total_facts = 0
-
+    """Refresh attributed facts, replacing only missing or source-owned values."""
+    enriched = total_facts = 0
     for place in places:
-        pid = str(place.get("id", ""))
-        facts = overlay_facts.get(pid, [])
-        if not facts:
-            continue
-
-        enriched += 1
-        source_facts: list[dict[str, Any]] = []
-
+        remove_unsupported_defaults(place)
+        existing = {f["id"]: f for f in place.get("sourceFacts", []) if f.get("id")}
+        facts = overlay_facts.get(str(place.get("id", "")), [])
+        accepted = 0
         for fact in facts:
-            # Build SourceFact compatible with ConciergePlace.sourceFacts
-            source_fact = {
-                "id": fact["id"],
-                "placeId": fact["placeId"],
-                "field": fact["field"],
-                "value": fact["value"],
-                "source": fact["source"],
-                "verification": fact.get("verification", "listed"),
-            }
-            if fact.get("url"):
-                source_fact["url"] = fact["url"]
-            if fact.get("capturedAt"):
-                source_fact["capturedAt"] = fact["capturedAt"]
-
-            source_facts.append(source_fact)
-            total_facts += 1
-
-            # Also inject opening hours into the top-level field if missing
-            if fact["field"] == "openingHours" and not place.get("openingHours"):
-                place["openingHours"] = fact["value"]
-
-            # Inject priceSEK into top-level field if missing
-            if fact["field"] == "priceSEK" and not place.get("priceSEK"):
-                place["priceSEK"] = fact["value"]
-
-            # Inject website into top-level if missing
-            if fact["field"] == "tags" and fact["value"].startswith("Website: ") and not place.get("website"):
-                url = fact["value"].replace("Website: ", "")
-                if url.startswith("http"):
+            if fact.get("placeId") != place.get("id") or not fact.get("value") or not fact.get("source"):
+                continue
+            old = existing.get(fact["id"])
+            if old and old.get("capturedAt", "") > fact.get("capturedAt", ""):
+                continue
+            field, value = fact["field"], fact["value"]
+            if field in {"openingHours", "priceSEK", "address"}:
+                if not place.get(field) or (old and place.get(field) == old.get("value")):
+                    place[field] = value
+            if field == "tags" and value.startswith("Website: ") and not place.get("website"):
+                url = value.removeprefix("Website: ")
+                if url.startswith(("http://", "https://")):
                     place["website"] = url
-
-        # Set sourceFacts on the place (preserving any existing ones)
-        existing = place.get("sourceFacts", [])
-        existing_ids = {f.get("id") for f in existing}
-        for sf in source_facts:
-            if sf["id"] not in existing_ids:
-                existing.append(sf)
-        place["sourceFacts"] = existing
-
-    # Baseline fallback sweep to ensure 100% coverage for openingHours and priceSEK
-    for place in places:
-        kind = str(place.get("kind", "")).lower()
-        is_cafe = any(k in kind for k in ["coffee", "café", "bakery", "bageri"])
-        if not place.get("openingHours"):
-            place["openingHours"] = "Mo-Sa 17:00-23:00" if "restaurant" in kind else "Mo-Fr 07:30-18:00; Sa-Su 08:00-17:00"
-        if not place.get("priceSEK"):
-            place["priceSEK"] = "45–145" if is_cafe else "160–350"
-
+            if field == "tags" and fact["id"].endswith(":osm:wifi"):
+                place["tags"] = [t for t in place.get("tags", []) if t not in WIFI_TAGS]
+                # Generic Wi-Fi filter includes all confirmed wireless availability.
+                if value in {"Free Wi-Fi", "Wi-Fi free for customers", "Paid Wi-Fi", "Wi-Fi"}:
+                    place["tags"].append("Wi-Fi")
+                if value != "Wi-Fi":
+                    place["tags"].append(value)
+            existing[fact["id"]] = dict(fact)
+            accepted += 1
+        if accepted:
+            place["sourceFacts"] = list(existing.values())
+            enriched += 1
+            total_facts += accepted
     return enriched, total_facts
 
 

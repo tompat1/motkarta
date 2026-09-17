@@ -358,3 +358,13 @@ only records; the importer’s broader fallback is not sufficient RAG scope evid
    - Rate limit of 0.5s pause per request; responses cached in `.tmp/scraped_html_cache/`.
    - Facts extracted from venue websites are marked `verification: "listed"` (self-reported), never `verified`.
 4. **Core Values Protection**: No commercial platform ratings or popularity metrics are ever admitted. Unverified commercial claims or paid promotion are strictly rejected.
+
+## Neutral enrichment repair (2026-09-17)
+
+Hours, website prices and OSM Wi-Fi facts follow the
+[sourced enrichment contract](../enrichment-repair.md). Unknown values are not
+category estimates. `place_source_facts` is neutral provenance and must not be
+joined into quality evidence or hidden-gem eligibility counts. Display price
+symbols do not populate static scoring `priceLevel`. Scorer and model versions
+are unchanged. Rebuild any downstream fact index from the repaired catalog before
+activation; old document hashes are not evidence that removed defaults are true.

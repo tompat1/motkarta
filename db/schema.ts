@@ -200,3 +200,11 @@ export const placePhotoUploads = sqliteTable("place_photo_uploads", {
 }, (table) => [
   index("photo_upload_place_idx").on(table.placeId, table.createdAt),
 ]);
+
+// Neutral enrichment provenance; never included in quality evidence queries.
+export const placeSourceFacts = sqliteTable("place_source_facts", {
+  id: text("id").primaryKey().notNull(),
+  placeId: integer("place_id").notNull().references(() => establishments.id, { onDelete: "cascade" }),
+  factJson: text("fact_json").notNull(),
+  capturedAt: text("captured_at").notNull(),
+}, (table) => [index("place_source_facts_place_idx").on(table.placeId)]);

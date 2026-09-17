@@ -288,11 +288,25 @@ export async function loadPlacesFromD1(db: D1Database): Promise<ConciergePlace[]
     return [];
   }
 
-  return rowsToPlaceInputs(
+  const places = rowsToPlaceInputs(
     rows,
     evidenceResult.results ?? [],
     tagResult.results ?? [],
   );
+  try {
+    const result = await db.prepare("SELECT place_id, fact_json FROM place_source_facts").all<{ place_id: number; fact_json: string }>();
+    const byId = new Map(places.map((place) => [place.id, place]));
+    for (const row of result.results ?? []) {
+      const place = byId.get(row.place_id);
+      try {
+        const fact = JSON.parse(row.fact_json);
+        if (place && fact.placeId === place.id && fact.id && fact.source && typeof fact.value === 'string') {
+          (place.sourceFacts ??= []).push(fact);
+        }
+      } catch { /* An invalid record must not discard the remaining catalog. */ }
+    }
+  } catch { /* Pre-migration installations retain their existing catalog. */ }
+  return places;
 }
 
 export function rowsToPlaceInputs(

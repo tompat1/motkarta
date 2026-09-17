@@ -1,3 +1,4 @@
+import { priceDisplay } from "../../lib/price-display";
 import { firstAvailablePhoto } from "../../lib/photo-loading";
 import React, { useEffect, useState } from "react";
 import {
@@ -252,20 +253,8 @@ export function PlaceDetailSheet({
 
               {/* Price Tier Badge */}
               {(() => {
-                const sek = place.priceSEK;
-                let lvl = place.priceLevel && place.priceLevel > 0 ? place.priceLevel : null;
-                if (!lvl && sek) {
-                  const numMatch = sek.match(/\d+/);
-                  if (numMatch) {
-                    const num = parseInt(numMatch[0], 10);
-                    if (num < 150) lvl = 1;
-                    else if (num <= 350) lvl = 2;
-                    else if (num <= 750) lvl = 3;
-                    else lvl = 4;
-                  }
-                }
-                if (!lvl && !sek) return null;
-                const tier = lvl || 2;
+                const price = priceDisplay(place.priceSEK);
+                if (!price) return null;
                 return (
                   <span
                     style={{
@@ -280,11 +269,11 @@ export function PlaceDetailSheet({
                       fontSize: "12px",
                       fontWeight: 600,
                     }}
-                    title={lang === "sv" ? `Prisnivå ${"$".repeat(tier)} (${sek ? `${sek} kr` : ""})` : `Price tier ${"$".repeat(tier)} (${sek ? `${sek} SEK` : ""})`}
+                    title={`${lang === "sv" ? "Prisnivå" : "Price tier"} ${price.symbol}${price.amount ? ` (${price.amount})` : ""}`}
                   >
                     <CurrencyCircleDollar size={15} weight="bold" style={{ color: "var(--color-water, #2563eb)" }} />
-                    <strong>{"$".repeat(tier)}</strong>
-                    {sek ? <span style={{ color: "var(--color-slate, #64748b)" }}>· {sek} SEK</span> : null}
+                    <strong>{price.symbol}</strong>
+                    {price.amount ? <span style={{ color: "var(--color-slate, #64748b)" }}>· {price.amount}</span> : null}
                   </span>
                 );
               })()}

@@ -1,3 +1,4 @@
+import { priceDisplay } from "../lib/price-display";
 "use client";
 
 import { firstAvailablePhoto } from "../lib/photo-loading";
@@ -2508,6 +2509,10 @@ function AppContent({
                   ) : null}
                 </div>
                 <div className="tag-row">
+                  {(() => {
+                    const price = priceDisplay(active.priceSEK);
+                    return price ? <span title={`${lang === "sv" ? "Prisnivå" : "Price tier"} ${price.symbol}${price.amount ? ` (${price.amount})` : ""}`}>{price.symbol}</span> : null;
+                  })()}
                   {active.tags.map((tag: string) => (
                     <span key={tag}>{tag}</span>
                   ))}

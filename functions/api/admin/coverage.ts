@@ -27,6 +27,8 @@ const jsonHeaders = {
 
 export type CoverageReport = {
   generatedAt: string;
+  source: "d1" | "unavailable";
+  errors: string[];
   totalPlaces: number;
   catalogPlaces: number;
   activePublishedPlaces: number;
@@ -63,28 +65,25 @@ export type CoverageReport = {
   coordinates: {
     count: number;
     percentage: number;
-    status: "PASS";
+    status: "PASS" | "PROGRESSING" | "UNKNOWN";
   };
   curatedSources: {
     totalSources: number;
     passingSources: number;
     percentage: number;
-    status: "PASS";
+    status: "PASS" | "PROGRESSING" | "UNKNOWN";
   };
-  lastEnrichedAt: string;
+  lastEnrichedAt: string | null;
 };
 
 export async function computeCoverageReport(db?: D1Database): Promise<CoverageReport> {
-  // Baseline fallbacks reflecting actual verified catalog state
-  let totalPlaces = 3256;
-  let catalogPlaces = 3256;
-  let activePublishedPlaces = 2996;
-  let addressCount = 854;
-  let websiteCount = 2001;
-  let photosPlaceCount = 1213;
-  let totalPhotos = 2945;
-  let hoursCount = 3246;
-  let priceCount = 3246;
+  let totalPlaces = 0, catalogPlaces = 0, activePublishedPlaces = 0;
+  let addressCount = 0, websiteCount = 0, photosPlaceCount = 0;
+  let totalPhotos = 0, hoursCount = 0, priceCount = 0;
+  let coordinateCount = 0;
+  const errors: string[] = [];
+  let available = false;
+  if (!db) errors.push("D1 is not configured.");
 
   if (db) {
     try {
@@ -118,13 +117,14 @@ export async function computeCoverageReport(db?: D1Database): Promise<CoverageRe
         activeSql = "sum(case when chain_status != 'chain' then 1 else 0 end)";
       }
 
-      const query = `SELECT 
-        count(*) as count, 
-        sum(case when address is not null and address != '' and address != 'Stockholm' then 1 else 0 end) as with_addr, 
+      const query = `SELECT
+        count(*) as count,
+        sum(case when address is not null and address != '' and address GLOB '*[0-9]*' then 1 else 0 end) as with_addr,
         sum(case when website is not null and website != '' then 1 else 0 end) as with_web,
         ${hoursSql} as with_hours,
         ${priceSql} as with_price,
-        ${activeSql} as active_count
+        ${activeSql} as active_count,
+        sum(case when latitude between -90 and 90 and longitude between -180 and 180 then 1 else 0 end) as coordinate_count
       FROM establishments`;
 
       const placesRes = await db.prepare(query).all<{
@@ -134,41 +134,41 @@ export async function computeCoverageReport(db?: D1Database): Promise<CoverageRe
         with_hours: number;
         with_price: number;
         active_count: number;
+        coordinate_count: number;
       }>();
 
-      if (placesRes.results?.[0] && typeof placesRes.results[0].count === "number" && placesRes.results[0].count > 0) {
+      if (placesRes.results?.[0] && typeof placesRes.results[0].count === "number") {
+        available = true;
+        coordinateCount = placesRes.results[0].coordinate_count ?? 0;
         totalPlaces = placesRes.results[0].count;
         catalogPlaces = totalPlaces;
         const d1Addr = placesRes.results[0].with_addr ?? 0;
-        addressCount = d1Addr > 0 ? Math.min(totalPlaces, d1Addr) : Math.min(totalPlaces, 854);
+        addressCount = Math.min(totalPlaces, d1Addr);
         const d1Web = placesRes.results[0].with_web ?? 0;
-        websiteCount = d1Web > 0 ? Math.min(totalPlaces, d1Web) : Math.min(totalPlaces, 2001);
+        websiteCount = Math.min(totalPlaces, d1Web);
         const d1Hours = placesRes.results[0].with_hours ?? 0;
-        hoursCount = d1Hours > 0 ? Math.min(totalPlaces, d1Hours) : Math.min(totalPlaces, 3246);
+        hoursCount = Math.min(totalPlaces, d1Hours);
         const d1Price = placesRes.results[0].with_price ?? 0;
-        priceCount = d1Price > 0 ? Math.min(totalPlaces, d1Price) : Math.min(totalPlaces, 3246);
+        priceCount = Math.min(totalPlaces, d1Price);
         activePublishedPlaces = Math.min(totalPlaces, placesRes.results[0].active_count ?? totalPlaces);
       }
 
-      const photosRes = await db.prepare(
-        `SELECT 
-           count(*) as total_photos, 
-           count(distinct place_id) as place_count 
-         FROM place_photos 
-         WHERE url NOT LIKE '%unsplash.com%' 
-           AND url NOT LIKE '%wikimedia.org%' 
-           AND url NOT LIKE '%wikipedia%'`
-      ).all<{ total_photos: number; place_count: number }>();
-
-      if (photosRes.results?.[0] && typeof photosRes.results[0].place_count === "number" && photosRes.results[0].place_count > 0) {
-        totalPhotos = photosRes.results[0].total_photos ?? 0;
-        photosPlaceCount = Math.min(totalPlaces, photosRes.results[0].place_count ?? 0);
-      } else {
-        totalPhotos = 2945;
-        photosPlaceCount = Math.min(totalPlaces, 1213);
+      const tables = await db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all<{ name: string }>();
+      const names = new Set((tables.results ?? []).map((r) => r.name));
+      const photoQueries: string[] = [];
+      if (names.has("place_photos")) photoQueries.push("SELECT place_id FROM place_photos WHERE url IS NOT NULL AND url != '' AND url NOT LIKE '%unsplash.com%' AND url NOT LIKE '%wikimedia.org%' AND url NOT LIKE '%wikipedia%'");
+      else errors.push("Scraped photo storage is not provisioned.");
+      if (names.has("place_photo_uploads")) photoQueries.push("SELECT place_id FROM place_photo_uploads");
+      else errors.push("Public photo upload storage is not provisioned.");
+      if (photoQueries.length) {
+        const photos = await db.prepare(`SELECT count(*) AS total_photos, count(distinct place_id) AS place_count FROM (${photoQueries.join(" UNION ALL ")}) media JOIN establishments e ON e.id = media.place_id`).all<{total_photos: number; place_count: number}>();
+        totalPhotos = photos.results?.[0]?.total_photos ?? 0;
+        photosPlaceCount = photos.results?.[0]?.place_count ?? 0;
       }
+      if (!hasHours) errors.push("Opening-hours column is not provisioned.");
+      if (!hasPriceSek && !hasPriceLevel) errors.push("Price columns are not provisioned.");
     } catch {
-      // Use baseline fallback values
+      errors.push("D1 coverage query failed; incomplete measurements are unavailable.");
     }
   }
 
@@ -188,6 +188,8 @@ export async function computeCoverageReport(db?: D1Database): Promise<CoverageRe
 
   return {
     generatedAt: new Date().toISOString(),
+    source: available ? "d1" : "unavailable",
+    errors,
     totalPlaces,
     catalogPlaces,
     activePublishedPlaces,
@@ -222,17 +224,17 @@ export async function computeCoverageReport(db?: D1Database): Promise<CoverageRe
       percentage: websitePct,
     },
     coordinates: {
-      count: totalPlaces,
-      percentage: 100.0,
-      status: "PASS",
+      count: coordinateCount,
+      percentage: totalPlaces ? Number((100 * coordinateCount / totalPlaces).toFixed(1)) : 0,
+      status: totalPlaces && coordinateCount === totalPlaces ? "PASS" : "PROGRESSING",
     },
     curatedSources: {
-      totalSources: 7,
-      passingSources: 7,
-      percentage: 100.0,
-      status: "PASS",
+      totalSources: 0,
+      passingSources: 0,
+      percentage: 0,
+      status: "UNKNOWN",
     },
-    lastEnrichedAt: new Date().toISOString(),
+    lastEnrichedAt: null,
   };
 }
 
@@ -258,27 +260,14 @@ export async function onRequestPost(context: EventContext<Env>) {
     );
   }
 
-  let action = "full_sync";
-  try {
-    const body = (await context.request.json()) as { action?: string };
-    if (body?.action) action = body.action;
-  } catch {}
-
   const report = await computeCoverageReport(context.env.DB);
 
-  const actionMessages: Record<string, string> = {
-    enrich_addresses: `Synkning av gatuadresser genomförd (${report.address.count} / ${report.totalPlaces} adresser verifierade).`,
-    enrich_photos: `Fotogallerier synkade med verifierad webbmedia (${report.photos.count} ställen med foto, ${report.photos.placeholderCount} ställen visar Motkarta-badge).`,
-    enrich_hours_prices: `Öppettider (${report.openingHours.count}) och prisdata (${report.priceInfo.count}) auditerade.`,
-    check_existence: `Månadsvis existenskontroll genomförd: ${report.activePublishedPlaces} aktiva oberoende ställen bekräftade.`,
-    full_sync: `Fullständig täckningsaudit slutförd för ${report.catalogPlaces} ställen i katalogen.`,
-  };
-
-  const message = actionMessages[action] ?? `Enrichment pipeline '${action}' completed successfully.`;
+  const message = "Coverage measured from D1. This action does not run enrichment or synchronize data.";
 
   return Response.json(
     {
-      success: true,
+      success: report.source === "d1",
+      action: "audit",
       message,
       report,
     },

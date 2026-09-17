@@ -21,18 +21,8 @@ const lines = [
 ];
 
 function derivePriceLevel(place) {
-  if (place.priceLevel && place.priceLevel > 0) return place.priceLevel;
-  if (place.priceSEK) {
-    const match = place.priceSEK.match(/\d+/);
-    if (match) {
-      const num = parseInt(match[0], 10);
-      if (num < 150) return 1;
-      if (num <= 350) return 2;
-      if (num <= 750) return 3;
-      return 4;
-    }
-  }
-  return 2;
+  // Display prices are sourced separately; do not populate commercial/scoring tiers.
+  return "NULL";
 }
 
 for (const place of places) {
