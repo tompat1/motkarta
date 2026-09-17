@@ -38,6 +38,22 @@ Date-limited exceptional hours are excluded from regular weekly schedules.
 its output. The overlay refreshes existing fact IDs rather than ignoring them.
 Address enrichment no longer fabricates a street address from a district name.
 
+JSON-LD structured data is now extracted *before* BeautifulSoup strips `<script>`
+tags, so `openingHoursSpecification`, `priceRange` and `PostalAddress` blocks on
+structured restaurant pages are captured even when they are the only source of
+that data. The regex text fallback fires only if JSON-LD did not provide the
+field, preventing duplicate facts with the same ID.
+
+The website HTML cache honours a `max_age_days` limit (default 30 days). Files
+older than the limit are treated as cache misses and re-fetched, so stale HTML
+can no longer prevent updated hours and prices from being scraped. Pass
+`max_age_days=0` to the `WebsiteScraper` constructor to force fresh fetches.
+
+Venue enrichment priority is now a clean three-level scale: 0 = missing both
+hours and price, 1 = missing hours, 2 = missing price, 3 = both present. The
+previous tier 3 ("generic fallback hours/prices") is removed because those legacy
+default strings no longer exist in the catalog.
+
 Admin measures D1 counts, including both scraped and uploaded photos. Missing
 storage and query errors are reported. Neither the server nor browser substitutes
 historical success counts. Curated-source verification and last enrichment time

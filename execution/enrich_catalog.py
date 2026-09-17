@@ -648,10 +648,12 @@ USER_AGENT = "MotkartaBot/1.0 (+https://motkarta.se/bot; open catalog project)"
 class WebsiteScraper:
     """Website scraper respecting robots.txt, rate limits, and local HTML caching."""
 
-    def __init__(self, cache_dir: Path | None = None, delay_seconds: float = 0.5):
+    def __init__(self, cache_dir: Path | None = None, delay_seconds: float = 0.5,
+                 max_age_days: int = 30):
         self.cache_dir = cache_dir or (ROOT / ".tmp" / "scraped_html_cache")
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.delay_seconds = delay_seconds
+        self.max_age_seconds = max_age_days * 86400
         self.robot_parsers: dict[str, urllib.robotparser.RobotFileParser] = {}
         self.last_request_time: float = 0.0
 
@@ -674,11 +676,14 @@ class WebsiteScraper:
         return self.robot_parsers[domain].can_fetch(USER_AGENT, url)
 
     def fetch_url(self, url: str) -> str | None:
-        """Fetch URL content with local file caching and rate limiting."""
+        """Fetch URL content with local file caching, freshness limit, and rate limiting."""
         url_hash = hashlib.sha256(url.encode("utf-8")).hexdigest()[:16]
         cache_file = self.cache_dir / f"{url_hash}.html"
         if cache_file.exists():
-            return cache_file.read_text(encoding="utf-8", errors="ignore")
+            age = time.time() - cache_file.stat().st_mtime
+            if age < self.max_age_seconds:
+                return cache_file.read_text(encoding="utf-8", errors="ignore")
+            print(f"  [Scraper] Cache stale ({int(age / 86400)}d > {int(self.max_age_seconds / 86400)}d): {url}")
 
         if not self.can_fetch(url):
             print(f"  [Scraper] Disallowed by robots.txt: {url}")
@@ -708,11 +713,62 @@ def extract_facts_from_html(
     place_id: int,
     timestamp: str,
 ) -> list[dict[str, Any]]:
-    """Extract opening hours, dish, atmosphere, and price facts from raw HTML text."""
+    """Extract opening hours, dish, atmosphere, and price facts from raw HTML.
+
+    JSON-LD structured data is parsed before BeautifulSoup strips script tags,
+    so structured hours, price and address are not lost to the text preprocessor.
+    """
     facts: list[dict[str, Any]] = []
     if not html_text:
         return facts
 
+    from scripts.fetch_place_hours_and_prices import parse_schema_json_ld, determine_venue_price
+
+    parsed_url = urllib.parse.urlparse(url)
+    domain = parsed_url.netloc or "venue-website"
+
+    fact_base: dict[str, Any] = {
+        "placeId": place_id,
+        "source": f"Venue Website ({domain})",
+        "url": url,
+        "verification": "listed",
+        "capturedAt": timestamp,
+    }
+
+    # --- Structured JSON-LD extraction (before script tags are stripped) ---
+    schema = parse_schema_json_ld(html_text)
+    jsonld_has_hours = False
+    jsonld_has_price = False
+
+    if schema.get("opening_hours"):
+        facts.append({
+            **fact_base,
+            "id": f"{place_id}:website:openingHours",
+            "field": "openingHours",
+            "value": schema["opening_hours"],
+        })
+        jsonld_has_hours = True
+
+    if schema.get("price_range"):
+        _, price_sek = determine_venue_price({}, schema["price_range"], (None, None))
+        if price_sek:
+            facts.append({
+                **fact_base,
+                "id": f"{place_id}:website:price",
+                "field": "priceSEK",
+                "value": price_sek,
+            })
+            jsonld_has_price = True
+
+    if schema.get("street_address"):
+        facts.append({
+            **fact_base,
+            "id": f"{place_id}:website:address",
+            "field": "address",
+            "value": schema["street_address"],
+        })
+
+    # --- Plain-text extraction (regex fallback for non-structured pages) ---
     if BeautifulSoup:
         soup = BeautifulSoup(html_text, "html.parser")
         for tag in soup(["script", "style", "nav", "footer"]):
@@ -723,36 +779,27 @@ def extract_facts_from_html(
         text = html.unescape(text)
 
     text_lower = text.lower()
-    parsed_url = urllib.parse.urlparse(url)
-    domain = parsed_url.netloc or "venue-website"
 
-    fact_base = {
-        "placeId": place_id,
-        "source": f"Venue Website ({domain})",
-        "url": url,
-        "verification": "listed",
-        "capturedAt": timestamp,
-    }
-
-    # 1. Opening Hours
+    # 1. Opening Hours (regex fallback — only if JSON-LD did not provide hours)
     hours_patterns = [
         r"(?:öppettider|opening hours)[:\s]*([a-zåäö0-9\s:,\.-–]{5,80})",
         r"\b(?:mån(?:dag)?|tis(?:dag)?|ons(?:dag)?|tors(?:dag)?|fre(?:dag)?|lör(?:dag)?|sön(?:dag)?|mo|tu|we|th|fr|sa|su)[-–a-z\s]*\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}\b",
         r"\b(?:vardagar|helger|alla dagar)[:\s]*\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}\b",
         r"\b(?:mån|tis|ons|tors|fre|lör|sön)[-–a-z\s]*\d{1,2}\s*[-–]\s*\d{1,2}\b",
     ]
-    for pattern in hours_patterns:
-        match = re.search(pattern, text_lower)
-        if match:
-            raw_hours = match.group(0).strip()
-            if 5 <= len(raw_hours) <= 80:
-                facts.append({
-                    **fact_base,
-                    "id": f"{place_id}:website:openingHours",
-                    "field": "openingHours",
-                    "value": raw_hours,
-                })
-                break
+    if not jsonld_has_hours:
+        for pattern in hours_patterns:
+            match = re.search(pattern, text_lower)
+            if match:
+                raw_hours = match.group(0).strip()
+                if 5 <= len(raw_hours) <= 80:
+                    facts.append({
+                        **fact_base,
+                        "id": f"{place_id}:website:openingHours",
+                        "field": "openingHours",
+                        "value": raw_hours,
+                    })
+                    break
 
     # 2. Dishes
     DISH_KEYWORDS = {
@@ -811,21 +858,22 @@ def extract_facts_from_html(
                 "value": atmo_val,
             })
 
-    # 4. Price pattern
-    price_matches = re.findall(r"\b(\d{2,4})\s*(?:kr|sek|:-)", text_lower)
-    if not price_matches:
-        price_matches = re.findall(r"(?:lunch|dagens|meny|pris|från)[:\s]*(\d{2,4})\s*(?:kr|sek|:-)?", text_lower)
-    if price_matches:
-        prices = [int(p) for p in price_matches if 40 <= int(p) <= 1200]
-        if prices:
-            min_p, max_p = min(prices), max(prices)
-            price_val = f"{min_p} SEK" if min_p == max_p else f"{min_p} - {max_p} SEK"
-            facts.append({
-                **fact_base,
-                "id": f"{place_id}:website:price",
-                "field": "priceSEK",
-                "value": price_val,
-            })
+    # 4. Price pattern (regex fallback — only if JSON-LD did not provide price)
+    if not jsonld_has_price:
+        price_matches = re.findall(r"\b(\d{2,4})\s*(?:kr|sek|:-)", text_lower)
+        if not price_matches:
+            price_matches = re.findall(r"(?:lunch|dagens|meny|pris|från)[:\s]*(\d{2,4})\s*(?:kr|sek|:-)?", text_lower)
+        if price_matches:
+            prices = [int(p) for p in price_matches if 40 <= int(p) <= 1200]
+            if prices:
+                min_p, max_p = min(prices), max(prices)
+                price_val = f"{min_p} SEK" if min_p == max_p else f"{min_p} - {max_p} SEK"
+                facts.append({
+                    **fact_base,
+                    "id": f"{place_id}:website:price",
+                    "field": "priceSEK",
+                    "value": price_val,
+                })
 
     return facts
 
@@ -835,21 +883,17 @@ def venue_enrichment_priority(place: dict[str, Any]) -> int:
     0: Missing both openingHours and priceSEK (must-have priority)
     1: Missing openingHours
     2: Missing priceSEK
-    3: Generic fallback hours/prices
-    4: Already enriched
+    3: Already has both sourced fields
     """
-    has_custom_hours = bool(place.get("openingHours") and not place.get("openingHours", "").startswith("Mo-Sa 17:00-23:00") and not place.get("openingHours", "").startswith("Mo-Fr 07:30-18:00"))
-    has_custom_price = bool(place.get("priceSEK") and place.get("priceSEK") not in ["45–145", "160–350"])
-
-    if not place.get("openingHours") and not place.get("priceSEK"):
+    has_hours = bool(place.get("openingHours"))
+    has_price = bool(place.get("priceSEK"))
+    if not has_hours and not has_price:
         return 0
-    if not place.get("openingHours"):
+    if not has_hours:
         return 1
-    if not place.get("priceSEK"):
+    if not has_price:
         return 2
-    if not has_custom_hours or not has_custom_price:
-        return 3
-    return 4
+    return 3
 
 
 def scrape_venue_websites(
