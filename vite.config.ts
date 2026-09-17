@@ -138,7 +138,7 @@ function viteAdminDevPlugin(): Plugin {
           res.setHeader("Cache-Control", "no-store");
           return res.end(JSON.stringify({ blocked: [] }));
         }
-        if (!req.url?.startsWith("/api/admin")) {
+        if (!req.url?.startsWith("/api/admin") && !req.url?.startsWith("/api/cms-session")) {
           return next();
         }
 
@@ -146,7 +146,7 @@ function viteAdminDevPlugin(): Plugin {
         const pathname = url.pathname;
         res.setHeader("Content-Type", "application/json");
 
-        if (pathname === "/api/admin/session") {
+        if (pathname === "/api/admin/session" || pathname === "/api/cms-session") {
           res.statusCode = 200;
           return res.end(
             JSON.stringify({

@@ -61,3 +61,23 @@ test('CMS client rejects unauthorized, malformed and redirected responses', asyn
     await assert.rejects(fetchAdminSession('motkarta'));
   }
 });
+
+test('CMS client falls back to /api/cms-session when /api/admin/session is intercepted by Cloudflare Access', async t => {
+  let calledCmsSession = false;
+  t.mock.method(globalThis, 'fetch', async (url, init) => {
+    if (url === '/api/admin/session') {
+      return new Response(null, { status: 302, headers: { location: 'https://access.cloudflare.com' } });
+    }
+    if (url === '/api/cms-session') {
+      calledCmsSession = true;
+      assert.equal(init.headers['x-motkarta-admin-token'], 'ValidEdgeToken');
+      return Response.json({ admin: true, authMode: 'token' });
+    }
+    throw new Error(`Unexpected url: ${url}`);
+  });
+
+  const session = await fetchAdminSession('ValidEdgeToken');
+  assert.equal(session.admin, true);
+  assert.equal(calledCmsSession, true);
+});
+
