@@ -43,8 +43,8 @@ a verified server session and does not trust browser-stored flags.
 For environments that intentionally use token authentication, set the secret
 `MOTKARTA_ADMIN_TOKEN`. The dialog's alternative token form sends the token to
 `/api/admin/session` for verification and only retains it in sessionStorage
-after success. It is case-sensitive. Production currently has no token fallback
-configured. There is no default password and no public account-registration flow.
+after success. It is case-sensitive. Production has `MOTKARTA_ADMIN_TOKEN`
+configured in Cloudflare Pages encrypted secrets. There is no default password and no public account-registration flow.
 
 ## Session and editor behavior
 
