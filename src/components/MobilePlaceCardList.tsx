@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { LIST_SCROLL_BATCH_SIZE } from "../app/map-bounds";
 import {
   MapPin,
   Star,
@@ -42,12 +43,45 @@ export function MobilePlaceCardList({
 }: MobilePlaceCardListProps) {
   const [photoMap, setPhotoMap] = useState<Record<number, string | null>>({});
   const listRef = useRef<HTMLDivElement>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
   const loadedPhotos = useRef(new Map<number, string | null>());
   const [feedbackTarget, setFeedbackTarget] = useState<{ id: number; name: string; type: "up" | "down" } | null>(null);
+  const [visibleCount, setVisibleCount] = useState(LIST_SCROLL_BATCH_SIZE);
+
+  useEffect(() => {
+    setVisibleCount(LIST_SCROLL_BATCH_SIZE);
+  }, [places]);
+
+  const visiblePlaces = places.slice(0, visibleCount);
+  const hasMorePlaces = visibleCount < places.length;
+
+  useEffect(() => {
+    if (!hasMorePlaces) {
+      return;
+    }
+
+    const sentinel = loadMoreRef.current;
+    if (!sentinel || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) {
+          return;
+        }
+        setVisibleCount((current) => Math.min(current + LIST_SCROLL_BATCH_SIZE, places.length));
+      },
+      { rootMargin: "500px" },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMorePlaces, places.length, visibleCount]);
 
   useEffect(() => {
     const controller = new AbortController();
-    const byId = new Map(places.map((place) => [String(place.id), place]));
+    const byId = new Map(visiblePlaces.map((place) => [String(place.id), place]));
     const load = async (element: Element) => {
       const place = byId.get(element.getAttribute("data-place-id") ?? "");
       if (!place || loadedPhotos.current.has(place.id)) return;
@@ -75,7 +109,7 @@ export function MobilePlaceCardList({
       observer.disconnect();
       controller.abort();
     };
-  }, [places]);
+  }, [visiblePlaces]);
 
   if (places.length === 0) {
     return (
@@ -89,7 +123,7 @@ export function MobilePlaceCardList({
 
   return (
     <div className="mobile-place-card-list" ref={listRef}>
-      {places.map((place) => {
+      {visiblePlaces.map((place) => {
         const isSaved = savedPlaceIds.includes(place.id);
         const isActive = activePlace?.id === place.id;
         const photoUrl = photoMap[place.id] || null;
@@ -229,6 +263,14 @@ export function MobilePlaceCardList({
           </article>
         );
       })}
+
+      {hasMorePlaces ? (
+        <div
+          ref={loadMoreRef}
+          className="mobile-list-load-sentinel"
+          aria-hidden="true"
+        />
+      ) : null}
 
       <PlaceFeedbackModal
         isOpen={Boolean(feedbackTarget)}

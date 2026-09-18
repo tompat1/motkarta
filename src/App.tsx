@@ -10,6 +10,8 @@ import { ConciergeSuperpowerModal } from "./components/ConciergeSuperpowerModal"
 import { CuratedSourcesPanel } from "./components/CuratedSourcesPanel";
 import { ExternalMapLinks } from "./components/ExternalMapLinks";
 import { FoodMap } from "./components/FoodMap";
+import { PlaceResultList } from "./components/PlaceResultList";
+import { filterRankedPlacesByBounds, type MapBounds } from "./app/map-bounds";
 import { SyncDevicesModal } from "./components/SyncDevicesModal";
 import { parseSyncDirectPlaces } from "./app/sync-utils";
 import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
@@ -40,7 +42,6 @@ import {
   modeScore,
   preferencesFromQuery,
   recommendationImpressionLimit,
-  renderLimit,
   rounded,
   sortModeLabel,
   sortModes,
@@ -196,6 +197,7 @@ function AppContent({
   const [isUserPhotoUploadOpen, setIsUserPhotoUploadOpen] = useState(false);
   const [mapFocusRequest, setMapFocusRequest] = useState<{ id: number; timestamp: number } | null>(null);
   const [mapViewportCount, setMapViewportCount] = useState<number | null>(null);
+  const [mapViewportBounds, setMapViewportBounds] = useState<MapBounds | null>(null);
   const [placeAddedToast, setPlaceAddedToast] = useState<{
     placeName: string;
     area: string;
@@ -960,21 +962,30 @@ function AppContent({
     ],
   );
 
-  const visibleRanked = useMemo(() => {
+  const listPlaces = useMemo(() => {
     if (conciergePlaces.length > 0) {
+      return conciergePlaces;
+    }
+
+    if (mobileViewMode === "list") {
       return ranked;
     }
-    return ranked.slice(0, renderLimit);
-  }, [conciergePlaces.length, ranked, renderLimit]);
-  const handleMapViewportCountChange = useCallback((count: number) => {
-    setMapViewportCount(count);
+
+    return filterRankedPlacesByBounds(ranked, mapViewportBounds, selected);
+  }, [conciergePlaces, mapViewportBounds, mobileViewMode, ranked, selected]);
+
+  const handleMapViewportChange = useCallback((payload: { count: number; bounds: MapBounds }) => {
+    setMapViewportCount(payload.count);
+    setMapViewportBounds(payload.bounds);
   }, []);
+
   const countLocale = lang === "sv" ? "sv-SE" : "en-US";
   const formatPlaceCount = useCallback(
     (count: number) => count.toLocaleString(countLocale),
     [countLocale],
   );
   const mapDisplayCount = mapViewportCount ?? ranked.length;
+  const listDisplayCount = listPlaces.length;
   const matchingCount = ranked.length;
   const hasSearchQuery = Boolean(query.trim());
   const activeHeroStoryId =
@@ -994,14 +1005,14 @@ function AppContent({
       cuisine: recommendationCuisineContext(cuisine),
       mode: recommendationRankingModeContext(mode),
       sortMode: recommendationSortModeContext(sortMode),
-      resultCount: visibleRanked.length,
+      resultCount: listPlaces.length,
       surface: "results",
     }),
-    [cuisine, kind, mode, query, sortMode, visibleRanked.length],
+    [cuisine, kind, mode, query, sortMode, listPlaces.length],
   );
   const resultSetSignature = useMemo(
-    () => recommendationResultSetSignature(recommendationQueryContext, visibleRanked.map((place) => place.id)),
-    [recommendationQueryContext, visibleRanked],
+    () => recommendationResultSetSignature(recommendationQueryContext, listPlaces.map((place) => place.id)),
+    [recommendationQueryContext, listPlaces],
   );
   const resultSetStateRef = useRef({ signature: "", sequence: 0, id: "" });
   if (resultSetStateRef.current.signature !== resultSetSignature) {
@@ -1084,9 +1095,9 @@ function AppContent({
   );
 
   useEffect(() => {
-    if (!visibleRanked.length) return;
+    if (!listPlaces.length) return;
     recordRecommendationEvents(
-      visibleRanked
+      listPlaces
         .slice(0, recommendationImpressionLimit)
         .map((place, index) => ({
           establishmentId: place.id,
@@ -1095,7 +1106,7 @@ function AppContent({
           resultSetId: recommendationResultSetId,
         })),
     );
-  }, [recordRecommendationEvents, recommendationResultSetId, visibleRanked]);
+  }, [recordRecommendationEvents, recommendationResultSetId, listPlaces]);
 
   const active = selected !== null ? (ranked.find((place) => place.id === selected) ?? scoredPlaces.find((place) => place.id === selected) ?? null) : null;
   const [activeCardPhoto, setActiveCardPhoto] = useState<PlacePhoto | null>(null);
@@ -1147,7 +1158,7 @@ function AppContent({
     if (rankingControlsChanged) {
       setSelected(null);
     }
-  }, [mode, randomSeed, sortMode, visibleRanked]);
+  }, [mode, randomSeed, sortMode, listPlaces]);
 
   const handleSelectPlace = useCallback(
     (id: number) => {
@@ -2616,16 +2627,12 @@ function AppContent({
             <div className="mobile-results-title-group">
               <span className="mobile-results-eyebrow">{t.eyebrow}</span>
               <h2 className="mobile-results-count">
-                <span>{formatPlaceCount(mapDisplayCount)}</span> <span>{t.placesOnMap}</span>
+                <span>{formatPlaceCount(mobileViewMode === "list" ? listDisplayCount : mapDisplayCount)}</span>{" "}
+                <span>{mobileViewMode === "list" ? t.placesInList : t.placesOnMap}</span>
               </h2>
-              {matchingCount !== mapDisplayCount || (mobileViewMode === "list" && matchingCount > renderLimit) ? (
+              {matchingCount !== (mobileViewMode === "list" ? listDisplayCount : mapDisplayCount) ? (
                 <p className="mobile-results-count-meta">
-                  {matchingCount !== mapDisplayCount ? (
-                    <span>{formatPlaceCount(matchingCount)} {t.placesMatching}</span>
-                  ) : null}
-                  {mobileViewMode === "list" && matchingCount > renderLimit ? (
-                    <span>{t.showingTopList} {renderLimit} {t.listOnlyHint}</span>
-                  ) : null}
+                  <span>{formatPlaceCount(matchingCount)} {t.placesMatching}</span>
                 </p>
               ) : null}
             </div>
@@ -2680,7 +2687,7 @@ function AppContent({
 
         {mobileViewMode === "list" ? (
           <MobilePlaceCardList
-            places={visibleRanked}
+            places={listPlaces}
             activePlace={active}
             savedPlaceIds={savedPlaceIds}
             userLocation={userLocation}
@@ -2701,7 +2708,7 @@ function AppContent({
               userLocation={userLocation}
               onSelect={handleSelectPlace}
               onOpenPlaceDetails={handleOpenPlaceDetails}
-              onViewportCountChange={handleMapViewportCountChange}
+              onViewportChange={handleMapViewportChange}
               onUserLocated={(loc) => {
                 setUserLocation(loc);
                 setSortMode("Distance");
@@ -3022,8 +3029,8 @@ function AppContent({
                 {matchingCount !== mapDisplayCount ? (
                   <small>{formatPlaceCount(matchingCount)} {t.placesMatching}</small>
                 ) : null}
-                {matchingCount > renderLimit ? (
-                  <small>{t.showingTopList} {renderLimit} {t.listOnlyHint}</small>
+                {listDisplayCount !== mapDisplayCount ? (
+                  <small>{formatPlaceCount(listDisplayCount)} {t.placesInList}</small>
                 ) : null}
               </div>
             </div>
@@ -3084,80 +3091,31 @@ function AppContent({
               <CmsEditFlag cmsKey="principle3" label="Princip 3: Klickpopularitet" />
             </span>
           </div>
-          <div className="list">
-            {hasSearchQuery && visibleRanked.length === 0 ? (
-              <div className="search-empty-state" aria-live="polite">
-                <strong>{t.noSearchResultsTitle}</strong>
-                <span>
-                  {t.noSearchResultsText} "{query.trim()}".
-                </span>
-              </div>
-            ) : null}
-            {visibleRanked.map((place, index) => (
-              <div
-                key={place.id}
-                className={active && place.id === active.id ? "place active-place" : "place"}
-                onClick={() => {
-                  setSelected(place.id);
-                  recordRecommendationEvents([
-                    {
-                      establishmentId: place.id,
-                      eventType: "profile_view",
-                      resultPosition: index,
-                      queryContext: { surface: "results" },
-                    },
-                  ]);
-                }}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setSelected(place.id);
-                    recordRecommendationEvents([
-                      {
-                        establishmentId: place.id,
-                        eventType: "profile_view",
-                        resultPosition: index,
-                        queryContext: { surface: "results" },
-                      },
-                    ]);
-                  }
-                }}
-              >
-                <span className="rank">{String(index + 1).padStart(2, "0")}</span>
-                <span className="place-main">
-                  <small>
-                    {kindFilterLabel(place.kind, lang)} · {place.area}
-                    {userLocation && hasCoordinates(place) ? ` · 📍 ${formatDistance(distanceFromPoint(place, userLocation), lang)}` : ""}
-                  </small>
-                  <strong>{place.name}</strong>
-                  <span>{place.tags.slice(0, 2).join(" · ")}</span>
-                </span>
-                <span className="total">
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleSavePlace(place.id);
-                      }}
-                      style={{ background: "none", border: "none", cursor: "pointer", padding: "2px", display: "inline-flex" }}
-                      title={savedPlaceIds.includes(place.id) ? (lang === "sv" ? "Ta bort från sparade" : "Remove from saved") : (lang === "sv" ? "Spara ställe" : "Save place")}
-                    >
-                      <Star
-                        size={15}
-                        weight={savedPlaceIds.includes(place.id) ? "fill" : "regular"}
-                        style={{ color: savedPlaceIds.includes(place.id) ? "#F59E0B" : "var(--color-mist)" }}
-                      />
-                    </button>
-                    <b>{rounded(modeScore(place, mode))}</b>
-                  </div>
-                  <small>{t.totalScoreLabel}</small>
-                </span>
-              </div>
-            ))}
-          </div>
+          <PlaceResultList
+            places={listPlaces}
+            activePlace={active}
+            savedPlaceIds={savedPlaceIds}
+            userLocation={userLocation}
+            mode={mode}
+            lang={lang}
+            hasSearchQuery={hasSearchQuery}
+            searchQuery={query}
+            noResultsTitle={t.noSearchResultsTitle}
+            noResultsText={t.noSearchResultsText}
+            totalScoreLabel={t.totalScoreLabel}
+            onSelectPlace={(place, index) => {
+              setSelected(place.id);
+              recordRecommendationEvents([
+                {
+                  establishmentId: place.id,
+                  eventType: "profile_view",
+                  resultPosition: index,
+                  queryContext: { surface: "results" },
+                },
+              ]);
+            }}
+            onToggleSave={handleToggleSavePlace}
+          />
         </aside>
       </section>
 

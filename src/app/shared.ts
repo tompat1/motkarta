@@ -34,7 +34,6 @@ export const establishmentTypes = [
 export const visibleEstablishmentTypes = establishmentTypes.filter((item) => item !== "Curated");
 
 export const allCuisines = "All cuisines";
-export const renderLimit = 350;
 export const recommendationImpressionLimit = 50;
 
 export type EstablishmentFilter = (typeof establishmentTypes)[number];
@@ -216,6 +215,7 @@ export const translations = {
     placesInView: "ställen i vyn",
     placesOnMap: "på kartan",
     placesMatching: "matchar filter",
+    placesInList: "i listan",
     showingTopList: "Visar topp",
     listOnlyHint: "i listan",
     showingTop: "Visar topp",
@@ -412,6 +412,7 @@ export const translations = {
     placesInView: "places in view",
     placesOnMap: "on map",
     placesMatching: "matching filters",
+    placesInList: "in list",
     showingTopList: "Showing top",
     listOnlyHint: "in list",
     showingTop: "Showing top",

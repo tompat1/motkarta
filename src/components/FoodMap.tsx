@@ -9,6 +9,7 @@ import {
   MAP_AUTO_FIT_MAX_PLACES,
   boundsFromLeaflet,
   filterPlacesByBounds,
+  type MapBounds,
 } from "../app/map-bounds";
 import { requestPosition, locationFailureMessage, type LocationResult } from '../app/geolocation';
 import { ArrowsIn, ArrowsOut, Crosshair, MapTrifold, Minus, Plus } from "@phosphor-icons/react";
@@ -22,7 +23,7 @@ export function FoodMap({
   onSelect,
   onOpenPlaceDetails,
   onUserLocated,
-  onViewportCountChange,
+  onViewportChange,
   lang,
 }: {
   places: ScoredPlace[];
@@ -32,7 +33,7 @@ export function FoodMap({
   onSelect: (id: number) => void;
   onOpenPlaceDetails?: (id: number) => void;
   onUserLocated?: (loc: { latitude: number; longitude: number }) => void;
-  onViewportCountChange?: (count: number) => void;
+  onViewportChange?: (payload: { count: number; bounds: MapBounds }) => void;
   lang: Language;
 }) {
   const t = translations[lang];
@@ -51,12 +52,12 @@ export function FoodMap({
   const activePlaceIdRef = useRef<number | null>(activePlace?.id ?? null);
   const placesRef = useRef(places);
   const onSelectRef = useRef(onSelect);
-  const onViewportCountChangeRef = useRef(onViewportCountChange);
+  const onViewportChangeRef = useRef(onViewportChange);
   const [mapReady, setMapReady] = useState(false);
 
   placesRef.current = places;
   onSelectRef.current = onSelect;
-  onViewportCountChangeRef.current = onViewportCountChange;
+  onViewportChangeRef.current = onViewportChange;
 
   const syncViewportMarkers = useCallback(() => {
     const map = mapRef.current;
@@ -120,7 +121,10 @@ export function FoodMap({
       markersRef.current.set(place.id, marker);
     }
 
-    onViewportCountChangeRef.current?.(inBounds.length);
+    onViewportChangeRef.current?.({
+      count: inBounds.length,
+      bounds: boundsFromLeaflet(map.getBounds()),
+    });
   }, []);
 
   const handleLocateUser = async () => {

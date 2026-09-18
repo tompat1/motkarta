@@ -2844,9 +2844,31 @@ button.search-clear-btn:hover {
 /* -------------------------------------------------------------------------- */
 
 .results {
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
   padding: 0 28px 24px;
   background: var(--color-paper);
+}
+
+.results-list-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.list-virtual {
+  position: relative;
+}
+
+.list-virtual-window {
+  width: 100%;
+}
+
+.mobile-list-load-sentinel {
+  height: 1px;
+  width: 100%;
 }
 
 .results-head {
@@ -16278,7 +16300,7 @@ footer {
   .mobile-place-card-list { display: none !important; }
   .workspace { border: 0; display: grid; grid-template-columns: minmax(410px,36%) minmax(0,64%); height: calc(100vh - 166px); min-height: 650px; }
   .workspace .map-panel { border: 0; grid-column: 2; grid-row: 1; height: 100%; min-height: 0; }
-  .workspace .results { background: var(--editorial-paper); border-right: 1px solid #ddd; grid-column: 1; grid-row: 1; padding: 0 20px 30px; scroll-margin-top: 150px; }
+  .workspace .results { background: var(--editorial-paper); border-right: 1px solid #ddd; grid-column: 1; grid-row: 1; min-height: 0; padding: 0 20px 0; scroll-margin-top: 150px; }
   .results-head {
     align-items: end;
     background: rgba(250, 249, 245, 0.98);

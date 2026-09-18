@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   expandBounds,
   filterPlacesByBounds,
+  filterRankedPlacesByBounds,
   placeInBounds,
 } from "../src/app/map-bounds.ts";
 
@@ -34,4 +35,15 @@ test("expandBounds adds padding around the viewport", () => {
   assert.ok(expanded.north > stockholmBounds.north);
   assert.ok(expanded.west < stockholmBounds.west);
   assert.ok(expanded.east > stockholmBounds.east);
+});
+
+test("filterRankedPlacesByBounds preserves ranked order and keeps active place visible", () => {
+  const ranked = [
+    { id: 1, latitude: 59.33, longitude: 18.07 },
+    { id: 2, latitude: 59.5, longitude: 18.07 },
+    { id: 3, latitude: 59.34, longitude: 18.08 },
+  ];
+
+  const filtered = filterRankedPlacesByBounds(ranked, stockholmBounds, 2);
+  assert.deepEqual(filtered.map((place) => place.id), [2, 1, 3]);
 });

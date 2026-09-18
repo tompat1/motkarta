@@ -57,3 +57,44 @@ export function boundsFromLeaflet(latLngBounds: {
 
 /** Only auto-fit the map when the filtered result set is small enough to be useful. */
 export const MAP_AUTO_FIT_MAX_PLACES = 80;
+
+export const DESKTOP_LIST_ROW_HEIGHT = 118;
+export const MOBILE_CARD_ROW_HEIGHT = 236;
+export const LIST_WINDOW_OVERSCAN = 8;
+export const LIST_SCROLL_BATCH_SIZE = 60;
+
+function hasValidCoordinates(place: {
+  latitude?: number;
+  longitude?: number;
+}): place is { latitude: number; longitude: number } {
+  return Number.isFinite(place.latitude) && Number.isFinite(place.longitude);
+}
+
+/** Keep ranked order while limiting to places inside the current map viewport. */
+export function filterRankedPlacesByBounds<T extends { id: number; latitude?: number; longitude?: number }>(
+  ranked: T[],
+  bounds: MapBounds | null,
+  activePlaceId: number | null = null,
+): T[] {
+  if (!bounds) {
+    return ranked;
+  }
+
+  const expanded = expandBounds(bounds);
+  const inBoundsIds = new Set<number>();
+  for (const place of ranked) {
+    if (hasValidCoordinates(place) && placeInBounds(place, expanded)) {
+      inBoundsIds.add(place.id);
+    }
+  }
+  let filtered = ranked.filter((place) => inBoundsIds.has(place.id));
+
+  if (activePlaceId !== null && !inBoundsIds.has(activePlaceId)) {
+    const activePlace = ranked.find((place) => place.id === activePlaceId);
+    if (activePlace) {
+      filtered = [activePlace, ...filtered.filter((place) => place.id !== activePlaceId)];
+    }
+  }
+
+  return filtered;
+}
