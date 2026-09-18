@@ -8490,6 +8490,21 @@ footer {
   padding-bottom: 10px;
 }
 
+.concierge-results-header-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.concierge-results-mode-badge {
+  color: var(--color-stone, #71717A);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .countermap-concierge-panel .concierge-results-title-badge {
   align-items: center;
   color: var(--color-signal);

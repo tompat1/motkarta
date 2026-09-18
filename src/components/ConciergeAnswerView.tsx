@@ -9,6 +9,7 @@ import { ArrowSquareOut, CheckCircle, Globe, MagnifyingGlass, MapPin, MapTrifold
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 
 import { formatChatTimestamp, formatChatTimestampTooltip } from "../../lib/concierge/format";
+import { conciergeModeLabel } from "../app/concierge-client";
 export { formatChatTimestamp, formatChatTimestampTooltip };
 
 export function ConciergeAnswerView({
@@ -82,9 +83,14 @@ export function ConciergeAnswerView({
     <div className="concierge-results">
       {onClose ? (
         <div className="concierge-results-header">
-          <span className="concierge-results-title-badge">
-            <Sparkle size={15} weight="bold" /> {lang === "sv" ? "AI-Concierge Svar" : "AI Concierge Result"}
-          </span>
+          <div className="concierge-results-header-title-group">
+            <span className="concierge-results-title-badge">
+              <Sparkle size={15} weight="bold" /> {lang === "sv" ? "AI-Concierge Svar" : "AI Concierge Result"}
+            </span>
+            {response ? (
+              <span className="concierge-results-mode-badge">{conciergeModeLabel(response, lang)}</span>
+            ) : null}
+          </div>
           <button
             type="button"
             onClick={onClose}

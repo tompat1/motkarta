@@ -91,12 +91,13 @@ test("selecting any filter clears concierge state in App.tsx", async () => {
   assert.equal(appSource.includes("selectCuisineFilter"), true);
 });
 
-test("concierge responses are promoted into the main list instead of a separate result list", async () => {
+test("concierge responses update the main list and structured answer state", async () => {
   const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
   assert.match(appSource, /resolveConciergeMainListIds\(payload\)/);
   assert.match(appSource, /resolveConciergeMainListIds\(result\)/);
   assert.match(appSource, /place\.id === recommended\.id \|\| normalize\(place\.name\) === normalize\(recommended\.name\)/);
   assert.match(appSource, /if \(conciergeMainListIds\.length > 0\)/);
-  assert.match(appSource, /setAnswer\(null\);[\s\S]*setConciergeResponse\(null\);/);
+  assert.match(appSource, /setConciergeResponse\(payload\)/);
+  assert.match(appSource, /setAnswer\(conciergeDisplayAnswer\(payload\)\)/);
 });
 

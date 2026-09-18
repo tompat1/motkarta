@@ -12,6 +12,7 @@ import { ExternalMapLinks } from "./components/ExternalMapLinks";
 import { FoodMap } from "./components/FoodMap";
 import { PlaceResultList } from "./components/PlaceResultList";
 import { filterRankedPlacesByBounds, type MapBounds } from "./app/map-bounds";
+import { appendConciergeTurn, conciergeDisplayAnswer } from "./app/concierge-client";
 import { SyncDevicesModal } from "./components/SyncDevicesModal";
 import { parseSyncDirectPlaces } from "./app/sync-utils";
 import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
@@ -1440,15 +1441,13 @@ function AppContent({
       if (payload.schemaVersion !== 'concierge-response-v1' || typeof payload.answer !== 'string' || !Array.isArray(payload.cards)) throw new Error('invalid_response');
       if (conciergeRequest.current !== controller || controller.signal.aborted) return;
       setConciergeMainListIds(resolveConciergeMainListIds(payload));
-      setAnswer(null);
-      setConciergeResponse(null);
-      setConciergeChatMessages([]);
+      setConciergeResponse(payload);
+      setAnswer(conciergeDisplayAnswer(payload));
+      setConciergeChatMessages((prev) => appendConciergeTurn(prev, queryText, payload, userMessageTimestamp));
       if (payload.action) setSuperpowerMode(payload.action);
-      setConciergeChatMessages((prev) => [
-        ...prev,
-        { role: "user" as const, content: queryText.trim(), timestamp: userMessageTimestamp },
-        { role: "assistant" as const, content: payload.intro || payload.answer, timestamp: Date.now() },
-      ].slice(-10));
+      window.requestAnimationFrame(() => {
+        document.getElementById("concierge-answer")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
     } catch {
       if (conciergeRequest.current !== controller) return;
       if (!controller.signal.aborted) {
@@ -1462,15 +1461,13 @@ function AppContent({
           if (conciergeRequest.current !== controller || controller.signal.aborted) return;
           const result = retrieveAndSynthesize(queryText, catalog, { language: lang, messages: currentMessages, ...(queryLocation ? { location: queryLocation } : {}) });
           setConciergeMainListIds(resolveConciergeMainListIds(result));
-          setAnswer(null);
-          setConciergeResponse(null);
-          setConciergeChatMessages([]);
+          setConciergeResponse(result);
+          setAnswer(conciergeDisplayAnswer(result));
+          setConciergeChatMessages((prev) => appendConciergeTurn(prev, queryText, result, userMessageTimestamp));
           if (result.action) setSuperpowerMode(result.action);
-          setConciergeChatMessages((prev) => [
-            ...prev,
-            { role: "user" as const, content: queryText.trim(), timestamp: userMessageTimestamp },
-            { role: "assistant" as const, content: result.intro || result.answer, timestamp: Date.now() },
-          ].slice(-10));
+          window.requestAnimationFrame(() => {
+            document.getElementById("concierge-answer")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          });
         } catch {
           if (conciergeRequest.current === controller) setAnswer(lang === 'sv' ? 'Katalogen är inte tillgänglig just nu.' : 'The catalog is currently unavailable.');
         }
@@ -1944,7 +1941,7 @@ function AppContent({
         <div className="concierge-panel-chat" id="concierge-answer" aria-label="Concierge answer">
           <ConciergeAnswerView
             answer={answer}
-            response={conciergeResponse?.answer === answer ? conciergeResponse : undefined}
+            response={conciergeResponse ?? undefined}
             places={places}
             onSelectPlace={handleSelectPlace}
             onRefineQuery={handleRefineQuery}
