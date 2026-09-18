@@ -12,7 +12,7 @@ import { ExternalMapLinks } from "./components/ExternalMapLinks";
 import { FoodMap } from "./components/FoodMap";
 import { PlaceResultList } from "./components/PlaceResultList";
 import { filterRankedPlacesByBounds, type MapBounds } from "./app/map-bounds";
-import { appendConciergeTurn, conciergeDisplayAnswer } from "./app/concierge-client";
+import { buildConciergeQuerySuccess } from "./app/concierge-client";
 import { SyncDevicesModal } from "./components/SyncDevicesModal";
 import { parseSyncDirectPlaces } from "./app/sync-utils";
 import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
@@ -848,6 +848,9 @@ function AppContent({
   }, [conciergeCards, conciergeResponse, preferences, scoredPlaces]);
 
   const ranked = useMemo(() => {
+    if (conciergeResponse?.cards.length && conciergePlaces.length > 0) {
+      return conciergePlaces;
+    }
     if (conciergeMainListIds.length > 0) {
       const byId = new Map(scoredPlaces.map((place) => [place.id, place]));
       return conciergeMainListIds.flatMap((id) => {
@@ -950,6 +953,7 @@ function AppContent({
       allCuisines,
       conciergePlaces,
       conciergeMainListIds,
+      conciergeResponse,
       cuisine,
       kind,
       selectedTags,
@@ -1440,10 +1444,11 @@ function AppContent({
       if (payload.status === 'unavailable') throw new Error('catalog_unavailable');
       if (payload.schemaVersion !== 'concierge-response-v1' || typeof payload.answer !== 'string' || !Array.isArray(payload.cards)) throw new Error('invalid_response');
       if (conciergeRequest.current !== controller || controller.signal.aborted) return;
+      const applied = buildConciergeQuerySuccess(currentMessages, queryText, payload, userMessageTimestamp);
       setConciergeMainListIds(resolveConciergeMainListIds(payload));
-      setConciergeResponse(payload);
-      setAnswer(conciergeDisplayAnswer(payload));
-      setConciergeChatMessages((prev) => appendConciergeTurn(prev, queryText, payload, userMessageTimestamp));
+      setConciergeResponse(applied.response);
+      setAnswer(applied.answer);
+      setConciergeChatMessages(applied.chatMessages);
       if (payload.action) setSuperpowerMode(payload.action);
       window.requestAnimationFrame(() => {
         document.getElementById("concierge-answer")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -1460,10 +1465,11 @@ function AppContent({
           }
           if (conciergeRequest.current !== controller || controller.signal.aborted) return;
           const result = retrieveAndSynthesize(queryText, catalog, { language: lang, messages: currentMessages, ...(queryLocation ? { location: queryLocation } : {}) });
+          const applied = buildConciergeQuerySuccess(currentMessages, queryText, result, userMessageTimestamp);
           setConciergeMainListIds(resolveConciergeMainListIds(result));
-          setConciergeResponse(result);
-          setAnswer(conciergeDisplayAnswer(result));
-          setConciergeChatMessages((prev) => appendConciergeTurn(prev, queryText, result, userMessageTimestamp));
+          setConciergeResponse(applied.response);
+          setAnswer(applied.answer);
+          setConciergeChatMessages(applied.chatMessages);
           if (result.action) setSuperpowerMode(result.action);
           window.requestAnimationFrame(() => {
             document.getElementById("concierge-answer")?.scrollIntoView({ behavior: "smooth", block: "nearest" });

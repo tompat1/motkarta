@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
   appendConciergeTurn,
+  buildConciergeQuerySuccess,
   conciergeDisplayAnswer,
   conciergeModeLabel,
 } from "../src/app/concierge-client.ts";
@@ -27,17 +28,20 @@ test("appendConciergeTurn keeps the latest user and assistant messages", () => {
 
 test("conciergeModeLabel describes retrieval and synthesis modes", () => {
   const response = retrieveAndSynthesize("pierogi", places, { language: "en" });
-  assert.match(conciergeModeLabel(response, "en"), /Lexical search · Template/);
+  assert.match(conciergeModeLabel(response, "en"), /Lexical search · Template · \d+ matches of/);
+});
+
+test("buildConciergeQuerySuccess returns answer, response and chat turns together", () => {
+  const response = retrieveAndSynthesize("pierogi", places, { language: "sv" });
+  const applied = buildConciergeQuerySuccess([], "pierogi", response, 1000);
+  assert.equal(applied.response, response);
+  assert.match(applied.answer, /./);
+  assert.equal(applied.chatMessages.length, 2);
 });
 
 test("App.tsx wires structured concierge responses into answer state", async () => {
   const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
-  assert.match(appSource, /setConciergeResponse\(payload\)/);
-  assert.match(appSource, /setConciergeResponse\(result\)/);
-  assert.match(appSource, /setAnswer\(conciergeDisplayAnswer\(payload\)\)/);
-  assert.match(appSource, /setAnswer\(conciergeDisplayAnswer\(result\)\)/);
-  assert.match(
-    appSource,
-    /setConciergeMainListIds\(resolveConciergeMainListIds\(payload\)\);[\s\S]{0,500}setConciergeResponse\(payload\);[\s\S]{0,200}setAnswer\(conciergeDisplayAnswer\(payload\)\)/,
-  );
+  assert.match(appSource, /buildConciergeQuerySuccess\(currentMessages, queryText, payload/);
+  assert.match(appSource, /buildConciergeQuerySuccess\(currentMessages, queryText, result/);
+  assert.match(appSource, /if \(conciergeResponse\?\.cards\.length && conciergePlaces\.length > 0\)/);
 });

@@ -21,6 +21,20 @@ export function appendConciergeTurn(
   ].slice(-10);
 }
 
+/** Apply a successful concierge query to client-visible state. */
+export function buildConciergeQuerySuccess(
+  previousMessages: ChatMessage[],
+  queryText: string,
+  response: ConciergeResponse,
+  userMessageTimestamp: number,
+) {
+  return {
+    answer: conciergeDisplayAnswer(response),
+    response,
+    chatMessages: appendConciergeTurn(previousMessages, queryText, response, userMessageTimestamp),
+  };
+}
+
 export function conciergeModeLabel(
   response: ConciergeResponse,
   lang: "sv" | "en",
@@ -41,5 +55,11 @@ export function conciergeModeLabel(
       : lang === "sv"
         ? "Malltext"
         : "Template";
-  return `${retrieval} · ${synthesis}`;
+  const matched = response.cards.length;
+  const searched = response.totalSearchSpace;
+  const count =
+    lang === "sv"
+      ? `${matched} träffar av ${searched.toLocaleString("sv-SE")}`
+      : `${matched} matches of ${searched.toLocaleString("en-US")}`;
+  return `${retrieval} · ${synthesis} · ${count}`;
 }
