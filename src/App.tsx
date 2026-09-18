@@ -195,6 +195,7 @@ function AppContent({
   const [isMapCardMinimized, setIsMapCardMinimized] = useState(false);
   const [isUserPhotoUploadOpen, setIsUserPhotoUploadOpen] = useState(false);
   const [mapFocusRequest, setMapFocusRequest] = useState<{ id: number; timestamp: number } | null>(null);
+  const [mapViewportCount, setMapViewportCount] = useState<number | null>(null);
   const [placeAddedToast, setPlaceAddedToast] = useState<{
     placeName: string;
     area: string;
@@ -965,6 +966,16 @@ function AppContent({
     }
     return ranked.slice(0, renderLimit);
   }, [conciergePlaces.length, ranked, renderLimit]);
+  const handleMapViewportCountChange = useCallback((count: number) => {
+    setMapViewportCount(count);
+  }, []);
+  const countLocale = lang === "sv" ? "sv-SE" : "en-US";
+  const formatPlaceCount = useCallback(
+    (count: number) => count.toLocaleString(countLocale),
+    [countLocale],
+  );
+  const mapDisplayCount = mapViewportCount ?? ranked.length;
+  const matchingCount = ranked.length;
   const hasSearchQuery = Boolean(query.trim());
   const activeHeroStoryId =
     kind === "Restaurant"
@@ -1195,9 +1206,9 @@ function AppContent({
           ? [active, ...conciergePlaces]
           : conciergePlaces;
       }
-      return active && !visibleRanked.some((p) => p.id === active.id) ? [active, ...visibleRanked] : visibleRanked;
+      return active && !ranked.some((p) => p.id === active.id) ? [active, ...ranked] : ranked;
     },
-    [active, conciergePlaces, visibleRanked],
+    [active, conciergePlaces, ranked],
   );
 
   const [isConciergeFocused, setIsConciergeFocused] = useState(false);
@@ -2605,8 +2616,18 @@ function AppContent({
             <div className="mobile-results-title-group">
               <span className="mobile-results-eyebrow">{t.eyebrow}</span>
               <h2 className="mobile-results-count">
-                <span>{ranked.length}</span> <span>{t.placesInView}</span>
+                <span>{formatPlaceCount(mapDisplayCount)}</span> <span>{t.placesOnMap}</span>
               </h2>
+              {matchingCount !== mapDisplayCount || (mobileViewMode === "list" && matchingCount > renderLimit) ? (
+                <p className="mobile-results-count-meta">
+                  {matchingCount !== mapDisplayCount ? (
+                    <span>{formatPlaceCount(matchingCount)} {t.placesMatching}</span>
+                  ) : null}
+                  {mobileViewMode === "list" && matchingCount > renderLimit ? (
+                    <span>{t.showingTopList} {renderLimit} {t.listOnlyHint}</span>
+                  ) : null}
+                </p>
+              ) : null}
             </div>
             <button
               type="button"
@@ -2680,6 +2701,7 @@ function AppContent({
               userLocation={userLocation}
               onSelect={handleSelectPlace}
               onOpenPlaceDetails={handleOpenPlaceDetails}
+              onViewportCountChange={handleMapViewportCountChange}
               onUserLocated={(loc) => {
                 setUserLocation(loc);
                 setSortMode("Distance");
@@ -2995,9 +3017,14 @@ function AppContent({
               <p className="eyebrow results-eyebrow">{t.eyebrow}</p>
               <div className="results-count-row">
                 <h2>
-                  <span>{ranked.length}</span> <span>{t.placesInView}</span>
+                  <span>{formatPlaceCount(mapDisplayCount)}</span> <span>{t.placesOnMap}</span>
                 </h2>
-                {ranked.length > renderLimit ? <small>{t.showingTop} {renderLimit}</small> : null}
+                {matchingCount !== mapDisplayCount ? (
+                  <small>{formatPlaceCount(matchingCount)} {t.placesMatching}</small>
+                ) : null}
+                {matchingCount > renderLimit ? (
+                  <small>{t.showingTopList} {renderLimit} {t.listOnlyHint}</small>
+                ) : null}
               </div>
             </div>
             <div className="rank-controls">

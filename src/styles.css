@@ -14524,6 +14524,16 @@ footer {
   letter-spacing: -0.02em;
 }
 
+.mobile-results-count-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--color-muted, #71717A);
+}
+
 .mobile-formula-trigger-btn {
   display: inline-flex;
   align-items: center;

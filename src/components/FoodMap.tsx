@@ -1,10 +1,15 @@
 import L from "../lib/leafletSetup";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { EstablishmentType, ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
 import { cuisineLabel, cuisineParts, hasCoordinates, translations } from "../app/shared";
+import {
+  MAP_AUTO_FIT_MAX_PLACES,
+  boundsFromLeaflet,
+  filterPlacesByBounds,
+} from "../app/map-bounds";
 import { requestPosition, locationFailureMessage, type LocationResult } from '../app/geolocation';
 import { ArrowsIn, ArrowsOut, Crosshair, MapTrifold, Minus, Plus } from "@phosphor-icons/react";
 import { SPECIALTY_COFFEE_SVG_CONTENT } from "./SpecialtyCoffeeIcon";
@@ -17,6 +22,7 @@ export function FoodMap({
   onSelect,
   onOpenPlaceDetails,
   onUserLocated,
+  onViewportCountChange,
   lang,
 }: {
   places: ScoredPlace[];
@@ -26,6 +32,7 @@ export function FoodMap({
   onSelect: (id: number) => void;
   onOpenPlaceDetails?: (id: number) => void;
   onUserLocated?: (loc: { latitude: number; longitude: number }) => void;
+  onViewportCountChange?: (count: number) => void;
   lang: Language;
 }) {
   const t = translations[lang];
@@ -42,6 +49,79 @@ export function FoodMap({
   const prevActivePlaceIdRef = useRef<number | null>(null);
   const prevFocusKeyRef = useRef<string>("");
   const activePlaceIdRef = useRef<number | null>(activePlace?.id ?? null);
+  const placesRef = useRef(places);
+  const onSelectRef = useRef(onSelect);
+  const onViewportCountChangeRef = useRef(onViewportCountChange);
+  const [mapReady, setMapReady] = useState(false);
+
+  placesRef.current = places;
+  onSelectRef.current = onSelect;
+  onViewportCountChangeRef.current = onViewportCountChange;
+
+  const syncViewportMarkers = useCallback(() => {
+    const map = mapRef.current;
+    const clusterGroup = clusterGroupRef.current;
+    if (!map || !clusterGroup) {
+      return;
+    }
+
+    const allPlaces = placesRef.current.filter(hasCoordinates);
+    const catalogIds = new Set(allPlaces.map((place) => place.id));
+
+    for (const [id, marker] of markersRef.current.entries()) {
+      if (!catalogIds.has(id)) {
+        clusterGroup.removeLayer(marker);
+        markersRef.current.delete(id);
+      }
+    }
+
+    const inBounds = filterPlacesByBounds(allPlaces, boundsFromLeaflet(map.getBounds()));
+    const inBoundsIds = new Set(inBounds.map((place) => place.id));
+    const activeId = activePlaceIdRef.current;
+
+    let renderPlaces = inBounds;
+    if (activeId !== null && !inBoundsIds.has(activeId)) {
+      const active = allPlaces.find((place) => place.id === activeId);
+      if (active) {
+        renderPlaces = [active, ...inBounds];
+      }
+    }
+
+    const renderIds = new Set(renderPlaces.map((place) => place.id));
+
+    for (const [id, marker] of markersRef.current.entries()) {
+      if (!renderIds.has(id)) {
+        clusterGroup.removeLayer(marker);
+        markersRef.current.delete(id);
+      }
+    }
+
+    for (const place of renderPlaces) {
+      const isActive = place.id === activeId;
+      const existing = markersRef.current.get(place.id);
+      if (existing) {
+        existing.setIcon(placeIcon(place, isActive));
+        existing.setZIndexOffset(isActive ? 1000 : 0);
+        continue;
+      }
+
+      const marker = L.marker([place.latitude, place.longitude], {
+        icon: placeIcon(place, isActive),
+        title: place.name,
+      }).on("click", () => {
+        onSelectRef.current(place.id);
+      });
+
+      if (isActive) {
+        marker.setZIndexOffset(1000);
+      }
+
+      clusterGroup.addLayer(marker);
+      markersRef.current.set(place.id, marker);
+    }
+
+    onViewportCountChangeRef.current?.(inBounds.length);
+  }, []);
 
   const handleLocateUser = async () => {
     if (locating) return;
@@ -152,6 +232,7 @@ export function FoodMap({
     clusterGroupRef.current = clusterGroup;
 
     mapRef.current = map;
+    setMapReady(true);
     window.setTimeout(() => {
       try {
         map.invalidateSize();
@@ -185,6 +266,7 @@ export function FoodMap({
       map.remove();
       mapRef.current = null;
       clusterGroupRef.current = null;
+      setMapReady(false);
     };
   }, []);
 
@@ -232,62 +314,77 @@ export function FoodMap({
   };
 
   useEffect(() => {
+    if (!mapReady) {
+      return;
+    }
+
+    const onViewportChange = () => {
+      syncViewportMarkers();
+    };
+
     const map = mapRef.current;
-    const clusterGroup = clusterGroupRef.current;
     if (!map) {
       return;
     }
 
-    if (clusterGroup) {
-      clusterGroup.clearLayers();
+    map.on("moveend", onViewportChange);
+    map.on("zoomend", onViewportChange);
+    syncViewportMarkers();
+
+    return () => {
+      map.off("moveend", onViewportChange);
+      map.off("zoomend", onViewportChange);
+    };
+  }, [mapReady, syncViewportMarkers]);
+
+  useEffect(() => {
+    if (!mapReady) {
+      return;
     }
-    markersRef.current.clear();
 
-    const bounds = L.latLngBounds([]);
     const validPlaces = places.filter(hasCoordinates);
+    const currentKey = validPlaces
+      .map((place) => place.id)
+      .sort((a, b) => a - b)
+      .join(",");
 
-    validPlaces.forEach((place, index) => {
-      const isActive = place.id === activePlaceIdRef.current;
-      const marker = L.marker([place.latitude, place.longitude], {
-        icon: placeIcon(place, isActive),
-        title: place.name,
-      }).on("click", () => {
-        onSelect(place.id);
-      });
+    syncViewportMarkers();
 
-      if (isActive) {
-        marker.setZIndexOffset(1000);
-      }
+    if (lastFitKeyRef.current === currentKey) {
+      return;
+    }
 
-      if (clusterGroup) {
-        clusterGroup.addLayer(marker);
-      } else {
-        marker.addTo(map);
-      }
+    lastFitKeyRef.current = currentKey;
 
-      markersRef.current.set(place.id, marker);
-      bounds.extend(marker.getLatLng());
-    });
-
-    const currentKey = validPlaces.map((p) => p.id).join(",");
     if (fitBoundsTimeoutRef.current) {
       clearTimeout(fitBoundsTimeoutRef.current);
       fitBoundsTimeoutRef.current = null;
     }
 
-    if (bounds.isValid() && lastFitKeyRef.current !== currentKey) {
-      lastFitKeyRef.current = currentKey;
-      // Do NOT fit bounds to all places if an active place is selected or requested!
-      if (!activePlaceIdRef.current && !focusRequest?.id) {
-        const maxZoom = validPlaces.length <= 10 ? 15 : 13;
-        // Debounce fitBounds by 100ms so rapid search keystrokes do not trigger overlapping animations
-        fitBoundsTimeoutRef.current = setTimeout(() => {
-          if (mapRef.current && !activePlaceIdRef.current && !focusRequest?.id) {
-            mapRef.current.fitBounds(bounds, { padding: [42, 42], maxZoom });
-          }
-        }, 100);
-      }
+    if (
+      validPlaces.length === 0 ||
+      validPlaces.length > MAP_AUTO_FIT_MAX_PLACES ||
+      activePlaceIdRef.current ||
+      focusRequest?.id
+    ) {
+      return;
     }
+
+    const bounds = L.latLngBounds([]);
+    validPlaces.forEach((place) => {
+      bounds.extend([place.latitude, place.longitude]);
+    });
+
+    if (!bounds.isValid()) {
+      return;
+    }
+
+    const maxZoom = validPlaces.length <= 10 ? 15 : 13;
+    fitBoundsTimeoutRef.current = setTimeout(() => {
+      if (mapRef.current && !activePlaceIdRef.current && !focusRequest?.id) {
+        mapRef.current.fitBounds(bounds, { padding: [42, 42], maxZoom });
+      }
+    }, 100);
 
     return () => {
       if (fitBoundsTimeoutRef.current) {
@@ -295,18 +392,23 @@ export function FoodMap({
         fitBoundsTimeoutRef.current = null;
       }
     };
-  }, [lang, onOpenPlaceDetails, onSelect, places]);
+  }, [focusRequest?.id, mapReady, places, syncViewportMarkers]);
 
   useEffect(() => {
     const map = mapRef.current;
     const clusterGroup = clusterGroupRef.current;
     const currentActiveId = activePlace?.id ?? null;
+    const activeChanged = prevActivePlaceIdRef.current !== currentActiveId;
     activePlaceIdRef.current = currentActiveId;
+
+    if (activeChanged) {
+      syncViewportMarkers();
+    }
 
     // Track both activePlace ID change and explicit focusRequest triggers
     const focusKey = `${currentActiveId ?? ""}_${focusRequest?.timestamp ?? ""}`;
     const shouldFocus =
-      prevActivePlaceIdRef.current !== currentActiveId ||
+      activeChanged ||
       (focusRequest && prevFocusKeyRef.current !== focusKey);
 
     if (shouldFocus) {
@@ -407,7 +509,7 @@ export function FoodMap({
 
       runFocusSequence();
     }
-  }, [activePlace, focusRequest, places]);
+  }, [activePlace, focusRequest, places, syncViewportMarkers]);
 
   return (
     <div className="leaflet-shell">
