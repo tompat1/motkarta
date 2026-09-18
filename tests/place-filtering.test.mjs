@@ -97,7 +97,7 @@ test("concierge responses update the main list and structured answer state", asy
   assert.match(appSource, /resolveConciergeMainListIds\(result\)/);
   assert.match(appSource, /place\.id === recommended\.id \|\| normalize\(place\.name\) === normalize\(recommended\.name\)/);
   assert.match(appSource, /if \(conciergeMainListIds\.length > 0\)/);
-  assert.match(appSource, /setConciergeResponse\(payload\)/);
-  assert.match(appSource, /setAnswer\(conciergeDisplayAnswer\(payload\)\)/);
+  assert.match(appSource, /buildConciergeQuerySuccess/);
+  assert.match(appSource, /setConciergeResponse\(applied\.response\)/);
 });
 
