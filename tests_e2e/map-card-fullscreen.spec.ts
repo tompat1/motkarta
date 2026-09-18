@@ -25,7 +25,7 @@ test.describe("Map Card Fullscreen & Mobile Viewport Tests", () => {
     const mapCard = page.locator("article.map-card");
     if (isMobile) {
       await expect(mapCard).toBeHidden();
-      await expect(page.locator(".leaflet-popup")).toBeVisible({ timeout: 10000 });
+      await expect(page.locator(".mobile-place-slide-up")).toBeVisible({ timeout: 10000 });
 
       const fsBtn = page.locator(
         ".map-control-btn[title*='Helskärm'], .map-control-btn[title*='Fullscreen'], .map-control-btn[aria-label*='Helskärm'], .map-control-btn[aria-label*='Fullscreen']"
@@ -33,7 +33,7 @@ test.describe("Map Card Fullscreen & Mobile Viewport Tests", () => {
       await expect(fsBtn).toBeVisible();
       await fsBtn.click();
       await expect(mapCard).toBeHidden();
-      await expect(page.locator(".leaflet-popup")).toBeVisible();
+      await expect(page.locator(".mobile-place-slide-up")).toBeVisible();
       return;
     }
 

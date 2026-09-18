@@ -152,12 +152,24 @@ export function FoodMap({
     clusterGroupRef.current = clusterGroup;
 
     mapRef.current = map;
-    window.setTimeout(() => map.invalidateSize(), 0);
+    window.setTimeout(() => {
+      try {
+        map.invalidateSize();
+      } catch {
+        // ignore if container is transitioning
+      }
+    }, 0);
 
     const handleFsChange = () => {
       const isFs = Boolean(document.fullscreenElement);
       setIsFullscreen(isFs);
-      window.setTimeout(() => map.invalidateSize(), 100);
+      window.setTimeout(() => {
+        try {
+          map.invalidateSize();
+        } catch {
+          // ignore if container is transitioning
+        }
+      }, 100);
     };
 
     document.addEventListener("fullscreenchange", handleFsChange);
@@ -241,48 +253,11 @@ export function FoodMap({
         title: place.name,
       }).on("click", () => {
         onSelect(place.id);
-        if (isMobileMapViewport()) marker.openPopup();
       });
 
       if (isActive) {
         marker.setZIndexOffset(1000);
       }
-
-      marker.bindPopup(placePopupHtml(place, index + 1, lang), {
-        maxWidth: 280,
-        autoPan: true,
-        autoPanPadding: [50, 50],
-      });
-
-      marker.on("popupopen", (event) => {
-        if (!isMobileMapViewport()) {
-          marker.closePopup();
-          return;
-        }
-
-        const content = event.popup.getElement()?.querySelector<HTMLElement>(".leaflet-popup-content");
-        if (!content) return;
-
-        content.classList.add("motkarta-place-popup");
-        content.tabIndex = 0;
-        content.setAttribute("role", "button");
-        content.setAttribute(
-          "aria-label",
-          lang === "sv" ? `Visa detaljer för ${place.name}` : `View details for ${place.name}`,
-        );
-
-        const openDetails = (target: EventTarget | null) => {
-          if (target instanceof Element && target.closest("a")) return;
-          onSelect(place.id);
-          onOpenPlaceDetails?.(place.id);
-        };
-        content.addEventListener("click", (clickEvent) => openDetails(clickEvent.target));
-        content.addEventListener("keydown", (keyEvent) => {
-          if (keyEvent.key !== "Enter" && keyEvent.key !== " ") return;
-          keyEvent.preventDefault();
-          openDetails(keyEvent.target);
-        });
-      });
 
       if (clusterGroup) {
         clusterGroup.addLayer(marker);
@@ -402,7 +377,7 @@ export function FoodMap({
         const targetLng = activePlace.longitude;
         const targetZoom = Math.max(currentMap.getZoom(), 15);
 
-        // On mobile, offset the center downwards (southwards) so the marker appears in the visible top half above .map-card
+        // On mobile, offset the center downwards (southwards) so the marker appears in the visible top half above the slide-up sheet
         let flyCenter: L.LatLngExpression = [targetLat, targetLng];
         if (isMobileMapViewport()) {
           // At zoom 15+, calculate precise latitude delta for ~130px upward visual shift on screen
@@ -410,53 +385,24 @@ export function FoodMap({
           flyCenter = [targetLat - latShift, targetLng];
         }
 
-        const triggerPopup = (retries = 6) => {
-          if (!isMobileMapViewport()) {
-            currentMap.closePopup();
-            return;
-          }
-          try {
-            if (activeMarker.isPopupOpen && activeMarker.isPopupOpen()) return;
-            if (currentCluster && typeof (currentCluster as any).zoomToShowLayer === "function") {
-              try {
-                (currentCluster as any).zoomToShowLayer(activeMarker, () => {
-                  try {
-                    activeMarker.openPopup();
-                  } catch {}
-                });
-                return;
-              } catch {
-                // Fall back to standard retry
-              }
-            }
-            if (!activeMarker.getElement() || !(activeMarker as any)._map) {
-              if (retries > 0) {
-                window.setTimeout(() => triggerPopup(retries - 1), 100);
-                return;
-              }
-            }
-            activeMarker.openPopup();
-          } catch {
-            if (retries > 0) {
-              window.setTimeout(() => triggerPopup(retries - 1), 100);
-            }
-          }
-        };
+        currentMap.closePopup();
 
-        const completeFocus = () => {
-          currentMap.off("moveend", completeFocus);
-          currentMap.off("zoomend", completeFocus);
-          triggerPopup();
-        };
+        if (currentCluster && typeof (currentCluster as any).zoomToShowLayer === "function") {
+          try {
+            (currentCluster as any).zoomToShowLayer(activeMarker, () => {
+              currentMap.flyTo(flyCenter, targetZoom, {
+                duration: 0.35,
+                easeLinearity: 0.25,
+              });
+            });
+            return;
+          } catch {}
+        }
 
         currentMap.flyTo(flyCenter, targetZoom, {
           duration: 0.35,
           easeLinearity: 0.25,
         });
-
-        currentMap.once("moveend", completeFocus);
-        currentMap.once("zoomend", completeFocus);
-        window.setTimeout(completeFocus, 550);
       };
 
       runFocusSequence();

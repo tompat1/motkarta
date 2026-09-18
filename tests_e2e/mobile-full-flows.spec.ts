@@ -18,7 +18,7 @@ test.describe("Mobile Full User Flows", () => {
     await expect(logo).toBeVisible();
 
     // Verify search bar is visible
-    const searchInput = page.locator('input[aria-label*="Sök"], input[aria-label*="Search"]');
+    const searchInput = page.locator('input[aria-label*="Sök"], input[aria-label*="Search"]').first();
     await expect(searchInput).toBeVisible();
 
     // Verify workspace mobile header controls bar
@@ -33,12 +33,14 @@ test.describe("Mobile Full User Flows", () => {
   test("2. Mobile search flow & clear query", async ({ page }) => {
     await page.goto("/");
 
-    const searchInput = page.locator('input[aria-label*="Sök"], input[aria-label*="Search"]');
-    await searchInput.focus();
+    const searchInput = page.locator('#desktop-discovery-search, input[aria-label*="Sök"]').first();
+    await searchInput.scrollIntoViewIfNeeded();
+    await expect(searchInput).toBeVisible();
     await searchInput.fill("Solkant");
+    await expect(searchInput).toHaveValue("Solkant");
 
     // Verify search clear button appears
-    const clearBtn = page.locator(".search-clear-btn");
+    const clearBtn = page.locator(".search-clear-btn").first();
     await expect(clearBtn).toBeVisible();
 
     // Clear search
@@ -151,26 +153,30 @@ test.describe("Mobile Full User Flows", () => {
     const mapPanel = page.locator(".map-panel");
     await expect(mapPanel).toBeVisible({ timeout: 10000 });
 
-    // Active marker and popup should be visible and match selected venue
+    // Active marker and slide-up card should be visible and match selected venue
     const activeMarker = page.locator(".motkarta-map-marker.active");
     await expect(activeMarker).toBeVisible({ timeout: 10000 });
 
-    const leafletPopup = page.locator(".leaflet-popup");
-    await expect(leafletPopup).toBeVisible({ timeout: 10000 });
+    const slideUp = page.locator(".mobile-place-slide-up");
+    await expect(slideUp).toBeVisible({ timeout: 10000 });
     await expect(page.locator("article.map-card")).toBeHidden();
     if (expectedName) {
-      await expect(leafletPopup).toContainText(expectedName);
+      await expect(slideUp).toContainText(expectedName);
     }
 
-    await leafletPopup.locator(".leaflet-popup-content").click({ position: { x: 12, y: 12 } });
+    await slideUp.locator(".mobile-slide-up-primary-btn, .mobile-slide-up-content").first().click();
     await expect(page.locator(".place-detail-sheet-overlay")).toBeVisible({ timeout: 10000 });
   });
 
   test("6. Device sync modal flow", async ({ page }) => {
     await page.goto("/");
 
-    // Click "Synka enheter" quick pill
-    const syncBtn = page.locator(".quick-filter-pill", { hasText: /synka|sync/i }).first();
+    // Open hamburger menu drawer and click Synka enheter
+    const menuBtn = page.locator(".mobile-hamburger-btn");
+    await expect(menuBtn).toBeVisible();
+    await menuBtn.click();
+
+    const syncBtn = page.locator(".mobile-menu-action-btn", { hasText: /synka|sync/i }).first();
     await expect(syncBtn).toBeVisible();
     await syncBtn.click();
 
@@ -219,17 +225,11 @@ test.describe("Mobile Full User Flows", () => {
     await expect(drawer).not.toBeVisible();
   });
 
-  test("8. Mobile floating controls (scroll to top & view toggle)", async ({ page }) => {
+  test("8. Mobile black panel view toggle (list/map)", async ({ page }) => {
     await page.goto("/");
 
-    const scrollTopBtn = page.locator(".floating-scroll-top-btn");
-    await expect(scrollTopBtn).toBeVisible();
-
-    const viewToggleBtn = page.locator(".floating-view-toggle-btn");
+    const viewToggleBtn = page.locator(".mobile-controls-bar .is-action-view-toggle, .floating-view-toggle-btn").first();
     await expect(viewToggleBtn).toBeVisible();
-
-    // Test scroll to top click
-    await scrollTopBtn.click();
 
     // Test view toggle click
     await viewToggleBtn.click();
@@ -448,8 +448,8 @@ test.describe("Mobile Full User Flows", () => {
     await expect(mapPanel).toBeVisible();
     await expect(mapPanel).not.toHaveClass(/mobile-view-hidden/);
 
-    // Verify new place is active and visible on map (map-card or leaflet popup)
-    const placeTitle = page.locator('.map-card-head h2, .leaflet-popup-content strong');
+    // Verify new place is active and visible on map (map-card or slide-up)
+    const placeTitle = page.locator('.map-card-head h2, .leaflet-popup-content strong, .mobile-slide-up-title');
     await expect(placeTitle.filter({ hasText: "Belgobaren City Test" }).first()).toBeVisible({ timeout: 10000 });
 
     // Capture screenshot of place added toast & focused map

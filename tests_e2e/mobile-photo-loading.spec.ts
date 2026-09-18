@@ -45,13 +45,13 @@ test('loads photos past result 25 on scroll and falls back from broken images', 
   await expect(later.locator('.mobile-photo-card-bg')).toHaveCSS('background-image', new RegExp(`working-${laterId}`));
   expect(datasetRequests).toBe(1);
   await later.screenshot({ path: testInfo.outputPath("loaded-card-after-25.png") });
-  // Opening a card uses the working photo; returning to the map uses the compact popup.
+  // Opening a card uses the working photo; returning to the map uses the slide-up card.
   await later.locator('h2').click();
   await expect(page.locator('.place-detail-hero-photo')).toHaveAttribute('src', new RegExp(`working-${laterId}`));
   await page.locator('.place-detail-primary-cta').click();
   await expect(page.locator('article.map-card')).toBeHidden();
-  const popup = page.locator('.leaflet-popup');
-  await expect(popup).toBeVisible();
-  await expect(popup).toContainText(`Photo venue ${String(Number(laterId) - 800000).padStart(2, '0')}`);
-  await popup.screenshot({ path: testInfo.outputPath('mobile-map-popup.png') });
+  const slideUp = page.locator('.mobile-place-slide-up');
+  await expect(slideUp).toBeVisible();
+  await expect(slideUp).toContainText(`Photo venue ${String(Number(laterId) - 800000).padStart(2, '0')}`);
+  await slideUp.screenshot({ path: testInfo.outputPath('mobile-map-slide-up.png') });
 });

@@ -35,7 +35,7 @@ test.describe("Search input & Map clustering console error prevention", () => {
     }
 
     // 3. Locate search input
-    const searchInput = page.locator('input[aria-label*="Sök"], input[aria-label*="Search"]').first();
+    const searchInput = page.locator('input[aria-label*="Sök"]:visible, input[aria-label*="Search"]:visible').first();
     await expect(searchInput).toBeVisible();
 
     // 4. Focus and type query character by character to trigger rapid filtering & fitBounds

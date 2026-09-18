@@ -20,10 +20,18 @@ test.describe("Sync Devices Real QR Code & Favorites URL Flow", () => {
 
     await page.goto("/");
 
-    // Open SyncDevicesModal via quick-filter-pill
-    const syncBtn = page.locator(".quick-filter-pill", { hasText: /synka|sync/i }).first();
-    await expect(syncBtn).toBeVisible();
-    await syncBtn.click();
+    // Open SyncDevicesModal via quick-filter-pill or mobile drawer menu
+    const syncPill = page.locator(".quick-filter-pill", { hasText: /synka|sync/i }).first();
+    if (await syncPill.count() > 0 && await syncPill.isVisible()) {
+      await syncPill.click();
+    } else {
+      const menuBtn = page.locator(".mobile-hamburger-btn").first();
+      await expect(menuBtn).toBeVisible();
+      await menuBtn.click();
+      const syncBtn = page.locator(".mobile-menu-action-btn", { hasText: /synka|sync/i }).first();
+      await expect(syncBtn).toBeVisible();
+      await syncBtn.click();
+    }
 
     // Verify modal and QR code wrapper exist
     const modalTitle = page.locator(".sync-modal-title");
