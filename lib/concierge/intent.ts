@@ -1,4 +1,5 @@
 import { CUISINE_ALIASES, extractStructuredFilters } from './filters.ts';
+import { dishExclusionTerms, dishIntentMatchers } from './cuisine-dishes.ts';
 import { includesPhrase, normalize } from './facts.ts';
 import type { QueryContext } from './contracts.ts';
 import policy from './policy.json' with { type: 'json' };
@@ -45,21 +46,17 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
   const area = rawArea;
   const excludedBrandRequested = policy.excludedChains.some((name) => includesPhrase(positive, name));
   const outsideStockholm = policy.excludedLocalities.some((value) => includesPhrase(positive, value));
-  const dishes = [
-    ['pierogi', 'pierogi'], ['tacos', 'tacos'], ['ramen', 'ramen'], ['sushi', 'sushi'],
-    ['cardamom bun', 'cardamom'], ['kardemummabulle', 'cardamom'], ['kardemumma', 'cardamom'],
-    ['sourdough', 'sourdough'], ['surdegsbrod', 'sourdough'], ['surdeg', 'sourdough'],
-    ['burger', 'burger'], ['burgers', 'burger'], ['burgare', 'burger'], ['burgaren', 'burger'],
-    ['burgarna', 'burger'], ['hamburgare', 'burger'], ['hamburgaren', 'burger'], ['hamburgarna', 'burger'],
-    ['dumpling', 'dumplings'], ['dumplings', 'dumplings'],
-    ['dim sum', 'dim sum'], ['dimsum', 'dim sum'],
-  ].filter(([word]) => includesPhrase(positive, word)).map(([, dish]) => dish);
+  const dishes = [...new Set(
+    dishIntentMatchers()
+      .filter(([word]) => includesPhrase(positive, word))
+      .map(([, dish]) => dish),
+  )];
   const specialty = /\b(specialty|specialkaffe|roastery|roaster|rosteri)\b/.test(normalize(positive));
   const bakery = /\b(bakery|bageri|hantverksbageri)\b/.test(normalize(positive));
   const dinner = /\b(dinner|middag|kvallsmat|restaurant|restaurang)\b/.test(normalize(positive));
   const near = /\b(near me|nearby|nara mig|narmaste|close to me)\b/.test(normalized);
   const openNow = /\b(open now|oppet nu|open tonight|oppet ikvall)\b/.test(normalized);
-  const exclusions = negative.flatMap((value) => queryTerms(value)).flatMap(tokenAlternatives);
+  const exclusions = negative.flatMap((value) => dishExclusionTerms(value));
   const cuisineKinds = filters.cuisines.filter((c) => !['coffee', 'bakery'].includes(c));
   const localityTokens = new Set([
     'soder', 'sodermalm', 'vasastan', 'vasastaden', 'vasan', 'ostermalm', 'oster',

@@ -45,6 +45,7 @@ except ImportError:
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from motkarta.dog_friendly import eligible_dog_friendly_target
+CUISINE_DISH_REGISTRY = ROOT / "data" / "concierge" / "cuisine-dishes.json"
 OSM_RAW = ROOT / "data" / "raw" / "osm_stockholm_food_places.json"
 PLACES_JSON = ROOT / "public" / "data" / "places.json"
 HUSA_GUIDE = ROOT / "data" / "husa_guide_ground_truth.json"
@@ -72,27 +73,40 @@ def normalize_name(name: str) -> str:
 # OSM → SourceFact extraction
 # ---------------------------------------------------------------------------
 
-# Map of OSM cuisine sub-tags to their signature dishes (where clear).
-CUISINE_DISH_MAP: dict[str, list[str]] = {
-    "polish": ["pierogi", "bigos", "żurek"],
-    "mexican": ["tacos", "burritos", "guacamole"],
-    "japanese": ["sushi", "ramen", "yakitori"],
-    "italian": ["pasta", "pizza", "risotto"],
-    "thai": ["pad thai", "green curry", "tom yum"],
-    "indian": ["curry", "naan", "tandoori"],
-    "vietnamese": ["pho", "banh mi", "spring rolls"],
-    "korean": ["bibimbap", "kimchi", "bulgogi"],
-    "chinese": ["dim sum", "kung pao", "dumplings"],
-    "greek": ["souvlaki", "moussaka", "tzatziki"],
-    "lebanese": ["falafel", "hummus", "shawarma"],
-    "turkish": ["kebab", "lahmacun", "pide"],
-    "french": ["croissant", "crêpe", "ratatouille"],
-    "spanish": ["paella", "tapas", "gazpacho"],
-    "hungarian": ["goulash", "langos"],
-    "czech": ["svíčková", "trdelník"],
-    "persian": ["kebab", "tahdig", "ghormeh sabzi"],
-    "ethiopian": ["injera", "doro wat"],
-}
+def load_cuisine_dish_registry() -> dict[str, Any]:
+    """Load canonical cuisine↔dish registry shared with concierge TS modules."""
+    with CUISINE_DISH_REGISTRY.open(encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def build_cuisine_dish_map(registry: dict[str, Any]) -> dict[str, list[str]]:
+    return {k: list(v) for k, v in registry.get("signatureDishes", {}).items()}
+
+
+def build_dish_keywords(registry: dict[str, Any]) -> dict[str, str]:
+    """Map lowercase scrape keywords → canonical dish value for SourceFacts."""
+    keywords: dict[str, str] = {}
+    for _cuisine, dishes in registry.get("signatureDishes", {}).items():
+        for dish in dishes:
+            keywords[dish.lower()] = dish
+    for hint in registry.get("dishHints", []):
+        canonical = str(hint.get("dish") or "")
+        for term in list(hint.get("terms", [])) + list(hint.get("match", [])):
+            keywords[str(term).lower()] = canonical or str(term)
+    # Common website variants not always present as standalone terms
+    keywords.setdefault("zurek", "żurek")
+    keywords.setdefault("surdegsbrod", "sourdough bread")
+    keywords.setdefault("surdegsbröd", "sourdough bread")
+    keywords.setdefault("kardemummabulle", "cardamom bun")
+    keywords.setdefault("corn tortillas", "corn tortillas")
+    keywords.setdefault("tortillas", "corn tortillas")
+    keywords.setdefault("smorrebrod", "smørrebrød")
+    return keywords
+
+
+_CUISINE_REGISTRY = load_cuisine_dish_registry()
+CUISINE_DISH_MAP: dict[str, list[str]] = build_cuisine_dish_map(_CUISINE_REGISTRY)
+DISH_KEYWORDS: dict[str, str] = build_dish_keywords(_CUISINE_REGISTRY)
 
 # OSM outdoor_seating / description keywords → atmosphere facts.
 ATMOSPHERE_KEYWORDS: dict[str, list[str]] = {
@@ -801,30 +815,7 @@ def extract_facts_from_html(
                     })
                     break
 
-    # 2. Dishes
-    DISH_KEYWORDS = {
-        "pierogi": "pierogi",
-        "bigos": "bigos",
-        "żurek": "żurek",
-        "zurek": "żurek",
-        "tacos": "tacos",
-        "tortillas": "corn tortillas",
-        "sushi": "sushi",
-        "sashimi": "sashimi",
-        "ramen": "ramen",
-        "yakitori": "yakitori",
-        "tsukune": "tsukune",
-        "cardamom bun": "cardamom bun",
-        "kardemummabulle": "cardamom bun",
-        "kanelbulle": "cinnamon bun",
-        "sourdough": "sourdough bread",
-        "surdegsbröd": "sourdough bread",
-        "pasta": "pasta",
-        "pizza": "pizza",
-        "falafel": "falafel",
-        "smårätter": "smårätter (small plates)",
-        "fika": "fika",
-    }
+    # 2. Dishes (keywords loaded from data/concierge/cuisine-dishes.json)
     for kw, dish_val in DISH_KEYWORDS.items():
         if kw in text_lower:
             facts.append({

@@ -1,0 +1,488 @@
+{
+  "version": "concierge-cuisine-dishes-v2",
+  "signatureDishes": {
+    "polish": ["pierogi", "bigos", "żurek", "kotlet schabowy", "barszcz"],
+    "ukrainian": ["borscht", "varenyky", "holubtsi", "syrniki"],
+    "russian": ["borscht", "pelmeni", "blini", "beef stroganoff"],
+    "belarusian": ["draniki", "machanka", "kolduny"],
+    "czech": ["svíčková", "trdelník", "guláš", "knedlíky"],
+    "slovak": ["bryndzové halušky", "kapustnica", "lokše"],
+    "hungarian": ["goulash", "langos", "chicken paprikash", "lecsó"],
+    "romanian": ["sarmale", "mămăligă", "mici", "ciorbă"],
+    "serbian": ["ćevapi", "pljeskavica", "ajvar", "sarma"],
+    "croatian": ["cevapcici", "pasticada", "black risotto", "strukli"],
+    "bosnian": ["cevapi", "burek", "begova corba", "klepe"],
+    "albanian": ["byrek", "tavë kosi", "fërgesë", "qofte"],
+    "greek": ["souvlaki", "moussaka", "tzatziki", "spanakopita"],
+    "turkish": ["kebab", "lahmacun", "pide", "manti", "baklava"],
+    "lebanese": ["falafel", "hummus", "shawarma", "kibbeh", "tabbouleh"],
+    "israeli": ["shakshuka", "falafel", "hummus", "sabich"],
+    "persian": ["kebab", "tahdig", "ghormeh sabzi", "fesenjan"],
+    "middle_eastern": ["falafel", "hummus", "shawarma", "mezze"],
+    "moroccan": ["tagine", "couscous", "harira", "pastilla"],
+    "tunisian": ["brik", "couscous", "shakshuka", "lablabi"],
+    "egyptian": ["koshari", "ful medames", "molokhia", "taameya"],
+    "ethiopian": ["injera", "doro wat", "tibs", "shiro"],
+    "eritrean": ["injera", "zigini", "ful", "tsebhi"],
+    "somali": ["suqaar", "sambusa", "canjeero", "baasto"],
+    "nigerian": ["jollof rice", "suya", "egusi soup", "puff puff"],
+    "ghanaian": ["jollof rice", "banku", "kelewele", "waakye"],
+    "south_african": ["bobotie", "bunny chow", "boerewors", "pap"],
+    "swedish": ["meatballs", "gravlax", "pyttipanna", "köttbullar", "raggmunk"],
+    "finnish": ["lohikeitto", "karjalanpiirakka", "lihapullat", "salmiakki"],
+    "danish": ["smørrebrød", "frikadeller", "flæskesteg", "rødgrød"],
+    "norwegian": ["fårikål", "lutefisk", "kjøttkaker", "rømmegrøt"],
+    "icelandic": ["plokkfiskur", "hákarl", "lamb soup", "skyr"],
+    "scandinavian": ["gravlax", "smørrebrød", "meatballs", "open sandwich"],
+    "balkan": ["cevapi", "burek", "ajvar", "sarma"],
+    "georgian": ["khachapuri", "khinkali", "lobio", "satsivi"],
+    "armenian": ["dolma", "khorovats", "lavash", "harissa"],
+    "french": ["croissant", "crêpe", "ratatouille", "coq au vin", "onion soup"],
+    "belgian": ["moules-frites", "waffles", "carbonade flamande", "waterzooi"],
+    "dutch": ["bitterballen", "stroopwafel", "haring", "poffertjes"],
+    "german": ["schnitzel", "bratwurst", "sauerkraut", "currywurst"],
+    "austrian": ["wiener schnitzel", "tafelspitz", "sachertorte", "apfelstrudel"],
+    "swiss": ["fondue", "raclette", "rösti", "zürcher geschnetzeltes"],
+    "italian": ["pasta", "pizza", "risotto", "osso buco", "tiramisu"],
+    "spanish": ["paella", "tapas", "gazpacho", "tortilla española", "jamón"],
+    "portuguese": ["bacalhau", "pastéis de nata", "francesinha", "caldo verde"],
+    "british": ["fish and chips", "full english", "shepherd's pie", "bangers and mash"],
+    "irish": ["irish stew", "boxty", "colcannon", "soda bread"],
+    "american": ["burger", "bbq ribs", "mac and cheese", "clam chowder"],
+    "mexican": ["tacos", "burritos", "guacamole", "mole", "tamales"],
+    "peruvian": ["ceviche", "lomo saltado", "aji de gallina", "anticuchos"],
+    "brazilian": ["feijoada", "pão de queijo", "moqueca", "churrasco"],
+    "argentinian": ["asado", "empanadas", "milanesa", "chimichurri"],
+    "colombian": ["arepas", "bandeja paisa", "ajiaco", "sancocho"],
+    "cuban": ["ropa vieja", "cubano sandwich", "moros y cristianos", "tostones"],
+    "japanese": ["sushi", "ramen", "yakitori", "tempura", "tonkatsu"],
+    "chinese": ["dim sum", "dumplings", "kung pao", "peking duck", "mapo tofu"],
+    "korean": ["bibimbap", "kimchi", "bulgogi", "tteokbokki", "japchae"],
+    "thai": ["pad thai", "green curry", "tom yum", "som tam", "massaman"],
+    "vietnamese": ["pho", "banh mi", "spring rolls", "bun cha", "com tam"],
+    "indian": ["curry", "naan", "tandoori", "biryani", "dal"],
+    "pakistani": ["biryani", "nihari", "seekh kebab", "haleem"],
+    "bangladeshi": ["biryani", "hilsa fish", "panta bhat", "fuchka"],
+    "sri_lankan": ["hoppers", "kottu roti", "lamprais", "fish curry"],
+    "nepalese": ["momo", "dal bhat", "sel roti", "thukpa"],
+    "indonesian": ["nasi goreng", "satay", "rendang", "gado-gado"],
+    "malaysian": ["nasi lemak", "laksa", "char kway teow", "roti canai"],
+    "singaporean": ["chilli crab", "hainanese chicken rice", "laksa", "char kway teow"],
+    "filipino": ["adobo", "sinigang", "lechon", "lumpia"],
+    "pizza": ["pizza", "margherita", "neapolitan pizza"],
+    "sushi": ["sushi", "sashimi", "nigiri", "maki"],
+    "ramen": ["ramen", "tonkotsu", "shoyu ramen", "miso ramen"],
+    "burger": ["burger", "hamburger", "cheeseburger"],
+    "tapas": ["tapas", "patatas bravas", "jamón ibérico"],
+    "seafood": ["oysters", "lobster", "grilled fish", "ceviche"],
+    "steak": ["steak", "dry-aged beef", "entrecôte"],
+    "bakery": ["sourdough", "cardamom bun", "kanelbulle", "croissant"],
+    "coffee": ["espresso", "filter coffee", "cortado", "flat white"],
+    "bistro": ["steak frites", "onion soup", "duck confit"],
+    "pub": ["fish and chips", "pie and mash", "bangers and mash"]
+  },
+  "dishHints": [
+    {
+      "terms": ["pierogi", "pierogarnia", "polska pierogi", "polish pierogi"],
+      "cuisine": "polish",
+      "dish": "pierogi",
+      "match": ["pierogi"]
+    },
+    {
+      "terms": ["moules frites", "moules-frites", "mussels and fries", "musslor och pommes"],
+      "cuisine": "belgian",
+      "dish": "moules-frites",
+      "match": ["moules", "moules frites", "mussels", "moules-frites"]
+    },
+    {
+      "terms": ["lohikeitto", "salmon soup", "laxsoppa", "laxsoppan"],
+      "cuisine": "finnish",
+      "dish": "lohikeitto",
+      "match": ["lohikeitto", "salmon soup", "laxsoppa"]
+    },
+    {
+      "terms": ["cevapi", "ćevapi", "cevapcici", "cevap"],
+      "cuisine": "balkan",
+      "dish": "cevapi",
+      "match": ["cevapi", "cevap", "cevapcici"]
+    },
+    {
+      "terms": ["burek", "börek", "byrek"],
+      "cuisine": "balkan",
+      "dish": "burek",
+      "match": ["burek", "borek", "byrek"]
+    },
+    {
+      "terms": ["khachapuri", "khachapuri bread"],
+      "cuisine": "georgian",
+      "dish": "khachapuri",
+      "match": ["khachapuri"]
+    },
+    {
+      "terms": ["khinkali", "georgian dumplings"],
+      "cuisine": "georgian",
+      "dish": "khinkali",
+      "match": ["khinkali"]
+    },
+    {
+      "terms": ["gravlax", "gravad lax"],
+      "cuisine": "swedish",
+      "dish": "gravlax",
+      "match": ["gravlax", "gravad lax"]
+    },
+    {
+      "terms": ["köttbullar", "kottbullar", "swedish meatballs", "svenska köttbullar"],
+      "cuisine": "swedish",
+      "dish": "meatballs",
+      "match": ["köttbullar", "kottbullar", "meatballs"]
+    },
+    {
+      "terms": ["smørrebrød", "smorrebrod", "open sandwich"],
+      "cuisine": "danish",
+      "dish": "smørrebrød",
+      "match": ["smørrebrød", "smorrebrod", "open sandwich"]
+    },
+    {
+      "terms": ["shakshuka"],
+      "cuisine": "israeli",
+      "dish": "shakshuka",
+      "match": ["shakshuka"]
+    },
+    {
+      "terms": ["jollof rice", "jollof"],
+      "cuisine": "nigerian",
+      "dish": "jollof rice",
+      "match": ["jollof", "jollof rice"]
+    },
+    {
+      "terms": ["injera", "ethiopian platter"],
+      "cuisine": "ethiopian",
+      "dish": "injera",
+      "match": ["injera", "doro wat", "tibs"]
+    },
+    {
+      "terms": ["tagine", "tajine"],
+      "cuisine": "moroccan",
+      "dish": "tagine",
+      "match": ["tagine", "tajine"]
+    },
+    {
+      "terms": ["koshari", "kushari"],
+      "cuisine": "egyptian",
+      "dish": "koshari",
+      "match": ["koshari", "kushari"]
+    },
+    {
+      "terms": ["feijoada"],
+      "cuisine": "brazilian",
+      "dish": "feijoada",
+      "match": ["feijoada"]
+    },
+    {
+      "terms": ["ceviche", "cebiche"],
+      "cuisine": "peruvian",
+      "dish": "ceviche",
+      "match": ["ceviche", "cebiche"]
+    },
+    {
+      "terms": ["empanadas"],
+      "cuisine": "argentinian",
+      "dish": "empanadas",
+      "match": ["empanadas"]
+    },
+    {
+      "terms": ["arepas"],
+      "cuisine": "colombian",
+      "dish": "arepas",
+      "match": ["arepas"]
+    },
+    {
+      "terms": ["adobo"],
+      "cuisine": "filipino",
+      "dish": "adobo",
+      "match": ["adobo"]
+    },
+    {
+      "terms": ["nasi goreng"],
+      "cuisine": "indonesian",
+      "dish": "nasi goreng",
+      "match": ["nasi goreng"]
+    },
+    {
+      "terms": ["nasi lemak"],
+      "cuisine": "malaysian",
+      "dish": "nasi lemak",
+      "match": ["nasi lemak"]
+    },
+    {
+      "terms": ["laksa"],
+      "cuisine": "malaysian",
+      "dish": "laksa",
+      "match": ["laksa"]
+    },
+    {
+      "terms": ["hainanese chicken rice", "chicken rice"],
+      "cuisine": "singaporean",
+      "dish": "hainanese chicken rice",
+      "match": ["chicken rice", "hainanese"]
+    },
+    {
+      "terms": ["chilli crab", "chili crab"],
+      "cuisine": "singaporean",
+      "dish": "chilli crab",
+      "match": ["chilli crab", "chili crab"]
+    },
+    {
+      "terms": ["momo", "nepalese dumplings"],
+      "cuisine": "nepalese",
+      "dish": "momo",
+      "match": ["momo"]
+    },
+    {
+      "terms": ["hoppers", "appam"],
+      "cuisine": "sri_lankan",
+      "dish": "hoppers",
+      "match": ["hoppers", "appam"]
+    },
+    {
+      "terms": ["biryani"],
+      "cuisine": "indian",
+      "dish": "biryani",
+      "match": ["biryani"]
+    },
+    {
+      "terms": ["pad thai"],
+      "cuisine": "thai",
+      "dish": "pad thai",
+      "match": ["pad thai"]
+    },
+    {
+      "terms": ["tom yum", "tom yam"],
+      "cuisine": "thai",
+      "dish": "tom yum",
+      "match": ["tom yum", "tom yam"]
+    },
+    {
+      "terms": ["green curry", "grön curry"],
+      "cuisine": "thai",
+      "dish": "green curry",
+      "match": ["green curry"]
+    },
+    {
+      "terms": ["pho", "phở"],
+      "cuisine": "vietnamese",
+      "dish": "pho",
+      "match": ["pho"]
+    },
+    {
+      "terms": ["banh mi", "bánh mì"],
+      "cuisine": "vietnamese",
+      "dish": "banh mi",
+      "match": ["banh mi"]
+    },
+    {
+      "terms": ["bibimbap"],
+      "cuisine": "korean",
+      "dish": "bibimbap",
+      "match": ["bibimbap"]
+    },
+    {
+      "terms": ["bulgogi"],
+      "cuisine": "korean",
+      "dish": "bulgogi",
+      "match": ["bulgogi"]
+    },
+    {
+      "terms": ["kimchi"],
+      "cuisine": "korean",
+      "dish": "kimchi",
+      "match": ["kimchi"]
+    },
+    {
+      "terms": ["dim sum", "dimsum"],
+      "cuisine": "chinese",
+      "dish": "dim sum",
+      "match": ["dim sum", "dimsum"]
+    },
+    {
+      "terms": ["dumplings", "dumpling", "jiaozi", "gyoza"],
+      "cuisine": "chinese",
+      "dish": "dumplings",
+      "match": ["dumpling", "dumplings", "jiaozi", "gyoza"]
+    },
+    {
+      "terms": ["peking duck", "beijing duck"],
+      "cuisine": "chinese",
+      "dish": "peking duck",
+      "match": ["peking duck", "beijing duck"]
+    },
+    {
+      "terms": ["sushi", "sashimi", "nigiri"],
+      "cuisine": "sushi",
+      "dish": "sushi",
+      "match": ["sushi", "sashimi", "nigiri", "maki"]
+    },
+    {
+      "terms": ["ramen", "tonkotsu", "shoyu ramen", "miso ramen"],
+      "cuisine": "ramen",
+      "dish": "ramen",
+      "match": ["ramen", "tonkotsu", "shoyu", "miso ramen"]
+    },
+    {
+      "terms": ["yakitori", "tsukune"],
+      "cuisine": "japanese",
+      "dish": "yakitori",
+      "match": ["yakitori", "tsukune"]
+    },
+    {
+      "terms": ["tacos", "taqueria"],
+      "cuisine": "mexican",
+      "dish": "tacos",
+      "match": ["tacos", "taqueria"]
+    },
+    {
+      "terms": ["paella"],
+      "cuisine": "spanish",
+      "dish": "paella",
+      "match": ["paella"]
+    },
+    {
+      "terms": ["tapas", "patatas bravas"],
+      "cuisine": "tapas",
+      "dish": "tapas",
+      "match": ["tapas", "patatas bravas"]
+    },
+    {
+      "terms": ["falafel"],
+      "cuisine": "lebanese",
+      "dish": "falafel",
+      "match": ["falafel"]
+    },
+    {
+      "terms": ["hummus", "houmous"],
+      "cuisine": "lebanese",
+      "dish": "hummus",
+      "match": ["hummus", "houmous"]
+    },
+    {
+      "terms": ["shawarma", "schawarma"],
+      "cuisine": "lebanese",
+      "dish": "shawarma",
+      "match": ["shawarma", "schawarma"]
+    },
+    {
+      "terms": ["kebab", "kebabs"],
+      "cuisine": "turkish",
+      "dish": "kebab",
+      "match": ["kebab", "kebabs"]
+    },
+    {
+      "terms": ["souvlaki"],
+      "cuisine": "greek",
+      "dish": "souvlaki",
+      "match": ["souvlaki"]
+    },
+    {
+      "terms": ["moussaka"],
+      "cuisine": "greek",
+      "dish": "moussaka",
+      "match": ["moussaka"]
+    },
+    {
+      "terms": ["goulash", "gulasch"],
+      "cuisine": "hungarian",
+      "dish": "goulash",
+      "match": ["goulash", "gulasch"]
+    },
+    {
+      "terms": ["schnitzel", "wiener schnitzel"],
+      "cuisine": "austrian",
+      "dish": "schnitzel",
+      "match": ["schnitzel", "wiener schnitzel"]
+    },
+    {
+      "terms": ["bratwurst", "currywurst"],
+      "cuisine": "german",
+      "dish": "bratwurst",
+      "match": ["bratwurst", "currywurst"]
+    },
+    {
+      "terms": ["fondue"],
+      "cuisine": "swiss",
+      "dish": "fondue",
+      "match": ["fondue"]
+    },
+    {
+      "terms": ["raclette"],
+      "cuisine": "swiss",
+      "dish": "raclette",
+      "match": ["raclette"]
+    },
+    {
+      "terms": ["fish and chips"],
+      "cuisine": "british",
+      "dish": "fish and chips",
+      "match": ["fish and chips"]
+    },
+    {
+      "terms": ["pastéis de nata", "pasteis de nata", "nata"],
+      "cuisine": "portuguese",
+      "dish": "pastéis de nata",
+      "match": ["pastéis de nata", "pasteis de nata", "nata"]
+    },
+    {
+      "terms": ["bacalhau"],
+      "cuisine": "portuguese",
+      "dish": "bacalhau",
+      "match": ["bacalhau"]
+    },
+    {
+      "terms": ["borscht", "barszcz", "borsch"],
+      "cuisine": "ukrainian",
+      "dish": "borscht",
+      "match": ["borscht", "barszcz", "borsch"]
+    },
+    {
+      "terms": ["varenyky", "vareniki"],
+      "cuisine": "ukrainian",
+      "dish": "varenyky",
+      "match": ["varenyky", "vareniki"]
+    },
+    {
+      "terms": ["cardamom bun", "kardemummabulle", "kardemumma"],
+      "cuisine": "bakery",
+      "dish": "cardamom bun",
+      "match": ["cardamom", "kardemumma", "kardemummabulle"]
+    },
+    {
+      "terms": ["sourdough", "surdegsbröd", "surdeg"],
+      "cuisine": "bakery",
+      "dish": "sourdough",
+      "match": ["sourdough", "surdeg", "surdegsbrod"]
+    },
+    {
+      "terms": ["kanelbulle", "cinnamon bun"],
+      "cuisine": "bakery",
+      "dish": "kanelbulle",
+      "match": ["kanelbulle", "cinnamon"]
+    },
+    {
+      "terms": ["burger", "burgers", "burgare", "hamburgare"],
+      "cuisine": "burger",
+      "dish": "burger",
+      "match": ["burger", "burgers", "burgare", "hamburgare"]
+    },
+    {
+      "terms": ["pizza", "pizzeria"],
+      "cuisine": "pizza",
+      "dish": "pizza",
+      "match": ["pizza", "pizzeria"]
+    },
+    {
+      "terms": ["steak", "entrecôte", "entrecote"],
+      "cuisine": "steak",
+      "dish": "steak",
+      "match": ["steak", "entrecote", "entrecôte"]
+    }
+  ]
+}

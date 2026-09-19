@@ -1,3 +1,5 @@
+import { dishCuisineAliases, dishCuisineSearchTerms } from './cuisine-dishes.ts';
+
 export type StructuredFilters = {
   cuisines: string[];
   price_max: number | null;
@@ -169,6 +171,7 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     ["paella", "spanish"],
     ["paella", "paella"],
     ["ramen", "ramen"],
+    ...dishCuisineSearchTerms(),
   ];
 
   for (const [term, norm] of knownCuisines) {
@@ -219,7 +222,7 @@ export function extractStructuredFilters(query: string): StructuredFilters {
   };
 }
 
-export const CUISINE_ALIASES: Record<string, string[]> = {
+const BASE_CUISINE_ALIASES: Record<string, string[]> = {
   poland: ["polish", "poland", "polska", "polsk", "pierogi", "eastern_european", "eastern european"],
   polish: ["polish", "poland", "polska", "polsk", "pierogi", "eastern_european", "eastern european"],
   polska: ["polish", "poland", "polska", "polsk", "pierogi", "eastern_european", "eastern european"],
@@ -343,3 +346,18 @@ export const CUISINE_ALIASES: Record<string, string[]> = {
   hamburgaren: ["burger", "burgers", "burgare", "burgaren", "burgarna", "hamburgare", "hamburgaren", "hamburgarna"],
   hamburgarna: ["burger", "burgers", "burgare", "burgaren", "burgarna", "hamburgare", "hamburgaren", "hamburgarna"],
 };
+
+function mergeAliases(base: Record<string, string[]>, extra: Record<string, string[]>): Record<string, string[]> {
+  const merged: Record<string, Set<string>> = {};
+  for (const [key, values] of Object.entries(base)) {
+    merged[key] = new Set(values);
+  }
+  for (const [key, values] of Object.entries(extra)) {
+    if (!merged[key]) merged[key] = new Set();
+    for (const value of values) merged[key].add(value);
+    merged[key].add(key);
+  }
+  return Object.fromEntries(Object.entries(merged).map(([key, values]) => [key, [...values]]));
+}
+
+export const CUISINE_ALIASES = mergeAliases(BASE_CUISINE_ALIASES, dishCuisineAliases());

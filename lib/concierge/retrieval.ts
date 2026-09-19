@@ -2,6 +2,7 @@ import { scorePlace } from '../scoring.ts';
 import type { ConciergePlace, QueryContext, RankedCandidate } from './contracts.ts';
 import { includesPhrase, normalize, placeFacts } from './facts.ts';
 import { coordinates, distanceKm, eligiblePlace, specialtyEligible } from './gates.ts';
+import { dishMatchTerms, mealCuisineIds } from './cuisine-dishes.ts';
 import { isCuisineTerm, type Intent, parseIntent, queryTerms, tokenAlternatives } from './intent.ts';
 import { reciprocalRankFusion } from './hybrid_search.ts';
 
@@ -19,14 +20,8 @@ function oneEdit(a: string, b: string): boolean {
 function matchesTerm(term: string, text: string): boolean {
   return tokenAlternatives(term).some((alternative) => includesPhrase(text, alternative)) || text.split(' ').some((word) => oneEdit(term, word));
 }
-const DISH_TERMS: Record<string, string[]> = {
-  cardamom: ['cardamom', 'kardemumma', 'kardemummabulle'],
-  sourdough: ['sourdough', 'surdeg', 'surdegsbrod'],
-  burger: ['burger', 'burgers', 'burgare', 'burgaren', 'burgarna', 'hamburgare', 'hamburgaren', 'hamburgarna'],
-  dumplings: ['dumpling', 'dumplings', 'dim sum', 'dimsum', 'jiaozi', 'gyoza'],
-  'dim sum': ['dim sum', 'dimsum', 'dumplings', 'dumpling'],
-};
-const MEAL_CUISINES = new Set(['thai', 'polish', 'italian', 'french', 'japanese', 'chinese', 'korean', 'indian', 'mexican', 'vietnamese', 'spanish', 'greek', 'german', 'austrian', 'hungarian', 'czech', 'pub', 'middle eastern', 'lebanese', 'burger', 'pizza', 'sushi', 'ramen']);
+const DISH_TERMS = dishMatchTerms();
+const MEAL_CUISINES = new Set(mealCuisineIds());
 
 const SODERORT_SUB = [
   'soderort', 'arsta', 'liljeholmen', 'aspudden', 'hagersten', 'enskede',

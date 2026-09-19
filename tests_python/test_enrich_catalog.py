@@ -4,13 +4,30 @@ import json
 from pathlib import Path
 from execution.enrich_catalog import (
     WebsiteScraper,
+    build_cuisine_dish_map,
+    build_dish_keywords,
     extract_facts_from_html,
     extract_ground_truth_facts,
     extract_curated_place_facts,
     extract_osm_facts,
+    load_cuisine_dish_registry,
     merge_facts,
     normalize_name,
 )
+
+
+def test_cuisine_dish_registry_loader() -> None:
+    registry = load_cuisine_dish_registry()
+    assert registry["version"] == "concierge-cuisine-dishes-v2"
+    cuisine_map = build_cuisine_dish_map(registry)
+    keywords = build_dish_keywords(registry)
+    assert "polish" in cuisine_map
+    assert "pierogi" in cuisine_map["polish"]
+    assert "belgian" in cuisine_map
+    assert "moules-frites" in cuisine_map["belgian"]
+    assert keywords["moules frites"] == "moules-frites"
+    assert keywords["lohikeitto"] == "lohikeitto"
+    assert keywords["salmon soup"] == "lohikeitto"
 
 
 def test_normalize_name() -> None:
