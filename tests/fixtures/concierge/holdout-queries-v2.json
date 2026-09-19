@@ -1,0 +1,26 @@
+{
+  "version": "concierge-holdout-v2",
+  "description": "Dish→cuisine semantic holdout queries for preview/hybrid RAG evaluation. Not used in training fixtures.",
+  "queries": [
+    { "id": "h2-pierogi-polish", "query": "polska pierogi", "expectedCuisine": "polish", "expectedDish": "pierogi" },
+    { "id": "h2-moules-belgian", "query": "moules frites brasserie", "expectedCuisine": "belgian", "expectedDish": "moules-frites" },
+    { "id": "h2-salmon-finnish", "query": "salmon soup finnish", "expectedCuisine": "finnish", "expectedDish": "lohikeitto" },
+    { "id": "h2-cevapi-balkan", "query": "cevapi grill", "expectedCuisine": "balkan", "expectedDish": "cevapi" },
+    { "id": "h2-khachapuri-georgian", "query": "khachapuri bread", "expectedCuisine": "georgian", "expectedDish": "khachapuri" },
+    { "id": "h2-shakshuka-israeli", "query": "shakshuka brunch", "expectedCuisine": "israeli", "expectedDish": "shakshuka" },
+    { "id": "h2-jollof-nigerian", "query": "jollof rice west african", "expectedCuisine": "nigerian", "expectedDish": "jollof rice" },
+    { "id": "h2-injera-ethiopian", "query": "injera platter", "expectedCuisine": "ethiopian", "expectedDish": "injera" },
+    { "id": "h2-tagin-moroccan", "query": "lamb tagine", "expectedCuisine": "moroccan", "expectedDish": "tagine" },
+    { "id": "h2-ceviche-peruvian", "query": "ceviche lime", "expectedCuisine": "peruvian", "expectedDish": "ceviche" },
+    { "id": "h2-empanadas-argentinian", "query": "empanadas argentina", "expectedCuisine": "argentinian", "expectedDish": "empanadas" },
+    { "id": "h2-nasi-goreng-indonesian", "query": "nasi goreng", "expectedCuisine": "indonesian", "expectedDish": "nasi goreng" },
+    { "id": "h2-laksa-malaysian", "query": "laksa spicy", "expectedCuisine": "malaysian", "expectedDish": "laksa" },
+    { "id": "h2-momo-nepalese", "query": "nepalese momo dumplings", "expectedCuisine": "nepalese", "expectedDish": "momo" },
+    { "id": "h2-biryani-indian", "query": "chicken biryani", "expectedCuisine": "indian", "expectedDish": "biryani" },
+    { "id": "h2-pad-thai", "query": "pad thai noodles", "expectedCuisine": "thai", "expectedDish": "pad thai" },
+    { "id": "h2-pho-vietnamese", "query": "pho bo", "expectedCuisine": "vietnamese", "expectedDish": "pho" },
+    { "id": "h2-bibimbap-korean", "query": "bibimbap bowl", "expectedCuisine": "korean", "expectedDish": "bibimbap" },
+    { "id": "h2-dim-sum-chinese", "query": "dim sum dumplings", "expectedCuisine": "chinese", "expectedDish": "dim sum" },
+    { "id": "h2-ramen-not-sushi", "query": "ramen not sushi", "expectedCuisine": "ramen", "expectedDish": "ramen", "mustExcludeDish": "sushi" }
+  ]
+}
