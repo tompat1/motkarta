@@ -12,7 +12,7 @@ import { ExternalMapLinks } from "./components/ExternalMapLinks";
 import { FoodMap } from "./components/FoodMap";
 import { PlaceResultList } from "./components/PlaceResultList";
 import { filterRankedPlacesByBounds, type MapBounds } from "./app/map-bounds";
-import { buildConciergeQuerySuccess } from "./app/concierge-client";
+import { buildConciergeQuerySuccess, conciergeModeLabel } from "./app/concierge-client";
 import { SyncDevicesModal } from "./components/SyncDevicesModal";
 import { parseSyncDirectPlaces } from "./app/sync-utils";
 import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
@@ -516,6 +516,24 @@ function AppContent({
     setConcierge("");
     setQuery("");
   }, []);
+
+  const dismissConciergeAnswer = useCallback(() => {
+    conciergeRequest.current?.abort();
+    setAnswer(null);
+    setConciergeResponse(null);
+    setConciergeChatMessages([]);
+  }, []);
+
+  const scrollToConciergeAnswer = useCallback(() => {
+    const target = document.getElementById("concierge-answer")
+      ?? document.getElementById("concierge-answer-mobile");
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
+  const openConciergeAnswerPanel = useCallback(() => {
+    if (mobileViewMode === "map") setMobileViewMode("list");
+    window.requestAnimationFrame(scrollToConciergeAnswer);
+  }, [mobileViewMode, scrollToConciergeAnswer]);
 
   const selectKindFilter = useCallback(
     (newKind: EstablishmentFilter) => {
@@ -1450,9 +1468,7 @@ function AppContent({
       setAnswer(applied.answer);
       setConciergeChatMessages(applied.chatMessages);
       if (payload.action) setSuperpowerMode(payload.action);
-      window.requestAnimationFrame(() => {
-        document.getElementById("concierge-answer")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      });
+      window.requestAnimationFrame(scrollToConciergeAnswer);
     } catch {
       if (conciergeRequest.current !== controller) return;
       if (!controller.signal.aborted) {
@@ -1471,9 +1487,7 @@ function AppContent({
           setAnswer(applied.answer);
           setConciergeChatMessages(applied.chatMessages);
           if (result.action) setSuperpowerMode(result.action);
-          window.requestAnimationFrame(() => {
-            document.getElementById("concierge-answer")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-          });
+          window.requestAnimationFrame(scrollToConciergeAnswer);
         } catch {
           if (conciergeRequest.current === controller) setAnswer(lang === 'sv' ? 'Katalogen är inte tillgänglig just nu.' : 'The catalog is currently unavailable.');
         }
@@ -1768,6 +1782,32 @@ function AppContent({
     );
   }
 
+  const renderConciergeAnswerPanel = (variant: "desktop" | "mobile") => {
+    if (!answer) return null;
+    return (
+      <div
+        className={`concierge-answer-dock concierge-answer-dock-${variant}`}
+        id={variant === "desktop" ? "concierge-answer" : "concierge-answer-mobile"}
+        aria-label={lang === "sv" ? "Concierge-svar" : "Concierge answer"}
+      >
+        <ConciergeAnswerView
+          answer={answer}
+          response={conciergeResponse ?? undefined}
+          places={places}
+          onSelectPlace={handleSelectPlace}
+          onRefineQuery={handleRefineQuery}
+          onTriggerAction={(action, prefillName) => {
+            setSuperpowerInitialPlaceName(prefillName);
+            setSuperpowerMode(action);
+          }}
+          lang={lang}
+          onClose={dismissConciergeAnswer}
+          messages={conciergeChatMessages}
+        />
+      </div>
+    );
+  };
+
   const renderConciergePanel = () => (
     <div className="countermap-concierge-panel">
       <div className="countermap-panel-heading">
@@ -1778,22 +1818,6 @@ function AppContent({
             <small>{lang === "sv" ? "Söker först i verifierade signaler" : "Searches verified signals first"}</small>
           </div>
         </div>
-        {answer ? (
-          <button
-            type="button"
-            className="countermap-concierge-close"
-            onClick={() => {
-              conciergeRequest.current?.abort();
-              setAnswer(null);
-              setConciergeResponse(null);
-              setConciergeChatMessages([]);
-            }}
-            title={lang === "sv" ? "Stäng svar" : "Dismiss answer"}
-          >
-            <X size={13} weight="bold" />
-            <span>{lang === "sv" ? "Stäng" : "Close"}</span>
-          </button>
-        ) : null}
       </div>
 
       <div className="search-container-relative">
@@ -1944,21 +1968,31 @@ function AppContent({
       </div>
 
       {answer ? (
-        <div className="concierge-panel-chat" id="concierge-answer" aria-label="Concierge answer">
-          <ConciergeAnswerView
-            answer={answer}
-            response={conciergeResponse ?? undefined}
-            places={places}
-            onSelectPlace={handleSelectPlace}
-            onRefineQuery={handleRefineQuery}
-            onTriggerAction={(action, prefillName) => {
-              setSuperpowerInitialPlaceName(prefillName);
-              setSuperpowerMode(action);
-            }}
-            lang={lang}
-            onClose={() => { conciergeRequest.current?.abort(); setAnswer(null); setConciergeResponse(null); setConciergeChatMessages([]); }}
-            messages={conciergeChatMessages}
-          />
+        <div className="concierge-search-status" role="status">
+          <div className="concierge-search-status-copy">
+            <Sparkle size={14} weight="fill" aria-hidden="true" />
+            <span>
+              {conciergeResponse
+                ? conciergeModeLabel(conciergeResponse, lang)
+                : lang === "sv"
+                  ? "Concierge-svar klart"
+                  : "Concierge answer ready"}
+            </span>
+          </div>
+          <div className="concierge-search-status-actions">
+            <button type="button" className="concierge-search-status-link" onClick={openConciergeAnswerPanel}>
+              {lang === "sv" ? "Visa svar" : "View answer"}
+            </button>
+            <button
+              type="button"
+              className="concierge-search-status-dismiss"
+              onClick={dismissConciergeAnswer}
+              title={lang === "sv" ? "Stäng svar" : "Dismiss answer"}
+            >
+              <X size={13} weight="bold" />
+              <span>{lang === "sv" ? "Stäng" : "Close"}</span>
+            </button>
+          </div>
         </div>
       ) : (
         <>
@@ -2688,6 +2722,8 @@ function AppContent({
           </div>
         </div>
 
+        {renderConciergeAnswerPanel("mobile")}
+
         {mobileViewMode === "list" ? (
           <MobilePlaceCardList
             places={listPlaces}
@@ -3067,6 +3103,7 @@ function AppContent({
               ) : null}
             </div>
           </div>
+          {renderConciergeAnswerPanel("desktop")}
           <p className="formula">
             {mode === "Hidden gems"
               ? t.formulaHiddenGems
