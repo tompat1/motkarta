@@ -43,7 +43,9 @@
     "deploy:cloudflare": "npm run build && wrangler pages deploy dist --project-name motkarta",
     "deploy:concierge-rate-gate": "wrangler deploy --config wrangler.concierge-rate-gate.toml",
     "preview:concierge-ai:prepare": "node execution/prepare_concierge_ai_preview.mjs",
-    "preview:concierge-ai:smoke": "node execution/smoke_concierge_ai_preview.mjs"
+    "preview:concierge-ai:prepare:hybrid": "node execution/prepare_concierge_ai_preview.mjs --hybrid",
+    "preview:concierge-ai:smoke": "node execution/smoke_concierge_ai_preview.mjs",
+    "preview:concierge-ai:smoke:hybrid": "node execution/smoke_concierge_ai_preview.mjs --hybrid"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
