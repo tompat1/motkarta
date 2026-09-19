@@ -5,7 +5,7 @@ import { safeUrl } from "../../lib/concierge/facts";
 import { resolveConciergeMapPlace } from "../../lib/concierge/map-identity";
 import type { PlaceInput } from "../../lib/scoring";
 import type { Language } from "../app/shared";
-import { ArrowSquareOut, CheckCircle, Globe, MagnifyingGlass, MapPin, MapTrifold, PlusCircle, Sliders, Sparkle, ThumbsDown, ThumbsUp, X } from "@phosphor-icons/react";
+import { ArrowSquareOut, CaretUp, CheckCircle, Globe, MagnifyingGlass, MapPin, MapTrifold, PlusCircle, Sliders, Sparkle, ThumbsDown, ThumbsUp } from "@phosphor-icons/react";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 
 import { formatChatTimestamp, formatChatTimestampTooltip } from "../../lib/concierge/format";
@@ -22,6 +22,7 @@ export function ConciergeAnswerView({
   lang = "sv",
   onClose,
   messages,
+  hidePlaceCards = false,
 }: {
   answer: string;
   response?: ConciergeResponse;
@@ -32,6 +33,8 @@ export function ConciergeAnswerView({
   lang?: Language;
   onClose?: () => void;
   messages?: import("../../lib/concierge/contracts").ChatMessage[];
+  /** When true, catalog cards render in the main list instead of here (dock/summary mode). */
+  hidePlaceCards?: boolean;
 }) {
   const parsed = useMemo(() => response ? {
     intro: response.intro, cards: response.cards, charter: [],
@@ -80,14 +83,14 @@ export function ConciergeAnswerView({
   };
 
   return (
-    <div className="concierge-results">
+    <div className={`concierge-results${hidePlaceCards ? " concierge-results-compact" : ""}`}>
       {onClose ? (
         <div className="concierge-results-header">
           <div className="concierge-results-header-title-group">
             <span className="concierge-results-title-badge">
               <Sparkle size={15} weight="bold" /> {lang === "sv" ? "AI-Concierge Svar" : "AI Concierge Result"}
             </span>
-            {response ? (
+            {response && !hidePlaceCards ? (
               <span className="concierge-results-mode-badge">{conciergeModeLabel(response, lang)}</span>
             ) : null}
           </div>
@@ -95,9 +98,9 @@ export function ConciergeAnswerView({
             type="button"
             onClick={onClose}
             className="concierge-results-dismiss-btn"
-            title={lang === "sv" ? "Dölj svar" : "Dismiss"}
+            title={lang === "sv" ? "Dölj svar" : "Hide answer"}
           >
-            <X size={13} weight="bold" /> {lang === "sv" ? "Dölj svar" : "Dismiss"}
+            <CaretUp size={13} weight="bold" aria-hidden="true" /> {lang === "sv" ? "Dölj" : "Hide"}
           </button>
         </div>
       ) : null}
@@ -152,6 +155,14 @@ export function ConciergeAnswerView({
           </form>
         </div>
       ) : parsed.intro ? <p className="concierge-intro">{parsed.intro}</p> : null}
+
+      {hidePlaceCards && parsed.cards.length > 0 ? (
+        <p className="concierge-list-hint">
+          {lang === "sv"
+            ? `${parsed.cards.length} ställe${parsed.cards.length === 1 ? "" : "n"} visas i listan nedan.`
+            : `${parsed.cards.length} place${parsed.cards.length === 1 ? "" : "s"} shown in the list below.`}
+        </p>
+      ) : null}
 
       {parsed.cards.length === 0 && (response?.query || answer) ? (
         <div className="concierge-inline-web-enrichment">
@@ -243,7 +254,7 @@ export function ConciergeAnswerView({
         </div>
       ) : null}
 
-      {parsed.cards.map((card, idx) => {
+      {!hidePlaceCards ? parsed.cards.map((card, idx) => {
         const cardNameClean = card.name.replace(/\s*\([^)]*\)/g, "").trim().toLowerCase();
         const matchedPlace =
           (response && response.cards[idx] ? resolveConciergeMapPlace(response.cards[idx], places) : undefined) ||
@@ -378,7 +389,7 @@ export function ConciergeAnswerView({
             </div>
           </article>
         );
-      })}
+      }) : null}
 
       {parsed.charter.length ? (
         <div className="concierge-charter-box">
@@ -394,111 +405,115 @@ export function ConciergeAnswerView({
         </div>
       ) : null}
 
-      <div className="concierge-feedback-bar">
-        <span className="concierge-feedback-label">
-          {lang === "sv" ? "Var svaret hjälpsamt?" : "Was this recommendation helpful?"}
-        </span>
-
-        <div className="concierge-feedback-actions">
-          <button
-            type="button"
-            className={`feedback-btn ${feedback === "up" ? "active-up" : ""}`}
-            onClick={() => {
-              setFeedback("up");
-              setFeedbackType("up");
-              setIsFeedbackModalOpen(true);
-            }}
-            title={lang === "sv" ? "Hjälpsamt (Tummen upp)" : "Helpful (Thumbs up)"}
-          >
-            <ThumbsUp size={14} weight={feedback === "up" ? "fill" : "bold"} />
-            {lang === "sv" ? "Ja" : "Yes"}
-          </button>
-          <button
-            type="button"
-            className={`feedback-btn ${feedback === "down" ? "active-down" : ""}`}
-            onClick={() => {
-              setFeedback("down");
-              setFeedbackType("down");
-              setIsFeedbackModalOpen(true);
-            }}
-            title={lang === "sv" ? "Inte hjälpsamt (Tummen ner)" : "Not helpful (Thumbs down)"}
-          >
-            <ThumbsDown size={14} weight={feedback === "down" ? "fill" : "bold"} />
-            {lang === "sv" ? "Nej" : "No"}
-          </button>
-        </div>
-
-        {feedback ? (
-          <span className={`concierge-feedback-thanks ${feedback}`}>
-            {feedback === "up"
-              ? lang === "sv"
-                ? "Tack för din feedback! 👍"
-                : "Thanks for your feedback! 👍"
-              : lang === "sv"
-                ? "Tack! Vi förbättrar källorna. 👎"
-                : "Thanks! We'll improve our sources. 👎"}
+      <div className="concierge-answer-footer">
+        <div className="concierge-feedback-bar">
+          <span className="concierge-feedback-label">
+            {lang === "sv" ? "Var svaret hjälpsamt?" : "Was this recommendation helpful?"}
           </span>
+
+          <div className="concierge-feedback-actions">
+            <button
+              type="button"
+              className={`feedback-btn ${feedback === "up" ? "active-up" : ""}`}
+              onClick={() => {
+                setFeedback("up");
+                setFeedbackType("up");
+                setIsFeedbackModalOpen(true);
+              }}
+              title={lang === "sv" ? "Hjälpsamt (Tummen upp)" : "Helpful (Thumbs up)"}
+            >
+              <ThumbsUp size={14} weight={feedback === "up" ? "fill" : "bold"} />
+              {lang === "sv" ? "Ja" : "Yes"}
+            </button>
+            <button
+              type="button"
+              className={`feedback-btn ${feedback === "down" ? "active-down" : ""}`}
+              onClick={() => {
+                setFeedback("down");
+                setFeedbackType("down");
+                setIsFeedbackModalOpen(true);
+              }}
+              title={lang === "sv" ? "Inte hjälpsamt (Tummen ner)" : "Not helpful (Thumbs down)"}
+            >
+              <ThumbsDown size={14} weight={feedback === "down" ? "fill" : "bold"} />
+              {lang === "sv" ? "Nej" : "No"}
+            </button>
+          </div>
+
+          {feedback ? (
+            <span className={`concierge-feedback-thanks ${feedback}`}>
+              {feedback === "up"
+                ? lang === "sv"
+                  ? "Tack för din feedback!"
+                  : "Thanks for your feedback!"
+                : lang === "sv"
+                  ? "Tack! Vi förbättrar källorna."
+                  : "Thanks! We'll improve our sources."}
+            </span>
+          ) : null}
+        </div>
+
+        <PlaceFeedbackModal
+          isOpen={isFeedbackModalOpen}
+          targetId={response?.cards?.[0]?.id ?? 0}
+          targetName={response?.cards?.[0]?.name ?? (lang === "sv" ? "Concierge-rekommendation" : "Concierge Recommendation")}
+          initialType={feedbackType}
+          lang={lang}
+          onClose={() => setIsFeedbackModalOpen(false)}
+        />
+
+        {onRefineQuery ? (
+          <div className="concierge-follow-up-box">
+            <div className="concierge-follow-up-title">
+              {lang === "sv" ? "Följdfråga" : "Follow-up"}
+            </div>
+            <div className="concierge-follow-up-chips">
+              <button
+                type="button"
+                className="concierge-btn"
+                onClick={() => onRefineQuery(lang === "sv" ? "Ge mig fler ställen" : "Show more places")}
+              >
+                {lang === "sv" ? "Fler förslag" : "More places"}
+              </button>
+              <button
+                type="button"
+                className="concierge-btn"
+                onClick={() => onRefineQuery(lang === "sv" ? "På Södermalm då?" : "In Södermalm?")}
+              >
+                {lang === "sv" ? "På Söder då?" : "In Södermalm?"}
+              </button>
+              <button
+                type="button"
+                className="concierge-btn"
+                onClick={() => onRefineQuery(lang === "sv" ? "Något billigare alternativ?" : "More affordable options?")}
+              >
+                {lang === "sv" ? "Billigare" : "Budget friendly"}
+              </button>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const input = e.currentTarget.elements.namedItem("followUpQuery") as HTMLInputElement;
+                if (input && input.value.trim()) {
+                  onRefineQuery(input.value.trim());
+                  input.value = "";
+                }
+              }}
+              className="concierge-follow-up-form"
+            >
+              <input
+                name="followUpQuery"
+                type="text"
+                maxLength={1000}
+                placeholder={lang === "sv" ? "T.ex. Vilka har öppet på söndagar?" : "E.g. Which are open on Sundays?"}
+                className="concierge-follow-up-input"
+              />
+              <button type="submit" className="concierge-btn primary">
+                {lang === "sv" ? "Skicka" : "Send"}
+              </button>
+            </form>
+          </div>
         ) : null}
-      </div>
-
-      <PlaceFeedbackModal
-        isOpen={isFeedbackModalOpen}
-        targetId={response?.cards?.[0]?.id ?? 0}
-        targetName={response?.cards?.[0]?.name ?? (lang === "sv" ? "Concierge-rekommendation" : "Concierge Recommendation")}
-        initialType={feedbackType}
-        lang={lang}
-        onClose={() => setIsFeedbackModalOpen(false)}
-      />
-
-      <div className="concierge-follow-up-box">
-        <div className="concierge-follow-up-title">
-          💬 {lang === "sv" ? "Ställ en följdfråga" : "Ask a follow-up question"}
-        </div>
-        <div className="concierge-follow-up-chips">
-          <button
-            type="button"
-            className="concierge-btn"
-            onClick={() => onRefineQuery?.(lang === "sv" ? "Ge mig fler ställen" : "Show more places")}
-          >
-            ➕ {lang === "sv" ? "Fler förslag" : "More places"}
-          </button>
-          <button
-            type="button"
-            className="concierge-btn"
-            onClick={() => onRefineQuery?.(lang === "sv" ? "På Södermalm då?" : "In Södermalm?")}
-          >
-            📍 {lang === "sv" ? "På Söder då?" : "In Södermalm?"}
-          </button>
-          <button
-            type="button"
-            className="concierge-btn"
-            onClick={() => onRefineQuery?.(lang === "sv" ? "Något billigare alternativ?" : "More affordable options?")}
-          >
-            🏷️ {lang === "sv" ? "Billigare alternativ" : "Budget friendly"}
-          </button>
-        </div>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const input = e.currentTarget.elements.namedItem("followUpQuery") as HTMLInputElement;
-            if (input && input.value.trim()) {
-              onRefineQuery?.(input.value.trim());
-              input.value = "";
-            }
-          }}
-          className="concierge-follow-up-form"
-        >
-          <input
-            name="followUpQuery"
-            type="text"
-            maxLength={1000}
-            placeholder={lang === "sv" ? "T.ex. Vilka av dessa har öppet på söndagar?" : "E.g. Which of these are open on Sundays?"}
-            className="concierge-follow-up-input"
-          />
-          <button type="submit" className="concierge-btn primary">
-            {lang === "sv" ? "Skicka följdfråga" : "Send follow-up"}
-          </button>
-        </form>
       </div>
     </div>
   );
