@@ -491,6 +491,7 @@ function AppContent({
     );
   };
   const [answer, setAnswer] = useState<string | null>(null);
+  const [conciergeAnswerCollapsed, setConciergeAnswerCollapsed] = useState(false);
   const [conciergeResponse, setConciergeResponse] = useState<ConciergeResponse | null>(null);
   const [conciergeMainListIds, setConciergeMainListIds] = useState<number[]>([]);
   const conciergeRequest = useRef<AbortController | null>(null);
@@ -510,6 +511,7 @@ function AppContent({
   const clearConciergeState = useCallback(() => {
     conciergeRequest.current?.abort();
     setAnswer(null);
+    setConciergeAnswerCollapsed(false);
     setConciergeResponse(null);
     setConciergeMainListIds([]);
     setConciergeChatMessages([]);
@@ -520,8 +522,13 @@ function AppContent({
   const dismissConciergeAnswer = useCallback(() => {
     conciergeRequest.current?.abort();
     setAnswer(null);
+    setConciergeAnswerCollapsed(false);
     setConciergeResponse(null);
     setConciergeChatMessages([]);
+  }, []);
+
+  const hideConciergeAnswerPanel = useCallback(() => {
+    setConciergeAnswerCollapsed(true);
   }, []);
 
   const scrollToConciergeAnswer = useCallback(() => {
@@ -531,6 +538,7 @@ function AppContent({
   }, []);
 
   const openConciergeAnswerPanel = useCallback(() => {
+    setConciergeAnswerCollapsed(false);
     if (mobileViewMode === "map") setMobileViewMode("list");
     window.requestAnimationFrame(scrollToConciergeAnswer);
   }, [mobileViewMode, scrollToConciergeAnswer]);
@@ -1783,10 +1791,10 @@ function AppContent({
   }
 
   const renderConciergeAnswerPanel = (variant: "desktop" | "mobile") => {
-    if (!answer) return null;
+    if (!answer || conciergeAnswerCollapsed) return null;
     return (
       <div
-        className={`concierge-answer-dock concierge-answer-dock-${variant}`}
+        className={`concierge-answer-dock concierge-answer-dock-${variant} concierge-answer-dock-summary`}
         id={variant === "desktop" ? "concierge-answer" : "concierge-answer-mobile"}
         aria-label={lang === "sv" ? "Concierge-svar" : "Concierge answer"}
       >
@@ -1801,8 +1809,9 @@ function AppContent({
             setSuperpowerMode(action);
           }}
           lang={lang}
-          onClose={dismissConciergeAnswer}
+          onClose={hideConciergeAnswerPanel}
           messages={conciergeChatMessages}
+          hidePlaceCards
         />
       </div>
     );
@@ -1967,34 +1976,7 @@ function AppContent({
         ) : null}
       </div>
 
-      {answer ? (
-        <div className="concierge-search-status" role="status">
-          <div className="concierge-search-status-copy">
-            <Sparkle size={14} weight="fill" aria-hidden="true" />
-            <span>
-              {conciergeResponse
-                ? conciergeModeLabel(conciergeResponse, lang)
-                : lang === "sv"
-                  ? "Concierge-svar klart"
-                  : "Concierge answer ready"}
-            </span>
-          </div>
-          <div className="concierge-search-status-actions">
-            <button type="button" className="concierge-search-status-link" onClick={openConciergeAnswerPanel}>
-              {lang === "sv" ? "Visa svar" : "View answer"}
-            </button>
-            <button
-              type="button"
-              className="concierge-search-status-dismiss"
-              onClick={dismissConciergeAnswer}
-              title={lang === "sv" ? "Stäng svar" : "Dismiss answer"}
-            >
-              <X size={13} weight="bold" />
-              <span>{lang === "sv" ? "Stäng" : "Close"}</span>
-            </button>
-          </div>
-        </div>
-      ) : (
+      {!answer ? (
         <>
           <div className="countermap-starter-row" aria-label={lang === "sv" ? "Förslag till concierge" : "Concierge starters"}>
             <span>{lang === "sv" ? "Prova" : "Try"}</span>
@@ -2031,9 +2013,40 @@ function AppContent({
             </button>
           </div>
         </>
-      )}
+      ) : null}
     </div>
   );
+
+  const renderConciergeStickyBanner = () => {
+    if (!answer) return null;
+    const modeLabel = conciergeResponse
+      ? conciergeModeLabel(conciergeResponse, lang)
+      : lang === "sv"
+        ? "Concierge-svar klart"
+        : "Concierge answer ready";
+    return (
+      <div className="concierge-sticky-banner" role="status">
+        <div className="concierge-sticky-banner-copy">
+          <Sparkle size={14} weight="fill" aria-hidden="true" />
+          <span className="concierge-sticky-banner-mode">{modeLabel}</span>
+        </div>
+        <div className="concierge-sticky-banner-actions">
+          <button type="button" className="concierge-sticky-banner-link" onClick={openConciergeAnswerPanel}>
+            {lang === "sv" ? "Visa svar" : "View answer"}
+          </button>
+          <button
+            type="button"
+            className="concierge-sticky-banner-dismiss"
+            onClick={dismissConciergeAnswer}
+            title={lang === "sv" ? "Stäng svar" : "Dismiss answer"}
+          >
+            <X size={13} weight="bold" />
+            <span>{lang === "sv" ? "Stäng" : "Close"}</span>
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <main className={mobileTab === "discover" ? "mobile-tab-discover-active" : ""}>
@@ -2656,6 +2669,13 @@ function AppContent({
           </div>
         </div>
         </div>
+
+        {answer ? (
+          <div className={`concierge-sticky-stack${conciergeAnswerCollapsed ? " concierge-answer-panel-collapsed" : ""}`}>
+            {renderConciergeStickyBanner()}
+            {renderConciergeAnswerPanel("desktop")}
+          </div>
+        ) : null}
       </section>
 
       <section className="workspace" id="place-workspace" ref={workspaceRef}>
@@ -3103,7 +3123,6 @@ function AppContent({
               ) : null}
             </div>
           </div>
-          {renderConciergeAnswerPanel("desktop")}
           <p className="formula">
             {mode === "Hidden gems"
               ? t.formulaHiddenGems
