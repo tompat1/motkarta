@@ -16,6 +16,7 @@ function autoHintsFromSignatures(): DishHint[] {
   const hints: DishHint[] = [];
   for (const [cuisine, dishes] of Object.entries(signatureDishes)) {
     for (const dish of dishes) {
+      if (dish in signatureDishes && dish !== cuisine) continue;
       const key = normalize(dish);
       if (!key) continue;
       hints.push({ terms: [dish], cuisine, dish, match: [dish] });
@@ -51,6 +52,8 @@ export function dishCuisineSearchTerms(): Array<[string, string]> {
     const key = `${cuisine}::${cuisine}`;
     if (!seen.has(key)) pairs.push([cuisine, cuisine]);
     for (const dish of dishes) {
+      // Skip mapping e.g. burger→american when burger is its own cuisine category.
+      if (dish in signatureDishes && dish !== cuisine) continue;
       const dishKey = `${dish}::${cuisine}`;
       if (!seen.has(dishKey)) pairs.push([dish, cuisine]);
     }
@@ -60,7 +63,7 @@ export function dishCuisineSearchTerms(): Array<[string, string]> {
 
 /** `[phrase, dishId]` matchers for intent parsing (longest phrases first). */
 export function dishIntentMatchers(): Array<[string, string]> {
-  const pairs = allHints.flatMap((hint) => hint.terms.map((term) => [term, hint.dish] as [string, string]));
+  const pairs = registry.dishHints.flatMap((hint) => hint.terms.map((term) => [term, hint.dish] as [string, string]));
   return pairs.sort((a, b) => b[0].length - a[0].length);
 }
 
