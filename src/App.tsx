@@ -600,6 +600,7 @@ function AppContent({
         }
       } else if (tab === "map") {
         setActiveDesktopNav("map");
+        setMobileViewMode("map");
         if (kind === "Saved") {
           selectKindFilter("All places");
         }
