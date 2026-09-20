@@ -3,7 +3,7 @@ import type { PlaceInput, ScoredPlace } from '../scoring.ts';
 export const VERSIONS = {
   schema: 'concierge-response-v1', corpus: 'concierge-facts-v1',
   lexical: 'concierge-lexical-v3', hybrid: 'concierge-hybrid-v3',
-  prompt: 'concierge-synthesis-v3', scorer: 'transparent-scorer-v1.1',
+  prompt: 'concierge-synthesis-v4', scorer: 'transparent-scorer-v1.1',
 } as const;
 export const EMBEDDING_MODEL = '@cf/baai/bge-m3';
 export const EMBEDDING_DIMENSIONS = 1024;
