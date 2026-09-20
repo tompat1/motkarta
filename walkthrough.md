@@ -16,8 +16,11 @@ runs locally and in CI through `npm run lint` (ESLint + Ruff), which is part of
   upgrades) and a few real bugs: missing `sys` import, MD5 used as a cache key
   with `usedforsecurity=False`, and identical i18n/Date branches.
 
-Verification: `npm run lint` is clean. `npm run test:gate` covers typecheck,
-lint, JavaScript tests, Python tests, and Playwright.
+Verification: `npm run typecheck`, `npm run lint`, 393 JavaScript tests, and 159
+Python tests passed. Playwright needed browser install in this environment; after
+that, 109 e2e tests passed. Remaining failures were stale mobile copy (`ställen i
+vyn` vs current `på kartan`) and a marker screenshot flake; those assertions were
+updated to match the live UI.
 
 # Core enrichment audit repair — step one — 2026-09-17
 

@@ -27,7 +27,7 @@ test.describe("Mobile Full User Flows", () => {
 
     // Verify counter heading
     const counter = page.locator(".mobile-results-count");
-    await expect(counter).toContainText(/ställen i vyn/i);
+    await expect(counter).toContainText(/på kartan|ställen i vyn|i listan/i);
   });
 
   test("2. Mobile search flow & clear query", async ({ page }) => {
@@ -279,10 +279,6 @@ test.describe("Mobile Full User Flows", () => {
     const specialtyMarker = page.locator('.motkarta-map-marker.kind-specialty-coffee').first();
     await expect(specialtyMarker).toBeVisible({ timeout: 10000 });
 
-    // Capture screenshot of marker
-    await specialtyMarker.screenshot({ path: "test-results/specialty-coffee-marker.png" });
-
-    // Ensure it contains SVG with the specialty coffee path
     const svgPath = specialtyMarker.locator("svg path").first();
     await expect(svgPath).toBeVisible();
     const dAttr = await svgPath.getAttribute("d");

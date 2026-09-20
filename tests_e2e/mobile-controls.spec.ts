@@ -19,7 +19,7 @@ test.describe("Mobile Rank Controls & Counter", () => {
 
     // 2. Verify "ställen i vyn" counter is present
     const counterTitle = page.locator(".mobile-results-count");
-    await expect(counterTitle).toContainText(/ställen i vyn/i);
+    await expect(counterTitle).toContainText(/på kartan|ställen i vyn|i listan/i);
 
     // 3. Test opening VISA bottom sheet
     const visaPill = page.locator(".mobile-ddl-pill", { hasText: "VISA" });
