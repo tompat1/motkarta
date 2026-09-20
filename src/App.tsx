@@ -3399,6 +3399,11 @@ function AppContent({
           onToggleSave={handleToggleSavePlace}
           onRatePlace={handleRatePlace}
           onViewOnMap={handleViewPlaceOnMap}
+          onGetDirections={(place) =>
+            recordRecommendationEvents([
+              { establishmentId: place.id, eventType: "direction_request", queryContext: { surface: "place_detail" } },
+            ])
+          }
         />
       ) : null}
 

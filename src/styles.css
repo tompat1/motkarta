@@ -13802,6 +13802,15 @@ footer {
   z-index: 10;
 }
 
+.place-detail-footer-actions {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
 .place-detail-primary-cta {
   background: #2563eb;
   color: #ffffff;
@@ -13823,6 +13832,34 @@ footer {
 
 .place-detail-primary-cta:active {
   transform: scale(0.98);
+}
+
+.place-detail-directions-link {
+  color: var(--color-water, #2563eb);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.place-detail-directions-link:hover {
+  text-decoration: underline;
+}
+
+.place-detail-directions-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--color-water, #2563eb);
+  font-family: var(--font-display, "Archivo Condensed", sans-serif);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.place-detail-directions-cta:hover {
+  text-decoration: underline;
 }
 
 /* Mobile List View & Rich Photo Cards */

@@ -28,6 +28,7 @@ import { formatDistance, distanceFromPoint } from "../app/shared";
 import { LazyPlaceMediaDrawer } from "./LazyPlaceMediaDrawer";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 import { MotkartaScoreWidget } from "./MotkartaScoreWidget";
+import { buildDirectionsUrl } from "../../lib/map-links";
 
 const DUMMY_PLACE_IMAGE_URL = "/motkarta_drop_divided_black_red.svg";
 
@@ -126,6 +127,7 @@ export function PlaceDetailSheet({
     userLocation && place.latitude && place.longitude
       ? distanceFromPoint(place, userLocation)
       : null;
+  const directionsUrl = buildDirectionsUrl(place);
   const activePhoto = photos[activePhotoIndex] ?? null;
 
   return (
@@ -374,7 +376,23 @@ export function PlaceDetailSheet({
           <div className="place-detail-meta-box">
             <div className="meta-row">
               <MapPin size={18} weight="bold" style={{ color: "var(--color-water)", flexShrink: 0 }} />
-              <span>{place.address ? `${place.address}, ${place.area}` : `${place.area}, Stockholm`}</span>
+              <span>
+                {place.address ? `${place.address}, ${place.area}` : `${place.area}, Stockholm`}
+                {directionsUrl ? (
+                  <>
+                    {" · "}
+                    <a
+                      href={directionsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="place-detail-directions-link"
+                      onClick={() => onGetDirections?.(place)}
+                    >
+                      {lang === "sv" ? "Hitta hit" : "Get directions"}
+                    </a>
+                  </>
+                ) : null}
+              </span>
             </div>
             {place.openingHours ? (
               <div className="meta-row" style={{ alignItems: "flex-start" }}>
@@ -461,13 +479,27 @@ export function PlaceDetailSheet({
 
         {/* Sticky Primary CTA Action */}
         <footer className="place-detail-footer">
-          <button
-            type="button"
-            className="place-detail-primary-cta"
-            onClick={() => onViewOnMap(place)}
-          >
-            <span>{lang === "sv" ? "VISA PÅ KARTAN" : "VIEW ON MAP"}</span>
-          </button>
+          <div className="place-detail-footer-actions">
+            <button
+              type="button"
+              className="place-detail-primary-cta"
+              onClick={() => onViewOnMap(place)}
+            >
+              <span>{lang === "sv" ? "VISA PÅ KARTAN" : "VIEW ON MAP"}</span>
+            </button>
+            {directionsUrl ? (
+              <a
+                href={directionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="place-detail-directions-cta"
+                onClick={() => onGetDirections?.(place)}
+              >
+                <NavigationArrow size={18} weight="bold" />
+                <span>{lang === "sv" ? "Hitta hit" : "Get directions"}</span>
+              </a>
+            ) : null}
+          </div>
         </footer>
       </article>
 
