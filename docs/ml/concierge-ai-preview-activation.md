@@ -10,13 +10,14 @@ holdout approves promotion.
    ```bash
    npm run deploy:concierge-rate-gate
    ```
-2. **Vector index verified** — `motkarta-concierge-preview-v1` with 3,143 vectors
-   from the [2026-09-07 trial](concierge-real-model-trial.md). Re-sync if D1 drifted:
+2. **Vector index verified** — `motkarta-concierge-preview-v1` (1,024-d cosine,
+   `@cf/baai/bge-m3`). Re-sync if D1 drifted. The 2026-09-20 apply verified **3,140**
+   current documents (430 upserts, 3 O'Learys deletions from the 3,143 trial index):
    ```bash
-   node execution/export_concierge.mjs <d1-snapshot.json> .tmp/corpus.json
    python3 execution/index_concierge.py \
-     --input .tmp/corpus.json \
+     --input .tmp/concierge-readiness/canonical-d1.json \
      --index motkarta-concierge-preview-v1 \
+     --previous .tmp/concierge/previous-manifest.json \
      --output .tmp/concierge/index-plan.json
    # Review plan, then apply with credentials and --max-input-tokens budget.
    ```
@@ -62,6 +63,8 @@ Preview wrangler vars (generated under `.tmp/concierge-ai-preview/wrangler.toml`
 | `CONCIERGE_RETRIEVAL_MODE` | `hybrid` |
 | `CONCIERGE_SYNTHESIS_MODE` | `constrained` |
 | `CONCIERGE_MIN_SIMILARITY` | `0.5` (diagnostic; not production default) |
+| `CONCIERGE_DEADLINE_MS` | `8000` (preview-only; production stays 4500) |
+| `limits.cpu_ms` | `10000` (hybrid+Gemma exceeded the lexical 1000ms CPU budget) |
 
 ## Demo queries (side-by-side vs production)
 
