@@ -191,8 +191,14 @@ index_name = "motkarta-concierge-preview-v1"
 These are examples, not applied configuration. Do not activate hybrid or constrained
 synthesis until preview resource, spending and quality approval is in place.
 Runtime remote stages have bounded waits and no automatic retries. The post-body
-processing deadline is 4.5 seconds; D1 is bounded at 1.2 seconds, embedding at 1.2,
-vector query at 0.8 and synthesis at 2 seconds within the remaining deadline.
+processing deadline is 4.5 seconds in production (`CONCIERGE_DEADLINE_MS` unset).
+The isolated hybrid preview may raise it to 12 seconds. D1 is bounded at 1.2 seconds
+(2 seconds when the raised preview deadline is in effect), embedding at 1.2, vector
+query at 0.8 and synthesis at 8 seconds within the remaining deadline. Workers AI JSON mode may already parse that object; REST Gemma returns a string. The adapter now accepts both. A 2026-09-20
+live hybrid smoke showed Workers Gemma exceeding both a 2-second and a 4-second
+synthesis cap after hybrid retrieval (Drop Coffee wall time 5.6s with fallback);
+REST Gemma on a tiny packet completed in ~1s, so the extra budget is for live
+Workers AI binding + full citation packets.
 Workers binding calls cannot necessarily be cancelled remotely; timeout does not
 promise cancellation of an already billed call, but no new stage continues from
 its late result. Browser network timeout is six seconds; initial location permission

@@ -8,21 +8,34 @@ import { buildResponse } from '../../lib/concierge/response.ts';
 import { semanticCandidates, withinDeadline } from '../../lib/concierge/providers.ts';
 import { synthesize } from '../../lib/concierge/synthesis.ts';
 import { parseAction, parseIntent } from '../../lib/concierge/intent.ts';
+import { isProhibitedDomain, filterExternalWebResults, parseDuckDuckGoHtml, PROHIBITED_DOMAINS } from '../../lib/concierge/web-search.ts';
 
 export { extractStructuredFilters } from '../../lib/concierge/filters.ts';
 export { retrieveAndSynthesize } from '../../lib/concierge/response.ts';
+export { isProhibitedDomain };
 export type Env = {
   DB?: Parameters<typeof loadPlacesFromD1>[0]; AI?: AiBinding; CONCIERGE_INDEX?: VectorBinding;
   CONCIERGE_RETRIEVAL_MODE?: string; CONCIERGE_SYNTHESIS_MODE?: string;
   CONCIERGE_MIN_SIMILARITY?: string;
+  CONCIERGE_DEADLINE_MS?: string;
   CONCIERGE_RATE_LIMITER?: { limit(input: { key: string }): Promise<{ success: boolean }> };
   CONCIERGE_RATE_GATE?: { fetch(request: Request): Promise<Response> };
   ASSETS?: { fetch(input: Request | string, init?: RequestInit): Promise<Response> };
   BRAVE_SEARCH_API_KEY?: string;
   TAVILY_API_KEY?: string;
 };
-import { isProhibitedDomain, filterExternalWebResults, parseDuckDuckGoHtml, PROHIBITED_DOMAINS } from '../../lib/concierge/web-search.ts';
-export { isProhibitedDomain };
+
+export const DEFAULT_CONCIERGE_DEADLINE_MS = 4500;
+export const MAX_CONCIERGE_DEADLINE_MS = 12000;
+
+/** Production stays at 4.5s unless a preview/explicit env raises the wall budget. */
+export function processingDeadlineMs(env: Env = {}): number {
+  const raw = Number(env.CONCIERGE_DEADLINE_MS);
+  if (!Number.isInteger(raw) || raw < DEFAULT_CONCIERGE_DEADLINE_MS || raw > MAX_CONCIERGE_DEADLINE_MS) {
+    return DEFAULT_CONCIERGE_DEADLINE_MS;
+  }
+  return raw;
+}
 
 export async function fetchExternalWebResults(query: string, env: Env, deadline: number): Promise<import('../../lib/concierge/contracts.ts').ExternalWebResult[]> {
   const timeoutMs = Math.max(100, Math.min(1800, deadline - Date.now()));
@@ -193,14 +206,14 @@ export async function requestAiPermit(env: Env, key: string, units: number) {
   } catch { return false; }
 }
 export async function processConciergeQuery(query: string, env: Env = {}, context: QueryContext = {}, allowAI = false, requestUrl?: string) {
-  const started = Date.now(), deadline = started + 4500;
+  const started = Date.now(), budget = processingDeadlineMs(env), deadline = started + budget;
   let places: ConciergePlace[] = [];
   let blocked: PlaceIdentity[] = [];
   let publicationAvailable = true;
   let sourceNamespace = 'd1';
   if (parseAction(query)) return Response.json(buildResponse(query, [], 0, context, 'action'), { headers });
   try {
-    if (env.DB) places = await withinDeadline(loadPlacesFromD1(env.DB), 1200);
+    if (env.DB) places = await withinDeadline(loadPlacesFromD1(env.DB), budget >= 8000 ? 2000 : 1200);
     blocked = places.filter(isClosedPlace);
   } catch { publicationAvailable = false; }
   if (env.ASSETS && requestUrl) {

@@ -30,7 +30,7 @@ const previewConfigLines = [
   `compatibility_date = "${date}"`,
   '',
   '[limits]',
-  'cpu_ms = 1000',
+  'cpu_ms = 10000',
   '',
   '[[d1_databases]]',
   'binding = "DB"',
@@ -57,6 +57,7 @@ previewConfigLines.push(
   '[vars]',
   `CONCIERGE_RETRIEVAL_MODE = "${hybrid ? 'hybrid' : 'lexical'}"`,
   'CONCIERGE_SYNTHESIS_MODE = "constrained"',
+  'CONCIERGE_DEADLINE_MS = "12000"',
 );
 if (hybrid) {
   // Diagnostic preview threshold from the 2026-09-07 trial sweep; not a production default.
@@ -84,7 +85,8 @@ const manifest = {
   paidInference: true,
   rateGateService: 'motkarta-concierge-ai-gate',
   dailyAiUnitLimit: 200,
-  cpuLimitMs: 1000,
+  cpuLimitMs: 10000,
+  deadlineMs: 12000,
   workerSha256: await hash(path.join(site, '_worker.js')),
   publicCatalogSha256: await hash(path.join(site, 'data/places.json')),
 };

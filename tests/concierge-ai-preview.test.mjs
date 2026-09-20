@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import preview, { buildPreviewConciergeEnv, readOnlyAiCatalog } from '../execution/concierge-ai-preview-worker.ts';
 import { evidenceQuery, placeQuery, tagQuery } from '../lib/place-records.ts';
+import { processingDeadlineMs } from '../functions/api/concierge.ts';
 
 const origin = 'https://concierge-ai-preview.motkarta.pages.dev';
 const hybridOrigin = 'https://concierge-ai-hybrid-preview.motkarta.pages.dev';
@@ -23,6 +24,28 @@ test('buildPreviewConciergeEnv keeps lexical when hybrid is requested without ve
   assert.equal(built.env.CONCIERGE_RETRIEVAL_MODE, 'lexical');
   assert.equal(built.env.CONCIERGE_SYNTHESIS_MODE, 'constrained');
   assert.equal(built.env.CONCIERGE_INDEX, undefined);
+});
+
+test('processingDeadlineMs keeps production at 4.5s and allows a bounded preview raise', () => {
+  assert.equal(processingDeadlineMs(), 4500);
+  assert.equal(processingDeadlineMs({}), 4500);
+  assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '8000' }), 8000);
+  assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '12000' }), 12000);
+  assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '4499' }), 4500);
+  assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '12001' }), 4500);
+  assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '8000.5' }), 4500);
+});
+
+test('buildPreviewConciergeEnv passes a raised hybrid deadline through to the concierge env', () => {
+  const built = buildPreviewConciergeEnv({
+    DB: db,
+    CONCIERGE_RETRIEVAL_MODE: 'hybrid',
+    CONCIERGE_MIN_SIMILARITY: '0.5',
+    CONCIERGE_DEADLINE_MS: '8000',
+    CONCIERGE_INDEX: { query: async () => ({ matches: [] }) },
+  });
+  assert.equal(built.env.CONCIERGE_DEADLINE_MS, '8000');
+  assert.equal(processingDeadlineMs(built.env), 8000);
 });
 
 test('buildPreviewConciergeEnv enables hybrid when index and threshold are configured', () => {

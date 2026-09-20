@@ -34,7 +34,7 @@ export function buildSynthesisInput(response: ConciergeResponse, language: Local
 }
 export async function synthesize(response: ConciergeResponse, ai: AiBinding, language: Locale, deadline: number, context: import('./contracts.ts').QueryContext = {}): Promise<ConciergeResponse> {
   if (!response.cards.length) return response;
-  const raw = await withinDeadline(ai.run(SYNTHESIS_MODEL, buildSynthesisInput(response, language, context)), Math.min(2000, deadline - Date.now()));
+  const raw = await withinDeadline(ai.run(SYNTHESIS_MODEL, buildSynthesisInput(response, language, context)), Math.min(8000, deadline - Date.now()));
   return applySynthesisOutput(raw, response, language);
 }
 export function applySynthesisOutput(raw: unknown, response: ConciergeResponse, language: Locale): ConciergeResponse {
@@ -46,8 +46,13 @@ export function applySynthesisOutput(raw: unknown, response: ConciergeResponse, 
     if (choice.finish_reason !== 'stop' || choice.message?.refusal || choice.message?.tool_calls?.length) throw new Error('invalid_synthesis');
     payload = choice.message?.content;
   }
-  if (typeof payload !== 'string' || payload.length > 6000) throw new Error('invalid_synthesis');
-  const selections = validateSynthesis(JSON.parse(payload), response);
+  if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+    // Workers AI JSON mode may already parse the object; REST returns a string.
+  } else {
+    if (typeof payload !== 'string' || payload.length > 6000) throw new Error('invalid_synthesis');
+    payload = JSON.parse(payload);
+  }
+  const selections = validateSynthesis(payload, response);
   if (!selections.some((selection) => selection.factIds.length)) throw new Error('unsupported_synthesis');
   const cards = response.cards.map((card, i) => {
     const selected = selections[i].factIds.map((id) => card.citations.find((f) => f.id === id)!);
