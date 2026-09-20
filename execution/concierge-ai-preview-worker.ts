@@ -35,6 +35,7 @@ export function buildPreviewConciergeEnv(env: PreviewEnv): { env: Env; previewTa
     CONCIERGE_RETRIEVAL_MODE: hybridReady ? 'hybrid' : 'lexical',
     CONCIERGE_SYNTHESIS_MODE: 'constrained',
     CONCIERGE_DEADLINE_MS: env.CONCIERGE_DEADLINE_MS,
+    CONCIERGE_SYNTHESIS_CAPTURE: env.CONCIERGE_SYNTHESIS_CAPTURE,
   };
   if (hybridReady) {
     previewEnv.CONCIERGE_INDEX = env.CONCIERGE_INDEX;
