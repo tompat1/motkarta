@@ -82,9 +82,9 @@ Check `diagnostics.fallbackReasons` in the JSON response. Empty array = full RAG
 `synthesis_rejected_or_unavailable` with `diagnostics.synthesisCapture` means the
 preview recorded the Workers `AI.run` shape (keys, success flag, 240-character
 content head) without query text. The 2026-09-20 Drop Coffee probe captured a
-chat-completions object whose JSON listed nine real fact IDs; synthesis v4
-accepts up to ten. Extra keys still fail. REST is not required for this
-Workers `AI.run` path.
+chat-completions object whose JSON listed nine real fact IDs. The validator now
+accepts up to ten; the prompt still asks for 1–3. Extra keys still fail. REST is
+not required for this Workers `AI.run` path.
 
 ## Safety boundaries (unchanged)
 

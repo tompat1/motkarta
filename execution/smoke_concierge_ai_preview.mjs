@@ -77,7 +77,7 @@ for (const expected of queries) {
     assert.equal(result.retrievalMode, 'lexical', expected.query);
     assert.equal(result.modelVersion, modelVersionForRetrieval('lexical'), expected.query);
   }
-  assert.equal(result.promptVersion, 'concierge-synthesis-v4');
+  assert.equal(result.promptVersion, 'concierge-synthesis-v3');
   assert.ok(result.cards.length > 0, expected.query);
   assert.ok(!result.diagnostics.fallbackReasons.includes('ai_rate_gate_closed'), expected.query);
   if (hybrid) {

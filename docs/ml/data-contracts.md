@@ -1,14 +1,14 @@
 # ML data contracts
 
-Concierge synthesis v4 uses Gemma 4's single completed chat response, rejects
+Concierge synthesis v3 uses Gemma 4's single completed chat response, rejects
 truncation/refusals/tool calls, then validates existing fact IDs and server-selected
 place order. The adapter may unwrap a Workers AI REST envelope and accept parsed
 JSON or a fenced string; extra keys still fail validation. Raw model text is not
 displayed. Isolated AI previews may attach `diagnostics.synthesisCapture` on
 synthesis failure: envelope keys and a 240-character content head, never query
-text. Each card may cite up to ten supplied fact IDs; longer lists are bounded
-to ten before validation. See the [real-model trial](concierge-real-model-trial.md) for measured
-failures and lineage.
+text. Each card may cite up to ten supplied fact IDs even though the prompt asks
+for 1–3; longer lists are bounded to ten before validation. See the
+[real-model trial](concierge-real-model-trial.md) for measured failures and lineage.
 
 ## Principles
 
