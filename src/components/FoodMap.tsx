@@ -117,6 +117,15 @@ export function FoodMap({
         marker.setZIndexOffset(1000);
       }
 
+      // Add popup for mobile users
+      if (isMobileMapViewport()) {
+        const popupContent = createPlacePopupContent(place, lang);
+        marker.bindPopup(popupContent, {
+          maxWidth: 280,
+          className: 'motkarta-place-popup'
+        });
+      }
+
       clusterGroup.addLayer(marker);
       markersRef.current.set(place.id, marker);
     }
@@ -491,7 +500,23 @@ export function FoodMap({
           flyCenter = [targetLat - latShift, targetLng];
         }
 
-        currentMap.closePopup();
+        // Open popup on mobile when marker is clicked
+        if (isMobileMapViewport()) {
+          // Ensure the marker has a popup bound
+          if (!activeMarker.getPopup()) {
+            const popupContent = createPlacePopupContent(activePlace, lang);
+            activeMarker.bindPopup(popupContent, {
+              maxWidth: 280,
+              className: 'motkarta-place-popup'
+            });
+          }
+          // Open it after animation
+          setTimeout(() => {
+            activeMarker.openPopup();
+          }, 400);
+        } else {
+          currentMap.closePopup();
+        }
 
         if (currentCluster && typeof (currentCluster as any).zoomToShowLayer === "function") {
           try {
@@ -587,6 +612,27 @@ export function FoodMap({
 
 function isMobileMapViewport() {
   return typeof window !== "undefined" && window.matchMedia("(max-width: 760px)").matches;
+}
+
+function createPlacePopupContent(place: ScoredPlace, lang: Language): string {
+  const cuisines = cuisineParts(place).map((c) => cuisineLabel(c, lang)).join(" · ");
+  const kindLabel = place.kind;
+  const areaLabel = place.area;
+  
+  return `
+    <div style="font-family: system-ui, -apple-system, sans-serif; padding: 4px 2px;">
+      <div style="font-weight: 700; font-size: 15px; color: #111; margin-bottom: 6px; line-height: 1.3;">
+        ${escapeHtml(place.name)}
+      </div>
+      <div style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; font-weight: 600;">
+        ${escapeHtml(kindLabel)} · ${escapeHtml(areaLabel)}
+      </div>
+      ${cuisines ? `<div style="font-size: 13px; color: #444; margin-bottom: 8px;">${escapeHtml(cuisines)}</div>` : ''}
+      <div style="font-size: 11px; color: #888; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e5e5;">
+        ${lang === 'sv' ? 'Tryck för mer information' : 'Tap for more details'}
+      </div>
+    </div>
+  `;
 }
 
 function placeIcon(place: ScoredPlace, active: boolean) {

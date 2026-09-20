@@ -1903,6 +1903,17 @@ button.search-clear-btn:hover {
   font-size: 12px;
 }
 
+/* Custom place popup styling for mobile */
+.motkarta-place-popup .leaflet-popup-content-wrapper {
+  border: 2px solid var(--color-ink);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+}
+
+.motkarta-place-popup .leaflet-popup-tip {
+  border: 2px solid var(--color-ink);
+}
+
 /* Map Markers */
 .leaflet-place-marker {
   align-items: center;
