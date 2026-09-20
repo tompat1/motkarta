@@ -17,12 +17,16 @@ function canRun(command, args) {
 
 runRequired("npx", ["eslint", "."]);
 
+const isCI = process.env.CF_PAGES === "1" || process.env.CI === "true";
+
 if (existsSync(".venv/bin/ruff")) {
   runRequired(".venv/bin/ruff", ["check", "."]);
 } else if (canRun("python3", ["-m", "ruff", "--version"])) {
   runRequired("python3", ["-m", "ruff", "check", "."]);
 } else if (canRun("ruff", ["--version"])) {
   runRequired("ruff", ["check", "."]);
+} else if (isCI) {
+  console.log("⚠️ Ruff not found in CI build environment (Cloudflare Pages). Skipping Python linting during static asset compilation.");
 } else {
   console.error("Ruff is not installed. Create .venv and run: pip install -r requirements-python.txt");
   process.exit(1);
