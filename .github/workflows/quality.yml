@@ -1,0 +1,63 @@
+name: Quality Gate
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  lint:
+    name: ESLint and Ruff
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: |
+          npm ci
+          python -m pip install "ruff==0.16.8"
+
+      - name: Run ESLint and Ruff
+        run: npm run lint
+
+  pr-quality-check:
+    name: Typecheck, Build & Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: |
+          npm ci
+          python -m pip install "ruff==0.16.8"
+
+      - name: Verify Types & Build
+        run: npm run build
+
+      - name: Run Test Suite
+        run: npm test

@@ -8,7 +8,7 @@ const origin = 'https://concierge-rag-preview.motkarta.pages.dev';
 const unavailableAssets = { fetch: () => { throw new Error('unexpected_asset_access'); } };
 
 test('unsupported intents short-circuit ranking without reading venue records', () => {
-  const places = [{ get id() { assert.fail('unnecessary_catalog_scan'); } }];
+  const places = [{ get id() { assert.fail('unnecessary_catalog_scan'); return 0; } }];
   for (const query of ['Starbucks', 'open now', 'pierogi nära mig', 'restaurants in Göteborg']) {
     assert.deepEqual(lexicalCandidates(query, places), []);
   }

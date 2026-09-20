@@ -58,7 +58,7 @@ function fakeD1({ duplicate = null } = {}) {
     tags: [],
     establishment: null,
     prepare(query) {
-      const statement = {
+      return {
         values: [],
         bind(...values) {
           this.values = values;
@@ -96,7 +96,6 @@ function fakeD1({ duplicate = null } = {}) {
           return { meta: { changes: 1 } };
         },
       };
-      return statement;
     },
   };
   return db;

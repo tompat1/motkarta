@@ -10,7 +10,7 @@ Every AI agent and contributor working on Motkarta MUST run and verify 100% clea
 ```bash
 npm run test:gate
 # Equivalent to:
-npm run typecheck && npm test && npm run test:python && npm run test:e2e
+npm run typecheck && npm run lint && npm test && npm run test:python && npm run test:e2e
 ```
 
 ### The 4 Tiers
@@ -31,6 +31,10 @@ npm run typecheck && npm test && npm run test:python && npm run test:e2e
    - Executes Playwright cross-browser tests (`playwright test`).
    - Verifies real browser behavior on Desktop Chromium, Mobile Chrome (Pixel 5), and Mobile Safari (iPhone 12).
    - Validates page rendering, category filter pills, search input, mobile bottom sheet controls (VISA, SORTERA, Formula modal), hamburger menu, scroll-to-top, list/map view toggle, and device sync modal.
+
+### Lint quality gate
+
+`npm run lint` is part of `npm run test:gate`. It runs ESLint (`eslint.config.mjs`) and Ruff (`pyproject.toml`) for the former Sourcery categories: refactoring, bug risk, performance, and security. Ignore catalog dumps under `public/data`. Advisory AI PR comments belong in Cursor Bugbot, not a quota-limited review SaaS.
 
 ---
 

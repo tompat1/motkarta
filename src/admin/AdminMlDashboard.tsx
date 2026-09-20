@@ -734,7 +734,7 @@ export function AdminMlDashboard({
           onClick={() => setActiveSection("cloudflare")}
         >
           <Lightning size={16} weight="fill" />
-          <span>{lang === "sv" ? "5. Cloudflare AI Workers & Agents" : "5. Cloudflare AI Workers & Agents"}</span>
+          <span>5. Cloudflare AI Workers & Agents</span>
         </button>
       </div>
 
@@ -1143,7 +1143,7 @@ export function AdminMlDashboard({
                     )
                   }
                 >
-                  {lang === "sv" ? "☕ Espresso Söder" : "☕ Espresso Söder"}
+                  ☕ Espresso Söder
                 </button>
                 <button
                   type="button"

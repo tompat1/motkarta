@@ -1823,7 +1823,7 @@ function AppContent({
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="countermap-panel-icon"><Sparkle size={16} weight="fill" aria-hidden="true" /></span>
           <div>
-            <strong>{lang === "sv" ? "Concierge" : "Concierge"}</strong>
+            <strong>Concierge</strong>
             <small>{lang === "sv" ? "Söker först i verifierade signaler" : "Searches verified signals first"}</small>
           </div>
         </div>
@@ -2117,9 +2117,7 @@ function AppContent({
               <span>
                 {adminSession.email
                   ? adminSession.email
-                  : lang === "sv"
-                    ? "Admin"
-                    : "Admin"}
+                  : "Admin"}
               </span>
               <button
                 type="button"

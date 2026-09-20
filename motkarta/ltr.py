@@ -14,7 +14,8 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Any, Sequence
+from typing import Any
+from collections.abc import Sequence
 
 import numpy as np
 import pandas as pd
@@ -129,7 +130,7 @@ class MotkartaDebiasedRanker:
         self.feature_names_: list[str] = []
         self.is_fitted_ = False
 
-    def fit(self, telemetry_events: list[dict[str, Any]]) -> "MotkartaDebiasedRanker":
+    def fit(self, telemetry_events: list[dict[str, Any]]) -> MotkartaDebiasedRanker:
         """Fit debiased ranker on recommendation events weighted by Inverse Propensity Scoring."""
         if not telemetry_events:
             raise ValueError("telemetry_events must not be empty.")

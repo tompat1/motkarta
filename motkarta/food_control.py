@@ -51,7 +51,7 @@ def load_or_fetch_food_control(
                 "metadata_url": FOOD_CONTROL_METADATA_URL,
                 "license": "Creative Commons CC0 1.0 according to Stockholm data portal metadata.",
                 "where": where,
-                "query_hash": hashlib.sha256(f"{layer_url}:{where}".encode("utf-8")).hexdigest(),
+                "query_hash": hashlib.sha256(f"{layer_url}:{where}".encode()).hexdigest(),
                 "fetched_at": datetime.now(UTC).isoformat(),
                 "cache_path": str(cache),
                 "feature_count": len(payload.get("features", [])),

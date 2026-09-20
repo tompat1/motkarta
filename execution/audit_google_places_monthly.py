@@ -16,8 +16,8 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timezone
-from typing import Dict, List, Any
+from datetime import datetime, UTC
+from typing import Any
 
 PLACES_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "data", "places.json")
 SPOTTED_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "data", "spotted_by_locals.json")
@@ -51,7 +51,7 @@ KNOWN_MISSING_CANDIDATES = [
         "lifecycleState": "verified",
         "sourceName": "Spotted by Locals Stockholm",
         "sourceUrl": "https://www.spottedbylocals.com/stockholm/soldaten-svejk/",
-        "lastUpdated": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "lastUpdated": datetime.now(UTC).strftime("%Y-%m-%d"),
         "evidenceLabel": "OpenStreetMap verified open data · Spotted by Locals",
         "mainstreamExposure": 30.0,
         "ageDays": 1000,
@@ -73,7 +73,7 @@ KNOWN_MISSING_CANDIDATES = [
                 "source": "Spotted by Locals Stockholm",
                 "verification": "listed",
                 "url": "https://www.spottedbylocals.com/stockholm/soldaten-svejk/",
-                "capturedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                "capturedAt": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
             }
         ]
     }
@@ -85,9 +85,9 @@ def normalize_name(name: str) -> str:
     cleaned = re.sub(r'\s+', ' ', cleaned).strip()
     return cleaned
 
-def audit_catalog(apply_fixes: bool = False) -> Dict[str, Any]:
+def audit_catalog(apply_fixes: bool = False) -> dict[str, Any]:
     print("Loading Motkarta catalog dataset...")
-    with open(PLACES_PATH, "r", encoding="utf-8") as f:
+    with open(PLACES_PATH, encoding="utf-8") as f:
         places_raw = json.load(f)
 
     places = places_raw.get("places", []) if isinstance(places_raw, dict) else places_raw
@@ -155,7 +155,7 @@ def audit_catalog(apply_fixes: bool = False) -> Dict[str, Any]:
 
     # 3. Check Spotted by Locals output for any unmatched active spots
     if os.path.exists(SPOTTED_PATH):
-        with open(SPOTTED_PATH, "r", encoding="utf-8") as f:
+        with open(SPOTTED_PATH, encoding="utf-8") as f:
             spotted_data = json.load(f)
         unmatched_spotted = [s for s in spotted_data.get("spots", []) if not s.get("matchedPlaceId")]
         print(f"Audited Spotted by Locals: {len(unmatched_spotted)} uncataloged spots available for candidate queue.")
@@ -166,7 +166,7 @@ def audit_catalog(apply_fixes: bool = False) -> Dict[str, Any]:
         print(f"Updated {PLACES_PATH} with fixes applied.")
 
     report_payload = {
-        "auditedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "auditedAt": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "totalCatalogPlaces": len(places),
         "activePlaces": len(places) - len(closed_places),
         "closedPlacesCount": len(closed_places),

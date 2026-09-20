@@ -9,15 +9,15 @@ import json
 import os
 import re
 import time
-from datetime import datetime, timezone
-from typing import Dict, List, Any
+from datetime import datetime, UTC
+from typing import Any
 import cloudscraper
 import bs4
 
 PLACES_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "data", "places.json")
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "data", "spotted_by_locals.json")
 
-def get_stockholm_urls_from_sitemaps(scraper: cloudscraper.CloudScraper) -> List[str]:
+def get_stockholm_urls_from_sitemaps(scraper: cloudscraper.CloudScraper) -> list[str]:
     """Fetch all Stockholm spot URLs from Spotted by Locals XML sitemaps."""
     urls = set()
     print("Fetching XML sitemaps to locate all Stockholm spot endpoints...")
@@ -39,7 +39,7 @@ def get_stockholm_urls_from_sitemaps(scraper: cloudscraper.CloudScraper) -> List
     print(f"Located {len(urls)} distinct Stockholm spot candidate URLs.")
     return sorted(list(urls))
 
-def scrape_spot_detail(scraper: cloudscraper.CloudScraper, url: str) -> Dict[str, Any]:
+def scrape_spot_detail(scraper: cloudscraper.CloudScraper, url: str) -> dict[str, Any]:
     """Scrape title, review text, and category from a single spot detail page."""
     try:
         r = scraper.get(url, timeout=15)
@@ -86,7 +86,7 @@ def normalize_name(name: str) -> str:
     cleaned = re.sub(r'\s+', ' ', cleaned).strip()
     return cleaned
 
-def match_spots_with_places(spots: List[Dict[str, Any]], places: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def match_spots_with_places(spots: list[dict[str, Any]], places: list[dict[str, Any]]) -> list[dict[str, Any]]:
     matched_results = []
     
     # Index places by normalized name
@@ -123,13 +123,13 @@ def match_spots_with_places(spots: List[Dict[str, Any]], places: List[Dict[str, 
 
     return matched_results
 
-def enrich_catalog_places(matched_spots: List[Dict[str, Any]], places_data: Dict[str, Any]) -> int:
+def enrich_catalog_places(matched_spots: list[dict[str, Any]], places_data: dict[str, Any]) -> int:
     """Add 'Spotted by Locals' tag, evidenceLabel entry and sourceFacts to matched catalog places."""
     places_list = places_data.get("places", []) if isinstance(places_data, dict) else places_data
     places_by_id = {p["id"]: p for p in places_list if "id" in p}
     
-    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    now_ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    now_iso = datetime.now(UTC).strftime("%Y-%m-%d")
+    now_ts = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     enriched_count = 0
 
     for m in matched_spots:
@@ -197,7 +197,7 @@ def main():
     places_raw = {}
     places_list = []
     if os.path.exists(PLACES_PATH):
-        with open(PLACES_PATH, "r", encoding="utf-8") as f:
+        with open(PLACES_PATH, encoding="utf-8") as f:
             places_raw = json.load(f)
         places_list = places_raw.get("places", []) if isinstance(places_raw, dict) else places_raw
         print(f"Loaded {len(places_list)} catalog places from public/data/places.json")
@@ -220,7 +220,7 @@ def main():
         "sourceName": "Spotted by Locals Stockholm",
         "sourceUrl": "https://www.spottedbylocals.com/stockholm/",
         "license": "Editorial Guide / Local Spotters",
-        "scrapedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "scrapedAt": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "totalExtractedSpots": len(scraped_spots),
         "verifiedCatalogMatches": len(verified_matches),
         "spots": matched

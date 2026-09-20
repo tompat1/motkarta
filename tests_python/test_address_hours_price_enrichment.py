@@ -4,7 +4,6 @@ Unit tests for Motkarta address, hours, and price enrichment logic.
 
 from __future__ import annotations
 
-import pytest
 from scripts.fetch_place_hours_and_prices import (
     classify_price_level,
     price_level_to_symbol,
@@ -17,7 +16,6 @@ from scripts.fetch_place_hours_and_prices import (
 from scripts.enrich_street_addresses import (
     has_street_number,
     format_street_address,
-    normalize_text,
     haversine_distance,
 )
 

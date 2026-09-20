@@ -66,7 +66,7 @@ def run_verification(
 
     # 1. Load Ground Truth
     gt_rows: list[dict[str, str]] = []
-    with open(gt_path, mode="r", encoding="utf-8") as f:
+    with open(gt_path, encoding="utf-8") as f:
         reader = csv.DictReader(f)
         gt_rows = list(reader)
 
@@ -76,7 +76,7 @@ def run_verification(
     gt_chains = [r for r in gt_stockholm_rows if norm(r.get("name")) in EXCLUDED_CHAINS]
 
     # 2. Load Scraped Tasstipset Output
-    with open(scraped_path, mode="r", encoding="utf-8") as f:
+    with open(scraped_path, encoding="utf-8") as f:
         scraped_payload = json.load(f)
 
     scraped_places: list[dict[str, Any]] = scraped_payload.get("places", [])
@@ -92,7 +92,7 @@ def run_verification(
             scraped_norm_map[pn] = p
 
     # 3. Load Public Live Places
-    with open(public_path, mode="r", encoding="utf-8") as f:
+    with open(public_path, encoding="utf-8") as f:
         public_payload = json.load(f)
 
     public_places: list[dict[str, Any]] = public_payload.get("places", public_payload)

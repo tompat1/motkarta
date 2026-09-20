@@ -405,7 +405,7 @@ function fakeAdminD1(rows) {
     copiedEvidence: [],
     copiedTags: [],
     prepare(query) {
-      const statement = {
+      return {
         values: [],
         bind(...values) {
           this.values = values;
@@ -525,7 +525,6 @@ function fakeAdminD1(rows) {
           return { success: true, meta: { changes: 0 } };
         },
       };
-      return statement;
     },
   };
 

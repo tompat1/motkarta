@@ -56,7 +56,7 @@ export function wifiFact(place: Pick<ScoredPlace, "tags">, lang: Language): Plac
   if (wifi) {
     return {
       label: wifi,
-      title: lang === "sv" ? `Wi-Fi: ${wifi}` : `Wi-Fi: ${wifi}`,
+      title: `Wi-Fi: ${wifi}`,
       isPlaceholder: false,
     };
   }

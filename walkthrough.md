@@ -1,3 +1,24 @@
+# Replace Sourcery with ESLint and Ruff — 2026-09-20
+
+Removed the quota-limited Sourcery GitHub Action and `.sourcery.yaml`. Quality now
+runs locally and in CI through `npm run lint` (ESLint + Ruff), which is part of
+`npm run test:gate`. Advisory AI PR comments belong in Cursor Bugbot.
+
+## What changed
+
+- Added `eslint.config.mjs` and `pyproject.toml` covering the old Sourcery
+  categories: refactoring, bug risk, performance, and security.
+- Catalog dumps under `public/data` stay ignored so enrichment PRs cannot
+  exhaust a review budget.
+- CI workflow is `.github/workflows/quality.yml`. It no longer uses
+  `SOURCERY_TOKEN`.
+- Auto-fixed safe Ruff findings (unused imports, redundant open modes, typing
+  upgrades) and a few real bugs: missing `sys` import, MD5 used as a cache key
+  with `usedforsecurity=False`, and identical i18n/Date branches.
+
+Verification: `npm run lint` is clean. `npm run test:gate` covers typecheck,
+lint, JavaScript tests, Python tests, and Playwright.
+
 # Core enrichment audit repair — step one — 2026-09-17
 
 Implemented the first two tiers of the [enrichment audit repair plan](docs/enrichment-repair.md).

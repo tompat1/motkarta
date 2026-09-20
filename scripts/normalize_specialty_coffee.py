@@ -214,7 +214,7 @@ def apply_specialty_coffee_gold_standard(places_file: Path = PLACES_FILE) -> int
             updated_count += 1
         else:
             # Add missing gold standard venue
-            new_id = zlib.crc32(f"specialty:{g['name']}".encode("utf-8"))
+            new_id = zlib.crc32(f"specialty:{g['name']}".encode())
             new_place = {
                 "id": new_id,
                 "name": g["name"],

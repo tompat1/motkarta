@@ -13,7 +13,7 @@ verify_and_clean_photos.py - Strict Verification & Cleanup for Place Photos
 
 import json
 import os
-import re
+import sys
 import urllib.request
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -147,7 +147,7 @@ def clean_place_photos():
         print("❌ Dataset file not found.")
         sys.exit(1)
 
-    with open(DATA_SET_FILE, "r", encoding="utf-8") as f:
+    with open(DATA_SET_FILE, encoding="utf-8") as f:
         dataset = json.load(f)
 
     photos_by_place = dataset.get("photosByPlace", {})
@@ -248,7 +248,7 @@ def clean_place_photos():
     with open(DATA_SET_FILE, "w", encoding="utf-8") as f:
         json.dump(dataset, f, ensure_ascii=False, indent=2)
 
-    print(f"🎉 Verification Finished!")
+    print("🎉 Verification Finished!")
     print(f"  - Valid Verified Photos Remaining: {total_valid}")
     print(f"  - Generic Unsplash Removed: {total_removed_unsplash}")
     print(f"  - Wikimedia Commons Removed: {total_removed_wikimedia}")
@@ -261,7 +261,7 @@ def clean_place_photos():
     with open(SQL_FILE, "w", encoding="utf-8") as f:
         f.write("-- Cleaned & Verified D1 place_photos seed file\n")
         f.write("DELETE FROM place_photos;\n\n")
-        for place_id_str, photo_list in cleaned_photos_by_place.items():
+        for _place_id_str, photo_list in cleaned_photos_by_place.items():
             for p in photo_list:
                 sql_id = p["id"].replace("'", "''")
                 sql_place_id = p["placeId"]

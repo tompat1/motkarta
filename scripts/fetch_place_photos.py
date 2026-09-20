@@ -215,7 +215,7 @@ def main():
 
     if args.workers < 1 or (args.limit is not None and args.limit < 1):
         parser.error("workers and limit must be positive")
-    with open(args.places_file, "r", encoding="utf-8") as f:
+    with open(args.places_file, encoding="utf-8") as f:
         data = json.load(f)
     catalog = data.get("places", []) if isinstance(data, dict) else data
     existing_path = Path(args.existing_json)

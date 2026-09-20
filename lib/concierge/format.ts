@@ -2,7 +2,7 @@ import type { Locale } from './contracts.ts';
 
 export function formatChatTimestamp(timestamp?: number | string, lang: Locale = 'sv'): string | null {
   if (!timestamp) return null;
-  const date = typeof timestamp === 'number' ? new Date(timestamp) : new Date(timestamp);
+  const date = new Date(timestamp);
   if (isNaN(date.getTime())) {
     return typeof timestamp === 'string' ? timestamp : null;
   }
@@ -16,7 +16,7 @@ export function formatChatTimestamp(timestamp?: number | string, lang: Locale = 
 
 export function formatChatTimestampTooltip(timestamp?: number | string, lang: Locale = 'sv'): string | undefined {
   if (!timestamp) return undefined;
-  const date = typeof timestamp === 'number' ? new Date(timestamp) : new Date(timestamp);
+  const date = new Date(timestamp);
   if (isNaN(date.getTime())) return undefined;
   return date.toLocaleString(lang === 'sv' ? 'sv-SE' : 'en-GB', {
     timeZone: 'Europe/Stockholm',

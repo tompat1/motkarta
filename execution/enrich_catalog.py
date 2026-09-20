@@ -32,7 +32,7 @@ import unicodedata
 import urllib.parse
 import urllib.request
 import urllib.robotparser
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from pathlib import Path
 from typing import Any
 
@@ -352,7 +352,7 @@ def extract_ground_truth_facts(
 ) -> dict[int, list[dict[str, Any]]]:
     """Extract atmosphere/dish facts from editorial ground-truth files."""
     facts_by_id: dict[int, list[dict[str, Any]]] = {}
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     def add_facts(
         name: str,
@@ -522,7 +522,7 @@ def extract_editorial_facts(
     }
 
     facts_by_id: dict[int, list[dict[str, Any]]] = {}
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     for venue_name, content in reviews.items():
         norm = normalize_name(venue_name)
@@ -596,7 +596,7 @@ def extract_curated_place_facts(
 ) -> dict[int, list[dict[str, Any]]]:
     """Convert curated place tags into explicit SourceFacts."""
     facts_by_id: dict[int, list[dict[str, Any]]] = {}
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     if not CURATED_PLACES.exists():
         return facts_by_id
@@ -893,7 +893,7 @@ def scrape_venue_websites(
 ) -> dict[int, list[dict[str, Any]]]:
     """Scrape venue websites for places with valid website URLs, prioritizing missing must-have data."""
     facts_by_id: dict[int, list[dict[str, Any]]] = {}
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     candidates: list[dict[str, Any]] = []
     for place in places:
@@ -1080,10 +1080,10 @@ def main() -> None:
             field = fact.get("field", "unknown")
             field_counts[field] = field_counts.get(field, 0) + 1
 
-    print(f"\n=== Enrichment Summary ===")
+    print("\n=== Enrichment Summary ===")
     print(f"Total places enriched: {len(all_facts)} / {len(places)}")
     print(f"Total facts generated: {sum(len(v) for v in all_facts.values())}")
-    print(f"Facts by field:")
+    print("Facts by field:")
     for field, count in sorted(field_counts.items(), key=lambda x: -x[1]):
         print(f"  {field}: {count}")
 
@@ -1093,7 +1093,7 @@ def main() -> None:
 
     overlay = {
         "version": "enrichment-overlay-v1",
-        "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "generatedAt": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "sourcePlacesCount": len(places),
         "enrichedPlacesCount": len(all_facts),
         "totalFacts": sum(len(v) for v in all_facts.values()),

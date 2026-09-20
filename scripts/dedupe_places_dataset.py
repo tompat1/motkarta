@@ -48,7 +48,7 @@ def main():
         print("❌ Dataset file not found.")
         return
 
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
+    with open(DATA_FILE, encoding="utf-8") as f:
         data = json.load(f)
 
     places = data.get("places", [])

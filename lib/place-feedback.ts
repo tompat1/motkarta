@@ -114,10 +114,9 @@ export function getStoredPlaceFeedback(placeId: number | string | undefined, pla
       return matchId || matchName;
     });
 
-    const combined = [...matchedGems, ...matchedFeedback].sort(
+    return [...matchedGems, ...matchedFeedback].sort(
       (a, b) => (b.timestampMs || 0) - (a.timestampMs || 0)
     );
-    return combined;
   } catch {
     return [];
   }

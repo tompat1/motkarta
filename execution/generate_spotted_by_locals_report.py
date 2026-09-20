@@ -6,7 +6,6 @@ and 'Spotted by Locals' in Motkarta's catalog.
 
 import json
 import os
-from typing import Dict, List, Any
 
 PLACES_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "data", "places.json")
 SPOTTED_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "data", "spotted_by_locals.json")
@@ -16,11 +15,11 @@ def main():
         print("Missing dataset files.")
         return
 
-    with open(PLACES_PATH, "r", encoding="utf-8") as f:
+    with open(PLACES_PATH, encoding="utf-8") as f:
         places_data = json.load(f)
     places = places_data.get("places", []) if isinstance(places_data, dict) else places_data
 
-    with open(SPOTTED_PATH, "r", encoding="utf-8") as f:
+    with open(SPOTTED_PATH, encoding="utf-8") as f:
         spotted_data = json.load(f)
 
     spotted_places = [p for p in places if "Spotted by Locals" in p.get("tags", [])]

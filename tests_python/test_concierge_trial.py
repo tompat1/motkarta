@@ -1,4 +1,3 @@
-import json
 import pytest
 from execution.run_concierge_trial import TrialClient, EMBEDDING, SYNTHESIS
 

@@ -11,6 +11,8 @@ export function safeUrl(value: unknown): string | undefined {
   try { const url = new URL(value); return ['https:', 'http:'].includes(url.protocol) && !url.username && !url.password ? url.href : undefined; } catch { return undefined; }
 }
 export function plainText(value: unknown, limit = 500): string {
+  // Strip ASCII control characters from untrusted catalog text.
+  // eslint-disable-next-line no-control-regex -- intentional control-char sanitizer
   return typeof value === 'string' ? value.replace(/[\r\n\x00-\x1f]/g, ' ').replace(/[#*<>`]/g, '').trim().slice(0, limit) : '';
 }
 const FIELDS = new Set(['name', 'kind', 'area', 'address', 'cuisine', 'tags', 'dish', 'dogFriendly', 'priceSEK', 'openingHours', 'transit', 'atmosphere']);

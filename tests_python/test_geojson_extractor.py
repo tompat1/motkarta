@@ -1,6 +1,6 @@
 import geopandas as gpd
 from shapely.geometry import Point
-from scripts.geojson_extractor import encode_geohash, detect_hidden_gems, synthesize_rag_docs
+from scripts.geojson_extractor import encode_geohash, detect_hidden_gems
 
 
 def test_encode_geohash():

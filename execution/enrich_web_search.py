@@ -17,11 +17,10 @@ import argparse
 import hashlib
 import json
 import re
-import sys
 import unicodedata
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from pathlib import Path
 from typing import Any
 
@@ -76,7 +75,7 @@ def extract_facts_from_guide_html(
 
     domain = urllib.parse.urlparse(source_url).netloc or "web"
     source_tag = f"Editorial Guide ({domain})"
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Build fuzzy index of catalog places
     catalog_map: dict[str, dict[str, Any]] = {}
@@ -117,7 +116,7 @@ def extract_facts_from_guide_html(
             dish_keywords = ["pad thai", "curry", "tom yum", "pierogi", "sushi", "ramen", "tacos", "pasta", "pizza", "bageri", "kaffe", "fika", "soppa", "wok"]
             for dish in dish_keywords:
                 if re.search(r"\b" + re.escape(dish) + r"\b", full_text, re.IGNORECASE):
-                    fact_id = hashlib.md5(f"{place_id}:dish:{dish}:{source_url}".encode("utf-8")).hexdigest()[:12]
+                    fact_id = hashlib.md5(f"{place_id}:dish:{dish}:{source_url}".encode(), usedforsecurity=False).hexdigest()[:12]
                     extracted_facts.append({
                         "id": fact_id,
                         "placeId": place_id,
@@ -134,7 +133,7 @@ def extract_facts_from_guide_html(
             for term in atmosphere_terms:
                 if term in full_text.lower():
                     mapped_val = "outdoor seating" if "uteservering" in term else ("garden seating" if "trädgård" in term else ("rooftop" if "takbar" in term else "cozy"))
-                    fact_id = hashlib.md5(f"{place_id}:atmosphere:{mapped_val}:{source_url}".encode("utf-8")).hexdigest()[:12]
+                    fact_id = hashlib.md5(f"{place_id}:atmosphere:{mapped_val}:{source_url}".encode(), usedforsecurity=False).hexdigest()[:12]
                     extracted_facts.append({
                         "id": fact_id,
                         "placeId": place_id,
@@ -200,7 +199,7 @@ def enrich_from_url(url: str, output_path: Path = DEFAULT_OVERLAY) -> list[dict[
         if not overlay or "facts" not in overlay:
             overlay = {
                 "version": "enrichment-overlay-v1",
-                "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "generatedAt": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "sourcePlacesCount": len(places),
                 "enrichedPlacesCount": 0,
                 "totalFacts": 0,
@@ -224,7 +223,7 @@ def enrich_from_url(url: str, output_path: Path = DEFAULT_OVERLAY) -> list[dict[
         overlay["facts"] = facts_dict
         overlay["enrichedPlacesCount"] = len(facts_dict)
         overlay["totalFacts"] = sum(len(v) for v in facts_dict.values())
-        overlay["generatedAt"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        overlay["generatedAt"] = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(json.dumps(overlay, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

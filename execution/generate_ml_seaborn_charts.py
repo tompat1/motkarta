@@ -8,7 +8,6 @@ Produces 4 Seaborn/Matplotlib charts saved to public/ml_charts/:
 4. ml_lifecycle_and_gaps.png - Full Model Lifecycle Breakdown & Identified System Gaps
 """
 
-import os
 from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")

@@ -16,14 +16,11 @@ import argparse
 import csv
 import json
 import os
-import re
 import sys
-import time
-from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 # Ensure repository root is on sys.path
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,8 +28,6 @@ sys.path.insert(0, str(ROOT))
 
 from scripts.google_places_monthly_sync import (
     DEFAULT_PLACES_FILE,
-    EXCLUDED_CHAINS,
-    FORBIDDEN_VALUE_FIELDS,
     clean_text,
     distance_meters,
     fetch_google_places,
@@ -67,7 +62,7 @@ def normalize_compare_name(name: str) -> str:
     return normalized_name(name).replace("é", "e").replace("è", "e").replace("ê", "e").replace("ü", "u")
 
 
-def name_similarity(a: str, b: str, norm_a: Optional[str] = None, norm_b: Optional[str] = None) -> float:
+def name_similarity(a: str, b: str, norm_a: str | None = None, norm_b: str | None = None) -> float:
     na = norm_a if norm_a is not None else normalize_compare_name(a)
     nb = norm_b if norm_b is not None else normalize_compare_name(b)
     if not na or not nb:
@@ -96,7 +91,7 @@ def load_osm_places(osm_path: Path = OSM_PLACES_FILE) -> list[dict[str, Any]]:
         print(f"Notice: OSM places file not found at {osm_path}")
         return []
     rows: list[dict[str, Any]] = []
-    with open(osm_path, "r", encoding="utf-8") as f:
+    with open(osm_path, encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             name = clean_text(row.get("name"))
@@ -124,13 +119,13 @@ def load_osm_places(osm_path: Path = OSM_PLACES_FILE) -> list[dict[str, Any]]:
 
 def find_matching_catalog_place(
     target_name: str,
-    target_lat: Optional[float],
-    target_lon: Optional[float],
+    target_lat: float | None,
+    target_lon: float | None,
     catalog: list[dict[str, Any]],
-    exact_map: Optional[dict[str, dict[str, Any]]] = None,
+    exact_map: dict[str, dict[str, Any]] | None = None,
     distance_threshold_m: float = 85.0,
     name_similarity_threshold: float = 0.72,
-) -> Optional[dict[str, Any]]:
+) -> dict[str, Any] | None:
     target_norm = normalize_compare_name(target_name)
     if exact_map and target_norm in exact_map:
         return exact_map[target_norm]
@@ -174,7 +169,7 @@ def run_comparison(
     api_key: str = "",
     places_path: Path = DEFAULT_PLACES_FILE,
     osm_path: Path = OSM_PLACES_FILE,
-    queries: Optional[list[str]] = None,
+    queries: list[str] | None = None,
     skip_google: bool = False,
     skip_osm: bool = False,
 ) -> dict[str, Any]:
@@ -207,7 +202,7 @@ def run_comparison(
 
     # 2. Google Places (New API) Comparison
     if not skip_google and api_key:
-        print(f"\nQuerying Google Places (Places API New)...")
+        print("\nQuerying Google Places (Places API New)...")
         google_results = fetch_google_places(api_key, queries or DEFAULT_COMPARE_QUERIES)
         print(f"Processing {len(google_results)} Google Places records...")
 
@@ -270,7 +265,7 @@ def run_comparison(
                         "latitude": metadata.latitude,
                         "longitude": metadata.longitude,
                         "website": metadata.website,
-                        "discoveredAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "discoveredAt": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
                     })
 
     # 3. OpenStreetMap / Mapy Baseline Comparison
@@ -325,7 +320,7 @@ def run_comparison(
                         "longitude": osm["longitude"],
                         "website": osm["website"],
                         "openingHours": osm["opening_hours"],
-                        "discoveredAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "discoveredAt": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
                     })
 
     # Deduplicate missing attributes by catalog ID
@@ -343,7 +338,7 @@ def run_comparison(
                     deduped_missing[pid][k] = item[k]
 
     report = {
-        "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "generatedAt": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "summary": {
             "catalogTotalPlaces": len(catalog),
             "newCandidatesFound": len(new_candidates),

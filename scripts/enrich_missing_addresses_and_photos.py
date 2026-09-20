@@ -37,7 +37,7 @@ FORBIDDEN_VALUE_FIELDS = {
 
 # Load .env
 if os.path.exists(ENV_FILE):
-    with open(ENV_FILE, "r", encoding="utf-8") as f:
+    with open(ENV_FILE, encoding="utf-8") as f:
         for line in f:
             if line.strip() and not line.startswith("#") and "=" in line:
                 k, v = line.strip().split("=", 1)
@@ -133,7 +133,7 @@ def main():
         print("❌ dataset places.json not found")
         return
 
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
+    with open(DATA_FILE, encoding="utf-8") as f:
         data = json.load(f)
 
     places = data.get("places", [])
@@ -144,14 +144,14 @@ def main():
         "photosByPlace": {},
     }
     if os.path.exists(PHOTOS_FILE):
-        with open(PHOTOS_FILE, "r", encoding="utf-8") as f:
+        with open(PHOTOS_FILE, encoding="utf-8") as f:
             photos_data = json.load(f)
     photos_by_place = photos_data.setdefault("photosByPlace", {})
 
     missing_address = [p for p in places if not p.get("address") or len(p.get("address", "")) < 5]
     missing_photos = [p for p in places if not photos_by_place.get(str(p["id"]))]
 
-    print(f"📊 Dataset Audit Results:")
+    print("📊 Dataset Audit Results:")
     print(f"  - Total Unique Places: {len(places)}")
     print(f"  - Places missing complete street address: {len(missing_address)}")
     print(f"  - Places missing authentic photos: {len(missing_photos)}")
@@ -161,7 +161,7 @@ def main():
         print("   To execute the initial full enrichment run, add `GOOGLE_PLACES_API_KEY=your_key` to .env.")
         return
 
-    print(f"\n⚡ Beginning metadata-only enrichment run with Google Places API & Website Scraper...", flush=True)
+    print("\n⚡ Beginning metadata-only enrichment run with Google Places API & Website Scraper...", flush=True)
     enriched_addresses = 0
     enriched_photos = 0
 
@@ -212,7 +212,7 @@ def main():
     with open(PHOTOS_FILE, "w", encoding="utf-8") as f:
         json.dump(photos_data, f, ensure_ascii=False, indent=2)
 
-    print(f"\n🎉 Initial Enrichment Completed:")
+    print("\n🎉 Initial Enrichment Completed:")
     print(f"  - Addresses Enriched: {enriched_addresses}")
     print(f"  - Website Photos Enriched: {enriched_photos}")
 

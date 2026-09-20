@@ -111,7 +111,7 @@ export function ConciergeAnswerView({
           </div>
           {messages.map((msg, idx) => {
             const timeStr = formatChatTimestamp(msg.timestamp, lang);
-            const dateObj = msg.timestamp ? (typeof msg.timestamp === "number" ? new Date(msg.timestamp) : new Date(msg.timestamp)) : null;
+            const dateObj = msg.timestamp ? new Date(msg.timestamp) : null;
             const validDate = dateObj && !isNaN(dateObj.getTime()) ? dateObj : null;
             const isoTime = validDate ? validDate.toISOString() : undefined;
             const tooltip = formatChatTimestampTooltip(msg.timestamp, lang);

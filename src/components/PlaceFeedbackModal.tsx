@@ -296,7 +296,7 @@ export function PlaceFeedbackModal({
                 <Sparkle size={14} weight={isNominateGem ? "fill" : "bold"} />
                 {isNominateGem
                   ? (lang === "sv" ? "Dold pärla nominering" : "Hidden gem nomination")
-                  : (lang === "sv" ? "Feedback loop" : "Feedback loop")}
+                  : "Feedback loop"}
               </div>
               <h3 style={{ margin: "4px 0 0 0", fontSize: "18px", fontWeight: 700, color: "var(--color-ink)" }}>
                 {targetName}

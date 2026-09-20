@@ -21,13 +21,11 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
-import sys
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from pathlib import Path
 from typing import Any
 
@@ -386,7 +384,7 @@ def enrich_hours_and_prices(
             fid = f"{place['id']}:website:{field}"
             facts[fid] = {"id": fid, "placeId": place["id"], "field": field,
                           "value": value, "source": "Venue website", "url": place["website"],
-                          "verification": "listed", "capturedAt": datetime.now(timezone.utc).isoformat()}
+                          "verification": "listed", "capturedAt": datetime.now(UTC).isoformat()}
         if updates:
             place["sourceFacts"] = list(facts.values())
 

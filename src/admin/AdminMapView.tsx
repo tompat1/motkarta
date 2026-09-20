@@ -434,7 +434,7 @@ export function AdminMapView({
                   ) : null}
                   {(selectedPlace.communityNominationCount ?? 0) > 0 ? (
                     <span className="inspector-nomination-badge" title={lang === "sv" ? "Tipsad av besökare som dold pärla" : "Nominated by visitors as hidden gem"}>
-                      ✨ {selectedPlace.communityNominationCount} {lang === "sv" ? "tips" : "tips"}
+                      ✨ {selectedPlace.communityNominationCount} tips
                     </span>
                   ) : null}
                 </div>

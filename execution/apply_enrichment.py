@@ -116,12 +116,12 @@ def main() -> None:
     has_website = sum(1 for p in places if p.get("website"))
     has_source_facts = sum(1 for p in places if p.get("sourceFacts"))
 
-    print(f"\n=== After enrichment ===")
+    print("\n=== After enrichment ===")
     print(f"Places with sourceFacts: {has_source_facts} / {len(places)}")
     print(f"Places with openingHours: {has_hours} / {len(places)}")
     print(f"Places with website: {has_website} / {len(places)}")
     print(f"Total enrichment facts injected: {total_facts}")
-    print(f"SourceFact fields:")
+    print("SourceFact fields:")
     for field, count in sorted(field_counts.items(), key=lambda x: -x[1]):
         print(f"  {field}: {count}")
 

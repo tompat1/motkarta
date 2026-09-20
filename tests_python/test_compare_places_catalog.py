@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 from execution import compare_places_catalog as comp
 
 

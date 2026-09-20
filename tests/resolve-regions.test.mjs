@@ -145,7 +145,7 @@ function fakeD1(initialRows) {
     rows: [...initialRows],
     auditEvents: [],
     prepare(query) {
-      const statement = {
+      return {
         values: [],
         bind(...values) {
           this.values = values;
@@ -175,7 +175,6 @@ function fakeD1(initialRows) {
           return { success: true, meta: { changes: 0 } };
         },
       };
-      return statement;
     },
   };
   return db;

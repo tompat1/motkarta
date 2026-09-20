@@ -141,8 +141,9 @@ From now on, to eliminate technical debt, prevent regressions, and enforce 100% 
    - **Tier 4 (Playwright E2E Mobile & Desktop Suite):** `npm run test:e2e`
 
    - **One-Line Combined Full Verification Gate:**
-     `npm run test:gate` (runs `npm run typecheck && npm test && npm run test:python && npm run test:e2e`)
+     `npm run test:gate` (runs `npm run typecheck && npm run lint && npm test && npm run test:python && npm run test:e2e`)
 
-3. **Sourcery Quality Standards**:
-   - All code must comply with `.sourcery.yaml` quality standards.
+3. **Lint Quality Standards**:
+   - All code must comply with ESLint (`eslint.config.mjs`) and Ruff (`pyproject.toml`).
    - Eliminate code duplication, overly complex routines, and anti-patterns across Python and TypeScript.
+   - Use Cursor Bugbot for advisory AI PR comments. Do not introduce a quota-limited review SaaS.

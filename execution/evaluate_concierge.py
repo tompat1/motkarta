@@ -35,7 +35,8 @@ def metrics(rows: list[dict], queries: dict, method: str, catalog: dict) -> dict
         if q.get('exactName'):
             exacts.append(bool(ids) and ids[0] in relevant)
         exposure.update(ids[:5])
-    mean = lambda values: sum(values) / len(values) if values else None
+    def mean(values):
+        return sum(values) / len(values) if values else None
     counts = sorted(exposure.get(key, 0) for key in catalog)
     total = sum(counts)
     gini = sum((2 * i - len(counts) - 1) * count for i, count in enumerate(counts, 1)) / (len(counts) * total) if total else 0

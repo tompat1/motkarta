@@ -1,0 +1,47 @@
+[tool.ruff]
+required-version = ">=0.16"
+target-version = "py311"
+line-length = 120
+extend-exclude = [
+  ".venv",
+  ".tmp",
+  "dist",
+  "node_modules",
+  "public",
+  "build",
+  ".wrangler",
+  "outputs",
+  "playwright-report",
+  "test-results",
+  "coverage",
+]
+
+[tool.ruff.lint]
+# Sourcery replacements: refactoring, bug risk, performance, security.
+select = ["E", "F", "B", "S", "SIM", "UP", "PERF", "C90"]
+ignore = [
+  "E501", # line length is not a merge blocker
+  "S310", # scrapers fetch caller-supplied HTTP URLs by design
+  "S608", # offline SQL seed writers; values are locally escaped
+  "S110", # network fetch fallbacks swallow expected transport errors
+  "S112",
+  "S603", # trusted local npm/node subprocesses
+  "S607",
+  "B905", # zip(strict=) would change existing catalog pairing behavior
+  "SIM102",
+  "SIM103",
+  "SIM108",
+  "SIM116",
+  "SIM210",
+  "PERF102",
+  "PERF401",
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 35
+
+[tool.ruff.lint.per-file-ignores]
+"tests_python/**" = ["S101"]
+"scripts/**" = ["E402"]
+"execution/**" = ["E402"]
+"motkarta/**" = ["E402"]

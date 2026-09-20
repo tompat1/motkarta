@@ -87,7 +87,7 @@ export function AdminGuidePanel({ lang, onClose }: AdminGuidePanelProps) {
           onClick={() => setActiveTab("runbook")}
         >
           <TerminalWindow size={14} weight="bold" />
-          {lang === "sv" ? "4. Terminal Runbook" : "4. Terminal Runbook"}
+          4. Terminal Runbook
         </button>
       </div>
 
@@ -282,7 +282,7 @@ export function AdminGuidePanel({ lang, onClose }: AdminGuidePanelProps) {
               </div>
 
               <div className="metric-card">
-                <h6>{lang === "sv" ? "Concierge RAG: Reciprocal Rank Fusion (RRF)" : "Concierge RAG: Reciprocal Rank Fusion (RRF)"}</h6>
+                <h6>Concierge RAG: Reciprocal Rank Fusion (RRF)</h6>
                 <p>
                   {lang === "sv"
                     ? "Slår samman lexikal BM25 och semantisk vektorsökning med RRF(d) = Σ 1/(60 + r(d)). Exakta namnträffar ges alltid absolut företräde."
@@ -291,7 +291,7 @@ export function AdminGuidePanel({ lang, onClose }: AdminGuidePanelProps) {
               </div>
 
               <div className="metric-card">
-                <h6>{lang === "sv" ? "Debiased LTR (Inverse Propensity Scoring)" : "Debiased LTR (Inverse Propensity Scoring)"}</h6>
+                <h6>Debiased LTR (Inverse Propensity Scoring)</h6>
                 <p>
                   {lang === "sv"
                     ? "Korrigerar för presentationsbias via P(Examine|k) = (1+k)^-γ med viktbegränsning (max 20x). Kommersiella signaler är strikt blockerade från funktionsmatrisen."

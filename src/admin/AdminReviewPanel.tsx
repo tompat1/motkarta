@@ -1572,7 +1572,7 @@ export function AdminReviewPanel({
           </button>
 
           <div className="admin-sync-cli-hint">
-            <span className="cli-hint-label">{lang === "sv" ? "Terminal:" : "Terminal:"}</span>
+            <span className="cli-hint-label">Terminal:</span>
             <code className="cli-hint-code">npm run sync:labels</code>
           </div>
         </div>
@@ -1907,7 +1907,7 @@ export function AdminReviewPanel({
                   onClick={() => void promoteCandidate(candidate, "verified", "known_mainstream")}
                 >
                   <CheckCircle size={14} weight="bold" />
-                  {lang === "sv" ? "Mainstream" : "Mainstream"}
+                  Mainstream
                 </button>
                 <button
                   type="button"
@@ -1923,7 +1923,7 @@ export function AdminReviewPanel({
                   onClick={() => void promoteCandidate(candidate, "featured", "known_hidden_gem")}
                 >
                   <ShieldCheck size={14} weight="bold" />
-                  {lang === "sv" ? "Featured" : "Featured"}
+                  Featured
                 </button>
                 <button
                   type="button"

@@ -15,13 +15,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
-import sys
 import time
 import urllib.parse
 import urllib.request
-import zlib
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -129,8 +125,6 @@ def enrich_addresses_and_photos(
         if is_missing_addr:
             p_name = p.get("name", "")
             p_area = p.get("area", "Stockholm")
-            p_lat = p.get("latitude")
-            p_lon = p.get("longitude")
 
             found_addr = None
             found_website = None
@@ -280,7 +274,7 @@ def enrich_addresses_and_photos(
         print(f"💳 Price Info:           {price_count}/{total_places} ({stats['priceInfo']['percentage']}%)")
         print(f"🌐 Official Websites:    {web_count}/{total_places} ({stats['websites']['percentage']}%)")
         print(f"📍 Geographic Coords:    {coord_count}/{total_places} ({stats['coordinates']['percentage']}%)")
-        print(f"📜 Curated Open Sources: 7/7 Verified Guides (100.0%)")
+        print("📜 Curated Open Sources: 7/7 Verified Guides (100.0%)")
         print("=" * 80 + "\n")
 
     return stats

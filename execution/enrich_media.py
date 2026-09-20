@@ -90,7 +90,7 @@ def main():
         print(f"File not found: {places_file}")
         return
 
-    with open(places_file, "r", encoding="utf-8") as f:
+    with open(places_file, encoding="utf-8") as f:
         places_data = json.load(f)
 
     places = places_data.get("places", places_data) if isinstance(places_data, dict) else places_data
@@ -123,9 +123,10 @@ def main():
         # 2. Stockholms Stad Food Control Inspection (CC0)
         inspec_id = f"rev-inspec-{p_id}-1"
         inspec_text = f"Stockholms stad livsmedelskontroll bekräftar godkänd hygien och förvaring för {p_name}."
+        inspec_sql = inspec_text.replace("'", "''")
         sql_statements.append(
             f"INSERT OR REPLACE INTO place_reviews (id, place_id, author, rating, date, source, content, verified) VALUES "
-            f"('{inspec_id}', {p_id}, 'Miljö & Hälsoskydd (Stockholms stad)', 5.0, '2026-06-15', 'Food Control Inspection', '{inspec_text.replace("'", "''")}', 1);"
+            f"('{inspec_id}', {p_id}, 'Miljö & Hälsoskydd (Stockholms stad)', 5.0, '2026-06-15', 'Food Control Inspection', '{inspec_sql}', 1);"
         )
 
     # Write SQL seed output

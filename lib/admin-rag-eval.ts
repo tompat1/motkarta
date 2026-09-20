@@ -225,7 +225,7 @@ export function simulateRagEvaluation(
     q.includes("hötorget") ||
     q.includes("centralen")
   ) {
-    area = isEn ? "Norrmalm / City" : "Norrmalm / City";
+    area = "Norrmalm / City";
   } else if (
     q.includes("kransen") ||
     q.includes("midsommarkransen") ||

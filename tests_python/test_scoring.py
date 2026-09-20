@@ -99,6 +99,7 @@ def test_specialty_coffee_verification_gates():
         tags=["Coffee"],
         evidence=EvidenceSignals(specialist_guide=1),
     )
+    assert not verify_specialty_coffee_eligibility(fake_place)
     assert verify_specialty_coffee_eligibility(verified_place)
 
 

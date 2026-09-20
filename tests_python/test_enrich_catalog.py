@@ -1,17 +1,12 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from execution.enrich_catalog import (
     WebsiteScraper,
     build_cuisine_dish_map,
     build_dish_keywords,
     extract_facts_from_html,
-    extract_ground_truth_facts,
-    extract_curated_place_facts,
-    extract_osm_facts,
     load_cuisine_dish_registry,
-    merge_facts,
     normalize_name,
 )
 
@@ -133,7 +128,8 @@ def test_extract_facts_jsonld_address() -> None:
 
 def test_website_scraper_stale_cache_refetches(tmp_path: Path, monkeypatch) -> None:
     """A cache file older than max_age_days must trigger a real HTTP fetch, not serve stale HTML."""
-    import hashlib, time
+    import hashlib
+    import time
     from execution.enrich_catalog import WebsiteScraper
 
     scraper = WebsiteScraper(cache_dir=tmp_path, max_age_days=7)
@@ -147,8 +143,6 @@ def test_website_scraper_stale_cache_refetches(tmp_path: Path, monkeypatch) -> N
     old_mtime = time.time() - 8 * 86400
     import os
     os.utime(cache_file, (old_mtime, old_mtime))
-
-    fetched_urls = []
 
     def fake_can_fetch(url):
         return False  # robots.txt blocks — simulates a cache-miss that can't re-fetch

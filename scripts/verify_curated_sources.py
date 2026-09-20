@@ -71,7 +71,7 @@ def verify_all_curated_sources(
     if not places_file.exists():
         raise FileNotFoundError(f"Places dataset not found: {places_file}")
 
-    with open(places_file, mode="r", encoding="utf-8") as f:
+    with open(places_file, encoding="utf-8") as f:
         payload = json.load(f)
 
     places: list[dict[str, Any]] = payload.get("places", payload)

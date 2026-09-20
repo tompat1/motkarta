@@ -1,4 +1,3 @@
-import pytest
 from scripts.verify_curated_sources import verify_all_curated_sources
 
 

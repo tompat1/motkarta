@@ -162,7 +162,8 @@ def main():
     target.parent.mkdir(exist_ok=True)
     with target.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=FIELDS)
-        writer.writeheader(); writer.writerows(rows)
+        writer.writeheader()
+        writer.writerows(rows)
     print(f"Saved {len(rows)} places to {target}")
 
 if __name__ == "__main__":

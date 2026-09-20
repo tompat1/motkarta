@@ -5,10 +5,8 @@ Optimized for Antigravity IDE & Gemini Flash
 """
 
 import json
-import math
 from pathlib import Path
 import numpy as np
-import pandas as pd
 import geopandas as gpd
 from sklearn.ensemble import IsolationForest
 
@@ -87,7 +85,7 @@ def detect_hidden_gems(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     if len(X) >= 5:
         # Train Unsupervised Isolation Forest
         clf = IsolationForest(contamination=0.15, random_state=42)
-        preds = clf.fit_predict(X)
+        clf.fit(X)
         scores = clf.decision_function(X)
 
         # Invert decision function: lower scores mean more anomalous (potential gems)
