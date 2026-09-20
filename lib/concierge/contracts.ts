@@ -61,6 +61,18 @@ export type WebSearchFallback = {
   links: WebSearchLink[];
   externalResults?: ExternalWebResult[];
 };
+export type SynthesisCapture = {
+  stage: 'provider' | 'deadline' | 'validate';
+  error: string;
+  rawType: string;
+  rawKeys?: string[];
+  success?: boolean;
+  choicesLength?: number;
+  finishReason?: string;
+  contentType?: string;
+  contentChars?: number;
+  contentHead?: string;
+};
 export type ConciergeResponse = {
   query: string; answer: string; intro: string; cards: ConciergeCard[];
   recommendedPlaces: Array<Pick<ScoredPlace, 'id' | 'name' | 'kind' | 'area' | 'scores' | 'hiddenGem' | 'discoveryReasons'>>;
@@ -73,6 +85,7 @@ export type ConciergeResponse = {
   diagnostics: {
     fallbackReasons: string[]; candidateCount: number; timingsMs: Record<string, number>;
     ranking: Array<{ id: number; exact: boolean; lexicalScore: number; lexicalRank?: number; vectorRank?: number; fusionScore: number; recommendationScore: number }>;
+    synthesisCapture?: SynthesisCapture;
   };
 };
 export type AiBinding = { run(model: string, input: Record<string, unknown>): Promise<unknown> };

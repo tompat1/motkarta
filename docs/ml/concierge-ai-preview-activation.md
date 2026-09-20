@@ -64,6 +64,7 @@ Preview wrangler vars (generated under `.tmp/concierge-ai-preview/wrangler.toml`
 | `CONCIERGE_SYNTHESIS_MODE` | `constrained` |
 | `CONCIERGE_MIN_SIMILARITY` | `0.5` (diagnostic; not production default) |
 | `CONCIERGE_DEADLINE_MS` | `12000` (preview-only; production stays 4500) |
+| `CONCIERGE_SYNTHESIS_CAPTURE` | `1` (preview-only; bounded Gemma payload shape on synthesis failure) |
 | `limits.cpu_ms` | `10000` (hybrid+Gemma exceeded the lexical 1000ms CPU budget) |
 
 ## Demo queries (side-by-side vs production)
@@ -78,6 +79,14 @@ Preview wrangler vars (generated under `.tmp/concierge-ai-preview/wrangler.toml`
 
 Check `diagnostics.fallbackReasons` in the JSON response. Empty array = full RAG path.
 `no_current_semantic_matches` = lexical fallback within hybrid mode (valid).
+`synthesis_rejected_or_unavailable` with `diagnostics.synthesisCapture` means the
+preview recorded the Workers `AI.run` shape (keys, success flag, 240-character
+content head) without query text. The 2026-09-20 Drop Coffee probe captured a
+chat-completions object whose JSON listed nine real string fact IDs. The prompt
+stays at 1–3 string IDs after a 1–10 request produced duplicate numeric placeIds.
+The validator accepts up to ten, which let a later Drop Coffee probe return
+`synthesisMode=constrained` with nine listed attributes and no fallbacks.
+Extra keys still fail. REST is not required for this Workers `AI.run` path.
 
 ## Safety boundaries (unchanged)
 

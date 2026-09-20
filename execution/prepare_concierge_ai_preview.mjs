@@ -58,6 +58,7 @@ previewConfigLines.push(
   `CONCIERGE_RETRIEVAL_MODE = "${hybrid ? 'hybrid' : 'lexical'}"`,
   'CONCIERGE_SYNTHESIS_MODE = "constrained"',
   'CONCIERGE_DEADLINE_MS = "12000"',
+  'CONCIERGE_SYNTHESIS_CAPTURE = "1"',
 );
 if (hybrid) {
   // Diagnostic preview threshold from the 2026-09-07 trial sweep; not a production default.
@@ -78,6 +79,7 @@ const manifest = {
   databaseAccess: 'three_catalog_selects_only',
   retrieval: hybrid ? 'hybrid' : 'lexical',
   synthesis: 'constrained',
+  synthesisCapture: true,
   embeddingModel: hybrid ? '@cf/baai/bge-m3' : undefined,
   vectorIndex: hybrid ? 'motkarta-concierge-preview-v1' : undefined,
   minSimilarity: hybrid ? 0.5 : undefined,

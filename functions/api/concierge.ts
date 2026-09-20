@@ -1,6 +1,6 @@
 import { loadPlacesFromD1 } from '../../lib/place-records.ts';
 import { filterPublishedPlaces, isClosedPlace, type PlaceIdentity } from '../../lib/place-visibility.ts';
-import { VERSIONS, type AiBinding, type ConciergePlace, type QueryContext, type VectorBinding } from '../../lib/concierge/contracts.ts';
+import { VERSIONS, type AiBinding, type ConciergePlace, type QueryContext, type SynthesisCapture, type VectorBinding } from '../../lib/concierge/contracts.ts';
 import { coordinates } from '../../lib/concierge/gates.ts';
 import { plainText, safeUrl, normalize } from '../../lib/concierge/facts.ts';
 import { lexicalCandidates, fuseCandidates } from '../../lib/concierge/retrieval.ts';
@@ -18,6 +18,7 @@ export type Env = {
   CONCIERGE_RETRIEVAL_MODE?: string; CONCIERGE_SYNTHESIS_MODE?: string;
   CONCIERGE_MIN_SIMILARITY?: string;
   CONCIERGE_DEADLINE_MS?: string;
+  CONCIERGE_SYNTHESIS_CAPTURE?: string;
   CONCIERGE_RATE_LIMITER?: { limit(input: { key: string }): Promise<{ success: boolean }> };
   CONCIERGE_RATE_GATE?: { fetch(request: Request): Promise<Response> };
   ASSETS?: { fetch(input: Request | string, init?: RequestInit): Promise<Response> };
@@ -289,7 +290,13 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
   if (allowAI && env.CONCIERGE_SYNTHESIS_MODE === 'constrained' && result.cards.length > 0 && result.cards.length <= 5) {
     if (env.AI && deadline - Date.now() > 100) {
       try { result = await synthesize(result, env.AI, intent.language, deadline, context); }
-      catch { fallbacks.push('synthesis_rejected_or_unavailable'); }
+      catch (error) {
+        fallbacks.push('synthesis_rejected_or_unavailable');
+        if (env.CONCIERGE_SYNTHESIS_CAPTURE === '1' && error && typeof error === 'object' && 'synthesisCapture' in error) {
+          const capture = (error as { synthesisCapture?: SynthesisCapture }).synthesisCapture;
+          if (capture) result.diagnostics.synthesisCapture = capture;
+        }
+      }
     } else fallbacks.push('synthesis_not_available');
   }
   result.diagnostics.fallbackReasons = fallbacks;

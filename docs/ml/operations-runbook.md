@@ -430,7 +430,9 @@ disabled flags, canonical corpus export, dry-run indexing, explicit apply budget
 metadata-index prerequisites, verified manifests, timeouts and rollback.
 AI/index/rate-gate resources and live D1 coverage have not been validated.
 Ordinary tests use mocks and need no provider credentials. Never run indexing
-`--apply` or enable AI flags as part of routine validation.
+`--apply` or enable AI flags as part of routine validation. If hybrid preview
+synthesis falls back, inspect `diagnostics.synthesisCapture` on the isolated
+preview only; production responses must not include that object.
 
 ---
 

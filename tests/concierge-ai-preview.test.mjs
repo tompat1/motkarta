@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import preview, { buildPreviewConciergeEnv, readOnlyAiCatalog } from '../execution/concierge-ai-preview-worker.ts';
 import { evidenceQuery, placeQuery, tagQuery } from '../lib/place-records.ts';
 import { processingDeadlineMs } from '../functions/api/concierge.ts';
@@ -34,6 +35,23 @@ test('processingDeadlineMs keeps production at 4.5s and allows a bounded preview
   assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '4499' }), 4500);
   assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '12001' }), 4500);
   assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '8000.5' }), 4500);
+});
+
+test('buildPreviewConciergeEnv forwards preview-only synthesis capture', () => {
+  const built = buildPreviewConciergeEnv({
+    DB: db,
+    CONCIERGE_SYNTHESIS_CAPTURE: '1',
+  });
+  assert.equal(built.env.CONCIERGE_SYNTHESIS_CAPTURE, '1');
+  assert.equal(buildPreviewConciergeEnv({ DB: db }).env.CONCIERGE_SYNTHESIS_CAPTURE, undefined);
+});
+
+test('AI preview prepare script enables bounded synthesis capture without changing production wrangler', async () => {
+  const source = await readFile(new URL('../execution/prepare_concierge_ai_preview.mjs', import.meta.url), 'utf8');
+  const production = await readFile(new URL('../wrangler.toml', import.meta.url), 'utf8');
+  assert.match(source, /CONCIERGE_SYNTHESIS_CAPTURE = "1"/);
+  assert.doesNotMatch(production, /CONCIERGE_SYNTHESIS_CAPTURE/);
+  assert.match(production, /CONCIERGE_SYNTHESIS_MODE = "template"/);
 });
 
 test('buildPreviewConciergeEnv passes a raised hybrid deadline through to the concierge env', () => {

@@ -104,19 +104,35 @@ are unavailable or no current semantic matches survive.
 
 ## Constrained synthesis
 
-The Gemma 4 adapter (`concierge-synthesis-v2`) generates a JSON selection of 1–3 supplied fact IDs per
+The Gemma 4 adapter (`concierge-synthesis-v3`) generates a JSON selection of 1–3 supplied fact IDs per
 fixed result. Its role is query-sensitive explanation selection. The server
 renders the selected facts with localized connective text. Arbitrary generated
 prose is intentionally not accepted: schema-valid citations do not prove factual
 entailment. This is narrower than free-form conversational RAG.
 
-The validator rejects added keys, invented fact IDs, duplicate IDs, added/missing
-venues and order changes. Protected fields—hours, prices, dates, addresses, links
+The adapter unwraps a Workers `AI.run` REST envelope (`{ success, result }`),
+accepts an already-parsed JSON object or a string, and strips a surrounding
+markdown fence when present. Top-level `{ places }` is accepted. The prompt still
+asks for 1–3 string fact IDs and forbids copying the numeric `placeId`. The
+validator accepts up to ten supplied string IDs because a Drop Coffee capture
+listed nine real ones; lists longer than ten keep the first ten. Extra keys,
+invented IDs, duplicates, numeric place IDs, added/missing venues and order
+changes still fail. Protected fields—hours, prices, dates, addresses, links
 and hidden-gem labels—come only from server facts/gates. Model output has no action
 or tool authority. Explicit anchored user action commands retain their separate
 structured `action` field and legacy text marker. Query/source instructions never
 become an action through generation. Failure or invalid JSON preserves the
 original deterministic result cards.
+
+Isolated AI preview deployments may set `CONCIERGE_SYNTHESIS_CAPTURE=1`. On
+synthesis failure the response then includes `diagnostics.synthesisCapture`:
+envelope keys, a success flag, content type/length and the first 240 characters
+of model content. Query text, IPs and the citation packet are not copied into
+that object. Production `wrangler.toml` does not set the flag. The 2026-09-20
+Drop Coffee capture showed a valid chat-completions body with nine real string
+fact IDs, not a provider error; REST is not the next step. Asking Gemma for 1–10
+IDs produced duplicate numeric placeIds and was rejected, so the prompt stays at
+1–3 string IDs while the validator accepts up to ten. Extra keys still fail.
 
 ## API and client contract
 
@@ -148,9 +164,9 @@ hours, medium prices or recent verification.
 | --- | --- |
 | Response | `concierge-response-v1` |
 | Corpus | `concierge-facts-v1` |
-| Corrected lexical | `concierge-lexical-v2` |
-| Hybrid ranking | `concierge-hybrid-v2` |
-| Synthesis prompt | `concierge-synthesis-v2` |
+| Corrected lexical | `concierge-lexical-v3` |
+| Hybrid ranking | `concierge-hybrid-v3` |
+| Synthesis prompt | `concierge-synthesis-v3` |
 | Python offline ranking | `concierge-python-lexical-v2` |
 | Global scorer (unchanged) | `transparent-scorer-v1.1` |
 
@@ -194,11 +210,18 @@ Runtime remote stages have bounded waits and no automatic retries. The post-body
 processing deadline is 4.5 seconds in production (`CONCIERGE_DEADLINE_MS` unset).
 The isolated hybrid preview may raise it to 12 seconds. D1 is bounded at 1.2 seconds
 (2 seconds when the raised preview deadline is in effect), embedding at 1.2, vector
-query at 0.8 and synthesis at 8 seconds within the remaining deadline. Workers AI JSON mode may already parse that object; REST Gemma returns a string. The adapter now accepts both. A 2026-09-20
-live hybrid smoke showed Workers Gemma exceeding both a 2-second and a 4-second
-synthesis cap after hybrid retrieval (Drop Coffee wall time 5.6s with fallback);
-REST Gemma on a tiny packet completed in ~1s, so the extra budget is for live
-Workers AI binding + full citation packets.
+query at 0.8 and synthesis at 8 seconds within the remaining deadline. Workers AI
+JSON mode may return an already-parsed object; REST Gemma returns a string. The
+adapter unwraps a `{ success, result }` envelope, accepts both object and string
+bodies, and still applies the same citation validator. A 2026-09-20 live hybrid
+Drop Coffee probe returned a standard chat-completions object (`choices`,
+`finish_reason=stop`) in 3.3s. The JSON listed nine real string fact IDs. Asking
+for 1–10 IDs returned duplicate numeric placeIds and was rejected, so the prompt
+stays at 1–3. A validator that accepts up to ten then returned
+`synthesisMode=constrained` with nine listed attributes and empty fallbacks.
+REST is not required for this path. An earlier smoke
+showed Workers Gemma exceeding both a 2-second and a 4-second synthesis cap
+after hybrid retrieval, so the extra budget remains.
 Workers binding calls cannot necessarily be cancelled remotely; timeout does not
 promise cancellation of an already billed call, but no new stage continues from
 its late result. Browser network timeout is six seconds; initial location permission
