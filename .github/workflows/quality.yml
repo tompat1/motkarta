@@ -56,6 +56,9 @@ jobs:
           npm ci
           python -m pip install "ruff==0.16.8"
 
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
       - name: Verify Types & Build
         run: npm run build
 
