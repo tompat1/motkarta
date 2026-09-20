@@ -1870,6 +1870,11 @@ button.search-clear-btn:hover {
   padding: 4px 8px !important;
 }
 
+/* Hide Leaflet attribution in fullscreen mode */
+:is(.map-panel:fullscreen, .map-panel.is-fullscreen) .leaflet-control-attribution {
+  display: none !important;
+}
+
 .leaflet-popup {
   display: block;
 }

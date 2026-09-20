@@ -124,6 +124,17 @@ export function FoodMap({
           maxWidth: 280,
           className: 'motkarta-place-popup'
         });
+        
+        marker.on('popupopen', () => {
+          const popupElement = marker.getPopup()?.getElement();
+          if (popupElement) {
+            popupElement.style.cursor = 'pointer';
+            popupElement.onclick = () => {
+              onOpenPlaceDetails?.(place.id);
+              map.closePopup();
+            };
+          }
+        });
       }
 
       clusterGroup.addLayer(marker);
@@ -510,6 +521,20 @@ export function FoodMap({
               className: 'motkarta-place-popup'
             });
           }
+          
+          // Make popup clickable to open details
+          activeMarker.off('popupopen');
+          activeMarker.on('popupopen', () => {
+            const popupElement = activeMarker.getPopup()?.getElement();
+            if (popupElement) {
+              popupElement.style.cursor = 'pointer';
+              popupElement.onclick = () => {
+                onOpenPlaceDetails?.(activePlace.id);
+                currentMap.closePopup();
+              };
+            }
+          });
+          
           // Open it after animation
           setTimeout(() => {
             activeMarker.openPopup();
