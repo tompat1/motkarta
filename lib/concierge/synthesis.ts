@@ -46,8 +46,13 @@ export function applySynthesisOutput(raw: unknown, response: ConciergeResponse, 
     if (choice.finish_reason !== 'stop' || choice.message?.refusal || choice.message?.tool_calls?.length) throw new Error('invalid_synthesis');
     payload = choice.message?.content;
   }
-  if (typeof payload !== 'string' || payload.length > 6000) throw new Error('invalid_synthesis');
-  const selections = validateSynthesis(JSON.parse(payload), response);
+  if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+    // Workers AI JSON mode may already parse the object; REST returns a string.
+  } else {
+    if (typeof payload !== 'string' || payload.length > 6000) throw new Error('invalid_synthesis');
+    payload = JSON.parse(payload);
+  }
+  const selections = validateSynthesis(payload, response);
   if (!selections.some((selection) => selection.factIds.length)) throw new Error('unsupported_synthesis');
   const cards = response.cards.map((card, i) => {
     const selected = selections[i].factIds.map((id) => card.citations.find((f) => f.id === id)!);

@@ -145,6 +145,8 @@ test('Gemma 4 chat completions preserve citation validation and reject truncatio
   const content = JSON.stringify({ places: [{ placeId: 1, factIds: ['1:cuisine'] }] });
   const choice = { finish_reason: 'stop', message: { content } };
   assert.equal(applySynthesisOutput({ choices: [choice] }, original, 'en').cards[0].whyItMatches, 'Listed attributes: polish.');
+  assert.equal(applySynthesisOutput({ choices: [{ finish_reason: 'stop', message: { content: { places: [{ placeId: 1, factIds: ['1:cuisine'] }] } } }] }, original, 'en').cards[0].whyItMatches, 'Listed attributes: polish.');
+  assert.equal(applySynthesisOutput({ response: { places: [{ placeId: 1, factIds: ['1:cuisine'] }] } }, original, 'en').cards[0].whyItMatches, 'Listed attributes: polish.');
   for (const choices of [[], [choice, choice], [{ ...choice, finish_reason: 'length' }], [{ ...choice, message: { content, refusal: 'Refused' } }], [{ ...choice, message: { content, tool_calls: [{}] } }], [{ ...choice, message: { content: '{"places":[{"placeId":1,"factIds":["invented"]}]}' } }]]) {
     assert.throws(() => applySynthesisOutput({ choices }, original, 'en'));
   }
