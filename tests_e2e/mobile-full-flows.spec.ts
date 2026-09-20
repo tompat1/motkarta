@@ -90,6 +90,22 @@ test.describe("Mobile Full User Flows", () => {
     await expect(cardList).not.toBeVisible();
   });
 
+  test("4b. Bottom toolbar Map tab always switches from list view to map view", async ({ page }) => {
+    await page.goto("/");
+
+    const viewToggleBtn = page.locator(".floating-view-toggle-btn");
+    const cardList = page.locator(".mobile-place-card-list");
+    const mapTab = page.locator('.mobile-toolbar-tab[data-tab="map"]');
+
+    await viewToggleBtn.click();
+    await expect(cardList).toBeVisible();
+
+    await mapTab.click();
+    await expect(cardList).not.toBeVisible();
+    await expect(page.locator(".map-panel")).not.toHaveClass(/mobile-view-hidden/);
+    await expect(mapTab).toHaveClass(/is-active/);
+  });
+
   test("5. Mobile place detail sheet flow", async ({ page }) => {
     await page.goto("/");
 
