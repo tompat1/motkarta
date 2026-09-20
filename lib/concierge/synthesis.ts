@@ -42,6 +42,22 @@ function parseJsonPayload(payload: unknown): unknown {
   return JSON.parse(trimmed);
 }
 
+/** Keep the documented 1–3 citation cap without inventing IDs or dropping extra keys. */
+export function boundFactIds(payload: unknown): unknown {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return payload;
+  const row = payload as { places?: unknown };
+  if (!Array.isArray(row.places)) return payload;
+  return {
+    ...row,
+    places: row.places.map((item) => {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return item;
+      const place = item as { factIds?: unknown };
+      if (!Array.isArray(place.factIds) || place.factIds.length <= 3) return item;
+      return { ...place, factIds: place.factIds.slice(0, 3) };
+    }),
+  };
+}
+
 function captureValueShape(capture: SynthesisCapture, value: unknown): void {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     if (typeof value === 'string') {
@@ -145,7 +161,7 @@ export async function synthesize(response: ConciergeResponse, ai: AiBinding, lan
 }
 
 export function applySynthesisOutput(raw: unknown, response: ConciergeResponse, language: Locale): ConciergeResponse {
-  const selections = validateSynthesis(parseJsonPayload(extractSynthesisPayload(raw)), response);
+  const selections = validateSynthesis(boundFactIds(parseJsonPayload(extractSynthesisPayload(raw))), response);
   if (!selections.some((selection) => selection.factIds.length)) throw new Error('unsupported_synthesis');
   const cards = response.cards.map((card, i) => {
     const selected = selections[i].factIds.map((id) => card.citations.find((f) => f.id === id)!);

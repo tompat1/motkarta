@@ -81,8 +81,10 @@ Check `diagnostics.fallbackReasons` in the JSON response. Empty array = full RAG
 `no_current_semantic_matches` = lexical fallback within hybrid mode (valid).
 `synthesis_rejected_or_unavailable` with `diagnostics.synthesisCapture` means the
 preview recorded the Workers `AI.run` shape (keys, success flag, 240-character
-content head) without query text. Use that capture to keep the adapter unwrap or
-move synthesis to REST; do not weaken the citation validator.
+content head) without query text. The 2026-09-20 Drop Coffee probe captured a
+chat-completions object whose JSON listed nine real fact IDs; the adapter now
+keeps the first three. Extra keys still fail. REST is not required for this
+Workers `AI.run` path.
 
 ## Safety boundaries (unchanged)
 

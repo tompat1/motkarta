@@ -112,9 +112,10 @@ entailment. This is narrower than free-form conversational RAG.
 
 The adapter unwraps a Workers `AI.run` REST envelope (`{ success, result }`),
 accepts an already-parsed JSON object or a string, and strips a surrounding
-markdown fence when present. Top-level `{ places }` is accepted. The citation
-validator still rejects added keys, invented fact IDs, duplicate IDs, added/missing
-venues and order changes. Protected fields—hours, prices, dates, addresses, links
+markdown fence when present. Top-level `{ places }` is accepted. If Gemma
+returns more than three otherwise-valid fact IDs, the adapter keeps the first
+three; it does not invent IDs. The citation validator still rejects added keys,
+invented fact IDs, duplicate IDs, added/missing venues and order changes. Protected fields—hours, prices, dates, addresses, links
 and hidden-gem labels—come only from server facts/gates. Model output has no action
 or tool authority. Explicit anchored user action commands retain their separate
 structured `action` field and legacy text marker. Query/source instructions never
@@ -125,9 +126,9 @@ Isolated AI preview deployments may set `CONCIERGE_SYNTHESIS_CAPTURE=1`. On
 synthesis failure the response then includes `diagnostics.synthesisCapture`:
 envelope keys, a success flag, content type/length and the first 240 characters
 of model content. Query text, IPs and the citation packet are not copied into
-that object. Production `wrangler.toml` does not set the flag. Use the capture to
-decide whether to keep the adapter unwrap or call Gemma over REST from the
-worker; do not relax the validator.
+that object. Production `wrangler.toml` does not set the flag. The 2026-09-20
+Drop Coffee capture showed a valid chat-completions body with too many fact IDs,
+not a provider error; REST is not the next step. Extra keys still fail.
 
 ## API and client contract
 
@@ -208,11 +209,12 @@ The isolated hybrid preview may raise it to 12 seconds. D1 is bounded at 1.2 sec
 query at 0.8 and synthesis at 8 seconds within the remaining deadline. Workers AI
 JSON mode may return an already-parsed object; REST Gemma returns a string. The
 adapter unwraps a `{ success, result }` envelope, accepts both object and string
-bodies, and still applies the same citation validator. A 2026-09-20
-live hybrid smoke showed Workers Gemma exceeding both a 2-second and a 4-second
-synthesis cap after hybrid retrieval (Drop Coffee wall time 5.6s with fallback);
-REST Gemma on a tiny packet completed in ~1s, so the extra budget is for live
-Workers AI binding + full citation packets.
+bodies, and still applies the same citation validator. A 2026-09-20 live hybrid
+Drop Coffee probe returned a standard chat-completions object (`choices`,
+`finish_reason=stop`) in 3.3s. The JSON listed nine real fact IDs; the adapter
+now keeps the first three. REST is not required for this path. An earlier smoke
+showed Workers Gemma exceeding both a 2-second and a 4-second synthesis cap
+after hybrid retrieval, so the extra budget remains.
 Workers binding calls cannot necessarily be cancelled remotely; timeout does not
 promise cancellation of an already billed call, but no new stage continues from
 its late result. Browser network timeout is six seconds; initial location permission

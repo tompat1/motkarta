@@ -6,7 +6,8 @@ place order. The adapter may unwrap a Workers AI REST envelope and accept parsed
 JSON or a fenced string; extra keys still fail validation. Raw model text is not
 displayed. Isolated AI previews may attach `diagnostics.synthesisCapture` on
 synthesis failure: envelope keys and a 240-character content head, never query
-text. See the [real-model trial](concierge-real-model-trial.md) for measured
+text. Over-selected fact ID lists are bounded to three before validation; extra
+keys still fail. See the [real-model trial](concierge-real-model-trial.md) for measured
 failures and lineage.
 
 ## Principles

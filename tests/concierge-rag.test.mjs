@@ -163,6 +163,19 @@ test('Workers AI envelopes, markdown fences and top-level places still pass the 
   assert.equal(applySynthesisOutput(places, original, 'en').cards[0].whyItMatches, 'Listed attributes: polish.');
   assert.throws(() => applySynthesisOutput({ success: true, result: { places: [{ placeId: 1, factIds: ['1:cuisine'], extra: true }] } }, original, 'en'));
 });
+test('adapter keeps the first three fact IDs when Gemma over-selects, without accepting extra keys', () => {
+  const original = response();
+  const allowed = original.cards[0].citations.filter((fact) => ['cuisine', 'kind', 'area', 'dish', 'tags'].includes(fact.field)).map((fact) => fact.id);
+  assert.ok(allowed.length > 3);
+  const firstThree = allowed.slice(0, 3);
+  const generated = applySynthesisOutput({
+    choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({ places: [{ placeId: 1, factIds: allowed }] }) } }],
+  }, original, 'en');
+  assert.equal(generated.synthesisMode, 'constrained');
+  assert.equal(generated.cards[0].whyItMatches, `Listed attributes: ${firstThree.map((id) => original.cards[0].citations.find((fact) => fact.id === id).value).join('; ')}.`);
+  assert.throws(() => validateSynthesis({ places: [{ placeId: 1, factIds: allowed }] }, original));
+  assert.throws(() => applySynthesisOutput({ places: [{ placeId: 1, factIds: firstThree, extra: true }] }, original, 'en'));
+});
 test('failed synthesis capture records envelope keys and a bounded content head without query text', async () => {
   const original = response();
   const envelope = { success: false, errors: [{ code: 5006, message: 'internal' }] };
