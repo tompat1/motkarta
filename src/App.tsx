@@ -1823,7 +1823,7 @@ function AppContent({
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="countermap-panel-icon"><Sparkle size={16} weight="fill" aria-hidden="true" /></span>
           <div>
-            <strong>{lang === "sv" ? "Concierge" : "Concierge"}</strong>
+            <strong>Concierge</strong>
             <small>{lang === "sv" ? "Söker först i verifierade signaler" : "Searches verified signals first"}</small>
           </div>
         </div>
@@ -2115,11 +2115,7 @@ function AppContent({
             <div className="admin-session-auth topbar-session-auth" aria-live="polite">
               <ShieldCheck size={14} weight="bold" />
               <span>
-                {adminSession.email
-                  ? adminSession.email
-                  : lang === "sv"
-                    ? "Admin"
-                    : "Admin"}
+                {adminSession.email || "Admin"}
               </span>
               <button
                 type="button"
