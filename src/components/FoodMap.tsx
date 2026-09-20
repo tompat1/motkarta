@@ -124,6 +124,17 @@ export function FoodMap({
           maxWidth: 280,
           className: 'motkarta-place-popup'
         });
+        
+        marker.on('popupopen', () => {
+          const popupElement = marker.getPopup()?.getElement();
+          if (popupElement) {
+            popupElement.style.cursor = 'pointer';
+            popupElement.onclick = () => {
+              onOpenPlaceDetails?.(place.id);
+              map.closePopup();
+            };
+          }
+        });
       }
 
       clusterGroup.addLayer(marker);
@@ -134,7 +145,7 @@ export function FoodMap({
       count: inBounds.length,
       bounds: boundsFromLeaflet(map.getBounds()),
     });
-  }, []);
+  }, [lang, onOpenPlaceDetails]);
 
   const handleLocateUser = async () => {
     if (locating) return;
@@ -409,7 +420,6 @@ export function FoodMap({
 
   useEffect(() => {
     const map = mapRef.current;
-    const clusterGroup = clusterGroupRef.current;
     const currentActiveId = activePlace?.id ?? null;
     const activeChanged = prevActivePlaceIdRef.current !== currentActiveId;
     activePlaceIdRef.current = currentActiveId;
@@ -453,7 +463,6 @@ export function FoodMap({
 
       const runFocusSequence = () => {
         const currentMap = mapRef.current;
-        const currentCluster = clusterGroupRef.current;
         const container = containerRef.current;
         if (!currentMap || !container || !(currentMap as any)._loaded) {
           window.requestAnimationFrame(() => {
@@ -510,6 +519,20 @@ export function FoodMap({
               className: 'motkarta-place-popup'
             });
           }
+          
+          // Make popup clickable to open details
+          activeMarker.off('popupopen');
+          activeMarker.on('popupopen', () => {
+            const popupElement = activeMarker.getPopup()?.getElement();
+            if (popupElement) {
+              popupElement.style.cursor = 'pointer';
+              popupElement.onclick = () => {
+                onOpenPlaceDetails?.(activePlace.id);
+                currentMap.closePopup();
+              };
+            }
+          });
+          
           // Open it after animation
           setTimeout(() => {
             activeMarker.openPopup();
@@ -518,9 +541,9 @@ export function FoodMap({
           currentMap.closePopup();
         }
 
-        if (currentCluster && typeof (currentCluster as any).zoomToShowLayer === "function") {
+        if (typeof (clusterGroupRef.current as any)?.zoomToShowLayer === "function") {
           try {
-            (currentCluster as any).zoomToShowLayer(activeMarker, () => {
+            (clusterGroupRef.current as any).zoomToShowLayer(activeMarker, () => {
               currentMap.flyTo(flyCenter, targetZoom, {
                 duration: 0.35,
                 easeLinearity: 0.25,
@@ -538,7 +561,7 @@ export function FoodMap({
 
       runFocusSequence();
     }
-  }, [activePlace, focusRequest, places, syncViewportMarkers]);
+  }, [activePlace, focusRequest, places, syncViewportMarkers, lang, onOpenPlaceDetails]);
 
   return (
     <div className="leaflet-shell">
