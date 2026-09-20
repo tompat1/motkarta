@@ -216,7 +216,10 @@ Drop Coffee probe returned a standard chat-completions object (`choices`,
 `finish_reason=stop`) in 3.3s. The JSON listed nine real string fact IDs; the
 adapter keeps the first three. A later probe that asked for 1–10 IDs returned
 duplicate numeric placeIds and was rejected, so that prompt change was reverted.
-REST is not required for this path. An earlier smoke
+A 2026-09-20 reprobe with the restored 1–3 string-ID prompt returned
+`synthesisMode=constrained` in 2.7s (`Listed attributes: Specialty coffee;
+coffee shop; Own roastery.`) with empty fallbacks. REST is not required for this
+path. An earlier smoke
 showed Workers Gemma exceeding both a 2-second and a 4-second synthesis cap
 after hybrid retrieval, so the extra budget remains.
 Workers binding calls cannot necessarily be cancelled remotely; timeout does not
