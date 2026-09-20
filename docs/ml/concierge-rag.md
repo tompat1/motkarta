@@ -104,20 +104,18 @@ are unavailable or no current semantic matches survive.
 
 ## Constrained synthesis
 
-The Gemma 4 adapter (`concierge-synthesis-v3`) generates a JSON selection of
-supplied fact IDs per fixed result. The prompt still asks for 1–3 IDs; the
-validator accepts up to ten because a 2026-09-20 Drop Coffee capture listed nine
-real string IDs. Asking the model for 1–10 made it emit duplicate numeric place
-IDs, so the prompt was not changed. Its role is query-sensitive explanation
-selection. The server renders the selected facts with localized connective text.
-Arbitrary generated prose is intentionally not accepted.
+The Gemma 4 adapter (`concierge-synthesis-v3`) generates a JSON selection of 1–3 supplied fact IDs per
+fixed result. Its role is query-sensitive explanation selection. The server
+renders the selected facts with localized connective text. Arbitrary generated
+prose is intentionally not accepted: schema-valid citations do not prove factual
+entailment. This is narrower than free-form conversational RAG.
 
 The adapter unwraps a Workers `AI.run` REST envelope (`{ success, result }`),
 accepts an already-parsed JSON object or a string, and strips a surrounding
-markdown fence when present. Top-level `{ places }` is accepted. Lists longer
-than ten keep the first ten; the adapter does not invent IDs. The citation
-validator still rejects added keys, invented fact IDs, duplicate IDs, added/missing
-venues and order changes. Protected fields—hours, prices, dates, addresses, links
+markdown fence when present. Top-level `{ places }` is accepted. If Gemma
+returns more than three otherwise-valid fact IDs, the adapter keeps the first
+three; it does not invent IDs. The citation validator still rejects added keys,
+invented fact IDs, duplicate IDs, added/missing venues and order changes. Protected fields—hours, prices, dates, addresses, links
 and hidden-gem labels—come only from server facts/gates. Model output has no action
 or tool authority. Explicit anchored user action commands retain their separate
 structured `action` field and legacy text marker. Query/source instructions never
@@ -129,8 +127,10 @@ synthesis failure the response then includes `diagnostics.synthesisCapture`:
 envelope keys, a success flag, content type/length and the first 240 characters
 of model content. Query text, IPs and the citation packet are not copied into
 that object. Production `wrangler.toml` does not set the flag. The 2026-09-20
-Drop Coffee capture showed a valid chat-completions body with too many fact IDs,
-not a provider error; REST is not the next step. Extra keys still fail.
+Drop Coffee capture showed a valid chat-completions body with too many string
+fact IDs, not a provider error; REST is not the next step. Asking Gemma for 1–10
+IDs produced duplicate numeric placeIds and was rejected, so the prompt stays at
+1–3 string IDs and the adapter still keeps the first three. Extra keys still fail.
 
 ## API and client contract
 
@@ -213,9 +213,9 @@ JSON mode may return an already-parsed object; REST Gemma returns a string. The
 adapter unwraps a `{ success, result }` envelope, accepts both object and string
 bodies, and still applies the same citation validator. A 2026-09-20 live hybrid
 Drop Coffee probe returned a standard chat-completions object (`choices`,
-`finish_reason=stop`) in 3.3s. The JSON listed nine real fact IDs; the validator
-now accepts up to ten while the prompt still asks for 1–3. Asking the model for
-1–10 produced duplicate numeric place IDs, so that prompt change was reverted.
+`finish_reason=stop`) in 3.3s. The JSON listed nine real string fact IDs; the
+adapter keeps the first three. A later probe that asked for 1–10 IDs returned
+duplicate numeric placeIds and was rejected, so that prompt change was reverted.
 REST is not required for this path. An earlier smoke
 showed Workers Gemma exceeding both a 2-second and a 4-second synthesis cap
 after hybrid retrieval, so the extra budget remains.
