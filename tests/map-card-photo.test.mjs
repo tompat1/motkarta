@@ -16,8 +16,15 @@ test("App.tsx replaces recommendation paragraph with map card photo container", 
   assert.match(appSource, /className=\{`map-card-hero-photo \$\{\!activeCardPhoto \? "map-card-hero-photo-dummy" : ""\}`\}/);
   assert.match(appSource, /src=\{activeCardPhoto\?\.url \?\? DUMMY_PLACE_IMAGE_URL\}/);
 
-  // Clicking photo opens place detail sheet
-  assert.match(appSource, /onClick=\{\(\) => setIsPlaceDetailOpen\(true\)\}/);
+  // Map card photo is display-only on desktop; feedback/save controls live in the header
+  assert.match(appSource, /className="map-card-action-controls"/);
+  assert.match(appSource, /className="map-card-reaction-btn map-card-reaction-btn-up"/);
+  assert.match(appSource, /className=\{`map-card-bookmark-btn \$\{savedPlaceIds\.includes\(active\.id\) \? "is-saved" : ""\}`\}/);
+  assert.match(appSource, /setMapCardFeedbackType\("up"\)/);
+  assert.ok(
+    !appSource.includes("map-card-photo-container") || !appSource.match(/map-card-photo-container[\s\S]{0,200}onClick/),
+    "photo container should not be wired as a click target",
+  );
   assert.match(appSource, /window\.addEventListener\("motkarta:photo_added", handlePhotoAdded\)/);
   assert.match(appSource, /detail\?\.placeId === active\.id/);
 });
@@ -52,6 +59,9 @@ test("styles.css defines map card photo container and responsive styling", () =>
   assert.match(stylesSource, /\.map-card-hero-photo\s*\{[\s\S]*?object-fit:\s*contain;/);
   assert.match(stylesSource, /\.map-card-hero-photo-dummy\s*\{/);
   assert.match(stylesSource, /\.map-card-photo-credit\s*\{/);
+  assert.match(stylesSource, /\.map-card-action-controls\s*\{/);
+  assert.match(stylesSource, /\.map-card-reaction-btn\s*\{/);
+  assert.match(stylesSource, /\.map-card-bookmark-btn\s*\{/);
 });
 
 const mediaDrawerSource = await readFile(new URL("../src/components/LazyPlaceMediaDrawer.tsx", import.meta.url), "utf8");

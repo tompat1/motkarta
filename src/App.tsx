@@ -115,6 +115,8 @@ import {
   ArrowUp,
   Info,
   CurrencyCircleDollar,
+  ThumbsUp,
+  ThumbsDown,
 } from "@phosphor-icons/react";
 import { parseConciergeAnswer } from "../lib/concierge-parser";
 import { retrieveAndSynthesize } from "../lib/concierge/response";
@@ -127,6 +129,7 @@ import {
 } from "./components/MobileFilterBottomSheet";
 import { MobileRankControlSheet, type RankSheetType } from "./components/MobileRankControlSheet";
 import { PlaceDetailSheet } from "./components/PlaceDetailSheet";
+import { PlaceFeedbackModal } from "./components/PlaceFeedbackModal";
 import { UserPhotoUploadModal } from "./components/UserPhotoUploadModal";
 import { MobilePlaceCardList } from "./components/MobilePlaceCardList";
 import { MobileAppToolbar, type MobileTab } from "./components/MobileAppToolbar";
@@ -227,6 +230,7 @@ function AppContent({
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [mobileRankSheet, setMobileRankSheet] = useState<RankSheetType>(null);
   const [isPlaceDetailOpen, setIsPlaceDetailOpen] = useState(false);
+  const [mapCardFeedbackType, setMapCardFeedbackType] = useState<"up" | "down" | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [activeDesktopNav, setActiveDesktopNav] = useState<"discover" | "map" | "saved">("discover");
 
@@ -2833,6 +2837,43 @@ function AppContent({
                 <h3 className="map-card-header-title">{active.name}</h3>
               </div>
               <div className="map-card-header-actions">
+                <div className="map-card-action-controls">
+                  <button
+                    type="button"
+                    className="map-card-reaction-btn map-card-reaction-btn-up"
+                    onClick={() => setMapCardFeedbackType("up")}
+                    title={lang === "sv" ? "Hjälpsam / Bra ställe" : "Helpful / Good place"}
+                  >
+                    <ThumbsUp size={18} weight="bold" />
+                  </button>
+                  <button
+                    type="button"
+                    className="map-card-reaction-btn map-card-reaction-btn-down"
+                    onClick={() => setMapCardFeedbackType("down")}
+                    title={lang === "sv" ? "Inte bra / Felaktig info" : "Not good / Wrong info"}
+                  >
+                    <ThumbsDown size={18} weight="bold" />
+                  </button>
+                  <button
+                    type="button"
+                    className={`map-card-bookmark-btn ${savedPlaceIds.includes(active.id) ? "is-saved" : ""}`}
+                    onClick={() => handleToggleSavePlace(active.id)}
+                    aria-label={
+                      savedPlaceIds.includes(active.id)
+                        ? lang === "sv"
+                          ? "Ta bort bokmärke"
+                          : "Remove bookmark"
+                        : lang === "sv"
+                          ? "Spara ställe"
+                          : "Save place"
+                    }
+                  >
+                    <BookmarkSimple
+                      size={22}
+                      weight={savedPlaceIds.includes(active.id) ? "fill" : "bold"}
+                    />
+                  </button>
+                </div>
                 <button
                   type="button"
                   className="map-card-toggle-btn"
@@ -2869,16 +2910,6 @@ function AppContent({
                 ) : null}
                 <div
                   className={`map-card-photo-container ${!activeCardPhoto ? "map-card-photo-container-dummy" : ""}`}
-                  onClick={() => setIsPlaceDetailOpen(true)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setIsPlaceDetailOpen(true);
-                    }
-                  }}
-                  title={lang === "sv" ? "Visa ställets detaljer" : "View place details"}
                 >
                   <img
                     src={activeCardPhoto?.url ?? DUMMY_PLACE_IMAGE_URL}
@@ -3427,6 +3458,17 @@ function AppContent({
           placeName={active.name}
           lang={lang}
           onClose={() => setIsUserPhotoUploadOpen(false)}
+        />
+      ) : null}
+
+      {active ? (
+        <PlaceFeedbackModal
+          isOpen={Boolean(mapCardFeedbackType)}
+          targetId={active.id}
+          targetName={active.name}
+          initialType={mapCardFeedbackType ?? "up"}
+          lang={lang}
+          onClose={() => setMapCardFeedbackType(null)}
         />
       ) : null}
 

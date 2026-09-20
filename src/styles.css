@@ -2173,6 +2173,53 @@ button.search-clear-btn:hover {
   flex-shrink: 0;
 }
 
+.map-card-action-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-card-reaction-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--color-mist);
+  background: var(--color-paper, #f8fafc);
+  cursor: pointer;
+  padding: 0;
+  transition: background var(--motion-fast), border-color var(--motion-fast);
+}
+
+.map-card-reaction-btn:hover {
+  border-color: var(--color-ink);
+}
+
+.map-card-reaction-btn-up {
+  color: #166534;
+}
+
+.map-card-reaction-btn-down {
+  color: #991b1b;
+}
+
+.map-card-bookmark-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--color-ink);
+}
+
+.map-card-bookmark-btn.is-saved {
+  color: var(--color-water, #2563eb);
+}
+
 .map-card-toggle-btn {
   display: inline-flex;
   align-items: center;
@@ -2318,19 +2365,12 @@ button.search-clear-btn:hover {
   height: 180px;
   border-radius: 8px;
   overflow: hidden;
-  cursor: pointer;
   background: #ffffff;
   border: 1px solid var(--color-mist);
-  transition: transform var(--motion-fast), box-shadow var(--motion-fast), border-color var(--motion-fast);
   margin-bottom: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.map-card-photo-container:hover {
-  border-color: var(--color-ink);
-  box-shadow: 0 4px 14px rgba(17, 17, 17, 0.08);
 }
 
 .map-card-photo-container-dummy {
@@ -2347,10 +2387,6 @@ button.search-clear-btn:hover {
   display: block;
   transition: transform var(--motion-fast);
   background: #ffffff;
-}
-
-.map-card-photo-container:hover .map-card-hero-photo:not(.map-card-hero-photo-dummy) {
-  transform: none;
 }
 
 .map-card-hero-photo-dummy {
