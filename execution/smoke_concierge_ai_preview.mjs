@@ -62,7 +62,7 @@ for (const expected of queries) {
   const response = await fetch(origin + '/api/concierge', {
     method: 'POST', headers: { 'content-type': 'application/json', origin },
     body: JSON.stringify({ query: expected.query, language: expected.query.match(/[åäöÅÄÖ]/) ? 'sv' : 'en' }),
-    signal: AbortSignal.timeout(12000),
+    signal: AbortSignal.timeout(20000),
   });
   if (response.status !== 200) throw new Error(`${expected.query}: HTTP ${response.status}; ${(await response.text()).slice(0, 1000)}`);
   assert.equal(response.headers.get('x-motkarta-preview'), previewTag);

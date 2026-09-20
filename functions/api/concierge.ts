@@ -206,14 +206,14 @@ export async function requestAiPermit(env: Env, key: string, units: number) {
   } catch { return false; }
 }
 export async function processConciergeQuery(query: string, env: Env = {}, context: QueryContext = {}, allowAI = false, requestUrl?: string) {
-  const started = Date.now(), deadline = started + processingDeadlineMs(env);
+  const started = Date.now(), budget = processingDeadlineMs(env), deadline = started + budget;
   let places: ConciergePlace[] = [];
   let blocked: PlaceIdentity[] = [];
   let publicationAvailable = true;
   let sourceNamespace = 'd1';
   if (parseAction(query)) return Response.json(buildResponse(query, [], 0, context, 'action'), { headers });
   try {
-    if (env.DB) places = await withinDeadline(loadPlacesFromD1(env.DB), 1200);
+    if (env.DB) places = await withinDeadline(loadPlacesFromD1(env.DB), budget >= 8000 ? 2000 : 1200);
     blocked = places.filter(isClosedPlace);
   } catch { publicationAvailable = false; }
   if (env.ASSETS && requestUrl) {

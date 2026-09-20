@@ -63,7 +63,7 @@ Preview wrangler vars (generated under `.tmp/concierge-ai-preview/wrangler.toml`
 | `CONCIERGE_RETRIEVAL_MODE` | `hybrid` |
 | `CONCIERGE_SYNTHESIS_MODE` | `constrained` |
 | `CONCIERGE_MIN_SIMILARITY` | `0.5` (diagnostic; not production default) |
-| `CONCIERGE_DEADLINE_MS` | `8000` (preview-only; production stays 4500) |
+| `CONCIERGE_DEADLINE_MS` | `12000` (preview-only; production stays 4500) |
 | `limits.cpu_ms` | `10000` (hybrid+Gemma exceeded the lexical 1000ms CPU budget) |
 
 ## Demo queries (side-by-side vs production)

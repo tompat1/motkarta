@@ -34,7 +34,7 @@ export function buildSynthesisInput(response: ConciergeResponse, language: Local
 }
 export async function synthesize(response: ConciergeResponse, ai: AiBinding, language: Locale, deadline: number, context: import('./contracts.ts').QueryContext = {}): Promise<ConciergeResponse> {
   if (!response.cards.length) return response;
-  const raw = await withinDeadline(ai.run(SYNTHESIS_MODEL, buildSynthesisInput(response, language, context)), Math.min(4000, deadline - Date.now()));
+  const raw = await withinDeadline(ai.run(SYNTHESIS_MODEL, buildSynthesisInput(response, language, context)), Math.min(8000, deadline - Date.now()));
   return applySynthesisOutput(raw, response, language);
 }
 export function applySynthesisOutput(raw: unknown, response: ConciergeResponse, language: Locale): ConciergeResponse {

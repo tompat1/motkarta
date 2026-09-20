@@ -30,6 +30,7 @@ test('processingDeadlineMs keeps production at 4.5s and allows a bounded preview
   assert.equal(processingDeadlineMs(), 4500);
   assert.equal(processingDeadlineMs({}), 4500);
   assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '8000' }), 8000);
+  assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '12000' }), 12000);
   assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '4499' }), 4500);
   assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '12001' }), 4500);
   assert.equal(processingDeadlineMs({ CONCIERGE_DEADLINE_MS: '8000.5' }), 4500);
