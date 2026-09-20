@@ -82,10 +82,10 @@ Check `diagnostics.fallbackReasons` in the JSON response. Empty array = full RAG
 `synthesis_rejected_or_unavailable` with `diagnostics.synthesisCapture` means the
 preview recorded the Workers `AI.run` shape (keys, success flag, 240-character
 content head) without query text. The 2026-09-20 Drop Coffee probe captured a
-chat-completions object whose JSON listed nine real string fact IDs; the adapter
-now keeps the first three. Asking the model for 1–10 IDs produced duplicate
-numeric placeIds, so the prompt stays at 1–3. A restored-prompt reprobe then
-returned `synthesisMode=constrained` with listed attributes and no fallbacks.
+chat-completions object whose JSON listed nine real string fact IDs. The prompt
+stays at 1–3 string IDs after a 1–10 request produced duplicate numeric placeIds.
+The validator accepts up to ten, which let a later Drop Coffee probe return
+`synthesisMode=constrained` with nine listed attributes and no fallbacks.
 Extra keys still fail. REST is not required for this Workers `AI.run` path.
 
 ## Safety boundaries (unchanged)

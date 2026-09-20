@@ -6,7 +6,7 @@ import { lexicalCandidates, fuseCandidates } from '../lib/concierge/retrieval.ts
 import { placeFacts, documentHash } from '../lib/concierge/facts.ts';
 import { eligiblePlace, specialtyEligible } from '../lib/concierge/gates.ts';
 import { semanticCandidates, hydrateSemanticMatches, validateEmbedding, withinDeadline } from '../lib/concierge/providers.ts';
-import { validateSynthesis, synthesize, buildSynthesisInput, applySynthesisOutput, unwrapAiRun, describeSynthesisCapture } from '../lib/concierge/synthesis.ts';
+import { validateSynthesis, synthesize, buildSynthesisInput, applySynthesisOutput, unwrapAiRun, describeSynthesisCapture, MAX_SYNTHESIS_FACT_IDS } from '../lib/concierge/synthesis.ts';
 import { onRequestPost, onRequestGet, validateRequest } from '../functions/api/concierge.ts';
 import { rowsToPlaceInputs } from '../lib/place-records.ts';
 import { VERSIONS } from '../lib/concierge/contracts.ts';
@@ -163,23 +163,27 @@ test('Workers AI envelopes, markdown fences and top-level places still pass the 
   assert.equal(applySynthesisOutput(places, original, 'en').cards[0].whyItMatches, 'Listed attributes: polish.');
   assert.throws(() => applySynthesisOutput({ success: true, result: { places: [{ placeId: 1, factIds: ['1:cuisine'], extra: true }] } }, original, 'en'));
 });
-test('adapter keeps the first three fact IDs when Gemma over-selects, without accepting extra keys', () => {
-  const original = response();
-  const allowed = original.cards[0].citations.filter((fact) => ['cuisine', 'kind', 'area', 'dish', 'tags'].includes(fact.field)).map((fact) => fact.id);
-  assert.ok(allowed.length > 3);
-  const firstThree = allowed.slice(0, 3);
+test('adapter accepts up to ten cited facts and only bounds lists above that cap', () => {
+  const rich = retrieveAndSynthesize('pierogi', [fixture({ tags: ['pierogi', 'lunch', 'takeaway', 'family', 'casual', 'sourdough', 'dumpling', 'outdoor', 'vegetarian'] })]);
+  const allowed = rich.cards[0].citations.filter((fact) => ['cuisine', 'kind', 'area', 'dish', 'tags'].includes(fact.field)).map((fact) => fact.id);
+  assert.ok(allowed.length > MAX_SYNTHESIS_FACT_IDS);
+  const nine = allowed.slice(0, 9);
   const generated = applySynthesisOutput({
-    choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({ places: [{ placeId: 1, factIds: allowed }] }) } }],
-  }, original, 'en');
+    choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({ places: [{ placeId: 1, factIds: nine }] }) } }],
+  }, rich, 'en');
   assert.equal(generated.synthesisMode, 'constrained');
-  assert.equal(generated.cards[0].whyItMatches, `Listed attributes: ${firstThree.map((id) => original.cards[0].citations.find((fact) => fact.id === id).value).join('; ')}.`);
-  assert.throws(() => validateSynthesis({ places: [{ placeId: 1, factIds: allowed }] }, original));
-  assert.throws(() => applySynthesisOutput({ places: [{ placeId: 1, factIds: firstThree, extra: true }] }, original, 'en'));
+  assert.equal(generated.cards[0].whyItMatches, `Listed attributes: ${nine.map((id) => rich.cards[0].citations.find((fact) => fact.id === id).value).join('; ')}.`);
+  assert.deepEqual(validateSynthesis({ places: [{ placeId: 1, factIds: nine }] }, rich), [{ placeId: 1, factIds: nine }]);
+  const bounded = applySynthesisOutput({ response: JSON.stringify({ places: [{ placeId: 1, factIds: allowed }] }) }, rich, 'en');
+  assert.equal(bounded.synthesisMode, 'constrained');
+  assert.equal(bounded.cards[0].whyItMatches, `Listed attributes: ${allowed.slice(0, MAX_SYNTHESIS_FACT_IDS).map((id) => rich.cards[0].citations.find((fact) => fact.id === id).value).join('; ')}.`);
+  assert.throws(() => validateSynthesis({ places: [{ placeId: 1, factIds: allowed }] }, rich));
+  assert.throws(() => applySynthesisOutput({ places: [{ placeId: 1, factIds: nine, extra: true }] }, rich, 'en'));
   assert.throws(() => applySynthesisOutput({
     choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({ places: [{ placeId: 1, factIds: Array(9).fill(1) }] }) } }],
-  }, original, 'en'));
-  assert.match(buildSynthesisInput(original, 'en').messages[0].content, /1–3 supplied string fact IDs/);
-  assert.match(buildSynthesisInput(original, 'en').messages[0].content, /Never copy the numeric placeId/);
+  }, rich, 'en'));
+  assert.match(buildSynthesisInput(rich, 'en').messages[0].content, /1–3 supplied string fact IDs/);
+  assert.match(buildSynthesisInput(rich, 'en').messages[0].content, /Never copy the numeric placeId/);
 });
 test('failed synthesis capture records envelope keys and a bounded content head without query text', async () => {
   const original = response();

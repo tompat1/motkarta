@@ -112,10 +112,12 @@ entailment. This is narrower than free-form conversational RAG.
 
 The adapter unwraps a Workers `AI.run` REST envelope (`{ success, result }`),
 accepts an already-parsed JSON object or a string, and strips a surrounding
-markdown fence when present. Top-level `{ places }` is accepted. If Gemma
-returns more than three otherwise-valid fact IDs, the adapter keeps the first
-three; it does not invent IDs. The citation validator still rejects added keys,
-invented fact IDs, duplicate IDs, added/missing venues and order changes. Protected fields—hours, prices, dates, addresses, links
+markdown fence when present. Top-level `{ places }` is accepted. The prompt still
+asks for 1–3 string fact IDs and forbids copying the numeric `placeId`. The
+validator accepts up to ten supplied string IDs because a Drop Coffee capture
+listed nine real ones; lists longer than ten keep the first ten. Extra keys,
+invented IDs, duplicates, numeric place IDs, added/missing venues and order
+changes still fail. Protected fields—hours, prices, dates, addresses, links
 and hidden-gem labels—come only from server facts/gates. Model output has no action
 or tool authority. Explicit anchored user action commands retain their separate
 structured `action` field and legacy text marker. Query/source instructions never
@@ -127,10 +129,10 @@ synthesis failure the response then includes `diagnostics.synthesisCapture`:
 envelope keys, a success flag, content type/length and the first 240 characters
 of model content. Query text, IPs and the citation packet are not copied into
 that object. Production `wrangler.toml` does not set the flag. The 2026-09-20
-Drop Coffee capture showed a valid chat-completions body with too many string
+Drop Coffee capture showed a valid chat-completions body with nine real string
 fact IDs, not a provider error; REST is not the next step. Asking Gemma for 1–10
 IDs produced duplicate numeric placeIds and was rejected, so the prompt stays at
-1–3 string IDs and the adapter still keeps the first three. Extra keys still fail.
+1–3 string IDs while the validator accepts up to ten. Extra keys still fail.
 
 ## API and client contract
 
@@ -213,13 +215,11 @@ JSON mode may return an already-parsed object; REST Gemma returns a string. The
 adapter unwraps a `{ success, result }` envelope, accepts both object and string
 bodies, and still applies the same citation validator. A 2026-09-20 live hybrid
 Drop Coffee probe returned a standard chat-completions object (`choices`,
-`finish_reason=stop`) in 3.3s. The JSON listed nine real string fact IDs; the
-adapter keeps the first three. A later probe that asked for 1–10 IDs returned
-duplicate numeric placeIds and was rejected, so that prompt change was reverted.
-A 2026-09-20 reprobe with the restored 1–3 string-ID prompt returned
-`synthesisMode=constrained` in 2.7s (`Listed attributes: Specialty coffee;
-coffee shop; Own roastery.`) with empty fallbacks. REST is not required for this
-path. An earlier smoke
+`finish_reason=stop`) in 3.3s. The JSON listed nine real string fact IDs. Asking
+for 1–10 IDs returned duplicate numeric placeIds and was rejected, so the prompt
+stays at 1–3. A validator that accepts up to ten then returned
+`synthesisMode=constrained` with nine listed attributes and empty fallbacks.
+REST is not required for this path. An earlier smoke
 showed Workers Gemma exceeding both a 2-second and a 4-second synthesis cap
 after hybrid retrieval, so the extra budget remains.
 Workers binding calls cannot necessarily be cancelled remotely; timeout does not
