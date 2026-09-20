@@ -20,7 +20,6 @@ interface MobilePlaceSlideUpProps {
   onOpenDetails: (place: ScoredPlace) => void;
   onToggleSave?: (id: number) => void;
   onClose?: () => void;
-  onToggleListView?: () => void;
 }
 
 export function MobilePlaceSlideUp({
@@ -31,7 +30,6 @@ export function MobilePlaceSlideUp({
   onOpenDetails,
   onToggleSave,
   onClose,
-  onToggleListView,
 }: MobilePlaceSlideUpProps) {
   const [showWhyReason, setShowWhyReason] = useState(false);
 
@@ -155,16 +153,6 @@ export function MobilePlaceSlideUp({
       >
         <span>{lang === "sv" ? "Visa stället" : "View place"}</span>
         <ArrowRight size={18} weight="bold" />
-      </button>
-
-      {/* Footer Toggle Row */}
-      <button
-        type="button"
-        className="mobile-slide-up-footer-toggle"
-        onClick={() => onToggleListView?.()}
-      >
-        <span>{lang === "sv" ? "Exempelresultat" : "Sample results"}</span>
-        <CaretDown size={14} weight="bold" />
       </button>
     </aside>
   );

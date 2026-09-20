@@ -3411,7 +3411,6 @@ function AppContent({
           onOpenDetails={() => setIsPlaceDetailOpen(true)}
           onToggleSave={handleToggleSavePlace}
           onClose={() => setSelected(null)}
-          onToggleListView={toggleMobileView}
         />
       ) : null}
 
