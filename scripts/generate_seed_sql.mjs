@@ -10,14 +10,12 @@ const rawData = JSON.parse(await readFile(input, "utf8"));
 const places = (rawData.places ?? rawData).filter((place) => !isExcludedCatalogPlace(place));
 
 const lines = [
-  "BEGIN TRANSACTION;",
   "DELETE FROM score_snapshots;",
   "DELETE FROM engagement_snapshots;",
   "DELETE FROM rating_snapshots;",
   "DELETE FROM specialty_coffee_attributes;",
   "DELETE FROM establishment_tags;",
   "DELETE FROM evidence_sources;",
-  "DELETE FROM establishments;",
 ];
 
 function derivePriceLevel(place) {
@@ -45,7 +43,7 @@ for (const place of places) {
       sql(place.website || null),
       sql(place.openingHours || null),
       sql(place.priceSEK || null),
-    ].join(", ")});`,
+    ].join(", ")}) ON CONFLICT(id) DO UPDATE SET name=excluded.name, type=excluded.type, district=excluded.district, description=excluded.description, latitude=excluded.latitude, longitude=excluded.longitude, chain_status=excluded.chain_status, updated_at=excluded.updated_at, address=excluded.address, website=excluded.website, opening_hours=excluded.opening_hours, price_sek=excluded.price_sek;`,
   );
 
   if (Array.isArray(place.tags)) {
@@ -76,8 +74,6 @@ for (const place of places) {
     );
   }
 }
-
-lines.push("COMMIT;");
 
 await mkdir(dirname(output), { recursive: true });
 await writeFile(output, `${lines.join("\n")}\n`, "utf8");
