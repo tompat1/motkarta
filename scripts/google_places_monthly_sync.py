@@ -31,6 +31,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from motkarta.catalog_exclusions import is_excluded_catalog_name
+from motkarta.discovery_queries import build_discovery_queries
 
 DEFAULT_PLACES_FILE = ROOT / "public" / "data" / "places.json"
 DEFAULT_PHOTOS_FILE = ROOT / "public" / "data" / "place_photos.json"
@@ -42,12 +43,7 @@ GOOGLE_DETAILS_URL = "https://maps.googleapis.com/maps/api/place/details/json"
 GOOGLE_PLACES_NEW_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
 GOOGLE_PLACES_NEW_DETAILS_URL = "https://places.googleapis.com/v1/places"
 
-DEFAULT_QUERIES = [
-    "new independent restaurants Stockholm",
-    "new cafes Stockholm",
-    "new bakeries Stockholm",
-    "new coffee shops Stockholm",
-]
+DEFAULT_QUERIES = build_discovery_queries()
 
 EXCLUDED_CHAINS = [
     "nespresso",
@@ -482,6 +478,7 @@ def sync_metadata(
     queries: list[str] | None = None,
     dry_run: bool = False,
     scrape_photos: bool = True,
+    enrich_existing_only: bool = False,
 ) -> dict[str, int]:
     places_payload, places = load_places(places_path)
     photos_payload = load_photos(photos_path)
@@ -523,10 +520,10 @@ def sync_metadata(
                 stats["address_updates"] += int("address" in changes)
                 stats["website_updates"] += int("website" in changes)
                 stats["official_photo_updates"] += int("official_photo" in changes)
-        else:
+        elif not enrich_existing_only:
             new_candidates.append(build_candidate_record(metadata))
 
-    candidates_payload = merge_candidates(candidates_path, new_candidates)
+    candidates_payload = merge_candidates(candidates_path, new_candidates if not enrich_existing_only else [])
     stats["new_candidates"] = len(new_candidates)
 
     photos_payload["updatedAt"] = iso_now()
@@ -656,6 +653,11 @@ def main() -> None:
     parser.add_argument("--query", action="append", dest="queries", help="Google text-search query. Repeatable.")
     parser.add_argument("--check-existence", action="store_true", help="Run monthly existence check against Google Places businessStatus.")
     parser.add_argument("--skip-photos", action="store_true", help="Skip website og:image scraping for faster metadata-only sync.")
+    parser.add_argument(
+        "--enrich-existing-only",
+        action="store_true",
+        help="Only fill missing address/website/photo metadata for cataloged venues; skip new Google-only candidate writes.",
+    )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -683,6 +685,7 @@ def main() -> None:
         queries=args.queries,
         dry_run=args.dry_run,
         scrape_photos=not args.skip_photos,
+        enrich_existing_only=args.enrich_existing_only,
     )
 
     print("Metadata-only Google sync complete:")

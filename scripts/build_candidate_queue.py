@@ -19,15 +19,24 @@ import time
 from pathlib import Path
 from typing import Any
 
-from motkarta.stockholm_boundary import is_stockholm_municipality_place
 from motkarta.dog_friendly import is_tasstipset_source
+from motkarta.municipal_signals import (
+    is_food_venue_business_type,
+    is_likely_new_venue_signal,
+    municipal_signal_reason,
+    summarize_municipal_new_venue_signals,
+)
+from motkarta.stockholm_boundary import is_stockholm_municipality_place
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PLACES_FILE = ROOT / "public" / "data" / "places.json"
 DEFAULT_FOOD_CONTROL_FILE = ROOT / "data" / "stockholm_food_control.csv"
 DEFAULT_FOOD_CONTROL_MATCHES_FILE = ROOT / "data" / "stockholm_food_control_matches.csv"
+DEFAULT_SERVING_PERMITS_FILE = ROOT / "data" / "serving_permits.csv"
+DEFAULT_SERVING_PERMIT_MATCHES_FILE = ROOT / "data" / "serving_permit_matches.csv"
 DEFAULT_GOOGLE_CANDIDATES_FILE = ROOT / "outputs" / "google_places_candidates.json"
+DEFAULT_COMPARISON_REPORT_FILE = ROOT / "outputs" / "places_comparison_report.json"
 DEFAULT_OUTPUT_FILE = ROOT / "outputs" / "candidate_queue.json"
 
 STATES = {"baseline", "candidate", "verified", "featured"}
@@ -57,7 +66,10 @@ def build_candidate_queue(
     places_path: Path = DEFAULT_PLACES_FILE,
     food_control_path: Path = DEFAULT_FOOD_CONTROL_FILE,
     food_control_matches_path: Path = DEFAULT_FOOD_CONTROL_MATCHES_FILE,
+    serving_permits_path: Path = DEFAULT_SERVING_PERMITS_FILE,
+    serving_permit_matches_path: Path = DEFAULT_SERVING_PERMIT_MATCHES_FILE,
     google_candidates_path: Path = DEFAULT_GOOGLE_CANDIDATES_FILE,
+    comparison_report_path: Path | None = None,
     curated_submissions_path: Path | None = None,
     validation_labels_path: Path | None = None,
 ) -> dict[str, Any]:
@@ -65,13 +77,43 @@ def build_candidate_queue(
     entries: list[dict[str, Any]] = []
 
     entries.extend(baseline_entries(load_places(places_path), validations))
-    entries.extend(unmatched_food_control_entries(food_control_path, food_control_matches_path, validations))
+    food_control_rows = read_csv(food_control_path)
+    food_control_matches = read_csv(food_control_matches_path)
+    serving_permit_rows = read_csv(serving_permits_path)
+    serving_permit_matches = read_csv(serving_permit_matches_path)
+
+    entries.extend(
+        unmatched_food_control_entries(
+            food_control_rows,
+            food_control_matches,
+            validations,
+        )
+    )
+    entries.extend(
+        unmatched_serving_permit_entries(
+            serving_permit_rows,
+            serving_permit_matches,
+            validations,
+        )
+    )
     entries.extend(google_candidate_entries(google_candidates_path, validations))
+    entries.extend(comparison_candidate_entries(comparison_report_path, validations))
     entries.extend(curated_submission_entries(curated_submissions_path, validations))
 
     deduped = dedupe_entries(entries)
     for entry in deduped:
         assert_no_forbidden_value_fields(entry)
+
+    municipal_signals = summarize_municipal_new_venue_signals(
+        food_control_rows,
+        matched_source_ids={clean_text(row.get("source_id")) for row in food_control_matches if row.get("source_id")},
+        serving_permit_rows=serving_permit_rows,
+        matched_permit_ids={
+            clean_text(row.get("source_id") or row.get("permit_id"))
+            for row in serving_permit_matches
+            if row.get("source_id") or row.get("permit_id")
+        },
+    )
 
     return {
         "updatedAt": iso_now(),
@@ -81,6 +123,7 @@ def build_candidate_queue(
             state: sum(1 for entry in deduped if entry["state"] == state)
             for state in ["baseline", "candidate", "verified", "featured"]
         },
+        "municipalNewVenueSignals": municipal_signals,
         "entries": deduped,
     }
 
@@ -112,21 +155,21 @@ def baseline_entries(places: list[dict[str, Any]], validations: dict[str, dict[s
 
 
 def unmatched_food_control_entries(
-    food_control_path: Path,
-    matches_path: Path,
+    food_control_rows: list[dict[str, str]],
+    matches_rows: list[dict[str, str]],
     validations: dict[str, dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    if not food_control_path.exists():
-        return []
     matched_source_ids = {
-        row.get("source_id", "")
-        for row in read_csv(matches_path)
+        clean_text(row.get("source_id"))
+        for row in matches_rows
         if row.get("source_id")
     }
     entries = []
-    for row in read_csv(food_control_path):
+    for row in food_control_rows:
         source_id = clean_text(row.get("source_id"))
         if not source_id or source_id in matched_source_ids:
+            continue
+        if not is_food_venue_business_type(row.get("business_type"), row.get("facility_type")):
             continue
         validation = validations.get(f"municipal:{source_id}") or validations.get(normalized_name(row.get("name"))) or {}
         entry = {
@@ -140,10 +183,95 @@ def unmatched_food_control_entries(
             "longitude": optional_float(row.get("longitude")),
             "sourceName": clean_text(row.get("source") or "Stockholms stad livsmedelskontroll"),
             "capturedAt": clean_text(row.get("latest_inspection_date")),
+            "businessType": clean_text(row.get("business_type")),
+            "facilityType": clean_text(row.get("facility_type")),
+            "signalReason": municipal_signal_reason(row),
+            "isLikelyNewVenue": is_likely_new_venue_signal(row),
             "validationLabel": validation.get("label"),
             "validationNotes": validation.get("notes"),
             "reviewStatus": "needs_osm_match_or_manual_place_creation",
             "allowedUse": "Candidate existence evidence only; not shown as recommendation until matched or manually verified.",
+        }
+        entries.append(drop_empty(entry))
+    return entries
+
+
+def unmatched_serving_permit_entries(
+    permit_rows: list[dict[str, str]],
+    matches_rows: list[dict[str, str]],
+    validations: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    matched_permit_ids = {
+        clean_text(row.get("source_id") or row.get("permit_id"))
+        for row in matches_rows
+        if row.get("source_id") or row.get("permit_id")
+    }
+    entries = []
+    for row in permit_rows:
+        permit_id = clean_text(row.get("permit_id") or row.get("source_id"))
+        if not permit_id or permit_id in matched_permit_ids:
+            continue
+        validation = validations.get(f"serving_permit:{permit_id}") or validations.get(normalized_name(row.get("name"))) or {}
+        entry = {
+            "id": f"serving-permit:{permit_id}",
+            "state": apply_validation_state("candidate", validation),
+            "sourceType": "serving_permit",
+            "sourceId": permit_id,
+            "name": clean_text(row.get("name")),
+            "address": clean_text(row.get("address")),
+            "latitude": optional_float(row.get("latitude")),
+            "longitude": optional_float(row.get("longitude")),
+            "sourceName": clean_text(row.get("source_name")) or "Serving permit register",
+            "sourceUrl": clean_text(row.get("source_url")),
+            "capturedAt": clean_text(row.get("valid_from") or row.get("captured_at")),
+            "permitType": clean_text(row.get("permit_type")),
+            "signalReason": "Serving permit on file but no catalog match yet",
+            "isLikelyNewVenue": bool(clean_text(row.get("valid_from"))),
+            "validationLabel": validation.get("label"),
+            "validationNotes": validation.get("notes"),
+            "reviewStatus": "needs_open_source_or_human_verification",
+            "allowedUse": "Candidate existence evidence from serving permit register; never scoring.",
+        }
+        entries.append(drop_empty(entry))
+    return entries
+
+
+def comparison_candidate_entries(
+    path: Path | None,
+    validations: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    if path is None or not path.exists():
+        return []
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    entries = []
+    for candidate in payload.get("newCandidates", []):
+        source_name = clean_text(candidate.get("source") or "Catalog comparison")
+        source_key = "google"
+        source_type = "google_metadata"
+        if "OpenStreetMap" in source_name:
+            source_key = "osm"
+            source_type = "osm_unmatched"
+        google_place_id = clean_text(candidate.get("googlePlaceId"))
+        source_id = google_place_id or normalized_name(candidate.get("name"))
+        validation = validations.get(f"{source_key}:{source_id}") or validations.get(normalized_name(candidate.get("name"))) or {}
+        entry = {
+            "id": f"catalog-comparison:{source_key}:{source_id}",
+            "state": apply_validation_state("candidate", validation),
+            "sourceType": source_type,
+            "sourceId": source_id,
+            "name": clean_text(candidate.get("name")),
+            "kind": clean_text(candidate.get("kind")),
+            "address": clean_text(candidate.get("address")),
+            "latitude": optional_float(candidate.get("latitude")),
+            "longitude": optional_float(candidate.get("longitude")),
+            "website": clean_text(candidate.get("website")),
+            "openingHours": clean_text(candidate.get("openingHours")),
+            "sourceName": source_name,
+            "validationLabel": validation.get("label"),
+            "validationNotes": validation.get("notes"),
+            "reviewStatus": "needs_open_source_or_human_verification",
+            "allowedUse": "Candidate discovery from monthly catalog comparison; never scoring.",
+            "discoveredAt": clean_text(candidate.get("discoveredAt")),
         }
         entries.append(drop_empty(entry))
     return entries
@@ -361,7 +489,10 @@ def main() -> None:
     parser.add_argument("--places", type=Path, default=DEFAULT_PLACES_FILE)
     parser.add_argument("--food-control", type=Path, default=DEFAULT_FOOD_CONTROL_FILE)
     parser.add_argument("--food-control-matches", type=Path, default=DEFAULT_FOOD_CONTROL_MATCHES_FILE)
+    parser.add_argument("--serving-permits", type=Path, default=DEFAULT_SERVING_PERMITS_FILE)
+    parser.add_argument("--serving-permit-matches", type=Path, default=DEFAULT_SERVING_PERMIT_MATCHES_FILE)
     parser.add_argument("--google-candidates", type=Path, default=DEFAULT_GOOGLE_CANDIDATES_FILE)
+    parser.add_argument("--comparison-report", type=Path, default=DEFAULT_COMPARISON_REPORT_FILE)
     parser.add_argument("--curated-submissions", type=Path)
     parser.add_argument("--validation-labels", type=Path)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_FILE)
@@ -371,7 +502,10 @@ def main() -> None:
         places_path=args.places,
         food_control_path=args.food_control,
         food_control_matches_path=args.food_control_matches,
+        serving_permits_path=args.serving_permits,
+        serving_permit_matches_path=args.serving_permit_matches,
         google_candidates_path=args.google_candidates,
+        comparison_report_path=args.comparison_report if args.comparison_report.exists() else None,
         curated_submissions_path=args.curated_submissions,
         validation_labels_path=args.validation_labels,
     )

@@ -49,19 +49,23 @@ def test_candidate_queue_combines_sources_and_keeps_value_fields_out(tmp_path):
                 "source_id": "municipal-1",
                 "name": "Matched Kitchen",
                 "address": "Matchgatan 1",
+                "business_type": "Restaurang-, catering- och barverksamhet",
                 "latitude": "59.31",
                 "longitude": "18.01",
                 "source": "Stockholms stad livsmedelskontroll",
                 "latest_inspection_date": "2026-08-01",
+                "inspection_count": "8",
             },
             {
                 "source_id": "municipal-2",
                 "name": "Unmatched Kitchen",
                 "address": "Kandgatan 2",
+                "business_type": "Restaurang-, catering- och barverksamhet",
                 "latitude": "59.32",
                 "longitude": "18.02",
                 "source": "Stockholms stad livsmedelskontroll",
                 "latest_inspection_date": "2026-08-02",
+                "inspection_count": "1",
             },
         ],
     )
@@ -155,6 +159,8 @@ def test_candidate_queue_combines_sources_and_keeps_value_fields_out(tmp_path):
     assert result["summary"]["candidate"] == 2
     assert by_name["OSM Baseline Cafe"]["state"] == "verified"
     assert by_name["Unmatched Kitchen"]["sourceType"] == "municipal_unmatched"
+    assert by_name["Unmatched Kitchen"]["isLikelyNewVenue"] is True
+    assert result["municipalNewVenueSignals"]["unmatchedFoodControlVenues"] == 1
     assert by_name["Google Candidate"]["state"] == "candidate"
     assert by_name["Curated Cafe"]["sourceType"] == "curated_submission"
     assert by_name["Curated Cafe"]["sourceId"] == "visit-stockholm:curated-cafe"

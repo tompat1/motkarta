@@ -157,6 +157,45 @@ def test_sync_writes_new_google_places_to_candidate_queue_only(tmp_path, monkeyp
     assert sync.forbidden_value_fields(candidates[0]) == set()
 
 
+def test_sync_enrich_existing_only_skips_new_google_candidates(tmp_path, monkeypatch):
+    places_path = tmp_path / "places.json"
+    photos_path = tmp_path / "place_photos.json"
+    candidates_path = tmp_path / "google_places_candidates.json"
+    places_path.write_text(
+        json.dumps({"places": [{"id": 1, "name": "Existing Cafe", "latitude": 59.3, "longitude": 18.0}]}),
+        encoding="utf-8",
+    )
+    photos_path.write_text(json.dumps({"photosByPlace": {}}), encoding="utf-8")
+    candidates_path.write_text(json.dumps({"candidates": []}), encoding="utf-8")
+
+    monkeypatch.setattr(
+        sync,
+        "fetch_google_places",
+        lambda api_key, queries: [
+            {
+                "place_id": "new-google-place",
+                "name": "New Review Queue Bistro",
+                "formatted_address": "Nygatan 3, Stockholm",
+                "geometry": {"location": {"lat": 59.31, "lng": 18.01}},
+            }
+        ],
+    )
+    monkeypatch.setattr(sync, "fetch_place_details", lambda api_key, place_id: {"website": "https://new.example"})
+    monkeypatch.setattr(sync, "scrape_website_og_image", lambda url: None)
+
+    stats = sync.sync_metadata(
+        api_key="test-key",
+        places_path=places_path,
+        photos_path=photos_path,
+        candidates_path=candidates_path,
+        enrich_existing_only=True,
+    )
+
+    candidates = json.loads(candidates_path.read_text(encoding="utf-8"))["candidates"]
+    assert stats["new_candidates"] == 0
+    assert candidates == []
+
+
 def test_legacy_enrichment_request_is_metadata_only(monkeypatch):
     captured_field_masks = []
 

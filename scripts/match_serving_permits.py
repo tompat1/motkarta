@@ -10,6 +10,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from motkarta.catalog_matching import load_catalog_dataframe
 from motkarta.pipeline import clean_text, load_raw_csv
 from motkarta.source_matching import SourceRecord, match_source_records
 
@@ -20,12 +21,16 @@ SOURCE_NAME = "Serving permit register"
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--places", default="data/stockholm_food_places_scored.csv")
+    parser.add_argument("--catalog", type=Path, help="Match serving permits against public/data/places.json instead of a CSV.")
     parser.add_argument("--permits", default="data/serving_permits.csv")
     parser.add_argument("--matches", default="data/serving_permit_matches.csv")
     parser.add_argument("--evidence", default="outputs/serving_permit_evidence.json")
     args = parser.parse_args()
 
-    places = load_raw_csv(args.places)
+    if args.catalog:
+        places = load_catalog_dataframe(args.catalog)
+    else:
+        places = load_raw_csv(args.places)
     permits = pd.read_csv(args.permits).fillna("")
     records_by_id = {record.source_id: record for record in permit_records(permits)}
     matches = match_source_records(places, list(records_by_id.values()))

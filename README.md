@@ -235,6 +235,20 @@ placeholders). Venues without verified photos fall back gracefully to Motkarta's
 branded SVG badge. For full technical details and policy guidelines, see
 [`docs/media_enrichment_and_photo_policy.md`](docs/media_enrichment_and_photo_policy.md).
 
+Run the full monthly catalog freshness loop locally (OSM refresh, municipal
+food-control diff, Google/OSM discovery, candidate queue rebuild):
+
+```bash
+npm run freshness:monthly
+```
+
+This writes `public/data/catalog_freshness_report.json` and refreshes
+`outputs/places_comparison_report.json` plus `outputs/candidate_queue.json`.
+The loop also treats Stockholm food-control registrations (and optional serving
+permit CSV imports) as municipal new-venue signals: unmatched restaurant-type
+facilities are queued for `/admin` review instead of being auto-published.
+GitHub Actions runs the same loop on the 1st of every month before enrichment.
+
 Build a unified lifecycle queue after OSM, municipal, Google-metadata, and
 curated-source imports:
 

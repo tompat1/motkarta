@@ -32,6 +32,7 @@
     "enrich:apply": ".venv/bin/python execution/apply_enrichment.py",
     "enrich:all": "npm run enrich:addresses && npm run enrich:photos && npm run enrich:catalog && npm run enrich:apply",
     "enrich:audit": ".venv/bin/python execution/audit_google_places_monthly.py",
+    "freshness:monthly": "python3 scripts/run_monthly_catalog_freshness.py",
     "candidates:build": "python3 scripts/build_candidate_queue.py",
     "candidates:seed": "node scripts/generate_candidate_import_sql.mjs",
     "reviews:labels": "node scripts/export_review_labels.mjs",

@@ -4,7 +4,7 @@ Unified Catalog Comparison Runner for Motkarta.
 
 Compares Motkarta's catalog (public/data/places.json) against:
 1. Google Places (Places API New)
-2. OpenStreetMap / Mapy.cz baseline (data/stockholm_food_places.csv)
+2. OpenStreetMap baseline (data/stockholm_food_places.csv)
 3. Known closure registries
 
 Outputs: outputs/places_comparison_report.json
@@ -26,6 +26,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from motkarta.discovery_queries import build_discovery_queries
 from scripts.google_places_monthly_sync import (
     DEFAULT_PLACES_FILE,
     clean_text,
@@ -49,13 +50,7 @@ KNOWN_CLOSED_REGISTRY: dict[str, str] = {
     "agrikultur": "Closed permanently",
 }
 
-DEFAULT_COMPARE_QUERIES = [
-    "new independent restaurants Stockholm",
-    "new cafes Stockholm",
-    "new bakeries Stockholm",
-    "new coffee shops Stockholm",
-    "independent pubs Stockholm",
-]
+DEFAULT_COMPARE_QUERIES = build_discovery_queries()
 
 
 def normalize_compare_name(name: str) -> str:
@@ -268,9 +263,9 @@ def run_comparison(
                         "discoveredAt": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
                     })
 
-    # 3. OpenStreetMap / Mapy Baseline Comparison
+    # 3. OpenStreetMap baseline comparison
     if not skip_osm:
-        print(f"\nComparing against OpenStreetMap / Mapy baseline ({osm_path})...")
+        print(f"\nComparing against OpenStreetMap baseline ({osm_path})...")
         osm_places = load_osm_places(osm_path)
         print(f"Processing {len(osm_places):,} OpenStreetMap food amenities...")
 
