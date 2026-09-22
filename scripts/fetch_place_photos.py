@@ -21,6 +21,13 @@ try:
 except ImportError:
     requests = None
 
+try:
+    from execution.url_blocklist import UrlBlocklist
+except ImportError:
+    import sys
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+    from execution.url_blocklist import UrlBlocklist
+
 PLACES_FILE = os.path.join(os.path.dirname(__file__), "..", "public", "data", "places.json")
 OUTPUT_JSON_FILE = os.path.join(os.path.dirname(__file__), "..", "public", "data", "place_photos.json")
 OUTPUT_SQL_FILE = os.path.join(os.path.dirname(__file__), "..", "drizzle", "seed-photos.sql")
@@ -220,11 +227,22 @@ def main():
     catalog = data.get("places", []) if isinstance(data, dict) else data
     existing_path = Path(args.existing_json)
     photos_by_place = json.loads(existing_path.read_text(encoding="utf-8")).get("photosByPlace", {}) if existing_path.exists() else {}
-    places = [place for place in catalog if place.get("website") and
-              (not args.only_missing or not photos_by_place.get(str(place["id"]))) ]
+    blocklist = UrlBlocklist()
+    blocked_count = 0
+    places = []
+    for place in catalog:
+        url = place.get("website")
+        if not url:
+            continue
+        if args.only_missing and photos_by_place.get(str(place["id"])):
+            continue
+        if blocklist.is_blocked(url):
+            blocked_count += 1
+            continue
+        places.append(place)
     if args.limit:
         places = places[:args.limit]
-    print(f"📦 Scraping {len(places)} eligible places; preserving {len(photos_by_place)} existing photo entries", flush=True)
+    print(f"📦 Scraping {len(places)} eligible places ({blocked_count} blocklisted URLs skipped); preserving {len(photos_by_place)} existing photo entries", flush=True)
     added_photos = 0
 
     max_workers = args.workers

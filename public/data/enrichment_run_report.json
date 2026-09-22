@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "runId": "initial-baseline",
+  "timestamp": "2026-09-22T10:30:00Z",
+  "durationSeconds": 0,
+  "status": "completed",
+  "summary": {
+    "totalVenuesChecked": 0,
+    "successfulScrapes": 0,
+    "failedScrapes": 0,
+    "skippedBlockedUrls": 0,
+    "newlyBlockedUrls": 0,
+    "totalBlockedUrls": 0
+  },
+  "recentErrors": [],
+  "blocklist": []
+}

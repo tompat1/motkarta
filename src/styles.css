@@ -5223,6 +5223,335 @@ button.concierge-clear-btn:hover {
   color: var(--color-ink);
 }
 
+/* -------------------------------------------------------------------------- */
+/* Admin URL Error Blocklist & Run Report                                     */
+/* -------------------------------------------------------------------------- */
+
+.admin-blocklist-section {
+  background: var(--color-paper);
+  border: 1px solid var(--color-ink);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+  padding: 18px;
+}
+
+.admin-blocklist-header {
+  border-bottom: 1px solid var(--color-mist);
+  padding-bottom: 14px;
+}
+
+.admin-blocklist-title-group h5.admin-blocklist-title {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 6px 0 4px;
+}
+
+.admin-blocklist-subcopy {
+  color: var(--color-stone);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.admin-blocklist-kpis {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.admin-blocklist-kpi-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+}
+
+.admin-blocklist-kpi-label {
+  align-items: center;
+  color: var(--color-stone);
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.admin-blocklist-kpi-val {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.admin-blocklist-kpi-sub {
+  color: var(--color-stone);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.admin-blocklist-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.admin-blocklist-search {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-ink);
+  display: flex;
+  flex: 1 1 240px;
+  max-width: 380px;
+  padding: 0 10px;
+  position: relative;
+}
+
+.admin-blocklist-search-icon {
+  color: var(--color-stone);
+  margin-right: 6px;
+}
+
+.admin-blocklist-input {
+  background: transparent;
+  border: none;
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  height: 34px;
+  outline: none;
+  width: 100%;
+}
+
+.admin-blocklist-clear {
+  background: none;
+  border: none;
+  color: var(--color-stone);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px;
+}
+
+.admin-blocklist-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-blocklist-filter-btn {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  transition: all 0.15s ease;
+}
+
+.admin-blocklist-filter-btn:hover {
+  border-color: var(--color-ink);
+}
+
+.admin-blocklist-filter-btn.active {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-white);
+}
+
+.admin-blocklist-table-container {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  max-height: 480px;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.admin-blocklist-table {
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.admin-blocklist-table th {
+  background: var(--color-sand);
+  border-bottom: 1px solid var(--color-ink);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 10px 12px;
+  position: sticky;
+  text-transform: uppercase;
+  top: 0;
+  z-index: 2;
+}
+
+.admin-blocklist-table th.th-action {
+  text-align: right;
+}
+
+.admin-blocklist-table td {
+  border-bottom: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+
+.admin-blocklist-table tr:hover td {
+  background: var(--color-paper);
+}
+
+.admin-blocklist-pid {
+  background: var(--color-sand);
+  border: 1px solid var(--color-mist);
+  border-radius: 2px;
+  color: var(--color-stone);
+  font-size: 10px;
+  margin-left: 6px;
+  padding: 1px 4px;
+}
+
+.admin-blocklist-link {
+  align-items: center;
+  color: var(--color-signal);
+  display: inline-flex;
+  gap: 4px;
+  max-width: 280px;
+  text-decoration: none;
+}
+
+.admin-blocklist-link:hover {
+  text-decoration: underline;
+}
+
+.admin-blocklist-url-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-blocklist-badge {
+  border-radius: 2px;
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 2px 6px;
+  text-transform: uppercase;
+}
+
+.admin-blocklist-badge.badge-404 {
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #991b1b;
+}
+
+.admin-blocklist-badge.badge-server {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  color: #92400e;
+}
+
+.admin-blocklist-badge.badge-timeout {
+  background: #f3e8ff;
+  border: 1px solid #a855f7;
+  color: #6b21a8;
+}
+
+.admin-blocklist-badge.badge-net {
+  background: #e0f2fe;
+  border: 1px solid #0284c7;
+  color: #075985;
+}
+
+.admin-blocklist-err-msg {
+  color: var(--color-stone);
+  display: block;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.admin-blocklist-fail-pill {
+  background: var(--color-sand);
+  border: 1px solid var(--color-mist);
+  border-radius: 10px;
+  color: var(--color-ink);
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 6px;
+  padding: 1px 6px;
+}
+
+.admin-blocklist-unblock-btn {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 4px;
+  margin-left: auto;
+  padding: 5px 10px;
+  transition: all 0.15s ease;
+}
+
+.admin-blocklist-unblock-btn:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #991b1b;
+}
+
+.admin-blocklist-empty {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px dashed var(--color-mist);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 36px 18px;
+  text-align: center;
+}
+
+.admin-blocklist-empty-icon {
+  color: var(--color-water);
+}
+
+.admin-blocklist-empty p {
+  color: var(--color-stone);
+  font-family: var(--font-body);
+  font-size: 13px;
+  margin: 0;
+}
+
+.admin-blocklist-footer-hint {
+  background: var(--color-sand);
+  border-top: 1px solid var(--color-mist);
+  color: var(--color-stone);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 8px 12px;
+  text-align: center;
+}
+
 .admin-sync-card {
   background: var(--color-white);
   border: 1px solid var(--color-mist);

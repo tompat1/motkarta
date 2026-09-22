@@ -68,7 +68,10 @@ jobs:
       #          atmosphere, dishes, and Wi-Fi text patterns.
       # -----------------------------------------------------------------------
       - name: Run catalog enrichment (local + website scraping)
-        run: python execution/enrich_catalog.py --output data/enrichment_overlay.json --scrape
+        # --limit 300: scrapes the top-priority 300 venues per run (sorted by
+        # missing must-have data first). Prevents GitHub Actions timeout while
+        # still covering all venues over 2-3 monthly runs via the cache.
+        run: python execution/enrich_catalog.py --output data/enrichment_overlay.json --scrape --limit 300
 
       # -----------------------------------------------------------------------
       # Step 4: Apply enrichment overlay into places.json
@@ -106,6 +109,8 @@ jobs:
           git add \
             public/data/places.json \
             public/data/place_photos.json \
+            public/data/enrichment_url_blocklist.json \
+            public/data/enrichment_run_report.json \
             data/enrichment_overlay.json \
             drizzle/seed-places.sql
           # Only commit if there are actual changes

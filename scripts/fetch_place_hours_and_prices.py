@@ -25,9 +25,16 @@ import re
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+try:
+    from execution.url_blocklist import UrlBlocklist
+except ImportError:
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from execution.url_blocklist import UrlBlocklist
 
 ROOT = Path(__file__).resolve().parents[1]
 PLACES_FILE = ROOT / "public" / "data" / "places.json"
@@ -328,18 +335,23 @@ def enrich_hours_and_prices(
     payload = json.loads(places_file.read_text(encoding="utf-8"))
     places: list[dict[str, Any]] = payload.get("places", payload)
 
-    # Identify places with websites to scrape
+    # Identify places with websites to scrape (skipping blocklisted URLs)
+    blocklist = UrlBlocklist()
     scrape_queue: list[tuple[int, str]] = []
+    blocked_count = 0
     for idx, p in enumerate(places):
         url = p.get("website", "")
         if url and url.startswith("http"):
-            scrape_queue.append((idx, url))
+            if blocklist.is_blocked(url):
+                blocked_count += 1
+            else:
+                scrape_queue.append((idx, url))
 
     if limit_sites > 0:
         scrape_queue = scrape_queue[:limit_sites]
 
     if not quiet:
-        print(f"🌐 Scraping {len(scrape_queue)} venue websites for hours, prices & addresses...")
+        print(f"🌐 Scraping {len(scrape_queue)} venue websites ({blocked_count} blocklisted URLs skipped) for hours, prices & addresses...")
 
     website_results: dict[int, dict[str, Any]] = {}
     with ThreadPoolExecutor(max_workers=max_workers) as executor:

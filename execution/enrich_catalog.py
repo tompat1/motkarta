@@ -41,6 +41,11 @@ try:
 except ImportError:
     BeautifulSoup = None  # type: ignore[assignment,misc]
 
+try:
+    from execution.url_blocklist import UrlBlocklist
+except ImportError:
+    from url_blocklist import UrlBlocklist  # type: ignore[no-redef]
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -718,16 +723,22 @@ USER_AGENT = "MotkartaBot/1.0 (+https://motkarta.se/bot; open catalog project)"
 
 
 class WebsiteScraper:
-    """Website scraper respecting robots.txt, rate limits, and local HTML caching."""
+    """Website scraper respecting robots.txt, rate limits, local HTML caching, and URL blocklists."""
 
-    def __init__(self, cache_dir: Path | None = None, delay_seconds: float = 0.5,
-                 max_age_days: int = 30):
+    def __init__(
+        self,
+        cache_dir: Path | None = None,
+        delay_seconds: float = 0.5,
+        max_age_days: int = 30,
+        blocklist: UrlBlocklist | None = None,
+    ):
         self.cache_dir = cache_dir or (ROOT / ".tmp" / "scraped_html_cache")
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.delay_seconds = delay_seconds
         self.max_age_seconds = max_age_days * 86400
         self.robot_parsers: dict[str, urllib.robotparser.RobotFileParser] = {}
         self.last_request_time: float = 0.0
+        self.blocklist: UrlBlocklist | None = blocklist if blocklist is not None else UrlBlocklist()
 
     def can_fetch(self, url: str) -> bool:
         """Check robots.txt for the host."""
@@ -747,8 +758,17 @@ class WebsiteScraper:
             self.robot_parsers[domain] = rp
         return self.robot_parsers[domain].can_fetch(USER_AGENT, url)
 
-    def fetch_url(self, url: str) -> str | None:
-        """Fetch URL content with local file caching, freshness limit, and rate limiting."""
+    def fetch_url(
+        self,
+        url: str,
+        place_id: int | str | None = None,
+        place_name: str = "",
+    ) -> str | None:
+        """Fetch URL content with local file caching, blocklist skipping, and rate limiting."""
+        if self.blocklist and self.blocklist.is_blocked(url):
+            print(f"  [Scraper] Skipping blocked URL: {url}")
+            return None
+
         url_hash = hashlib.sha256(url.encode("utf-8")).hexdigest()[:16]
         cache_file = self.cache_dir / f"{url_hash}.html"
         if cache_file.exists():
@@ -774,8 +794,26 @@ class WebsiteScraper:
                 content = resp.read().decode("utf-8", errors="ignore")
                 cache_file.write_text(content, encoding="utf-8")
                 return content
+        except urllib.error.HTTPError as err:
+            print(f"  [Scraper] Failed to fetch {url} (HTTP {err.code}): {err}")
+            if self.blocklist:
+                self.blocklist.record_error(
+                    url,
+                    place_id=place_id,
+                    place_name=place_name,
+                    error=err,
+                    status_code=err.code,
+                )
+            return None
         except Exception as err:
             print(f"  [Scraper] Failed to fetch {url}: {err}")
+            if self.blocklist:
+                self.blocklist.record_error(
+                    url,
+                    place_id=place_id,
+                    place_name=place_name,
+                    error=err,
+                )
             return None
 
 
@@ -999,6 +1037,7 @@ def venue_enrichment_priority(place: dict[str, Any]) -> int:
 def scrape_venue_websites(
     places: list[dict[str, Any]],
     limit: int = 0,
+    blocklist: UrlBlocklist | None = None,
 ) -> dict[int, list[dict[str, Any]]]:
     """Scrape venue websites for places with valid website URLs, prioritizing missing must-have data."""
     facts_by_id: dict[int, list[dict[str, Any]]] = {}
@@ -1022,21 +1061,58 @@ def scrape_venue_websites(
     if limit > 0:
         candidates = candidates[:limit]
 
-    print(f"Scraping {len(candidates)} venue websites (prioritizing missing hours & prices)...")
-    scraper = WebsiteScraper()
+    scraper = WebsiteScraper(blocklist=blocklist)
+    active_blocklist = scraper.blocklist
+    initial_blocked_count = len(active_blocklist.entries) if active_blocklist else 0
+
+    print(f"Scraping {len(candidates)} venue websites (prioritizing missing hours & prices; {initial_blocked_count} blocked URLs on record)...")
+
+    start_time = time.time()
+    skipped_blocked = 0
+    successful = 0
+    failed = 0
+    recent_errors: list[dict[str, Any]] = []
 
     for item in candidates:
         place = item["place"]
         url = item["url"]
         pid = place["id"]
+        pname = place.get("name", "")
 
-        html_content = scraper.fetch_url(url)
-        if not html_content:
+        if active_blocklist and active_blocklist.is_blocked(url):
+            skipped_blocked += 1
+            print(f"  [Scraper] Skipping blocklisted URL: {url} ({pname})")
             continue
 
+        html_content = scraper.fetch_url(url, place_id=pid, place_name=pname)
+        if not html_content:
+            failed += 1
+            if active_blocklist:
+                entry = active_blocklist.get_blocked_entry(url)
+                if entry and entry not in recent_errors:
+                    recent_errors.append(entry)
+            continue
+
+        successful += 1
         extracted = extract_facts_from_html(html_content, url, pid, timestamp)
         if extracted:
             facts_by_id[pid] = extracted
+
+    if active_blocklist:
+        newly_blocked = len(active_blocklist.entries) - initial_blocked_count
+        active_blocklist.save()
+        run_id = f"run-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}"
+        active_blocklist.save_run_report(
+            run_id=run_id,
+            start_time=start_time,
+            total_checked=len(candidates),
+            successful_count=successful,
+            failed_count=failed,
+            skipped_blocked_count=skipped_blocked,
+            newly_blocked_count=max(0, newly_blocked),
+            recent_errors=recent_errors[:50],
+        )
+        print(f"  [Blocklist] Updated: {len(active_blocklist.entries)} total blocked URLs ({newly_blocked} newly added, {skipped_blocked} skipped)")
 
     return facts_by_id
 

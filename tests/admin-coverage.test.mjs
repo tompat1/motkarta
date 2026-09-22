@@ -89,3 +89,37 @@ test('coverage preserves real zeros and counts both photo stores without double 
   assert.equal(missing.photos.count, 0);
   assert.equal(missing.errors.length, 2);
 });
+
+test("admin coverage endpoint returns enrichmentReport and urlBlocklist", async () => {
+  const req = new Request("https://motkarta.se/api/admin/coverage", {
+    method: "GET",
+    headers: {
+      "x-motkarta-admin-token": adminToken,
+    },
+  });
+  const res = await onRequestGet({ request: req, env: { MOTKARTA_ADMIN_TOKEN: adminToken } });
+  assert.equal(res.status, 200);
+
+  const data = await res.json();
+  assert.ok("enrichmentReport" in data);
+  assert.ok(Array.isArray(data.urlBlocklist));
+});
+
+test("admin coverage POST supports unblock_url action", async () => {
+  const req = new Request("https://motkarta.se/api/admin/coverage", {
+    method: "POST",
+    headers: {
+      "x-motkarta-admin-token": adminToken,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ action: "unblock_url", url: "https://nonexistent-sample.com" }),
+  });
+  const res = await onRequestPost({ request: req, env: { MOTKARTA_ADMIN_TOKEN: adminToken } });
+  assert.equal(res.status, 200);
+
+  const data = await res.json();
+  assert.equal(data.success, true);
+  assert.equal(data.action, "unblock_url");
+  assert.match(data.message, /Unblocked/);
+  assert.ok(Array.isArray(data.report.urlBlocklist));
+});

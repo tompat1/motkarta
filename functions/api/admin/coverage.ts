@@ -25,6 +25,45 @@ const jsonHeaders = {
   "cache-control": "no-cache",
 };
 
+export type BlockedUrlEntry = {
+  url: string;
+  normalizedUrl?: string;
+  domain?: string;
+  placeId?: number | string | null;
+  placeName?: string;
+  errorType: string;
+  errorMessage?: string;
+  statusCode?: number | null;
+  firstFailedAt?: string;
+  lastFailedAt?: string;
+  failCount?: number;
+};
+
+export type EnrichmentRunReport = {
+  version: string;
+  runId: string;
+  timestamp: string;
+  durationSeconds: number;
+  status: string;
+  summary: {
+    totalVenuesChecked: number;
+    successfulScrapes: number;
+    failedScrapes: number;
+    skippedBlockedUrls: number;
+    newlyBlockedUrls: number;
+    totalBlockedUrls: number;
+  };
+  recentErrors: Array<{
+    placeId?: number | string | null;
+    placeName?: string;
+    url: string;
+    errorType: string;
+    errorMessage?: string;
+    timestamp?: string;
+  }>;
+  blocklist: BlockedUrlEntry[];
+};
+
 export type CoverageReport = {
   generatedAt: string;
   source: "d1" | "unavailable";
@@ -74,6 +113,8 @@ export type CoverageReport = {
     status: "PASS" | "PROGRESSING" | "UNKNOWN";
   };
   lastEnrichedAt: string | null;
+  enrichmentReport?: EnrichmentRunReport | null;
+  urlBlocklist?: BlockedUrlEntry[];
 };
 
 export async function computeCoverageReport(db?: D1Database): Promise<CoverageReport> {
@@ -238,6 +279,60 @@ export async function computeCoverageReport(db?: D1Database): Promise<CoverageRe
   };
 }
 
+async function loadEnrichmentArtifacts(context?: { request?: Request; env?: Env }): Promise<{
+  enrichmentReport: EnrichmentRunReport | null;
+  urlBlocklist: BlockedUrlEntry[];
+}> {
+  let enrichmentReport: EnrichmentRunReport | null = null;
+  let urlBlocklist: BlockedUrlEntry[] = [];
+
+  const assets = (context?.env as { ASSETS?: { fetch: (req: Request | string) => Promise<Response> } })?.ASSETS;
+  if (assets && context?.request?.url) {
+    try {
+      const [rRes, bRes] = await Promise.all([
+        assets.fetch(new URL("/data/enrichment_run_report.json", context.request.url).toString()).catch(() => null),
+        assets.fetch(new URL("/data/enrichment_url_blocklist.json", context.request.url).toString()).catch(() => null),
+      ]);
+      if (rRes && rRes.ok) {
+        enrichmentReport = (await rRes.json().catch(() => null)) as EnrichmentRunReport | null;
+      }
+      if (bRes && bRes.ok) {
+        const bData = (await bRes.json().catch(() => null)) as { blockedUrls?: BlockedUrlEntry[] } | null;
+        if (bData && Array.isArray(bData.blockedUrls)) {
+          urlBlocklist = bData.blockedUrls;
+        }
+      }
+    } catch {}
+  }
+
+  if (!enrichmentReport || urlBlocklist.length === 0) {
+    try {
+      const fs = await import("node:fs/promises");
+      const path = await import("node:path");
+      const root = process.cwd();
+      if (!enrichmentReport) {
+        const rPath = path.resolve(root, "public/data/enrichment_run_report.json");
+        const rContent = await fs.readFile(rPath, "utf-8").catch(() => null);
+        if (rContent) {
+          enrichmentReport = JSON.parse(rContent) as EnrichmentRunReport;
+        }
+      }
+      if (urlBlocklist.length === 0) {
+        const bPath = path.resolve(root, "public/data/enrichment_url_blocklist.json");
+        const bContent = await fs.readFile(bPath, "utf-8").catch(() => null);
+        if (bContent) {
+          const bData = JSON.parse(bContent) as { blockedUrls?: BlockedUrlEntry[] };
+          if (bData && Array.isArray(bData.blockedUrls)) {
+            urlBlocklist = bData.blockedUrls;
+          }
+        }
+      }
+    } catch {}
+  }
+
+  return { enrichmentReport, urlBlocklist };
+}
+
 export async function onRequestGet(context: EventContext<Env>) {
   const session = await getAdminSession(context.request, context.env);
   if (!session.admin) {
@@ -248,6 +343,9 @@ export async function onRequestGet(context: EventContext<Env>) {
   }
 
   const report = await computeCoverageReport(context.env.DB);
+  const artifacts = await loadEnrichmentArtifacts(context);
+  report.enrichmentReport = artifacts.enrichmentReport;
+  report.urlBlocklist = artifacts.urlBlocklist;
   return Response.json(report, { headers: jsonHeaders });
 }
 
@@ -260,7 +358,56 @@ export async function onRequestPost(context: EventContext<Env>) {
     );
   }
 
+  const body = (await context.request.json().catch(() => ({}))) as {
+    action?: string;
+    url?: string;
+  };
+
   const report = await computeCoverageReport(context.env.DB);
+  const artifacts = await loadEnrichmentArtifacts(context);
+
+  if (body.action === "unblock_url" && body.url) {
+    const targetUrl = body.url.trim();
+    const normTarget = targetUrl.toLowerCase().replace(/\/+$/, "");
+
+    try {
+      const fs = await import("node:fs/promises");
+      const path = await import("node:path");
+      const blocklistPath = path.resolve(process.cwd(), "public/data/enrichment_url_blocklist.json");
+      const content = await fs.readFile(blocklistPath, "utf-8").catch(() => null);
+      if (content) {
+        const bData = JSON.parse(content) as { version?: string; blockedUrls?: BlockedUrlEntry[] };
+        if (Array.isArray(bData.blockedUrls)) {
+          bData.blockedUrls = bData.blockedUrls.filter((entry) => {
+            const entryNorm = (entry.normalizedUrl || entry.url || "").trim().toLowerCase().replace(/\/+$/, "");
+            return entryNorm !== normTarget && entry.url !== targetUrl;
+          });
+          await fs.writeFile(blocklistPath, JSON.stringify(bData, null, 2) + "\n", "utf-8");
+        }
+      }
+    } catch {}
+
+    const filtered = artifacts.urlBlocklist.filter((entry) => {
+      const entryNorm = (entry.normalizedUrl || entry.url || "").trim().toLowerCase().replace(/\/+$/, "");
+      return entryNorm !== normTarget && entry.url !== targetUrl;
+    });
+
+    report.enrichmentReport = artifacts.enrichmentReport;
+    report.urlBlocklist = filtered;
+
+    return Response.json(
+      {
+        success: true,
+        action: "unblock_url",
+        message: `Unblocked ${targetUrl}`,
+        report,
+      },
+      { headers: jsonHeaders },
+    );
+  }
+
+  report.enrichmentReport = artifacts.enrichmentReport;
+  report.urlBlocklist = artifacts.urlBlocklist;
 
   const message = "Coverage measured from D1. This action does not run enrichment or synchronize data.";
 
