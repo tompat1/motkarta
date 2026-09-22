@@ -1424,7 +1424,7 @@ button.search-clear-btn:hover {
 .countermap-concierge-panel .unified-search-ai-btn {
   background: var(--color-signal);
   border-color: var(--color-signal);
-  color: var(--color-ink);
+  color: var(--color-white);
   min-height: 44px;
   padding-inline: 16px;
 }
@@ -16669,7 +16669,7 @@ footer {
     border: 1.5px solid var(--editorial-red, #f4483a);
     border-radius: 8px;
     box-sizing: border-box;
-    color: #000000;
+    color: #ffffff;
     cursor: pointer;
     display: inline-flex;
     flex-shrink: 0;
@@ -16686,7 +16686,7 @@ footer {
   }
   .editorial-hero-concierge-btn:hover:not(:disabled) {
     background: #1d55d8;
-    color: #000000;
+    color: #ffffff;
     transform: translateY(-1px);
   }
   .editorial-hero-concierge-btn:disabled {
@@ -17568,7 +17568,7 @@ footer {
     background: var(--editorial-blue, #2864f0);
     border: 1.5px solid var(--editorial-red, #f4483a);
     border-radius: 8px;
-    color: #000000;
+    color: #ffffff;
     cursor: pointer;
     flex-shrink: 0;
     font-family: var(--font-mono, monospace);
@@ -17797,4 +17797,3 @@ footer {
     color: #64748b;
   }
 }
-
