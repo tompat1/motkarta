@@ -1,0 +1,117 @@
+name: Monthly Enrichment
+
+# Runs on the 1st of every month at 04:00 UTC.
+# Also triggerable manually via the Actions tab.
+on:
+  schedule:
+    - cron: "0 4 1 * *"
+  workflow_dispatch:
+
+jobs:
+  enrich:
+    name: Enrich addresses, images, Wi-Fi & prices → D1
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # needed to commit enriched files back to main
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install beautifulsoup4
+          if [ -f requirements-python.txt ]; then pip install -r requirements-python.txt; fi
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      # -----------------------------------------------------------------------
+      # Step 1: Google Places metadata-only sync
+      # Fills missing street addresses and official og:image photos.
+      # Guardrails: no ratings, reviews, price_level, prominence or review counts.
+      # -----------------------------------------------------------------------
+      - name: Enrich missing addresses (Google Places metadata-only)
+        env:
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+        run: python scripts/google_places_monthly_sync.py
+
+      # -----------------------------------------------------------------------
+      # Step 2: Website photo scraping
+      # Scrapes og:image / srcset from official venue websites for places that
+      # still have no photos after Step 1. HTTP-validates candidates before merge.
+      # -----------------------------------------------------------------------
+      - name: Scrape website images for venues still missing photos
+        run: python scripts/fetch_place_photos.py --only-missing --validate
+
+      # -----------------------------------------------------------------------
+      # Step 3: Catalog enrichment (Phase 1 + Phase 2)
+      # Phase 1: Deterministic local extraction (OSM, ground-truth files,
+      #          editorial reviews, curated sources).
+      #          Now also extracts OSM lunch & charge tags for price signals.
+      # Phase 2 (--scrape): Website scraping for opening hours, price ranges,
+      #          atmosphere, dishes, and Wi-Fi text patterns.
+      # -----------------------------------------------------------------------
+      - name: Run catalog enrichment (local + website scraping)
+        run: python execution/enrich_catalog.py --output data/enrichment_overlay.json --scrape
+
+      # -----------------------------------------------------------------------
+      # Step 4: Apply enrichment overlay into places.json
+      # Injects sourceFacts and backfills top-level openingHours / website
+      # fields without touching any non-enrichment properties.
+      # -----------------------------------------------------------------------
+      - name: Apply enrichment overlay to places.json
+        run: python execution/apply_enrichment.py
+
+      # -----------------------------------------------------------------------
+      # Step 5: Regenerate D1 seed SQL from updated places.json and re-seed
+      # the live Cloudflare D1 database so the enriched data is queryable.
+      # Requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets.
+      # -----------------------------------------------------------------------
+      - name: Regenerate D1 seed SQL from enriched places.json
+        run: node scripts/generate_seed_sql.mjs
+
+      - name: Re-seed Cloudflare D1 (motkarta-prod) with enriched data
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler d1 execute motkarta-prod --remote --file drizzle/seed-places.sql
+        continue-on-error: true  # D1 failure must not block the JSON commit
+
+      # -----------------------------------------------------------------------
+      # Step 6: Commit enriched files back to main
+      # Uses [skip ci] to prevent triggering the quality gate in a loop.
+      # Only commits if any files actually changed.
+      # -----------------------------------------------------------------------
+      - name: Commit enriched data back to main
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add \
+            public/data/places.json \
+            public/data/place_photos.json \
+            data/enrichment_overlay.json \
+            drizzle/seed-places.sql
+          # Only commit if there are actual changes
+          if git diff --cached --quiet; then
+            echo "No enrichment changes detected — skipping commit."
+          else
+            git commit -m "chore(enrich): monthly address, image, Wi-Fi & price enrichment [skip ci]"
+            git push origin main
+          fi

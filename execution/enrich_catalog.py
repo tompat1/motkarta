@@ -125,6 +125,53 @@ ATMOSPHERE_KEYWORDS: dict[str, list[str]] = {
 }
 
 
+def _osm_lunch_fact(
+    pid: int,
+    tags: dict[str, Any],
+    fact_base: dict[str, Any],
+) -> dict[str, Any] | None:
+    """Return a tags fact for the OSM lunch= tag, or None if not present."""
+    lunch_tag = tags.get("lunch", "").lower().strip()
+    lunch_map = {
+        "yes": "Lunch service",
+        "menu": "Lunch menu",
+        "buffet": "Lunch buffet",
+        "no": "No lunch service",
+    }
+    lunch_val = lunch_map.get(lunch_tag)
+    if not lunch_val:
+        return None
+    return {
+        **fact_base,
+        "id": f"{pid}:osm:tags:lunch",
+        "field": "tags",
+        "value": lunch_val,
+    }
+
+
+def _osm_charge_fact(
+    pid: int,
+    tags: dict[str, Any],
+    fact_base: dict[str, Any],
+) -> dict[str, Any] | None:
+    """Return a priceSEK fact from OSM charge=* tag (numeric SEK only), or None."""
+    charge_raw = tags.get("charge", "").strip()
+    if not charge_raw:
+        return None
+    charge_match = re.search(r"(\d{2,4})\s*(?:sek|kr|:-)", charge_raw, re.IGNORECASE)
+    if not charge_match:
+        return None
+    charge_amount = int(charge_match.group(1))
+    if not (40 <= charge_amount <= 2000):
+        return None
+    return {
+        **fact_base,
+        "id": f"{pid}:osm:priceSEK",
+        "field": "priceSEK",
+        "value": str(charge_amount),
+    }
+
+
 def extract_osm_facts(
     osm_elements: list[dict[str, Any]],
     place_index: dict[str, list[dict[str, Any]]],
@@ -291,7 +338,18 @@ def extract_osm_facts(
                                 "value": dish,
                             })
 
+            # Lunch service tag → tags fact (via helper to keep complexity in bounds)
+            lunch_fact = _osm_lunch_fact(pid, tags, fact_base)
+            if lunch_fact:
+                facts_by_id[pid].append(lunch_fact)
+
+            # charge=* tag → priceSEK fact (numeric SEK only, via helper)
+            charge_fact = _osm_charge_fact(pid, tags, fact_base)
+            if charge_fact:
+                facts_by_id[pid].append(charge_fact)
+
     return facts_by_id
+
 
 
 # ---------------------------------------------------------------------------
@@ -865,6 +923,57 @@ def extract_facts_from_html(
                     "field": "priceSEK",
                     "value": price_val,
                 })
+
+    # 5. Wi-Fi detection from website text
+    # Positive patterns (Swedish + English) → "Free Wi-Fi" or "Wi-Fi available"
+    # Negative patterns → "No Wi-Fi"
+    # Only emit if we find an explicit textual signal; silence is not "No Wi-Fi".
+    WIFI_POSITIVE_PHRASES = [
+        "free wi-fi",
+        "free wifi",
+        "gratis wifi",
+        "gratis wi-fi",
+        "gratis trådlöst",
+        "trådlöst internet",
+        "wifi för gäster",
+        "wi-fi för gäster",
+        "wifi tillgängligt",
+        "wi-fi tillgängligt",
+        "wifi available",
+        "complimentary wifi",
+        "complimentary wi-fi",
+        "wi-fi gratis",
+        "kostnadsfri wifi",
+        "kostnadsfri wi-fi",
+        "guest wifi",
+        "gästnätverk",
+        "wifi-lösenord",  # Wi-Fi password mention implies availability
+        "wifi lösenord",
+    ]
+    WIFI_NEGATIVE_PHRASES = [
+        "no wifi",
+        "no wi-fi",
+        "ingen wifi",
+        "ingen wi-fi",
+        "saknar wifi",
+    ]
+    wifi_val: str | None = None
+    for phrase in WIFI_POSITIVE_PHRASES:
+        if phrase in text_lower:
+            wifi_val = "Free Wi-Fi"
+            break
+    if wifi_val is None:
+        for phrase in WIFI_NEGATIVE_PHRASES:
+            if phrase in text_lower:
+                wifi_val = "No Wi-Fi"
+                break
+    if wifi_val:
+        facts.append({
+            **fact_base,
+            "id": f"{place_id}:website:wifi",
+            "field": "tags",
+            "value": wifi_val,
+        })
 
     return facts
 
