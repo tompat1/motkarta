@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import urllib.error
 from pathlib import Path
 
 from execution.url_blocklist import (
@@ -36,6 +37,21 @@ def test_classify_error() -> None:
 
     cat, msg, code = classify_error("Connection refused by remote host")
     assert cat == "Connection Refused"
+
+    cat, msg, code = classify_error(None, status_code=301)
+    assert cat == "HTTP 301"
+    assert code == 301
+
+    redirect_error = urllib.error.HTTPError(
+        "https://www.boxsushi.se/",
+        301,
+        "The HTTP server returned a redirect error that would lead to an infinite loop.",
+        {},
+        None,
+    )
+    cat, msg, code = classify_error(redirect_error)
+    assert cat == "HTTP 301"
+    assert code == 301
 
 
 def test_url_blocklist_lifecycle(tmp_path: Path) -> None:

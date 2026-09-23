@@ -62,6 +62,9 @@ def classify_error(
     status_code: int | None = None,
 ) -> tuple[str, str, int | None]:
     """Classify an HTTP or network exception into a clean category and message."""
+    if status_code and 300 <= status_code <= 399:
+        return f"HTTP {status_code}", str(error or f"Redirect error ({status_code})"), status_code
+
     if status_code and 400 <= status_code <= 599:
         msg = f"HTTP {status_code}"
         if status_code == 404:
@@ -77,8 +80,7 @@ def classify_error(
         return msg, str(error or msg), status_code
 
     if isinstance(error, urllib.error.HTTPError):
-        code = error.code
-        return classify_error(error, status_code=code)
+        return classify_error(str(error), status_code=error.code)
 
     if isinstance(error, urllib.error.URLError):
         reason = error.reason
