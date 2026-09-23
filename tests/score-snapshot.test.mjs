@@ -20,7 +20,8 @@ test("score snapshot generator emits score inserts from PlaceInput records", asy
   assert.match(sql, /INSERT INTO score_snapshots/);
   assert.match(sql, /quality_score/);
   assert.match(sql, /recommendation_score/);
-  assert.match(sql, /COMMIT;/);
+  assert.doesNotMatch(sql, /^\s*BEGIN TRANSACTION;/m);
+  assert.doesNotMatch(sql, /^\s*COMMIT;/m);
 });
 
 test("score snapshot generator accepts combined D1 row exports", async () => {
