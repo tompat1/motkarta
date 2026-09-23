@@ -9,6 +9,8 @@ import { AdminGuidePanel } from "./AdminGuidePanel";
 import { AdminToastContainer, type AdminToast } from "./AdminToastContainer";
 import { AdminMapView, type AdminMapCandidate } from "./AdminMapView";
 import { AdminPhotoManager } from "./AdminPhotoManager";
+import { AdminPlaceEditor, candidateToPlaceDraft, emptyPlaceDraft, type AdminPlaceDraft } from "./AdminPlaceEditor";
+import { AdminDistrictManager } from "./AdminDistrictManager";
 import {
   ArrowClockwise,
   ArrowRight,
@@ -23,6 +25,7 @@ import {
   MagnifyingGlass,
   MapPin,
   MapTrifold,
+  PencilSimple,
   PlusCircle,
   Scales,
   ShieldCheck,
@@ -195,6 +198,11 @@ export function AdminReviewPanel({
   const [checkingSession, setCheckingSession] = useState(true);
   const [showGuide, setShowGuide] = useState(false);
   const [toasts, setToasts] = useState<AdminToast[]>([]);
+  const [districtNames, setDistrictNames] = useState<string[]>([...STOCKHOLM_REGION_NAMES]);
+  const [placeEditorOpen, setPlaceEditorOpen] = useState(false);
+  const [placeEditorMode, setPlaceEditorMode] = useState<"create" | "edit">("create");
+  const [placeEditorDraft, setPlaceEditorDraft] = useState<AdminPlaceDraft>(emptyPlaceDraft());
+  const [districtManagerOpen, setDistrictManagerOpen] = useState(false);
   const hasAdminAuth = adminSession?.admin === true;
 
   const [d1QuotaExceeded, setD1QuotaExceeded] = useState<boolean>(() => {
@@ -335,6 +343,19 @@ export function AdminReviewPanel({
     },
     [addToast, adminHeaders, adminSession?.admin, adminToken, d1QuotaExceeded, lang, markD1QuotaExceeded, searchQuery, stateFilter],
   );
+
+  const loadDistrictNames = useCallback(async () => {
+    if (!hasAdminAuth) return;
+    try {
+      const response = await fetch("/api/admin/districts", { headers: adminHeaders() });
+      const payload = (await response.json().catch(() => ({}))) as { districts?: Array<{ name: string }> };
+      if (response.ok && payload.districts?.length) {
+        setDistrictNames(payload.districts.map((row) => row.name));
+      }
+    } catch {
+      setDistrictNames([...STOCKHOLM_REGION_NAMES]);
+    }
+  }, [adminHeaders, hasAdminAuth]);
 
   const filteredCandidates = React.useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -594,8 +615,9 @@ export function AdminReviewPanel({
   useEffect(() => {
     if (hasAdminAuth && schemaStatus?.ready && !d1QuotaExceeded) {
       void loadCandidates();
+      void loadDistrictNames();
     }
-  }, [hasAdminAuth, schemaStatus?.ready, d1QuotaExceeded, loadCandidates]);
+  }, [hasAdminAuth, schemaStatus?.ready, d1QuotaExceeded, loadCandidates, loadDistrictNames]);
 
   const handleUnlock = (event: React.FormEvent) => {
     event.preventDefault();
@@ -670,6 +692,24 @@ export function AdminReviewPanel({
       : `Restore ${candidate.name} to Baseline? Confirm it is open and belongs in the catalog. Any separate closure in the source dataset must also be corrected.`)) return;
 
     const validationNotes = (reviewNotes[candidate.id] ?? candidate.validationNotes ?? "").trim();
+    const needsHiddenGemOverride =
+      validationLabel === "known_hidden_gem" && !candidate.evidenceGate.canPromoteHiddenGem;
+    if (needsHiddenGemOverride) {
+      if (!validationNotes) {
+        setError(
+          lang === "sv"
+            ? "Skriv en granskningsnotering som förklarar varför du gör en redaktionell dold-pärla-override."
+            : "Add a review note explaining this editorial hidden-gem override.",
+        );
+        return;
+      }
+      const confirmed = window.confirm(
+        lang === "sv"
+          ? `${candidate.name} har bara ${candidate.evidenceGate.independentEvidenceCount}/2 oberoende källor. Vill du göra en redaktionell override och markera som dold pärla ändå?`
+          : `${candidate.name} only has ${candidate.evidenceGate.independentEvidenceCount}/2 independent sources. Apply an editorial override and mark as hidden gem anyway?`,
+      );
+      if (!confirmed) return;
+    }
     setBusyId(candidate.id);
     setError(null);
 
@@ -682,6 +722,7 @@ export function AdminReviewPanel({
           state: lifecycleState,
           validationLabel,
           validationNotes,
+          adminOverrideHiddenGem: needsHiddenGemOverride,
         }),
       });
       const payload = (await response.json().catch(() => ({}))) as {
@@ -736,9 +777,13 @@ export function AdminReviewPanel({
           type: "ml_event",
           title: lang === "sv" ? "✨ Promoverad: Dold Pärla" : "✨ Promoted: Hidden Gem",
           message: `${candidate.name} (#${candidate.id}) ➔ ${lifecycleStateLabel(lifecycleState, lang)}`,
-          detail: lang === "sv"
-            ? "Dubbellås godkänt (2+ oberoende källor). Platsen rankas upp i 'Dolda pärlor'-läget och Concierge RAG. Kommersiella betyg förblir i strikt karantän."
-            : "Double-lock approved (2+ independent sources). Venue boosted in Hidden Gems mode and Concierge RAG. Commercial platform ratings remain quarantined.",
+          detail: needsHiddenGemOverride
+            ? (lang === "sv"
+              ? "Redaktionell admin-override (dubbellås ej uppfyllt). Beslutet loggas i granskningsnotering och audit."
+              : "Editorial admin override (double-lock not met). Decision logged in review note and audit.")
+            : (lang === "sv"
+              ? "Dubbellås godkänt (2+ oberoende källor). Platsen rankas upp i 'Dolda pärlor'-läget och Concierge RAG. Kommersiella betyg förblir i strikt karantän."
+              : "Double-lock approved (2+ independent sources). Venue boosted in Hidden Gems mode and Concierge RAG. Commercial platform ratings remain quarantined."),
         });
       } else if (lifecycleState === "featured") {
         addToast({
@@ -1309,6 +1354,30 @@ export function AdminReviewPanel({
           <button
             type="button"
             className="admin-resolve-regions-btn"
+            onClick={() => {
+              setPlaceEditorMode("create");
+              setPlaceEditorDraft(emptyPlaceDraft());
+              setPlaceEditorOpen(true);
+            }}
+            disabled={!hasAdminAuth || schemaStatus?.ready !== true}
+            title={lang === "sv" ? "Lägg till en ny plats manuellt" : "Add a new place manually"}
+          >
+            <PlusCircle size={14} weight="bold" />
+            {lang === "sv" ? "Ny plats" : "Add place"}
+          </button>
+          <button
+            type="button"
+            className="admin-resolve-regions-btn"
+            onClick={() => setDistrictManagerOpen(true)}
+            disabled={!hasAdminAuth || schemaStatus?.ready !== true}
+            title={lang === "sv" ? "Byt namn, slå ihop eller granska stadsdelar" : "Rename, merge or review districts"}
+          >
+            <MapPin size={14} weight="bold" />
+            {lang === "sv" ? "Stadsdelar" : "Districts"}
+          </button>
+          <button
+            type="button"
+            className="admin-resolve-regions-btn"
             onClick={() => void resolvePlacesWithoutRegion()}
             disabled={!hasAdminAuth || resolvingRegions || loading || schemaStatus?.ready !== true}
             title={
@@ -1680,6 +1749,15 @@ export function AdminReviewPanel({
             const found = candidates.find((c) => c.id === candidate.id);
             if (found) void promoteCandidate(found, "baseline", null);
           }}
+          onEditPlace={(candidate) => {
+            const found = candidates.find((c) => c.id === candidate.id);
+            if (found) {
+              setPlaceEditorMode("edit");
+              setPlaceEditorDraft(candidateToPlaceDraft(found));
+              setPlaceEditorOpen(true);
+            }
+          }}
+          districtNames={districtNames}
           adminHeaders={adminHeaders}
           busyId={busyId}
           lang={lang}
@@ -1804,7 +1882,7 @@ export function AdminReviewPanel({
                   <select
                     id={`admin-region-select-${candidate.id}`}
                     className="admin-region-select"
-                    value={(STOCKHOLM_REGION_NAMES as readonly string[]).includes(candidate.area) ? candidate.area : ""}
+                    value={districtNames.includes(candidate.area) ? candidate.area : candidate.area || ""}
                     disabled={busyId === candidate.id}
                     onChange={(event) => {
                       const nextRegion = event.target.value;
@@ -1818,7 +1896,10 @@ export function AdminReviewPanel({
                         ? (lang === "sv" ? "⚠️ Välj region ur listan..." : "⚠️ Select region from list...")
                         : (lang === "sv" ? "— Välj ny region —" : "— Select new region —")}
                     </option>
-                    {STOCKHOLM_REGION_NAMES.map((regionName) => (
+                    {!districtNames.includes(candidate.area) && candidate.area ? (
+                      <option value={candidate.area}>{candidate.area}</option>
+                    ) : null}
+                    {districtNames.map((regionName) => (
                       <option key={regionName} value={regionName}>
                         {regionName}
                       </option>
@@ -1887,19 +1968,32 @@ export function AdminReviewPanel({
               <div className="admin-candidate-actions">
                 <button
                   type="button"
-                  className="admin-action-btn primary"
-                  disabled={busyId === candidate.id || !candidate.evidenceGate.canPromoteHiddenGem}
+                  className={`admin-action-btn primary ${!candidate.evidenceGate.canPromoteHiddenGem ? "override" : ""}`}
+                  disabled={busyId === candidate.id}
                   title={
                     candidate.evidenceGate.canPromoteHiddenGem
                       ? validationLabelText("known_hidden_gem", lang)
                       : lang === "sv"
-                        ? "Kräver minst två oberoende icke-Google-signaler"
-                        : "Requires at least two independent non-Google signals"
+                        ? "Dubbellås ej uppfyllt — kräver granskningsnotering och admin-bekräftelse"
+                        : "Double-lock not met — requires review note and admin confirmation"
                   }
                   onClick={() => void promoteCandidate(candidate, "verified", "known_hidden_gem")}
                 >
                   <Sparkle size={14} weight="bold" />
                   {lang === "sv" ? "Dold pärla" : "Hidden gem"}
+                </button>
+                <button
+                  type="button"
+                  className="admin-action-btn muted"
+                  disabled={busyId === candidate.id}
+                  onClick={() => {
+                    setPlaceEditorMode("edit");
+                    setPlaceEditorDraft(candidateToPlaceDraft(candidate));
+                    setPlaceEditorOpen(true);
+                  }}
+                >
+                  <PencilSimple size={14} weight="bold" />
+                  {lang === "sv" ? "Redigera" : "Edit"}
                 </button>
                 <button
                   type="button"
@@ -1912,14 +2006,14 @@ export function AdminReviewPanel({
                 </button>
                 <button
                   type="button"
-                  className="admin-action-btn"
-                  disabled={busyId === candidate.id || !candidate.evidenceGate.canPromoteHiddenGem}
+                  className={`admin-action-btn ${!candidate.evidenceGate.canPromoteHiddenGem ? "override" : ""}`}
+                  disabled={busyId === candidate.id}
                   title={
                     candidate.evidenceGate.canPromoteHiddenGem
                       ? validationLabelText("known_hidden_gem", lang)
                       : lang === "sv"
-                        ? "Kräver minst två oberoende icke-Google-signaler"
-                        : "Requires at least two independent non-Google signals"
+                        ? "Dubbellås ej uppfyllt — kräver granskningsnotering och admin-bekräftelse"
+                        : "Double-lock not met — requires review note and admin confirmation"
                   }
                   onClick={() => void promoteCandidate(candidate, "featured", "known_hidden_gem")}
                 >
@@ -1979,6 +2073,53 @@ export function AdminReviewPanel({
           ) : null}
         </div>
       )}
+      <AdminPlaceEditor
+        lang={lang}
+        open={placeEditorOpen}
+        mode={placeEditorMode}
+        initial={placeEditorDraft}
+        districts={districtNames}
+        adminHeaders={adminHeaders}
+        onClose={() => setPlaceEditorOpen(false)}
+        onSaved={(saved) => {
+          const savedCandidate = saved as AdminCandidate;
+          if (placeEditorMode === "create" && savedCandidate.id) {
+            setCandidates((current) => [savedCandidate, ...current]);
+          } else if (savedCandidate.id) {
+            setCandidates((current) =>
+              current.map((row) => (row.id === savedCandidate.id ? { ...row, ...savedCandidate } : row)),
+            );
+          }
+          void loadCandidates(undefined, undefined, true);
+          void loadDistrictNames();
+          addToast({
+            type: "success",
+            title: placeEditorMode === "create"
+              ? (lang === "sv" ? "Plats skapad" : "Place created")
+              : (lang === "sv" ? "Plats uppdaterad" : "Place updated"),
+            message: String(savedCandidate.name ?? placeEditorDraft.name),
+          });
+        }}
+        onDeleted={(id) => {
+          setCandidates((current) => current.filter((row) => row.id !== id));
+          void loadDashboard();
+          addToast({
+            type: "warning",
+            title: lang === "sv" ? "Plats raderad" : "Place deleted",
+            message: `#${id}`,
+          });
+        }}
+      />
+      <AdminDistrictManager
+        lang={lang}
+        open={districtManagerOpen}
+        adminHeaders={adminHeaders}
+        onClose={() => setDistrictManagerOpen(false)}
+        onChanged={() => {
+          void loadDistrictNames();
+          void loadCandidates(undefined, undefined, true);
+        }}
+      />
       <AdminToastContainer toasts={toasts} onDismiss={dismissToast} />
     </section>
   );

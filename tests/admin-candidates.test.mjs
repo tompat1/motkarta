@@ -190,6 +190,77 @@ test("admin candidate promotion rejects invalid validation transitions", async (
   assert.equal(db.events.length, 0);
 });
 
+test("admin candidate promotion allows hidden-gem override with review note", async () => {
+  const db = fakeAdminD1([
+    candidateRow({
+      id: 10,
+      name: "Editorial Gem",
+      lifecycleState: "candidate",
+      candidateSourceType: "google_metadata",
+      evidenceSourceTypes: "google_metadata",
+    }),
+  ]);
+
+  const response = await postAdminCandidate({
+    request: new Request("https://motkarta.test/api/admin/candidates", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-motkarta-admin-token": adminToken,
+      },
+      body: JSON.stringify({
+        id: 10,
+        state: "verified",
+        validationLabel: "known_hidden_gem",
+        validationNotes: "Editorial override after field visit.",
+        adminOverrideHiddenGem: true,
+      }),
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.success, true);
+  assert.equal(db.rows[0].lifecycleState, "verified");
+  assert.equal(db.rows[0].validationLabel, "known_hidden_gem");
+  assert.equal(db.events.length, 1);
+});
+
+test("admin candidate promotion rejects hidden-gem override without review note", async () => {
+  const db = fakeAdminD1([
+    candidateRow({
+      id: 10,
+      name: "Editorial Gem",
+      lifecycleState: "candidate",
+      candidateSourceType: "google_metadata",
+      evidenceSourceTypes: "google_metadata",
+    }),
+  ]);
+
+  const response = await postAdminCandidate({
+    request: new Request("https://motkarta.test/api/admin/candidates", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-motkarta-admin-token": adminToken,
+      },
+      body: JSON.stringify({
+        id: 10,
+        state: "verified",
+        validationLabel: "known_hidden_gem",
+        adminOverrideHiddenGem: true,
+      }),
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 400);
+  assert.match(payload.error, /review note/i);
+  assert.equal(db.rows[0].lifecycleState, "candidate");
+});
+
 test("admin candidate promotion blocks hidden-gem label without independent evidence", async () => {
   const db = fakeAdminD1([
     candidateRow({

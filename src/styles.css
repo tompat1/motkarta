@@ -8383,6 +8383,128 @@ button.concierge-clear-btn:hover {
   color: var(--color-signal);
 }
 
+.admin-action-btn.override {
+  border-color: #b7791f;
+  color: #8a5a12;
+}
+
+.admin-modal-backdrop {
+  align-items: center;
+  background: rgba(18, 18, 18, 0.55);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 1200;
+}
+
+.admin-modal {
+  background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.18);
+  display: grid;
+  gap: 12px;
+  max-height: 90vh;
+  max-width: 760px;
+  overflow: auto;
+  padding: 16px;
+  width: min(760px, 100%);
+}
+
+.admin-modal-header,
+.admin-modal-footer {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.admin-modal-header h3 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.admin-modal-close {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.admin-modal-body {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-place-editor-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-place-editor-grid label {
+  display: grid;
+  font-size: 12px;
+  gap: 4px;
+}
+
+.admin-place-editor-grid input,
+.admin-place-editor-grid select,
+.admin-place-editor-grid textarea {
+  border: 1px solid var(--color-mist);
+  font: inherit;
+  padding: 8px 10px;
+}
+
+.admin-place-editor-note {
+  grid-column: 1 / -1;
+}
+
+.admin-modal-error {
+  color: var(--color-signal);
+  font-size: 13px;
+  margin: 0;
+}
+
+.admin-district-help {
+  color: var(--color-stone);
+  font-size: 13px;
+  margin: 0;
+}
+
+.admin-district-forms {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-district-form-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr auto 1fr auto;
+}
+
+.admin-district-table-wrap {
+  max-height: 280px;
+  overflow: auto;
+}
+
+.admin-district-table {
+  border-collapse: collapse;
+  font-size: 13px;
+  width: 100%;
+}
+
+.admin-district-table th,
+.admin-district-table td {
+  border-bottom: 1px solid var(--color-mist);
+  padding: 8px 6px;
+  text-align: left;
+}
+
+.inspector-btn-override {
+  border-color: #b7791f;
+  color: #8a5a12;
+}
+
 footer {
   background: var(--color-ink);
   color: var(--color-paper);

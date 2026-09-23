@@ -31,7 +31,16 @@ type Env = {
 
 type ValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
 type CandidateStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all" | "removed";
-type AdminAction = "promote" | "merge_duplicate" | "keep_separate" | "update_district" | "update_website" | "create_place" | "mark_closed";
+type AdminAction =
+  | "promote"
+  | "merge_duplicate"
+  | "keep_separate"
+  | "update_district"
+  | "update_website"
+  | "create_place"
+  | "update_place"
+  | "delete_place"
+  | "mark_closed";
 
 type CandidateRow = {
   id: number;
@@ -70,7 +79,17 @@ type EstablishmentLookupRow = {
 
 const lifecycleStates: PlaceLifecycleState[] = ["baseline", "candidate", "verified", "featured"];
 const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "unresolved_region", "needs_input", "ml_dashboard", "all", "removed"];
-const adminActions: AdminAction[] = ["promote", "merge_duplicate", "keep_separate", "update_district", "update_website", "create_place", "mark_closed"];
+const adminActions: AdminAction[] = [
+  "promote",
+  "merge_duplicate",
+  "keep_separate",
+  "update_district",
+  "update_website",
+  "create_place",
+  "update_place",
+  "delete_place",
+  "mark_closed",
+];
 const validationLabels: ValidationLabel[] = [
   "known_mainstream",
   "known_hidden_gem",
@@ -91,6 +110,7 @@ const hiddenGemEvidenceSourceTypes = new Set([
   "curated_submission",
   "field_visit",
   "verified_user_rating",
+  "admin_override",
 ]);
 
 const jsonHeaders = {
@@ -196,6 +216,14 @@ export async function onRequestPost(context: EventContext<Env>) {
     );
   }
 
+  if (action === "update_place") {
+    return updatePlace(db, id, payload, validationNotes);
+  }
+
+  if (action === "delete_place") {
+    return deletePlace(db, id, validationNotes);
+  }
+
   if (action === "mark_closed") {
     return markClosed(db, id, validationNotes);
   }
@@ -238,12 +266,31 @@ export async function onRequestPost(context: EventContext<Env>) {
   }
 
   if ((lifecycleState === "verified" || lifecycleState === "featured") && validationLabel === "known_hidden_gem") {
+    const adminOverrideHiddenGem = payload.adminOverrideHiddenGem === true;
     const profile = await loadEvidenceProfile(db, id);
-    if (!profile || evidenceGateProfile(profile).independentEvidenceCount < 2) {
+    const gate = profile ? evidenceGateProfile(profile) : null;
+    if (!adminOverrideHiddenGem && (!gate || gate.independentEvidenceCount < 2)) {
       return Response.json(
         { error: "Hidden-gem promotion requires at least 2 independent non-Google evidence signals." },
         { headers: jsonHeaders, status: 409 },
       );
+    }
+    if (adminOverrideHiddenGem && !validationNotes) {
+      return Response.json(
+        { error: "Admin hidden-gem override requires a review note explaining the editorial decision." },
+        { headers: jsonHeaders, status: 400 },
+      );
+    }
+    if (adminOverrideHiddenGem) {
+      const reviewedAt = new Date().toISOString();
+      await db
+        .prepare(
+          `INSERT INTO evidence_sources (establishment_id, source_type, source_name, confidence, captured_at, summary)
+           VALUES (?, 'admin_override', 'Admin editorial override', 1.0, ?, ?)`,
+        )
+        .bind(id, reviewedAt, validationNotes)
+        .run()
+        .catch(() => {});
     }
   }
 
@@ -389,6 +436,154 @@ async function createPlace(db: D1Database, payload: Record<string, unknown>, val
       },
     },
     { headers: jsonHeaders }
+  );
+}
+
+const placeKinds = ["Restaurant", "Bakery", "Café", "Specialty coffee"] as const;
+
+async function updatePlace(db: D1Database, id: number, payload: Record<string, unknown>, validationNotes: string | null) {
+  const existing = await loadEstablishmentDetails(db, id);
+  if (!existing) {
+    return Response.json({ error: "Establishment not found." }, { headers: jsonHeaders, status: 404 });
+  }
+
+  const name = typeof payload.name === "string" && payload.name.trim() ? payload.name.trim() : existing.name;
+  const kind =
+    typeof payload.kind === "string" && placeKinds.includes(payload.kind as (typeof placeKinds)[number])
+      ? payload.kind
+      : existing.kind;
+  const area =
+    typeof payload.area === "string" && payload.area.trim()
+      ? payload.area.trim()
+      : typeof payload.district === "string" && payload.district.trim()
+        ? payload.district.trim()
+        : existing.area;
+  const address = typeof payload.address === "string" ? payload.address.trim() : existing.address ?? "";
+  const website = typeof payload.website === "string" ? payload.website.trim() : existing.website ?? "";
+  const description =
+    typeof payload.note === "string"
+      ? payload.note.trim()
+      : typeof payload.description === "string"
+        ? payload.description.trim()
+        : existing.note;
+  const latitude =
+    typeof payload.latitude === "number" && !Number.isNaN(payload.latitude) ? payload.latitude : existing.latitude;
+  const longitude =
+    typeof payload.longitude === "number" && !Number.isNaN(payload.longitude) ? payload.longitude : existing.longitude;
+  const lifecycleState =
+    typeof payload.lifecycleState === "string" && isLifecycleState(payload.lifecycleState)
+      ? payload.lifecycleState
+      : existing.lifecycleState;
+  const rawValidationLabel = payload.validationLabel === undefined ? existing.validationLabel : normalizeValidationLabel(payload.validationLabel);
+  if (rawValidationLabel === "invalid") {
+    return Response.json({ error: "Invalid validation label." }, { headers: jsonHeaders, status: 400 });
+  }
+  const validationLabel = rawValidationLabel;
+
+  const updatedAt = new Date().toISOString();
+  const notes = joinNotes([validationNotes, "Updated place metadata via admin editor."]);
+  const updateResult = await db
+    .prepare(
+      `UPDATE establishments
+       SET name = ?, type = ?, district = ?, address = ?, website = ?, description = ?,
+           latitude = ?, longitude = ?, lifecycle_state = ?, validation_label = ?,
+           validation_notes = ?, updated_at = ?
+       WHERE id = ?`,
+    )
+    .bind(
+      name,
+      kind,
+      area,
+      address || null,
+      website || null,
+      description || null,
+      latitude,
+      longitude,
+      lifecycleState,
+      validationLabel,
+      notes,
+      updatedAt,
+      id,
+    )
+    .run();
+
+  if (updateResult.meta?.changes === 0) {
+    return Response.json({ error: "Establishment not found." }, { headers: jsonHeaders, status: 404 });
+  }
+
+  if (typeof payload.cuisine === "string" && payload.cuisine.trim()) {
+    await db
+      .prepare(`INSERT OR IGNORE INTO establishment_tags (establishment_id, tag) VALUES (?, ?)`)
+      .bind(id, payload.cuisine.trim())
+      .run()
+      .catch(() => {});
+  }
+
+  await recordReviewEvent(db, {
+    establishmentId: id,
+    lifecycleState,
+    validationLabel,
+    validationNotes: notes,
+    reviewedAt: updatedAt,
+    action: "update_place",
+  });
+
+  return Response.json(
+    {
+      success: true,
+      action: "update_place",
+      id,
+      candidate: candidateFromRow({
+        ...existing,
+        name,
+        kind,
+        area,
+        address: address || null,
+        website: website || null,
+        note: description || "",
+        latitude,
+        longitude,
+        lifecycleState,
+        validationLabel,
+        validationNotes: notes,
+        updatedAt,
+      }),
+      reviewedAt: updatedAt,
+    },
+    { headers: jsonHeaders },
+  );
+}
+
+async function deletePlace(db: D1Database, id: number, validationNotes: string | null) {
+  const existing = await loadEstablishmentDetails(db, id);
+  if (!existing) {
+    return Response.json({ error: "Establishment not found." }, { headers: jsonHeaders, status: 404 });
+  }
+
+  const reviewedAt = new Date().toISOString();
+  const notes = joinNotes([validationNotes, `Permanently deleted place #${id} (${existing.name}).`]);
+  await recordReviewEvent(db, {
+    establishmentId: id,
+    lifecycleState: existing.lifecycleState,
+    validationLabel: existing.validationLabel,
+    validationNotes: notes,
+    reviewedAt,
+    action: "delete_place",
+  });
+
+  const deleteResult = await db.prepare(`DELETE FROM establishments WHERE id = ?`).bind(id).run();
+  if (deleteResult.meta?.changes === 0) {
+    return Response.json({ error: "Establishment not found." }, { headers: jsonHeaders, status: 404 });
+  }
+
+  return Response.json(
+    {
+      success: true,
+      action: "delete_place",
+      id,
+      reviewedAt,
+    },
+    { headers: jsonHeaders },
   );
 }
 
@@ -613,6 +808,44 @@ async function loadEvidenceProfile(db: D1Database, id: number) {
     )
     .bind(id)
     .all<Pick<CandidateRow, "id" | "website" | "candidateSourceType" | "evidenceSourceTypes" | "latestEvidenceAt">>();
+
+  return results?.[0] ?? null;
+}
+
+async function loadEstablishmentDetails(db: D1Database, id: number) {
+  const { results } = await db
+    .prepare(
+      `SELECT
+        e.id,
+        e.name,
+        e.type AS kind,
+        e.district AS area,
+        e.address,
+        e.website,
+        e.latitude,
+        e.longitude,
+        e.description AS note,
+        e.lifecycle_state AS lifecycleState,
+        e.validation_label AS validationLabel,
+        e.validation_notes AS validationNotes,
+        e.candidate_source_type AS candidateSourceType,
+        e.candidate_source_id AS candidateSourceId,
+        e.candidate_review_status AS candidateReviewStatus,
+        e.candidate_allowed_use AS candidateAllowedUse,
+        e.duplicate_resolution AS duplicateResolution,
+        e.merged_into_establishment_id AS mergedIntoEstablishmentId,
+        e.updated_at AS updatedAt,
+        e.created_at AS createdAt,
+        COUNT(DISTINCT ev.id) AS evidenceCount,
+        GROUP_CONCAT(DISTINCT ev.source_type) AS evidenceSourceTypes,
+        MAX(ev.captured_at) AS latestEvidenceAt
+       FROM establishments e
+       LEFT JOIN evidence_sources ev ON ev.establishment_id = e.id
+       WHERE e.id = ?
+       GROUP BY e.id`,
+    )
+    .bind(id)
+    .all<CandidateRow>();
 
   return results?.[0] ?? null;
 }

@@ -52,7 +52,9 @@ interface AdminMapViewProps {
   onPromoteHiddenGem?: (candidate: AdminMapCandidate) => void;
   onMarkClosed?: (candidate: AdminMapCandidate) => void;
   onRestore?: (candidate: AdminMapCandidate) => void;
-    adminHeaders?: (tokenOverride?: string, extraHeaders?: Record<string, string>) => Record<string, string>;
+  onEditPlace?: (candidate: AdminMapCandidate) => void;
+  districtNames?: string[];
+  adminHeaders?: (tokenOverride?: string, extraHeaders?: Record<string, string>) => Record<string, string>;
   busyId?: number | null;
   lang?: Language;
 }
@@ -66,7 +68,9 @@ export function AdminMapView({
   onPromoteHiddenGem,
   onMarkClosed,
   onRestore,
-    adminHeaders,
+  onEditPlace,
+  districtNames = [...STOCKHOLM_REGION_NAMES],
+  adminHeaders,
   busyId,
   lang = "sv",
 }: AdminMapViewProps) {
@@ -386,7 +390,7 @@ export function AdminMapView({
                 onChange={(e) => setBatchDistrict(e.target.value)}
                 className="admin-batch-district-select"
               >
-                {STOCKHOLM_REGION_NAMES.map((region) => (
+                {districtNames.map((region) => (
                   <option key={region} value={region}>
                     {region}
                   </option>
@@ -514,7 +518,10 @@ export function AdminMapView({
                     onChange={(e) => onUpdateDistrict(selectedPlace, e.target.value)}
                     className="admin-region-select"
                   >
-                    {STOCKHOLM_REGION_NAMES.map((region) => (
+                    {!districtNames.includes(selectedPlace.area) && selectedPlace.area ? (
+                      <option value={selectedPlace.area}>{selectedPlace.area}</option>
+                    ) : null}
+                    {districtNames.map((region) => (
                       <option key={region} value={region}>
                         {region}
                       </option>
@@ -528,15 +535,14 @@ export function AdminMapView({
                   <button
                     type="button"
                     className={`inspector-btn inspector-btn-gem ${
-                      selectedPlace.evidenceGate?.canPromoteHiddenGem === false || selectedPlace.canPromoteHiddenGem === false ? "disabled" : ""
+                      selectedPlace.evidenceGate?.canPromoteHiddenGem === false || selectedPlace.canPromoteHiddenGem === false ? "inspector-btn-override" : ""
                     }`}
-                    disabled={selectedPlace.evidenceGate?.canPromoteHiddenGem === false || selectedPlace.canPromoteHiddenGem === false}
                     onClick={() => onPromoteHiddenGem(selectedPlace)}
                     title={
                       selectedPlace.evidenceGate?.canPromoteHiddenGem === false || selectedPlace.canPromoteHiddenGem === false
                         ? (lang === "sv"
-                            ? "Kräver minst 2 oberoende icke-Google-källor (Dubbellås)"
-                            : "Requires at least 2 independent non-Google sources (Double-Lock)")
+                            ? "Dubbellås ej uppfyllt — kräver granskningsnotering och admin-bekräftelse"
+                            : "Double-lock not met — requires review note and admin confirmation")
                         : (lang === "sv"
                             ? "Promovera plats till verifierad dold pärla (Dubbellås uppfyllt)"
                             : "Promote place to verified hidden gem (Double-Lock satisfied)")
@@ -544,6 +550,11 @@ export function AdminMapView({
                   >
                     <Sparkle size={14} weight="fill" />
                     {lang === "sv" ? "Dold pärla" : "Hidden gem"}
+                  </button>
+                ) : null}
+                {onEditPlace ? (
+                  <button type="button" className="inspector-btn inspector-btn-secondary" onClick={() => onEditPlace(selectedPlace)}>
+                    {lang === "sv" ? "Redigera" : "Edit"}
                   </button>
                 ) : null}
                 <button
