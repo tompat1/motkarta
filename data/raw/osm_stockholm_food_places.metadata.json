@@ -1,0 +1,11 @@
+{
+  "source": "OpenStreetMap Overpass API",
+  "source_url": "https://overpass-api.de/api/interpreter",
+  "license": "OpenStreetMap data is available under the Open Database License (ODbL).",
+  "boundary": "municipality",
+  "boundary_reference": "OSM administrative area named Stockholms kommun",
+  "query_hash": "4b118d90f36d52484c35637129fc3539440d5130e17f6e3646a1503ebe0ec567",
+  "fetched_at": "2026-09-17T09:12:40.301899+00:00",
+  "cache_path": "data/raw/osm_stockholm_food_places.json",
+  "element_count": 3618
+}

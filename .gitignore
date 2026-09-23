@@ -33,6 +33,16 @@ dist-ssr/
 !/data/concierge/
 !/data/concierge/**
 !/data/enrichment_overlay.json
+!/data/stockholm_food_places.csv
+!/data/stockholm_food_control.csv
+!/data/stockholm_food_control_matches.csv
+!/data/serving_permits.csv
+!/data/serving_permit_matches.csv
+!/data/raw/
+!/data/raw/osm_stockholm_food_places.json
+!/data/raw/osm_stockholm_food_places.metadata.json
+!/data/raw/stockholm_food_control.json
+!/data/raw/stockholm_food_control.metadata.json
 
 # Temporary / intermediate files
 .tmp/

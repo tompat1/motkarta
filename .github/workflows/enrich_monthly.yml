@@ -98,6 +98,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
+          # Requires a custom API token with Account / D1 / Edit (or broader Workers+D1 write).
           npx wrangler d1 execute motkarta-prod --remote --file drizzle/seed-places.sql
         continue-on-error: true  # D1 failure must not block the JSON commit
 
@@ -118,7 +119,20 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add \
+          safe_git_add() {
+            for path in "$@"; do
+              if [ ! -e "$path" ]; then
+                echo "Skipping missing path: $path"
+                continue
+              fi
+              if git check-ignore -q "$path"; then
+                echo "Skipping ignored path: $path"
+                continue
+              fi
+              git add -- "$path"
+            done
+          }
+          safe_git_add \
             public/data/places.json \
             public/data/place_photos.json \
             public/data/enrichment_url_blocklist.json \
@@ -129,15 +143,14 @@ jobs:
             data/stockholm_food_places.csv \
             data/raw/osm_stockholm_food_places.json \
             data/raw/osm_stockholm_food_places.metadata.json \
+            data/raw/stockholm_food_control.json \
+            data/raw/stockholm_food_control.metadata.json \
             data/stockholm_food_control.csv \
             data/stockholm_food_control_matches.csv \
+            data/serving_permits.csv \
+            data/serving_permit_matches.csv \
             drizzle/seed-places.sql \
             drizzle/seed-candidates.sql
-          for optional in data/serving_permits.csv data/serving_permit_matches.csv; do
-            if [ -f "$optional" ]; then
-              git add "$optional"
-            fi
-          done
           if git diff --cached --quiet; then
             echo "No enrichment changes detected — skipping commit."
           else

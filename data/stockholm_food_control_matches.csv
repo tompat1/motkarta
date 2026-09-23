@@ -1,0 +1,310 @@
+source_id,source_name,source_record_name,place_name,osm_type,osm_id,match_score,match_reason,distance_meters
+19FBA279-5724-4D3D-BF35-E6C547D6A801,Stockholms stad livsmedelskontroll,800 grader,800 grader,node,4419095291,0.9969,nearby coordinates and similar name,2.8
+989D0DBF-375F-4486-97A8-70524406CBEA,Stockholms stad livsmedelskontroll,AOE Restaurang.,AOE Restaurang,node,12011975938,0.9874,nearby coordinates and similar name,11.3
+A9813863-E084-4EC3-80CB-3D073E7071AF,Stockholms stad livsmedelskontroll,ARJ Sushi,Arj Sushi,node,1550011782,0.9793,nearby coordinates and similar name,18.6
+2D9CC276-B862-4472-B1C4-0145E9B7B4B0,Stockholms stad livsmedelskontroll,Abrahamsbergs Sushi,Abrahamsbergs Sushi,node,2145175626,0.9837,nearby coordinates and similar name,14.7
+DCFE72E4-0D94-4B6A-8138-58AABECF30A1,Stockholms stad livsmedelskontroll,Agnes,Agnes,node,312467727,0.9845,nearby coordinates and similar name,13.9
+59B18545-DEF6-4242-94B4-7C52D470072C,Stockholms stad livsmedelskontroll,Ai Ramen Klara,Ai Ramen Klara,node,6370117617,0.9953,nearby coordinates and similar name,4.3
+3198BF84-0E93-4BA5-9BEA-660B8C684112,Stockholms stad livsmedelskontroll,Aiyara Restaurang,Aiyara,node,1151463175,0.9865,nearby coordinates and similar name,12.2
+5B5D42D9-3796-4FBB-A811-0A49EC02D928,Stockholms stad livsmedelskontroll,Allegrillen,Alle Grillen,node,11989748517,0.9706,nearby coordinates and similar name,26.4
+2986B98A-57B5-4E43-AA0D-2B655840A5DD,Stockholms stad livsmedelskontroll,Alviksgrillen,Alviks Grillen,node,12035222405,0.9985,nearby coordinates and similar name,1.4
+78D5ED92-E14C-4DDD-AFC3-A4759775FEA9,Stockholms stad livsmedelskontroll,Animo,Animo,node,13376856815,0.9891,nearby coordinates and similar name,9.8
+D181E456-C1C4-419C-BD8F-904B3069C960,Stockholms stad livsmedelskontroll,Anjas Vedung,Anjas Vedugn,node,1728279179,0.9745,same address and similar name,5.1
+179917E0-6974-41CD-BD5C-6E165707CFBF,Stockholms stad livsmedelskontroll,Arya Restaurang & Pizzeria,Arya Restaurang & Pizzeria,node,11991480466,0.9855,nearby coordinates and similar name,13.0
+47A7B154-4CE4-4B1F-B503-E3F0C0D194C6,Stockholms stad livsmedelskontroll,BG Gastronomisk Catering AB,Vinterträdgården,node,12010343470,0.75,same address,21.6
+929BFD55-2734-458C-B469-27CCED4C301B,Stockholms stad livsmedelskontroll,BIM.,bim*,node,11062217401,0.9967,nearby coordinates and similar name,3.0
+9926CAF9-52A3-419E-959B-B3CD91978C6B,Stockholms stad livsmedelskontroll,Bagarmossens Sushi,Bagarmossen Sushi & Café,node,8580538597,0.9817,nearby coordinates and similar name,8.9
+83DEFE3F-CB05-4149-A8BD-19001096DC31,Stockholms stad livsmedelskontroll,Bagel deli,Bagel Deli,node,670786471,0.9952,nearby coordinates and similar name,4.3
+E30AABE7-3799-46C6-9A66-483451FAC555,Stockholms stad livsmedelskontroll,Bageriet BAK,BAK,node,3939393020,0.75,same address,3.7
+B9DA6C5B-97DE-4CBD-BBB0-237A5F2BD540,Stockholms stad livsmedelskontroll,Bapuji Indisk Restaurang,Bapuji,node,1782802161,0.75,same address,8.9
+94484376-6D56-4C76-AAFE-0EDF538F6166,Stockholms stad livsmedelskontroll,Bar Montan,Bar Montan,node,11564464426,0.99,nearby coordinates and similar name,9.0
+EED88662-2EF9-4C4D-AA67-C5E2628F6A69,Stockholms stad livsmedelskontroll,Bastard Burgers Alvik,Bastard Burgers,node,8712095818,0.9576,same address and similar name,10.3
+6FE1B642-8552-4044-ACA4-B4F2CE992C39,Stockholms stad livsmedelskontroll,Beirut Foodbynatt I,Beirut food by natt,node,2956920963,0.966,nearby coordinates and similar name,23.0
+45C1FBEC-A4C5-4F4E-9466-F5879238E54C,Stockholms stad livsmedelskontroll,Beiruts Brygga,Beiruts Brygga,node,4612475998,0.9929,nearby coordinates and similar name,6.4
+67D55C0D-73EB-40A5-B641-E23EB261935A,Stockholms stad livsmedelskontroll,Biblioteket Live,Biblioteket Live,node,10093317827,0.9935,nearby coordinates and similar name,5.8
+B6EFB5C7-0EA0-4693-AF9C-8539A67DC209,Stockholms stad livsmedelskontroll,Birkastans restaurang och pizzeria,Birkastans pizzeria,node,469928850,0.9642,nearby coordinates and similar name,12.8
+B1A1F873-17B7-4E7E-B408-DD42D1623D27,Stockholms stad livsmedelskontroll,Bistro Bromma,Bistro Bromma,node,9743319181,1.0,same address and similar name,10.0
+5CC7C076-993F-4E94-81E3-30E6081BD1C8,Stockholms stad livsmedelskontroll,Bistro Capitol,Bistro Capitol,node,5760827182,0.9967,nearby coordinates and similar name,3.0
+3B29BB1B-B2D2-49C4-B055-6A077CC38752,Stockholms stad livsmedelskontroll,Bistro Garros,Garros Bistro,node,5468749382,0.75,same address,28.5
+74D92026-CF9E-4A84-9EE6-22A1B4971B9F,Stockholms stad livsmedelskontroll,Bistro Mirabelle,Bistro Mirabelle,node,13523645301,0.9946,nearby coordinates and similar name,4.8
+5DF42B47-1D40-4CCB-9EAE-2682C92CEF92,Stockholms stad livsmedelskontroll,Blue Light Yokohama,Blue Light Yokohoma,node,3423230608,0.9755,nearby coordinates and similar name,7.2
+98220C88-7888-4529-AC0A-B63ECDDC399B,Stockholms stad livsmedelskontroll,Boteco da SILVANIA,Boteco da Silvania,node,469283984,0.996,nearby coordinates and similar name,3.6
+B70A960B-046D-4E59-8DDD-FD36195B9EB1,Stockholms stad livsmedelskontroll,Boulebar,Boulebar Rålambshov,node,9646995878,0.75,same address,2.4
+A6BBAFD7-BAE0-45A3-B257-8B14446375E5,Stockholms stad livsmedelskontroll,Brasserie Elverket,Brasserie Elverket,node,29898138,0.9958,nearby coordinates and similar name,3.8
+829568C8-7FA3-4CF7-A588-09A0331C7182,Stockholms stad livsmedelskontroll,Bredängs Bar & Kök,Bredängs bar & kök,node,2288368230,0.9965,nearby coordinates and similar name,3.2
+E0F07747-CC9F-48A6-89A7-38D05E2F2969,Stockholms stad livsmedelskontroll,Brickyard,Brickyard,node,1509877634,0.986,nearby coordinates and similar name,12.6
+C849AB8C-4FAA-4A68-89EF-F41497D05A52,Stockholms stad livsmedelskontroll,Brioche,Brioche,node,2571793104,0.9853,nearby coordinates and similar name,13.2
+DF5D9FD1-8E02-4DD1-B3A4-D1F2576B044E,Stockholms stad livsmedelskontroll,Bröd & Salt,Bröd & Salt,node,413531970,0.9872,nearby coordinates and similar name,11.6
+5ADFA59B-DF6F-44AB-BBDF-464028933534,Stockholms stad livsmedelskontroll,Bröd & Salt,Bröd & Salt,node,2420180749,0.9132,nearby coordinates and similar name,78.1
+0BF3A5B2-65FB-4FD1-96CF-3B70A6569761,Stockholms stad livsmedelskontroll,Brödernas Bromma,Brödernas,node,5155787747,0.93,same address and similar name,5.1
+B5DA1043-AA2D-44E0-BB91-AF61602FAB6E,Stockholms stad livsmedelskontroll,Buddha Nepal,Buddha Nepal,node,715701185,0.9917,nearby coordinates and similar name,7.5
+E48F1750-E371-4B39-8393-D587FD027654,Stockholms stad livsmedelskontroll,Bullens Cafe,Bullens,node,372707711,0.9862,nearby coordinates and similar name,12.5
+76020E8B-0E9E-450A-B4DD-DE08998DE8A2,Stockholms stad livsmedelskontroll,Bun Meat Bun,Bun Meat Bun,node,710382062,0.9951,nearby coordinates and similar name,4.4
+CE65C6A7-D385-413C-97AF-ACCC2DAEB668,Stockholms stad livsmedelskontroll,Bun Meat Bun Mariehäll,Bun Meat Bun,node,6172599488,0.75,same address,2.8
+8A7F4DED-5F67-4E60-8090-C9E4FE1F93FD,Stockholms stad livsmedelskontroll,Burger Mansion,Burger Mansion,node,1728309969,1.0,same address and similar name,30.0
+DDB7D0A2-3882-4511-8F22-53C12585B9CA,Stockholms stad livsmedelskontroll,By:Fiket,By:fiket,node,4344171471,0.9956,nearby coordinates and similar name,4.0
+0BAC6460-A923-4EE4-B3CE-AA528A02E79D,Stockholms stad livsmedelskontroll,Bönor & Blad,Bönor och Blad,node,6656937370,0.96,same address and similar name,32.4
+67867F38-8116-4075-B3F9-E9B5EF1F5E40,Stockholms stad livsmedelskontroll,CGs Streetfood,Cgs Streetfood,node,12005795860,0.9328,nearby coordinates and similar name,60.5
+E56640BC-3749-4F32-9413-82FD99C040D3,Stockholms stad livsmedelskontroll,CONVENDUM SV46,Giro Pizzeria,node,3615461811,0.75,same address,37.6
+E8A5DC95-E167-431E-B638-33DE3C27BE63,Stockholms stad livsmedelskontroll,Cachay,Cachay,node,12025184141,0.9966,nearby coordinates and similar name,3.1
+16FB9369-A2E0-472A-B917-75688F9E0400,Stockholms stad livsmedelskontroll,Cafe Babel Deli,Babel Deli,node,503503242,0.9918,nearby coordinates and similar name,7.3
+82E6D6A7-4186-45BB-9F6B-79A4C782F3B3,Stockholms stad livsmedelskontroll,Cafe Blomma,Café Blomma,node,1831996628,0.9847,nearby coordinates and similar name,13.8
+2734B8D2-E5FF-4E91-B99C-ADFF60833A91,Stockholms stad livsmedelskontroll,Cafe Delantina,Delantina,node,373445062,0.9926,nearby coordinates and similar name,6.6
+9FA5DEBC-5C5F-4C44-8FDA-E8D8C39D1EF9,Stockholms stad livsmedelskontroll,Cafe Euro Bar,Eurobar Café,node,751969511,1.0,same address and similar name,4.1
+3B1293FF-9514-4AA7-9EC1-9C16C421828C,Stockholms stad livsmedelskontroll,Cafe Kåkbrinken,Kåkbrinken,node,1779515441,0.9986,nearby coordinates and similar name,1.2
+0A0C95FC-E98C-474F-AD0A-7A800055F8E0,Stockholms stad livsmedelskontroll,Cafe Lilla Hörnan,Café Lilla Hörnan,node,12030714131,0.9948,nearby coordinates and similar name,4.6
+63A456A4-C483-48C7-9CE5-1B15BA39A91D,Stockholms stad livsmedelskontroll,Cafe Söderberg,Cafe Söderberg,node,6188609205,0.9864,nearby coordinates and similar name,12.2
+065B3AB0-C65C-4BE7-AE78-0DBF65BF78A4,Stockholms stad livsmedelskontroll,Cafe hållplatsen,Hot SweetThai Wok,node,546653008,0.75,same address,6.5
+7BA70240-4C07-44CB-A93D-F1ED760C6C31,Stockholms stad livsmedelskontroll,Cafekoppen,Cafékoppen,node,884399802,0.972,same address and similar name,2.6
+84D61F0E-7472-4295-B349-9BF0E608323A,Stockholms stad livsmedelskontroll,Caffetteria del corso,Caffetteria del Corso,node,2135379889,0.9572,nearby coordinates and similar name,38.6
+BB4B0A6B-C552-4517-913F-675027E5BAC5,Stockholms stad livsmedelskontroll,Café Majella,Majella,node,1255629509,0.9904,nearby coordinates and similar name,8.6
+037E43A5-2FF3-460C-9F69-DF42A91B9DBB,Stockholms stad livsmedelskontroll,Casa Amico,Casa Amico,node,11920037369,1.0,same address and similar name,6.4
+D1A0DEF0-D284-47F7-B65A-8861B307419F,Stockholms stad livsmedelskontroll,Chioi,Chiôi,node,11167592302,0.9558,nearby coordinates and similar name,11.8
+682D5849-B915-4DD6-A911-25D81A9C5976,Stockholms stad livsmedelskontroll,Chokladfabriken,Chokladfabriken,node,345450421,0.9882,nearby coordinates and similar name,10.6
+F9F57D34-6A80-4CDE-8FA3-8807C7D60A7C,Stockholms stad livsmedelskontroll,Coop Stamgatan,Loran's Rastaurang & Pizzeria,node,3064132603,0.75,same address,9.5
+655069F7-90A1-493C-A5D5-5D63E053636B,Stockholms stad livsmedelskontroll,Crêperie Rustique,Crêperie Rustique,node,9795447604,0.9906,nearby coordinates and similar name,8.5
+F4430519-2E87-4531-9382-96B4B89E4506,Stockholms stad livsmedelskontroll,Daisys Express,Daisy's Express,node,6721534890,0.9784,nearby coordinates and similar name,19.5
+CAEB7D88-8482-41F8-8913-ABE0BBEBA958,Stockholms stad livsmedelskontroll,Dalensgrill AB,Dalens Grill,node,725590059,0.9955,nearby coordinates and similar name,4.1
+8CACC54C-D568-4535-9733-8FD4563296A7,Stockholms stad livsmedelskontroll,Dashi,Dashi,node,13613006456,0.9897,nearby coordinates and similar name,9.3
+50B8F20C-FED6-42E4-BE04-FB38C153B586,Stockholms stad livsmedelskontroll,Den gamle och havet,Den gamle och havet,node,1516415126,0.9971,nearby coordinates and similar name,2.6
+DD1E8444-4D1D-4B7E-A6AF-5F8A226EB77E,Stockholms stad livsmedelskontroll,DiWine Restaurang,DiWINE,node,8947060417,0.9841,nearby coordinates and similar name,14.3
+563B45D1-9B6E-48C8-90BC-8D2E2708799B,Stockholms stad livsmedelskontroll,Därmed Pasta,Därmedpasta,node,360935262,0.9779,nearby coordinates and similar name,19.9
+A8797008-A5D1-4D4E-9AD2-35DB924B47EB,Stockholms stad livsmedelskontroll,E&G,E & G,node,12157951305,0.976,nearby coordinates and similar name,21.6
+7E77DAF9-0D33-498C-BAD9-55469100C7CB,Stockholms stad livsmedelskontroll,Eatalia,Eatalia,node,4637172015,0.9982,nearby coordinates and similar name,1.6
+9985FAFE-AC97-4560-AAC1-8EA62CB41DAC,Stockholms stad livsmedelskontroll,Eatnam,Eatnam,node,461666437,0.9907,nearby coordinates and similar name,8.4
+D8496B74-280C-4D63-BA05-AE298C0C92C3,Stockholms stad livsmedelskontroll,Eatnam,Eatnam,node,11744938669,0.9749,nearby coordinates and similar name,22.6
+C9520FBD-5C7B-487A-A32D-EFBDF20F8E05,Stockholms stad livsmedelskontroll,Ekstedt,Ekstedt,node,1962273874,0.994,nearby coordinates and similar name,5.4
+01424B1A-43EC-4888-984C-4E018D7B5BDA,Stockholms stad livsmedelskontroll,Enbi Sushi,Tasty Sushi,node,9690128817,0.75,same address,4.7
+2D15FAB4-CD3C-4FA5-A826-51671DDDA2B0,Stockholms stad livsmedelskontroll,Ernas Cafe,Erna's,node,1098148030,0.9944,nearby coordinates and similar name,5.1
+68272114-9B05-4C26-AFFA-6443118029D6,Stockholms stad livsmedelskontroll,Fabrique,Fabrique,node,11238019437,0.9961,nearby coordinates and similar name,3.5
+CA3B336C-E8BC-4572-AAC4-265C39F605E8,Stockholms stad livsmedelskontroll,Farsta Strand Grillen,Gatukök,node,1203647901,0.75,same address,5.3
+CE3E6D27-068D-49AD-B56C-851F4F4D0C1E,Stockholms stad livsmedelskontroll,Ferm Bakery,Ferm,node,9466083761,1.0,same address and similar name,2.2
+614D452C-BFD1-4A66-AEB1-8081B6EBB7EF,Stockholms stad livsmedelskontroll,Filmhusets Bar & Bistro,Crème Filmhuset Bar & Bistro,node,12911162467,0.9659,same address and similar name,50.7
+589424EB-C0A1-47FC-AA56-0239A30D26E4,Stockholms stad livsmedelskontroll,Folkungagrillen,Folkungagrillen,node,1501759431,0.9525,nearby coordinates and similar name,42.7
+928A0825-A394-4BC7-8594-9D173DDCABF9,Stockholms stad livsmedelskontroll,Fondueboden,Fondueboden,node,473475022,0.9917,nearby coordinates and similar name,7.4
+5E7A9A6F-BD53-4A72-B501-FD60A5641A70,Stockholms stad livsmedelskontroll,Food of India,Food of India,node,825090333,0.9877,nearby coordinates and similar name,11.0
+3C9395A0-A914-4924-8083-1261A9373921,Stockholms stad livsmedelskontroll,Forma,Forma,node,3841506085,0.9945,nearby coordinates and similar name,5.0
+43109ABD-EA01-448B-A3EE-4B4B6B4CF1AF,Stockholms stad livsmedelskontroll,Fosch Artisan Pâtisserie,Fosch Artisan Pâtisserie,node,4740949141,1.0,same address and similar name,4.6
+006280CF-A1E3-4E8F-B8AE-B4096361423C,Stockholms stad livsmedelskontroll,Fredhälls Källare,Fredhälls Källare,node,343094497,0.9841,nearby coordinates and similar name,14.3
+8AB46DE2-F785-4294-B973-3AAEF26DA6E6,Stockholms stad livsmedelskontroll,Fåfängan Restaurang & Cafe,Fåfängan,way,140046247,1.0,same address and similar name,8.0
+F8361836-14F0-4F17-BCB8-5D0B46CA4B85,Stockholms stad livsmedelskontroll,Gaia,GAIA,node,3336439851,0.9909,nearby coordinates and similar name,8.2
+397A0F9F-373B-4AA1-9DEF-42D010993134,Stockholms stad livsmedelskontroll,Gateau,Gateau,node,772407060,1.0,same address and similar name,5.6
+6EE42042-1983-4A7E-92AC-B43825298C8B,Stockholms stad livsmedelskontroll,German Beer Hall Norrtull,German Beer Hall Norrtull,node,1550011915,0.9738,nearby coordinates and similar name,23.5
+67C42343-47CE-462C-8F38-F80F243B09FF,Stockholms stad livsmedelskontroll,Gigis hörna,Gigis Hörna,node,12025369596,0.9937,nearby coordinates and similar name,5.6
+1DB7CA80-68EA-43C7-91F9-0D73A6E0B798,Stockholms stad livsmedelskontroll,Glupsk,Glupsk,node,13336220426,0.9964,nearby coordinates and similar name,3.2
+0460F940-D9E0-4BC5-AC45-D77CB1C2C7DD,Stockholms stad livsmedelskontroll,GoChoo,Go Choo,node,503503213,0.9894,nearby coordinates and similar name,9.5
+2B4EFAAD-D4D0-4191-90AD-74AA0BD93A46,Stockholms stad livsmedelskontroll,Golden Kitchen,Golden Kitchen,node,12011223561,1.0,same address and similar name,15.9
+AAFF123A-D210-43A2-A711-E4A81A906529,Stockholms stad livsmedelskontroll,Grannens Pizzeria,Grannens Pizzeria,node,3052572535,0.9799,nearby coordinates and similar name,18.1
+F367267B-ECF9-42D0-8E4F-DECF7D1CC5A0,Stockholms stad livsmedelskontroll,Grillhörnan,Grillhörnan,node,872588446,0.9868,nearby coordinates and similar name,11.8
+FF570000-0B82-40BE-9EC9-6E0C8080D788,Stockholms stad livsmedelskontroll,Grillöversten,Grillöversten,node,12461712323,0.9944,nearby coordinates and similar name,5.0
+DCE9F85B-3D06-489B-B923-EE18BB43591A,Stockholms stad livsmedelskontroll,Gula Kiosken,Gula Kiosken,way,105467275,1.0,same address and similar name,3.5
+348BD00C-35C0-4E08-96D4-E889A5856252,Stockholms stad livsmedelskontroll,Gullegårdens glutenfria bageri,Gullegårdens glutenfria bageri,node,11422931836,0.9956,nearby coordinates and similar name,4.0
+C38D34AB-EEDA-4860-9CE4-C6260E5B4170,Stockholms stad livsmedelskontroll,H-hus,H-hus,node,372660457,1.0,same address and similar name,7.5
+D88EFBC5-AC0D-42BD-95F7-C04BC41B2682,Stockholms stad livsmedelskontroll,Hammarby Sushi & Dumplings,Hammarby Sushi & Dumplings,node,3480751955,1.0,same address and similar name,6.3
+A791D5F4-5849-4222-BDC4-BCA3603C8A89,Stockholms stad livsmedelskontroll,Hammurabi Restaurang,Hammurabi Restaurang,node,6432884040,0.9886,nearby coordinates and similar name,10.3
+A07735D3-8543-4B17-A083-9278DE32D3D3,Stockholms stad livsmedelskontroll,Hantverket på Hörnet,Hantverket på Hörnet,node,410520308,0.9944,nearby coordinates and similar name,5.0
+C1458554-0027-4AF8-9694-C74D53F50293,Stockholms stad livsmedelskontroll,Happy Thai Food & Sushi,Thanita's Thai,node,3676843873,0.75,same address,2.1
+25ECAF34-449C-4173-9E4B-A6A802A494A5,Stockholms stad livsmedelskontroll,Happy Wiener,Happy Wiener,node,7033420513,0.9986,nearby coordinates and similar name,1.2
+AB7838C0-755C-4484-9FCE-E4673D0F62CE,Stockholms stad livsmedelskontroll,Hasselsson 1,Hasselsson,node,7101336531,0.9814,nearby coordinates and similar name,4.7
+C55D60C6-25D7-4DD7-BE5F-52297B81763B,Stockholms stad livsmedelskontroll,Heat Kista,Heat Kista,node,491504973,1.0,same address and similar name,12.4
+9550B8DB-4A03-4F00-BB58-C0615090CA37,Stockholms stad livsmedelskontroll,Hemköp Farsta,Kinahörnet,node,1213873980,0.75,same address,38.7
+55F56312-8600-4BB9-96CC-99A0CD2472F0,Stockholms stad livsmedelskontroll,Hemma hos Kaj,Hemma hos Kaj,node,1423351937,0.9955,nearby coordinates and similar name,4.0
+A7FF4C9B-0C28-4D85-B450-1196732B68C2,Stockholms stad livsmedelskontroll,Himmelska Hundar,Himmelska hundar,node,1905050339,0.9929,nearby coordinates and similar name,6.4
+B7FED0A7-3801-483F-9C3D-5FDDDD2BC5FA,Stockholms stad livsmedelskontroll,Hinode Wok,Hinode Wok,node,4084496882,1.0,same address and similar name,2.9
+85280AEB-DDF0-44F7-800A-5E9E514D6289,Stockholms stad livsmedelskontroll,Ho's Tapas Kök & Bar,Ho's tapas kök & bar,node,861743772,0.9908,nearby coordinates and similar name,8.3
+70B806A1-5DCE-4497-8B05-39592BE801B8,Stockholms stad livsmedelskontroll,Holy Greens,Holy Greens,node,2721566753,0.9951,nearby coordinates and similar name,4.4
+C1949E12-2405-4FDE-8003-617FBCD2540C,Stockholms stad livsmedelskontroll,Husby Gård Cafe,Husby gård,way,41388753,0.997,nearby coordinates and similar name,2.7
+6B502675-036B-4989-824A-316FBDEB888D,Stockholms stad livsmedelskontroll,Häktet,Häktet,node,1149275330,0.9935,nearby coordinates and similar name,5.8
+5DD3D936-CC9F-493B-A1E6-1BD123FD8B8F,Stockholms stad livsmedelskontroll,Högdalens Bowlingpalatz,Aroy Thai Take Away,node,1453083452,0.75,same address,20.6
+544E5657-D284-4FC0-A7B7-775E51A40578,Stockholms stad livsmedelskontroll,"Höjdens Grill,",Höjdens Grill,node,1564283506,1.0,same address and similar name,15.9
+C712C21D-44D8-4066-A0E2-5D75249EB89E,Stockholms stad livsmedelskontroll,Ica Nära Bandhagen,Prego Kolgrill & Pizzeria,node,3788634968,0.75,same address,34.7
+0B5AF2E5-E930-47D0-B7DF-8AA816A5EC13,Stockholms stad livsmedelskontroll,Ica Nära Lappkärrsberget,Sushi Garden,node,3654765986,0.75,same address,11.3
+8CCEA027-5A98-4334-AF82-EAB1F0438197,Stockholms stad livsmedelskontroll,Ikawa Sushi,Ikawa Sushi,node,13340835667,0.9941,nearby coordinates and similar name,5.3
+E65FA3E4-76CE-42AE-AFFD-195F273E93CF,Stockholms stad livsmedelskontroll,Ikiru Sushi,Ikiru sushi,node,4793363911,0.9874,nearby coordinates and similar name,11.4
+994895F3-476B-4343-9D7F-7320F2040135,Stockholms stad livsmedelskontroll,Il Caffe,il Caffe,node,2507550682,0.9425,nearby coordinates and similar name,51.8
+0ECCDB0A-3A14-4167-8657-C8FD44E5E66D,Stockholms stad livsmedelskontroll,Il Conte,Il Conte,node,1278519630,1.0,same address and similar name,50.1
+9E15C1BF-31C2-4FC7-A8AB-2EFC279A006C,Stockholms stad livsmedelskontroll,Il Piatto,Il Piatto,node,12014499982,0.9587,nearby coordinates and similar name,37.2
+F4C6F85D-ED96-4EA2-B37D-36F67EC10719,Stockholms stad livsmedelskontroll,India´s,India's,node,410564455,0.9857,nearby coordinates and similar name,12.9
+5516FBD3-A168-4124-AED3-FF7BB24C1C03,Stockholms stad livsmedelskontroll,Ivanders Pizzeria,Ivanders Pizzeria,node,1313477103,1.0,same address and similar name,2.6
+DAF130E3-E419-4362-9BF7-145BA9330198,Stockholms stad livsmedelskontroll,Izgara Grill,Cizgara grill,node,2716911937,0.9845,nearby coordinates and similar name,3.0
+E37F2A68-7DEF-4CFD-AA12-CC0517EB3082,Stockholms stad livsmedelskontroll,Izmir Kebab,Izmir Kebab,way,1300101911,0.9738,nearby coordinates and similar name,23.6
+5D323CF8-9A9F-4684-91C5-A4E38D9A1DFE,Stockholms stad livsmedelskontroll,Jack`s Burger,Jack's Burger,node,1579713565,0.9882,nearby coordinates and similar name,10.7
+A474CEEC-58DB-4A39-A4C6-1D8919134D28,Stockholms stad livsmedelskontroll,Java Whiskers,Java Whiskers,node,1595430247,0.9892,nearby coordinates and similar name,9.7
+224BC679-CADA-4664-A1F1-8CE8CDFCA3EC,Stockholms stad livsmedelskontroll,Jeans Kök,Jean’s Kök,node,12016451816,0.962,nearby coordinates and similar name,34.2
+A2FD5070-84A1-4CB6-A456-9DEA628FA6B7,Stockholms stad livsmedelskontroll,Joe & The Juice,Joe & The Juice,node,5131313108,0.9826,nearby coordinates and similar name,15.7
+EADF18DD-D463-43F3-8854-08637F27346F,Stockholms stad livsmedelskontroll,Joe & The Juice 2,Joe & The Juice,node,11581550287,0.9741,nearby coordinates and similar name,12.4
+9BACBA82-BC6F-46CC-83C0-A1984513B26D,Stockholms stad livsmedelskontroll,Johan & Nyström,Johan & Nyström,node,747463330,0.9867,nearby coordinates and similar name,12.0
+E0F482AB-0330-413C-9EDA-9CD85BF8B3BA,Stockholms stad livsmedelskontroll,Josefina,Josefina,node,10180723345,0.9689,nearby coordinates and similar name,28.0
+EF68A4C7-8528-4504-88BA-3FACD432BFEE,Stockholms stad livsmedelskontroll,Kaferang,Kaferang,node,469866387,0.992,nearby coordinates and similar name,7.2
+B29912C2-160D-4C31-BC5C-6A9C58807301,Stockholms stad livsmedelskontroll,Kaffe Express Colombia,Kaffe & Restaurang Express Colombia,node,3563621593,1.0,same address and similar name,0.9
+17FBBC19-7F0A-4645-9537-786D145764AD,Stockholms stad livsmedelskontroll,Kaffekoppen,Kaffekoppen,node,418261868,0.9937,nearby coordinates and similar name,5.7
+4222683E-2E21-4714-BA65-0421E2D5324C,Stockholms stad livsmedelskontroll,Kanaans Trädgårdscafe,Kanaans Trädgårdscafe,way,106745766,1.0,same address and similar name,5.8
+F1F6F770-CBEA-4A6C-BD27-843A9E780973,Stockholms stad livsmedelskontroll,Kandyz Bromma,Godisbolaget Bromma,node,4097955158,0.75,same address,132.8
+3C3FA8DB-301F-4A57-AED2-E9DFF5C65B04,Stockholms stad livsmedelskontroll,Karamellaffären,Karamellaffären,node,3402696475,0.9963,nearby coordinates and similar name,3.4
+DF48F470-DBEB-4A39-A827-3B7724595448,Stockholms stad livsmedelskontroll,Karla Cafe,Karla Café,node,2884788356,0.9887,nearby coordinates and similar name,10.2
+C380CB36-E3D8-420A-BB74-14A122CCD5E7,Stockholms stad livsmedelskontroll,Kasta Loss Bar & Bistro,Kasta Loss Bar & Bistro,node,8361998275,0.9027,nearby coordinates and similar name,87.5
+EB6D5768-5CA2-4476-AAE4-E38CFB204698,Stockholms stad livsmedelskontroll,Kebab Kitchen,Kebab Kitchen,node,372709676,0.9941,nearby coordinates and similar name,5.3
+FD637F79-9606-468F-8847-A30B7153EFA7,Stockholms stad livsmedelskontroll,Kebab-Ish,Kebab-ish,node,12455908105,0.9714,nearby coordinates and similar name,25.7
+977BF24D-9309-4A64-BBA4-7B4E1DD50E29,Stockholms stad livsmedelskontroll,Kelp Bar Mat & Deli,Cheers N’ Burger,node,2411550519,0.75,same address,9.0
+06C5C751-A3BA-43D2-BBD5-6D30360162F8,Stockholms stad livsmedelskontroll,Kokvrån,Kok Vrån,node,12035324167,0.9972,nearby coordinates and similar name,2.5
+51248B57-B8FF-405A-B301-7F0DC2431D2A,Stockholms stad livsmedelskontroll,Kulturhuset Stories,Kulturhuset Stories,node,11067741626,0.9388,nearby coordinates and similar name,55.1
+87185B9E-6F48-4C79-BD92-EE6AE90A7427,Stockholms stad livsmedelskontroll,Kungsholmens Vinbar,Kungsholmens Vinbar,node,329178893,0.9898,nearby coordinates and similar name,9.2
+63BEA721-A32D-4120-B416-E2A1E786C1AE,Stockholms stad livsmedelskontroll,Kungstensgatan 12 Café & Restaurang,Kungstensgatan 12,node,2511976486,0.9903,nearby coordinates and similar name,8.7
+7A58CA85-0F20-48F2-AA61-A0BE9BBC977A,Stockholms stad livsmedelskontroll,Kärrtorps Krog,Kärrtorps krog,node,3723792928,0.9917,nearby coordinates and similar name,7.4
+7028E448-5CBA-4110-AAB5-7D94C9062D98,Stockholms stad livsmedelskontroll,Körsbär,Körsbär kafé,node,2527180315,0.9378,same address and similar name,4.3
+4290F587-1CBE-4305-A9A5-E0123CBD1874,Stockholms stad livsmedelskontroll,L Avventura,L'Avventura,node,7049205981,0.9893,nearby coordinates and similar name,9.6
+DC2D63DF-EBC3-4576-9867-7D88C52188ED,Stockholms stad livsmedelskontroll,La Barra,La Barra,node,9850675496,0.9937,nearby coordinates and similar name,5.7
+BB8B6400-8D18-4E2F-B6BC-533CDC6083D7,Stockholms stad livsmedelskontroll,La Favorita,La Favorita,node,3147284143,0.99,nearby coordinates and similar name,9.0
+6F2B24F2-F6D6-4CDB-A4D4-CB01E6392820,Stockholms stad livsmedelskontroll,La Pizza,La Pizza,node,778310992,0.9797,nearby coordinates and similar name,18.3
+1DF2A8A7-6F76-4DBF-803C-1048DE771FCD,Stockholms stad livsmedelskontroll,Lao Wai,Lao Wai,node,503503241,0.9953,nearby coordinates and similar name,4.3
+7BE7DA2E-9EBF-4035-9ED8-E4275B6977D0,Stockholms stad livsmedelskontroll,Le PassePartout,Le Passepartout,node,13340835663,0.9833,nearby coordinates and similar name,15.0
+4E303995-FA34-4DC9-802D-C5B4642EF856,Stockholms stad livsmedelskontroll,Lebanon MezaLounge,Lebanon Meza Lounge,node,360759482,0.9931,nearby coordinates and similar name,6.2
+BE2BEB4F-A285-4C01-AEC1-25C16CE11B96,Stockholms stad livsmedelskontroll,Lemon & Chili.,Lemon & Chili,node,666042040,0.9947,nearby coordinates and similar name,4.8
+1002F927-6AFA-4502-B420-D54E4DE29764,Stockholms stad livsmedelskontroll,Lilla Parkkaféet,Lilla Parkkaféet,node,373820282,0.9875,nearby coordinates and similar name,11.3
+92F1CC45-3EF5-42E7-B198-32562F689E38,Stockholms stad livsmedelskontroll,Lilys Burger,Lily's Burger,node,3487160843,0.9903,nearby coordinates and similar name,8.8
+19A21D12-38B9-4AF2-9F52-D6B161538747,Stockholms stad livsmedelskontroll,Lulus Sushi och Poke,Lulu,node,11975236598,0.75,same address,21.1
+6BEEAA88-85CB-4478-8E59-83C068029D66,Stockholms stad livsmedelskontroll,"Lyckebo Trädgårdscafe, Kyrkhamnsvägen 20",Lyckebo Trädgårdscafé,way,1385129471,0.75,same address,4.6
+1A5618C4-A846-4F2E-BE74-8A2051CF4B24,Stockholms stad livsmedelskontroll,Långbro Värdshus,Långbro värdshus,way,116646141,1.0,same address and similar name,9.1
+2B9F0BD0-255B-4C30-B8BE-4E864F9335FD,Stockholms stad livsmedelskontroll,MGL Sushi,MGL Sushi,node,5258213921,0.993,nearby coordinates and similar name,6.3
+1600CA53-DAC8-4AB1-BB60-526AE3F0D0E4,Stockholms stad livsmedelskontroll,Magari Pizza,Magari Pizza,node,473475025,0.9916,nearby coordinates and similar name,7.5
+2446210A-54B6-4120-AC38-3885D6606635,Stockholms stad livsmedelskontroll,Mahalo,Mahalo,node,5685767170,0.9898,nearby coordinates and similar name,9.2
+C4EFACFC-DA04-4DA7-832C-9628EA6B034F,Stockholms stad livsmedelskontroll,Mandarin Sea City,Mandarin Sea City,node,5697169320,0.9791,nearby coordinates and similar name,18.8
+E59416AC-8107-4AA4-B5A1-944B13053B3E,Stockholms stad livsmedelskontroll,Matcha-Ya,Matcha ya,node,4109297202,0.9864,nearby coordinates and similar name,12.2
+9CD34007-5C12-4A77-93C0-55754131B573,Stockholms stad livsmedelskontroll,Maxigrillen,Maxi grillen,way,141258105,0.9393,nearby coordinates and similar name,54.6
+6E4A78CF-5F3D-4DE0-B463-525FFED034F2,Stockholms stad livsmedelskontroll,Mille Lire Bromma,Mille Lire,node,14068792602,0.93,same address and similar name,5.0
+893FFD04-6D5A-4A00-8631-1B9E1245AFC7,Stockholms stad livsmedelskontroll,Miss Puri,Miss Puri,node,329178885,0.9948,nearby coordinates and similar name,4.7
+F310D067-7F77-4123-BA0C-2D0878C3AE87,Stockholms stad livsmedelskontroll,Mix Thaiwok,Mix Thai,node,849242859,0.9506,same address and similar name,3.7
+118D4189-E9EA-42C3-9D1A-7BC2A7DE8CE1,Stockholms stad livsmedelskontroll,Monster Chicken,Monster Chicken,node,1541177909,0.9975,nearby coordinates and similar name,2.2
+EC00BA9F-A297-4D8E-AE22-CE6E6B405CF2,Stockholms stad livsmedelskontroll,Mormors Dumpling,Mormors dumpling,node,851534146,0.9936,nearby coordinates and similar name,5.8
+FA48BFDB-9FA8-4E30-98C0-921D7D98BCD2,Stockholms stad livsmedelskontroll,Mr French,Mr. French,node,1809117862,0.9967,nearby coordinates and similar name,2.9
+B3A77AAF-420F-4224-B725-23EE0A807BF3,Stockholms stad livsmedelskontroll,NISCH,nisch,node,1261379523,0.9856,nearby coordinates and similar name,12.9
+B9D245E0-F5D1-4C1A-A4EB-4FB4F6E97A4B,Stockholms stad livsmedelskontroll,NK Art Bakery,NK Art Bakery,node,9460366417,0.9781,nearby coordinates and similar name,19.7
+2FD9A3A8-8822-4523-86BD-96BC3F9A17B8,Stockholms stad livsmedelskontroll,Naked Fish,Naked Fish,node,661070852,0.9957,nearby coordinates and similar name,3.9
+523160D9-D09D-46D7-8280-F8A59F7FC0DC,Stockholms stad livsmedelskontroll,"Naked Juicebar, Farsta",Kinahörnet,node,1213873980,0.75,same address,38.7
+0BFB9D86-D0E7-45B7-87BA-8960ED98009F,Stockholms stad livsmedelskontroll,Nana Omakase,Nana omakase,node,2463097761,0.9976,nearby coordinates and similar name,2.2
+58C5150C-5779-4A8E-AC87-1CFC9DCAA21E,Stockholms stad livsmedelskontroll,Nejos Cafe,Nejo’s Café,node,11989747926,0.9977,nearby coordinates and similar name,2.1
+08EA5C80-DB08-4E03-8A90-450201A797C0,Stockholms stad livsmedelskontroll,Nockeby Pizzeria,Nockeby Pizzeria,node,248752304,0.9915,nearby coordinates and similar name,7.7
+E4D10A03-C80F-4D11-ABDA-FF398AFE0669,Stockholms stad livsmedelskontroll,Non Solo Bar,Non Solo Bar,node,701186525,0.9901,nearby coordinates and similar name,8.9
+74991126-248A-410B-A76D-354CC8DCDFF6,Stockholms stad livsmedelskontroll,Noorm,Noorm,node,1579713575,0.995,nearby coordinates and similar name,4.5
+7AB77CE4-F9A0-412B-A807-9D8409FFC9E2,Stockholms stad livsmedelskontroll,Nyko Kitchen,Nyko Kitchen,node,9048046954,0.9809,nearby coordinates and similar name,17.2
+95BC443E-4C26-4449-90FF-A168AAA82813,Stockholms stad livsmedelskontroll,Operakällaren,Operakällaren,node,485959211,0.9529,nearby coordinates and similar name,42.4
+6512DF4A-38B7-473B-B696-E687EAAD87E1,Stockholms stad livsmedelskontroll,Opizzicato,O'Pizzicato,node,747463323,0.9861,nearby coordinates and similar name,12.5
+C21B523E-7AB4-4BFE-A9D6-2B650EF1BD7F,Stockholms stad livsmedelskontroll,Oummi,Oummi,node,1754241994,0.9959,nearby coordinates and similar name,3.7
+74BC1D00-8CE2-4E0A-94E2-46A392A24794,Stockholms stad livsmedelskontroll,Oyster Bar,Oyster Bar,node,1192858541,0.988,nearby coordinates and similar name,10.8
+A696498B-A62B-488F-9165-57FC4C7C45BD,Stockholms stad livsmedelskontroll,Panpans kök,Panpan's kök,node,11107873295,0.9803,nearby coordinates and similar name,17.7
+43561C23-8DD3-4257-9257-E1496DFCBCD4,Stockholms stad livsmedelskontroll,Pappa's Pizzeria,Stureby Pizza Express,node,1728262036,0.75,same address,7.2
+EE25A9DA-6D4F-4FDB-8797-5832A4BFCAB2,Stockholms stad livsmedelskontroll,Pascha Deli,Pascha Deli,node,1362013499,0.9975,nearby coordinates and similar name,2.2
+4E5C740F-E7EF-4AE0-A4FD-B88B4FCB35FF,Stockholms stad livsmedelskontroll,Pizza Hut,Pizza Hut,node,470495631,0.9784,nearby coordinates and similar name,19.5
+D3B5B9BC-249B-4A77-AFBA-965C3766C5CC,Stockholms stad livsmedelskontroll,Pizza Punks,Pizza Punks,node,11521892848,0.9972,nearby coordinates and similar name,2.5
+EDA619D5-D9CC-4F64-869E-9B12AA0638B1,Stockholms stad livsmedelskontroll,Pizzeria 9,Pizza 9,node,9079704110,0.944,same address and similar name,2.1
+80A6D5E4-D356-4A5B-89E3-437E16910C9E,Stockholms stad livsmedelskontroll,Pizzeria Delice,Pizzeria Delize,node,11780129378,0.9723,nearby coordinates and similar name,6.9
+77303E77-7408-45DC-A398-8E66C0F394AE,Stockholms stad livsmedelskontroll,Pizzeria Spader Dam,Pizzeria Spader Dam,node,924176998,0.9856,nearby coordinates and similar name,13.0
+19E8635D-1523-4284-B50A-9C33A55B20CD,Stockholms stad livsmedelskontroll,Pizzeria Tomatis,Pizzeria Tomatis- (Pizza – Deli – Pasta),node,1252652165,0.75,same address,1.7
+33BC3BEE-BF55-43CE-9E2E-BC48113FF8BA,Stockholms stad livsmedelskontroll,Pizzeria Tranan,Pizzeria Tranan,node,1640820030,0.9885,nearby coordinates and similar name,10.4
+124A2DCC-D43D-42F9-865D-3332DA25D9CF,Stockholms stad livsmedelskontroll,Pomona,Bageri Pomona,node,13365634805,0.9935,nearby coordinates and similar name,5.9
+E95DC4E4-DABF-47A4-A197-294FEFA54CCF,Stockholms stad livsmedelskontroll,Reload foodbar,Reload Foodbar,node,11932722477,0.9976,nearby coordinates and similar name,2.1
+0EE0CC19-F6F8-47CD-9123-142C58BE9B05,Stockholms stad livsmedelskontroll,Restaurang 88,Restaurang 88,node,929984154,0.9626,nearby coordinates and similar name,33.7
+EC638775-BB4F-4B51-987D-030C42AD5321,Stockholms stad livsmedelskontroll,Restaurang B.A.R.,B.A.R.,node,1449445339,0.9783,nearby coordinates and similar name,19.6
+125F570F-D4B7-4983-AB3A-ABA93E22DC7D,Stockholms stad livsmedelskontroll,Restaurang Bleck,Bleck,node,3652358040,0.9675,nearby coordinates and similar name,29.2
+36CEAEE2-7190-4A40-9F62-2C1AEAB5C510,Stockholms stad livsmedelskontroll,Restaurang Caliente,Caliente,node,330944608,0.997,nearby coordinates and similar name,2.7
+D0059EF7-48F8-475A-A18A-265355F2C55B,Stockholms stad livsmedelskontroll,Restaurang Casa Del Lago,CASA del LAGO,node,4253358768,0.9925,nearby coordinates and similar name,6.7
+3AD8C14D-CCFA-4EA3-A274-750F2C9ADD67,Stockholms stad livsmedelskontroll,Restaurang Esperanza,Esperanza,node,2923840029,0.9954,nearby coordinates and similar name,4.2
+56028D13-0963-4ACB-A6A3-34D0EBD9B33D,Stockholms stad livsmedelskontroll,Restaurang Esperia,Esperia,node,1239298328,0.9839,nearby coordinates and similar name,14.5
+A5268657-8DB0-4421-A2C1-07C931FA3AB0,Stockholms stad livsmedelskontroll,Restaurang Farang,Farang,node,2488368169,0.9927,nearby coordinates and similar name,6.5
+7AA8F67E-4354-4168-AC59-EB29FEC2D620,Stockholms stad livsmedelskontroll,Restaurang Gandhi,Gandhi,node,320554037,0.9934,nearby coordinates and similar name,6.0
+B151CFF4-5615-40AA-BF8F-22C503CB2D1C,Stockholms stad livsmedelskontroll,Restaurang Guld Hörnan,Guldhörnan,node,2807486201,1.0,same address and similar name,4.5
+6886618E-4C3F-40A1-88D0-0E156BD664AC,Stockholms stad livsmedelskontroll,Restaurang Hantverket,Hantverket,node,8766151622,0.9876,nearby coordinates and similar name,11.2
+6D834472-2165-4EA0-85C9-BAE697088C1A,Stockholms stad livsmedelskontroll,Restaurang Happy India,Happy India,node,959587582,1.0,same address and similar name,5.4
+887D5A41-3BEA-41B8-B310-48A3CCD66944,Stockholms stad livsmedelskontroll,Restaurang Hornhuset,Hornhuset,way,219109510,0.9789,nearby coordinates and similar name,19.0
+E4611CE0-C6FA-4B7F-97F4-D5FDFBA20D65,Stockholms stad livsmedelskontroll,Restaurang Il Conte,Il Conte,node,1680567183,0.9942,nearby coordinates and similar name,5.2
+7EB33AC8-909A-4DCA-A768-39EB5707468D,Stockholms stad livsmedelskontroll,Restaurang Indira,Indira,node,851533632,0.9824,nearby coordinates and similar name,15.8
+0E24BC40-357F-410A-A11A-D3123DFF3476,Stockholms stad livsmedelskontroll,Restaurang Jubba,Jubba,node,12005756690,0.9724,nearby coordinates and similar name,24.8
+D7944FE3-4A0B-4FA8-B24E-141D3D41B585,Stockholms stad livsmedelskontroll,Restaurang Kimchi,Kimchi,node,1433722540,0.9944,nearby coordinates and similar name,5.0
+D4950693-C8D1-48CA-986A-CBDFFC6A9308,Stockholms stad livsmedelskontroll,Restaurang Lilla Prag,Lilla Prag,node,467122308,1.0,same address and similar name,7.5
+D9569207-B4CB-4970-AB31-0668D1D16E3A,Stockholms stad livsmedelskontroll,Restaurang Moldau,Moldau,node,857400230,0.9967,nearby coordinates and similar name,3.0
+CDFC8573-4DD3-4703-A6D8-B5DC29CE7C90,Stockholms stad livsmedelskontroll,Restaurang Pic Nic,Restaurang Picnic,node,5079680337,0.9914,nearby coordinates and similar name,7.7
+A8415380-3B99-4F81-B431-C7EDBF3433F9,Stockholms stad livsmedelskontroll,Restaurang Razmoni,Razmoni,node,661084634,0.9905,nearby coordinates and similar name,8.6
+EA6A850E-AE8F-4C68-BDBA-08836D1C686F,Stockholms stad livsmedelskontroll,Restaurang Rosa Drömmar,Rosa Drömmar,node,446295280,1.0,same address and similar name,22.2
+83BACDA6-7810-4082-B816-75A7D9FB196C,Stockholms stad livsmedelskontroll,Restaurang Saffran,Saffran,node,312811163,0.9941,nearby coordinates and similar name,5.3
+5F8B15F2-C67F-41EC-AB8B-EE96D366BA85,Stockholms stad livsmedelskontroll,Restaurang Sanna,Restaurang Sanna,node,11993335045,0.9852,nearby coordinates and similar name,13.3
+466E7542-D8D5-4DE8-AF7D-D0940A0F9B43,Stockholms stad livsmedelskontroll,Restaurang Solstugan,Solstugan,node,343094493,0.9944,nearby coordinates and similar name,5.0
+DF9586F0-598B-4DC4-B2E0-D6B09EF02798,Stockholms stad livsmedelskontroll,Restaurang Sorbon,Sorbon,node,315729403,0.9969,nearby coordinates and similar name,2.8
+9FD7B84A-57A0-409D-AE0E-A4D171EADD80,Stockholms stad livsmedelskontroll,Restaurang Stråket,Stråket,node,762716290,0.9877,nearby coordinates and similar name,11.1
+B24A24EC-4FF9-4AE6-BF9C-B3A997160AD4,Stockholms stad livsmedelskontroll,Restaurang Syster o Bror,Syster O Bror,node,602788514,0.9717,nearby coordinates and similar name,25.5
+5A531A8D-DC4E-4C15-BDDF-5CC68B2D271A,Stockholms stad livsmedelskontroll,Restaurang Torget,Pizza Torget,node,772290622,0.75,same address,13.2
+84AE5322-CAFA-4099-B50B-715F3D9191E8,Stockholms stad livsmedelskontroll,Restaurang Tradition,Restaurang Tradition,node,3396035263,0.9973,nearby coordinates and similar name,2.4
+E984CE8E-968B-4BE2-B5BB-4DAF6028943F,Stockholms stad livsmedelskontroll,Restaurang Tranan,Tranan,node,617259128,0.9968,nearby coordinates and similar name,2.9
+7E1A2105-9255-4E86-B8D5-974DF31F3E65,Stockholms stad livsmedelskontroll,Restaurang Triton,Restaurang Triton,node,1258634101,0.9909,nearby coordinates and similar name,8.2
+13DB48C0-13DB-42B4-B909-21EA31082719,Stockholms stad livsmedelskontroll,Restaurang UMI,U:M:I,node,3577207374,0.997,nearby coordinates and similar name,2.7
+F623EF62-D477-4454-A62C-26537C5E7239,Stockholms stad livsmedelskontroll,Restaurang Vinterträdgården,Vinterträdgården,node,12010343470,1.0,same address and similar name,21.6
+B4AC9AF7-666E-4BE6-B89E-F0BF2DFEDEFD,Stockholms stad livsmedelskontroll,Restaurang Wong Kee,Wong Kee,node,991746405,0.9969,nearby coordinates and similar name,2.8
+0F90D395-3A07-4CCE-BB06-FCE833893CC1,Stockholms stad livsmedelskontroll,Rianns Krog,Rianns Krog,node,2497605788,0.9904,nearby coordinates and similar name,8.7
+D95AC63E-42FC-483F-8B0C-B2ECA395ABEC,Stockholms stad livsmedelskontroll,Rolfs Kök,Rolfs kök,node,503503251,0.9917,nearby coordinates and similar name,7.4
+6F266E3B-336E-4221-97C4-941F06901E99,Stockholms stad livsmedelskontroll,Rörstrandsgrillen,Rörstrands Grillen,node,701186518,0.9988,nearby coordinates and similar name,1.1
+80B30270-9D1B-4EAF-ABC7-FDFFB614E111,Stockholms stad livsmedelskontroll,SEN Street Kitchen,SEN Street Kitchen,node,479369242,0.9862,nearby coordinates and similar name,12.4
+23BB2648-BDBA-4F58-AC22-FE506A197F48,Stockholms stad livsmedelskontroll,SIN Ramen,Sin Ramen,node,11676332389,0.9706,nearby coordinates and similar name,26.5
+962306ED-A508-4CA4-9927-CAF5209E1B9C,Stockholms stad livsmedelskontroll,STHLM Brunch Club,Sthlm Brunch Club,node,766791993,0.9842,nearby coordinates and similar name,14.2
+0D5EEDF3-4E0A-4D50-A154-48AC992EB7AC,Stockholms stad livsmedelskontroll,SUBWAY,Subway,node,4028349207,0.9959,nearby coordinates and similar name,3.7
+37AE5166-1389-4763-B603-DA1CF83C41D0,Stockholms stad livsmedelskontroll,SUBWAY,Subway,node,12616205304,0.9625,nearby coordinates and similar name,33.8
+A0C1828F-19C4-40BB-8C4C-1A8CC69670FF,Stockholms stad livsmedelskontroll,SUSHII,Sushii,node,1234015445,0.9882,nearby coordinates and similar name,10.6
+A251B5BC-6CC4-4773-B714-DCC173FA8E75,Stockholms stad livsmedelskontroll,Sairu sushi,Sairu Sushi,node,13243384559,0.9984,nearby coordinates and similar name,1.4
+7CEAA38D-B6B2-4A2F-8EBE-93208AD22F1D,Stockholms stad livsmedelskontroll,Sally Voltaire och Systrar,Sally Voltaire & Systrar,node,3856619681,0.956,nearby coordinates and similar name,22.0
+EAE9C9CB-13F3-4663-95F4-F9D2921EDB52,Stockholms stad livsmedelskontroll,Samys Krog.,Samy’s Krog,node,12011768938,0.9656,nearby coordinates and similar name,31.0
+D3E51074-262D-4803-BB24-3A60E419C0BF,Stockholms stad livsmedelskontroll,Sauerbee,Sauerbee,node,12161355401,0.9545,nearby coordinates and similar name,41.0
+1E1665D1-4DDA-4604-9D96-263958CA6AA7,Stockholms stad livsmedelskontroll,Scarpetta by Ingrosso,Scarpetta by Ingrosso,node,1429311401,0.9843,nearby coordinates and similar name,14.1
+0FBC7B9F-24EC-4CEF-8BEA-3DE8DF0DB7D5,Stockholms stad livsmedelskontroll,Shaah Macaan,Shaah Macaan,node,11989561325,0.9965,nearby coordinates and similar name,3.1
+A89BC57F-20C4-40CC-B316-339668F07A2A,Stockholms stad livsmedelskontroll,Shanti Soft Corner,Shanti Softcorner,node,426920025,0.9967,nearby coordinates and similar name,3.0
+4EC8950B-3B03-4320-AA9D-C3DF40EBCD7B,Stockholms stad livsmedelskontroll,SoFo sushi&ramen,SoFo Sushi & Ramen,node,1501759686,0.9776,nearby coordinates and similar name,20.1
+0DD1F4E3-25E8-4201-828A-F5F2BA2495D7,Stockholms stad livsmedelskontroll,Sockerbagaren,Sockerbagaren,node,510605894,0.9852,nearby coordinates and similar name,13.4
+89C4429F-0CD4-4883-BDE0-2EF56ABD554A,Stockholms stad livsmedelskontroll,Sondor Sushi,Sondor Sushi,node,2913235497,0.9862,nearby coordinates and similar name,12.4
+2B7447A6-B6AD-43DC-A3F8-81380BDFE64D,Stockholms stad livsmedelskontroll,Spice Corner,Spice Corner,node,345372918,0.9945,nearby coordinates and similar name,5.0
+4583B789-7B8E-4AA5-B361-4327E16A364C,Stockholms stad livsmedelskontroll,Spicery,Matborgen,node,1312284405,0.75,same address,53.8
+56DBFE08-BC84-4883-A305-43EF8A621039,Stockholms stad livsmedelskontroll,Spicy Villa,Spice Villa,node,11993371284,0.9349,nearby coordinates and similar name,33.3
+E3E5F8D6-CBAB-4F12-A49B-2356FB31D2D4,Stockholms stad livsmedelskontroll,Spisa pizza,Spisa Pizza,node,12003299628,0.9936,nearby coordinates and similar name,5.8
+0CDCF407-C651-46FF-8A89-6E923006F796,Stockholms stad livsmedelskontroll,Spritmuseum Restaurang,Spritmuseum,node,2441872776,0.954,nearby coordinates and similar name,41.4
+4FB4A7A5-007B-48F8-AB20-17894D71FC2B,Stockholms stad livsmedelskontroll,Stockholms grill,Stockholm Grill,node,7694849757,0.9559,nearby coordinates and similar name,31.0
+9F503C68-58B4-41F0-B90D-87EF62A85DD1,Stockholms stad livsmedelskontroll,Stora Bageriet,Stora Bageriet,node,2129439288,1.0,same address and similar name,1.3
+E72BDBF9-0500-4021-9CC8-750CFE21B115,Stockholms stad livsmedelskontroll,Storgatans Cafe & Bageri,Storgatans café & bageri,node,1177113915,0.9944,nearby coordinates and similar name,5.0
+458A5B1B-4B60-47A6-BC8C-F1B237586E8D,Stockholms stad livsmedelskontroll,Sushi Kawa,Sushi Kawa,node,12009122149,1.0,same address and similar name,11.2
+498EC39C-9F75-4B87-AB63-B35577B34ABA,Stockholms stad livsmedelskontroll,Sushi Shop.,Sushi shop,node,5841701785,0.9963,nearby coordinates and similar name,3.3
+A9132B79-7D96-4F0D-AB06-CB37985BF0DF,Stockholms stad livsmedelskontroll,Sushi Sun,Sushi Sun,node,5779722221,1.0,same address and similar name,10.6
+B84EFD1A-DF95-49E0-8C06-31B618DDF800,Stockholms stad livsmedelskontroll,Svartengrens,Svartengrens,node,3067344774,0.9877,nearby coordinates and similar name,11.1
+6E0247ED-1695-4BAD-BF63-A3063E42AC54,Stockholms stad livsmedelskontroll,Söderbergs Bageri Tellusgången,Söderbergs Bageri Telefabriken,node,12025361080,0.75,same address,3.0
+EE39CD59-EB63-4A28-911A-B7DDE7FB9BDE,Stockholms stad livsmedelskontroll,Södergrillen,Södergrillen,node,1211021947,0.9987,nearby coordinates and similar name,1.1
+FD6DAB11-70A7-4AD4-ADFC-45435E3DEA93,Stockholms stad livsmedelskontroll,Södergruvan,Södergruvan,node,851533810,0.9956,nearby coordinates and similar name,4.0
+85E84F0B-6434-450D-8A01-5CFD2C212CDD,Stockholms stad livsmedelskontroll,"TZ-Shops, Farsta",Kinahörnet,node,1213873980,0.75,same address,38.7
+B1F04488-8E7F-4482-ADD0-FDAF0B8807B9,Stockholms stad livsmedelskontroll,Tak,Tak,node,9724380273,0.9764,nearby coordinates and similar name,21.3
+2C7DEBFA-58C7-4BBF-AC11-A098D7D2059E,Stockholms stad livsmedelskontroll,Tehran Grill,Tehran Grill,node,503503193,0.9957,nearby coordinates and similar name,3.9
+68376BEA-E7D2-4EEF-BFA4-FF56049ABDB3,Stockholms stad livsmedelskontroll,Texas Longhorn,Texas Longhorn,node,312286552,0.9915,nearby coordinates and similar name,7.6
+D8EA783E-C304-45A7-A340-94C4FEB2DAC1,Stockholms stad livsmedelskontroll,Texas Longhorn,Texas Longhorn,node,727716864,0.9911,nearby coordinates and similar name,8.0
+7BB6FF90-4E09-4147-9005-EB1CF997F989,Stockholms stad livsmedelskontroll,Thai House Wok Sockenplan,Gateau,node,719637799,0.75,same address,16.3
+A7A169D4-AF1E-45C6-9A5B-590C0FA2B93F,Stockholms stad livsmedelskontroll,Thai Rung,Thai Rung,node,1036315069,0.9956,nearby coordinates and similar name,4.0
+A4533C07-CA50-4E78-8A47-D19A90F60E2C,Stockholms stad livsmedelskontroll,The Good Gringo,The Good Gringo,node,11527731896,0.9945,nearby coordinates and similar name,4.9
+317D3A26-22A0-4387-B618-1D0D1F3C8AE3,Stockholms stad livsmedelskontroll,The Meeting Bar & Restaurant,The meeting bar & restaurant,node,2962651036,0.9788,nearby coordinates and similar name,19.1
+7E639FDE-1F80-410C-B185-0552366B0CEE,Stockholms stad livsmedelskontroll,The-huset,Tehuset,node,9056301857,0.9761,nearby coordinates and similar name,4.7
+04131A78-D2D6-440E-8E8F-959F5AD25D1B,Stockholms stad livsmedelskontroll,Thelins,Thelins,node,6477254397,0.9939,nearby coordinates and similar name,5.5
+0BE718CB-E3FC-49DB-BFC7-9706541E7BAA,Stockholms stad livsmedelskontroll,Thirdplace,Third Place,node,13758152435,0.9972,nearby coordinates and similar name,2.6
+8C6D8971-1C8D-41EA-89D4-2A6894EB474B,Stockholms stad livsmedelskontroll,Tokyo Sushi,Tokyo Sushi,node,11986883544,0.9956,nearby coordinates and similar name,4.0
+7609073E-4473-40AF-8A34-30D2935EB19B,Stockholms stad livsmedelskontroll,Tosca Pizzeria.,Tosca Pizzeria,node,1611096420,0.9909,nearby coordinates and similar name,8.2
+F4289B41-B2FF-45E5-AF8F-89A6F05CD53B,Stockholms stad livsmedelskontroll,Totemo Ramen,Totemo Ramen,node,708032026,0.9957,nearby coordinates and similar name,3.9
+7B0B346A-1C7A-4B99-9B24-EDBCF4B0B255,Stockholms stad livsmedelskontroll,Tryffel,Restaurang Tryffel,node,3505761151,0.98,nearby coordinates and similar name,18.0
+1446B795-002F-4C44-8DEC-95AFDBD5AAB2,Stockholms stad livsmedelskontroll,Tutto Bello,Tutto Bello,node,3221572253,0.9972,nearby coordinates and similar name,2.5
+364F9746-68F9-42E9-8E15-CF71294AFBEF,Stockholms stad livsmedelskontroll,Under Kastanjen,Under Kastanjen,node,1811685745,0.9876,nearby coordinates and similar name,11.2
+1BEF346B-F94C-4A7F-9398-8F9C56F8EAAF,Stockholms stad livsmedelskontroll,Urban Deli,Urban Deli,node,720866979,0.9784,nearby coordinates and similar name,19.5
+1566AF93-70C7-450F-9A01-8CDC754B8115,Stockholms stad livsmedelskontroll,Valhallabageriet,Valhallabageriet,node,1096582660,0.9805,nearby coordinates and similar name,17.5
+EFAE2E4E-DE6E-4360-BE91-4BA18518C2FA,Stockholms stad livsmedelskontroll,Vapiano,Vapiano,node,410528737,0.9911,nearby coordinates and similar name,8.0
+5E23B447-5BA2-4263-BEE2-A42BD1F2D0E3,Stockholms stad livsmedelskontroll,Vapiano,Vapiano,node,11854331690,0.9793,nearby coordinates and similar name,18.6
+53662F87-DED2-478D-9B33-0F05DF11DAEA,Stockholms stad livsmedelskontroll,Västertorps Hjärta,Västertorps Hjärta,node,12009260853,1.0,same address and similar name,20.0
+BB5F2BFC-970A-42C2-82FC-89C1B1C4EE69,Stockholms stad livsmedelskontroll,Wallmans Salonger,Wallmans salonger,node,1741554550,0.9845,nearby coordinates and similar name,13.9
+AEF13968-F663-4E2B-8805-130934B96123,Stockholms stad livsmedelskontroll,Wang Asia sushi dumplings,Wang Sushi & Dumplings,node,5005094648,0.972,same address and similar name,5.6
+0F88CB10-BD37-4AEE-B58F-0B8D8E604A8B,Stockholms stad livsmedelskontroll,Weidao,Weidao,node,6187809367,0.9816,nearby coordinates and similar name,16.5
+CA2E85DF-528C-451A-8F30-F2ACA71319DD,Stockholms stad livsmedelskontroll,Willi´s Krog,Willis,node,1209267384,0.93,same address and similar name,4.5
+378F397E-F844-4DF4-ADAF-DBCFFAA43DF3,Stockholms stad livsmedelskontroll,Yono Sabo,Yono Sabo,node,1433722477,0.9973,nearby coordinates and similar name,2.5
+FE6F9578-CF03-4714-8C79-673E8B137D07,Stockholms stad livsmedelskontroll,Zaap Thai,ZAAP Thai,node,3388818764,0.9874,nearby coordinates and similar name,11.3
+3930AB65-9AD0-4097-8433-FB8A0722163E,Stockholms stad livsmedelskontroll,Zaza Pizzeria & Bar,Pizzeria Stureby,node,1315465155,0.75,same address,7.0
+E8D5541B-D023-459E-810E-6DD0C6CBCB91,Stockholms stad livsmedelskontroll,Zios Pasta,Zio's pasta,node,957961775,0.9777,nearby coordinates and similar name,20.1
+CE28E772-87A6-4742-9418-317D9A6FB78A,Stockholms stad livsmedelskontroll,Åkermyntan Pizzeria,Åkermyntan Pizzeria,node,3407604585,0.996,nearby coordinates and similar name,3.6
+0582683F-BED8-4123-B63D-2A0B07C92C55,Stockholms stad livsmedelskontroll,Årsta Kök,Årsta kök,node,884569852,0.9754,nearby coordinates and similar name,22.1
+117E6CDE-F1FB-459D-8780-4F9EA8633FAE,Stockholms stad livsmedelskontroll,Österlånggatan 17,Österlånggatan 17,node,1787546850,0.9477,nearby coordinates and similar name,47.1
+D3E085A1-39B0-4168-9F69-1B8F1CFED064,Stockholms stad livsmedelskontroll,Östermalms pizzeria & Cafe,Östermalms Pizzeria & Café,node,764946441,0.9837,nearby coordinates and similar name,14.7
+73A647CC-9C37-4DB3-BF2B-66CF633E35BB,Stockholms stad livsmedelskontroll,Östermalmsgrillen,Östermalmsgrillen,node,1090521144,0.9518,nearby coordinates and similar name,43.4
