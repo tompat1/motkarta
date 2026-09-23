@@ -5,7 +5,7 @@
   "license": "Creative Commons CC0 1.0 according to Stockholm data portal metadata.",
   "where": "TillsynsDatum >= '2024-01-01'",
   "query_hash": "4d78318895f1c9185019a74d3e50bcdec8a0c1040174f5b85a667f662144bd7d",
-  "fetched_at": "2026-08-13T20:05:26.833584+00:00",
+  "fetched_at": "2026-09-23T12:00:43.398084+00:00",
   "cache_path": "data/raw/stockholm_food_control.json",
   "feature_count": 16000
 }

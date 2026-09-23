@@ -1,11 +1,16 @@
 {
   "source": "OpenStreetMap Overpass API",
-  "source_url": "https://overpass-api.de/api/interpreter",
+  "source_url": null,
   "license": "OpenStreetMap data is available under the Open Database License (ODbL).",
   "boundary": "municipality",
   "boundary_reference": "OSM administrative area named Stockholms kommun",
-  "query_hash": "4b118d90f36d52484c35637129fc3539440d5130e17f6e3646a1503ebe0ec567",
-  "fetched_at": "2026-09-17T09:12:40.301899+00:00",
-  "cache_path": "data/raw/osm_stockholm_food_places.json",
-  "element_count": 3618
+  "query_hash": "d173deb78ab22e4a4d9cbb5fa6f6655e0f3dbb0102530172166dd5c32842ab19",
+  "fetched_at": "2026-09-23T12:00:33.489371+00:00",
+  "cache_path": "/home/runner/work/motkarta/motkarta/data/raw/osm_stockholm_food_places.json",
+  "element_count": 3618,
+  "fetch_mode": "chunked",
+  "page_size": 500,
+  "stale_fallback": true,
+  "stale_fallback_at": "2026-09-23T12:00:33.489371+00:00",
+  "stale_fallback_reason": "https://overpass-api.de/api/interpreter: 504 Server Error: Gateway Timeout for url: https://overpass-api.de/api/interpreter <?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 }

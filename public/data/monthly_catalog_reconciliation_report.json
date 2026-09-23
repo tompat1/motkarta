@@ -1,7 +1,7 @@
 {
-  "auditedAt": "2026-09-08T16:40:13Z",
-  "totalCatalogPlaces": 3246,
-  "activePlaces": 3244,
+  "auditedAt": "2026-09-23T12:11:55Z",
+  "totalCatalogPlaces": 3198,
+  "activePlaces": 3196,
   "closedPlacesCount": 2,
   "closedPlaces": [
     {
@@ -19,11 +19,52 @@
   ],
   "missingAttributesCount": {
     "address": 0,
-    "openingHours": 0,
-    "website": 1245
+    "openingHours": 925,
+    "website": 1237
   },
   "missingAddressSample": [],
-  "missingHoursSample": [],
+  "missingHoursSample": [
+    {
+      "id": 329797914,
+      "name": "Solkant"
+    },
+    {
+      "id": 739596670,
+      "name": "Bambino"
+    },
+    {
+      "id": 3207555622,
+      "name": "Brasserie Elverket"
+    },
+    {
+      "id": 2778498136,
+      "name": "Fiskartorpet"
+    },
+    {
+      "id": 2273478994,
+      "name": "Apotekskiosken"
+    },
+    {
+      "id": 1047024362,
+      "name": "Tullfritt"
+    },
+    {
+      "id": 3832888205,
+      "name": "al Caminetto"
+    },
+    {
+      "id": 1441671158,
+      "name": "BODA"
+    },
+    {
+      "id": 2497095864,
+      "name": "Rastgården"
+    },
+    {
+      "id": 1655801737,
+      "name": "Sorbon"
+    }
+  ],
   "missingWebsiteSample": [
     {
       "id": 2273478994,
@@ -66,11 +107,6 @@
       "name": "Wok & Sushi"
     }
   ],
-  "uncatalogedCandidatesAdded": [
-    "Soldaten Svejk"
-  ],
-  "closedPlacesUpdated": [
-    "Arirang",
-    "Bistro Süd"
-  ]
+  "uncatalogedCandidatesAdded": [],
+  "closedPlacesUpdated": []
 }
