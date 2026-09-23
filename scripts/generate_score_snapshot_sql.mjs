@@ -11,8 +11,8 @@ const payload = JSON.parse(await readFile(input, "utf8"));
 const places = normalizePlaces(payload);
 
 const lines = [
-  "BEGIN TRANSACTION;",
   "-- Score snapshot import. Scores are computed from exported PlaceInput records.",
+  "-- D1 remote execute does not allow SQL BEGIN TRANSACTION/COMMIT wrappers.",
 ];
 
 for (const place of places) {
@@ -30,8 +30,6 @@ for (const place of places) {
     ].join(", ")});`,
   );
 }
-
-lines.push("COMMIT;");
 
 await mkdir(dirname(output), { recursive: true });
 await writeFile(output, `${lines.join("\n")}\n`, "utf8");

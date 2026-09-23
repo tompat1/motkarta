@@ -13,8 +13,8 @@ if (!Array.isArray(records)) {
 }
 
 const lines = [
-  "BEGIN TRANSACTION;",
   "-- Manual evidence enrichment. Matches existing places by OSM id or exact name.",
+  "-- D1 remote execute does not allow SQL BEGIN TRANSACTION/COMMIT wrappers.",
 ];
 
 let imported = 0;
@@ -81,8 +81,6 @@ for (const record of records) {
     );
   }
 }
-
-lines.push("COMMIT;");
 
 await mkdir(dirname(output), { recursive: true });
 await writeFile(output, `${lines.join("\n")}\n`, "utf8");

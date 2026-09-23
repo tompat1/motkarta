@@ -174,8 +174,7 @@ def enrich_addresses_and_photos(
 
     total_photos = sum(len(plist) for plist in photos_by_place.values())
     sql_lines = [
-        "BEGIN TRANSACTION;",
-        "DELETE FROM place_photos;",
+        "-- D1 remote execute does not allow SQL BEGIN TRANSACTION/COMMIT wrappers.",
     ]
 
     for pid_str, p_list in photos_by_place.items():
@@ -186,11 +185,9 @@ def enrich_addresses_and_photos(
             clean_cap = str(p.get("caption", "")).replace("'", "''")
             clean_credit = str(p.get("credit", "Official Website")).replace("'", "''")
             sql_lines.append(
-                f"INSERT INTO place_photos (id, place_id, url, thumbnail_url, caption, credit, created_at) VALUES ("
+                f"INSERT OR REPLACE INTO place_photos (id, place_id, url, thumbnail_url, caption, credit, created_at) VALUES ("
                 f"'{clean_id}', {pid_str}, '{clean_url}', '{clean_thumb}', '{clean_cap}', '{clean_credit}', datetime('now'));"
             )
-
-    sql_lines.append("COMMIT;\n")
 
     photos_payload = {
         "updatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),

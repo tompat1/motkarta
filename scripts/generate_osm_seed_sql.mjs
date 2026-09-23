@@ -14,8 +14,8 @@ const capturedAt = new Date().toISOString();
 
 const rows = parseCsv(await readFile(input, "utf8"));
 const lines = [
-  "BEGIN TRANSACTION;",
   "-- OSM baseline import. Does not delete manually curated evidence.",
+  "-- D1 remote execute does not allow SQL BEGIN TRANSACTION/COMMIT wrappers.",
 ];
 
 let imported = 0;
@@ -67,8 +67,6 @@ for (const row of rows) {
     );
   }
 }
-
-lines.push("COMMIT;");
 
 await mkdir(dirname(output), { recursive: true });
 await writeFile(output, `${lines.join("\n")}\n`, "utf8");

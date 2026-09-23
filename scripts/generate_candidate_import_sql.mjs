@@ -36,8 +36,8 @@ if (!Array.isArray(entries)) {
 }
 
 const lines = [
-  "BEGIN TRANSACTION;",
   "-- Candidate queue import. Neutral metadata only; preserves reviewed lifecycle decisions.",
+  "-- D1 remote execute does not allow SQL BEGIN TRANSACTION/COMMIT wrappers.",
 ];
 
 let imported = 0;
@@ -124,8 +124,6 @@ for (const entry of entries) {
     );
   }
 }
-
-lines.push("COMMIT;");
 
 await mkdir(dirname(output), { recursive: true });
 await writeFile(output, `${lines.join("\n")}\n`, "utf8");
