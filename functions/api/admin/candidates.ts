@@ -1,4 +1,5 @@
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
+import { isD1QuotaError } from "../../../lib/admin-d1.ts";
 import type { PlaceInput, PlaceLifecycleState } from "../../../lib/scoring.ts";
 import { resolveStockholmRegion } from "../../../lib/stockholm-regions.ts";
 
@@ -98,34 +99,53 @@ const jsonHeaders = {
 };
 
 export async function onRequestGet(context: EventContext<Env>) {
-  const auth = await requireAdmin(context.request, context.env);
-  if (auth) return auth;
+  try {
+    const auth = await requireAdmin(context.request, context.env);
+    if (auth) return auth;
 
-  const db = context.env.DB as D1Database | undefined;
-  if (!db) {
+    const db = context.env.DB as D1Database | undefined;
+    if (!db) {
+      return Response.json(
+        { source: "unavailable", candidates: [], error: "No production D1 dataset is bound." },
+        { headers: jsonHeaders, status: 503 },
+      );
+    }
+
+    const url = new URL(context.request.url);
+    const stateParam = url.searchParams.get("state") ?? "candidate";
+    const queryParam = url.searchParams.get("q")?.trim() ?? "";
+    if (!isStateFilter(stateParam)) {
+      return Response.json(
+        { error: `Invalid state '${stateParam}'.` },
+        { headers: jsonHeaders, status: 400 },
+      );
+    }
+
+    const limit = clampLimit(url.searchParams.get("limit"));
+    const includeDuplicates = url.searchParams.get("includeDuplicates") === "1";
+    const includeNominations = await tableExists(db, "recommendation_events");
+    const rows = await loadCandidates(db, stateParam, limit, queryParam, {
+      includeDuplicates,
+      includeNominations,
+    });
+
     return Response.json(
-      { source: "unavailable", candidates: [], error: "No production D1 dataset is bound." },
-      { headers: jsonHeaders, status: 503 },
+      { source: "d1", state: stateParam, query: queryParam, candidates: rows.map(candidateFromRow) },
+      { headers: jsonHeaders },
+    );
+  } catch (error) {
+    const isQuota = isD1QuotaError(error);
+    console.error("GET /api/admin/candidates failed:", error);
+    return Response.json(
+      {
+        source: "d1",
+        candidates: [],
+        quotaExceeded: isQuota,
+        error: error instanceof Error ? error.message : "Could not load review queue.",
+      },
+      { headers: jsonHeaders, status: isQuota ? 429 : 500 },
     );
   }
-
-  const url = new URL(context.request.url);
-  const stateParam = url.searchParams.get("state") ?? "candidate";
-  const queryParam = url.searchParams.get("q")?.trim() ?? "";
-  if (!isStateFilter(stateParam)) {
-    return Response.json(
-      { error: `Invalid state '${stateParam}'.` },
-      { headers: jsonHeaders, status: 400 },
-    );
-  }
-
-  const limit = clampLimit(url.searchParams.get("limit"));
-  const rows = await loadCandidates(db, stateParam, limit, queryParam);
-
-  return Response.json(
-    { source: "d1", state: stateParam, query: queryParam, candidates: rows.map(candidateFromRow) },
-    { headers: jsonHeaders },
-  );
 }
 
 export async function onRequestPost(context: EventContext<Env>) {
@@ -406,8 +426,24 @@ async function markClosed(db: D1Database, id: number, validationNotes: string | 
   );
 }
 
-async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit: number, query = "") {
-  const select = `
+type CandidateQueryOptions = {
+  includeDuplicates: boolean;
+  includeNominations: boolean;
+};
+
+async function tableExists(db: D1Database, table: string) {
+  const { results } = await db
+    .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?")
+    .bind(table)
+    .all<{ name: string }>();
+  return Boolean(results?.[0]?.name);
+}
+
+function buildCandidateSelect(options: CandidateQueryOptions) {
+  const duplicateCountSql = options.includeDuplicates ? duplicateCountSubquery() : "0";
+  const duplicateMatchesSql = options.includeDuplicates ? duplicateMatchesSubquery() : "''";
+  const nominationSql = options.includeNominations ? nominationCountSubquery() : "0";
+  return `
     SELECT
       e.id,
       e.name,
@@ -432,12 +468,22 @@ async function loadCandidates(db: D1Database, state: CandidateStateFilter, limit
       COUNT(DISTINCT ev.id) AS evidenceCount,
       GROUP_CONCAT(DISTINCT ev.source_type) AS evidenceSourceTypes,
       MAX(ev.captured_at) AS latestEvidenceAt,
-      ${duplicateCountSubquery()} AS possibleDuplicateCount,
-      ${duplicateMatchesSubquery()} AS possibleDuplicates,
-      ${nominationCountSubquery()} AS communityNominationCount
+      ${duplicateCountSql} AS possibleDuplicateCount,
+      ${duplicateMatchesSql} AS possibleDuplicates,
+      ${nominationSql} AS communityNominationCount
     FROM establishments e
     LEFT JOIN evidence_sources ev ON ev.establishment_id = e.id
   `;
+}
+
+async function loadCandidates(
+  db: D1Database,
+  state: CandidateStateFilter,
+  limit: number,
+  query = "",
+  options: CandidateQueryOptions = { includeDuplicates: false, includeNominations: false },
+) {
+  const select = buildCandidateSelect(options);
   const order = `
     GROUP BY e.id
     ORDER BY

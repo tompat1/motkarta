@@ -172,7 +172,7 @@ export function AdminReviewPanel({
 }) {
   const [tokenInput, setTokenInput] = useState(readStoredAdminToken);
   const [adminToken, setAdminToken] = useState(readStoredAdminToken);
-  const [stateFilter, setStateFilter] = useState<AdminStateFilter>("all");
+  const [stateFilter, setStateFilter] = useState<AdminStateFilter>("candidate");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [selectedCandidateId, setSelectedCandidateId] = useState<number | null>(null);
@@ -284,7 +284,8 @@ export function AdminReviewPanel({
       setError(null);
       try {
         const q = (queryOverride !== undefined ? queryOverride : searchQuery).trim();
-        const url = `/api/admin/candidates?state=${stateFilter}&limit=200${q ? `&q=${encodeURIComponent(q)}` : ""}`;
+        const includeDuplicates = stateFilter !== "all" ? "&includeDuplicates=1" : "";
+        const url = `/api/admin/candidates?state=${stateFilter}&limit=200${includeDuplicates}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
         const response = await fetch(url, {
           headers: adminHeaders(token),
         });

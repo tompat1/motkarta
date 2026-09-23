@@ -10,6 +10,7 @@ cpu_ms = 1000
 binding = "DB"
 database_name = "motkarta-prod"
 database_id = "e9affd7c-51fb-4b73-8cfc-c105a0d136bd"
+migrations_dir = "drizzle"
 
 [vars]
 CONCIERGE_RETRIEVAL_MODE = "lexical"

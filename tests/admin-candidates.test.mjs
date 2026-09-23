@@ -46,7 +46,7 @@ test("admin candidates endpoint lists candidate records only by default", async 
   ]);
 
   const response = await getAdminCandidates({
-    request: new Request("https://motkarta.test/api/admin/candidates", {
+    request: new Request("https://motkarta.test/api/admin/candidates?includeDuplicates=1", {
       headers: { authorization: `Bearer ${adminToken}` },
     }),
     env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
@@ -89,6 +89,26 @@ test("admin candidates resolve Kista default districts to Västerort", async () 
   assert.equal(payload.candidates[0].area, "Västerort");
 });
 
+test("admin candidates endpoint skips duplicate scans for state=all by default", async () => {
+  const db = fakeAdminD1([
+    candidateRow({ id: 10, name: "Quiet Counter", lifecycleState: "candidate", possibleDuplicateCount: 3 }),
+    candidateRow({ id: 11, name: "Already Live", lifecycleState: "verified" }),
+  ]);
+
+  const response = await getAdminCandidates({
+    request: new Request("https://motkarta.test/api/admin/candidates?state=all", {
+      headers: { authorization: `Bearer ${adminToken}` },
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.candidates.length, 2);
+  assert.equal(payload.candidates[0].possibleDuplicateCount, 0);
+  assert.deepEqual(payload.candidates[0].possibleDuplicates, []);
+});
+
 test("admin candidates endpoint returns community nomination count when present", async () => {
   const db = fakeAdminD1([
     candidateRow({
@@ -96,7 +116,7 @@ test("admin candidates endpoint returns community nomination count when present"
       name: "Beloved Secret Spot",
       communityNominationCount: 7,
     }),
-  ]);
+  ], { hasRecommendationEvents: true });
 
   const response = await getAdminCandidates({
     request: new Request("https://motkarta.test/api/admin/candidates", {
@@ -398,9 +418,21 @@ function candidateRow(overrides) {
   };
 }
 
-function fakeAdminD1(rows) {
+function shapeCandidateRows(rows, query) {
+  const includeDuplicates = !query.includes("0 AS possibleDuplicateCount");
+  const includeNominations = !query.includes("0 AS communityNominationCount");
+  return rows.map((row) => ({
+    ...row,
+    possibleDuplicateCount: includeDuplicates ? row.possibleDuplicateCount : 0,
+    possibleDuplicates: includeDuplicates ? row.possibleDuplicates : "",
+    communityNominationCount: includeNominations ? row.communityNominationCount : 0,
+  }));
+}
+
+function fakeAdminD1(rows, options = {}) {
   const db = {
     rows,
+    hasRecommendationEvents: Boolean(options.hasRecommendationEvents),
     events: [],
     copiedEvidence: [],
     copiedTags: [],
@@ -412,6 +444,14 @@ function fakeAdminD1(rows) {
           return this;
         },
         async all() {
+          if (query.includes("sqlite_master")) {
+            const [table] = this.values;
+            if (table === "recommendation_events" && db.hasRecommendationEvents) {
+              return { results: [{ name: "recommendation_events" }] };
+            }
+            return { results: [] };
+          }
+
           if (!query.includes("FROM establishments")) {
             return { results: [] };
           }
@@ -431,19 +471,19 @@ function fakeAdminD1(rows) {
                 ["stockholm", "central stockholm", "north stockholm", "south stockholm", "east stockholm", "west stockholm", "stockholms lan", "stockholm county", "stockholms kommun", "sweden", "sverige", "unspecified"].includes(row.area.toLowerCase()),
             );
             const limit = Number(this.values.at(-1) ?? 100);
-            return { results: filtered.slice(0, limit) };
+            return { results: shapeCandidateRows(filtered.slice(0, limit), query) };
           }
 
           if (query.includes("WHERE e.district IS NULL")) {
             const filtered = db.rows.filter((row) => !row.area || ["stockholm", "central stockholm", "north stockholm", "south stockholm", "east stockholm", "west stockholm", "stockholms lan", "stockholm county", "stockholms kommun", "sweden", "sverige", "unspecified"].includes(row.area.toLowerCase()));
             const limit = Number(this.values.at(-1) ?? 100);
-            return { results: filtered.slice(0, limit) };
+            return { results: shapeCandidateRows(filtered.slice(0, limit), query) };
           }
 
           const state = query.includes("WHERE e.lifecycle_state = ?") ? this.values[0] : "all";
           const limit = Number(this.values.at(-1) ?? 100);
           const filtered = state === "all" ? db.rows : db.rows.filter((row) => row.lifecycleState === state);
-          return { results: filtered.slice(0, limit) };
+          return { results: shapeCandidateRows(filtered.slice(0, limit), query) };
         },
         async run() {
           if (query.includes("UPDATE establishments")) {
