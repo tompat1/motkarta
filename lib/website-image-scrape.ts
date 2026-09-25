@@ -8,12 +8,18 @@ type WebsiteImageDimensions = {
   height?: number | null;
 };
 
+type ImageCandidate = WebsiteImageDimensions & {
+  url: string;
+  source: string;
+};
+
 export type WebsiteImageScrapeResult = {
   imageUrl: string | null;
   width: number | null;
   height: number | null;
   skippedAsLogoBanner: boolean;
   skipReason: string | null;
+  skippedLogoUrls: string[];
 };
 
 export function isLikelyLogoBanner(imageUrl: string, dimensions: WebsiteImageDimensions = {}) {
@@ -40,44 +46,176 @@ export function isLikelyLogoBanner(imageUrl: string, dimensions: WebsiteImageDim
 }
 
 export function extractWebsiteImageFromHtml(html: string, websiteUrl: string): WebsiteImageScrapeResult {
-  const metaContent = (pattern: RegExp) => {
-    const match = html.match(pattern);
-    return match?.[1]?.trim() ?? null;
-  };
+  const candidates = collectWebsiteImageCandidates(html, websiteUrl);
+  const skippedLogoUrls: string[] = [];
 
-  const rawImageUrl =
-    metaContent(/<meta[^>]+property=["']og:image(?::secure_url)?["'][^>]+content=["']([^"']+)["']/i) ??
-    metaContent(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image(?::secure_url)?["']/i) ??
-    metaContent(/<meta[^>]+name=["']twitter:image(?::src)?["'][^>]+content=["']([^"']+)["']/i) ??
-    metaContent(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image(?::src)?["']/i) ??
-    metaContent(/<meta[^>]+itemprop=["']image["'][^>]+content=["']([^"']+)["']/i) ??
-    metaContent(/<link[^>]+rel=["']image_src["'][^>]+href=["']([^"']+)["']/i);
-
-  const width = parseDimension(
-    metaContent(/<meta[^>]+property=["']og:image:width["'][^>]+content=["'](\d+)["']/i) ??
-      metaContent(/<meta[^>]+content=["'](\d+)["'][^>]+property=["']og:image:width["']/i),
-  );
-  const height = parseDimension(
-    metaContent(/<meta[^>]+property=["']og:image:height["'][^>]+content=["'](\d+)["']/i) ??
-      metaContent(/<meta[^>]+content=["'](\d+)["'][^>]+property=["']og:image:height["']/i),
-  );
-
-  const imageUrl = normalizeImageUrl(rawImageUrl, websiteUrl);
-  if (!imageUrl) {
-    return { imageUrl: null, width, height, skippedAsLogoBanner: false, skipReason: null };
-  }
-
-  if (isLikelyLogoBanner(imageUrl, { width, height })) {
+  for (const candidate of candidates) {
+    if (isLikelyLogoBanner(candidate.url, candidate)) {
+      skippedLogoUrls.push(candidate.url);
+      continue;
+    }
     return {
-      imageUrl,
-      width,
-      height,
-      skippedAsLogoBanner: true,
-      skipReason: "logo_banner",
+      imageUrl: candidate.url,
+      width: candidate.width ?? null,
+      height: candidate.height ?? null,
+      skippedAsLogoBanner: false,
+      skipReason: null,
+      skippedLogoUrls,
     };
   }
 
-  return { imageUrl, width, height, skippedAsLogoBanner: false, skipReason: null };
+  if (skippedLogoUrls.length > 0) {
+    const first = candidates.find((candidate) => candidate.url === skippedLogoUrls[0]) ?? candidates[0];
+    return {
+      imageUrl: first?.url ?? skippedLogoUrls[0],
+      width: first?.width ?? null,
+      height: first?.height ?? null,
+      skippedAsLogoBanner: true,
+      skipReason: "logo_banner",
+      skippedLogoUrls,
+    };
+  }
+
+  return {
+    imageUrl: null,
+    width: null,
+    height: null,
+    skippedAsLogoBanner: false,
+    skipReason: null,
+    skippedLogoUrls,
+  };
+}
+
+export function collectWebsiteImageCandidates(html: string, websiteUrl: string): ImageCandidate[] {
+  const seen = new Set<string>();
+  const candidates: ImageCandidate[] = [];
+
+  const pushCandidate = (rawUrl: string | null, source: string, dimensions: WebsiteImageDimensions = {}) => {
+    const url = normalizeImageUrl(rawUrl, websiteUrl);
+    if (!url || seen.has(url) || isUnlikelyPhotoAsset(url)) return;
+    seen.add(url);
+    const fromUrl = dimensionsFromUrl(url);
+    candidates.push({
+      url,
+      source,
+      width: dimensions.width ?? fromUrl.width ?? null,
+      height: dimensions.height ?? fromUrl.height ?? null,
+    });
+  };
+
+  for (const match of html.matchAll(/<meta[^>]+property=["']og:image(?::secure_url)?["'][^>]+content=["']([^"']+)["'][^>]*>/gi)) {
+    pushCandidate(match[1], "og:image", readNearbyOgDimensions(html, match.index ?? 0));
+  }
+  for (const match of html.matchAll(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image(?::secure_url)?["'][^>]*>/gi)) {
+    pushCandidate(match[1], "og:image", readNearbyOgDimensions(html, match.index ?? 0));
+  }
+  for (const match of html.matchAll(/<meta[^>]+name=["']twitter:image(?::src)?["'][^>]+content=["']([^"']+)["'][^>]*>/gi)) {
+    pushCandidate(match[1], "twitter:image");
+  }
+  for (const match of html.matchAll(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image(?::src)?["'][^>]*>/gi)) {
+    pushCandidate(match[1], "twitter:image");
+  }
+  for (const match of html.matchAll(/<meta[^>]+itemprop=["']image["'][^>]+content=["']([^"']+)["'][^>]*>/gi)) {
+    pushCandidate(match[1], "itemprop:image");
+  }
+  for (const match of html.matchAll(/<link[^>]+rel=["']image_src["'][^>]+href=["']([^"']+)["'][^>]*>/gi)) {
+    pushCandidate(match[1], "link:image_src");
+  }
+  for (const match of html.matchAll(/<img\b[^>]*>/gi)) {
+    const tag = match[0];
+    const src = readTagAttribute(tag, "src")
+      ?? readTagAttribute(tag, "data-src")
+      ?? readTagAttribute(tag, "data-lazy-src")
+      ?? pickSrcsetUrl(readTagAttribute(tag, "srcset"));
+    if (!src) continue;
+    const width = parseDimension(readTagAttribute(tag, "width"));
+    const height = parseDimension(readTagAttribute(tag, "height"));
+    if (width !== null && height !== null && width < 220 && height < 220) continue;
+    pushCandidate(src, "img", { width, height });
+  }
+  for (const imageUrl of collectJsonLdImageUrls(html)) {
+    pushCandidate(imageUrl, "json-ld:image");
+  }
+
+  return candidates;
+}
+
+function readNearbyOgDimensions(html: string, index: number) {
+  const slice = html.slice(index, index + 500);
+  return {
+    width: parseDimension(readMetaContent(slice, /property=["']og:image:width["'][^>]+content=["'](\d+)["']/i)
+      ?? readMetaContent(slice, /content=["'](\d+)["'][^>]+property=["']og:image:width["']/i)),
+    height: parseDimension(readMetaContent(slice, /property=["']og:image:height["'][^>]+content=["'](\d+)["']/i)
+      ?? readMetaContent(slice, /content=["'](\d+)["'][^>]+property=["']og:image:height["']/i)),
+  };
+}
+
+function readMetaContent(html: string, pattern: RegExp) {
+  return html.match(pattern)?.[1]?.trim() ?? null;
+}
+
+function readTagAttribute(tag: string, name: string) {
+  const match = tag.match(new RegExp(`\\b${name}=["']([^"']+)["']`, "i"));
+  return match?.[1]?.trim() ?? null;
+}
+
+function pickSrcsetUrl(srcset: string | null) {
+  if (!srcset) return null;
+  const entries = srcset
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const [url, descriptor] = entry.split(/\s+/, 2);
+      const width = Number.parseInt(descriptor?.replace(/w$/i, "") ?? "", 10);
+      return { url, width: Number.isFinite(width) ? width : 0 };
+    })
+    .sort((left, right) => right.width - left.width);
+  return entries[0]?.url ?? null;
+}
+
+function collectJsonLdImageUrls(html: string) {
+  const urls: string[] = [];
+  for (const match of html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    try {
+      const payload = JSON.parse(match[1]) as unknown;
+      urls.push(...extractJsonLdImages(payload));
+    } catch {
+      // Ignore malformed JSON-LD blocks.
+    }
+  }
+  return urls;
+}
+
+function extractJsonLdImages(value: unknown): string[] {
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.flatMap((entry) => extractJsonLdImages(entry));
+  if (!value || typeof value !== "object") return [];
+
+  const record = value as Record<string, unknown>;
+  const direct = record.image ?? record.photo ?? record.thumbnailUrl;
+  if (direct) return extractJsonLdImages(direct);
+  if (typeof record.url === "string" && (record["@type"] === "ImageObject" || record.contentUrl)) {
+    return [record.url];
+  }
+  if (typeof record.contentUrl === "string") return [record.contentUrl];
+  if (record["@graph"]) return extractJsonLdImages(record["@graph"]);
+  return [];
+}
+
+function isUnlikelyPhotoAsset(url: string) {
+  return /\.(?:svg|ico)(?:$|[?#])/i.test(url) || url.startsWith("data:");
+}
+
+function dimensionsFromUrl(url: string): WebsiteImageDimensions {
+  try {
+    const parsed = new URL(url);
+    const width = parseDimension(parsed.searchParams.get("w") ?? parsed.searchParams.get("width"));
+    const height = parseDimension(parsed.searchParams.get("h") ?? parsed.searchParams.get("height"));
+    return { width, height };
+  } catch {
+    return { width: null, height: null };
+  }
 }
 
 function parseDimension(value: string | null) {

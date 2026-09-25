@@ -1127,6 +1127,7 @@ async function updateWebsite(db: D1Database, id: number, payload: Record<string,
   const reviewedAt = new Date().toISOString();
   let scrapedPhotoUrl: string | null = null;
   let scrapeSkippedReason: string | null = null;
+  let skippedLogoCount = 0;
 
   if (payload.scrapeImage !== false) {
     try {
@@ -1139,6 +1140,7 @@ async function updateWebsite(db: D1Database, id: number, payload: Record<string,
       if (resp.ok) {
         const html = await resp.text();
         const scrapeResult = extractWebsiteImageFromHtml(html, websiteUrl);
+        skippedLogoCount = scrapeResult.skippedLogoUrls.length;
         if (scrapeResult.skippedAsLogoBanner) {
           scrapeSkippedReason = scrapeResult.skipReason ?? "logo_banner";
           try {
@@ -1161,9 +1163,13 @@ async function updateWebsite(db: D1Database, id: number, payload: Record<string,
   const notes = joinNotes([
     validationNotes,
     `Updated website to '${websiteUrl}'.`,
-    scrapedPhotoUrl ? `Scraped og:image '${scrapedPhotoUrl}'.` : "",
+    scrapedPhotoUrl
+      ? skippedLogoCount > 0
+        ? `Scraped venue photo '${scrapedPhotoUrl}' after skipping ${skippedLogoCount} logo/banner candidate(s).`
+        : `Scraped venue photo '${scrapedPhotoUrl}'.`
+      : "",
     scrapeSkippedReason === "logo_banner"
-      ? "Skipped og:image because it looks like a logo/social banner rather than venue photography."
+      ? `Skipped ${skippedLogoCount || 1} website image candidate(s) because they look like logo/social banners rather than venue photography.`
       : "",
   ]);
 
@@ -1187,9 +1193,11 @@ async function updateWebsite(db: D1Database, id: number, payload: Record<string,
         websiteUrl,
         reviewedAt,
         scrapedPhotoUrl
-          ? `Venue website and og:image metadata scraped by admin: ${scrapedPhotoUrl}`
+          ? skippedLogoCount > 0
+            ? `Venue website verified by admin. Scraped venue photo after skipping ${skippedLogoCount} logo/banner candidate(s): ${scrapedPhotoUrl}`
+            : `Venue website and venue photo metadata scraped by admin: ${scrapedPhotoUrl}`
           : scrapeSkippedReason === "logo_banner"
-            ? "Venue website verified by admin. Auto-scrape skipped logo/social banner og:image."
+            ? "Venue website verified by admin. Auto-scrape found only logo/social banner images."
             : "Venue website verified by admin.",
       )
       .run();
@@ -1241,6 +1249,7 @@ async function updateWebsite(db: D1Database, id: number, payload: Record<string,
       website: websiteUrl,
       scrapedPhotoUrl,
       scrapeSkippedReason,
+      skippedLogoCount,
       reviewedAt,
     },
     { headers: jsonHeaders },
