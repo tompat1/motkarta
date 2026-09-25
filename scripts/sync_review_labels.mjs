@@ -34,9 +34,14 @@ function loadEnv() {
 
 loadEnv();
 
+const cliArgs = process.argv.slice(2).filter((arg) => arg !== "--remote");
+const useRemoteD1 = process.argv.includes("--remote") || process.env.WRANGLER_ENV === "remote";
 const adminToken = (process.env.MOTKARTA_ADMIN_TOKEN || process.env.ADMIN_TOKEN || "").trim();
 const apiUrl = (process.env.MOTKARTA_API_URL || process.env.API_URL || "http://localhost:5173").replace(/\/+$/, "");
-const outputPath = resolve(rootDir, process.argv[2] || "data/human_validation_labels.json");
+const d1Database = (process.env.WRANGLER_D1_DATABASE || "motkarta-prod").trim();
+const outputPath = resolve(rootDir, cliArgs[0] || "data/human_validation_labels.json");
+const preferWrangler =
+  useRemoteD1 || process.env.CI === "true" || Boolean(process.env.CLOUDFLARE_API_TOKEN?.trim());
 
 async function syncViaHttp() {
   const endpoint = `${apiUrl}/api/admin/review-labels`;
@@ -64,8 +69,8 @@ async function syncViaHttp() {
 async function syncViaWrangler() {
   const { execSync } = await import("node:child_process");
   const sqlFile = resolve(rootDir, "scripts/export_review_events.sql");
-  const isRemote = process.argv.includes("--remote") || process.env.WRANGLER_ENV === "remote";
-  const cmd = `npx wrangler d1 execute motkarta-db ${isRemote ? "--remote" : "--local"} --json --file "${sqlFile}"`;
+  const remoteFlag = useRemoteD1 ? "--remote" : "--local";
+  const cmd = `npx wrangler d1 execute ${d1Database} ${remoteFlag} --json --file "${sqlFile}"`;
   const stdout = execSync(cmd, { cwd: rootDir, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
   const raw = JSON.parse(stdout);
   return buildReviewLabelExport(extractReviewRows(raw));
@@ -75,16 +80,21 @@ async function main() {
   console.log("🔄 Starting automated review labels sync...");
   let payload = null;
 
-  try {
-    payload = await syncViaHttp();
-    console.log(`📡 Fetched latest review labels via HTTP endpoint (${apiUrl}/api/admin/review-labels).`);
-  } catch (httpError) {
-    console.warn(`⚠️ HTTP sync failed (${httpError instanceof Error ? httpError.message : String(httpError)}).`);
-    console.log("⏳ Attempting local Wrangler D1 fallback...");
+  if (preferWrangler) {
     try {
       payload = await syncViaWrangler();
-      console.log("💾 Successfully extracted review labels via local Wrangler D1.");
+      console.log(`💾 Extracted review labels via Wrangler D1 (${d1Database}${useRemoteD1 ? ", remote" : ", local"}).`);
     } catch (wranglerError) {
+      console.warn(`⚠️ Wrangler sync failed (${wranglerError instanceof Error ? wranglerError.message : String(wranglerError)}).`);
+    }
+  }
+
+  if (!payload) {
+    try {
+      payload = await syncViaHttp();
+      console.log(`📡 Fetched latest review labels via HTTP endpoint (${apiUrl}/api/admin/review-labels).`);
+    } catch (httpError) {
+      console.warn(`⚠️ HTTP sync failed (${httpError instanceof Error ? httpError.message : String(httpError)}).`);
       if (existsSync(outputPath)) {
         console.log(`ℹ️ Preserving existing labels file at ${outputPath}.`);
         return;
