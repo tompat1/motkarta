@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Language } from "../app/shared";
 import {
   ArrowClockwise,
@@ -17,15 +17,27 @@ import {
   Trash,
 } from "@phosphor-icons/react";
 
-import type { BlockedUrlEntry, CoverageReport, EnrichmentRunReport } from "../../functions/api/admin/coverage";
+import type {
+  BlockedUrlEntry,
+  CoverageGap,
+  CoverageGapListResponse,
+  CoverageReport,
+  EnrichmentRunReport,
+} from "../../functions/api/admin/coverage";
 export type AdminCoverageData = CoverageReport;
+
+const GAP_PAGE_SIZE = 100;
+
+type ClickableCoverageGap = Exclude<CoverageGap, never>;
 
 export function AdminCoveragePanel({
   lang = "sv",
   adminToken = "",
+  onSelectPlace,
 }: {
   lang?: Language;
   adminToken?: string;
+  onSelectPlace?: (placeId: number) => void;
 }) {
   const [coverage, setCoverage] = useState<AdminCoverageData | null>(null);
   const [runningAction, setRunningAction] = useState<string | null>(null);
@@ -35,6 +47,11 @@ export function AdminCoveragePanel({
   const [searchQuery, setSearchQuery] = useState("");
   const [errorFilter, setErrorFilter] = useState<"all" | "404" | "403_500" | "timeout_network">("all");
   const [unblockingUrl, setUnblockingUrl] = useState<string | null>(null);
+  const [activeGap, setActiveGap] = useState<ClickableCoverageGap | null>(null);
+  const [gapList, setGapList] = useState<CoverageGapListResponse | null>(null);
+  const [gapSearch, setGapSearch] = useState("");
+  const [gapOffset, setGapOffset] = useState(0);
+  const [gapLoading, setGapLoading] = useState(false);
 
   const fetchCoverage = useCallback(async () => {
     try {
@@ -155,6 +172,58 @@ export function AdminCoveragePanel({
     }
   };
 
+  const fetchGapPlaces = useCallback(async (gap: ClickableCoverageGap, offset = 0, search = gapSearch) => {
+    setGapLoading(true);
+    setActiveGap(gap);
+    setGapOffset(offset);
+    try {
+      const params = new URLSearchParams({
+        gap,
+        limit: String(GAP_PAGE_SIZE),
+        offset: String(offset),
+      });
+      if (search.trim()) params.set("search", search.trim());
+      const res = await fetch(`/api/admin/coverage?${params.toString()}`, {
+        headers: adminToken ? { "x-motkarta-admin-token": adminToken } : {},
+      });
+      const data = (await res.json().catch(() => ({}))) as CoverageGapListResponse & { error?: string };
+      if (!res.ok) {
+        setGapList(null);
+        setActionMessage(data.error ?? (lang === "sv" ? "Kunde inte läsa saknade fält." : "Could not load missing-field list."));
+        return;
+      }
+      setGapList(data);
+    } catch (err) {
+      setGapList(null);
+      setActionMessage(err instanceof Error ? err.message : String(err));
+    } finally {
+      setGapLoading(false);
+    }
+  }, [adminToken, gapSearch, lang]);
+
+  const gapLabels = useMemo(() => ({
+    address: {
+      title: lang === "sv" ? "Saknar gatuadress" : "Missing street address",
+      subtitle: lang === "sv" ? "platser utan gatuadress" : "places without street address",
+    },
+    opening_hours: {
+      title: lang === "sv" ? "Saknar öppettider" : "Missing opening hours",
+      subtitle: lang === "sv" ? "platser utan öppettider" : "places without opening hours",
+    },
+    price: {
+      title: lang === "sv" ? "Saknar prisuppgifter" : "Missing price info",
+      subtitle: lang === "sv" ? "platser utan prisnivå/SEK" : "places without price data",
+    },
+    photos: {
+      title: lang === "sv" ? "Saknar hero-bild" : "Missing hero image",
+      subtitle: lang === "sv" ? "platser utan lagrade foton i D1" : "places without stored photos in D1",
+    },
+    website: {
+      title: lang === "sv" ? "Saknar webbsida" : "Missing website",
+      subtitle: lang === "sv" ? "platser utan registrerad länk" : "places without recorded URL",
+    },
+  }), [lang]);
+
   const filteredBlocklist = useMemo(() => {
     let list = blocklist;
     const query = searchQuery.trim().toLowerCase();
@@ -258,102 +327,95 @@ export function AdminCoveragePanel({
         const pricePct = Math.min(100, Math.max(0, (c.priceInfo?.percentage ?? 0) > 100 ? 100 : (c.priceInfo?.percentage ?? 0)));
         const webPct = Math.min(100, Math.max(0, c.websites.percentage > 100 ? 100 : c.websites.percentage));
 
+        const gapCards: Array<{
+          gap: ClickableCoverageGap;
+          title: string;
+          icon: ReactNode;
+          pct: number;
+          count: number;
+          subtitle: string;
+          subhint?: string;
+        }> = [
+          {
+            gap: "address",
+            title: lang === "sv" ? "Gatuadresser" : "Street Addresses",
+            icon: <HouseLine size={16} weight="bold" />,
+            pct: addrPct,
+            count: addrCount,
+            subtitle: lang === "sv" ? "platser med gatuadress" : "places with street address",
+            subhint: lang === "sv"
+              ? `${(total - addrCount).toLocaleString(locale)} saknar gatuadress`
+              : `${(total - addrCount).toLocaleString(locale)} lack street address`,
+          },
+          {
+            gap: "opening_hours",
+            title: lang === "sv" ? "Öppettider (Must-Have)" : "Opening Hours (Must-Have)",
+            icon: <Clock size={16} weight="bold" />,
+            pct: hoursPct,
+            count: hoursCount,
+            subtitle: lang === "sv" ? "platser med öppettider" : "places with opening hours",
+          },
+          {
+            gap: "price",
+            title: lang === "sv" ? "Prisuppgifter (Must-Have)" : "Price Info (Must-Have)",
+            icon: <CurrencyCircleDollar size={16} weight="bold" />,
+            pct: pricePct,
+            count: priceCount,
+            subtitle: lang === "sv" ? "platser med prisnivå/SEK" : "places with price data",
+          },
+          {
+            gap: "photos",
+            title: lang === "sv" ? "Bilder & Gallerier" : "Photos & Media",
+            icon: <Camera size={16} weight="bold" />,
+            pct: photoPct,
+            count: photoCount,
+            subtitle: lang === "sv" ? "ställen med lagrade foton" : "places with stored photos",
+            subhint: lang === "sv"
+              ? `${(total - photoCount).toLocaleString(locale)} ställen saknar foton i D1`
+              : `${(total - photoCount).toLocaleString(locale)} places lack photos in D1`,
+          },
+          {
+            gap: "website",
+            title: lang === "sv" ? "Webbsidor" : "Websites",
+            icon: <Globe size={16} weight="bold" />,
+            pct: webPct,
+            count: webCount,
+            subtitle: lang === "sv" ? "platser med registrerad länk" : "places with recorded URL",
+          },
+        ];
+
         return (
           <div className="admin-coverage-grid">
-            <div className="admin-coverage-card">
-              <div className="admin-coverage-card-head">
-                <span className="admin-coverage-card-title">
-                  <HouseLine size={16} weight="bold" /> {lang === "sv" ? "Gatuadresser" : "Street Addresses"}
-                </span>
-                <span className={`admin-coverage-status-tag ${addrPct >= 95 ? "tag-pass" : "tag-progressing"}`}>
-                  {addrPct}% {lang === "sv" ? "Komplett" : "Complete"}
-                </span>
-              </div>
-              <div className="admin-coverage-bar-track">
-                <div className={`admin-coverage-bar-fill ${addrPct >= 95 ? "fill-pass" : "fill-info"}`} style={{ width: `${addrPct}%` }} />
-              </div>
-              <div className="admin-coverage-card-meta">
-                <b>{addrCount.toLocaleString(locale)} / {total.toLocaleString(locale)}</b>
-                <small>{lang === "sv" ? "platser med gatuadress" : "places with street address"}</small>
-              </div>
-            </div>
-
-            <div className="admin-coverage-card">
-              <div className="admin-coverage-card-head">
-                <span className="admin-coverage-card-title">
-                  <Clock size={16} weight="bold" /> {lang === "sv" ? "Öppettider (Must-Have)" : "Opening Hours (Must-Have)"}
-                </span>
-                <span className={`admin-coverage-status-tag ${hoursPct >= 95 ? "tag-pass" : "tag-progressing"}`}>
-                  {hoursPct}% {lang === "sv" ? "Komplett" : "Complete"}
-                </span>
-              </div>
-              <div className="admin-coverage-bar-track">
-                <div className={`admin-coverage-bar-fill ${hoursPct >= 95 ? "fill-pass" : "fill-info"}`} style={{ width: `${hoursPct}%` }} />
-              </div>
-              <div className="admin-coverage-card-meta">
-                <b>{hoursCount.toLocaleString(locale)} / {total.toLocaleString(locale)}</b>
-                <small>{lang === "sv" ? "platser med öppettider" : "places with opening hours"}</small>
-              </div>
-            </div>
-
-            <div className="admin-coverage-card">
-              <div className="admin-coverage-card-head">
-                <span className="admin-coverage-card-title">
-                  <CurrencyCircleDollar size={16} weight="bold" /> {lang === "sv" ? "Prisuppgifter (Must-Have)" : "Price Info (Must-Have)"}
-                </span>
-                <span className={`admin-coverage-status-tag ${pricePct >= 95 ? "tag-pass" : "tag-progressing"}`}>
-                  {pricePct}% {lang === "sv" ? "Komplett" : "Complete"}
-                </span>
-              </div>
-              <div className="admin-coverage-bar-track">
-                <div className={`admin-coverage-bar-fill ${pricePct >= 95 ? "fill-pass" : "fill-info"}`} style={{ width: `${pricePct}%` }} />
-              </div>
-              <div className="admin-coverage-card-meta">
-                <b>{priceCount.toLocaleString(locale)} / {total.toLocaleString(locale)}</b>
-                <small>{lang === "sv" ? "platser med prisnivå/SEK" : "places with price data"}</small>
-              </div>
-            </div>
-
-            <div className="admin-coverage-card">
-              <div className="admin-coverage-card-head">
-                <span className="admin-coverage-card-title">
-                  <Camera size={16} weight="bold" /> {lang === "sv" ? "Bilder & Gallerier" : "Photos & Media"}
-                </span>
-                <span className={`admin-coverage-status-tag ${photoPct >= 95 ? "tag-pass" : "tag-progressing"}`}>
-                  {photoPct}% {lang === "sv" ? "Registrerat" : "Recorded"}
-                </span>
-              </div>
-              <div className="admin-coverage-bar-track">
-                <div className={`admin-coverage-bar-fill ${photoPct >= 95 ? "fill-pass" : "fill-info"}`} style={{ width: `${photoPct}%` }} />
-              </div>
-              <div className="admin-coverage-card-meta">
-                <b>{photoCount.toLocaleString(locale)} / {total.toLocaleString(locale)}</b>
-                <small>{lang === "sv" ? "ställen med lagrade foton" : "places with stored photos"}</small>
-                <span className="admin-coverage-subhint">
-                  {lang === "sv"
-                    ? `${(total - photoCount).toLocaleString(locale)} ställen saknar foton i D1`
-                    : `${(total - photoCount).toLocaleString(locale)} places lack photos in D1`}
-                </span>
-              </div>
-            </div>
-
-            <div className="admin-coverage-card">
-              <div className="admin-coverage-card-head">
-                <span className="admin-coverage-card-title">
-                  <Globe size={16} weight="bold" /> {lang === "sv" ? "Webbsidor" : "Websites"}
-                </span>
-                <span className="admin-coverage-status-tag tag-progressing">
-                  {webPct}%
-                </span>
-              </div>
-              <div className="admin-coverage-bar-track">
-                <div className="admin-coverage-bar-fill fill-info" style={{ width: `${webPct}%` }} />
-              </div>
-              <div className="admin-coverage-card-meta">
-                <b>{webCount.toLocaleString(locale)} / {total.toLocaleString(locale)}</b>
-                <small>{lang === "sv" ? "platser med registrerad länk" : "places with recorded URL"}</small>
-              </div>
-            </div>
+            {gapCards.map((card) => (
+              <button
+                key={card.gap}
+                type="button"
+                className={`admin-coverage-card admin-coverage-card-btn${activeGap === card.gap ? " is-active" : ""}`}
+                onClick={() => {
+                  setGapSearch("");
+                  void fetchGapPlaces(card.gap, 0, "");
+                }}
+                aria-pressed={activeGap === card.gap}
+                title={lang === "sv" ? `Visa ${gapLabels[card.gap].subtitle}` : `Show ${gapLabels[card.gap].subtitle}`}
+              >
+                <div className="admin-coverage-card-head">
+                  <span className="admin-coverage-card-title">
+                    {card.icon} {card.title}
+                  </span>
+                  <span className={`admin-coverage-status-tag ${card.pct >= 95 ? "tag-pass" : "tag-progressing"}`}>
+                    {card.pct}% {card.gap === "photos" ? (lang === "sv" ? "Registrerat" : "Recorded") : (lang === "sv" ? "Komplett" : "Complete")}
+                  </span>
+                </div>
+                <div className="admin-coverage-bar-track">
+                  <div className={`admin-coverage-bar-fill ${card.pct >= 95 ? "fill-pass" : "fill-info"}`} style={{ width: `${card.pct}%` }} />
+                </div>
+                <div className="admin-coverage-card-meta">
+                  <b>{card.count.toLocaleString(locale)} / {total.toLocaleString(locale)}</b>
+                  <small>{card.subtitle}</small>
+                  {card.subhint ? <span className="admin-coverage-subhint">{card.subhint}</span> : null}
+                </div>
+              </button>
+            ))}
 
             <div className="admin-coverage-card">
               <div className="admin-coverage-card-head">
@@ -375,6 +437,141 @@ export function AdminCoveragePanel({
           </div>
         );
       })()}
+
+      {activeGap ? (
+        <div className="admin-coverage-gap-section" aria-label={gapLabels[activeGap].title}>
+          <div className="admin-coverage-gap-head">
+            <div>
+              <h5>{gapLabels[activeGap].title}</h5>
+              <p>
+                {gapList
+                  ? `${gapList.total.toLocaleString(locale)} ${gapLabels[activeGap].subtitle}`
+                  : (lang === "sv" ? "Läser lista…" : "Loading list…")}
+              </p>
+            </div>
+            <button
+              type="button"
+              className="admin-coverage-gap-close"
+              onClick={() => {
+                setActiveGap(null);
+                setGapList(null);
+                setGapSearch("");
+                setGapOffset(0);
+              }}
+            >
+              {lang === "sv" ? "Stäng" : "Close"}
+            </button>
+          </div>
+
+          <div className="admin-blocklist-toolbar">
+            <div className="admin-blocklist-search">
+              <MagnifyingGlass size={15} className="admin-blocklist-search-icon" />
+              <input
+                type="text"
+                className="admin-blocklist-input"
+                placeholder={lang === "sv" ? "Sök namn, stadsdel eller ID…" : "Search name, district or ID…"}
+                value={gapSearch}
+                onChange={(event) => setGapSearch(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") void fetchGapPlaces(activeGap, 0, event.currentTarget.value);
+                }}
+                aria-label={lang === "sv" ? "Sök i listan" : "Search gap list"}
+              />
+              <button
+                type="button"
+                className="admin-coverage-gap-search-btn"
+                onClick={() => void fetchGapPlaces(activeGap, 0, gapSearch)}
+                disabled={gapLoading}
+              >
+                {lang === "sv" ? "Sök" : "Search"}
+              </button>
+            </div>
+          </div>
+
+          {gapList?.errors?.length ? (
+            <p className="admin-photo-manager-error" role="alert">{gapList.errors.join(" ")}</p>
+          ) : null}
+
+          {gapLoading ? (
+            <p role="status"><CircleNotch size={16} className="animate-spin" /> {lang === "sv" ? "Läser platser…" : "Loading places…"}</p>
+          ) : gapList && gapList.places.length === 0 ? (
+            <div className="admin-blocklist-empty">
+              <CheckCircle size={32} weight="duotone" className="admin-blocklist-empty-icon" />
+              <p>{lang === "sv" ? "Inga platser matchar denna lucka." : "No places match this gap."}</p>
+            </div>
+          ) : gapList ? (
+            <>
+              <div className="admin-blocklist-table-container">
+                <table className="admin-blocklist-table">
+                  <thead>
+                    <tr>
+                      <th>{lang === "sv" ? "Ställe / ID" : "Venue / ID"}</th>
+                      <th>{lang === "sv" ? "Typ · Stadsdel" : "Kind · District"}</th>
+                      <th>{lang === "sv" ? "Adress" : "Address"}</th>
+                      <th>{lang === "sv" ? "Webb" : "Website"}</th>
+                      <th className="th-action">{lang === "sv" ? "Åtgärd" : "Action"}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {gapList.places.map((place) => (
+                      <tr key={place.id}>
+                        <td className="td-venue">
+                          <b>{place.name}</b>
+                          <span className="admin-blocklist-pid">#{place.id}</span>
+                        </td>
+                        <td>{place.kind} · {place.area}</td>
+                        <td>{place.address || "—"}</td>
+                        <td className="td-url">
+                          {place.website ? (
+                            <a href={place.website} target="_blank" rel="noopener noreferrer" className="admin-blocklist-link">
+                              <span className="admin-blocklist-url-text">{place.website}</span>
+                              <ArrowSquareOut size={13} />
+                            </a>
+                          ) : "—"}
+                        </td>
+                        <td className="td-action">
+                          {onSelectPlace ? (
+                            <button
+                              type="button"
+                              className="admin-blocklist-unblock-btn"
+                              onClick={() => onSelectPlace(place.id)}
+                            >
+                              {lang === "sv" ? "Öppna i kön" : "Open in queue"}
+                            </button>
+                          ) : null}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {gapList.total > GAP_PAGE_SIZE ? (
+                <div className="admin-coverage-gap-pagination">
+                  <button
+                    type="button"
+                    className="admin-coverage-gap-page-btn"
+                    disabled={gapOffset <= 0 || gapLoading}
+                    onClick={() => void fetchGapPlaces(activeGap, Math.max(0, gapOffset - GAP_PAGE_SIZE), gapSearch)}
+                  >
+                    {lang === "sv" ? "Föregående" : "Previous"}
+                  </button>
+                  <span>
+                    {gapOffset + 1}–{Math.min(gapOffset + GAP_PAGE_SIZE, gapList.total)} / {gapList.total.toLocaleString(locale)}
+                  </span>
+                  <button
+                    type="button"
+                    className="admin-coverage-gap-page-btn"
+                    disabled={gapOffset + GAP_PAGE_SIZE >= gapList.total || gapLoading}
+                    onClick={() => void fetchGapPlaces(activeGap, gapOffset + GAP_PAGE_SIZE, gapSearch)}
+                  >
+                    {lang === "sv" ? "Nästa" : "Next"}
+                  </button>
+                </div>
+              ) : null}
+            </>
+          ) : null}
+        </div>
+      ) : null}
 
       {/* ------------------------------------------------------------------ */}
       {/* Enrichment Run Report & URL Blocklist Section                      */}

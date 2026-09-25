@@ -1,6 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { onRequestGet, onRequestPost, computeCoverageReport } from "../functions/api/admin/coverage.ts";
+import {
+  onRequestGet,
+  onRequestPost,
+  computeCoverageReport,
+  listCoverageGapPlaces,
+  normalizeCoverageGap,
+} from "../functions/api/admin/coverage.ts";
 
 const adminToken = "dev-admin-token";
 
@@ -103,6 +109,104 @@ test("admin coverage endpoint returns enrichmentReport and urlBlocklist", async 
   const data = await res.json();
   assert.ok("enrichmentReport" in data);
   assert.ok(Array.isArray(data.urlBlocklist));
+});
+
+test("normalizeCoverageGap accepts known gap keys", () => {
+  assert.equal(normalizeCoverageGap("photos"), "photos");
+  assert.equal(normalizeCoverageGap("OPENING_HOURS"), "opening_hours");
+  assert.equal(normalizeCoverageGap("nope"), null);
+});
+
+test("listCoverageGapPlaces returns places missing photos", async (t) => {
+  const { DatabaseSync } = await import("node:sqlite");
+  const sqlite = new DatabaseSync(":memory:");
+  t.after(() => sqlite.close());
+  sqlite.exec(`
+    CREATE TABLE establishments(
+      id INTEGER PRIMARY KEY,
+      name TEXT,
+      type TEXT,
+      district TEXT,
+      address TEXT,
+      website TEXT,
+      opening_hours TEXT,
+      price_sek TEXT,
+      price_level INTEGER
+    );
+    INSERT INTO establishments VALUES
+      (1, 'With Photo', 'restaurant', 'Södermalm', 'Storgatan 1', 'https://with.test', NULL, NULL, NULL),
+      (2, 'No Photo', 'cafe', 'Vasastan', 'Lillgatan 2', 'https://without.test', NULL, NULL, NULL);
+    CREATE TABLE place_photos(place_id INTEGER, url TEXT);
+    INSERT INTO place_photos VALUES (1, 'https://with.test/hero.jpg');
+  `);
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            async all() {
+              return { results: sqlite.prepare(sql).all(...values) };
+            },
+          };
+        },
+        async all() {
+          return { results: sqlite.prepare(sql).all() };
+        },
+      };
+    },
+  };
+
+  const list = await listCoverageGapPlaces(db, "photos", { limit: 50, offset: 0 });
+  assert.equal(list.total, 1);
+  assert.equal(list.places.length, 1);
+  assert.equal(list.places[0].id, 2);
+  assert.equal(list.places[0].name, "No Photo");
+});
+
+test("admin coverage GET supports gap query parameter", async (t) => {
+  const { DatabaseSync } = await import("node:sqlite");
+  const sqlite = new DatabaseSync(":memory:");
+  t.after(() => sqlite.close());
+  sqlite.exec(`
+    CREATE TABLE establishments(id INTEGER PRIMARY KEY, name TEXT, type TEXT, district TEXT, address TEXT, website TEXT);
+    INSERT INTO establishments VALUES (1, 'No Site', 'bar', 'Kungsholmen', 'Testgatan 1', NULL);
+  `);
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            async all() {
+              return { results: sqlite.prepare(sql).all(...values) };
+            },
+          };
+        },
+        async all() {
+          return { results: sqlite.prepare(sql).all() };
+        },
+      };
+    },
+  };
+
+  const req = new Request("https://motkarta.se/api/admin/coverage?gap=website", {
+    method: "GET",
+    headers: { "x-motkarta-admin-token": adminToken },
+  });
+  const res = await onRequestGet({ request: req, env: { MOTKARTA_ADMIN_TOKEN: adminToken, DB: db } });
+  assert.equal(res.status, 200);
+  const data = await res.json();
+  assert.equal(data.gap, "website");
+  assert.equal(data.total, 1);
+  assert.equal(data.places[0].name, "No Site");
+});
+
+test("admin coverage GET rejects invalid gap query parameter", async () => {
+  const req = new Request("https://motkarta.se/api/admin/coverage?gap=unknown", {
+    method: "GET",
+    headers: { "x-motkarta-admin-token": adminToken },
+  });
+  const res = await onRequestGet({ request: req, env: { MOTKARTA_ADMIN_TOKEN: adminToken } });
+  assert.equal(res.status, 400);
 });
 
 test("admin coverage POST supports unblock_url action", async () => {

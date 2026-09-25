@@ -117,6 +117,187 @@ export type CoverageReport = {
   urlBlocklist?: BlockedUrlEntry[];
 };
 
+export type CoverageGap = "address" | "photos" | "opening_hours" | "price" | "website";
+
+export type CoverageGapPlace = {
+  id: number;
+  name: string;
+  kind: string;
+  area: string;
+  address: string | null;
+  website: string | null;
+};
+
+export type CoverageGapListResponse = {
+  gap: CoverageGap;
+  total: number;
+  offset: number;
+  limit: number;
+  search: string;
+  places: CoverageGapPlace[];
+  errors: string[];
+};
+
+type EstablishmentSchema = {
+  cols: Set<string>;
+  tableNames: Set<string>;
+};
+
+const coverageGaps: CoverageGap[] = ["address", "photos", "opening_hours", "price", "website"];
+
+export function normalizeCoverageGap(value: string | null | undefined): CoverageGap | null {
+  const normalized = (value ?? "").trim().toLowerCase();
+  return coverageGaps.includes(normalized as CoverageGap) ? normalized as CoverageGap : null;
+}
+
+async function loadEstablishmentSchema(db: D1Database): Promise<EstablishmentSchema> {
+  const colsRes = await db.prepare("PRAGMA table_info(establishments)").all<{ name: string }>();
+  const cols = new Set((colsRes.results ?? []).map((row) => row.name.toLowerCase()));
+  const tables = await db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all<{ name: string }>();
+  const tableNames = new Set((tables.results ?? []).map((row) => row.name));
+  return { cols, tableNames };
+}
+
+function buildCoverageGapWhereClause(gap: CoverageGap, schema: EstablishmentSchema): { clause: string; errors: string[] } {
+  const errors: string[] = [];
+
+  switch (gap) {
+    case "address":
+      return {
+        clause: "(e.address IS NULL OR e.address = '' OR e.address NOT GLOB '*[0-9]*')",
+        errors,
+      };
+    case "website":
+      return {
+        clause: "(e.website IS NULL OR e.website = '')",
+        errors,
+      };
+    case "opening_hours":
+      if (!schema.cols.has("opening_hours")) {
+        errors.push("Opening-hours column is not provisioned.");
+        return { clause: "1 = 0", errors };
+      }
+      return {
+        clause: "(e.opening_hours IS NULL OR e.opening_hours = '' OR e.opening_hours = 'undefined')",
+        errors,
+      };
+    case "price": {
+      const hasPriceSek = schema.cols.has("price_sek");
+      const hasPriceLevel = schema.cols.has("price_level");
+      if (!hasPriceSek && !hasPriceLevel) {
+        errors.push("Price columns are not provisioned.");
+        return { clause: "1 = 0", errors };
+      }
+      if (hasPriceSek && hasPriceLevel) {
+        return {
+          clause: "NOT ((e.price_sek IS NOT NULL AND e.price_sek != '') OR (e.price_level IS NOT NULL AND e.price_level > 0))",
+          errors,
+        };
+      }
+      if (hasPriceSek) {
+        return {
+          clause: "(e.price_sek IS NULL OR e.price_sek = '')",
+          errors,
+        };
+      }
+      return {
+        clause: "(e.price_level IS NULL OR e.price_level <= 0)",
+        errors,
+      };
+    }
+    case "photos": {
+      const photoQueries: string[] = [];
+      if (schema.tableNames.has("place_photos")) {
+        photoQueries.push(
+          "SELECT place_id FROM place_photos WHERE url IS NOT NULL AND url != '' AND url NOT LIKE '%unsplash.com%' AND url NOT LIKE '%wikimedia.org%' AND url NOT LIKE '%wikipedia%'",
+        );
+      }
+      if (schema.tableNames.has("place_photo_uploads")) {
+        photoQueries.push("SELECT place_id FROM place_photo_uploads");
+      }
+      if (!photoQueries.length) {
+        errors.push("Photo storage is not provisioned.");
+        return { clause: "1 = 0", errors };
+      }
+      return {
+        clause: `e.id NOT IN (SELECT DISTINCT place_id FROM (${photoQueries.join(" UNION ALL ")}))`,
+        errors,
+      };
+    }
+    default:
+      return { clause: "1 = 0", errors: ["Unsupported coverage gap."] };
+  }
+}
+
+export async function listCoverageGapPlaces(
+  db: D1Database | undefined,
+  gap: CoverageGap,
+  options: { limit?: number; offset?: number; search?: string } = {},
+): Promise<CoverageGapListResponse> {
+  const limit = Math.min(200, Math.max(1, options.limit ?? 100));
+  const offset = Math.max(0, options.offset ?? 0);
+  const search = (options.search ?? "").trim();
+  const errors: string[] = [];
+
+  if (!db) {
+    return { gap, total: 0, offset, limit, search, places: [], errors: ["D1 is not configured."] };
+  }
+
+  try {
+    const schema = await loadEstablishmentSchema(db);
+    const { clause, errors: gapErrors } = buildCoverageGapWhereClause(gap, schema);
+    errors.push(...gapErrors);
+
+    const searchClause = search
+      ? " AND (e.name LIKE ? OR e.district LIKE ? OR e.address LIKE ? OR CAST(e.id AS TEXT) = ?)"
+      : "";
+    const searchBindings = search ? [`%${search}%`, `%${search}%`, `%${search}%`, search] : [];
+
+    const countRes = await db
+      .prepare(`SELECT count(*) AS total FROM establishments e WHERE ${clause}${searchClause}`)
+      .bind(...searchBindings)
+      .all<{ total: number }>();
+    const total = countRes.results?.[0]?.total ?? 0;
+
+    const listRes = await db
+      .prepare(
+        `SELECT
+          e.id,
+          e.name,
+          e.type AS kind,
+          e.district AS area,
+          e.address,
+          e.website
+        FROM establishments e
+        WHERE ${clause}${searchClause}
+        ORDER BY e.name ASC
+        LIMIT ? OFFSET ?`,
+      )
+      .bind(...searchBindings, limit, offset)
+      .all<CoverageGapPlace>();
+
+    return {
+      gap,
+      total,
+      offset,
+      limit,
+      search,
+      places: listRes.results ?? [],
+      errors,
+    };
+  } catch {
+    return {
+      gap,
+      total: 0,
+      offset,
+      limit,
+      search,
+      places: [],
+      errors: [...errors, "D1 coverage gap query failed."],
+    };
+  }
+}
+
 export async function computeCoverageReport(db?: D1Database): Promise<CoverageReport> {
   let totalPlaces = 0, catalogPlaces = 0, activePublishedPlaces = 0;
   let addressCount = 0, websiteCount = 0, photosPlaceCount = 0;
@@ -340,6 +521,22 @@ export async function onRequestGet(context: EventContext<Env>) {
       { error: "Unauthorized admin access." },
       { headers: jsonHeaders, status: session.status ?? 401 },
     );
+  }
+
+  const url = new URL(context.request.url);
+  const gap = normalizeCoverageGap(url.searchParams.get("gap"));
+  if (url.searchParams.has("gap")) {
+    if (!gap) {
+      return Response.json(
+        { error: "Invalid coverage gap." },
+        { headers: jsonHeaders, status: 400 },
+      );
+    }
+    const limit = Number(url.searchParams.get("limit") ?? 100);
+    const offset = Number(url.searchParams.get("offset") ?? 0);
+    const search = url.searchParams.get("search") ?? "";
+    const list = await listCoverageGapPlaces(context.env.DB, gap, { limit, offset, search });
+    return Response.json(list, { headers: jsonHeaders });
   }
 
   const report = await computeCoverageReport(context.env.DB);

@@ -5164,8 +5164,85 @@ button.concierge-clear-btn:hover {
   transition: border-color 0.2s ease;
 }
 
-.admin-coverage-card:hover {
+.admin-coverage-card-btn {
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+}
+
+.admin-coverage-card-btn.is-active {
   border-color: var(--color-ink);
+  box-shadow: inset 0 0 0 1px var(--color-ink);
+}
+
+.admin-coverage-card:hover,
+.admin-coverage-card-btn:hover {
+  border-color: var(--color-ink);
+}
+
+.admin-coverage-gap-section {
+  border: 1px solid var(--color-mist);
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+  padding: 14px;
+}
+
+.admin-coverage-gap-head {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.admin-coverage-gap-head h5 {
+  color: var(--color-ink);
+  font-size: 15px;
+  margin: 0 0 4px;
+}
+
+.admin-coverage-gap-head p {
+  color: var(--color-stone);
+  font-size: 12px;
+  margin: 0;
+}
+
+.admin-coverage-gap-close,
+.admin-coverage-gap-search-btn,
+.admin-coverage-gap-page-btn {
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 6px 10px;
+  text-transform: uppercase;
+}
+
+.admin-coverage-gap-close:hover,
+.admin-coverage-gap-search-btn:hover,
+.admin-coverage-gap-page-btn:hover {
+  border-color: var(--color-ink);
+}
+
+.admin-coverage-gap-search-btn:disabled,
+.admin-coverage-gap-page-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.admin-coverage-gap-pagination {
+  align-items: center;
+  color: var(--color-stone);
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  gap: 10px;
+  justify-content: flex-end;
 }
 
 .admin-coverage-card-head {

@@ -1700,7 +1700,16 @@ export function AdminReviewPanel({
       ) : null}
 
       {hasAdminAuth ? (
-        <AdminCoveragePanel lang={lang} adminToken={adminToken} />
+        <AdminCoveragePanel
+          lang={lang}
+          adminToken={adminToken}
+          onSelectPlace={(placeId) => {
+            setSearchQuery(String(placeId));
+            setStateFilter("all");
+            setViewMode("list");
+            scrollToSection(queueSectionRef);
+          }}
+        />
       ) : null}
 
       <div className="admin-sync-card" ref={syncCardRef}>
@@ -1882,7 +1891,7 @@ export function AdminReviewPanel({
       ) : filteredCandidates.length ? (
         <div className="admin-candidate-list">
           {filteredCandidates.map((candidate) => (
-            <article key={candidate.id} className="admin-candidate-row" aria-busy={busyId === candidate.id}>
+            <article key={candidate.id} id={`admin-place-${candidate.id}`} className="admin-candidate-row" aria-busy={busyId === candidate.id}>
               <div className="admin-candidate-main">
                 <div className="admin-candidate-meta">
                   <span className={`admin-state-badge state-${candidate.lifecycleState}`}>
