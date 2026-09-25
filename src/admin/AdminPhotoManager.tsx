@@ -115,8 +115,13 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, adminHeaders 
       ) : null}
       <div className="admin-photo-manager-grid">
         {photos.map((photo) => (
-          <figure key={photo.id} className="admin-photo-manager-item">
-            <img src={photo.thumbnailUrl || photo.url} alt={photo.caption || "Place image"} />
+          <figure
+            key={photo.id}
+            className={`admin-photo-manager-item${editingId === photo.id ? " is-editing" : ""}`}
+          >
+            <div className="admin-photo-manager-preview">
+              <img src={photo.thumbnailUrl || photo.url} alt={photo.caption || "Place image"} />
+            </div>
             <figcaption>
               {editingId === photo.id ? (
                 <div className="admin-photo-edit-form">
