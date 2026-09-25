@@ -160,6 +160,8 @@ test("admin candidate promotion updates lifecycle state and writes audit event",
   assert.equal(db.events.length, 1);
   assert.equal(db.events[0].establishmentId, 10);
   assert.equal(db.events[0].lifecycleState, "verified");
+  assert.equal(db.exports.length, 1);
+  assert.equal(db.exports[0].exportedBy, "auto_review");
 });
 
 test("admin candidate promotion rejects invalid validation transitions", async () => {
@@ -505,6 +507,7 @@ function fakeAdminD1(rows, options = {}) {
     rows,
     hasRecommendationEvents: Boolean(options.hasRecommendationEvents),
     events: [],
+    exports: [],
     copiedEvidence: [],
     copiedTags: [],
     prepare(query) {
@@ -521,6 +524,29 @@ function fakeAdminD1(rows, options = {}) {
               return { results: [{ name: "recommendation_events" }] };
             }
             return { results: [] };
+          }
+
+          if (query.includes("FROM admin_review_events")) {
+            return {
+              results: db.events.map((event, index) => {
+                const row = db.rows.find((item) => item.id === event.establishmentId);
+                return {
+                  event_id: index + 1,
+                  establishment_id: event.establishmentId,
+                  name: row?.name ?? "Candidate",
+                  candidate_source_type: row?.candidateSourceType ?? "osm_baseline",
+                  candidate_source_id: row?.candidateSourceId ?? "candidate-1",
+                  duplicate_resolution: row?.duplicateResolution ?? null,
+                  merged_into_establishment_id: row?.mergedIntoEstablishmentId ?? null,
+                  lifecycle_state: event.lifecycleState,
+                  validation_label: event.validationLabel,
+                  validation_notes: event.validationNotes,
+                  action: event.action,
+                  target_establishment_id: event.targetEstablishmentId ?? null,
+                  reviewed_at: event.reviewedAt,
+                };
+              }),
+            };
           }
 
           if (!query.includes("FROM establishments")) {
@@ -630,6 +656,12 @@ function fakeAdminD1(rows, options = {}) {
           if (query.includes("INSERT INTO admin_review_events")) {
             const [establishmentId, lifecycleState, validationLabel, validationNotes, reviewedAt, action, targetEstablishmentId] = this.values;
             db.events.push({ establishmentId, lifecycleState, validationLabel, validationNotes, reviewedAt, action, targetEstablishmentId });
+            return { success: true, meta: { changes: 1 } };
+          }
+
+          if (query.includes("INSERT INTO admin_label_exports")) {
+            const [exportedAt, eventCount, labelCount, duplicateResolutionCount, exportedBy] = this.values;
+            db.exports.push({ exportedAt, eventCount, labelCount, duplicateResolutionCount, exportedBy });
             return { success: true, meta: { changes: 1 } };
           }
 

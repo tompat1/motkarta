@@ -1596,8 +1596,8 @@ export function AdminReviewPanel({
               </h5>
               <p className="admin-sync-desc">
                 {lang === "sv"
-                  ? "Granskningsbeslut sparas direkt. Borttagna ställen döljs vid nästa sidladdning och conciergefråga. Välj Alla för att söka i hela granskningskatalogen och Borttagna för att återställa. Ändringar av övrig källdata kräver katalogsynk."
-                  : "Review decisions are saved directly. Removed places are hidden on the next page load and concierge query. Choose All to search the review catalog and Removed to restore. Other source-data edits require a catalog sync."}
+                  ? "Granskningsbeslut och pipeline-checkpoint sparas automatiskt efter varje åtgärd. Borttagna ställen döljs vid nästa sidladdning. JSON-backup och månatlig CI-synk finns vid behov."
+                  : "Review decisions and pipeline checkpoints save automatically after each action. Removed places are hidden on the next page load. JSON backup and monthly CI sync remain available when needed."}
               </p>
             </div>
           </div>

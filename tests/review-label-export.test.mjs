@@ -10,6 +10,7 @@ import {
   onRequestGet as getReviewLabels,
   onRequestPost as postReviewLabels,
 } from "../functions/api/admin/review-labels.ts";
+import { recordReviewLabelCheckpoint } from "../lib/admin-label-exports.ts";
 import { buildReviewLabelExport } from "../lib/review-labels.ts";
 
 const execFileAsync = promisify(execFile);
@@ -170,6 +171,29 @@ test("review labels endpoint exports D1 admin review events", async () => {
   assert.equal(payload.duplicateResolutions.length, 1);
   assert.equal(payload.duplicateResolutions[0].duplicateResolution, "keep_separate");
   assert.match(db.queries[0], /FROM admin_review_events/);
+});
+
+test("recordReviewLabelCheckpoint writes export metadata from review events", async () => {
+  const db = fakeReviewLabelsD1([
+    {
+      event_id: 3,
+      establishment_id: 10,
+      name: "Quiet Counter",
+      candidate_source_type: "municipal_unmatched",
+      candidate_source_id: "source-10",
+      validation_label: "known_hidden_gem",
+      validation_notes: "Two independent signals.",
+      action: "promote",
+      reviewed_at: "2026-08-21T10:00:00Z",
+    },
+  ]);
+
+  const payload = await recordReviewLabelCheckpoint(db, { exportedBy: "auto_review" });
+
+  assert.equal(payload?.labels.length, 1);
+  assert.equal(db.exports.length, 1);
+  assert.equal(db.exports[0].exportedBy, "auto_review");
+  assert.equal(db.exports[0].labelCount, 1);
 });
 
 test("review labels POST records an export checkpoint", async () => {

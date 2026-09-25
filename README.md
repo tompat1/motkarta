@@ -318,17 +318,17 @@ If neither Cloudflare Access verification nor the local token fallback is
 configured, the admin API remains closed. If D1 is missing, it returns an
 unavailable response and never falls back to demo rows.
 
-When a review session is done, open `/admin` and press **Export** in the label
-export row. The browser downloads a portable `human_validation_labels` JSON file
-directly from the D1 audit events. The UI export also writes an
-`admin_label_exports` checkpoint, which lets the dashboard show whether any
-review decisions are newer than the latest export.
+Each review decision automatically records an `admin_label_exports` checkpoint
+in D1, so the dashboard no longer needs a manual export step after normal
+review work. Monthly enrichment also runs `npm run sync:labels` and commits
+`data/human_validation_labels.json` for offline ML retraining.
 
-The same export can still be produced from the command line when needed:
+Optional manual backup from `/admin` (**Download backup JSON**) or CLI:
 
 ```bash
+npm run sync:labels
 wrangler d1 execute <database-name> --remote --json --file scripts/export_review_events.sql > data/review-events-export.json
-npm run reviews:labels -- data/review-events-export.json outputs/human_validation_labels.json
+npm run reviews:labels -- data/review-events-export.json data/human_validation_labels.json
 ```
 
 The label export keeps duplicate resolutions separate from hidden-gem/mainstream

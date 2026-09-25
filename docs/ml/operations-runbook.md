@@ -488,12 +488,10 @@ The web application provides an interactive **Admin Playbook & SOP** drawer dire
      ```
    - Verifies PSI < 0.10, outer-city ratio $\ge 30\%$, independent ratio $\ge 90\%$, and cuisine Shannon entropy $\ge 2.5$.
 4. **Sync Review Labels (Automated)**:
-   - Run the automated CLI sync command to pull unexported review decisions directly from D1 into the ML training corpus without manual file movement:
-     ```bash
-     npm run sync:labels
-     ```
-   - Alternatively, in `/admin`, click `Synka pipeline direkt` (1-click checkpoint sync without desktop downloads) or `Ladda ner backup (JSON)`.
-   - These human validation labels in `outputs/human_validation_labels.json` serve as ground-truth for offline Learning-to-Rank (LTR) retraining and candidate classifier validation.
+   - Review checkpoints are written automatically after each admin decision (`auto_review` in `admin_label_exports`).
+   - Monthly enrichment runs `npm run sync:labels` and commits `data/human_validation_labels.json`.
+   - For ad-hoc refresh, run `npm run sync:labels` locally or use `/admin` → `Ladda ner backup (JSON)`.
+   - These human validation labels serve as ground-truth for offline Learning-to-Rank (LTR) retraining and candidate classifier validation.
 5. **Mandatory 4-Tier Full Test Coverage Gate**:
    - Before committing or deploying any changes:
      ```bash

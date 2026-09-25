@@ -36,7 +36,7 @@ loadEnv();
 
 const adminToken = (process.env.MOTKARTA_ADMIN_TOKEN || process.env.ADMIN_TOKEN || "").trim();
 const apiUrl = (process.env.MOTKARTA_API_URL || process.env.API_URL || "http://localhost:5173").replace(/\/+$/, "");
-const outputPath = resolve(rootDir, process.argv[2] || "outputs/human_validation_labels.json");
+const outputPath = resolve(rootDir, process.argv[2] || "data/human_validation_labels.json");
 
 async function syncViaHttp() {
   const endpoint = `${apiUrl}/api/admin/review-labels`;

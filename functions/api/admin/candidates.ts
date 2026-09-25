@@ -1,3 +1,4 @@
+import { syncReviewLabelCheckpoint } from "../../../lib/admin-label-exports.ts";
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
 import { isD1QuotaError } from "../../../lib/admin-d1.ts";
 import type { PlaceInput, PlaceLifecycleState } from "../../../lib/scoring.ts";
@@ -1259,7 +1260,10 @@ async function recordReviewEvent(
       .run();
   } catch (error) {
     console.warn("Could not write admin_review_events audit row", error);
+    return;
   }
+
+  await syncReviewLabelCheckpoint(db, { exportedBy: "auto_review", updatedAt: event.reviewedAt });
 }
 
 function candidateFromRow(row: CandidateRow) {

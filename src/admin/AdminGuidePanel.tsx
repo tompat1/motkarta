@@ -162,8 +162,8 @@ export function AdminGuidePanel({ lang, onClose }: AdminGuidePanelProps) {
                   </li>
                   <li>
                     {lang === "sv"
-                      ? "Granskningar sparas automatiskt i D1 i realtid. Du behöver inte exportera manuellt; synkning sker med ett klick via 'Synka pipeline direkt' eller CLI: npm run sync:labels."
-                      : "Reviews are auto-saved to D1 in real-time. No manual downloads needed; sync happens with 1 click via 'Sync pipeline directly' or CLI: npm run sync:labels."}
+                      ? "Granskningar sparas automatiskt i D1 och pipeline-checkpoint uppdateras direkt efter varje beslut. Månatlig CI skriver data/human_validation_labels.json. Manuell JSON-backup finns kvar vid behov."
+                      : "Reviews are auto-saved to D1 and the pipeline checkpoint updates after every decision. Monthly CI writes data/human_validation_labels.json. Manual JSON backup remains available if needed."}
                   </li>
                 </ul>
               </div>

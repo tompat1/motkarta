@@ -135,7 +135,18 @@ jobs:
         continue-on-error: true
 
       # -----------------------------------------------------------------------
-      # Phase F: Commit enriched files back to main
+      # Phase F: Sync admin review labels into the ML training corpus
+      # Records a D1 export checkpoint and writes data/human_validation_labels.json.
+      # -----------------------------------------------------------------------
+      - name: Sync review labels to ML corpus
+        env:
+          MOTKARTA_ADMIN_TOKEN: ${{ secrets.MOTKARTA_ADMIN_TOKEN }}
+          MOTKARTA_API_URL: https://motkarta.se
+        run: npm run sync:labels -- data/human_validation_labels.json
+        continue-on-error: true
+
+      # -----------------------------------------------------------------------
+      # Phase G: Commit enriched files back to main
       # Uses [skip ci] to prevent triggering the quality gate in a loop.
       # Only commits if any files actually changed.
       # -----------------------------------------------------------------------
@@ -164,6 +175,7 @@ jobs:
             public/data/monthly_catalog_reconciliation_report.json \
             public/data/catalog_freshness_report.json \
             data/enrichment_overlay.json \
+            data/human_validation_labels.json \
             data/stockholm_food_places.csv \
             data/raw/osm_stockholm_food_places.json \
             data/raw/osm_stockholm_food_places.metadata.json \

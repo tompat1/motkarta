@@ -1,3 +1,4 @@
+import { recordReviewLabelCheckpoint, reviewEventExportQuery } from "../../../lib/admin-label-exports.ts";
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
 import { buildReviewLabelExport, type ReviewEventExportRow } from "../../../lib/review-labels.ts";
 
@@ -54,11 +55,9 @@ async function exportReviewLabels(context: EventContext<Env>, recordExport: bool
   const output = buildReviewLabelExport(results ?? []);
 
   if (recordExport) {
-    await recordLabelExport(db, {
-      exportedAt: output.updatedAt,
-      eventCount: results?.length ?? 0,
-      labelCount: output.labels.length,
-      duplicateResolutionCount: output.duplicateResolutions.length,
+    await recordReviewLabelCheckpoint(db, {
+      exportedBy: "admin_ui",
+      updatedAt: output.updatedAt,
     });
   }
 
@@ -72,49 +71,3 @@ async function exportReviewLabels(context: EventContext<Env>, recordExport: bool
   );
 }
 
-async function recordLabelExport(
-  db: D1Database,
-  exportEvent: {
-    exportedAt: string;
-    eventCount: number;
-    labelCount: number;
-    duplicateResolutionCount: number;
-  },
-) {
-  await db
-    .prepare(
-      `INSERT INTO admin_label_exports
-        (exported_at, event_count, label_count, duplicate_resolution_count, exported_by)
-       VALUES (?, ?, ?, ?, ?)`,
-    )
-    .bind(
-      exportEvent.exportedAt,
-      exportEvent.eventCount,
-      exportEvent.labelCount,
-      exportEvent.duplicateResolutionCount,
-      "admin_ui",
-    )
-    .run();
-}
-
-function reviewEventExportQuery() {
-  return `
-    SELECT
-      ev.id AS event_id,
-      ev.establishment_id,
-      e.name,
-      e.candidate_source_type,
-      e.candidate_source_id,
-      e.duplicate_resolution,
-      e.merged_into_establishment_id,
-      ev.lifecycle_state,
-      ev.validation_label,
-      ev.validation_notes,
-      ev.action,
-      ev.target_establishment_id,
-      ev.reviewed_at
-    FROM admin_review_events ev
-    JOIN establishments e ON e.id = ev.establishment_id
-    ORDER BY ev.reviewed_at DESC, ev.id DESC
-  `;
-}

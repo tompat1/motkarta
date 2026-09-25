@@ -1,3 +1,4 @@
+import { syncReviewLabelCheckpoint } from "../../../lib/admin-label-exports.ts";
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
 import { isBroadStockholmArea, resolveStockholmRegion } from "../../../lib/stockholm-regions.ts";
 
@@ -129,6 +130,10 @@ async function handleResolveRegions(context: EventContext<Env>) {
         resolvedDistrict: resolved,
       });
     }
+  }
+
+  if (updatedPlaces.length > 0) {
+    await syncReviewLabelCheckpoint(db, { exportedBy: "auto_resolve_regions", updatedAt });
   }
 
   return Response.json(
