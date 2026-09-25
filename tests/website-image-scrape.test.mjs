@@ -69,15 +69,23 @@ test("pickWebsiteImageCandidate steps through usable website images after the cu
   assert.equal(first.candidateIndex, 0);
   assert.equal(first.totalCandidates, 2);
   assert.equal(first.hasMore, true);
+  assert.equal(first.hasPrevious, false);
 
-  const second = pickWebsiteImageCandidate(html, "https://example.test", first.imageUrl);
+  const second = pickWebsiteImageCandidate(html, "https://example.test", { currentUrl: first.imageUrl, direction: "next" });
   assert.equal(second.imageUrl, "https://example.test/interior-b.jpg");
   assert.equal(second.candidateIndex, 1);
   assert.equal(second.hasMore, false);
+  assert.equal(second.hasPrevious, true);
 
-  const exhausted = pickWebsiteImageCandidate(html, "https://example.test", second.imageUrl);
+  const backToFirst = pickWebsiteImageCandidate(html, "https://example.test", { currentUrl: second.imageUrl, direction: "previous" });
+  assert.equal(backToFirst.imageUrl, "https://example.test/interior-a.jpg");
+  assert.equal(backToFirst.candidateIndex, 0);
+  assert.equal(backToFirst.hasPrevious, false);
+
+  const exhausted = pickWebsiteImageCandidate(html, "https://example.test", { currentUrl: second.imageUrl, direction: "next" });
   assert.equal(exhausted.imageUrl, null);
   assert.equal(exhausted.hasMore, false);
+  assert.equal(exhausted.hasPrevious, true);
 });
 
 test("collectWebsiteImageCandidates gathers meta, img, and json-ld images in order", () => {

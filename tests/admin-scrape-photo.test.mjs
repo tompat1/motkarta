@@ -42,6 +42,44 @@ test("admin scrape-photo returns the next website image candidate", async () => 
     assert.equal(payload.photoUrl, "https://venue.test/room-b.jpg");
     assert.equal(payload.candidateIndex, 1);
     assert.equal(payload.hasMore, false);
+    assert.equal(payload.hasPrevious, true);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("admin scrape-photo returns the previous website image candidate", async () => {
+  const html = `
+<img src="https://venue.test/room-a.jpg" width="1200" height="900">
+<img src="https://venue.test/room-b.jpg" width="1200" height="900">
+`;
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(html, { status: 200 });
+
+  try {
+    const response = await onRequestPost({
+      request: new Request("https://motkarta.test/api/admin/scrape-photo", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-motkarta-admin-token": token,
+        },
+        body: JSON.stringify({
+          placeId: 42,
+          website: "https://venue.test",
+          currentUrl: "https://venue.test/room-b.jpg",
+          direction: "previous",
+        }),
+      }),
+      env: { MOTKARTA_ADMIN_TOKEN: token },
+    });
+    const payload = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(payload.photoUrl, "https://venue.test/room-a.jpg");
+    assert.equal(payload.candidateIndex, 0);
+    assert.equal(payload.hasPrevious, false);
+    assert.equal(payload.hasMore, true);
   } finally {
     globalThis.fetch = originalFetch;
   }

@@ -19,6 +19,7 @@ export async function onRequestPost({ request, env }: Context) {
   const website = normalizeWebsiteUrl(typeof payload.website === "string" ? payload.website : "");
   const currentUrl = typeof payload.currentUrl === "string" ? payload.currentUrl.trim()
     : typeof payload.current_url === "string" ? payload.current_url.trim() : "";
+  const direction = payload.direction === "previous" ? "previous" : "next";
 
   if (!Number.isSafeInteger(placeId) || placeId <= 0 || !website) {
     return Response.json({ error: "Missing or invalid placeId/website." }, { status: 400, headers });
@@ -36,7 +37,10 @@ export async function onRequestPost({ request, env }: Context) {
     }
 
     const html = await response.text();
-    const pick = pickWebsiteImageCandidate(html, website, currentUrl || null);
+    const pick = pickWebsiteImageCandidate(html, website, {
+      currentUrl: currentUrl || null,
+      direction,
+    });
     if (!pick.imageUrl) {
       return Response.json({
         success: false,
@@ -44,11 +48,14 @@ export async function onRequestPost({ request, env }: Context) {
         website,
         photoUrl: null,
         hasMore: false,
+        hasPrevious: pick.hasPrevious,
         candidateIndex: pick.candidateIndex,
         totalCandidates: pick.totalCandidates,
         skippedLogoCount: pick.skippedLogoUrls.length,
         error: pick.totalCandidates > 0
-          ? "No more website image candidates after the current one."
+          ? direction === "previous"
+            ? "No earlier website image candidates before the current one."
+            : "No more website image candidates after the current one."
           : "No usable website images found (only logo/banner candidates).",
       }, { status: 404, headers });
     }
@@ -64,6 +71,7 @@ export async function onRequestPost({ request, env }: Context) {
       candidateIndex: pick.candidateIndex,
       totalCandidates: pick.totalCandidates,
       hasMore: pick.hasMore,
+      hasPrevious: pick.hasPrevious,
       skippedLogoCount: pick.skippedLogoUrls.length,
     }, { headers });
   } catch (cause) {

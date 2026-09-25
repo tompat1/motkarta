@@ -47,6 +47,13 @@ export function isLikelyLogoBanner(imageUrl: string, dimensions: WebsiteImageDim
   return false;
 }
 
+export type WebsiteImagePickDirection = "next" | "previous";
+
+export type WebsiteImagePickOptions = {
+  currentUrl?: string | null;
+  direction?: WebsiteImagePickDirection;
+};
+
 export type WebsiteImagePickResult = {
   imageUrl: string | null;
   width: number | null;
@@ -55,6 +62,7 @@ export type WebsiteImagePickResult = {
   candidateIndex: number;
   totalCandidates: number;
   hasMore: boolean;
+  hasPrevious: boolean;
   skippedLogoUrls: string[];
 };
 
@@ -71,11 +79,21 @@ export function usableWebsiteImageCandidates(candidates: WebsiteImageCandidate[]
   return { usable, skippedLogoUrls };
 }
 
+function normalizeWebsiteImagePickOptions(
+  currentUrlOrOptions?: string | null | WebsiteImagePickOptions,
+): WebsiteImagePickOptions {
+  if (typeof currentUrlOrOptions === "string" || currentUrlOrOptions === null) {
+    return { currentUrl: currentUrlOrOptions, direction: "next" };
+  }
+  return currentUrlOrOptions ?? {};
+}
+
 export function pickWebsiteImageCandidate(
   html: string,
   websiteUrl: string,
-  afterUrl?: string | null,
+  currentUrlOrOptions?: string | null | WebsiteImagePickOptions,
 ): WebsiteImagePickResult {
+  const options = normalizeWebsiteImagePickOptions(currentUrlOrOptions);
   const candidates = collectWebsiteImageCandidates(html, websiteUrl);
   const { usable, skippedLogoUrls } = usableWebsiteImageCandidates(candidates);
   if (!usable.length) {
@@ -88,39 +106,55 @@ export function pickWebsiteImageCandidate(
       candidateIndex: -1,
       totalCandidates: 0,
       hasMore: false,
+      hasPrevious: false,
       skippedLogoUrls,
     };
   }
 
-  const normalizedAfter = afterUrl ? normalizeImageUrl(afterUrl, websiteUrl) : null;
-  let startIndex = 0;
-  if (normalizedAfter) {
-    const currentIndex = usable.findIndex((candidate) => candidate.url === normalizedAfter);
-    startIndex = currentIndex >= 0 ? currentIndex + 1 : 0;
+  const normalizedCurrent = options.currentUrl ? normalizeImageUrl(options.currentUrl, websiteUrl) : null;
+  const direction = options.direction ?? "next";
+  let targetIndex = 0;
+  let currentIndex = -1;
+
+  if (normalizedCurrent) {
+    currentIndex = usable.findIndex((candidate) => candidate.url === normalizedCurrent);
+    if (currentIndex >= 0) {
+      targetIndex = direction === "previous" ? currentIndex - 1 : currentIndex + 1;
+    } else if (direction === "previous") {
+      targetIndex = usable.length - 1;
+      currentIndex = usable.length;
+    } else {
+      targetIndex = 0;
+    }
+  } else if (direction === "previous") {
+    targetIndex = -1;
   }
 
-  if (startIndex >= usable.length) {
+  if (targetIndex < 0 || targetIndex >= usable.length) {
+    const resolvedIndex = currentIndex >= 0 ? currentIndex : 0;
     return {
       imageUrl: null,
       width: null,
       height: null,
       source: null,
-      candidateIndex: usable.length,
+      candidateIndex: targetIndex,
       totalCandidates: usable.length,
-      hasMore: false,
+      hasMore: resolvedIndex < usable.length - 1,
+      hasPrevious: resolvedIndex > 0,
       skippedLogoUrls,
     };
   }
 
-  const picked = usable[startIndex];
+  const picked = usable[targetIndex];
   return {
     imageUrl: picked.url,
     width: picked.width ?? null,
     height: picked.height ?? null,
     source: picked.source,
-    candidateIndex: startIndex,
+    candidateIndex: targetIndex,
     totalCandidates: usable.length,
-    hasMore: startIndex < usable.length - 1,
+    hasMore: targetIndex < usable.length - 1,
+    hasPrevious: targetIndex > 0,
     skippedLogoUrls,
   };
 }

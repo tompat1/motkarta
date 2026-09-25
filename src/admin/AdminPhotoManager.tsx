@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowRight, CircleNotch, PencilSimple, Plus, Trash, ImageSquare, UploadSimple } from "@phosphor-icons/react";
+import { ArrowLeft, ArrowRight, CircleNotch, PencilSimple, Plus, Trash, ImageSquare, UploadSimple } from "@phosphor-icons/react";
 import type { Language } from "../app/shared";
 import { processImageFile } from "../components/ConciergeSuperpowerModal";
 import {
@@ -55,7 +55,12 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, p
   const [editDataUrl, setEditDataUrl] = useState<string | null>(null);
   const [editFrame, setEditFrame] = useState<PhotoHeroFrame>(DEFAULT_PHOTO_HERO_FRAME);
   const [isProcessingUpload, setIsProcessingUpload] = useState(false);
-  const [scrapeCandidateMeta, setScrapeCandidateMeta] = useState<{ index: number; total: number; hasMore: boolean } | null>(null);
+  const [scrapeCandidateMeta, setScrapeCandidateMeta] = useState<{
+    index: number;
+    total: number;
+    hasMore: boolean;
+    hasPrevious: boolean;
+  } | null>(null);
   const addFileInputRef = useRef<HTMLInputElement>(null);
   const replaceFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -163,12 +168,12 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, p
     setScrapeCandidateMeta(null);
   };
 
-  const loadNextScrapedImage = async (currentUrl: string) => {
+  const loadScrapedImage = async (currentUrl: string, direction: "next" | "previous") => {
     if (!websiteUrl?.trim()) {
       setError(lang === "sv" ? "Ingen webbadress att hämta bilder från." : "No website URL to scrape images from.");
       return;
     }
-    setBusyId(editingId ?? "scrape-next");
+    setBusyId(editingId ?? `scrape-${direction}`);
     setError(null);
     try {
       const response = await fetch("/api/admin/scrape-photo", {
@@ -178,6 +183,7 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, p
           placeId,
           website: websiteUrl,
           currentUrl,
+          direction,
         }),
       });
       const payload = (await response.json().catch(() => ({}))) as {
@@ -185,21 +191,37 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, p
         candidateIndex?: number;
         totalCandidates?: number;
         hasMore?: boolean;
+        hasPrevious?: boolean;
         error?: string;
       };
       if (!response.ok || !payload.photoUrl) {
-        throw new Error(payload.error ?? (lang === "sv" ? "Inga fler bilder hittades på webbplatsen." : "No more images found on the website."));
+        throw new Error(payload.error ?? (
+          direction === "previous"
+            ? (lang === "sv" ? "Inga tidigare bilder hittades på webbplatsen." : "No earlier images found on the website.")
+            : (lang === "sv" ? "Inga fler bilder hittades på webbplatsen." : "No more images found on the website.")
+        ));
       }
-      setEditUrl(payload.photoUrl);
-      setEditDataUrl(null);
-      setEditFrame(DEFAULT_PHOTO_HERO_FRAME);
+      if (editingId) {
+        setEditUrl(payload.photoUrl);
+        setEditDataUrl(null);
+        setEditFrame(DEFAULT_PHOTO_HERO_FRAME);
+      } else {
+        setNewUrl(payload.photoUrl);
+        setNewDataUrl(null);
+        setNewFrame(DEFAULT_PHOTO_HERO_FRAME);
+      }
       setScrapeCandidateMeta({
         index: (payload.candidateIndex ?? 0) + 1,
         total: payload.totalCandidates ?? 0,
         hasMore: Boolean(payload.hasMore),
+        hasPrevious: Boolean(payload.hasPrevious),
       });
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : (lang === "sv" ? "Kunde inte hämta nästa bild." : "Could not load the next image."));
+      setError(cause instanceof Error ? cause.message : (
+        direction === "previous"
+          ? (lang === "sv" ? "Kunde inte hämta föregående bild." : "Could not load the previous image.")
+          : (lang === "sv" ? "Kunde inte hämta nästa bild." : "Could not load the next image.")
+      ));
     } finally {
       setBusyId(null);
     }
@@ -292,17 +314,31 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, p
                     {lang === "sv" ? "Byt hero-bild" : "Replace hero image"}
                   </button>
                   {websiteUrl?.trim() ? (
-                    <button
-                      type="button"
-                      className="admin-photo-next-scrape-btn"
-                      onClick={() => void loadNextScrapedImage(editDataUrl ?? editUrl)}
-                      disabled={busyId === photo.id || !(editDataUrl ?? editUrl).trim()}
-                      title={lang === "sv" ? "Hämta nästa bildkandidat från webbplatsen" : "Load the next image candidate from the website"}
-                    >
-                      {busyId === photo.id ? <CircleNotch size={14} className="animate-spin" /> : <ArrowRight size={14} weight="bold" />}
-                      {lang === "sv" ? "Nästa hämtade bild" : "Next scraped image"}
-                      {scrapeCandidateMeta ? ` (${scrapeCandidateMeta.index}/${scrapeCandidateMeta.total})` : ""}
-                    </button>
+                    <div className="admin-photo-scrape-nav">
+                      <button
+                        type="button"
+                        className="admin-photo-scrape-nav-btn"
+                        onClick={() => void loadScrapedImage(editDataUrl ?? editUrl, "previous")}
+                        disabled={busyId === photo.id || !(editDataUrl ?? editUrl).trim() || scrapeCandidateMeta?.hasPrevious === false}
+                        title={lang === "sv" ? "Föregående hämtade bild" : "Previous scraped image"}
+                      >
+                        <ArrowLeft size={14} weight="bold" />
+                        {lang === "sv" ? "Föregående" : "Previous"}
+                      </button>
+                      <span className="admin-photo-scrape-nav-count">
+                        {scrapeCandidateMeta ? `${scrapeCandidateMeta.index}/${scrapeCandidateMeta.total}` : "—"}
+                      </span>
+                      <button
+                        type="button"
+                        className="admin-photo-scrape-nav-btn"
+                        onClick={() => void loadScrapedImage(editDataUrl ?? editUrl, "next")}
+                        disabled={busyId === photo.id || !(editDataUrl ?? editUrl).trim() || scrapeCandidateMeta?.hasMore === false}
+                        title={lang === "sv" ? "Nästa hämtade bild" : "Next scraped image"}
+                      >
+                        {lang === "sv" ? "Nästa" : "Next"}
+                        <ArrowRight size={14} weight="bold" />
+                      </button>
+                    </div>
                   ) : null}
                   {!editDataUrl ? (
                     <input
@@ -412,15 +448,29 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, p
               lang={lang}
             />
             {websiteUrl?.trim() ? (
-              <button
-                type="button"
-                className="admin-photo-next-scrape-btn"
-                onClick={() => void loadNextScrapedImage(newDataUrl ?? newUrl)}
-                disabled={busyId === "new" || !(newDataUrl ?? newUrl).trim()}
-              >
-                {busyId === "new" ? <CircleNotch size={14} className="animate-spin" /> : <ArrowRight size={14} weight="bold" />}
-                {lang === "sv" ? "Nästa hämtade bild" : "Next scraped image"}
-              </button>
+              <div className="admin-photo-scrape-nav">
+                <button
+                  type="button"
+                  className="admin-photo-scrape-nav-btn"
+                  onClick={() => void loadScrapedImage(newDataUrl ?? newUrl, "previous")}
+                  disabled={busyId === "new" || !(newDataUrl ?? newUrl).trim() || scrapeCandidateMeta?.hasPrevious === false}
+                >
+                  <ArrowLeft size={14} weight="bold" />
+                  {lang === "sv" ? "Föregående" : "Previous"}
+                </button>
+                <span className="admin-photo-scrape-nav-count">
+                  {scrapeCandidateMeta ? `${scrapeCandidateMeta.index}/${scrapeCandidateMeta.total}` : "—"}
+                </span>
+                <button
+                  type="button"
+                  className="admin-photo-scrape-nav-btn"
+                  onClick={() => void loadScrapedImage(newDataUrl ?? newUrl, "next")}
+                  disabled={busyId === "new" || !(newDataUrl ?? newUrl).trim() || scrapeCandidateMeta?.hasMore === false}
+                >
+                  {lang === "sv" ? "Nästa" : "Next"}
+                  <ArrowRight size={14} weight="bold" />
+                </button>
+              </div>
             ) : null}
           </>
         ) : null}
