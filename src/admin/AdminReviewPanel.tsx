@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { PlaceInput, PlaceLifecycleState } from "../../lib/scoring";
 import { isBroadStockholmArea, STOCKHOLM_REGIONS as STOCKHOLM_REGION_NAMES } from "../../lib/stockholm-regions";
 import type { Language } from "../app/shared";
@@ -37,6 +37,11 @@ import {
 
 type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all" | "removed";
 type AdminValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
+type DashboardQueueFocus = "all" | "new" | "hidden_gem_ready" | "needs_evidence" | "duplicates";
+type DashboardNavTarget =
+  | { kind: "queue"; focus: DashboardQueueFocus }
+  | { kind: "sync" }
+  | { kind: "ml_dashboard" };
 
 export type AdminCandidate = {
   id: number;
@@ -176,7 +181,10 @@ export function AdminReviewPanel({
   const [tokenInput, setTokenInput] = useState(readStoredAdminToken);
   const [adminToken, setAdminToken] = useState(readStoredAdminToken);
   const [stateFilter, setStateFilter] = useState<AdminStateFilter>("candidate");
+  const [queueFocus, setQueueFocus] = useState<DashboardQueueFocus>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const queueSectionRef = useRef<HTMLDivElement>(null);
+  const syncCardRef = useRef<HTMLDivElement>(null);
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [selectedCandidateId, setSelectedCandidateId] = useState<number | null>(null);
   const [candidates, setCandidates] = useState<AdminCandidate[]>([]);
@@ -357,10 +365,57 @@ export function AdminReviewPanel({
     }
   }, [adminHeaders, hasAdminAuth]);
 
+  const scrollToSection = useCallback((ref: React.RefObject<HTMLElement | null>) => {
+    if (typeof window === "undefined") return;
+    window.requestAnimationFrame(() => {
+      ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, []);
+
+  const navigateDashboardTarget = useCallback(
+    (target: DashboardNavTarget) => {
+      if (target.kind === "sync") {
+        scrollToSection(syncCardRef);
+        return;
+      }
+
+      if (target.kind === "ml_dashboard") {
+        setQueueFocus("all");
+        setStateFilter("ml_dashboard");
+        setViewMode("list");
+        scrollToSection(queueSectionRef);
+        return;
+      }
+
+      setStateFilter("candidate");
+      setViewMode("list");
+      setQueueFocus(target.focus);
+      scrollToSection(queueSectionRef);
+    },
+    [scrollToSection],
+  );
+
   const filteredCandidates = React.useMemo(() => {
+    let rows = candidates;
+
+    if (stateFilter === "candidate" && queueFocus !== "all") {
+      if (queueFocus === "new") {
+        rows = rows.filter(
+          (candidate) =>
+            !candidate.validationLabel && candidate.candidateReviewStatus !== "duplicate_checked_keep_separate",
+        );
+      } else if (queueFocus === "hidden_gem_ready") {
+        rows = rows.filter((candidate) => candidate.evidenceGate.canPromoteHiddenGem);
+      } else if (queueFocus === "needs_evidence") {
+        rows = rows.filter((candidate) => candidate.evidenceGate.sourceGaps.length > 0);
+      } else if (queueFocus === "duplicates") {
+        rows = rows.filter((candidate) => candidate.possibleDuplicateCount > 0);
+      }
+    }
+
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return candidates;
-    return candidates.filter((c) => {
+    if (!q) return rows;
+    return rows.filter((c) => {
       return (
         c.name.toLowerCase().includes(q) ||
         c.area.toLowerCase().includes(q) ||
@@ -371,7 +426,7 @@ export function AdminReviewPanel({
         (c.note && c.note.toLowerCase().includes(q))
       );
     });
-  }, [candidates, searchQuery]);
+  }, [candidates, queueFocus, searchQuery, stateFilter]);
 
   const loadDashboard = useCallback(
     async (tokenOverride?: string, force = false) => {
@@ -1336,7 +1391,11 @@ export function AdminReviewPanel({
         ) : null}
       </div>
 
-      <div className="admin-review-toolbar" aria-label={lang === "sv" ? "Filter för granskningskö" : "Review queue filters"}>
+      <div
+        ref={queueSectionRef}
+        className="admin-review-toolbar"
+        aria-label={lang === "sv" ? "Filter för granskningskö" : "Review queue filters"}
+      >
         <div className="admin-state-tabs">
           {adminStateFilters.map((state) => (
             <button
@@ -1344,7 +1403,10 @@ export function AdminReviewPanel({
               type="button"
               className={stateFilter === state ? "active" : ""}
               aria-pressed={stateFilter === state}
-              onClick={() => setStateFilter(state)}
+              onClick={() => {
+                setQueueFocus("all");
+                setStateFilter(state);
+              }}
             >
               {lifecycleStateLabel(state, lang)}
             </button>
@@ -1481,6 +1543,15 @@ export function AdminReviewPanel({
         <span>{stateFilterHelpText(stateFilter, lang)}</span>
       </div>
 
+      {stateFilter === "candidate" && queueFocus !== "all" ? (
+        <div className="admin-queue-focus-banner" role="status">
+          <span>{queueFocusHelpText(queueFocus, lang)}</span>
+          <button type="button" className="admin-queue-focus-clear" onClick={() => setQueueFocus("all")}>
+            {lang === "sv" ? "Visa alla kandidater" : "Show all candidates"}
+          </button>
+        </div>
+      ) : null}
+
       {showGuide ? (
         <AdminGuidePanel lang={lang} onClose={() => setShowGuide(false)} />
       ) : null}
@@ -1563,20 +1634,38 @@ export function AdminReviewPanel({
 
       {hasAdminAuth && schemaStatus?.ready ? (
         <div className={`admin-session-dashboard step-${dashboard?.nextStep ?? "loading"}`} aria-live="polite">
-          <div className="admin-session-summary">
+          <button
+            type="button"
+            className="admin-session-summary admin-session-action"
+            onClick={() => navigateDashboardTarget(dashboardActionForStep(dashboard?.nextStep))}
+            title={dashboardActionHint(dashboard?.nextStep, lang)}
+          >
             <span className="admin-session-badge">
               {dashboardStepLabel(dashboard?.nextStep, loadingDashboard, lang)}
             </span>
             <strong>{dashboardHeadline(dashboard, loadingDashboard, lang)}</strong>
             <small>{dashboardSubcopy(dashboard, loadingDashboard, lang)}</small>
-          </div>
+            <span className="admin-session-action-hint">
+              <ArrowRight size={14} weight="bold" />
+              {dashboardActionHint(dashboard?.nextStep, lang)}
+            </span>
+          </button>
           <div className="admin-session-metrics">
             {dashboardMetrics(dashboard, lang).map((metric) => (
-              <div key={metric.key} className={`admin-session-metric tone-${metric.tone}`}>
+              <button
+                key={metric.key}
+                type="button"
+                className={`admin-session-metric admin-session-action tone-${metric.tone} ${
+                  metric.focusKey && queueFocus === metric.focusKey && stateFilter === "candidate" ? "is-active" : ""
+                }`}
+                onClick={() => navigateDashboardTarget(metric.action)}
+                title={metric.actionHint}
+                aria-pressed={Boolean(metric.focusKey && queueFocus === metric.focusKey && stateFilter === "candidate")}
+              >
                 <span className="admin-session-metric-icon">{metric.icon}</span>
                 <span>{metric.label}</span>
                 <b>{metric.value}</b>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -1586,7 +1675,7 @@ export function AdminReviewPanel({
         <AdminCoveragePanel lang={lang} adminToken={adminToken} />
       ) : null}
 
-      <div className="admin-sync-card">
+      <div className="admin-sync-card" ref={syncCardRef}>
         <div className="admin-sync-header">
           <div className="admin-sync-title-group">
             <ShieldCheck size={20} weight="bold" className="admin-sync-icon" />
@@ -2199,52 +2288,111 @@ function dashboardSubcopy(
   return lang === "sv" ? "Inga oexporterade beslut och inga tydliga review-blockerare." : "No unexported decisions and no clear review blockers.";
 }
 
+function dashboardActionForStep(step: AdminReviewDashboard["nextStep"] | undefined): DashboardNavTarget {
+  if (step === "export") {
+    return { kind: "sync" };
+  }
+  if (step === "harvest") {
+    return { kind: "queue", focus: "needs_evidence" };
+  }
+  return { kind: "queue", focus: "all" };
+}
+
+function dashboardActionHint(step: AdminReviewDashboard["nextStep"] | undefined, lang: Language) {
+  const labels: Record<NonNullable<AdminReviewDashboard["nextStep"]>, { sv: string; en: string }> = {
+    export: { sv: "Gå till pipeline-synk", en: "Go to pipeline sync" },
+    review: { sv: "Öppna kandidatkön", en: "Open candidate queue" },
+    harvest: { sv: "Visa kandidater med källgap", en: "Show candidates with source gaps" },
+    caught_up: { sv: "Öppna kandidatkön", en: "Open candidate queue" },
+  };
+  return labels[step ?? "caught_up"][lang];
+}
+
 function dashboardMetrics(dashboard: AdminReviewDashboard | null, lang: Language) {
   const counts = dashboard?.counts;
+  const sv = lang === "sv";
   return [
     {
       key: "new",
-      label: lang === "sv" ? "Nya kandidater" : "New candidates",
+      focusKey: "new" as DashboardQueueFocus,
+      label: sv ? "Nya kandidater" : "New candidates",
       value: dashboardMetricValue(counts?.newCandidateCount),
       icon: <PlusCircle size={15} weight="bold" />,
       tone: counts?.newCandidateCount ? "review" : "neutral",
+      action: { kind: "queue", focus: "new" } satisfies DashboardNavTarget,
+      actionHint: sv ? "Visa kandidater utan tidigare beslut" : "Show candidates without a prior decision",
     },
     {
       key: "ready",
-      label: lang === "sv" ? "Redo pärlor" : "Ready gems",
+      focusKey: "hidden_gem_ready" as DashboardQueueFocus,
+      label: sv ? "Redo pärlor" : "Ready gems",
       value: dashboardMetricValue(counts?.hiddenGemReadyCount),
       icon: <Sparkle size={15} weight="bold" />,
       tone: counts?.hiddenGemReadyCount ? "review" : "neutral",
+      action: { kind: "queue", focus: "hidden_gem_ready" } satisfies DashboardNavTarget,
+      actionHint: sv ? "Visa kandidater redo för dold-pärla-beslut" : "Show hidden-gem-ready candidates",
     },
     {
       key: "gaps",
-      label: lang === "sv" ? "Källgap" : "Source gaps",
+      focusKey: "needs_evidence" as DashboardQueueFocus,
+      label: sv ? "Källgap" : "Source gaps",
       value: dashboardMetricValue(counts?.needsEvidenceCount),
       icon: <Sliders size={15} weight="bold" />,
       tone: counts?.needsEvidenceCount ? "harvest" : "neutral",
+      action: { kind: "queue", focus: "needs_evidence" } satisfies DashboardNavTarget,
+      actionHint: sv ? "Visa kandidater som behöver mer evidens" : "Show candidates that need more evidence",
     },
     {
       key: "duplicates",
-      label: lang === "sv" ? "Dubbletter" : "Duplicates",
+      focusKey: "duplicates" as DashboardQueueFocus,
+      label: sv ? "Dubbletter" : "Duplicates",
       value: dashboardMetricValue(counts?.possibleDuplicateCount),
       icon: <Scales size={15} weight="bold" />,
       tone: counts?.possibleDuplicateCount ? "review" : "neutral",
+      action: { kind: "queue", focus: "duplicates" } satisfies DashboardNavTarget,
+      actionHint: sv ? "Visa kandidater med möjliga dubbletter" : "Show candidates with possible duplicates",
     },
     {
       key: "unexported",
-      label: lang === "sv" ? "Oexporterat" : "Unexported",
+      label: sv ? "Oexporterat" : "Unexported",
       value: dashboardMetricValue(counts?.unexportedReviewCount),
       icon: <DownloadSimple size={15} weight="bold" />,
       tone: counts?.unexportedReviewCount ? "export" : "neutral",
+      action: { kind: "sync" } satisfies DashboardNavTarget,
+      actionHint: sv ? "Gå till pipeline-synk och export" : "Go to pipeline sync and export",
     },
     {
       key: "last-export",
-      label: lang === "sv" ? "Senaste export" : "Last export",
-      value: dashboard?.lastExportedAt ? formatUpdatedDate(dashboard.lastExportedAt) : lang === "sv" ? "Aldrig" : "Never",
+      label: sv ? "Senaste export" : "Last export",
+      value: dashboard?.lastExportedAt ? formatUpdatedDate(dashboard.lastExportedAt) : sv ? "Aldrig" : "Never",
       icon: <CheckCircle size={15} weight="bold" />,
       tone: dashboard?.lastExportedAt ? "ok" : "neutral",
+      action: { kind: "sync" } satisfies DashboardNavTarget,
+      actionHint: sv ? "Gå till pipeline-synk och backup" : "Go to pipeline sync and backup",
     },
   ];
+}
+
+function queueFocusHelpText(focus: Exclude<DashboardQueueFocus, "all">, lang: Language) {
+  const labels: Record<Exclude<DashboardQueueFocus, "all">, { sv: string; en: string }> = {
+    new: {
+      sv: "Visar kandidater utan tidigare granskningsbeslut.",
+      en: "Showing candidates without a prior review decision.",
+    },
+    hidden_gem_ready: {
+      sv: "Visar kandidater som uppfyller dubbellåset för dold pärla.",
+      en: "Showing candidates that pass the hidden-gem double-lock.",
+    },
+    needs_evidence: {
+      sv: "Visar kandidater med källgap som behöver mer oberoende evidens.",
+      en: "Showing candidates with source gaps that need more independent evidence.",
+    },
+    duplicates: {
+      sv: "Visar kandidater med möjliga dubbletter att granska.",
+      en: "Showing candidates with possible duplicates to review.",
+    },
+  };
+  return labels[focus][lang];
 }
 
 function dashboardMetricValue(value: number | undefined) {
