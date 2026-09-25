@@ -14,10 +14,11 @@ type AdminPhoto = {
 type Props = {
   placeId: number;
   lang: Language;
+  refreshKey?: number;
   adminHeaders: (tokenOverride?: string, extraHeaders?: Record<string, string>) => Record<string, string>;
 };
 
-export function AdminPhotoManager({ placeId, lang, adminHeaders }: Props) {
+export function AdminPhotoManager({ placeId, lang, refreshKey = 0, adminHeaders }: Props) {
   const [photos, setPhotos] = useState<AdminPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -38,7 +39,9 @@ export function AdminPhotoManager({ placeId, lang, adminHeaders }: Props) {
     }
   };
 
-  useEffect(() => { void loadPhotos(); }, [placeId]);
+  useEffect(() => {
+    void loadPhotos();
+  }, [placeId, refreshKey]);
 
   const removePhoto = async (photo: AdminPhoto) => {
     if (!window.confirm(lang === "sv" ? "Ta bort bilden från platsen?" : "Remove this image from the place?")) return;

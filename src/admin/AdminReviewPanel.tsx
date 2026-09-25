@@ -193,6 +193,7 @@ export function AdminReviewPanel({
   const [loadingDashboard, setLoadingDashboard] = useState(false);
   const [exportingLabels, setExportingLabels] = useState(false);
   const [syncingPipeline, setSyncingPipeline] = useState(false);
+  const [photoRefreshKeys, setPhotoRefreshKeys] = useState<Record<number, number>>({});
   const [resolvingRegions, setResolvingRegions] = useState(false);
   const [websiteInputs, setWebsiteInputs] = useState<Record<number, string>>({});
   const [schemaBusy, setSchemaBusy] = useState(false);
@@ -1151,17 +1152,30 @@ export function AdminReviewPanel({
             : `Saved website for ${candidate.name}.`,
       );
       addToast({
-        type: "info",
-        title: lang === "sv" ? "🌐 Webb & bild sparad" : "🌐 Website & Photo Saved",
+        type: payload.scrapedPhotoUrl ? "success" : "info",
+        title: payload.scrapedPhotoUrl
+          ? lang === "sv"
+            ? "🌐 Webb & bild sparad"
+            : "🌐 Website & Photo Saved"
+          : lang === "sv"
+            ? "🌐 Webb sparad"
+            : "🌐 Website Saved",
         message: `${candidate.name} (#${candidate.id}) ➔ ${updatedWebsite}`,
         detail: payload.scrapedPhotoUrl
           ? lang === "sv"
-            ? `Officiell webbsida och og:image (${payload.scrapedPhotoUrl}) registrerade som verifierad källa (konfidens 0.9).`
-            : `Official website and og:image (${payload.scrapedPhotoUrl}) recorded as verified source (confidence 0.9).`
+            ? "og:image sparad i D1. Uppdaterar bildlistan och evidensremsan nedan."
+            : "og:image saved in D1. Refreshing the image list and evidence strip below."
           : lang === "sv"
-            ? "Officiell webbsida sparad som verifierad källa (konfidens 0.9)."
-            : "Official website saved as verified source (confidence 0.9).",
+            ? "Ingen og:image hittades i HTML. Webbadressen sparades som verifierad källa (konfidens 0.9)."
+            : "No og:image found in HTML. Website saved as verified source (confidence 0.9).",
       });
+      if (payload.scrapedPhotoUrl) {
+        setPhotoRefreshKeys((current) => ({
+          ...current,
+          [candidate.id]: (current[candidate.id] ?? 0) + 1,
+        }));
+      }
+      void loadCandidates();
       void loadDashboard();
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : String(saveError));
@@ -1916,7 +1930,12 @@ export function AdminReviewPanel({
                     ))}
                   </div>
                 ) : null}
-                <AdminPhotoManager placeId={candidate.id} lang={lang} adminHeaders={adminHeaders} />
+                <AdminPhotoManager
+                  placeId={candidate.id}
+                  lang={lang}
+                  refreshKey={photoRefreshKeys[candidate.id] ?? 0}
+                  adminHeaders={adminHeaders}
+                />
                 {candidate.possibleDuplicates.length ? (
                   <div className="admin-duplicate-box">
                     <div className="admin-duplicate-title">

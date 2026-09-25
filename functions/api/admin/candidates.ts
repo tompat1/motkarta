@@ -1,5 +1,6 @@
 import { syncReviewLabelCheckpoint } from "../../../lib/admin-label-exports.ts";
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
+import { fetchWebsiteImageUrl } from "../../../lib/website-image-scrape.ts";
 import { isD1QuotaError } from "../../../lib/admin-d1.ts";
 import type { PlaceInput, PlaceLifecycleState } from "../../../lib/scoring.ts";
 import { resolveStockholmRegion } from "../../../lib/stockholm-regions.ts";
