@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import { isExcludedCatalogPlace } from "../lib/catalog-exclusions.ts";
 
 const input = resolve(process.argv[2] ?? "public/data/places.json");
-const output = resolve(process.argv[3] ?? "drizzle/seed-places.sql");
+const output = resolve(process.argv[3] ?? "drizzle/seeds/seed-places.sql");
 const now = new Date().toISOString();
 
 const rawData = JSON.parse(await readFile(input, "utf8"));

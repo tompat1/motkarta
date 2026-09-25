@@ -9,7 +9,7 @@ import {
 import { numericOrNull, parseCsv, sql } from "../lib/import-utils.ts";
 
 const input = resolve(process.argv[2] ?? "data/stockholm_food_places.csv");
-const output = resolve(process.argv[3] ?? "drizzle/seed-osm.sql");
+const output = resolve(process.argv[3] ?? "drizzle/seeds/seed-osm.sql");
 const capturedAt = new Date().toISOString();
 
 const rows = parseCsv(await readFile(input, "utf8"));

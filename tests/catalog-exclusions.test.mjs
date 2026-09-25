@@ -19,7 +19,7 @@ test("published catalog and SQL seeds contain no O'Learys entries or dependent r
   const catalog = JSON.parse(readFileSync(new URL("../public/data/places.json", import.meta.url), "utf8"));
   assert.equal(catalog.places.some(isExcludedCatalogPlace), false);
   assert.equal(catalog.totalPlaces, catalog.places.length);
-  for (const file of ["seed-places.sql", "seed-osm.sql"]) {
+  for (const file of ["seeds/seed-places.sql", "seeds/seed-osm.sql"]) {
     const sql = readFileSync(new URL(`../drizzle/${file}`, import.meta.url), "utf8");
     assert.equal(isExcludedCatalogName(sql), false);
     assert.doesNotMatch(sql, /\b(?:1745655804|2454920710|870110783|710212268|1707636603|11993313340|1622348307|4133378355)\b/);

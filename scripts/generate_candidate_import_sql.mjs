@@ -4,7 +4,7 @@ import { sql } from "../lib/import-utils.ts";
 
 const args = process.argv.slice(2);
 const input = resolve(args[0] ?? "outputs/candidate_queue.json");
-const output = resolve(args[1] ?? "drizzle/seed-candidates.sql");
+const output = resolve(args[1] ?? "drizzle/seeds/seed-candidates.sql");
 const importedAt = new Date().toISOString();
 const allowedStates = new Set(["baseline", "candidate", "verified", "featured"]);
 const allowedKinds = new Set(["Restaurant", "Bakery", "Café", "Specialty coffee"]);

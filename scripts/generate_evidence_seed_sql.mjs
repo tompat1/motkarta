@@ -4,7 +4,7 @@ import { assertEvidenceImportRecord, placeReference } from "../lib/evidence-impo
 import { sql } from "../lib/import-utils.ts";
 
 const input = resolve(process.argv[2] ?? "data/evidence.json");
-const output = resolve(process.argv[3] ?? "drizzle/seed-evidence.sql");
+const output = resolve(process.argv[3] ?? "drizzle/seeds/seed-evidence.sql");
 const records = JSON.parse(await readFile(input, "utf8"));
 const importedAt = new Date().toISOString();
 
