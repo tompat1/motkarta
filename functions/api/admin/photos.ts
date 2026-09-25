@@ -39,6 +39,65 @@ export async function onRequestGet(context: Context) {
   return Response.json({ placeId, photos: [...await uploadedPhotos(db, placeId), ...(results ?? [])] }, { headers });
 }
 
+export async function onRequestPost(context: Context) {
+  const auth = await requireAdmin(context.request, context.env);
+  if (auth) return auth;
+
+  const db = context.env.DB as D1Database | undefined;
+  if (!db) return Response.json({ error: "No production D1 dataset is bound." }, { status: 503, headers });
+
+  let payload: Record<string, unknown>;
+  try {
+    payload = (await context.request.json()) as Record<string, unknown>;
+  } catch {
+    return Response.json({ error: "Invalid JSON body." }, { status: 400, headers });
+  }
+
+  const placeId = photoPlaceId(payload.placeId ?? payload.place_id);
+  const photoId = typeof payload.photoId === "string" ? payload.photoId.trim() : typeof payload.photo_id === "string" ? payload.photo_id.trim() : "";
+  const url = normalizePhotoUrl(typeof payload.url === "string" ? payload.url : "");
+  const thumbnailUrl = normalizePhotoUrl(typeof payload.thumbnailUrl === "string" ? payload.thumbnailUrl : typeof payload.thumbnail_url === "string" ? payload.thumbnail_url : url);
+  const caption = typeof payload.caption === "string" ? payload.caption.trim() : "";
+  const credit = typeof payload.credit === "string" ? payload.credit.trim() : "Admin curated";
+
+  if (!placeId || !url) {
+    return Response.json({ error: "Missing or invalid placeId/url." }, { status: 400, headers });
+  }
+
+  const reviewedAt = new Date().toISOString();
+  const resolvedPhotoId = photoId || `admin-${placeId}-${Date.now()}`;
+  const resolvedCaption = caption || "Admin curated place photo";
+
+  await db
+    .prepare(
+      `INSERT INTO place_photos (id, place_id, url, thumbnail_url, caption, credit, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         url = excluded.url,
+         thumbnail_url = excluded.thumbnail_url,
+         caption = excluded.caption,
+         credit = excluded.credit`,
+    )
+    .bind(resolvedPhotoId, placeId, url, thumbnailUrl || url, resolvedCaption, credit, reviewedAt)
+    .run();
+
+  return Response.json(
+    {
+      success: true,
+      placeId,
+      photo: {
+        id: resolvedPhotoId,
+        placeId,
+        url,
+        thumbnailUrl: thumbnailUrl || url,
+        caption: resolvedCaption,
+        credit,
+      },
+    },
+    { headers },
+  );
+}
+
 export async function onRequestDelete(context: Context) {
   const auth = await requireAdmin(context.request, context.env);
   if (auth) return auth;
@@ -57,4 +116,17 @@ export async function onRequestDelete(context: Context) {
 function parsePlaceId(request: Request) {
   const value = Number(new URL(request.url).searchParams.get("place_id"));
   return Number.isInteger(value) && value > 0 ? value : null;
+}
+
+function photoPlaceId(value: unknown) {
+  const id = Number(value);
+  return Number.isSafeInteger(id) && id > 0 ? id : null;
+}
+
+function normalizePhotoUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("//")) return `https:${trimmed}`;
+  if (!/^https?:\/\//i.test(trimmed)) return `https://${trimmed}`;
+  return trimmed.replace(/^http:\/\//i, "https://");
 }

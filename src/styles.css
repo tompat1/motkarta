@@ -8248,6 +8248,78 @@ button.concierge-clear-btn:hover {
   color: #991b1b;
 }
 
+.admin-photo-item-actions {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.admin-photo-item-actions button {
+  color: var(--color-ink);
+}
+
+.admin-photo-edit-form,
+.admin-photo-add-form {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+}
+
+.admin-photo-add-form {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--color-mist);
+}
+
+.admin-photo-edit-form input,
+.admin-photo-add-form input {
+  width: 100%;
+  border: 1px solid var(--color-mist);
+  font: inherit;
+  font-size: 11px;
+  padding: 6px 8px;
+}
+
+.admin-photo-add-form label {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-photo-add-form label span,
+.admin-photo-edit-actions button {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.admin-photo-edit-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-photo-edit-actions button,
+.admin-photo-add-form button[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 6px 8px;
+  text-transform: uppercase;
+}
+
+.admin-photo-edit-actions button.muted,
+.admin-photo-add-form button[type="submit"]:disabled {
+  background: var(--color-white);
+  color: var(--color-stone);
+  border-color: var(--color-mist);
+  cursor: not-allowed;
+}
+
 .admin-evidence-strip {
   gap: 6px;
 }

@@ -1,6 +1,6 @@
 import { syncReviewLabelCheckpoint } from "../../../lib/admin-label-exports.ts";
+import { extractWebsiteImageFromHtml } from "../../../lib/website-image-scrape.ts";
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
-import { fetchWebsiteImageUrl } from "../../../lib/website-image-scrape.ts";
 import { isD1QuotaError } from "../../../lib/admin-d1.ts";
 import type { PlaceInput, PlaceLifecycleState } from "../../../lib/scoring.ts";
 import { resolveStockholmRegion } from "../../../lib/stockholm-regions.ts";
@@ -1126,32 +1126,31 @@ async function updateWebsite(db: D1Database, id: number, payload: Record<string,
 
   const reviewedAt = new Date().toISOString();
   let scrapedPhotoUrl: string | null = null;
+  let scrapeSkippedReason: string | null = null;
 
   if (payload.scrapeImage !== false) {
     try {
       const resp = await fetch(websiteUrl, {
         headers: {
           "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Motkarta/1.0",
+          accept: "text/html,application/xhtml+xml",
         },
       });
       if (resp.ok) {
         const html = await resp.text();
-        const ogMatch =
-          html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
-          html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i) ||
-          html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i);
-
-        if (ogMatch && ogMatch[1]) {
-          let imgUrl = ogMatch[1].trim();
-          if (imgUrl.startsWith("//")) {
-            imgUrl = `https:${imgUrl}`;
-          } else if (imgUrl.startsWith("/")) {
-            const parsed = new URL(websiteUrl);
-            imgUrl = `${parsed.origin}${imgUrl}`;
+        const scrapeResult = extractWebsiteImageFromHtml(html, websiteUrl);
+        if (scrapeResult.skippedAsLogoBanner) {
+          scrapeSkippedReason = scrapeResult.skipReason ?? "logo_banner";
+          try {
+            await db
+              .prepare(`DELETE FROM place_photos WHERE id = ? AND place_id = ?`)
+              .bind(`web-scraped-${id}`, id)
+              .run();
+          } catch (cleanupError) {
+            console.warn("Could not remove logo-banner scrape from D1", cleanupError);
           }
-          if (imgUrl.startsWith("http://") || imgUrl.startsWith("https://")) {
-            scrapedPhotoUrl = imgUrl;
-          }
+        } else if (scrapeResult.imageUrl) {
+          scrapedPhotoUrl = scrapeResult.imageUrl;
         }
       }
     } catch (scrapeErr) {
@@ -1161,7 +1160,11 @@ async function updateWebsite(db: D1Database, id: number, payload: Record<string,
 
   const notes = joinNotes([
     validationNotes,
-    `Updated website to '${websiteUrl}'.${scrapedPhotoUrl ? ` Scraped og:image '${scrapedPhotoUrl}'.` : ""}`,
+    `Updated website to '${websiteUrl}'.`,
+    scrapedPhotoUrl ? `Scraped og:image '${scrapedPhotoUrl}'.` : "",
+    scrapeSkippedReason === "logo_banner"
+      ? "Skipped og:image because it looks like a logo/social banner rather than venue photography."
+      : "",
   ]);
 
   await db
@@ -1173,13 +1176,38 @@ async function updateWebsite(db: D1Database, id: number, payload: Record<string,
     .bind(websiteUrl, notes, reviewedAt, id)
     .run();
 
+  try {
+    await db
+      .prepare(
+        `INSERT INTO evidence_sources (establishment_id, source_type, source_name, url, confidence, captured_at, summary)
+         VALUES (?, 'official_site', 'Official Venue Website', ?, 0.9, ?, ?)`,
+      )
+      .bind(
+        id,
+        websiteUrl,
+        reviewedAt,
+        scrapedPhotoUrl
+          ? `Venue website and og:image metadata scraped by admin: ${scrapedPhotoUrl}`
+          : scrapeSkippedReason === "logo_banner"
+            ? "Venue website verified by admin. Auto-scrape skipped logo/social banner og:image."
+            : "Venue website verified by admin.",
+      )
+      .run();
+  } catch (evidenceError) {
+    console.warn("Could not insert official_site evidence", evidenceError);
+  }
+
   if (scrapedPhotoUrl) {
     try {
       await db
         .prepare(
-          `INSERT INTO place_photos (id, place_id, url, thumbnail_url, caption, credit)
-           VALUES (?, ?, ?, ?, ?, ?)
-           ON CONFLICT(id) DO UPDATE SET url = excluded.url, thumbnail_url = excluded.thumbnail_url`,
+          `INSERT INTO place_photos (id, place_id, url, thumbnail_url, caption, credit, created_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?)
+           ON CONFLICT(id) DO UPDATE SET
+             url = excluded.url,
+             thumbnail_url = excluded.thumbnail_url,
+             caption = excluded.caption,
+             credit = excluded.credit`,
         )
         .bind(
           `web-scraped-${id}`,
@@ -1188,19 +1216,7 @@ async function updateWebsite(db: D1Database, id: number, payload: Record<string,
           scrapedPhotoUrl,
           `${candidate.name} Official Web Photo`,
           "Official Venue Website",
-        )
-        .run();
-
-      await db
-        .prepare(
-          `INSERT INTO evidence_sources (establishment_id, source_type, source_name, url, confidence, captured_at, summary)
-           VALUES (?, 'official_site', 'Official Venue Website', ?, 0.9, ?, ?)`,
-        )
-        .bind(
-          id,
-          websiteUrl,
           reviewedAt,
-          `Venue website and og:image metadata scraped by admin: ${scrapedPhotoUrl}`,
         )
         .run();
     } catch (dbMediaError) {
@@ -1224,6 +1240,7 @@ async function updateWebsite(db: D1Database, id: number, payload: Record<string,
       id,
       website: websiteUrl,
       scrapedPhotoUrl,
+      scrapeSkippedReason,
       reviewedAt,
     },
     { headers: jsonHeaders },

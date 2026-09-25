@@ -1124,6 +1124,7 @@ export function AdminReviewPanel({
         reviewedAt?: string;
         website?: string;
         scrapedPhotoUrl?: string | null;
+        scrapeSkippedReason?: string | null;
         error?: string;
       };
 
@@ -1142,34 +1143,47 @@ export function AdminReviewPanel({
         }),
       );
 
+      const logoBannerSkipped = payload.scrapeSkippedReason === "logo_banner";
       setStatus(
         payload.scrapedPhotoUrl
           ? lang === "sv"
             ? `Webbplats sparad för ${candidate.name} & bild hämtades (${payload.scrapedPhotoUrl}).`
             : `Saved website for ${candidate.name} & scraped official photo (${payload.scrapedPhotoUrl}).`
-          : lang === "sv"
-            ? `Webbplats sparad för ${candidate.name}.`
-            : `Saved website for ${candidate.name}.`,
+          : logoBannerSkipped
+            ? lang === "sv"
+              ? `Webbplats sparad för ${candidate.name}. og:image hoppades över (logotyp/banner).`
+              : `Saved website for ${candidate.name}. og:image skipped (logo/social banner).`
+            : lang === "sv"
+              ? `Webbplats sparad för ${candidate.name}.`
+              : `Saved website for ${candidate.name}.`,
       );
       addToast({
-        type: payload.scrapedPhotoUrl ? "success" : "info",
+        type: payload.scrapedPhotoUrl ? "success" : logoBannerSkipped ? "warning" : "info",
         title: payload.scrapedPhotoUrl
           ? lang === "sv"
             ? "🌐 Webb & bild sparad"
             : "🌐 Website & Photo Saved"
-          : lang === "sv"
-            ? "🌐 Webb sparad"
-            : "🌐 Website Saved",
+          : logoBannerSkipped
+            ? lang === "sv"
+              ? "🌐 Webb sparad, logobild hoppades över"
+              : "🌐 Website saved, logo banner skipped"
+            : lang === "sv"
+              ? "🌐 Webb sparad"
+              : "🌐 Website Saved",
         message: `${candidate.name} (#${candidate.id}) ➔ ${updatedWebsite}`,
         detail: payload.scrapedPhotoUrl
           ? lang === "sv"
             ? "og:image sparad i D1. Uppdaterar bildlistan och evidensremsan nedan."
             : "og:image saved in D1. Refreshing the image list and evidence strip below."
-          : lang === "sv"
-            ? "Ingen og:image hittades i HTML. Webbadressen sparades som verifierad källa (konfidens 0.9)."
-            : "No og:image found in HTML. Website saved as verified source (confidence 0.9).",
+          : logoBannerSkipped
+            ? lang === "sv"
+              ? "Webbplatsen räknas som officiell källa, men auto-skrapad og:image var en logotyp/banner. Lägg till en riktig bild-URL manuellt nedan."
+              : "Website counts as an official source, but the auto-scraped og:image was a logo/social banner. Add a real image URL manually below."
+            : lang === "sv"
+              ? "Ingen og:image hittades i HTML. Webbadressen sparades som verifierad källa (konfidens 0.9)."
+              : "No og:image found in HTML. Website saved as verified source (confidence 0.9).",
       });
-      if (payload.scrapedPhotoUrl) {
+      if (payload.scrapedPhotoUrl || logoBannerSkipped) {
         setPhotoRefreshKeys((current) => ({
           ...current,
           [candidate.id]: (current[candidate.id] ?? 0) + 1,
