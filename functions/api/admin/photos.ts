@@ -1,4 +1,6 @@
+import { decodePhoto } from "../../../lib/photo-uploads.ts";
 import { uploadedPhotos } from "../../../lib/photo-uploads.ts";
+import { normalizePhotoHeroFrame } from "../../../lib/photo-hero-frame.ts";
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
 
 type D1Statement = {
@@ -20,6 +22,10 @@ type AdminPhoto = {
   credit?: string | null;
   width?: number | null;
   height?: number | null;
+  heroFocusX?: number;
+  heroFocusY?: number;
+  heroScale?: number;
+  heroFit?: "contain" | "cover";
 };
 
 const headers = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
@@ -33,7 +39,8 @@ export async function onRequestGet(context: Context) {
   if (!db) return Response.json({ error: "No production D1 dataset is bound." }, { status: 503, headers });
 
   const { results } = await db.prepare(
-    `SELECT id, place_id AS placeId, url, thumbnail_url AS thumbnailUrl, caption, credit, width, height
+    `SELECT id, place_id AS placeId, url, thumbnail_url AS thumbnailUrl, caption, credit, width, height,
+      hero_focus_x AS heroFocusX, hero_focus_y AS heroFocusY, hero_scale AS heroScale, hero_fit AS heroFit
      FROM place_photos WHERE place_id = ? ORDER BY id DESC`,
   ).bind(placeId).all<AdminPhoto>();
   return Response.json({ placeId, photos: [...await uploadedPhotos(db, placeId), ...(results ?? [])] }, { headers });
@@ -55,13 +62,99 @@ export async function onRequestPost(context: Context) {
 
   const placeId = photoPlaceId(payload.placeId ?? payload.place_id);
   const photoId = typeof payload.photoId === "string" ? payload.photoId.trim() : typeof payload.photo_id === "string" ? payload.photo_id.trim() : "";
-  const url = normalizePhotoUrl(typeof payload.url === "string" ? payload.url : "");
-  const thumbnailUrl = normalizePhotoUrl(typeof payload.thumbnailUrl === "string" ? payload.thumbnailUrl : typeof payload.thumbnail_url === "string" ? payload.thumbnail_url : url);
   const caption = typeof payload.caption === "string" ? payload.caption.trim() : "";
   const credit = typeof payload.credit === "string" ? payload.credit.trim() : "Admin curated";
+  const hero = normalizePhotoHeroFrame({
+    heroFocusX: readNumber(payload.heroFocusX) ?? readNumber(payload.hero_focus_x),
+    heroFocusY: readNumber(payload.heroFocusY) ?? readNumber(payload.hero_focus_y),
+    heroScale: readNumber(payload.heroScale) ?? readNumber(payload.hero_scale),
+    heroFit: readHeroFit(payload.heroFit) ?? readHeroFit(payload.hero_fit),
+  });
 
-  if (!placeId || !url) {
+  if (!placeId) {
+    return Response.json({ error: "Missing or invalid placeId." }, { status: 400, headers });
+  }
+
+  const dataUrl = typeof payload.dataUrl === "string" ? payload.dataUrl : typeof payload.data_url === "string" ? payload.data_url : "";
+  if (dataUrl) {
+    const decoded = decodePhoto(dataUrl);
+    if (!decoded) {
+      return Response.json({ error: "Invalid image upload. Use JPG, PNG or WebP up to 1 MiB." }, { status: 400, headers });
+    }
+    const exists = await db.prepare("SELECT id FROM establishments WHERE id = ? LIMIT 1").bind(placeId).all<{ id: number }>();
+    if (!exists.results?.[0]) {
+      return Response.json({ error: "Place not found." }, { status: 404, headers });
+    }
+    const resolvedPhotoId = photoId && photoId.startsWith("upload-") ? photoId : `upload-${crypto.randomUUID()}`;
+    const resolvedCaption = caption || "Admin curated hero photo";
+    const reviewedAt = new Date().toISOString();
+    if (photoId && photoId.startsWith("upload-")) {
+      await db.prepare(
+        `UPDATE place_photo_uploads
+         SET caption = ?, hero_focus_x = ?, hero_focus_y = ?, hero_scale = ?, hero_fit = ?
+         WHERE id = ? AND place_id = ?`,
+      ).bind(resolvedCaption, hero.heroFocusX, hero.heroFocusY, hero.heroScale, hero.heroFit, resolvedPhotoId, placeId).run();
+      await db.prepare(
+        `UPDATE place_photo_uploads
+         SET content_type = ?, image_base64 = ?
+         WHERE id = ? AND place_id = ?`,
+      ).bind(decoded.contentType, decoded.base64, resolvedPhotoId, placeId).run();
+    } else {
+      await db.prepare(
+        `INSERT INTO place_photo_uploads
+          (id, place_id, caption, content_type, image_base64, hero_focus_x, hero_focus_y, hero_scale, hero_fit, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ).bind(
+        resolvedPhotoId, placeId, resolvedCaption, decoded.contentType, decoded.base64,
+        hero.heroFocusX, hero.heroFocusY, hero.heroScale, hero.heroFit, reviewedAt,
+      ).run();
+    }
+    const url = `/api/photo-upload?id=${resolvedPhotoId}`;
+    return Response.json({
+      success: true,
+      placeId,
+      photo: {
+        id: resolvedPhotoId,
+        placeId,
+        url,
+        thumbnailUrl: url,
+        caption: resolvedCaption,
+        credit,
+        ...hero,
+      },
+    }, { headers });
+  }
+
+  const url = normalizePhotoUrl(typeof payload.url === "string" ? payload.url : "");
+  const thumbnailUrl = normalizePhotoUrl(typeof payload.thumbnailUrl === "string" ? payload.thumbnailUrl : typeof payload.thumbnail_url === "string" ? payload.thumbnail_url : url);
+  if (!url) {
     return Response.json({ error: "Missing or invalid placeId/url." }, { status: 400, headers });
+  }
+
+  if (photoId && photoId.startsWith("upload-")) {
+    const resolvedCaption = caption || "Admin curated hero photo";
+    const result = await db.prepare(
+      `UPDATE place_photo_uploads
+       SET caption = ?, hero_focus_x = ?, hero_focus_y = ?, hero_scale = ?, hero_fit = ?
+       WHERE id = ? AND place_id = ?`,
+    ).bind(resolvedCaption, hero.heroFocusX, hero.heroFocusY, hero.heroScale, hero.heroFit, photoId, placeId).run();
+    if (!result.meta?.changes) {
+      return Response.json({ error: "Photo not found." }, { status: 404, headers });
+    }
+    const uploadUrl = `/api/photo-upload?id=${photoId}`;
+    return Response.json({
+      success: true,
+      placeId,
+      photo: {
+        id: photoId,
+        placeId,
+        url: uploadUrl,
+        thumbnailUrl: uploadUrl,
+        caption: resolvedCaption,
+        credit,
+        ...hero,
+      },
+    }, { headers });
   }
 
   const reviewedAt = new Date().toISOString();
@@ -70,15 +163,25 @@ export async function onRequestPost(context: Context) {
 
   await db
     .prepare(
-      `INSERT INTO place_photos (id, place_id, url, thumbnail_url, caption, credit, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?)
+      `INSERT INTO place_photos (
+         id, place_id, url, thumbnail_url, caption, credit, created_at,
+         hero_focus_x, hero_focus_y, hero_scale, hero_fit
+       )
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(id) DO UPDATE SET
          url = excluded.url,
          thumbnail_url = excluded.thumbnail_url,
          caption = excluded.caption,
-         credit = excluded.credit`,
+         credit = excluded.credit,
+         hero_focus_x = excluded.hero_focus_x,
+         hero_focus_y = excluded.hero_focus_y,
+         hero_scale = excluded.hero_scale,
+         hero_fit = excluded.hero_fit`,
     )
-    .bind(resolvedPhotoId, placeId, url, thumbnailUrl || url, resolvedCaption, credit, reviewedAt)
+    .bind(
+      resolvedPhotoId, placeId, url, thumbnailUrl || url, resolvedCaption, credit, reviewedAt,
+      hero.heroFocusX, hero.heroFocusY, hero.heroScale, hero.heroFit,
+    )
     .run();
 
   return Response.json(
@@ -92,6 +195,7 @@ export async function onRequestPost(context: Context) {
         thumbnailUrl: thumbnailUrl || url,
         caption: resolvedCaption,
         credit,
+        ...hero,
       },
     },
     { headers },
@@ -121,6 +225,14 @@ function parsePlaceId(request: Request) {
 function photoPlaceId(value: unknown) {
   const id = Number(value);
   return Number.isSafeInteger(id) && id > 0 ? id : null;
+}
+
+function readNumber(value: unknown) {
+  return typeof value === "number" ? value : undefined;
+}
+
+function readHeroFit(value: unknown): "contain" | "cover" | undefined {
+  return value === "contain" || value === "cover" ? value : undefined;
 }
 
 function normalizePhotoUrl(value: string) {

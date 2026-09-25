@@ -1949,6 +1949,11 @@ export function AdminReviewPanel({
                   lang={lang}
                   refreshKey={photoRefreshKeys[candidate.id] ?? 0}
                   adminHeaders={adminHeaders}
+                  placePreview={{
+                    name: candidate.name,
+                    kind: candidate.kind,
+                    area: candidate.area,
+                  }}
                 />
                 {candidate.possibleDuplicates.length ? (
                   <div className="admin-duplicate-box">

@@ -23,14 +23,25 @@ export function parsePhotoIdentity(value: unknown): string[] | null {
 
 export async function uploadedPhotos(db: PhotoDatabase, placeId: number, osmIdentity?: string | null): Promise<PlacePhoto[]> {
   const identity = parsePhotoIdentity(osmIdentity);
-  const { results } = await db.prepare(`SELECT u.id, u.caption FROM place_photo_uploads u
+  const { results } = await db.prepare(`SELECT u.id, u.caption,
+      u.hero_focus_x AS heroFocusX, u.hero_focus_y AS heroFocusY,
+      u.hero_scale AS heroScale, u.hero_fit AS heroFit
+    FROM place_photo_uploads u
     JOIN establishments e ON e.id = u.place_id
     WHERE ${identity ? "e.osm_type = ? AND e.osm_id = ?" : "u.place_id = ?"}
     ORDER BY u.created_at DESC, u.id DESC`)
-    .bind(...(identity ?? [placeId])).all<{ id: string; caption: string }>();
-  return (results ?? []).map(({ id, caption }) => ({
+    .bind(...(identity ?? [placeId])).all<{
+      id: string;
+      caption: string;
+      heroFocusX?: number;
+      heroFocusY?: number;
+      heroScale?: number;
+      heroFit?: "contain" | "cover";
+    }>();
+  return (results ?? []).map(({ id, caption, heroFocusX, heroFocusY, heroScale, heroFit }) => ({
     id, placeId, caption, credit: "Community upload",
     url: `/api/photo-upload?id=${id}`, thumbnailUrl: `/api/photo-upload?id=${id}`,
+    heroFocusX, heroFocusY, heroScale, heroFit,
   }));
 }
 

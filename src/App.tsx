@@ -136,6 +136,7 @@ import { MobileAppToolbar, type MobileTab } from "./components/MobileAppToolbar"
 import { MobilePlaceSlideUp } from "./components/MobilePlaceSlideUp";
 import { MotkartaScoreWidget } from "./components/MotkartaScoreWidget";
 import { SpecialtyCoffeeIcon } from "./components/SpecialtyCoffeeIcon";
+import { heroImageStyle } from "../lib/photo-hero-frame";
 import {
   addUserReview,
   addUserPhoto,
@@ -2915,6 +2916,7 @@ function AppContent({
                     src={activeCardPhoto?.url ?? DUMMY_PLACE_IMAGE_URL}
                     alt={activeCardPhoto?.caption || active.name}
                     className={`map-card-hero-photo ${!activeCardPhoto ? "map-card-hero-photo-dummy" : ""}`}
+                    style={activeCardPhoto ? heroImageStyle(activeCardPhoto) : undefined}
                     loading="eager"
                     onError={(event) => {
                       event.currentTarget.src = DUMMY_PLACE_IMAGE_URL;

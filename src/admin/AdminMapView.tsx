@@ -505,7 +505,18 @@ export function AdminMapView({
                 </div>
               ) : null}
 
-              {adminHeaders ? <AdminPhotoManager placeId={selectedPlace.id} lang={lang} adminHeaders={adminHeaders} /> : null}
+              {adminHeaders ? (
+                <AdminPhotoManager
+                  placeId={selectedPlace.id}
+                  lang={lang}
+                  adminHeaders={adminHeaders}
+                  placePreview={{
+                    name: selectedPlace.name,
+                    kind: selectedPlace.kind,
+                    area: selectedPlace.area,
+                  }}
+                />
+              ) : null}
 
               {onUpdateDistrict ? (
                 <div className="inspector-region-selector">

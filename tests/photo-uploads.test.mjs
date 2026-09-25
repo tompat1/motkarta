@@ -22,6 +22,7 @@ function database(t) {
     INSERT INTO establishments VALUES (42, 'node', '456');
     CREATE TABLE place_photos (id TEXT, place_id INTEGER, url TEXT, thumbnail_url TEXT, caption TEXT, credit TEXT, width INTEGER, height INTEGER);`);
   sqlite.exec(readFileSync(new URL('../drizzle/0011_public_photo_uploads.sql', import.meta.url), 'utf8'));
+  sqlite.exec(readFileSync(new URL('../drizzle/0013_photo_hero_frame.sql', import.meta.url), 'utf8'));
   const DB = { prepare(sql) {
     const statement = sqlite.prepare(sql);
     let values = [];

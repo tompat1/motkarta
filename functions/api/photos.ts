@@ -41,7 +41,9 @@ export async function onRequestGet(context: EventContext<Env>) {
     try {
       const { results } = await db
         .prepare(
-          "SELECT id, place_id as placeId, url, thumbnail_url as thumbnailUrl, caption, credit, width, height FROM place_photos WHERE place_id = ?",
+          `SELECT id, place_id as placeId, url, thumbnail_url as thumbnailUrl, caption, credit, width, height,
+            hero_focus_x as heroFocusX, hero_focus_y as heroFocusY, hero_scale as heroScale, hero_fit as heroFit
+           FROM place_photos WHERE place_id = ?`,
         )
         .bind(placeId)
         .all<PlacePhoto>();

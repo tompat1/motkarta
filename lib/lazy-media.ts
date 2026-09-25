@@ -18,6 +18,10 @@ export type PlacePhoto = {
   credit?: string;
   width?: number;
   height?: number;
+  heroFocusX?: number;
+  heroFocusY?: number;
+  heroScale?: number;
+  heroFit?: "contain" | "cover";
 };
 
 export type PlaceContext = {

@@ -23,6 +23,7 @@ import {
 } from "@phosphor-icons/react";
 import type { ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
+import { heroImageStyle } from "../../lib/photo-hero-frame";
 import { fetchPlacePhotos, type PlacePhoto } from "../../lib/lazy-media";
 import { formatDistance, distanceFromPoint } from "../app/shared";
 import { LazyPlaceMediaDrawer } from "./LazyPlaceMediaDrawer";
@@ -289,6 +290,7 @@ export function PlaceDetailSheet({
               src={activePhoto?.url ?? DUMMY_PLACE_IMAGE_URL}
               alt={activePhoto?.caption || place.name}
               className={`place-detail-hero-photo ${!activePhoto ? "place-detail-hero-photo-dummy" : ""}`}
+              style={activePhoto ? heroImageStyle(activePhoto) : undefined}
               loading="eager"
               onError={(event) => {
                 event.currentTarget.src = DUMMY_PLACE_IMAGE_URL;
