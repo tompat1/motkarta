@@ -78,7 +78,7 @@ export function AdminPhotoHeroEditor({ imageUrl, frame, onFrameChange, placePrev
       </div>
       <div className="admin-photo-hero-controls">
         <label>
-          <span>{lang === "sv" ? "Zoom" : "Zoom"}</span>
+          <span>Zoom</span>
           <input
             type="range"
             min={1}
