@@ -2136,7 +2136,7 @@ export function AdminReviewPanel({
                           [candidate.id]: event.target.value,
                         }))
                       }
-                      placeholder={lang === "sv" ? "Götgatan 12, Stockholm" : "Götgatan 12, Stockholm"}
+                      placeholder="Götgatan 12, Stockholm"
                     />
                   </div>
                 </div>
