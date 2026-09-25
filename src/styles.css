@@ -9010,6 +9010,88 @@ button.concierge-clear-btn:hover {
   grid-column: 1 / -1;
 }
 
+.admin-place-editor-price-level {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-place-editor-price-level > span,
+.admin-price-picker-label,
+.admin-address-picker-label {
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-price-level-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-price-level-picker label {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  gap: 6px;
+  padding: 6px 10px;
+}
+
+.admin-price-level-picker label.is-active {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.admin-price-level-picker input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.admin-address-picker-row,
+.admin-price-picker-row {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-address-picker-label {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.admin-address-input-wrap,
+.admin-address-input {
+  width: 100%;
+}
+
+.admin-address-input {
+  border: 1px solid var(--color-mist);
+  font: inherit;
+  padding: 8px 10px;
+}
+
+.admin-address-picker-row.unresolved .admin-address-input,
+.admin-price-picker-row {
+  border-left: 2px solid #f59e0b;
+  padding-left: 8px;
+}
+
+.admin-price-picker-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .admin-modal-error {
   color: var(--color-signal);
   font-size: 13px;

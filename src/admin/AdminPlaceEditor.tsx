@@ -18,7 +18,47 @@ export type AdminPlaceDraft = {
   lifecycleState: PlaceLifecycleState;
   validationLabel: AdminValidationLabel | null;
   cuisine: string;
+  priceLevel: number | null;
 };
+
+const priceLevelOptions = [1, 2, 3, 4] as const;
+
+export function AdminPriceLevelPicker({
+  value,
+  onChange,
+  lang,
+  name = "price-level",
+}: {
+  value: number | null;
+  onChange: (value: number | null) => void;
+  lang: Language;
+  name?: string;
+}) {
+  return (
+    <div className="admin-price-level-picker" role="radiogroup" aria-label={lang === "sv" ? "Prisnivå" : "Price level"}>
+      {priceLevelOptions.map((level) => (
+        <label key={level} className={value === level ? "is-active" : ""}>
+          <input
+            type="radio"
+            name={name}
+            checked={value === level}
+            onChange={() => onChange(level)}
+          />
+          <span>{"$".repeat(level)}</span>
+        </label>
+      ))}
+      <label className={value === null ? "is-active" : ""}>
+        <input
+          type="radio"
+          name={name}
+          checked={value === null}
+          onChange={() => onChange(null)}
+        />
+        <span>{lang === "sv" ? "Ingen" : "None"}</span>
+      </label>
+    </div>
+  );
+}
 
 const placeKinds = ["Restaurant", "Bakery", "Café", "Specialty coffee"];
 const lifecycleOptions: PlaceLifecycleState[] = ["baseline", "candidate", "verified", "featured"];
@@ -92,6 +132,7 @@ export function AdminPlaceEditor({
           lifecycleState: draft.lifecycleState,
           validationLabel: draft.validationLabel,
           cuisine: draft.cuisine.trim(),
+          priceLevel: draft.priceLevel,
           validationNotes:
             mode === "create"
               ? lang === "sv"
@@ -197,8 +238,21 @@ export function AdminPlaceEditor({
           </label>
           <label>
             {lang === "sv" ? "Adress" : "Address"}
-            <input value={draft.address} onChange={(event) => setDraft((current) => ({ ...current, address: event.target.value }))} />
+            <input
+              value={draft.address}
+              onChange={(event) => setDraft((current) => ({ ...current, address: event.target.value }))}
+              placeholder={lang === "sv" ? "Gatuadress, t.ex. Götgatan 12" : "Street address, e.g. Götgatan 12"}
+            />
           </label>
+          <div className="admin-place-editor-price-level">
+            <span>{lang === "sv" ? "Prisnivå" : "Price level"}</span>
+            <AdminPriceLevelPicker
+              value={draft.priceLevel}
+              onChange={(priceLevel) => setDraft((current) => ({ ...current, priceLevel }))}
+              lang={lang}
+              name={`price-level-${draft.id ?? "new"}`}
+            />
+          </div>
           <label>
             {lang === "sv" ? "Webbplats" : "Website"}
             <input type="url" value={draft.website} onChange={(event) => setDraft((current) => ({ ...current, website: event.target.value }))} />
@@ -298,6 +352,7 @@ export function emptyPlaceDraft(): AdminPlaceDraft {
     lifecycleState: "verified",
     validationLabel: null,
     cuisine: "",
+    priceLevel: null,
   };
 }
 
@@ -313,6 +368,7 @@ export function candidateToPlaceDraft(candidate: {
   longitude?: number | null;
   lifecycleState: PlaceLifecycleState;
   validationLabel: AdminValidationLabel | null;
+  priceLevel?: number | null;
 }): AdminPlaceDraft {
   return {
     id: candidate.id,
@@ -327,5 +383,6 @@ export function candidateToPlaceDraft(candidate: {
     lifecycleState: candidate.lifecycleState,
     validationLabel: candidate.validationLabel,
     cuisine: "",
+    priceLevel: candidate.priceLevel ?? null,
   };
 }

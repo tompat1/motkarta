@@ -430,6 +430,47 @@ test("admin candidates endpoint supports filtering by needs_input", async () => 
   assert.deepEqual(payload.candidates.map((r) => r.name), ["Missing Web Place"]);
 });
 
+test("admin candidates endpoint updates address and price level via update_place", async () => {
+  const db = fakeAdminD1([
+    candidateRow({ id: 10, name: "Venue Needing Details", address: null, priceLevel: null }),
+  ]);
+
+  const response = await postAdminCandidate({
+    request: new Request("https://motkarta.test/api/admin/candidates", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-motkarta-admin-token": adminToken,
+      },
+      body: JSON.stringify({
+        id: 10,
+        action: "update_place",
+        name: "Venue Needing Details",
+        kind: "Café",
+        area: "Södermalm",
+        address: "Götgatan 12, Stockholm",
+        website: "https://candidate.example",
+        note: "Independent candidate.",
+        latitude: 59.32,
+        longitude: 18.07,
+        lifecycleState: "candidate",
+        validationLabel: null,
+        priceLevel: 3,
+        validationNotes: "Updated address and price in admin.",
+      }),
+    }),
+    env: { DB: db, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.action, "update_place");
+  assert.equal(db.rows[0].address, "Götgatan 12, Stockholm");
+  assert.equal(db.rows[0].priceLevel, 3);
+  assert.equal(payload.candidate.priceLevel, 3);
+  assert.equal(db.events[0].action, "update_place");
+});
+
 test("admin candidates endpoint updates website via update_website action", async () => {
   const db = fakeAdminD1([
     candidateRow({ id: 10, name: "Venue Needing Web", website: null }),
@@ -469,6 +510,8 @@ function candidateRow(overrides) {
     area: "Södermalm",
     address: "Kandgatan 1, Stockholm",
     website: "https://candidate.example",
+    priceLevel: 2,
+    priceSEK: null,
     note: "Independent candidate.",
     lifecycleState: "candidate",
     validationLabel: null,
@@ -584,7 +627,42 @@ function fakeAdminD1(rows, options = {}) {
         },
         async run() {
           if (query.includes("UPDATE establishments")) {
-            if (query.includes("website = ?")) {
+            if (query.includes("SET name = ?")) {
+              const [
+                name,
+                kind,
+                area,
+                address,
+                website,
+                description,
+                latitude,
+                longitude,
+                lifecycleState,
+                validationLabel,
+                priceLevel,
+                validationNotes,
+                updatedAt,
+                id,
+              ] = this.values;
+              const row = db.rows.find((item) => item.id === id);
+              if (!row) return { success: true, meta: { changes: 0 } };
+              row.name = name;
+              row.kind = kind;
+              row.area = area;
+              row.address = address;
+              row.website = website;
+              row.note = description;
+              row.latitude = latitude;
+              row.longitude = longitude;
+              row.lifecycleState = lifecycleState;
+              row.validationLabel = validationLabel;
+              row.priceLevel = priceLevel;
+              row.validationNotes = validationNotes;
+              row.updatedAt = updatedAt;
+              return { success: true, meta: { changes: 1 } };
+            }
+
+            if (query.includes("SET website = ?")) {
               const [website, validationNotes, updatedAt, id] = this.values;
               const row = db.rows.find((item) => item.id === id);
               if (!row) return { success: true, meta: { changes: 0 } };
@@ -594,7 +672,7 @@ function fakeAdminD1(rows, options = {}) {
               return { success: true, meta: { changes: 1 } };
             }
 
-            if (query.includes("district = ?")) {
+            if (query.includes("SET district = ?")) {
               const [district, validationNotes, updatedAt, id] = this.values;
               const row = db.rows.find((item) => item.id === id);
               if (!row) return { success: true, meta: { changes: 0 } };

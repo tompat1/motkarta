@@ -51,6 +51,8 @@ type CandidateRow = {
   area: string;
   address: string | null;
   website: string | null;
+  priceLevel: number | null;
+  priceSEK: string | null;
   latitude: number | null;
   longitude: number | null;
   note: string;
@@ -361,6 +363,11 @@ async function createPlace(db: D1Database, payload: Record<string, unknown>, val
     );
   }
   const validationLabel = rawValidationLabel ?? "known_hidden_gem";
+  const rawPriceLevel = normalizePriceLevel(payload.priceLevel ?? payload.price_level);
+  if (rawPriceLevel === "invalid") {
+    return Response.json({ error: "Invalid price level." }, { headers: jsonHeaders, status: 400 });
+  }
+  const priceLevel = rawPriceLevel;
 
   const now = new Date().toISOString();
   const newId = Date.now();
@@ -368,13 +375,13 @@ async function createPlace(db: D1Database, payload: Record<string, unknown>, val
   await db
     .prepare(
       `INSERT INTO establishments (
-        id, name, type, district, address, website, description, latitude, longitude,
+        id, name, type, district, address, website, description, latitude, longitude, price_level,
         lifecycle_state, validation_label, validation_notes, candidate_source_type, candidate_source_id,
         created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin_entry', ?, ?, ?)`
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'admin_entry', ?, ?, ?)`
     )
     .bind(
-      newId, name, kind, area, address || null, website || null, description || null, lat, lng,
+      newId, name, kind, area, address || null, website || null, description || null, lat, lng, priceLevel,
       lifecycleState, validationLabel, validationNotes || "Created manually by admin", `admin:${newId}`,
       now, now
     )
@@ -416,6 +423,8 @@ async function createPlace(db: D1Database, payload: Record<string, unknown>, val
         area,
         address: address || null,
         website: website || null,
+        priceLevel,
+        priceSEK: null,
         note: description,
         latitude: lat,
         longitude: lng,
@@ -481,6 +490,14 @@ async function updatePlace(db: D1Database, id: number, payload: Record<string, u
     return Response.json({ error: "Invalid validation label." }, { headers: jsonHeaders, status: 400 });
   }
   const validationLabel = rawValidationLabel;
+  let priceLevel = existing.priceLevel ?? null;
+  if (Object.prototype.hasOwnProperty.call(payload, "priceLevel") || Object.prototype.hasOwnProperty.call(payload, "price_level")) {
+    const normalizedPriceLevel = normalizePriceLevel(payload.priceLevel ?? payload.price_level);
+    if (normalizedPriceLevel === "invalid") {
+      return Response.json({ error: "Invalid price level." }, { headers: jsonHeaders, status: 400 });
+    }
+    priceLevel = normalizedPriceLevel;
+  }
 
   const updatedAt = new Date().toISOString();
   const notes = joinNotes([validationNotes, "Updated place metadata via admin editor."]);
@@ -489,7 +506,7 @@ async function updatePlace(db: D1Database, id: number, payload: Record<string, u
       `UPDATE establishments
        SET name = ?, type = ?, district = ?, address = ?, website = ?, description = ?,
            latitude = ?, longitude = ?, lifecycle_state = ?, validation_label = ?,
-           validation_notes = ?, updated_at = ?
+           price_level = ?, validation_notes = ?, updated_at = ?
        WHERE id = ?`,
     )
     .bind(
@@ -503,6 +520,7 @@ async function updatePlace(db: D1Database, id: number, payload: Record<string, u
       longitude,
       lifecycleState,
       validationLabel,
+      priceLevel,
       notes,
       updatedAt,
       id,
@@ -542,6 +560,7 @@ async function updatePlace(db: D1Database, id: number, payload: Record<string, u
         area,
         address: address || null,
         website: website || null,
+        priceLevel,
         note: description || "",
         latitude,
         longitude,
@@ -648,6 +667,8 @@ function buildCandidateSelect(options: CandidateQueryOptions) {
       e.district AS area,
       e.address,
       e.website,
+      e.price_level AS priceLevel,
+      e.price_sek AS priceSEK,
       e.latitude,
       e.longitude,
       e.description AS note,
@@ -824,6 +845,8 @@ async function loadEstablishmentDetails(db: D1Database, id: number) {
         e.district AS area,
         e.address,
         e.website,
+        e.price_level AS priceLevel,
+        e.price_sek AS priceSEK,
         e.latitude,
         e.longitude,
         e.description AS note,
@@ -1309,6 +1332,8 @@ function candidateFromRow(row: CandidateRow) {
     area,
     address: row.address,
     website: row.website,
+    priceLevel: typeof row.priceLevel === "number" ? row.priceLevel : null,
+    priceSEK: row.priceSEK ?? null,
     latitude: typeof row.latitude === "number" ? row.latitude : null,
     longitude: typeof row.longitude === "number" ? row.longitude : null,
     note: row.note,
@@ -1465,6 +1490,19 @@ function normalizeAction(value: unknown): AdminAction | null {
   }
 
   return null;
+}
+
+function normalizePriceLevel(value: unknown): number | null | "invalid" {
+  if (value === undefined || value === null || value === "") {
+    return null;
+  }
+
+  const numeric = typeof value === "number" ? value : Number(value);
+  if (!Number.isInteger(numeric) || numeric < 1 || numeric > 4) {
+    return "invalid";
+  }
+
+  return numeric;
 }
 
 function normalizeValidationLabel(value: unknown): ValidationLabel | null | "invalid" {

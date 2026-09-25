@@ -9,7 +9,7 @@ import { AdminGuidePanel } from "./AdminGuidePanel";
 import { AdminToastContainer, type AdminToast } from "./AdminToastContainer";
 import { AdminMapView, type AdminMapCandidate } from "./AdminMapView";
 import { AdminPhotoManager } from "./AdminPhotoManager";
-import { AdminPlaceEditor, candidateToPlaceDraft, emptyPlaceDraft, type AdminPlaceDraft } from "./AdminPlaceEditor";
+import { AdminPlaceEditor, AdminPriceLevelPicker, candidateToPlaceDraft, emptyPlaceDraft, type AdminPlaceDraft } from "./AdminPlaceEditor";
 import { AdminDistrictManager } from "./AdminDistrictManager";
 import {
   ArrowClockwise,
@@ -20,6 +20,7 @@ import {
   CircleNotch,
   DownloadSimple,
   Globe,
+  HouseLine,
   Info,
   ListBullets,
   MagnifyingGlass,
@@ -196,6 +197,8 @@ export function AdminReviewPanel({
   const [photoRefreshKeys, setPhotoRefreshKeys] = useState<Record<number, number>>({});
   const [resolvingRegions, setResolvingRegions] = useState(false);
   const [websiteInputs, setWebsiteInputs] = useState<Record<number, string>>({});
+  const [addressInputs, setAddressInputs] = useState<Record<number, string>>({});
+  const [priceLevelInputs, setPriceLevelInputs] = useState<Record<number, number | null>>({});
   const [schemaBusy, setSchemaBusy] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -1097,6 +1100,78 @@ export function AdminReviewPanel({
         title: lang === "sv" ? "Vissa uppdateringar misslyckades" : "Some updates failed",
         message: errors.slice(0, 3).join(", "),
       });
+    }
+  };
+
+  const updateCandidateDetails = async (candidate: AdminCandidate) => {
+    if (!hasAdminAuth) return;
+
+    const address = (addressInputs[candidate.id] ?? candidate.address ?? "").trim();
+    const priceLevel = Object.prototype.hasOwnProperty.call(priceLevelInputs, candidate.id)
+      ? priceLevelInputs[candidate.id]
+      : candidate.priceLevel ?? null;
+    const validationNotes = (reviewNotes[candidate.id] ?? candidate.validationNotes ?? "").trim();
+    setBusyId(candidate.id);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/admin/candidates", {
+        method: "POST",
+        headers: adminHeaders(undefined, { "content-type": "application/json" }),
+        body: JSON.stringify({
+          action: "update_place",
+          id: candidate.id,
+          name: candidate.name,
+          kind: candidate.kind,
+          area: candidate.area,
+          address,
+          website: candidate.website ?? "",
+          note: candidate.note,
+          latitude: candidate.latitude ?? 59.3293,
+          longitude: candidate.longitude ?? 18.0686,
+          lifecycleState: candidate.lifecycleState,
+          validationLabel: candidate.validationLabel,
+          priceLevel,
+          validationNotes,
+        }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        candidate?: AdminCandidate;
+        reviewedAt?: string;
+        error?: string;
+      };
+
+      if (!response.ok || !payload.candidate) {
+        throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte spara adress och pris." : "Could not save address and price."));
+      }
+
+      setCandidates((current) =>
+        current.map((row) => (row.id === candidate.id ? { ...row, ...payload.candidate } : row)),
+      );
+      setAddressInputs((current) => {
+        const next = { ...current };
+        delete next[candidate.id];
+        return next;
+      });
+      setPriceLevelInputs((current) => {
+        const next = { ...current };
+        delete next[candidate.id];
+        return next;
+      });
+      setStatus(
+        lang === "sv"
+          ? `Adress och prisnivå sparade för ${candidate.name}.`
+          : `Saved address and price level for ${candidate.name}.`,
+      );
+      addToast({
+        type: "success",
+        title: lang === "sv" ? "Platsdetaljer sparade" : "Place details saved",
+        message: `${candidate.name} (#${candidate.id})`,
+      });
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : String(cause));
+    } finally {
+      setBusyId(null);
     }
   };
 
@@ -2042,6 +2117,55 @@ export function AdminReviewPanel({
                       </option>
                     ))}
                   </select>
+                </div>
+
+                <div className={`admin-address-picker-row ${!candidate.address ? "unresolved" : ""}`}>
+                  <label htmlFor={`admin-address-input-${candidate.id}`} className="admin-address-picker-label">
+                    <HouseLine size={13} weight="bold" />
+                    {lang === "sv" ? "Gatuadress:" : "Street address:"}
+                  </label>
+                  <div className="admin-address-input-wrap">
+                    <input
+                      id={`admin-address-input-${candidate.id}`}
+                      type="text"
+                      className="admin-address-input"
+                      value={addressInputs[candidate.id] ?? candidate.address ?? ""}
+                      onChange={(event) =>
+                        setAddressInputs((current) => ({
+                          ...current,
+                          [candidate.id]: event.target.value,
+                        }))
+                      }
+                      placeholder={lang === "sv" ? "Götgatan 12, Stockholm" : "Götgatan 12, Stockholm"}
+                    />
+                  </div>
+                </div>
+
+                <div className="admin-price-picker-row">
+                  <span className="admin-price-picker-label">
+                    {lang === "sv" ? "Prisnivå:" : "Price level:"}
+                  </span>
+                  <AdminPriceLevelPicker
+                    value={priceLevelInputs[candidate.id] ?? candidate.priceLevel ?? null}
+                    onChange={(priceLevel) =>
+                      setPriceLevelInputs((current) => ({
+                        ...current,
+                        [candidate.id]: priceLevel,
+                      }))
+                    }
+                    lang={lang}
+                    name={`candidate-price-${candidate.id}`}
+                  />
+                  <button
+                    type="button"
+                    className="admin-scrape-btn"
+                    disabled={busyId === candidate.id}
+                    onClick={() => void updateCandidateDetails(candidate)}
+                    title={lang === "sv" ? "Spara adress och prisnivå i D1" : "Save address and price level to D1"}
+                  >
+                    <CheckCircle size={13} weight="bold" />
+                    {lang === "sv" ? "Spara adress & pris" : "Save address & price"}
+                  </button>
                 </div>
 
                 <div className={`admin-website-picker-row ${!candidate.website ? "unresolved" : ""}`}>
