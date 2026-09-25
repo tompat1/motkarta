@@ -8513,7 +8513,9 @@ button.concierge-clear-btn:hover {
   gap: 8px;
   grid-area: preview;
   min-width: 0;
+  overflow: visible;
   padding-left: 12px;
+  position: relative;
 }
 
 .admin-place-card-preview-label {
@@ -8523,13 +8525,24 @@ button.concierge-clear-btn:hover {
   color: var(--color-stone);
 }
 
-.admin-place-card-preview {
+.admin-place-card-preview.map-card {
   background: var(--color-paper);
   border: 1px solid var(--color-mist);
+  border-radius: 0;
+  border-right: 1px solid var(--color-mist);
+  bottom: auto;
+  box-shadow: none;
+  left: auto;
+  max-height: none;
   max-width: 100%;
+  overflow: visible;
   padding: 12px;
   pointer-events: none;
+  position: relative;
+  right: auto;
+  top: auto;
   width: 100%;
+  z-index: auto;
 }
 
 @media (max-width: 760px) {
@@ -8565,8 +8578,14 @@ button.concierge-clear-btn:hover {
 
 .admin-photo-add-form {
   margin-top: 4px;
+  overflow: visible;
   padding-top: 8px;
   border-top: 1px dashed var(--color-mist);
+}
+
+.admin-photo-add-form .admin-photo-hero-editor,
+.admin-photo-edit-form .admin-photo-hero-editor {
+  overflow: visible;
 }
 
 .admin-photo-edit-form input,
