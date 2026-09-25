@@ -5,6 +5,7 @@ import {
   collectWebsiteImageCandidates,
   extractWebsiteImageFromHtml,
   isLikelyLogoBanner,
+  pickWebsiteImageCandidate,
 } from "../lib/website-image-scrape.ts";
 
 const aperitivoHtml = `
@@ -53,6 +54,30 @@ test("extractWebsiteImageFromHtml keeps normal venue photos", () => {
   const result = extractWebsiteImageFromHtml(html, "https://example.test");
   assert.equal(result.skippedAsLogoBanner, false);
   assert.equal(result.imageUrl, "https://example.test/dining-room.jpg");
+});
+
+test("pickWebsiteImageCandidate steps through usable website images after the current one", () => {
+  const html = `
+<meta property="og:image" content="https://example.test/logo.png">
+<meta property="og:image:width" content="1500">
+<meta property="og:image:height" content="450">
+<img src="https://example.test/interior-a.jpg" width="1200" height="900">
+<img src="https://example.test/interior-b.jpg" width="1200" height="900">
+`;
+  const first = pickWebsiteImageCandidate(html, "https://example.test");
+  assert.equal(first.imageUrl, "https://example.test/interior-a.jpg");
+  assert.equal(first.candidateIndex, 0);
+  assert.equal(first.totalCandidates, 2);
+  assert.equal(first.hasMore, true);
+
+  const second = pickWebsiteImageCandidate(html, "https://example.test", first.imageUrl);
+  assert.equal(second.imageUrl, "https://example.test/interior-b.jpg");
+  assert.equal(second.candidateIndex, 1);
+  assert.equal(second.hasMore, false);
+
+  const exhausted = pickWebsiteImageCandidate(html, "https://example.test", second.imageUrl);
+  assert.equal(exhausted.imageUrl, null);
+  assert.equal(exhausted.hasMore, false);
 });
 
 test("collectWebsiteImageCandidates gathers meta, img, and json-ld images in order", () => {

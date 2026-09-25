@@ -1948,6 +1948,7 @@ export function AdminReviewPanel({
                   placeId={candidate.id}
                   lang={lang}
                   refreshKey={photoRefreshKeys[candidate.id] ?? 0}
+                  websiteUrl={candidate.website}
                   adminHeaders={adminHeaders}
                   placePreview={{
                     name: candidate.name,

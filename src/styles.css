@@ -8291,6 +8291,19 @@ button.concierge-clear-btn:hover {
   width: 100%;
 }
 
+.admin-photo-hero-editor-body {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+}
+
+.admin-photo-hero-workspace {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
 .admin-photo-hero-editor-head {
   display: flex;
   align-items: baseline;
@@ -8353,20 +8366,47 @@ button.concierge-clear-btn:hover {
   gap: 8px;
 }
 
-.admin-photo-hero-controls label {
+.admin-photo-hero-zoom-row {
+  align-items: center;
   display: grid;
-  gap: 4px;
+  gap: 6px;
+  grid-template-columns: auto auto auto auto minmax(0, 1fr);
+}
+
+.admin-photo-hero-zoom-label {
+  color: var(--color-ink);
   font-family: var(--font-mono);
   font-size: 10px;
   text-transform: uppercase;
 }
 
-.admin-photo-hero-controls label input[type="range"] {
-  width: 100%;
+.admin-photo-hero-zoom-btn {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-mist);
+  color: var(--color-ink);
+  cursor: pointer;
+  display: inline-flex;
+  height: 30px;
+  justify-content: center;
+  width: 30px;
 }
 
-.admin-photo-hero-controls label output {
+.admin-photo-hero-zoom-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.admin-photo-hero-zoom-value {
   color: var(--color-stone);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  min-width: 3.2em;
+  text-align: center;
+}
+
+.admin-photo-hero-zoom-slider {
+  width: 100%;
 }
 
 .admin-photo-hero-fit-toggle {
@@ -8415,12 +8455,34 @@ button.concierge-clear-btn:hover {
   opacity: 0.6;
 }
 
+.admin-photo-next-scrape-btn {
+  align-items: center;
+  background: var(--color-white);
+  border: 1px solid var(--color-ink);
+  color: var(--color-ink);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 6px;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 8px 10px;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+.admin-photo-next-scrape-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .admin-place-card-preview-wrap {
+  border-left: 1px dashed var(--color-mist);
   display: grid;
   gap: 8px;
-  margin-top: 4px;
-  padding-top: 10px;
-  border-top: 1px dashed var(--color-mist);
+  min-width: 0;
+  padding-left: 12px;
 }
 
 .admin-place-card-preview-label {
@@ -8431,14 +8493,25 @@ button.concierge-clear-btn:hover {
 }
 
 .admin-place-card-preview {
-  pointer-events: none;
-  transform: scale(0.92);
-  transform-origin: top left;
-  width: 100%;
-  max-width: 360px;
-  border: 1px solid var(--color-mist);
   background: var(--color-paper);
+  border: 1px solid var(--color-mist);
+  max-width: 100%;
   padding: 12px;
+  pointer-events: none;
+  width: 100%;
+}
+
+@media (max-width: 760px) {
+  .admin-photo-hero-editor-body {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-place-card-preview-wrap {
+    border-left: 0;
+    border-top: 1px dashed var(--color-mist);
+    padding-left: 0;
+    padding-top: 10px;
+  }
 }
 
 .admin-place-card-preview .map-card-header-title {

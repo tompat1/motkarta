@@ -8,10 +8,12 @@ type WebsiteImageDimensions = {
   height?: number | null;
 };
 
-type ImageCandidate = WebsiteImageDimensions & {
+export type WebsiteImageCandidate = WebsiteImageDimensions & {
   url: string;
   source: string;
 };
+
+type ImageCandidate = WebsiteImageCandidate;
 
 export type WebsiteImageScrapeResult = {
   imageUrl: string | null;
@@ -45,34 +47,107 @@ export function isLikelyLogoBanner(imageUrl: string, dimensions: WebsiteImageDim
   return false;
 }
 
-export function extractWebsiteImageFromHtml(html: string, websiteUrl: string): WebsiteImageScrapeResult {
-  const candidates = collectWebsiteImageCandidates(html, websiteUrl);
-  const skippedLogoUrls: string[] = [];
+export type WebsiteImagePickResult = {
+  imageUrl: string | null;
+  width: number | null;
+  height: number | null;
+  source: string | null;
+  candidateIndex: number;
+  totalCandidates: number;
+  hasMore: boolean;
+  skippedLogoUrls: string[];
+};
 
+export function usableWebsiteImageCandidates(candidates: WebsiteImageCandidate[]) {
+  const skippedLogoUrls: string[] = [];
+  const usable: WebsiteImageCandidate[] = [];
   for (const candidate of candidates) {
     if (isLikelyLogoBanner(candidate.url, candidate)) {
       skippedLogoUrls.push(candidate.url);
       continue;
     }
+    usable.push(candidate);
+  }
+  return { usable, skippedLogoUrls };
+}
+
+export function pickWebsiteImageCandidate(
+  html: string,
+  websiteUrl: string,
+  afterUrl?: string | null,
+): WebsiteImagePickResult {
+  const candidates = collectWebsiteImageCandidates(html, websiteUrl);
+  const { usable, skippedLogoUrls } = usableWebsiteImageCandidates(candidates);
+  if (!usable.length) {
+    const fallback = candidates[0];
     return {
-      imageUrl: candidate.url,
-      width: candidate.width ?? null,
-      height: candidate.height ?? null,
-      skippedAsLogoBanner: false,
-      skipReason: null,
+      imageUrl: fallback?.url ?? null,
+      width: fallback?.width ?? null,
+      height: fallback?.height ?? null,
+      source: fallback?.source ?? null,
+      candidateIndex: -1,
+      totalCandidates: 0,
+      hasMore: false,
       skippedLogoUrls,
     };
   }
 
-  if (skippedLogoUrls.length > 0) {
-    const first = candidates.find((candidate) => candidate.url === skippedLogoUrls[0]) ?? candidates[0];
+  const normalizedAfter = afterUrl ? normalizeImageUrl(afterUrl, websiteUrl) : null;
+  let startIndex = 0;
+  if (normalizedAfter) {
+    const currentIndex = usable.findIndex((candidate) => candidate.url === normalizedAfter);
+    startIndex = currentIndex >= 0 ? currentIndex + 1 : 0;
+  }
+
+  if (startIndex >= usable.length) {
     return {
-      imageUrl: first?.url ?? skippedLogoUrls[0],
-      width: first?.width ?? null,
-      height: first?.height ?? null,
+      imageUrl: null,
+      width: null,
+      height: null,
+      source: null,
+      candidateIndex: usable.length,
+      totalCandidates: usable.length,
+      hasMore: false,
+      skippedLogoUrls,
+    };
+  }
+
+  const picked = usable[startIndex];
+  return {
+    imageUrl: picked.url,
+    width: picked.width ?? null,
+    height: picked.height ?? null,
+    source: picked.source,
+    candidateIndex: startIndex,
+    totalCandidates: usable.length,
+    hasMore: startIndex < usable.length - 1,
+    skippedLogoUrls,
+  };
+}
+
+export function extractWebsiteImageFromHtml(html: string, websiteUrl: string): WebsiteImageScrapeResult {
+  const pick = pickWebsiteImageCandidate(html, websiteUrl);
+  if (pick.imageUrl && pick.candidateIndex >= 0) {
+    return {
+      imageUrl: pick.imageUrl,
+      width: pick.width,
+      height: pick.height,
+      skippedAsLogoBanner: false,
+      skipReason: null,
+      skippedLogoUrls: pick.skippedLogoUrls,
+    };
+  }
+
+  if (pick.skippedLogoUrls.length > 0) {
+    const firstSkipped = pick.skippedLogoUrls[0];
+    const candidate = collectWebsiteImageCandidates(html, websiteUrl).find((item) => item.url === firstSkipped);
+    return {
+      imageUrl: firstSkipped,
+      width: candidate?.width ?? null,
+      height: candidate?.height ?? null,
       skippedAsLogoBanner: true,
       skipReason: "logo_banner",
-      skippedLogoUrls,
+      skippedLogoUrls: pick.skippedLogoUrls,
     };
   }
 
@@ -82,7 +157,7 @@ export function extractWebsiteImageFromHtml(html: string, websiteUrl: string): W
     height: null,
     skippedAsLogoBanner: false,
     skipReason: null,
-    skippedLogoUrls,
+    skippedLogoUrls: pick.skippedLogoUrls,
   };
 }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { CircleNotch, PencilSimple, Plus, Trash, ImageSquare, UploadSimple } from "@phosphor-icons/react";
+import { ArrowRight, CircleNotch, PencilSimple, Plus, Trash, ImageSquare, UploadSimple } from "@phosphor-icons/react";
 import type { Language } from "../app/shared";
 import { processImageFile } from "../components/ConciergeSuperpowerModal";
 import {
@@ -26,6 +26,7 @@ type Props = {
   placeId: number;
   lang: Language;
   refreshKey?: number;
+  websiteUrl?: string | null;
   placePreview?: AdminPlacePreview;
   adminHeaders: (tokenOverride?: string, extraHeaders?: Record<string, string>) => Record<string, string>;
 };
@@ -39,7 +40,7 @@ function frameFromPhoto(photo?: Partial<AdminPhoto> | null): PhotoHeroFrame {
   });
 }
 
-export function AdminPhotoManager({ placeId, lang, refreshKey = 0, placePreview, adminHeaders }: Props) {
+export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, placePreview, adminHeaders }: Props) {
   const [photos, setPhotos] = useState<AdminPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -54,6 +55,7 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, placePreview,
   const [editDataUrl, setEditDataUrl] = useState<string | null>(null);
   const [editFrame, setEditFrame] = useState<PhotoHeroFrame>(DEFAULT_PHOTO_HERO_FRAME);
   const [isProcessingUpload, setIsProcessingUpload] = useState(false);
+  const [scrapeCandidateMeta, setScrapeCandidateMeta] = useState<{ index: number; total: number; hasMore: boolean } | null>(null);
   const addFileInputRef = useRef<HTMLInputElement>(null);
   const replaceFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -158,6 +160,49 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, placePreview,
     setEditCaption(photo.caption || "");
     setEditDataUrl(null);
     setEditFrame(frameFromPhoto(photo));
+    setScrapeCandidateMeta(null);
+  };
+
+  const loadNextScrapedImage = async (currentUrl: string) => {
+    if (!websiteUrl?.trim()) {
+      setError(lang === "sv" ? "Ingen webbadress att hämta bilder från." : "No website URL to scrape images from.");
+      return;
+    }
+    setBusyId(editingId ?? "scrape-next");
+    setError(null);
+    try {
+      const response = await fetch("/api/admin/scrape-photo", {
+        method: "POST",
+        headers: adminHeaders(undefined, { "content-type": "application/json" }),
+        body: JSON.stringify({
+          placeId,
+          website: websiteUrl,
+          currentUrl,
+        }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        photoUrl?: string;
+        candidateIndex?: number;
+        totalCandidates?: number;
+        hasMore?: boolean;
+        error?: string;
+      };
+      if (!response.ok || !payload.photoUrl) {
+        throw new Error(payload.error ?? (lang === "sv" ? "Inga fler bilder hittades på webbplatsen." : "No more images found on the website."));
+      }
+      setEditUrl(payload.photoUrl);
+      setEditDataUrl(null);
+      setEditFrame(DEFAULT_PHOTO_HERO_FRAME);
+      setScrapeCandidateMeta({
+        index: (payload.candidateIndex ?? 0) + 1,
+        total: payload.totalCandidates ?? 0,
+        hasMore: Boolean(payload.hasMore),
+      });
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : (lang === "sv" ? "Kunde inte hämta nästa bild." : "Could not load the next image."));
+    } finally {
+      setBusyId(null);
+    }
   };
 
   const handleFileSelection = async (file: File | undefined, mode: "add" | "edit") => {
@@ -241,6 +286,19 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, placePreview,
                     {isProcessingUpload ? <CircleNotch size={14} className="animate-spin" /> : <UploadSimple size={14} weight="bold" />}
                     {lang === "sv" ? "Byt hero-bild" : "Replace hero image"}
                   </button>
+                  {websiteUrl?.trim() ? (
+                    <button
+                      type="button"
+                      className="admin-photo-next-scrape-btn"
+                      onClick={() => void loadNextScrapedImage(editDataUrl ?? editUrl)}
+                      disabled={busyId === photo.id || !(editDataUrl ?? editUrl).trim()}
+                      title={lang === "sv" ? "Hämta nästa bildkandidat från webbplatsen" : "Load the next image candidate from the website"}
+                    >
+                      {busyId === photo.id ? <CircleNotch size={14} className="animate-spin" /> : <ArrowRight size={14} weight="bold" />}
+                      {lang === "sv" ? "Nästa hämtade bild" : "Next scraped image"}
+                      {scrapeCandidateMeta ? ` (${scrapeCandidateMeta.index}/${scrapeCandidateMeta.total})` : ""}
+                    </button>
+                  ) : null}
                   {!editDataUrl ? (
                     <input
                       type="url"
@@ -340,13 +398,26 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, placePreview,
           </button>
         </label>
         {(newDataUrl || newUrl.trim()) ? (
-          <AdminPhotoHeroEditor
-            imageUrl={previewUrl(null)}
-            frame={newFrame}
-            onFrameChange={setNewFrame}
-            placePreview={placePreview}
-            lang={lang}
-          />
+          <>
+            <AdminPhotoHeroEditor
+              imageUrl={previewUrl(null)}
+              frame={newFrame}
+              onFrameChange={setNewFrame}
+              placePreview={placePreview}
+              lang={lang}
+            />
+            {websiteUrl?.trim() ? (
+              <button
+                type="button"
+                className="admin-photo-next-scrape-btn"
+                onClick={() => void loadNextScrapedImage(newDataUrl ?? newUrl)}
+                disabled={busyId === "new" || !(newDataUrl ?? newUrl).trim()}
+              >
+                {busyId === "new" ? <CircleNotch size={14} className="animate-spin" /> : <ArrowRight size={14} weight="bold" />}
+                {lang === "sv" ? "Nästa hämtade bild" : "Next scraped image"}
+              </button>
+            ) : null}
+          </>
         ) : null}
         <label>
           <span>{lang === "sv" ? "Eller lägg till bild-URL" : "Or add image URL"}</span>

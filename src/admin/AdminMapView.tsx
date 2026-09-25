@@ -509,6 +509,7 @@ export function AdminMapView({
                 <AdminPhotoManager
                   placeId={selectedPlace.id}
                   lang={lang}
+                  websiteUrl={selectedPlace.website}
                   adminHeaders={adminHeaders}
                   placePreview={{
                     name: selectedPlace.name,
