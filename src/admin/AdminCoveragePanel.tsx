@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Language } from "../app/shared";
 import {
   ArrowClockwise,
@@ -52,6 +52,7 @@ export function AdminCoveragePanel({
   const [gapSearch, setGapSearch] = useState("");
   const [gapOffset, setGapOffset] = useState(0);
   const [gapLoading, setGapLoading] = useState(false);
+  const gapRequestRef = useRef(0);
 
   const fetchCoverage = useCallback(async () => {
     try {
@@ -172,34 +173,44 @@ export function AdminCoveragePanel({
     }
   };
 
-  const fetchGapPlaces = useCallback(async (gap: ClickableCoverageGap, offset = 0, search = gapSearch) => {
+  const fetchGapPlaces = useCallback(async (gap: ClickableCoverageGap, offset = 0, search = "") => {
+    const requestId = ++gapRequestRef.current;
+    const trimmedSearch = search.trim();
     setGapLoading(true);
     setActiveGap(gap);
     setGapOffset(offset);
+    setGapList(null);
     try {
       const params = new URLSearchParams({
         gap,
         limit: String(GAP_PAGE_SIZE),
         offset: String(offset),
       });
-      if (search.trim()) params.set("search", search.trim());
+      if (trimmedSearch) params.set("search", trimmedSearch);
       const res = await fetch(`/api/admin/coverage?${params.toString()}`, {
         headers: adminToken ? { "x-motkarta-admin-token": adminToken } : {},
       });
       const data = (await res.json().catch(() => ({}))) as CoverageGapListResponse & { error?: string };
+      if (requestId !== gapRequestRef.current) return;
       if (!res.ok) {
         setGapList(null);
         setActionMessage(data.error ?? (lang === "sv" ? "Kunde inte läsa saknade fält." : "Could not load missing-field list."));
         return;
       }
-      setGapList(data);
+      setGapList({
+        ...data,
+        places: Array.isArray(data.places) ? data.places : [],
+      });
     } catch (err) {
+      if (requestId !== gapRequestRef.current) return;
       setGapList(null);
       setActionMessage(err instanceof Error ? err.message : String(err));
     } finally {
-      setGapLoading(false);
+      if (requestId === gapRequestRef.current) {
+        setGapLoading(false);
+      }
     }
-  }, [adminToken, gapSearch, lang]);
+  }, [adminToken, lang]);
 
   const gapLabels = useMemo(() => ({
     address: {
@@ -393,6 +404,7 @@ export function AdminCoveragePanel({
                 className={`admin-coverage-card admin-coverage-card-btn${activeGap === card.gap ? " is-active" : ""}`}
                 onClick={() => {
                   setGapSearch("");
+                  setGapOffset(0);
                   void fetchGapPlaces(card.gap, 0, "");
                 }}
                 aria-pressed={activeGap === card.gap}
@@ -544,6 +556,11 @@ export function AdminCoveragePanel({
                     ))}
                   </tbody>
                 </table>
+              </div>
+              <div className="admin-coverage-gap-summary">
+                {lang === "sv"
+                  ? `Visar ${gapList.places.length.toLocaleString(locale)} av ${gapList.total.toLocaleString(locale)} platser`
+                  : `Showing ${gapList.places.length.toLocaleString(locale)} of ${gapList.total.toLocaleString(locale)} places`}
               </div>
               {gapList.total > GAP_PAGE_SIZE ? (
                 <div className="admin-coverage-gap-pagination">

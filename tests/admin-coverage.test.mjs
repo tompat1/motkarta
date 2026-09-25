@@ -163,6 +163,49 @@ test("listCoverageGapPlaces returns places missing photos", async (t) => {
   assert.equal(list.places[0].name, "No Photo");
 });
 
+test("listCoverageGapPlaces returns multiple missing-photo venues with paging", async (t) => {
+  const { DatabaseSync } = await import("node:sqlite");
+  const sqlite = new DatabaseSync(":memory:");
+  t.after(() => sqlite.close());
+  sqlite.exec(`
+    CREATE TABLE establishments(
+      id INTEGER PRIMARY KEY,
+      name TEXT,
+      type TEXT,
+      district TEXT,
+      address TEXT,
+      website TEXT
+    );
+    INSERT INTO establishments VALUES
+      (1, 'Alpha Cafe', 'cafe', 'Södermalm', 'Storgatan 1', 'https://alpha.test'),
+      (2, 'Beta Bar', 'bar', 'Vasastan', 'Lillgatan 2', 'https://beta.test'),
+      (3, 'Gamma Grill', 'restaurant', 'Kungsholmen', 'Testgatan 3', 'https://gamma.test');
+    CREATE TABLE place_photos(place_id INTEGER, url TEXT);
+    INSERT INTO place_photos VALUES (1, 'https://alpha.test/hero.jpg');
+  `);
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            async all() {
+              return { results: sqlite.prepare(sql).all(...values) };
+            },
+          };
+        },
+        async all() {
+          return { results: sqlite.prepare(sql).all() };
+        },
+      };
+    },
+  };
+
+  const list = await listCoverageGapPlaces(db, "photos", { limit: 50, offset: 0 });
+  assert.equal(list.total, 2);
+  assert.equal(list.places.length, 2);
+  assert.deepEqual(list.places.map((place) => place.name), ["Beta Bar", "Gamma Grill"]);
+});
+
 test("admin coverage GET supports gap query parameter", async (t) => {
   const { DatabaseSync } = await import("node:sqlite");
   const sqlite = new DatabaseSync(":memory:");

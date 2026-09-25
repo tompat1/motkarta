@@ -220,7 +220,11 @@ function buildCoverageGapWhereClause(gap: CoverageGap, schema: EstablishmentSche
         return { clause: "1 = 0", errors };
       }
       return {
-        clause: `e.id NOT IN (SELECT DISTINCT place_id FROM (${photoQueries.join(" UNION ALL ")}))`,
+        clause: `NOT EXISTS (
+          SELECT 1
+          FROM (${photoQueries.join(" UNION ALL ")}) media
+          WHERE media.place_id = e.id
+        )`,
         errors,
       };
     }
@@ -253,15 +257,13 @@ export async function listCoverageGapPlaces(
       : "";
     const searchBindings = search ? [`%${search}%`, `%${search}%`, `%${search}%`, search] : [];
 
-    const countRes = await db
-      .prepare(`SELECT count(*) AS total FROM establishments e WHERE ${clause}${searchClause}`)
-      .bind(...searchBindings)
-      .all<{ total: number }>();
+    const countStatement = db.prepare(`SELECT count(*) AS total FROM establishments e WHERE ${clause}${searchClause}`);
+    const countRes = searchBindings.length
+      ? await countStatement.bind(...searchBindings).all<{ total: number }>()
+      : await countStatement.all<{ total: number }>();
     const total = countRes.results?.[0]?.total ?? 0;
 
-    const listRes = await db
-      .prepare(
-        `SELECT
+    const listSql = `SELECT
           e.id,
           e.name,
           e.type AS kind,
@@ -271,10 +273,11 @@ export async function listCoverageGapPlaces(
         FROM establishments e
         WHERE ${clause}${searchClause}
         ORDER BY e.name ASC
-        LIMIT ? OFFSET ?`,
-      )
-      .bind(...searchBindings, limit, offset)
-      .all<CoverageGapPlace>();
+        LIMIT ${limit} OFFSET ${offset}`;
+    const listStatement = db.prepare(listSql);
+    const listRes = searchBindings.length
+      ? await listStatement.bind(...searchBindings).all<CoverageGapPlace>()
+      : await listStatement.all<CoverageGapPlace>();
 
     return {
       gap,

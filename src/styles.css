@@ -5235,6 +5235,12 @@ button.concierge-clear-btn:hover {
   opacity: 0.55;
 }
 
+.admin-coverage-gap-summary {
+  color: var(--color-stone);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
 .admin-coverage-gap-pagination {
   align-items: center;
   color: var(--color-stone);
