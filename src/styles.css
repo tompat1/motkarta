@@ -8207,6 +8207,10 @@ button.concierge-clear-btn:hover {
   gap: 0;
 }
 
+.admin-photo-manager-item.is-editing {
+  overflow: visible;
+}
+
 .admin-photo-manager-preview {
   align-items: center;
   background: #f4f5f2;
@@ -8256,7 +8260,7 @@ button.concierge-clear-btn:hover {
   white-space: nowrap;
 }
 
-.admin-photo-manager-item button {
+.admin-photo-manager-item .admin-photo-item-actions button {
   display: inline-flex;
   flex: 0 0 auto;
   padding: 3px;
@@ -8266,7 +8270,7 @@ button.concierge-clear-btn:hover {
   cursor: pointer;
 }
 
-.admin-photo-manager-item button:disabled {
+.admin-photo-manager-item .admin-photo-item-actions button:disabled {
   cursor: wait;
   opacity: 0.5;
 }
@@ -8295,12 +8299,14 @@ button.concierge-clear-btn:hover {
   align-items: start;
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  grid-template-areas: "workspace preview";
 }
 
 .admin-photo-hero-workspace {
   display: grid;
   gap: 10px;
+  grid-area: workspace;
   min-width: 0;
 }
 
@@ -8367,10 +8373,8 @@ button.concierge-clear-btn:hover {
 }
 
 .admin-photo-hero-zoom-row {
-  align-items: center;
   display: grid;
-  gap: 6px;
-  grid-template-columns: auto auto auto auto minmax(0, 1fr);
+  gap: 8px;
 }
 
 .admin-photo-hero-zoom-label {
@@ -8380,28 +8384,38 @@ button.concierge-clear-btn:hover {
   text-transform: uppercase;
 }
 
-.admin-photo-hero-zoom-btn {
+.admin-photo-hero-zoom-controls {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.admin-photo-hero-editor .admin-photo-hero-zoom-btn {
   align-items: center;
   background: var(--color-white);
-  border: 1px solid var(--color-mist);
+  border: 1px solid var(--color-ink);
   color: var(--color-ink);
   cursor: pointer;
   display: inline-flex;
-  height: 30px;
+  flex: 0 0 auto;
+  height: 36px;
   justify-content: center;
-  width: 30px;
+  padding: 0;
+  width: 36px;
 }
 
-.admin-photo-hero-zoom-btn:disabled {
+.admin-photo-hero-editor .admin-photo-hero-zoom-btn:disabled {
   cursor: not-allowed;
   opacity: 0.45;
 }
 
 .admin-photo-hero-zoom-value {
-  color: var(--color-stone);
+  color: var(--color-ink);
   font-family: var(--font-mono);
-  font-size: 11px;
-  min-width: 3.2em;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 3.5em;
   text-align: center;
 }
 
@@ -8414,8 +8428,8 @@ button.concierge-clear-btn:hover {
   gap: 6px;
 }
 
-.admin-photo-hero-fit-toggle button,
-.admin-photo-hero-reset {
+.admin-photo-hero-editor .admin-photo-hero-fit-toggle button,
+.admin-photo-hero-editor .admin-photo-hero-reset {
   border: 1px solid var(--color-mist);
   background: var(--color-white);
   color: var(--color-ink);
@@ -8427,7 +8441,7 @@ button.concierge-clear-btn:hover {
   text-transform: uppercase;
 }
 
-.admin-photo-hero-fit-toggle button.is-active {
+.admin-photo-hero-editor .admin-photo-hero-fit-toggle button.is-active {
   background: var(--color-ink);
   border-color: var(--color-ink);
   color: var(--color-paper);
@@ -8481,6 +8495,7 @@ button.concierge-clear-btn:hover {
   border-left: 1px dashed var(--color-mist);
   display: grid;
   gap: 8px;
+  grid-area: preview;
   min-width: 0;
   padding-left: 12px;
 }
@@ -8503,6 +8518,9 @@ button.concierge-clear-btn:hover {
 
 @media (max-width: 760px) {
   .admin-photo-hero-editor-body {
+    grid-template-areas:
+      "workspace"
+      "preview";
     grid-template-columns: 1fr;
   }
 

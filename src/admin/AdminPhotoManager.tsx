@@ -225,7 +225,10 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, p
   };
 
   const previewUrl = (photoId?: string | null) => {
-    if (photoId && editingId === photoId && editDataUrl) return editDataUrl;
+    if (photoId && editingId === photoId) {
+      if (editDataUrl) return editDataUrl;
+      if (editUrl.trim()) return editUrl.trim();
+    }
     if (!photoId && newDataUrl) return newDataUrl;
     if (photoId) {
       const photo = photos.find((item) => item.id === photoId);
@@ -254,9 +257,11 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, p
             key={photo.id}
             className={`admin-photo-manager-item${editingId === photo.id ? " is-editing" : ""}`}
           >
-            <div className="admin-photo-manager-preview">
-              <img src={editDataUrl && editingId === photo.id ? editDataUrl : (photo.thumbnailUrl || photo.url)} alt={photo.caption || "Place image"} />
-            </div>
+            {editingId !== photo.id ? (
+              <div className="admin-photo-manager-preview">
+                <img src={photo.thumbnailUrl || photo.url} alt={photo.caption || "Place image"} />
+              </div>
+            ) : null}
             <figcaption>
               {editingId === photo.id ? (
                 <div className="admin-photo-edit-form">

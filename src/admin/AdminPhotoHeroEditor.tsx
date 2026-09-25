@@ -84,7 +84,7 @@ export function AdminPhotoHeroEditor({ imageUrl, frame, onFrameChange, placePrev
             role="img"
             aria-label={lang === "sv" ? "Justera hero-bildens position" : "Adjust hero image position"}
           >
-            <img src={imageUrl} alt="" style={imageStyle} draggable={false} />
+            <img key={imageUrl} src={imageUrl} alt="" style={imageStyle} draggable={false} />
             <span className="admin-photo-hero-frame-hint">
               {lang === "sv" ? "Dra bilden" : "Drag image"}
             </span>
@@ -92,25 +92,27 @@ export function AdminPhotoHeroEditor({ imageUrl, frame, onFrameChange, placePrev
           <div className="admin-photo-hero-controls">
             <div className="admin-photo-hero-zoom-row">
               <span className="admin-photo-hero-zoom-label">Zoom</span>
-              <button
-                type="button"
-                className="admin-photo-hero-zoom-btn"
-                onClick={() => adjustZoom(-ZOOM_STEP)}
-                disabled={normalized.heroScale <= 1}
-                aria-label={lang === "sv" ? "Zooma ut" : "Zoom out"}
-              >
-                <Minus size={14} weight="bold" />
-              </button>
-              <output className="admin-photo-hero-zoom-value">{normalized.heroScale.toFixed(2)}×</output>
-              <button
-                type="button"
-                className="admin-photo-hero-zoom-btn"
-                onClick={() => adjustZoom(ZOOM_STEP)}
-                disabled={normalized.heroScale >= 2.5}
-                aria-label={lang === "sv" ? "Zooma in" : "Zoom in"}
-              >
-                <Plus size={14} weight="bold" />
-              </button>
+              <div className="admin-photo-hero-zoom-controls">
+                <button
+                  type="button"
+                  className="admin-photo-hero-zoom-btn"
+                  onClick={() => adjustZoom(-ZOOM_STEP)}
+                  disabled={normalized.heroScale <= 1}
+                  aria-label={lang === "sv" ? "Zooma ut" : "Zoom out"}
+                >
+                  <Minus size={16} weight="bold" aria-hidden="true" />
+                </button>
+                <output className="admin-photo-hero-zoom-value">{normalized.heroScale.toFixed(2)}×</output>
+                <button
+                  type="button"
+                  className="admin-photo-hero-zoom-btn"
+                  onClick={() => adjustZoom(ZOOM_STEP)}
+                  disabled={normalized.heroScale >= 2.5}
+                  aria-label={lang === "sv" ? "Zooma in" : "Zoom in"}
+                >
+                  <Plus size={16} weight="bold" aria-hidden="true" />
+                </button>
+              </div>
               <input
                 type="range"
                 className="admin-photo-hero-zoom-slider"
@@ -168,6 +170,7 @@ export function AdminPhotoHeroEditor({ imageUrl, frame, onFrameChange, placePrev
                 {placePreview.cuisine ? <p className="cuisine-line">{placePreview.cuisine}</p> : null}
                 <div className="map-card-photo-container">
                   <img
+                    key={imageUrl}
                     src={imageUrl}
                     alt=""
                     className="map-card-hero-photo"
