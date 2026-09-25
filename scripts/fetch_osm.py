@@ -273,7 +273,6 @@ def load_or_fetch_payload(
             rows=grid_rows,
             cols=grid_cols,
         )
-        endpoint = endpoints[-1] if endpoints else None
     except RuntimeError as error:
         if cache_path.exists():
             payload = load_cached_payload(cache_path)
