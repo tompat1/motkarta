@@ -11,6 +11,7 @@
     "build": "bash scripts/build-verified.sh",
     "start": "vite preview",
     "test": "node scripts/run-tests.mjs",
+    "preflight": "npm run typecheck && npm run lint",
     "test:gate": "npm run typecheck && npm run lint && npm test && npm run test:python && npm run test:e2e",
     "test:all": "npm run test:gate",
     "test:e2e": "bash scripts/run-e2e-tests.sh",

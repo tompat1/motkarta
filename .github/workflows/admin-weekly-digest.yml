@@ -21,15 +21,21 @@ jobs:
             exit 1
           fi
           url="${DIGEST_URL:-https://motkarta.rynell.org/api/cron/weekly-admin-digest}"
-          response="$(curl -sS -w '\n%{http_code}' -X POST "$url" \
+          response="$(curl -sS -w '\n%{http_code}' -G "$url" \
             -H "Authorization: Bearer $CRON_SECRET" \
+            -H "x-motkarta-cron-secret: $CRON_SECRET" \
             -H "x-motkarta-digest-force: 1" \
-            -H "Content-Type: application/json")"
+            -H "Accept: application/json")"
           body="$(printf '%s' "$response" | sed '$d')"
           status="$(printf '%s' "$response" | tail -n 1)"
           echo "$body"
           if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
             echo "::error::Digest request failed with HTTP $status"
+            exit 1
+          fi
+          if ! printf '%s' "$body" | grep -q '"sent"'; then
+            echo "::error::Response is not the digest API (deploy may be missing /api/cron/weekly-admin-digest). Body starts with:"
+            printf '%s' "$body" | head -c 200
             exit 1
           fi
           if printf '%s' "$body" | grep -q '"sent":false'; then

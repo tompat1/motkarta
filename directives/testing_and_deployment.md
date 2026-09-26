@@ -38,13 +38,36 @@ npm run typecheck && npm run lint && npm test && npm run test:python && npm run 
 
 ---
 
+## Minimum before every push
+
+Cloudflare Pages runs `npm run build`, which **always** runs `npm run lint` before
+`vite build` (`scripts/build-verified.sh`). A lint error blocks deploy exactly like
+the failed `place-payload.test.mjs` `sonarjs/no-unused-collection` case.
+
+**Before `git push` (required):**
+
+```bash
+npm run preflight
+```
+
+`preflight` is `typecheck` + `lint` (~15s). Fix all **errors** (warnings are allowed).
+
+**Before declaring work done or deploying:**
+
+```bash
+npm run test:gate
+```
+
+---
+
 ## When to Run the Gate
 
 | Action | Required Gate Command |
 | :--- | :--- |
+| **Git push (minimum)** | `npm run preflight` |
 | **Completing Any Task** | `npm run test:gate` |
 | **Building Production Assets** | `npm run build` (Automatically triggers full gate in `scripts/build-verified.sh`) |
-| **Git Push / Syncing Commits** | `npm run test:gate && git push` |
+| **Git Push / Syncing Commits** | `npm run preflight` at minimum; `npm run test:gate` before risky changes |
 | **Cloudflare Pages Deployment** | `npm run deploy:cloudflare` |
 | **Dataset Enrichment & Sync** | `npm run test:gate` after running sync scripts (`sync_curated_sources.py`, `google_places_monthly_sync.py`, `fetch_place_photos.py`, `verify_and_clean_photos.py`) |
 

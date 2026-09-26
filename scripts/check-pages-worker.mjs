@@ -8,7 +8,7 @@ const routed = (pathname) => routes.include.some((rule) => rule === pathname || 
 const env = { ASSETS: { fetch: async () => new Response('test-static-asset') } };
 const context = { waitUntil() {}, passThroughOnException() {} };
 const request = (pathname, init = {}) => worker.fetch(new Request('https://build-check.invalid' + pathname, init), env, context);
-for (const pathname of ['/', '/api/concierge', '/api/places', '/api/reviews', '/api/admin/session', '/admin']) assert.ok(routed(pathname), `${pathname} missing from worker routes`);
+for (const pathname of ['/', '/api/concierge', '/api/places', '/api/reviews', '/api/admin/session', '/api/cron/weekly-admin-digest', '/admin']) assert.ok(routed(pathname), `${pathname} missing from worker routes`);
 assert.equal(await (await request('/')).text(), 'test-static-asset');
 assert.equal(await (await request('/assets/test.js')).text(), 'test-static-asset');
 const malformed = await request('/api/concierge', { method: 'POST', body: '{}' });

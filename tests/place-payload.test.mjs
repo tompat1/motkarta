@@ -55,6 +55,7 @@ test("places payload overlays live D1 fields onto static catalog matches", async
   };
 
   const payload = await fetchPlacesPayload();
+  assert.deepEqual(calls, ["/api/place-visibility", "/data/places.json", "/api/places"]);
   assert.equal(payload.places[0].id, 1);
   assert.equal(payload.places[0].address, "New road 9");
   assert.equal(payload.places[0].lifecycleState, "verified");
@@ -90,6 +91,7 @@ test("places payload merges manual admin entries from live D1 catalog", async ()
 
   const payload = await fetchPlacesPayload();
 
+  assert.deepEqual(calls, ["/api/place-visibility", "/data/places.json", "/api/places"]);
   assert.equal(payload.source, "d1");
   assert.equal(payload.places.length, 2);
   assert.equal(payload.places[1].name, "LUCA - PIZZA NAPOLETANA");
