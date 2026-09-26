@@ -1,5 +1,5 @@
 import type { PlaceInput } from "./scoring.ts";
-import { mergeSupplementalCatalogPlaces } from "./place-catalog-merge.ts";
+import { overlayCatalogWithLivePlaces } from "./place-catalog-merge.ts";
 import { filterPublishedPlaces, type PlaceIdentity } from "./place-visibility.ts";
 
 export type DataSource = "loading" | "d1" | "osm" | "unavailable";
@@ -28,7 +28,9 @@ export async function fetchPlacesPayload(): Promise<{ source: DataSource; places
     if (payload.places?.length) {
       const staticPlaces = filterPublishedPlaces(payload.places, visibility.blocked);
       const mergedPlaces = await mergeLiveCatalogPlaces(staticPlaces, visibility.blocked);
-      const source = mergedPlaces.length > staticPlaces.length ? "d1" : sourceFromPayload(payload.source, "osm");
+      const source = catalogUsesLiveOverlay(staticPlaces, mergedPlaces)
+        ? "d1"
+        : sourceFromPayload(payload.source, "osm");
       return { source, places: mergedPlaces, blocked: visibility.blocked };
     }
 
@@ -67,10 +69,26 @@ async function mergeLiveCatalogPlaces(staticPlaces: PlaceInput[], blocked: Place
       return staticPlaces;
     }
     const livePlaces = filterPublishedPlaces(payload.places, blocked);
-    return mergeSupplementalCatalogPlaces(staticPlaces, livePlaces);
+    return overlayCatalogWithLivePlaces(staticPlaces, livePlaces);
   } catch {
     return staticPlaces;
   }
+}
+
+function catalogUsesLiveOverlay(before: PlaceInput[], after: PlaceInput[]) {
+  if (after.length !== before.length) {
+    return true;
+  }
+  return after.some((place, index) => {
+    const previous = before[index];
+    return !previous
+      || place.id !== previous.id
+      || place.address !== previous.address
+      || place.priceLevel !== previous.priceLevel
+      || place.lifecycleState !== previous.lifecycleState
+      || place.validationLabel !== previous.validationLabel
+      || place.cuisine !== previous.cuisine;
+  });
 }
 
 function sourceFromPayload(rawSource: string | undefined, fallback: DataSource): DataSource {

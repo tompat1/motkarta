@@ -32,6 +32,17 @@ Keep these Pages environment variables configured for the correct Access app:
 - `MOTKARTA_ACCESS_AUD`: the Access application's audience tag.
 - `MOTKARTA_ADMIN_EMAILS`: comma-separated allowed administrator emails.
 
+### Weekly admin digest (cron)
+
+Motkarta emails a weekly summary of new review candidates, hidden-gem-ready venues, coverage gaps, and recent admin activity.
+
+- Schedule: Mondays **08:00 UTC** (`wrangler.toml` cron + `functions/_scheduled.ts`).
+- Manual trigger: `POST /api/cron/weekly-admin-digest` with `Authorization: Bearer <MOTKARTA_CRON_SECRET>` (or header `x-motkarta-cron-secret`).
+- Recipients: `MOTKARTA_DIGEST_EMAILS` if set, otherwise `MOTKARTA_ADMIN_EMAILS`.
+- Optional: `MOTKARTA_DIGEST_FROM_EMAIL`, `MOTKARTA_DIGEST_FROM_NAME`, `MOTKARTA_ADMIN_DIGEST_WEBHOOK`, `MOTKARTA_PUBLIC_SITE_URL`.
+- Set the cron secret in production: `wrangler pages secret put MOTKARTA_CRON_SECRET`.
+- Mailchannels requires the `from` domain to be on Cloudflare with appropriate DNS (SPF) for outbound mail.
+
 Protect `/admin`, `/admin.html` and `/api/admin/*` with the same Access app;
 keep the public map available without login. If these paths use separate Access
 apps, the API app audience must match the configured audience. The server

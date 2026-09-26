@@ -4,6 +4,8 @@ import test from "node:test";
 import {
   isManualAdminCatalogPlace,
   mergeSupplementalCatalogPlaces,
+  overlayCatalogWithLivePlaces,
+  overlayPlaceFromLive,
 } from "../lib/place-catalog-merge.ts";
 
 test("mergeSupplementalCatalogPlaces appends manual admin entries not in static export", () => {
@@ -44,6 +46,38 @@ test("mergeSupplementalCatalogPlaces skips duplicates and closed manual entries"
 
   assert.equal(merged.length, 1);
   assert.equal(merged[0].id, 1);
+});
+
+test("overlayCatalogWithLivePlaces applies D1-wins fields for matching OSM rows", () => {
+  const staticPlace = place({
+    id: 100,
+    name: "Static Name",
+    address: "Old street 1",
+    priceLevel: 2,
+    osmIdentity: "node:42",
+  });
+  const livePlace = place({
+    id: 999,
+    name: "Verified Name",
+    address: "New street 9",
+    priceLevel: 4,
+    lifecycleState: "verified",
+    validationLabel: "known_hidden_gem",
+    osmIdentity: "node:42",
+  });
+
+  const [merged] = overlayCatalogWithLivePlaces([staticPlace], [livePlace]);
+  assert.equal(merged.id, 100);
+  assert.equal(merged.name, "Verified Name");
+  assert.equal(merged.address, "New street 9");
+  assert.equal(merged.priceLevel, 4);
+  assert.equal(merged.lifecycleState, "verified");
+});
+
+test("overlayPlaceFromLive keeps the public catalog id", () => {
+  const result = overlayPlaceFromLive(place({ id: 1 }), place({ id: 77, name: "Live" }));
+  assert.equal(result.id, 1);
+  assert.equal(result.name, "Live");
 });
 
 test("isManualAdminCatalogPlace detects admin_entry evidence", () => {

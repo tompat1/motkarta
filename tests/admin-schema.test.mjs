@@ -135,7 +135,7 @@ test("admin schema POST is idempotent when runtime is already ready", async () =
   assert.equal(response.status, 200);
   assert.equal(payload.ready, true);
   assert.equal(payload.applied, 0);
-  assert.equal(db.runs.length, 7);
+  assert.equal(db.runs.length, 8);
 });
 
 test("admin schema POST reports missing base schema without creating arbitrary app tables", async () => {

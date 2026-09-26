@@ -212,6 +212,7 @@ async function ensureAdminSchema(db: D1Database) {
   await tryRun(db, createAdminReviewEventsSql());
   await ensureColumns(db, "admin_review_events", adminReviewEventColumns);
   await tryRun(db, createAdminLabelExportsSql());
+  await tryRun(db, createAdminDigestLogSql());
   await tryRun(
     db,
     "CREATE INDEX IF NOT EXISTS establishments_lifecycle_idx ON establishments (lifecycle_state)",
@@ -335,5 +336,14 @@ function createAdminLabelExportsSql() {
     duplicate_resolution_count integer NOT NULL DEFAULT 0,
     exported_by text,
     notes text
+  )`;
+}
+
+function createAdminDigestLogSql() {
+  return `CREATE TABLE IF NOT EXISTS admin_digest_log (
+    id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+    sent_at text NOT NULL,
+    recipient_count integer NOT NULL DEFAULT 0,
+    summary_json text NOT NULL
   )`;
 }

@@ -28,6 +28,39 @@ test("places payload loads static dataset before D1 API", async () => {
   assert.equal(payload.places[0].name, "Static Place");
 });
 
+test("places payload overlays live D1 fields onto static catalog matches", async () => {
+  const calls = [];
+  globalThis.fetch = async (url) => {
+    calls.push(String(url));
+    if (url === "/api/place-visibility") return jsonResponse({ blocked: [] });
+    if (url === "/data/places.json") {
+      return jsonResponse({
+        source: "osm_curated_open_sources",
+        places: [{ ...place(1, "Static Place"), address: "Old road 1", osmIdentity: "node:99" }],
+      });
+    }
+    if (url === "/api/places") {
+      return jsonResponse({
+        source: "d1",
+        places: [{
+          ...place(1, "Static Place"),
+          id: 9001,
+          address: "New road 9",
+          osmIdentity: "node:99",
+          lifecycleState: "verified",
+        }],
+      });
+    }
+    throw new Error(`Unexpected URL ${url}`);
+  };
+
+  const payload = await fetchPlacesPayload();
+  assert.equal(payload.places[0].id, 1);
+  assert.equal(payload.places[0].address, "New road 9");
+  assert.equal(payload.places[0].lifecycleState, "verified");
+  assert.equal(payload.source, "d1");
+});
+
 test("places payload merges manual admin entries from live D1 catalog", async () => {
   const calls = [];
   globalThis.fetch = async (url) => {

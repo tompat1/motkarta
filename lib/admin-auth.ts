@@ -176,6 +176,21 @@ function adminEmailAllowlist(env: AdminAuthEnv) {
   );
 }
 
+export type AdminNotifyEnv = AdminAuthEnv & {
+  MOTKARTA_DIGEST_EMAILS?: string;
+};
+
+export function adminNotificationEmails(env: AdminNotifyEnv): string[] {
+  const digestOnly = String(env.MOTKARTA_DIGEST_EMAILS ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+  if (digestOnly.length > 0) {
+    return digestOnly;
+  }
+  return [...adminEmailAllowlist(env)];
+}
+
 function cookieValue(cookieHeader: string | null, name: string) {
   const prefix = `${name}=`;
   for (const cookie of String(cookieHeader ?? "").split(";")) {
