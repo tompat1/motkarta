@@ -17,5 +17,5 @@ CONCIERGE_RETRIEVAL_MODE = "lexical"
 CONCIERGE_SYNTHESIS_MODE = "template"
 MOTKARTA_PUBLIC_SITE_URL = "https://motkarta.rynell.org"
 
-[triggers]
-crons = [ "0 8 * * 1" ]
+# Pages does not support [triggers] in wrangler.toml. Schedule weekly digest via
+# Cloudflare dashboard (Cron Triggers on a Worker) or POST /api/cron/weekly-admin-digest.
