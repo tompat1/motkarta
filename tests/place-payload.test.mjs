@@ -23,9 +23,43 @@ test("places payload loads static dataset before D1 API", async () => {
 
   const payload = await fetchPlacesPayload();
 
-  assert.deepEqual(calls, ["/api/place-visibility", "/data/places.json"]);
+  assert.deepEqual(calls, ["/api/place-visibility", "/data/places.json", "/api/places"]);
   assert.equal(payload.source, "osm");
   assert.equal(payload.places[0].name, "Static Place");
+});
+
+test("places payload merges manual admin entries from live D1 catalog", async () => {
+  const calls = [];
+  globalThis.fetch = async (url) => {
+    calls.push(String(url));
+    if (url === "/api/place-visibility") return jsonResponse({ blocked: [] });
+    if (url === "/data/places.json") {
+      return jsonResponse({ source: "osm_curated_open_sources", places: [place(1, "Static Place")] });
+    }
+    if (url === "/api/places") {
+      return jsonResponse({
+        source: "d1",
+        places: [
+          place(1, "Static Place"),
+          {
+            ...place(2, "LUCA - PIZZA NAPOLETANA"),
+            candidateSourceType: "admin_entry",
+            lifecycleState: "verified",
+            validationLabel: "known_hidden_gem",
+            latitude: 59.32,
+            longitude: 18.07,
+          },
+        ],
+      });
+    }
+    throw new Error(`Unexpected URL ${url}`);
+  };
+
+  const payload = await fetchPlacesPayload();
+
+  assert.equal(payload.source, "d1");
+  assert.equal(payload.places.length, 2);
+  assert.equal(payload.places[1].name, "LUCA - PIZZA NAPOLETANA");
 });
 
 test("places payload uses D1 API only when static dataset is unavailable", async () => {

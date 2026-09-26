@@ -1,4 +1,5 @@
 import type { PlaceInput } from "./scoring.ts";
+import { mergeSupplementalCatalogPlaces } from "./place-catalog-merge.ts";
 import { filterPublishedPlaces, type PlaceIdentity } from "./place-visibility.ts";
 
 export type DataSource = "loading" | "d1" | "osm" | "unavailable";
@@ -25,7 +26,10 @@ export async function fetchPlacesPayload(): Promise<{ source: DataSource; places
 
     const payload = (await staticResponse.json()) as PlacesPayload;
     if (payload.places?.length) {
-      return { source: sourceFromPayload(payload.source, "osm"), places: filterPublishedPlaces(payload.places, visibility.blocked), blocked: visibility.blocked };
+      const staticPlaces = filterPublishedPlaces(payload.places, visibility.blocked);
+      const mergedPlaces = await mergeLiveCatalogPlaces(staticPlaces, visibility.blocked);
+      const source = mergedPlaces.length > staticPlaces.length ? "d1" : sourceFromPayload(payload.source, "osm");
+      return { source, places: mergedPlaces, blocked: visibility.blocked };
     }
 
     throw new Error("Static places returned no places");
@@ -34,7 +38,7 @@ export async function fetchPlacesPayload(): Promise<{ source: DataSource; places
   }
 
   try {
-    const apiResponse = await fetch("/api/places");
+    const apiResponse = await fetch("/api/places", { cache: "no-store", signal: AbortSignal.timeout(10_000) });
     if (apiResponse.ok) {
       const payload = (await apiResponse.json()) as PlacesPayload;
       if (payload.places?.length) {
@@ -50,6 +54,23 @@ export async function fetchPlacesPayload(): Promise<{ source: DataSource; places
   }
 
   throw new Error("Static places returned no places");
+}
+
+async function mergeLiveCatalogPlaces(staticPlaces: PlaceInput[], blocked: PlaceIdentity[]): Promise<PlaceInput[]> {
+  try {
+    const apiResponse = await fetch("/api/places", { cache: "no-store", signal: AbortSignal.timeout(10_000) });
+    if (!apiResponse.ok) {
+      return staticPlaces;
+    }
+    const payload = (await apiResponse.json()) as PlacesPayload;
+    if (!payload.places?.length) {
+      return staticPlaces;
+    }
+    const livePlaces = filterPublishedPlaces(payload.places, blocked);
+    return mergeSupplementalCatalogPlaces(staticPlaces, livePlaces);
+  } catch {
+    return staticPlaces;
+  }
 }
 
 function sourceFromPayload(rawSource: string | undefined, fallback: DataSource): DataSource {

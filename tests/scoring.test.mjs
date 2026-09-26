@@ -298,4 +298,16 @@ test("hidden gem gates require evidence, current existence, distinctiveness, and
   assert.equal(evaluateHiddenGemGates({ ...basePlace, mainstreamExposure: 75 }).eligible, false);
   assert.equal(evaluateHiddenGemGates({ ...basePlace, tags: ["Restaurant"], cuisine: "general" }).eligible, false);
   assert.equal(evaluateHiddenGemGates({ ...basePlace, lifecycleState: "candidate" }).eligible, false);
+  assert.equal(
+    evaluateHiddenGemGates({
+      ...basePlace,
+      lifecycleState: "candidate",
+      validationLabel: "known_hidden_gem",
+      candidateSourceType: "admin_entry",
+      tags: ["Restaurant"],
+      cuisine: "general",
+      mainstreamExposure: 75,
+    }).eligible,
+    true,
+  );
 });

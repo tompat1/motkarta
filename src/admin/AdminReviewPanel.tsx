@@ -8,7 +8,7 @@ import { AdminMlDashboard } from "./AdminMlDashboard";
 import { AdminGuidePanel } from "./AdminGuidePanel";
 import { AdminToastContainer, type AdminToast } from "./AdminToastContainer";
 import { AdminMapView, type AdminMapCandidate } from "./AdminMapView";
-import { AdminPhotoManager } from "./AdminPhotoManager";
+import { AdminPhotoManager, type AdminPhotoManagerSaveHandle } from "./AdminPhotoManager";
 import { AdminPlaceEditor, AdminPriceLevelPicker, candidateToPlaceDraft, emptyPlaceDraft, type AdminPlaceDraft } from "./AdminPlaceEditor";
 import { AdminDistrictManager } from "./AdminDistrictManager";
 import {
@@ -19,6 +19,7 @@ import {
   CheckCircle,
   CircleNotch,
   DownloadSimple,
+  FloppyDisk,
   Globe,
   HouseLine,
   Info,
@@ -199,6 +200,8 @@ export function AdminReviewPanel({
   const [websiteInputs, setWebsiteInputs] = useState<Record<number, string>>({});
   const [addressInputs, setAddressInputs] = useState<Record<number, string>>({});
   const [priceLevelInputs, setPriceLevelInputs] = useState<Record<number, number | null>>({});
+  const [photoPendingByPlace, setPhotoPendingByPlace] = useState<Record<number, boolean>>({});
+  const photoSaveHandlesRef = useRef<Record<number, AdminPhotoManagerSaveHandle>>({});
   const [schemaBusy, setSchemaBusy] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -1103,61 +1106,79 @@ export function AdminReviewPanel({
     }
   };
 
-  const updateCandidateDetails = async (candidate: AdminCandidate) => {
-    if (!hasAdminAuth) return;
+  const candidateDetailsPending = (candidate: AdminCandidate) => {
+    const addressDraft = (addressInputs[candidate.id] ?? candidate.address ?? "").trim();
+    const addressPending = addressDraft !== (candidate.address ?? "").trim();
+    const priceDraft = Object.prototype.hasOwnProperty.call(priceLevelInputs, candidate.id)
+      ? priceLevelInputs[candidate.id]
+      : candidate.priceLevel ?? null;
+    const pricePending = priceDraft !== (candidate.priceLevel ?? null);
+    return addressPending || pricePending;
+  };
 
+  const candidatePlacePending = (candidate: AdminCandidate) =>
+    candidateDetailsPending(candidate) || Boolean(photoPendingByPlace[candidate.id]);
+
+  const persistCandidateDetails = async (candidate: AdminCandidate) => {
     const address = (addressInputs[candidate.id] ?? candidate.address ?? "").trim();
     const priceLevel = Object.prototype.hasOwnProperty.call(priceLevelInputs, candidate.id)
       ? priceLevelInputs[candidate.id]
       : candidate.priceLevel ?? null;
     const validationNotes = (reviewNotes[candidate.id] ?? candidate.validationNotes ?? "").trim();
+
+    const response = await fetch("/api/admin/candidates", {
+      method: "POST",
+      headers: adminHeaders(undefined, { "content-type": "application/json" }),
+      body: JSON.stringify({
+        action: "update_place",
+        id: candidate.id,
+        name: candidate.name,
+        kind: candidate.kind,
+        area: candidate.area,
+        address,
+        website: candidate.website ?? "",
+        note: candidate.note,
+        latitude: candidate.latitude ?? 59.3293,
+        longitude: candidate.longitude ?? 18.0686,
+        lifecycleState: candidate.lifecycleState,
+        validationLabel: candidate.validationLabel,
+        priceLevel,
+        validationNotes,
+      }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as {
+      candidate?: AdminCandidate;
+      error?: string;
+    };
+
+    if (!response.ok || !payload.candidate) {
+      throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte spara platsdetaljer." : "Could not save place details."));
+    }
+
+    setCandidates((current) =>
+      current.map((row) => (row.id === candidate.id ? { ...row, ...payload.candidate } : row)),
+    );
+    setAddressInputs((current) => {
+      const next = { ...current };
+      delete next[candidate.id];
+      return next;
+    });
+    setPriceLevelInputs((current) => {
+      const next = { ...current };
+      delete next[candidate.id];
+      return next;
+    });
+
+    return payload.candidate;
+  };
+
+  const updateCandidateDetails = async (candidate: AdminCandidate) => {
+    if (!hasAdminAuth) return;
     setBusyId(candidate.id);
     setError(null);
 
     try {
-      const response = await fetch("/api/admin/candidates", {
-        method: "POST",
-        headers: adminHeaders(undefined, { "content-type": "application/json" }),
-        body: JSON.stringify({
-          action: "update_place",
-          id: candidate.id,
-          name: candidate.name,
-          kind: candidate.kind,
-          area: candidate.area,
-          address,
-          website: candidate.website ?? "",
-          note: candidate.note,
-          latitude: candidate.latitude ?? 59.3293,
-          longitude: candidate.longitude ?? 18.0686,
-          lifecycleState: candidate.lifecycleState,
-          validationLabel: candidate.validationLabel,
-          priceLevel,
-          validationNotes,
-        }),
-      });
-      const payload = (await response.json().catch(() => ({}))) as {
-        candidate?: AdminCandidate;
-        reviewedAt?: string;
-        error?: string;
-      };
-
-      if (!response.ok || !payload.candidate) {
-        throw new Error(payload.error ?? (lang === "sv" ? "Kunde inte spara adress och pris." : "Could not save address and price."));
-      }
-
-      setCandidates((current) =>
-        current.map((row) => (row.id === candidate.id ? { ...row, ...payload.candidate } : row)),
-      );
-      setAddressInputs((current) => {
-        const next = { ...current };
-        delete next[candidate.id];
-        return next;
-      });
-      setPriceLevelInputs((current) => {
-        const next = { ...current };
-        delete next[candidate.id];
-        return next;
-      });
+      await persistCandidateDetails(candidate);
       setStatus(
         lang === "sv"
           ? `Adress och prisnivå sparade för ${candidate.name}.`
@@ -1167,6 +1188,56 @@ export function AdminReviewPanel({
         type: "success",
         title: lang === "sv" ? "Platsdetaljer sparade" : "Place details saved",
         message: `${candidate.name} (#${candidate.id})`,
+      });
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : String(cause));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const saveCandidatePlace = async (candidate: AdminCandidate) => {
+    if (!hasAdminAuth) return;
+
+    const detailsPending = candidateDetailsPending(candidate);
+    const photoPending = Boolean(photoPendingByPlace[candidate.id]);
+    if (!detailsPending && !photoPending) {
+      setStatus(lang === "sv" ? "Inget att spara för denna plats." : "Nothing to save for this place.");
+      return;
+    }
+
+    setBusyId(candidate.id);
+    setError(null);
+
+    try {
+      if (detailsPending) {
+        await persistCandidateDetails(candidate);
+      }
+
+      if (photoPending) {
+        const handle = photoSaveHandlesRef.current[candidate.id];
+        const saved = await handle?.savePending();
+        if (!saved) {
+          throw new Error(lang === "sv" ? "Kunde inte spara hero-bilden." : "Could not save the hero image.");
+        }
+        setPhotoRefreshKeys((current) => ({
+          ...current,
+          [candidate.id]: (current[candidate.id] ?? 0) + 1,
+        }));
+      }
+
+      setStatus(
+        lang === "sv"
+          ? `Platsen ${candidate.name} sparades i D1.`
+          : `Saved ${candidate.name} to D1.`,
+      );
+      addToast({
+        type: "success",
+        title: lang === "sv" ? "Plats sparad" : "Place saved",
+        message: `${candidate.name} (#${candidate.id})`,
+        detail: lang === "sv"
+          ? "Hero-bild, ram och platsdetaljer är sparade."
+          : "Hero image, frame, and place details are saved.",
       });
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
@@ -2039,6 +2110,24 @@ export function AdminReviewPanel({
                     kind: candidate.kind,
                     area: candidate.area,
                   }}
+                  onPendingChange={(pending) => {
+                    setPhotoPendingByPlace((current) => {
+                      if (!pending) {
+                        if (!current[candidate.id]) return current;
+                        const next = { ...current };
+                        delete next[candidate.id];
+                        return next;
+                      }
+                      return { ...current, [candidate.id]: true };
+                    });
+                  }}
+                  onSaveHandleChange={(handle) => {
+                    if (!handle) {
+                      delete photoSaveHandlesRef.current[candidate.id];
+                      return;
+                    }
+                    photoSaveHandlesRef.current[candidate.id] = handle;
+                  }}
                 />
                 {candidate.possibleDuplicates.length ? (
                   <div className="admin-duplicate-box">
@@ -2227,6 +2316,16 @@ export function AdminReviewPanel({
               </div>
 
               <div className="admin-candidate-actions">
+                <button
+                  type="button"
+                  className="admin-action-btn save-place"
+                  disabled={busyId === candidate.id || !candidatePlacePending(candidate)}
+                  title={lang === "sv" ? "Spara hero-bild, ram och platsdetaljer i D1" : "Save hero image, frame, and place details to D1"}
+                  onClick={() => void saveCandidatePlace(candidate)}
+                >
+                  {busyId === candidate.id ? <CircleNotch size={14} className="animate-spin" /> : <FloppyDisk size={14} weight="bold" />}
+                  {lang === "sv" ? "Spara plats" : "Save place"}
+                </button>
                 <button
                   type="button"
                   className={`admin-action-btn primary ${!candidate.evidenceGate.canPromoteHiddenGem ? "override" : ""}`}

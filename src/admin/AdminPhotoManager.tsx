@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, CircleNotch, PencilSimple, Plus, Trash, ImageSquare, UploadSimple } from "@phosphor-icons/react";
 import type { Language } from "../app/shared";
 import { processImageFile } from "../components/ConciergeSuperpowerModal";
@@ -22,6 +22,11 @@ type AdminPhoto = {
   heroFit?: "contain" | "cover";
 };
 
+export type AdminPhotoManagerSaveHandle = {
+  hasPendingChanges: () => boolean;
+  savePending: () => Promise<boolean>;
+};
+
 type Props = {
   placeId: number;
   lang: Language;
@@ -29,6 +34,8 @@ type Props = {
   websiteUrl?: string | null;
   placePreview?: AdminPlacePreview;
   adminHeaders: (tokenOverride?: string, extraHeaders?: Record<string, string>) => Record<string, string>;
+  onSaveHandleChange?: (handle: AdminPhotoManagerSaveHandle | null) => void;
+  onPendingChange?: (pending: boolean) => void;
 };
 
 function frameFromPhoto(photo?: Partial<AdminPhoto> | null): PhotoHeroFrame {
@@ -40,7 +47,16 @@ function frameFromPhoto(photo?: Partial<AdminPhoto> | null): PhotoHeroFrame {
   });
 }
 
-export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, placePreview, adminHeaders }: Props) {
+export function AdminPhotoManager({
+  placeId,
+  lang,
+  refreshKey = 0,
+  websiteUrl,
+  placePreview,
+  adminHeaders,
+  onSaveHandleChange,
+  onPendingChange,
+}: Props) {
   const [photos, setPhotos] = useState<AdminPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -63,6 +79,10 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, p
   } | null>(null);
   const addFileInputRef = useRef<HTMLInputElement>(null);
   const replaceFileInputRef = useRef<HTMLInputElement>(null);
+  const onSaveHandleChangeRef = useRef(onSaveHandleChange);
+  const onPendingChangeRef = useRef(onPendingChange);
+  onSaveHandleChangeRef.current = onSaveHandleChange;
+  onPendingChangeRef.current = onPendingChange;
 
   const loadPhotos = async () => {
     setLoading(true);
@@ -104,7 +124,7 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, p
     dataUrl?: string | null;
     caption?: string;
     frame?: PhotoHeroFrame;
-  }) => {
+  }): Promise<boolean> => {
     setBusyId(photo.photoId ?? "new");
     setError(null);
     try {
@@ -133,8 +153,10 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, p
       resetAddForm();
       resetEditForm();
       await loadPhotos();
+      return true;
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Could not save image.");
+      return false;
     } finally {
       setBusyId(null);
     }
@@ -261,6 +283,53 @@ export function AdminPhotoManager({ placeId, lang, refreshKey = 0, websiteUrl, p
 
   const canSaveNew = Boolean(newDataUrl || newUrl.trim());
   const canSaveEdit = Boolean(editDataUrl || editUrl.trim());
+  const hasPendingPhotoChanges = canSaveNew || Boolean(editingId && canSaveEdit);
+
+  const savePendingPhoto = useCallback(async (): Promise<boolean> => {
+    if (editingId && canSaveEdit) {
+      return savePhoto({
+        photoId: editingId,
+        url: editDataUrl ? undefined : editUrl,
+        dataUrl: editDataUrl,
+        caption: editCaption,
+        frame: editFrame,
+      });
+    }
+    if (canSaveNew) {
+      return savePhoto({
+        url: newDataUrl ? undefined : newUrl,
+        dataUrl: newDataUrl,
+        caption: newCaption,
+        frame: newFrame,
+      });
+    }
+    return false;
+  }, [
+    canSaveEdit,
+    canSaveNew,
+    editCaption,
+    editDataUrl,
+    editFrame,
+    editUrl,
+    editingId,
+    newCaption,
+    newDataUrl,
+    newFrame,
+    newUrl,
+  ]);
+
+  useEffect(() => {
+    onPendingChangeRef.current?.(hasPendingPhotoChanges);
+  }, [hasPendingPhotoChanges]);
+
+  useEffect(() => {
+    const handle: AdminPhotoManagerSaveHandle = {
+      hasPendingChanges: () => hasPendingPhotoChanges,
+      savePending: savePendingPhoto,
+    };
+    onSaveHandleChangeRef.current?.(handle);
+    return () => onSaveHandleChangeRef.current?.(null);
+  }, [hasPendingPhotoChanges, savePendingPhoto]);
 
   return (
     <section className="admin-photo-manager" aria-label={lang === "sv" ? "Bilder" : "Images"}>

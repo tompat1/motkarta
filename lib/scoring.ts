@@ -86,6 +86,7 @@ export type PlaceInput = {
   lifecycleState?: PlaceLifecycleState;
   validationLabel?: "known_mainstream" | "known_hidden_gem" | "not_enough_evidence" | "closed_wrong_category";
   validationNotes?: string;
+  candidateSourceType?: string;
   evidence: EvidenceSignals;
   engagement: EngagementSignals;
   specialty?: SpecialtyAttributes;
@@ -333,6 +334,35 @@ export function isUserVisibleLifecycleState(state: PlaceLifecycleState | undefin
 }
 
 export function evaluateHiddenGemGates(place: PlaceInput): HiddenGemEligibility {
+  const lifecycleState = place.lifecycleState ?? "baseline";
+  const isKnownBadValidation = place.validationLabel === "closed_wrong_category";
+  const isEditorialHiddenGem =
+    place.validationLabel === "known_hidden_gem"
+    && !isKnownBadValidation
+    && (
+      isUserVisibleLifecycleState(lifecycleState)
+      || place.candidateSourceType === "admin_entry"
+    );
+  if (isEditorialHiddenGem) {
+    const evidenceCount = independentEvidenceCount(place);
+    const passed = { passed: true as const, detail: "Editorial hidden-gem label" };
+    return {
+      eligible: true,
+      independentEvidenceCount: evidenceCount,
+      gates: {
+        lowMainstreamExposure: { ...passed, label: "Low mainstream exposure" },
+        independentEvidence: { ...passed, label: "Two independent evidence signals" },
+        currentExistence: { ...passed, label: "Current existence" },
+        distinctiveness: { ...passed, label: "Distinctiveness" },
+        lifecycle: {
+          passed: true,
+          label: "Visible lifecycle state",
+          detail: `state=${lifecycleState}, validation=known_hidden_gem`,
+        },
+      },
+    };
+  }
+
   const evidence = normalizeEvidence(place.evidence);
   const evidenceCount = independentEvidenceCount(place);
   const nonGenericTags = (place.tags ?? []).filter((tag) => {
@@ -357,8 +387,6 @@ export function evaluateHiddenGemGates(place: PlaceInput): HiddenGemEligibility 
     (place.cuisine ? !["general", "restaurant", "cafe", "coffee"].includes(place.cuisine.toLowerCase()) : false) ||
     (place.kind === "Specialty coffee" && verifySpecialtyCoffeeEligibility(place));
 
-  const lifecycleState = place.lifecycleState ?? "baseline";
-  const isKnownBadValidation = place.validationLabel === "closed_wrong_category";
   const currentExistence =
     !isKnownBadValidation &&
     (finiteNumber(place.daysSinceFreshEvidence, 365) <= 365 ||

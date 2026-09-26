@@ -31,6 +31,7 @@ export type PlaceRow = {
   lifecycle_state: PlaceLifecycleState | null;
   validation_label: PlaceInput["validationLabel"] | null;
   validation_notes: string | null;
+  candidate_source_type?: string | null;
   rating_average: number | null;
   reliable_rating_count: number | null;
   review_count: number | null;
@@ -144,6 +145,7 @@ export const legacyPlaceQuery = `
     e.lifecycle_state,
     e.validation_label,
     e.validation_notes,
+    e.candidate_source_type,
     r.rating_average,
     r.reliable_rating_count,
     r.review_count,
@@ -210,6 +212,7 @@ export const placeQuery = `
     e.lifecycle_state,
     e.validation_label,
     e.validation_notes,
+    e.candidate_source_type,
     r.rating_average,
     r.reliable_rating_count,
     r.review_count,
@@ -373,6 +376,7 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
     lifecycleState: row.lifecycle_state ?? "baseline",
     validationLabel: row.validation_label ?? undefined,
     validationNotes: row.validation_notes ?? undefined,
+    candidateSourceType: row.candidate_source_type ?? undefined,
     evidence: {
       specialistGuide: sourceTypes.has("specialist_guide") ? 1 : 0,
       independentEditorial: sourceTypes.has("editorial") ? 1 : 0,
