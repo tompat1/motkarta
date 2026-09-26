@@ -36,8 +36,8 @@ Keep these Pages environment variables configured for the correct Access app:
 
 Motkarta emails a weekly summary of new review candidates, hidden-gem-ready venues, coverage gaps, and recent admin activity.
 
-- Schedule: Mondays **08:00 UTC** (`wrangler.toml` cron + `functions/_scheduled.ts`).
-- Manual trigger: `POST /api/cron/weekly-admin-digest` with `Authorization: Bearer <MOTKARTA_CRON_SECRET>` (or header `x-motkarta-cron-secret`).
+- **Automatic schedule:** GitHub Actions workflow `.github/workflows/admin-weekly-digest.yml` (Mondays **08:00 UTC**). Add repository secret `MOTKARTA_CRON_SECRET` with the same value as on Cloudflare Pages. Optional repository variable `MOTKARTA_DIGEST_URL` to override the POST target (defaults to production).
+- Manual trigger: `POST /api/cron/weekly-admin-digest` with `Authorization: Bearer <MOTKARTA_CRON_SECRET>` (or header `x-motkarta-cron-secret`), or run the workflow from **Actions → Weekly admin digest → Run workflow**.
 - Recipients: `MOTKARTA_DIGEST_EMAILS` if set, otherwise `MOTKARTA_ADMIN_EMAILS`.
 - Optional: `MOTKARTA_DIGEST_FROM_EMAIL`, `MOTKARTA_DIGEST_FROM_NAME`, `MOTKARTA_ADMIN_DIGEST_WEBHOOK`, `MOTKARTA_PUBLIC_SITE_URL`.
 - Set the cron secret in production: `wrangler pages secret put MOTKARTA_CRON_SECRET`.

@@ -1,0 +1,37 @@
+name: Weekly admin digest
+
+# Mondays 08:00 UTC. Also runnable from Actions → "Run workflow".
+on:
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+jobs:
+  send-digest:
+    name: Email Motkarta admin digest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger production digest endpoint
+        env:
+          CRON_SECRET: ${{ secrets.MOTKARTA_CRON_SECRET }}
+          DIGEST_URL: ${{ vars.MOTKARTA_DIGEST_URL }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::Add repository secret MOTKARTA_CRON_SECRET (same value as Cloudflare Pages)."
+            exit 1
+          fi
+          url="${DIGEST_URL:-https://motkarta.rynell.org/api/cron/weekly-admin-digest}"
+          response="$(curl -sS -w '\n%{http_code}' -X POST "$url" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "x-motkarta-digest-force: 1" \
+            -H "Content-Type: application/json")"
+          body="$(printf '%s' "$response" | sed '$d')"
+          status="$(printf '%s' "$response" | tail -n 1)"
+          echo "$body"
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+            echo "::error::Digest request failed with HTTP $status"
+            exit 1
+          fi
+          if printf '%s' "$body" | grep -q '"sent":false'; then
+            echo "::warning::Digest did not send (see JSON reason). Check Mailchannels and MOTKARTA_ADMIN_EMAILS on Pages."
+          fi
