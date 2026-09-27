@@ -66,18 +66,38 @@ test("overlayCatalogWithLivePlaces applies D1-wins fields for matching OSM rows"
     osmIdentity: "node:42",
   });
 
-  const [merged] = overlayCatalogWithLivePlaces([staticPlace], [livePlace]);
+  const [merged] = overlayCatalogWithLivePlaces(
+    [place({ ...staticPlace, cuisine: "mexican" })],
+    [livePlace],
+  );
   assert.equal(merged.id, 100);
   assert.equal(merged.name, "Verified Name");
   assert.equal(merged.address, "New street 9");
   assert.equal(merged.priceLevel, 4);
   assert.equal(merged.lifecycleState, "verified");
+  assert.equal(merged.cuisine, "mexican");
 });
 
 test("overlayPlaceFromLive keeps the public catalog id", () => {
   const result = overlayPlaceFromLive(place({ id: 1 }), place({ id: 77, name: "Live" }));
   assert.equal(result.id, 1);
   assert.equal(result.name, "Live");
+});
+
+test("overlayPlaceFromLive keeps static cuisine when live D1 row has no cuisine tag", () => {
+  const result = overlayPlaceFromLive(
+    place({ id: 1, cuisine: "mexican" }),
+    place({ id: 77, name: "Live", cuisine: undefined }),
+  );
+  assert.equal(result.cuisine, "mexican");
+});
+
+test("overlayPlaceFromLive prefers live cuisine when D1 has an explicit label", () => {
+  const result = overlayPlaceFromLive(
+    place({ id: 1, cuisine: "tex-mex" }),
+    place({ id: 77, cuisine: "mexican" }),
+  );
+  assert.equal(result.cuisine, "mexican");
 });
 
 test("isManualAdminCatalogPlace detects admin_entry evidence", () => {

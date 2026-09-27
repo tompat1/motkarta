@@ -111,9 +111,12 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     const text = normalize(facts.document);
     const exact = isExactPlaceMatch(normalizedQuery, place.name);
     const matchingTerms = intent.terms.filter((term) => matchesTerm(term, text));
+    const attributes = facts.facts.filter((fact) => ['dish', 'tags', 'cuisine'].includes(fact.field)).map((fact) => fact.value).join(' ');
+    const cuisineMatch = intent.cuisineKinds.length > 0 && intent.cuisineKinds.some((cuisine) =>
+      tokenAlternatives(normalize(cuisine)).some((term) => includesPhrase(attributes, term)));
     // Area alone must not make an unsupported food query relevant.
     const lexicalScore = matchingTerms.length / Math.max(1, intent.terms.length);
-    const relevant = exact || lexicalScore > 0 || (!intent.terms.length && (intent.area || intent.dinner || intent.hiddenGem || intent.near || intent.exclusions.length || intent.priceMax !== null || intent.filters.near_public_transport));
+    const relevant = exact || lexicalScore > 0 || cuisineMatch || (!intent.terms.length && (intent.area || intent.dinner || intent.hiddenGem || intent.near || intent.exclusions.length || intent.priceMax !== null || intent.filters.near_public_transport));
     if (!relevant) continue;
     const preferences: import('../scoring.ts').UserPreferences = {
       kind: intent.dinner || isMealCuisine ? 'Restaurant' : intent.specialty ? 'Specialty coffee' : intent.bakery ? 'Bakery' : undefined,

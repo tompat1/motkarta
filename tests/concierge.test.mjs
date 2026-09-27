@@ -93,6 +93,12 @@ test("RAG retrieveAndSynthesize ranks Mexican places for 'Mexican food' query", 
   const recommendedNames = result.recommendedPlaces.map((p) => p.name);
 
   assert.ok(recommendedNames.some((n) => n.includes("YUC") || n.includes("Taco") || n.includes("Chelas") || n.includes("La Neta") || n.includes("MXCO")));
+  assert.ok(result.cards.length <= 5, "Concierge answer should still highlight at most 5 venues");
+  assert.ok(
+    result.recommendedPlaces.length > result.cards.length,
+    "Cuisine browse should expose all catalog matches on the map, not only answer cards",
+  );
+  assert.match(result.intro, /alla|all|bekräftade|confirmed/i);
 });
 
 test("RAG retrieveAndSynthesize ranks Spanish places for 'Spanish tapas' query", () => {
@@ -275,9 +281,10 @@ test("RAG retrieveAndSynthesize lists ALL places in region when user writes Gaml
   const resultVasastan = retrieveAndSynthesize("Vasastan", livePlaces, { language: "sv" });
   assert.equal(resultVasastan.cards.length, 205, "Should return all 205 places in Vasastan");
 
-  // Non-district query still capped at 5
+  // Non-cuisine browse query still capped at 5 on map and in answer
   const resultGeneric = retrieveAndSynthesize("cardamom bun and filter coffee", livePlaces);
-  assert.ok(resultGeneric.cards.length <= 5, "Non-district queries must remain capped at top 5 recommendations");
+  assert.ok(resultGeneric.cards.length <= 5, "Non-cuisine browse queries must remain capped at top 5 recommendations");
+  assert.ok(resultGeneric.recommendedPlaces.length <= 5, "Non-cuisine browse queries must not expand the map pin set");
 });
 
 test("extractStructuredFilters parses Swedish Chinese cuisine keywords", () => {

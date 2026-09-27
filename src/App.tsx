@@ -880,15 +880,19 @@ function AppContent({
   }, [conciergeCards, conciergeResponse, preferences, scoredPlaces]);
 
   const ranked = useMemo(() => {
-    if (conciergeResponse?.cards.length && conciergePlaces.length > 0) {
-      return conciergePlaces;
-    }
     if (conciergeMainListIds.length > 0) {
       const byId = new Map(scoredPlaces.map((place) => [place.id, place]));
-      return conciergeMainListIds.flatMap((id) => {
+      const conciergeList = conciergeMainListIds.flatMap((id) => {
         const place = byId.get(id);
         return place ? [place] : [];
       });
+      if (cuisine === allCuisines) {
+        return conciergeList;
+      }
+      return conciergeList.filter((place) => cuisineParts(place).includes(cuisine));
+    }
+    if (conciergeResponse?.cards.length && conciergePlaces.length > 0) {
+      return conciergePlaces;
     }
     if (conciergePlaces.length > 0) {
       return conciergePlaces;
@@ -1000,7 +1004,7 @@ function AppContent({
   );
 
   const listPlaces = useMemo(() => {
-    if (conciergePlaces.length > 0) {
+    if (conciergeMainListIds.length === 0 && conciergePlaces.length > 0) {
       return conciergePlaces;
     }
 
@@ -1009,7 +1013,7 @@ function AppContent({
     }
 
     return filterRankedPlacesByBounds(ranked, mapViewportBounds, selected);
-  }, [conciergePlaces, mapViewportBounds, mobileViewMode, ranked, selected]);
+  }, [conciergeMainListIds.length, conciergePlaces, mapViewportBounds, mobileViewMode, ranked, selected]);
 
   const handleMapViewportChange = useCallback((payload: { count: number; bounds: MapBounds }) => {
     setMapViewportCount(payload.count);
@@ -1249,14 +1253,14 @@ function AppContent({
 
   const mapPlaces = useMemo(
     () => {
-      if (conciergePlaces.length > 0) {
+      if (conciergeMainListIds.length === 0 && conciergePlaces.length > 0) {
         return active && !conciergePlaces.some((p) => p.id === active.id)
           ? [active, ...conciergePlaces]
           : conciergePlaces;
       }
       return active && !ranked.some((p) => p.id === active.id) ? [active, ...ranked] : ranked;
     },
-    [active, conciergePlaces, ranked],
+    [active, conciergeMainListIds.length, conciergePlaces, ranked],
   );
 
   const [isConciergeFocused, setIsConciergeFocused] = useState(false);
@@ -1430,12 +1434,15 @@ function AppContent({
   const [conciergeChatMessages, setConciergeChatMessages] = useState<import("../lib/concierge/contracts").ChatMessage[]>([]);
 
   const resolveConciergeMainListIds = useCallback(
-    (response: ConciergeResponse) => response.recommendedPlaces.flatMap((recommended) => {
-      const match = scoredPlaces.find(
-        (place) => place.id === recommended.id || normalize(place.name) === normalize(recommended.name),
-      );
-      return match ? [match.id] : [];
-    }),
+    (response: ConciergeResponse) => {
+      const ids = response.recommendedPlaces.flatMap((recommended) => {
+        const match = scoredPlaces.find(
+          (place) => place.id === recommended.id || normalize(place.name) === normalize(recommended.name),
+        );
+        return match ? [match.id] : [];
+      });
+      return [...new Set(ids)];
+    },
     [scoredPlaces],
   );
 

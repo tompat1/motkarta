@@ -29,11 +29,21 @@ export function isCatalogDuplicate(existing: CatalogPlace, candidate: CatalogPla
   return Boolean(nameArea && otherNameArea && nameArea === otherNameArea);
 }
 
+function mergedOverlayCuisine(staticPlace: PlaceInput, livePlace: PlaceInput) {
+  const liveCuisine = (livePlace.cuisine ?? "").trim();
+  if (liveCuisine) {
+    return liveCuisine;
+  }
+  const staticCuisine = (staticPlace.cuisine ?? "").trim();
+  return staticCuisine || undefined;
+}
+
 export function overlayPlaceFromLive(staticPlace: PlaceInput, livePlace: PlaceInput): PlaceInput {
   return {
     ...livePlace,
     id: staticPlace.id,
     idNamespace: staticPlace.idNamespace ?? livePlace.idNamespace,
+    cuisine: mergedOverlayCuisine(staticPlace, livePlace),
   };
 }
 

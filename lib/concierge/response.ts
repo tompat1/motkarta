@@ -93,17 +93,24 @@ export function buildResponse(query: string, candidates: RankedCandidate[], tota
   const action = parseAction(query);
   const sv = intent.language === 'sv';
   const isDistrictQuery = Boolean(intent.area);
-  const picks = action ? [] : (isDistrictQuery ? candidates : candidates.slice(0, 5));
+  const isCuisineBrowse = !action && !intent.isPagination && intent.cuisineKinds.length > 0;
+  const cardPicks = action ? [] : (isDistrictQuery ? candidates : candidates.slice(0, 5));
+  const mapPicks = action ? [] : (isDistrictQuery || isCuisineBrowse ? candidates : cardPicks);
   let intro = sv ? 'Här är träffar från Motkartas katalog. Saknade uppgifter är markerade.' : 'Based on our auditable open dataset, here are catalog matches. Missing facts are marked.';
-  if (isDistrictQuery && picks.length > 0) {
+  if (isDistrictQuery && mapPicks.length > 0) {
     const areaName = intent.area ? (CANONICAL_AREA_NAMES[intent.area] || intent.area.split(' ').map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')) : '';
     intro = sv
-      ? `Här är alla ${picks.length} ställen i ${areaName} från Motkartas katalog. Saknade uppgifter är markerade.`
-      : `Based on our auditable open dataset, here are all ${picks.length} places in ${areaName}. Missing facts are marked.`;
+      ? `Här är alla ${mapPicks.length} ställen i ${areaName} från Motkartas katalog. Saknade uppgifter är markerade.`
+      : `Based on our auditable open dataset, here are all ${mapPicks.length} places in ${areaName}. Missing facts are marked.`;
+  } else if (isCuisineBrowse && mapPicks.length > 0) {
+    const cuisineLabel = intent.cuisineKinds[0]?.replaceAll('_', ' ') ?? (sv ? 'valt kök' : 'selected cuisine');
+    intro = sv
+      ? `Här är ${mapPicks.length} bekräftade ${cuisineLabel}-ställen i Motkartas katalog. Topp ${Math.min(5, cardPicks.length)} visas nedan; alla finns på kartan och i listan.`
+      : `Here are ${mapPicks.length} confirmed ${cuisineLabel} places in the Motkarta catalog. The top ${Math.min(5, cardPicks.length)} are below; all matches are on the map and list.`;
   } else if (intent.isPagination) {
     intro = sv ? 'Här är fler rekommenderade ställen från Motkartas katalog.' : 'Here are more recommended places from the Motkarta catalog.';
   }
-  if (!picks.length) {
+  if (!mapPicks.length) {
     intro = intent.isPagination
       ? (sv ? 'Det finns inga fler ställen som matchar dina kriterier i katalogen.' : 'There are no more places matching your criteria in the catalog.')
       : (sv ? 'Inga ställen kunde bekräftas för alla dina krav. Försök med ett annat kök eller område.' : 'No places could be confirmed for all your requirements. Try another cuisine or area.');
@@ -112,17 +119,17 @@ export function buildResponse(query: string, candidates: RankedCandidate[], tota
   if (intent.openNow) intro = sv ? 'Aktuella öppettider är inte verifierade. Kontrollera med stället.' : 'Current opening hours are unverified. Check with the venue.';
   if (action) intro = sv ? 'Öppnar formuläret för ditt val.' : 'Opening the form for your action.';
   const response: ConciergeResponse = {
-    query, intro, answer: '', cards: picks.map((pick) => makeCard(pick, intent.language)),
-    recommendedPlaces: picks.map(({ place: p }) => ({ id: p.id, name: p.name, kind: p.kind, area: p.area, scores: p.scores, hiddenGem: p.hiddenGem, discoveryReasons: p.discoveryReasons })),
-    source, totalSearchSpace: total, status: picks.length || action ? 'ok' : 'clarification', action,
+    query, intro, answer: '', cards: cardPicks.map((pick) => makeCard(pick, intent.language)),
+    recommendedPlaces: mapPicks.map(({ place: p }) => ({ id: p.id, name: p.name, kind: p.kind, area: p.area, scores: p.scores, hiddenGem: p.hiddenGem, discoveryReasons: p.discoveryReasons })),
+    source, totalSearchSpace: total, status: mapPicks.length || action ? 'ok' : 'clarification', action,
     structuredFilters: extractStructuredFilters(query), schemaVersion: VERSIONS.schema, corpusVersion: VERSIONS.corpus,
     modelVersion: VERSIONS.lexical, promptVersion: VERSIONS.prompt, retrievalMode: 'lexical', synthesisMode: 'template',
     diagnostics: {
       fallbackReasons: [], candidateCount: candidates.length, timingsMs: {},
-      ranking: picks.map((pick) => ({ id: pick.place.id, exact: pick.exact, lexicalScore: pick.lexicalScore, lexicalRank: pick.lexicalRank, vectorRank: pick.vectorRank, fusionScore: pick.fusionScore, recommendationScore: pick.place.scores.recommendation })),
+      ranking: mapPicks.map((pick) => ({ id: pick.place.id, exact: pick.exact, lexicalScore: pick.lexicalScore, lexicalRank: pick.lexicalRank, vectorRank: pick.vectorRank, fusionScore: pick.fusionScore, recommendationScore: pick.place.scores.recommendation })),
     },
   };
-  if (!picks.length && !action && query.trim()) {
+  if (!mapPicks.length && !action && query.trim()) {
     response.webSearch = buildWebSearchFallback(query, intent.language);
   }
   response.answer = action ? `SUPERPOWER_ACTION: ${action}\n\n${intro}` : renderAnswer(response);
