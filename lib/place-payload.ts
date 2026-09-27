@@ -1,15 +1,27 @@
+import type { CatalogDebug, CatalogMode, LiveApiStatus } from "./catalog-debug.ts";
+import { catalogDebugLoading, catalogDebugUnavailable } from "./catalog-debug.ts";
 import type { PlaceInput } from "./scoring.ts";
 import { overlayCatalogWithLivePlaces } from "./place-catalog-merge.ts";
 import { filterPublishedPlaces, type PlaceIdentity } from "./place-visibility.ts";
 
 export type DataSource = "loading" | "d1" | "osm" | "unavailable";
 
+export type PlacesPayloadResult = {
+  source: DataSource;
+  places: PlaceInput[];
+  blocked: PlaceIdentity[];
+  catalogDebug: CatalogDebug;
+};
+
+export { catalogDebugLoading, catalogDebugUnavailable };
+export type { CatalogDebug, CatalogMode, LiveApiStatus };
+
 type PlacesPayload = {
   source?: string;
   places?: PlaceInput[];
 };
 
-export async function fetchPlacesPayload(): Promise<{ source: DataSource; places: PlaceInput[]; blocked: PlaceIdentity[] }> {
+export async function fetchPlacesPayload(): Promise<PlacesPayloadResult> {
   // Read current admin exclusions even when the primary dataset is a static asset.
   // Fail closed if unavailable: falling back must not resurrect removed venues.
   const visibilityResponse = await fetch("/api/place-visibility", { cache: "no-store", signal: AbortSignal.timeout(5000) });
@@ -27,11 +39,16 @@ export async function fetchPlacesPayload(): Promise<{ source: DataSource; places
     const payload = (await staticResponse.json()) as PlacesPayload;
     if (payload.places?.length) {
       const staticPlaces = filterPublishedPlaces(payload.places, visibility.blocked);
-      const mergedPlaces = await mergeLiveCatalogPlaces(staticPlaces, visibility.blocked);
-      const source = catalogUsesLiveOverlay(staticPlaces, mergedPlaces)
-        ? "d1"
-        : sourceFromPayload(payload.source, "osm");
-      return { source, places: mergedPlaces, blocked: visibility.blocked };
+      const { places: mergedPlaces, liveApi } = await mergeLiveCatalogPlaces(staticPlaces, visibility.blocked);
+      const overlayApplied = catalogUsesLiveOverlay(staticPlaces, mergedPlaces);
+      const source = overlayApplied ? "d1" : sourceFromPayload(payload.source, "osm");
+      const catalogMode: CatalogMode = overlayApplied ? "d1_overlay" : "static";
+      return {
+        source,
+        places: mergedPlaces,
+        blocked: visibility.blocked,
+        catalogDebug: { catalogMode, placeCount: mergedPlaces.length, liveApi },
+      };
     }
 
     throw new Error("Static places returned no places");
@@ -44,7 +61,13 @@ export async function fetchPlacesPayload(): Promise<{ source: DataSource; places
     if (apiResponse.ok) {
       const payload = (await apiResponse.json()) as PlacesPayload;
       if (payload.places?.length) {
-        return { source: sourceFromPayload(payload.source, "d1"), places: filterPublishedPlaces(payload.places, visibility.blocked), blocked: visibility.blocked };
+        const places = filterPublishedPlaces(payload.places, visibility.blocked);
+        return {
+          source: sourceFromPayload(payload.source, "d1"),
+          places,
+          blocked: visibility.blocked,
+          catalogDebug: { catalogMode: "d1_only", placeCount: places.length, liveApi: "ok" },
+        };
       }
     }
   } catch {
@@ -58,20 +81,26 @@ export async function fetchPlacesPayload(): Promise<{ source: DataSource; places
   throw new Error("Static places returned no places");
 }
 
-async function mergeLiveCatalogPlaces(staticPlaces: PlaceInput[], blocked: PlaceIdentity[]): Promise<PlaceInput[]> {
+async function mergeLiveCatalogPlaces(
+  staticPlaces: PlaceInput[],
+  blocked: PlaceIdentity[],
+): Promise<{ places: PlaceInput[]; liveApi: LiveApiStatus }> {
   try {
     const apiResponse = await fetch("/api/places", { cache: "no-store", signal: AbortSignal.timeout(10_000) });
     if (!apiResponse.ok) {
-      return staticPlaces;
+      return { places: staticPlaces, liveApi: "failed" };
     }
     const payload = (await apiResponse.json()) as PlacesPayload;
     if (!payload.places?.length) {
-      return staticPlaces;
+      return { places: staticPlaces, liveApi: "empty" };
     }
     const livePlaces = filterPublishedPlaces(payload.places, blocked);
-    return overlayCatalogWithLivePlaces(staticPlaces, livePlaces);
+    return {
+      places: overlayCatalogWithLivePlaces(staticPlaces, livePlaces),
+      liveApi: "ok",
+    };
   } catch {
-    return staticPlaces;
+    return { places: staticPlaces, liveApi: "failed" };
   }
 }
 

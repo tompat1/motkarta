@@ -149,7 +149,10 @@ import {
   type ScoredPlace,
   scorePlace,
 } from "../lib/scoring";
+import { catalogDebugLoading, catalogDebugUnavailable } from "../lib/catalog-debug.ts";
+import type { CatalogDebug } from "../lib/catalog-debug.ts";
 import { fetchPlacesPayload, type DataSource } from "../lib/place-payload";
+import { CatalogDebugChip } from "./components/CatalogDebugChip";
 import { filterPublishedPlaces } from "../lib/place-visibility";
 import { openingHoursFact, priceFact, visibleTagLabels, wifiFact } from "./app/place-card-facts";
 
@@ -191,6 +194,7 @@ function AppContent({
 }) {
   const [places, setPlaces] = useState<PlaceInput[]>([]);
   const [dataSource, setDataSource] = useState<DataSource>("loading");
+  const [catalogDebug, setCatalogDebug] = useState<CatalogDebug>(catalogDebugLoading());
   const [mode, setMode] = useState<Mode>("All recommendations");
   const [sortMode, setSortMode] = useState<SortMode>("Motkarta score");
   const [randomSeed, setRandomSeed] = useState(1);
@@ -693,13 +697,16 @@ function AppContent({
               }
             } catch {}
           }
-          setPlaces(sanitizeAndAugmentPlaces(filterPublishedPlaces(initialPlaces, payload.blocked)));
+          const augmentedPlaces = sanitizeAndAugmentPlaces(filterPublishedPlaces(initialPlaces, payload.blocked));
+          setPlaces(augmentedPlaces);
           setDataSource(payload.source);
+          setCatalogDebug({ ...payload.catalogDebug, placeCount: augmentedPlaces.length });
         }
       } catch {
         if (!cancelled) {
           setPlaces([]);
           setDataSource("unavailable");
+          setCatalogDebug(catalogDebugUnavailable());
         }
       }
     }
@@ -2574,6 +2581,7 @@ function AppContent({
                 {t.selectionReadoutPlaces}
                 <CmsEditFlag cmsKey="selectionReadoutPlaces" label="Listrubrik: 'ställen i urvalet'" />
               </span>
+              <CatalogDebugChip debug={catalogDebug} lang={lang} />
             </div>
           </div>
           <p data-subparagraph-en="Tell us what you're in the mood for. Ask freely or use a few preferences – we'll find great places based on transparent signals.">
@@ -3681,6 +3689,7 @@ function AppContent({
                       ? t.dataSourceLiveD1
                       : t.dataSourceLoading}
                 </span>
+                <CatalogDebugChip debug={catalogDebug} lang={lang} />
               </div>
             </div>
           </div>

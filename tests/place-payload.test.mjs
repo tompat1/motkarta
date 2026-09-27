@@ -14,11 +14,14 @@ test("places payload loads static dataset before D1 API", async () => {
   globalThis.fetch = async (url) => {
     calls.push(String(url));
     if (url === "/api/place-visibility") return jsonResponse({ blocked: [] });
-    assert.equal(url, "/data/places.json");
-    return jsonResponse({
-      source: "osm_curated_open_sources",
-      places: [place(1, "Static Place")],
-    });
+    if (url === "/api/places") return new Response("unavailable", { status: 503 });
+    if (url === "/data/places.json") {
+      return jsonResponse({
+        source: "osm_curated_open_sources",
+        places: [place(1, "Static Place")],
+      });
+    }
+    throw new Error(`Unexpected URL ${url}`);
   };
 
   const payload = await fetchPlacesPayload();
@@ -26,6 +29,8 @@ test("places payload loads static dataset before D1 API", async () => {
   assert.deepEqual(calls, ["/api/place-visibility", "/data/places.json", "/api/places"]);
   assert.equal(payload.source, "osm");
   assert.equal(payload.places[0].name, "Static Place");
+  assert.equal(payload.catalogDebug.catalogMode, "static");
+  assert.equal(payload.catalogDebug.liveApi, "failed");
 });
 
 test("places payload overlays live D1 fields onto static catalog matches", async () => {
@@ -60,6 +65,8 @@ test("places payload overlays live D1 fields onto static catalog matches", async
   assert.equal(payload.places[0].address, "New road 9");
   assert.equal(payload.places[0].lifecycleState, "verified");
   assert.equal(payload.source, "d1");
+  assert.equal(payload.catalogDebug.catalogMode, "d1_overlay");
+  assert.equal(payload.catalogDebug.liveApi, "ok");
 });
 
 test("places payload merges manual admin entries from live D1 catalog", async () => {
