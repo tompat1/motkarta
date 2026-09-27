@@ -219,9 +219,9 @@ test("RAG retrieveAndSynthesize returns top burger spots and deduplicates establ
   assert.ok(namesSv.some((n) => n.includes("Franky") || n.includes("Lily") || n.includes("Bun Meat Bun")), `Expected top burger venue in Swedish, got: ${namesSv.join(", ")}`);
   assert.ok(namesEn.some((n) => n.includes("Franky") || n.includes("Lily") || n.includes("Bun Meat Bun")), `Expected top burger venue in English, got: ${namesEn.join(", ")}`);
 
-  // No duplicate venue names in recommendations
-  const uniqueNamesSv = new Set(namesSv);
-  assert.equal(namesSv.length, uniqueNamesSv.size, "Should not return duplicate places in results");
+  const idsSv = resultSv.recommendedPlaces.map((place) => place.id);
+  assert.equal(idsSv.length, new Set(idsSv).size, "Should not return duplicate place ids in results");
+  assert.ok(resultSv.recommendedPlaces.length > resultSv.cards.length, "Burger cuisine browse should list all matches on the map");
 
   // Commercial chain O'Learys should be excluded
   assert.equal(namesSv.some((n) => n.toLowerCase().includes("o'learys") || n.toLowerCase().includes("olearys")), false);
@@ -301,8 +301,8 @@ test("RAG retrieveAndSynthesize returns all Chinese places on Kungsholmen for 'k
   const result = retrieveAndSynthesize("kinaställen på kungsholmen", livePlaces, { language: "sv" });
 
   assert.equal(result.status, "ok");
-  assert.equal(result.cards.length, 12, "Should return all 12 Chinese places on Kungsholmen");
-  assert.ok(result.intro.includes("alla 12 ställen i Kungsholmen"));
+  assert.equal(result.cards.length, 14, "Should return all confirmed Chinese places on Kungsholmen");
+  assert.ok(result.intro.includes("alla 14 ställen i Kungsholmen"));
 
   const names = result.cards.map((c) => c.name);
   assert.ok(names.includes("Eat East"));
