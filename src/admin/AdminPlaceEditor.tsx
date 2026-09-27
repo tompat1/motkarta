@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { PlaceInput, PlaceLifecycleState } from "../../lib/scoring";
+import { canonicalCuisineOptions } from "../../lib/cuisine-tags";
 import type { Language } from "../app/shared";
 import { CircleNotch, FloppyDisk, Trash, X } from "@phosphor-icons/react";
 
@@ -258,8 +259,18 @@ export function AdminPlaceEditor({
             <input type="url" value={draft.website} onChange={(event) => setDraft((current) => ({ ...current, website: event.target.value }))} />
           </label>
           <label>
-            {lang === "sv" ? "Kök / tagg" : "Cuisine / tag"}
-            <input value={draft.cuisine} onChange={(event) => setDraft((current) => ({ ...current, cuisine: event.target.value }))} />
+            {lang === "sv" ? "Kök / mattyp" : "Cuisine"}
+            <input
+              list="admin-place-editor-cuisine-options"
+              value={draft.cuisine}
+              onChange={(event) => setDraft((current) => ({ ...current, cuisine: event.target.value }))}
+              placeholder={lang === "sv" ? "t.ex. italian, pizza" : "e.g. italian, pizza"}
+            />
+            <datalist id="admin-place-editor-cuisine-options">
+              {canonicalCuisineOptions.map((option) => (
+                <option key={option} value={option} />
+              ))}
+            </datalist>
           </label>
           <label>
             Lat
@@ -369,6 +380,7 @@ export function candidateToPlaceDraft(candidate: {
   lifecycleState: PlaceLifecycleState;
   validationLabel: AdminValidationLabel | null;
   priceLevel?: number | null;
+  cuisine?: string;
 }): AdminPlaceDraft {
   return {
     id: candidate.id,
@@ -382,7 +394,7 @@ export function candidateToPlaceDraft(candidate: {
     longitude: candidate.longitude ?? 18.0686,
     lifecycleState: candidate.lifecycleState,
     validationLabel: candidate.validationLabel,
-    cuisine: "",
+    cuisine: candidate.cuisine ?? "",
     priceLevel: candidate.priceLevel ?? null,
   };
 }

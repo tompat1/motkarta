@@ -1,4 +1,8 @@
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
+import {
+  sqlEstablishmentCuisineTagsSelect,
+  sqlEstablishmentMissingCuisine,
+} from "../../../lib/establishment-cuisine.ts";
 
 type D1Statement = {
   bind(...values: unknown[]): D1Statement;
@@ -27,6 +31,7 @@ type CandidateDashboardRow = {
   evidenceSourceTypes: string | null;
   latestEvidenceAt: string | null;
   possibleDuplicateCount: number | null;
+  cuisineTags: string | null;
 };
 
 type ReviewSummaryRow = {
@@ -78,17 +83,22 @@ export async function onRequestGet(context: EventContext<Env>) {
     );
   }
 
-  const [candidateRows, reviewSummary, lastExportResult] = await Promise.all([
+  const [candidateRows, reviewSummary, lastExportResult, missingCuisineCount] = await Promise.all([
     loadCandidateRows(db),
     loadReviewSummary(db),
     loadLastExport(db),
+    loadMissingCuisineCount(db),
   ]);
   const lastExportedAt = lastExportResult.row?.lastExportedAt ?? null;
   const unexportedReviewCount = await loadUnexportedReviewCount(db, lastExportedAt);
-  const counts = candidateCounts(candidateRows, reviewSummary, unexportedReviewCount);
+  const counts = candidateCounts(candidateRows, reviewSummary, unexportedReviewCount, missingCuisineCount);
   const actions = {
     harvestNeeded: counts.needsEvidenceCount > 0,
-    reviewNeeded: counts.newCandidateCount > 0 || counts.hiddenGemReadyCount > 0 || counts.possibleDuplicateCount > 0,
+    reviewNeeded:
+      counts.missingCuisineCount > 0 ||
+      counts.newCandidateCount > 0 ||
+      counts.hiddenGemReadyCount > 0 ||
+      counts.possibleDuplicateCount > 0,
     exportNeeded: counts.unexportedReviewCount > 0,
   };
   const nextStep = nextDashboardStep(actions);
@@ -147,6 +157,18 @@ async function loadLastExport(db: D1Database) {
   }
 }
 
+async function loadMissingCuisineCount(db: D1Database) {
+  try {
+    const { results } = await db
+      .prepare(`SELECT COUNT(*) AS value FROM establishments e WHERE ${sqlEstablishmentMissingCuisine("e")}`)
+      .all<CountRow>();
+    return Number(results?.[0]?.value ?? 0);
+  } catch (error) {
+    console.warn("Could not count establishments missing cuisine", error);
+    return 0;
+  }
+}
+
 async function loadUnexportedReviewCount(db: D1Database, lastExportedAt: string | null) {
   const { results } = await db
     .prepare(
@@ -163,14 +185,19 @@ function candidateCounts(
   rows: CandidateDashboardRow[],
   reviewSummary: ReviewSummaryRow,
   unexportedReviewCount: number,
+  missingCuisineCount: number,
 ) {
   let newCandidateCount = 0;
   let hiddenGemReadyCount = 0;
   let needsEvidenceCount = 0;
+  let missingCuisineCandidateCount = 0;
   let possibleDuplicateCount = 0;
 
   for (const row of rows) {
     const evidenceGate = evidenceGateProfile(row);
+    if (!row.cuisineTags?.trim()) {
+      missingCuisineCandidateCount += 1;
+    }
     if (!row.validationLabel && row.candidateReviewStatus !== "duplicate_checked_keep_separate") {
       newCandidateCount += 1;
     }
@@ -190,6 +217,8 @@ function candidateCounts(
     newCandidateCount,
     hiddenGemReadyCount,
     needsEvidenceCount,
+    missingCuisineCount,
+    missingCuisineCandidateCount,
     possibleDuplicateCount,
     reviewEventCount: Number(reviewSummary.reviewEventCount ?? 0),
     unexportedReviewCount,
@@ -223,7 +252,8 @@ function candidateDashboardQuery() {
         WHEN COALESCE(e.duplicate_resolution, '') = ''
           AND EXISTS (SELECT 1 FROM establishments m WHERE ${duplicatePredicate("m", "e")})
         THEN 1 ELSE 0
-      END AS possibleDuplicateCount
+      END AS possibleDuplicateCount,
+      ${sqlEstablishmentCuisineTagsSelect("e", "cuisineTags")}
     FROM establishments e
     LEFT JOIN evidence_sources ev ON ev.establishment_id = e.id
     WHERE e.lifecycle_state = 'candidate'
@@ -259,7 +289,9 @@ function normalizedSql(column: string) {
 }
 
 function evidenceGateProfile(
-  row: Pick<CandidateDashboardRow, "candidateSourceType" | "evidenceSourceTypes" | "latestEvidenceAt" | "website">,
+  row: Pick<CandidateDashboardRow, "candidateSourceType" | "evidenceSourceTypes" | "latestEvidenceAt" | "website"> & {
+    cuisineTags?: string | null;
+  },
 ) {
   const evidenceSourceTypes = parseEvidenceSources(row.evidenceSourceTypes);
   const independentEvidenceTypes = independentEvidenceTypesFor(evidenceSourceTypes, row.candidateSourceType);
@@ -267,7 +299,9 @@ function evidenceGateProfile(
     independentEvidenceTypes.length === 0 &&
     [row.candidateSourceType, ...evidenceSourceTypes].some((sourceType) => sourceType === "google_metadata");
   const hasCurrentExistence = Boolean(row.latestEvidenceAt || row.website);
+  const hasCuisineLabel = Boolean(row.cuisineTags?.trim());
   const sourceGaps = [
+    hasCuisineLabel ? "" : "needs_cuisine_label",
     independentEvidenceTypes.length < 2 ? "needs_second_independent_evidence" : "",
     evidenceSourceTypes.includes("osm") || row.candidateSourceType === "osm_baseline" ? "" : "needs_osm_or_open_data_match",
     hasCurrentExistence ? "" : "needs_current_existence_signal",

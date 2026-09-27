@@ -126,8 +126,8 @@ test("D1 loader derives cuisine filters from establishment tags", async () => {
 
   const places = await loadPlacesFromD1(db);
 
-  assert.equal(places.find((place) => place.id === 11)?.cuisine, "pizza;burger");
-  assert.equal(places.find((place) => place.id === 12)?.cuisine, "french;bistro");
+  assert.equal(places.find((place) => place.id === 11)?.cuisine, "burger;pizza");
+  assert.equal(places.find((place) => place.id === 12)?.cuisine, "bistro;french");
 });
 
 const basePlaceRow = {

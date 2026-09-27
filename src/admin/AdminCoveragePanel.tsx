@@ -8,6 +8,7 @@ import {
   CircleNotch,
   Clock,
   CurrencyCircleDollar,
+  ForkKnife,
   Globe,
   HouseLine,
   MagnifyingGlass,
@@ -213,6 +214,10 @@ export function AdminCoveragePanel({
   }, [adminToken, lang]);
 
   const gapLabels = useMemo(() => ({
+    cuisine: {
+      title: lang === "sv" ? "Saknar kök / mattyp" : "Missing cuisine label",
+      subtitle: lang === "sv" ? "platser utan kökstagg" : "places without a cuisine tag",
+    },
     address: {
       title: lang === "sv" ? "Saknar gatuadress" : "Missing street address",
       subtitle: lang === "sv" ? "platser utan gatuadress" : "places without street address",
@@ -296,8 +301,8 @@ export function AdminCoveragePanel({
           </h4>
           <p>
             {lang === "sv"
-              ? "Realtidsmätning av gatuadresser, fotogallerier och kurerade källor över hela redaktörskatalogen."
-              : "Real-time measurement of street addresses, photo galleries, and curated sources across the editorial catalog."}
+              ? "Kökstyp är vår viktigaste signal — vad vill du äta idag? Här mäts täckning för kök, adresser, foton och mer."
+              : "Cuisine is our top discovery signal — what do you want to eat today? Coverage for cuisine, addresses, photos, and more."}
           </p>
           <div className="admin-coverage-scope-pill">
             <b>{catalogCount.toLocaleString(locale)}</b> {lang === "sv" ? "i redaktörskatalogen (D1)" : "in catalog (D1)"} ·{" "}
@@ -327,11 +332,13 @@ export function AdminCoveragePanel({
 
       {(() => {
         const total = Math.max(1, c.totalPlaces);
+        const cuisineCount = Math.min(total, c.cuisine?.count ?? 0);
         const addrCount = Math.min(total, c.address.count);
         const photoCount = Math.min(total, c.photos.count);
         const hoursCount = Math.min(total, c.openingHours?.count ?? 0);
         const priceCount = Math.min(total, c.priceInfo?.count ?? 0);
         const webCount = Math.min(total, c.websites.count);
+        const cuisinePct = Math.min(100, Math.max(0, (c.cuisine?.percentage ?? 0) > 100 ? 100 : (c.cuisine?.percentage ?? 0)));
         const addrPct = Math.min(100, Math.max(0, c.address.percentage > 100 ? 100 : c.address.percentage));
         const photoPct = Math.min(100, Math.max(0, c.photos.percentage > 100 ? 100 : c.photos.percentage));
         const hoursPct = Math.min(100, Math.max(0, (c.openingHours?.percentage ?? 0) > 100 ? 100 : (c.openingHours?.percentage ?? 0)));
@@ -347,6 +354,17 @@ export function AdminCoveragePanel({
           subtitle: string;
           subhint?: string;
         }> = [
+          {
+            gap: "cuisine",
+            title: lang === "sv" ? "Kök / mattyp (#1)" : "Cuisine (#1 priority)",
+            icon: <ForkKnife size={16} weight="bold" />,
+            pct: cuisinePct,
+            count: cuisineCount,
+            subtitle: lang === "sv" ? "platser med kökstagg" : "places with cuisine tag",
+            subhint: lang === "sv"
+              ? `${(total - cuisineCount).toLocaleString(locale)} saknar kök — prioritera i granskningen`
+              : `${(total - cuisineCount).toLocaleString(locale)} lack cuisine — prioritize in review`,
+          },
           {
             gap: "address",
             title: lang === "sv" ? "Gatuadresser" : "Street Addresses",

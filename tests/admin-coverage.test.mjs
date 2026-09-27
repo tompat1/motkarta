@@ -45,6 +45,7 @@ test("admin coverage endpoint returns coverage report when authorized", async ()
   assert.equal(data.photos.count, 0);
   assert.equal(data.openingHours.count, 0);
   assert.equal(data.priceInfo.count, 0);
+  assert.equal(data.cuisine.count, 0);
   assert.equal(data.curatedSources.status, 'UNKNOWN');
   assert.equal(data.lastEnrichedAt, null);
   assert.ok(data.errors.length);
@@ -77,6 +78,7 @@ test('coverage preserves real zeros and counts both photo stores without double 
   t.after(() => sqlite.close());
   sqlite.exec(`CREATE TABLE establishments(id INTEGER PRIMARY KEY, address TEXT, website TEXT, opening_hours TEXT, price_sek TEXT, price_level INTEGER, latitude REAL, longitude REAL);
     INSERT INTO establishments VALUES(1,'Stockholm',NULL,NULL,NULL,NULL,59.3,18);
+    CREATE TABLE establishment_tags(establishment_id INTEGER, tag TEXT);
     CREATE TABLE place_photos(place_id INTEGER,url TEXT);
     CREATE TABLE place_photo_uploads(place_id INTEGER);
     INSERT INTO place_photos VALUES(1,'https://example.org/photo.jpg');
@@ -112,9 +114,51 @@ test("admin coverage endpoint returns enrichmentReport and urlBlocklist", async 
 });
 
 test("normalizeCoverageGap accepts known gap keys", () => {
+  assert.equal(normalizeCoverageGap("cuisine"), "cuisine");
   assert.equal(normalizeCoverageGap("photos"), "photos");
   assert.equal(normalizeCoverageGap("OPENING_HOURS"), "opening_hours");
   assert.equal(normalizeCoverageGap("nope"), null);
+});
+
+test("listCoverageGapPlaces returns places missing cuisine tags", async (t) => {
+  const { DatabaseSync } = await import("node:sqlite");
+  const sqlite = new DatabaseSync(":memory:");
+  t.after(() => sqlite.close());
+  sqlite.exec(`
+    CREATE TABLE establishments(
+      id INTEGER PRIMARY KEY,
+      name TEXT,
+      type TEXT,
+      district TEXT,
+      address TEXT,
+      website TEXT
+    );
+    INSERT INTO establishments VALUES
+      (1, 'Pizza Place', 'restaurant', 'Södermalm', 'Storgatan 1', 'https://pizza.test'),
+      (2, 'No Cuisine', 'restaurant', 'Vasastan', 'Lillgatan 2', 'https://none.test');
+    CREATE TABLE establishment_tags(establishment_id INTEGER, tag TEXT);
+    INSERT INTO establishment_tags VALUES (1, 'pizza');
+  `);
+  const db = {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          return {
+            async all() {
+              return { results: sqlite.prepare(sql).all(...values) };
+            },
+          };
+        },
+        async all() {
+          return { results: sqlite.prepare(sql).all() };
+        },
+      };
+    },
+  };
+
+  const list = await listCoverageGapPlaces(db, "cuisine", { limit: 50, offset: 0 });
+  assert.equal(list.total, 1);
+  assert.equal(list.places[0].name, "No Cuisine");
 });
 
 test("listCoverageGapPlaces returns places missing photos", async (t) => {

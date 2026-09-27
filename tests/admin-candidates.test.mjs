@@ -530,6 +530,7 @@ function candidateRow(overrides) {
     possibleDuplicateCount: 0,
     possibleDuplicates: null,
     communityNominationCount: 0,
+    cuisineTags: "coffee",
     ...overrides,
   };
 }
@@ -539,6 +540,7 @@ function shapeCandidateRows(rows, query) {
   const includeNominations = !query.includes("0 AS communityNominationCount");
   return rows.map((row) => ({
     ...row,
+    cuisineTags: row.cuisineTags ?? null,
     possibleDuplicateCount: includeDuplicates ? row.possibleDuplicateCount : 0,
     possibleDuplicates: includeDuplicates ? row.possibleDuplicates : "",
     communityNominationCount: includeNominations ? row.communityNominationCount : 0,
@@ -602,9 +604,10 @@ function fakeAdminD1(rows, options = {}) {
             return { results: row ? [row] : [] };
           }
 
-          if (query.includes("WHERE e.website IS NULL OR e.website = ''")) {
+          if (query.includes("establishment_tags t") && query.includes("OR e.website IS NULL OR e.website = ''")) {
             const filtered = db.rows.filter(
               (row) =>
+                !row.cuisineTags ||
                 !row.website ||
                 !row.address ||
                 !row.area ||
@@ -725,9 +728,17 @@ function fakeAdminD1(rows, options = {}) {
             return { success: true, meta: { changes: 1 } };
           }
 
-          if (query.includes("INSERT INTO establishment_tags")) {
+          if (query.includes("DELETE FROM establishment_tags")) {
+            return { success: true, meta: { changes: 1 } };
+          }
+
+          if (query.includes("INSERT INTO establishment_tags") || query.includes("INSERT OR IGNORE INTO establishment_tags")) {
             const [targetId, sourceId] = this.values;
             db.copiedTags.push({ targetId, sourceId });
+            const row = db.rows.find((item) => item.id === targetId);
+            if (row) {
+              row.cuisineTags = sourceId;
+            }
             return { success: true, meta: { changes: 1 } };
           }
 

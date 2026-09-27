@@ -1018,20 +1018,26 @@ def extract_facts_from_html(
 
 def venue_enrichment_priority(place: dict[str, Any]) -> int:
     """Prioritize venues for website enrichment.
-    0: Missing both openingHours and priceSEK (must-have priority)
-    1: Missing openingHours
-    2: Missing priceSEK
-    3: Already has both sourced fields
+    0: Missing cuisine label (primary discovery signal)
+    1: Missing both openingHours and priceSEK
+    2: Missing openingHours
+    3: Missing priceSEK
+    4: Already has cuisine plus both sourced fields
     """
+    cuisine = str(place.get("cuisine") or "").strip().lower()
+    generic = {"", "general", "restaurant", "cafe", "coffee"}
+    has_cuisine = cuisine not in generic
     has_hours = bool(place.get("openingHours"))
     has_price = bool(place.get("priceSEK"))
-    if not has_hours and not has_price:
+    if not has_cuisine:
         return 0
-    if not has_hours:
+    if not has_hours and not has_price:
         return 1
-    if not has_price:
+    if not has_hours:
         return 2
-    return 3
+    if not has_price:
+        return 3
+    return 4
 
 
 def scrape_venue_websites(

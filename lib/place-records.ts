@@ -1,5 +1,6 @@
 import type { ConciergePlace } from './concierge/contracts.ts';
 import { safeUrl } from './concierge/facts.ts';
+import { cuisineFromTags } from "./cuisine-tags.ts";
 import type { Confidence, EstablishmentType, PlaceInput, PlaceLifecycleState, SpecialtyAttributes } from "./scoring.ts";
 import { resolveStockholmRegion } from "./stockholm-regions.ts";
 
@@ -75,57 +76,6 @@ export type TagRow = {
   establishment_id: number;
   tag: string;
 };
-
-const CUISINE_TAGS = new Map([
-  ["american", "american"],
-  ["asian", "asian"],
-  ["austrian", "austrian"],
-  ["belgian", "belgian"],
-  ["belgiskt", "belgian"],
-  ["belgisk", "belgian"],
-  ["bistro", "bistro"],
-  ["burger", "burger"],
-  ["burgers", "burger"],
-  ["cake", "cake"],
-  ["chinese", "chinese"],
-  ["coffee", "coffee"],
-  ["coffee shop", "coffee shop"],
-  ["deli", "deli"],
-  ["eastern european", "eastern european"],
-  ["fish", "seafood"],
-  ["french", "french"],
-  ["german", "german"],
-  ["greek", "greek"],
-  ["grill", "grill"],
-  ["hamburger", "burger"],
-  ["hamburgers", "burger"],
-  ["hungarian", "hungarian"],
-  ["indian", "indian"],
-  ["italian", "italian"],
-  ["japanese", "japanese"],
-  ["kebab", "kebab"],
-  ["korean", "korean"],
-  ["lebanese", "lebanese"],
-  ["mexican", "mexican"],
-  ["middle eastern", "middle eastern"],
-  ["pasta", "pasta"],
-  ["pastry", "pastry"],
-  ["patisserie", "patisserie"],
-  ["pizza", "pizza"],
-  ["polish", "polish"],
-  ["ramen", "ramen"],
-  ["regional", "regional"],
-  ["salad", "salad"],
-  ["sandwich", "sandwich"],
-  ["scandinavian", "scandinavian"],
-  ["seafood", "seafood"],
-  ["spanish", "spanish"],
-  ["sushi", "sushi"],
-  ["swedish", "swedish"],
-  ["tapas", "tapas"],
-  ["thai", "thai"],
-  ["vietnamese", "vietnamese"],
-]);
 
 export const legacyPlaceQuery = `
   SELECT
@@ -334,7 +284,7 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
   ]);
   const confidence = confidenceFromEvidence(evidenceRows);
   const tags = tagRows.map((row) => row.tag);
-  const cuisines = cuisineFromTags(tags);
+  const cuisine = cuisineFromTags(tags);
   const area = resolveStockholmRegion({
     name: row.name,
     area: row.district,
@@ -353,7 +303,7 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
     evidenceSources: evidenceRows.map((evidence, index) => ({ id: String(evidence.id ?? `${row.id}:${index}`), name: evidence.source_name, type: evidence.source_type, url: safeUrl(evidence.url), capturedAt: evidence.captured_at, summary: evidence.summary ?? undefined })),
     name: row.name,
     kind: row.type,
-    cuisine: cuisines.length ? cuisines.join(";") : undefined,
+    cuisine: cuisine || undefined,
     area,
     address: row.address ?? undefined,
     openingHours: row.opening_hours ?? undefined,
@@ -407,29 +357,6 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
     x: coordinateToMapPosition(row.longitude, 17.75, 18.25),
     y: 100 - coordinateToMapPosition(row.latitude, 59.2, 59.47),
   };
-}
-
-function cuisineFromTags(tags: string[]) {
-  const cuisines = new Set<string>();
-
-  for (const tag of tags) {
-    const normalized = normalizeCuisineTag(tag);
-    const cuisine = CUISINE_TAGS.get(normalized);
-    if (cuisine) {
-      cuisines.add(cuisine);
-    }
-  }
-
-  return [...cuisines];
-}
-
-function normalizeCuisineTag(value: string) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replaceAll("_", " ")
-    .replaceAll("-", " ")
-    .replace(/\s+/g, " ");
 }
 
 function specialtyFromRow(row: PlaceRow): SpecialtyAttributes | undefined {

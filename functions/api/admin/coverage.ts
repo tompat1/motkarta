@@ -1,4 +1,5 @@
 import { getAdminSession, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
+import { sqlEstablishmentHasCuisine, sqlEstablishmentMissingCuisine } from "../../../lib/establishment-cuisine.ts";
 
 type EventContext<Env> = {
   request: Request;
@@ -71,6 +72,12 @@ export type CoverageReport = {
   totalPlaces: number;
   catalogPlaces: number;
   activePublishedPlaces: number;
+  cuisine: {
+    count: number;
+    percentage: number;
+    target: number;
+    status: "PASS" | "PROGRESSING";
+  };
   address: {
     count: number;
     percentage: number;
@@ -117,7 +124,7 @@ export type CoverageReport = {
   urlBlocklist?: BlockedUrlEntry[];
 };
 
-export type CoverageGap = "address" | "photos" | "opening_hours" | "price" | "website";
+export type CoverageGap = "cuisine" | "address" | "photos" | "opening_hours" | "price" | "website";
 
 export type CoverageGapPlace = {
   id: number;
@@ -143,7 +150,7 @@ type EstablishmentSchema = {
   tableNames: Set<string>;
 };
 
-const coverageGaps: CoverageGap[] = ["address", "photos", "opening_hours", "price", "website"];
+const coverageGaps: CoverageGap[] = ["cuisine", "address", "photos", "opening_hours", "price", "website"];
 
 export function normalizeCoverageGap(value: string | null | undefined): CoverageGap | null {
   const normalized = (value ?? "").trim().toLowerCase();
@@ -162,6 +169,16 @@ function buildCoverageGapWhereClause(gap: CoverageGap, schema: EstablishmentSche
   const errors: string[] = [];
 
   switch (gap) {
+    case "cuisine": {
+      if (!schema.tableNames.has("establishment_tags")) {
+        errors.push("Cuisine tag storage is not provisioned.");
+        return { clause: "1 = 0", errors };
+      }
+      return {
+        clause: sqlEstablishmentMissingCuisine("e"),
+        errors,
+      };
+    }
     case "address":
       return {
         clause: "(e.address IS NULL OR e.address = '' OR e.address NOT GLOB '*[0-9]*')",
@@ -303,6 +320,7 @@ export async function listCoverageGapPlaces(
 
 export async function computeCoverageReport(db?: D1Database): Promise<CoverageReport> {
   let totalPlaces = 0, catalogPlaces = 0, activePublishedPlaces = 0;
+  let cuisineCount = 0;
   let addressCount = 0, websiteCount = 0, photosPlaceCount = 0;
   let totalPhotos = 0, hoursCount = 0, priceCount = 0;
   let coordinateCount = 0;
@@ -392,6 +410,15 @@ export async function computeCoverageReport(db?: D1Database): Promise<CoverageRe
       }
       if (!hasHours) errors.push("Opening-hours column is not provisioned.");
       if (!hasPriceSek && !hasPriceLevel) errors.push("Price columns are not provisioned.");
+
+      if (names.has("establishment_tags")) {
+        const cuisineRes = await db
+          .prepare(`SELECT COUNT(*) AS with_cuisine FROM establishments e WHERE ${sqlEstablishmentHasCuisine("e")}`)
+          .all<{ with_cuisine: number }>();
+        cuisineCount = Math.min(totalPlaces, cuisineRes.results?.[0]?.with_cuisine ?? 0);
+      } else {
+        errors.push("Cuisine tag storage is not provisioned.");
+      }
     } catch {
       errors.push("D1 coverage query failed; incomplete measurements are unavailable.");
     }
@@ -403,6 +430,7 @@ export async function computeCoverageReport(db?: D1Database): Promise<CoverageRe
   hoursCount = Math.min(totalPlaces, hoursCount);
   priceCount = Math.min(totalPlaces, priceCount);
 
+  const cuisinePct = totalPlaces > 0 ? Number(Math.min(100, (cuisineCount / totalPlaces) * 100).toFixed(1)) : 0;
   const addressPct = totalPlaces > 0 ? Number(Math.min(100, (addressCount / totalPlaces) * 100).toFixed(1)) : 0;
   const photosPct = totalPlaces > 0 ? Number(Math.min(100, (photosPlaceCount / totalPlaces) * 100).toFixed(1)) : 0;
   const websitePct = totalPlaces > 0 ? Number(Math.min(100, (websiteCount / totalPlaces) * 100).toFixed(1)) : 0;
@@ -418,6 +446,12 @@ export async function computeCoverageReport(db?: D1Database): Promise<CoverageRe
     totalPlaces,
     catalogPlaces,
     activePublishedPlaces,
+    cuisine: {
+      count: cuisineCount,
+      percentage: cuisinePct,
+      target: 100,
+      status: cuisinePct >= 95 ? "PASS" : "PROGRESSING",
+    },
     address: {
       count: addressCount,
       percentage: addressPct,

@@ -3,6 +3,7 @@ import type { PlaceInput, PlaceLifecycleState } from "../../lib/scoring";
 import { isBroadStockholmArea, STOCKHOLM_REGIONS as STOCKHOLM_REGION_NAMES } from "../../lib/stockholm-regions";
 import type { Language } from "../app/shared";
 import { formatUpdatedDate } from "../app/shared";
+import { canonicalCuisineOptions } from "../../lib/cuisine-tags";
 import { AdminCoveragePanel } from "./AdminCoveragePanel";
 import { AdminMlDashboard } from "./AdminMlDashboard";
 import { AdminGuidePanel } from "./AdminGuidePanel";
@@ -20,6 +21,7 @@ import {
   CircleNotch,
   DownloadSimple,
   FloppyDisk,
+  ForkKnife,
   Globe,
   HouseLine,
   Info,
@@ -39,7 +41,7 @@ import {
 
 type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all" | "removed";
 type AdminValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
-type DashboardQueueFocus = "all" | "new" | "hidden_gem_ready" | "needs_evidence" | "duplicates";
+type DashboardQueueFocus = "all" | "new" | "hidden_gem_ready" | "missing_cuisine" | "needs_evidence" | "duplicates";
 type DashboardNavTarget =
   | { kind: "queue"; focus: DashboardQueueFocus }
   | { kind: "sync" }
@@ -49,6 +51,7 @@ export type AdminCandidate = {
   id: number;
   name: string;
   kind: string;
+  cuisine?: string;
   area: string;
   address: string | null;
   website: string | null;
@@ -116,6 +119,8 @@ type AdminReviewDashboard = {
     newCandidateCount: number;
     hiddenGemReadyCount: number;
     needsEvidenceCount: number;
+    missingCuisineCount?: number;
+    missingCuisineCandidateCount?: number;
     possibleDuplicateCount: number;
     reviewEventCount: number;
     unexportedReviewCount: number;
@@ -200,6 +205,7 @@ export function AdminReviewPanel({
   const [websiteInputs, setWebsiteInputs] = useState<Record<number, string>>({});
   const [addressInputs, setAddressInputs] = useState<Record<number, string>>({});
   const [priceLevelInputs, setPriceLevelInputs] = useState<Record<number, number | null>>({});
+  const [cuisineInputs, setCuisineInputs] = useState<Record<number, string>>({});
   const [photoPendingByPlace, setPhotoPendingByPlace] = useState<Record<number, boolean>>({});
   const photoSaveHandlesRef = useRef<Record<number, AdminPhotoManagerSaveHandle>>({});
   const [schemaBusy, setSchemaBusy] = useState(false);
@@ -413,6 +419,8 @@ export function AdminReviewPanel({
         );
       } else if (queueFocus === "hidden_gem_ready") {
         rows = rows.filter((candidate) => candidate.evidenceGate.canPromoteHiddenGem);
+      } else if (queueFocus === "missing_cuisine") {
+        rows = rows.filter((candidate) => candidate.evidenceGate.sourceGaps.includes("needs_cuisine_label"));
       } else if (queueFocus === "needs_evidence") {
         rows = rows.filter((candidate) => candidate.evidenceGate.sourceGaps.length > 0);
       } else if (queueFocus === "duplicates") {
@@ -1113,7 +1121,9 @@ export function AdminReviewPanel({
       ? priceLevelInputs[candidate.id]
       : candidate.priceLevel ?? null;
     const pricePending = priceDraft !== (candidate.priceLevel ?? null);
-    return addressPending || pricePending;
+    const cuisineDraft = (cuisineInputs[candidate.id] ?? candidate.cuisine ?? "").trim();
+    const cuisinePending = cuisineDraft !== (candidate.cuisine ?? "").trim();
+    return addressPending || pricePending || cuisinePending;
   };
 
   const candidatePlacePending = (candidate: AdminCandidate) =>
@@ -1124,6 +1134,7 @@ export function AdminReviewPanel({
     const priceLevel = Object.prototype.hasOwnProperty.call(priceLevelInputs, candidate.id)
       ? priceLevelInputs[candidate.id]
       : candidate.priceLevel ?? null;
+    const cuisine = (cuisineInputs[candidate.id] ?? candidate.cuisine ?? "").trim();
     const validationNotes = (reviewNotes[candidate.id] ?? candidate.validationNotes ?? "").trim();
 
     const response = await fetch("/api/admin/candidates", {
@@ -1143,6 +1154,7 @@ export function AdminReviewPanel({
         lifecycleState: candidate.lifecycleState,
         validationLabel: candidate.validationLabel,
         priceLevel,
+        cuisine,
         validationNotes,
       }),
     });
@@ -1164,6 +1176,11 @@ export function AdminReviewPanel({
       return next;
     });
     setPriceLevelInputs((current) => {
+      const next = { ...current };
+      delete next[candidate.id];
+      return next;
+    });
+    setCuisineInputs((current) => {
       const next = { ...current };
       delete next[candidate.id];
       return next;
@@ -2208,6 +2225,34 @@ export function AdminReviewPanel({
                   </select>
                 </div>
 
+                <div className={`admin-address-picker-row ${!candidate.cuisine ? "unresolved" : ""}`}>
+                  <label htmlFor={`admin-cuisine-input-${candidate.id}`} className="admin-address-picker-label">
+                    <ForkKnife size={13} weight="bold" />
+                    {lang === "sv" ? "Kök / mattyp:" : "Cuisine:"}
+                  </label>
+                  <div className="admin-address-input-wrap">
+                    <input
+                      id={`admin-cuisine-input-${candidate.id}`}
+                      type="text"
+                      className="admin-address-input"
+                      list={`admin-cuisine-options-${candidate.id}`}
+                      value={cuisineInputs[candidate.id] ?? candidate.cuisine ?? ""}
+                      onChange={(event) =>
+                        setCuisineInputs((current) => ({
+                          ...current,
+                          [candidate.id]: event.target.value,
+                        }))
+                      }
+                      placeholder={lang === "sv" ? "t.ex. italian, pizza, thai" : "e.g. italian, pizza, thai"}
+                    />
+                    <datalist id={`admin-cuisine-options-${candidate.id}`}>
+                      {canonicalCuisineOptions.map((option) => (
+                        <option key={option} value={option} />
+                      ))}
+                    </datalist>
+                  </div>
+                </div>
+
                 <div className={`admin-address-picker-row ${!candidate.address ? "unresolved" : ""}`}>
                   <label htmlFor={`admin-address-input-${candidate.id}`} className="admin-address-picker-label">
                     <HouseLine size={13} weight="bold" />
@@ -2250,10 +2295,10 @@ export function AdminReviewPanel({
                     className="admin-scrape-btn"
                     disabled={busyId === candidate.id}
                     onClick={() => void updateCandidateDetails(candidate)}
-                    title={lang === "sv" ? "Spara adress och prisnivå i D1" : "Save address and price level to D1"}
+                    title={lang === "sv" ? "Spara kök, adress och prisnivå i D1" : "Save cuisine, address and price level to D1"}
                   >
                     <CheckCircle size={13} weight="bold" />
-                    {lang === "sv" ? "Spara adress & pris" : "Save address & price"}
+                    {lang === "sv" ? "Spara kök, adress & pris" : "Save cuisine, address & price"}
                   </button>
                 </div>
 
@@ -2594,6 +2639,16 @@ function dashboardMetrics(dashboard: AdminReviewDashboard | null, lang: Language
       actionHint: sv ? "Visa kandidater utan tidigare beslut" : "Show candidates without a prior decision",
     },
     {
+      key: "cuisine",
+      focusKey: "missing_cuisine" as DashboardQueueFocus,
+      label: sv ? "Saknar kök" : "Missing cuisine",
+      value: dashboardMetricValue(counts?.missingCuisineCandidateCount ?? counts?.missingCuisineCount),
+      icon: <ForkKnife size={15} weight="bold" />,
+      tone: counts?.missingCuisineCandidateCount || counts?.missingCuisineCount ? "review" : "neutral",
+      action: { kind: "queue", focus: "missing_cuisine" } satisfies DashboardNavTarget,
+      actionHint: sv ? "Visa kandidater utan kökstagg" : "Show candidates without a cuisine tag",
+    },
+    {
       key: "ready",
       focusKey: "hidden_gem_ready" as DashboardQueueFocus,
       label: sv ? "Redo pärlor" : "Ready gems",
@@ -2653,6 +2708,10 @@ function queueFocusHelpText(focus: Exclude<DashboardQueueFocus, "all">, lang: La
     hidden_gem_ready: {
       sv: "Visar kandidater som uppfyller dubbellåset för dold pärla.",
       en: "Showing candidates that pass the hidden-gem double-lock.",
+    },
+    missing_cuisine: {
+      sv: "Visar kandidater utan kökstagg — vad vill du äta idag?",
+      en: "Showing candidates without a cuisine tag — what do you want to eat today?",
     },
     needs_evidence: {
       sv: "Visar kandidater med källgap som behöver mer oberoende evidens.",
@@ -2734,6 +2793,7 @@ function validationLabelText(label: AdminValidationLabel, lang: Language) {
 
 function sourceGapLabel(gap: string, lang: Language) {
   const labels: Record<string, { sv: string; en: string }> = {
+    needs_cuisine_label: { sv: "Saknar kök / mattyp", en: "Missing cuisine label" },
     needs_second_independent_evidence: { sv: "Behöver andra oberoende signalen", en: "Needs second independent signal" },
     needs_osm_or_open_data_match: { sv: "Behöver OSM/open-data match", en: "Needs OSM/open-data match" },
     needs_current_existence_signal: { sv: "Behöver aktuell existenssignal", en: "Needs current existence signal" },

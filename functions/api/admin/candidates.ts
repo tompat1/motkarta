@@ -3,6 +3,12 @@ import { extractWebsiteImageFromHtml } from "../../../lib/website-image-scrape.t
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
 import { isD1QuotaError } from "../../../lib/admin-d1.ts";
 import type { PlaceInput, PlaceLifecycleState } from "../../../lib/scoring.ts";
+import { cuisinesFromTagList, parseCuisineInput } from "../../../lib/cuisine-tags.ts";
+import {
+  sqlEstablishmentCuisineTagsSelect,
+  sqlEstablishmentMissingCuisine,
+  syncEstablishmentCuisineTags,
+} from "../../../lib/establishment-cuisine.ts";
 import { resolveStockholmRegion } from "../../../lib/stockholm-regions.ts";
 
 type D1RunResult = {
@@ -73,6 +79,7 @@ type CandidateRow = {
   possibleDuplicateCount: number | null;
   possibleDuplicates: string | null;
   communityNominationCount?: number | null;
+  cuisineTags: string | null;
 };
 
 type EstablishmentLookupRow = {
@@ -396,12 +403,8 @@ async function createPlace(db: D1Database, payload: Record<string, unknown>, val
     .run()
     .catch(() => {});
 
-  if (payload.cuisine && typeof payload.cuisine === "string" && payload.cuisine.trim()) {
-    await db
-      .prepare(`INSERT INTO establishment_tags (establishment_id, tag) VALUES (?, ?)`)
-      .bind(newId, payload.cuisine.trim())
-      .run()
-      .catch(() => {});
+  if (typeof payload.cuisine === "string" && payload.cuisine.trim()) {
+    await syncEstablishmentCuisineTags(db, newId, payload.cuisine.trim()).catch(() => {});
   }
 
   await recordReviewEvent(db, {
@@ -531,12 +534,11 @@ async function updatePlace(db: D1Database, id: number, payload: Record<string, u
     return Response.json({ error: "Establishment not found." }, { headers: jsonHeaders, status: 404 });
   }
 
-  if (typeof payload.cuisine === "string" && payload.cuisine.trim()) {
-    await db
-      .prepare(`INSERT OR IGNORE INTO establishment_tags (establishment_id, tag) VALUES (?, ?)`)
-      .bind(id, payload.cuisine.trim())
-      .run()
-      .catch(() => {});
+  let cuisineTags = existing.cuisineTags;
+  if (typeof payload.cuisine === "string") {
+    const parsedCuisine = parseCuisineInput(payload.cuisine.trim());
+    cuisineTags = parsedCuisine.length ? parsedCuisine.join(";") : null;
+    await syncEstablishmentCuisineTags(db, id, payload.cuisine.trim()).catch(() => {});
   }
 
   await recordReviewEvent(db, {
@@ -568,6 +570,7 @@ async function updatePlace(db: D1Database, id: number, payload: Record<string, u
         validationLabel,
         validationNotes: notes,
         updatedAt,
+        cuisineTags,
       }),
       reviewedAt: updatedAt,
     },
@@ -688,7 +691,8 @@ function buildCandidateSelect(options: CandidateQueryOptions) {
       MAX(ev.captured_at) AS latestEvidenceAt,
       ${duplicateCountSql} AS possibleDuplicateCount,
       ${duplicateMatchesSql} AS possibleDuplicates,
-      ${nominationSql} AS communityNominationCount
+      ${nominationSql} AS communityNominationCount,
+      ${sqlEstablishmentCuisineTagsSelect("e", "cuisineTags")}
     FROM establishments e
     LEFT JOIN evidence_sources ev ON ev.establishment_id = e.id
   `;
@@ -705,6 +709,7 @@ async function loadCandidates(
   const order = `
     GROUP BY e.id
     ORDER BY
+      CASE WHEN ${sqlEstablishmentMissingCuisine("e")} THEN 0 ELSE 1 END ASC,
       CASE WHEN MAX(ev.captured_at) IS NULL THEN 1 ELSE 0 END ASC,
       MAX(ev.captured_at) DESC,
       e.updated_at DESC,
@@ -762,7 +767,8 @@ async function loadCandidates(
     if (state === "needs_input") {
       const needsWhere = `
         WHERE (${searchClause}) AND (
-          e.website IS NULL OR e.website = ''
+          ${sqlEstablishmentMissingCuisine("e")}
+          OR e.website IS NULL OR e.website = ''
           OR e.address IS NULL OR e.address = ''
           OR e.district IS NULL OR e.district = ''
           OR LOWER(e.district) IN ('stockholm', 'central stockholm', 'north stockholm', 'south stockholm', 'east stockholm', 'west stockholm', 'stockholms lan', 'stockholm county', 'stockholms kommun', 'sweden', 'sverige', 'unspecified')
@@ -799,7 +805,8 @@ async function loadCandidates(
 
   if (state === "needs_input") {
     const needsWhere = `
-      WHERE e.website IS NULL OR e.website = ''
+      WHERE ${sqlEstablishmentMissingCuisine("e")}
+         OR e.website IS NULL OR e.website = ''
          OR e.address IS NULL OR e.address = ''
          OR e.district IS NULL OR e.district = ''
          OR LOWER(e.district) IN ('stockholm', 'central stockholm', 'north stockholm', 'south stockholm', 'east stockholm', 'west stockholm', 'stockholms lan', 'stockholm county', 'stockholms kommun', 'sweden', 'sverige', 'unspecified')
@@ -863,7 +870,8 @@ async function loadEstablishmentDetails(db: D1Database, id: number) {
         e.created_at AS createdAt,
         COUNT(DISTINCT ev.id) AS evidenceCount,
         GROUP_CONCAT(DISTINCT ev.source_type) AS evidenceSourceTypes,
-        MAX(ev.captured_at) AS latestEvidenceAt
+        MAX(ev.captured_at) AS latestEvidenceAt,
+        ${sqlEstablishmentCuisineTagsSelect("e", "cuisineTags")}
        FROM establishments e
        LEFT JOIN evidence_sources ev ON ev.establishment_id = e.id
        WHERE e.id = ?
@@ -1329,6 +1337,7 @@ function candidateFromRow(row: CandidateRow) {
     id: row.id,
     name: row.name,
     kind: row.kind,
+    cuisine: row.cuisineTags ? cuisinesFromTagList(row.cuisineTags.split(";")) : "",
     area,
     address: row.address,
     website: row.website,
@@ -1423,7 +1432,9 @@ function normalizedSql(column: string) {
 }
 
 function evidenceGateProfile(
-  row: Pick<CandidateRow, "candidateSourceType" | "evidenceSourceTypes" | "latestEvidenceAt" | "website">,
+  row: Pick<CandidateRow, "candidateSourceType" | "evidenceSourceTypes" | "latestEvidenceAt" | "website"> & {
+    cuisineTags?: string | null;
+  },
 ) {
   const evidenceSourceTypes = parseEvidenceSources(row.evidenceSourceTypes);
   const independentEvidenceTypes = independentEvidenceTypesFor(evidenceSourceTypes, row.candidateSourceType);
@@ -1431,7 +1442,9 @@ function evidenceGateProfile(
     independentEvidenceTypes.length === 0 &&
     [row.candidateSourceType, ...evidenceSourceTypes].some((sourceType) => sourceType === "google_metadata");
   const hasCurrentExistence = Boolean(row.latestEvidenceAt || row.website);
+  const hasCuisineLabel = Boolean(row.cuisineTags?.trim());
   const sourceGaps = [
+    hasCuisineLabel ? "" : "needs_cuisine_label",
     independentEvidenceTypes.length < 2 ? "needs_second_independent_evidence" : "",
     evidenceSourceTypes.includes("osm") || row.candidateSourceType === "osm_baseline" ? "" : "needs_osm_or_open_data_match",
     hasCurrentExistence ? "" : "needs_current_existence_signal",

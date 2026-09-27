@@ -75,15 +75,17 @@ def test_website_scraper_cache(tmp_path: Path) -> None:
 def test_venue_enrichment_priority() -> None:
     from execution.enrich_catalog import venue_enrichment_priority
 
-    missing_both = {"id": 1}
-    missing_hours = {"id": 2, "priceSEK": "150-300"}
-    missing_price = {"id": 3, "openingHours": "Tu-Sa 17:00-23:00"}
-    fully_enriched = {"id": 4, "openingHours": "Tu-Sa 17:00-23:00", "priceSEK": "220-450"}
+    missing_cuisine = {"id": 1, "openingHours": "Tu-Sa 17:00-23:00", "priceSEK": "220-450"}
+    missing_both = {"id": 2, "cuisine": "italian"}
+    missing_hours = {"id": 3, "cuisine": "thai", "priceSEK": "150-300"}
+    missing_price = {"id": 4, "cuisine": "japanese", "openingHours": "Tu-Sa 17:00-23:00"}
+    fully_enriched = {"id": 5, "cuisine": "swedish", "openingHours": "Tu-Sa 17:00-23:00", "priceSEK": "220-450"}
 
-    assert venue_enrichment_priority(missing_both) == 0
-    assert venue_enrichment_priority(missing_hours) == 1
-    assert venue_enrichment_priority(missing_price) == 2
-    assert venue_enrichment_priority(fully_enriched) == 3  # top level is now 3 (no legacy-default tier)
+    assert venue_enrichment_priority(missing_cuisine) == 0
+    assert venue_enrichment_priority(missing_both) == 1
+    assert venue_enrichment_priority(missing_hours) == 2
+    assert venue_enrichment_priority(missing_price) == 3
+    assert venue_enrichment_priority(fully_enriched) == 4
 
 
 def test_extract_facts_jsonld_takes_precedence_over_regex() -> None:

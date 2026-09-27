@@ -52,6 +52,7 @@ test("admin review dashboard prioritizes export when reviews are newer than last
       lastDuplicateResolutionCount: 1,
     },
     unexportedReviewCount: 1,
+    missingCuisineCount: 0,
   });
 
   const response = await getReviewDashboard({
@@ -90,6 +91,7 @@ test("admin review dashboard shows caught up after export when no candidate need
       lastDuplicateResolutionCount: 1,
     },
     unexportedReviewCount: 0,
+    missingCuisineCount: 0,
   });
 
   const response = await getReviewDashboard({
@@ -119,11 +121,12 @@ function candidateRow(overrides = {}) {
     evidenceSourceTypes: "osm,inspection",
     latestEvidenceAt: "2026-08-21T10:00:00Z",
     possibleDuplicateCount: 0,
+    cuisineTags: "italian",
     ...overrides,
   };
 }
 
-function fakeDashboardD1({ candidates, reviewSummary, lastExport, unexportedReviewCount }) {
+function fakeDashboardD1({ candidates, reviewSummary, lastExport, unexportedReviewCount, missingCuisineCount = 0 }) {
   return {
     prepare(query) {
       return {
@@ -133,6 +136,9 @@ function fakeDashboardD1({ candidates, reviewSummary, lastExport, unexportedRevi
           return this;
         },
         async all() {
+          if (query.includes("COUNT(*) AS value FROM establishments e WHERE")) {
+            return { results: [{ value: missingCuisineCount }] };
+          }
           if (query.includes("FROM establishments e")) {
             return { results: candidates };
           }
