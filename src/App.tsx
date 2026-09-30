@@ -2826,7 +2826,11 @@ function AppContent({
             <div className="places-loading-overlay" role="status" aria-live="polite">
               <div className="places-loading-card">
                 <span className="places-loading-spinner" aria-hidden="true">
-                  <CircleNotch size={28} weight="bold" className="animate-spin" />
+                  <img
+                    src="/motkarta_drop_divided_black_red.svg"
+                    alt=""
+                    className="animate-spin"
+                  />
                 </span>
                 <div>
                   <strong>{placesLoadingCopy.title}</strong>

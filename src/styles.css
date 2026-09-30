@@ -1939,13 +1939,19 @@ button.search-clear-btn:hover {
 
 .places-loading-spinner {
   align-items: center;
-  background: var(--color-ink);
-  color: var(--color-paper);
   display: inline-flex;
-  flex: 0 0 48px;
-  height: 48px;
+  flex: 0 0 56px;
+  height: 56px;
   justify-content: center;
-  width: 48px;
+  overflow: hidden;
+  width: 56px;
+}
+
+.places-loading-spinner img {
+  display: block;
+  flex: 0 0 auto;
+  height: 100px;
+  width: 67px;
 }
 
 .places-loading-card strong,
