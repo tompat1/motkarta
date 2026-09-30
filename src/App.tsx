@@ -14,6 +14,7 @@ import { PlaceResultList } from "./components/PlaceResultList";
 import { filterRankedPlacesByBounds, type MapBounds } from "./app/map-bounds";
 import { buildConciergeQuerySuccess, conciergeModeLabel } from "./app/concierge-client";
 import { SyncDevicesModal } from "./components/SyncDevicesModal";
+import { SiteUtilities } from "./components/SiteUtilities";
 import { parseSyncDirectPlaces } from "./app/sync-utils";
 import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
 import { VerificationBar } from "./components/VerificationBar";
@@ -3778,23 +3779,7 @@ function AppContent({
         </div>
       ) : null}
 
-      <div className="mobile-floating-controls" role="group" aria-label={lang === "sv" ? "Vynavigering" : "View navigation"}>
-        <button
-          type="button"
-          className="mobile-floating-control-btn floating-scroll-top-btn"
-          onClick={() => {
-            const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-            const scrollOpts: ScrollToOptions = { top: 0, behavior: prefersReduced ? "instant" : "smooth" };
-            window.scrollTo(scrollOpts);
-            document.documentElement?.scrollTo?.(scrollOpts);
-            document.body?.scrollTo?.(scrollOpts);
-          }}
-          title={lang === "sv" ? "Till toppen" : "Back to top"}
-          aria-label={lang === "sv" ? "Till toppen" : "Back to top"}
-        >
-          <ArrowUp size={20} weight="bold" aria-hidden="true" />
-        </button>
-      </div>
+      <SiteUtilities lang={lang} />
 
       <MobileAppToolbar
         activeTab={mobileTab}
