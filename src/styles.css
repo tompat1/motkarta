@@ -113,6 +113,12 @@ a {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin {
+    animation-duration: 1.8s;
+  }
+}
+
 /* -------------------------------------------------------------------------- */
 /* Topbar & Header                                                           */
 /* -------------------------------------------------------------------------- */
@@ -1905,6 +1911,69 @@ button.search-clear-btn:hover {
   z-index: 1;
 }
 
+.places-loading-overlay {
+  align-items: center;
+  background:
+    linear-gradient(180deg, rgba(250, 249, 245, 0.16), rgba(250, 249, 245, 0.36)),
+    repeating-linear-gradient(45deg, rgba(17, 17, 17, 0.025) 0 1px, transparent 1px 12px);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 11;
+}
+
+.places-loading-card {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  box-shadow: 0 18px 48px rgba(17, 17, 17, 0.16);
+  color: var(--color-ink);
+  display: flex;
+  gap: 14px;
+  max-width: min(360px, calc(100vw - 40px));
+  padding: 16px 18px;
+}
+
+.places-loading-spinner {
+  align-items: center;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  display: inline-flex;
+  flex: 0 0 48px;
+  height: 48px;
+  justify-content: center;
+  width: 48px;
+}
+
+.places-loading-card strong,
+.results-list-loading-copy strong,
+.mobile-list-loading-state h3 {
+  color: var(--color-ink);
+  display: block;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.places-loading-card span,
+.results-list-loading-copy span,
+.mobile-list-loading-state p {
+  color: var(--color-stone);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.45;
+  margin-top: 5px;
+}
+
 .leaflet-control-attribution {
   font-family: var(--font-mono) !important;
   font-size: 10px !important;
@@ -2940,6 +3009,96 @@ button.search-clear-btn:hover {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+}
+
+.results-list-loading {
+  border-top: 1px solid var(--color-mist);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.results-list-loading-copy {
+  align-items: center;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-mist);
+  display: flex;
+  gap: 12px;
+  padding: 18px 14px;
+}
+
+.results-list-loading-copy>svg {
+  color: var(--color-water);
+  flex: 0 0 auto;
+}
+
+.results-loading-inline {
+  align-items: center;
+  display: inline-flex !important;
+  gap: 6px;
+}
+
+.results-loading-row {
+  align-items: center;
+  border-bottom: 1px solid var(--color-mist);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 32px 1fr 60px;
+  min-height: 118px;
+  padding: 16px 8px;
+}
+
+.results-loading-row span,
+.results-loading-row i,
+.results-loading-row b,
+.results-loading-row em,
+.results-loading-row strong {
+  background: linear-gradient(90deg, #e9e5db 0%, #f8f6f0 46%, #e9e5db 100%);
+  background-size: 220% 100%;
+  display: block;
+  min-width: 0;
+  animation: motkarta-loading-sheen 1.4s ease-in-out infinite;
+}
+
+.results-loading-row span {
+  height: 12px;
+  width: 24px;
+}
+
+.results-loading-row div {
+  display: grid;
+  gap: 8px;
+}
+
+.results-loading-row i {
+  height: 10px;
+  width: min(132px, 80%);
+}
+
+.results-loading-row b {
+  height: 22px;
+  width: min(260px, 92%);
+}
+
+.results-loading-row em {
+  height: 11px;
+  width: min(180px, 72%);
+}
+
+.results-loading-row strong {
+  height: 28px;
+  justify-self: end;
+  width: 46px;
+}
+
+@keyframes motkarta-loading-sheen {
+  0% {
+    background-position: 120% 0;
+  }
+
+  100% {
+    background-position: -120% 0;
+  }
 }
 
 .list-virtual {
@@ -15219,6 +15378,44 @@ footer {
   align-items: center;
   gap: 12px;
   color: var(--color-ink);
+}
+
+.mobile-list-loading-state {
+  align-items: center;
+  color: var(--color-ink);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 280px;
+  padding: 58px 24px 100px;
+  text-align: center;
+}
+
+.mobile-list-loading-state>svg {
+  color: var(--color-water);
+}
+
+.mobile-list-loading-state h3 {
+  font-size: 24px;
+}
+
+.mobile-list-loading-state p {
+  max-width: 28ch;
+}
+
+.mobile-results-count-meta svg {
+  color: var(--color-water);
+  flex: 0 0 auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .results-loading-row span,
+  .results-loading-row i,
+  .results-loading-row b,
+  .results-loading-row em,
+  .results-loading-row strong {
+    animation: none;
+  }
 }
 
 /* OpenFreeMap / Motkarta Blue Category Map Pins & Cluster Blobs */

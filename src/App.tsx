@@ -1036,6 +1036,18 @@ function AppContent({
   const listDisplayCount = listPlaces.length;
   const matchingCount = ranked.length;
   const hasSearchQuery = Boolean(query.trim());
+  const isInitialPlacesLoading = dataSource === "loading";
+  const placesLoadingCopy = lang === "sv"
+    ? {
+        title: "Laddar ställen",
+        body: "Hämtar och ritar ut alla POI på kartan.",
+        short: "Laddar...",
+      }
+    : {
+        title: "Loading places",
+        body: "Fetching and drawing every POI on the map.",
+        short: "Loading...",
+      };
   const activeHeroStoryId =
     kind === "Restaurant"
       ? 1053351911
@@ -2701,10 +2713,21 @@ function AppContent({
             <div className="mobile-results-title-group">
               <span className="mobile-results-eyebrow">{t.eyebrow}</span>
               <h2 className="mobile-results-count">
-                <span>{formatPlaceCount(mobileViewMode === "list" ? listDisplayCount : mapDisplayCount)}</span>{" "}
-                <span>{mobileViewMode === "list" ? t.placesInList : t.placesOnMap}</span>
+                {isInitialPlacesLoading ? (
+                  <span>{placesLoadingCopy.title}</span>
+                ) : (
+                  <>
+                    <span>{formatPlaceCount(mobileViewMode === "list" ? listDisplayCount : mapDisplayCount)}</span>{" "}
+                    <span>{mobileViewMode === "list" ? t.placesInList : t.placesOnMap}</span>
+                  </>
+                )}
               </h2>
-              {matchingCount !== (mobileViewMode === "list" ? listDisplayCount : mapDisplayCount) ? (
+              {isInitialPlacesLoading ? (
+                <p className="mobile-results-count-meta" aria-live="polite">
+                  <CircleNotch size={14} className="animate-spin" aria-hidden="true" />
+                  <span>{placesLoadingCopy.body}</span>
+                </p>
+              ) : matchingCount !== (mobileViewMode === "list" ? listDisplayCount : mapDisplayCount) ? (
                 <p className="mobile-results-count-meta">
                   <span>{formatPlaceCount(matchingCount)} {t.placesMatching}</span>
                 </p>
@@ -2762,18 +2785,26 @@ function AppContent({
         {renderConciergeAnswerPanel("mobile")}
 
         {mobileViewMode === "list" ? (
-          <MobilePlaceCardList
-            places={listPlaces}
-            activePlace={active}
-            savedPlaceIds={savedPlaceIds}
-            userLocation={userLocation}
-            lang={lang}
-            onSelectPlace={(place) => {
-              setSelected(place.id);
-              setIsPlaceDetailOpen(true);
-            }}
-            onToggleSave={handleToggleSavePlace}
-          />
+          isInitialPlacesLoading ? (
+            <div className="mobile-list-loading-state" role="status" aria-live="polite">
+              <CircleNotch size={30} className="animate-spin" aria-hidden="true" />
+              <h3>{placesLoadingCopy.title}</h3>
+              <p>{placesLoadingCopy.body}</p>
+            </div>
+          ) : (
+            <MobilePlaceCardList
+              places={listPlaces}
+              activePlace={active}
+              savedPlaceIds={savedPlaceIds}
+              userLocation={userLocation}
+              lang={lang}
+              onSelectPlace={(place) => {
+                setSelected(place.id);
+                setIsPlaceDetailOpen(true);
+              }}
+              onToggleSave={handleToggleSavePlace}
+            />
+          )
         ) : null}
 
         <div className={`map-panel ${mobileViewMode === "list" ? "mobile-view-hidden" : ""}`}>
@@ -2791,6 +2822,19 @@ function AppContent({
               }}
               lang={lang}
             />
+          {isInitialPlacesLoading ? (
+            <div className="places-loading-overlay" role="status" aria-live="polite">
+              <div className="places-loading-card">
+                <span className="places-loading-spinner" aria-hidden="true">
+                  <CircleNotch size={28} weight="bold" className="animate-spin" />
+                </span>
+                <div>
+                  <strong>{placesLoadingCopy.title}</strong>
+                  <span>{placesLoadingCopy.body}</span>
+                </div>
+              </div>
+            </div>
+          ) : null}
 
           {locationToast ? (
             <div className="location-toast" role="status">
@@ -3128,12 +3172,23 @@ function AppContent({
               <p className="eyebrow results-eyebrow">{t.eyebrow}</p>
               <div className="results-count-row">
                 <h2>
-                  <span>{formatPlaceCount(mapDisplayCount)}</span> <span>{t.placesOnMap}</span>
+                  {isInitialPlacesLoading ? (
+                    <span>{placesLoadingCopy.title}</span>
+                  ) : (
+                    <>
+                      <span>{formatPlaceCount(mapDisplayCount)}</span> <span>{t.placesOnMap}</span>
+                    </>
+                  )}
                 </h2>
-                {matchingCount !== mapDisplayCount ? (
+                {isInitialPlacesLoading ? (
+                  <small className="results-loading-inline">
+                    <CircleNotch size={13} className="animate-spin" aria-hidden="true" />
+                    <span>{placesLoadingCopy.short}</span>
+                  </small>
+                ) : matchingCount !== mapDisplayCount ? (
                   <small>{formatPlaceCount(matchingCount)} {t.placesMatching}</small>
                 ) : null}
-                {listDisplayCount !== mapDisplayCount ? (
+                {!isInitialPlacesLoading && listDisplayCount !== mapDisplayCount ? (
                   <small>{formatPlaceCount(listDisplayCount)} {t.placesInList}</small>
                 ) : null}
               </div>
@@ -3195,31 +3250,54 @@ function AppContent({
               <CmsEditFlag cmsKey="principle3" label="Princip 3: Klickpopularitet" />
             </span>
           </div>
-          <PlaceResultList
-            places={listPlaces}
-            activePlace={active}
-            savedPlaceIds={savedPlaceIds}
-            userLocation={userLocation}
-            mode={mode}
-            lang={lang}
-            hasSearchQuery={hasSearchQuery}
-            searchQuery={query}
-            noResultsTitle={t.noSearchResultsTitle}
-            noResultsText={t.noSearchResultsText}
-            totalScoreLabel={t.totalScoreLabel}
-            onSelectPlace={(place, index) => {
-              setSelected(place.id);
-              recordRecommendationEvents([
-                {
-                  establishmentId: place.id,
-                  eventType: "profile_view",
-                  resultPosition: index,
-                  queryContext: { surface: "results" },
-                },
-              ]);
-            }}
-            onToggleSave={handleToggleSavePlace}
-          />
+          {isInitialPlacesLoading ? (
+            <div className="results-list-loading" role="status" aria-live="polite">
+              <div className="results-list-loading-copy">
+                <CircleNotch size={18} className="animate-spin" aria-hidden="true" />
+                <div>
+                  <strong>{placesLoadingCopy.title}</strong>
+                  <span>{placesLoadingCopy.body}</span>
+                </div>
+              </div>
+              {[0, 1, 2, 3, 4].map((item) => (
+                <div className="results-loading-row" key={item}>
+                  <span />
+                  <div>
+                    <i />
+                    <b />
+                    <em />
+                  </div>
+                  <strong />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <PlaceResultList
+              places={listPlaces}
+              activePlace={active}
+              savedPlaceIds={savedPlaceIds}
+              userLocation={userLocation}
+              mode={mode}
+              lang={lang}
+              hasSearchQuery={hasSearchQuery}
+              searchQuery={query}
+              noResultsTitle={t.noSearchResultsTitle}
+              noResultsText={t.noSearchResultsText}
+              totalScoreLabel={t.totalScoreLabel}
+              onSelectPlace={(place, index) => {
+                setSelected(place.id);
+                recordRecommendationEvents([
+                  {
+                    establishmentId: place.id,
+                    eventType: "profile_view",
+                    resultPosition: index,
+                    queryContext: { surface: "results" },
+                  },
+                ]);
+              }}
+              onToggleSave={handleToggleSavePlace}
+            />
+          )}
         </aside>
       </section>
 

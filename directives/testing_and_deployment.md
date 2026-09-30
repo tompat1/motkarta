@@ -85,8 +85,10 @@ If any tier fails during execution:
 
 ## Local browser test isolation
 
-Playwright uses port 4173 and `node_modules/.vite-e2e` (via `MOTKARTA_E2E=1`).
-It starts its own server instead of reusing an active development server. A
+Playwright uses port 4173 by default and `node_modules/.vite-e2e` (via
+`MOTKARTA_E2E=1`). If a local tool is already holding 4173, set
+`MOTKARTA_E2E_PORT=<free-port>` for the gate run. It starts its own server
+instead of reusing an active development server. A
 shared Vite cache produced HTTP 504 `Outdated Optimize Dep` failures before any
 application code ran; inspect browser network errors when a page stays blank.
 Keep screenshots under `testInfo.outputPath(...)`, not absolute paths in a

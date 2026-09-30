@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const e2ePort = process.env.MOTKARTA_E2E_PORT ?? "4173";
+const e2eBaseURL = `http://localhost:${e2ePort}`;
+
 export default defineConfig({
   testDir: "./tests_e2e",
   fullyParallel: true,
@@ -11,7 +14,7 @@ export default defineConfig({
   workers: 1,
   reporter: "html",
   use: {
-    baseURL: "http://localhost:4173",
+    baseURL: e2eBaseURL,
     trace: "on-first-retry",
   },
   projects: [
@@ -29,9 +32,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev -- --port 4173 --strictPort",
+    command: `npm run dev -- --port ${e2ePort} --strictPort`,
     env: { MOTKARTA_E2E: "1" },
-    url: "http://localhost:4173",
+    url: e2eBaseURL,
     reuseExistingServer: false,
   },
 });
