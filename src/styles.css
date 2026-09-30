@@ -117,6 +117,10 @@ a {
   .animate-spin {
     animation-duration: 1.8s;
   }
+
+  .motkarta-axis-spin {
+    animation-duration: 2.4s;
+  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -1944,6 +1948,8 @@ button.search-clear-btn:hover {
   height: 56px;
   justify-content: center;
   overflow: hidden;
+  perspective: 420px;
+  perspective-origin: center;
   width: 56px;
 }
 
@@ -1952,6 +1958,19 @@ button.search-clear-btn:hover {
   flex: 0 0 auto;
   height: 100px;
   width: 67px;
+}
+
+.motkarta-axis-spin {
+  animation: motkarta-axis-spin 1.05s linear infinite;
+  backface-visibility: visible;
+  transform-origin: center center;
+  transform-style: preserve-3d;
+}
+
+@keyframes motkarta-axis-spin {
+  to {
+    transform: rotateY(360deg);
+  }
 }
 
 .places-loading-card strong,

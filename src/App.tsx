@@ -2829,7 +2829,7 @@ function AppContent({
                   <img
                     src="/motkarta_drop_divided_black_red.svg"
                     alt=""
-                    className="animate-spin"
+                    className="motkarta-axis-spin"
                   />
                 </span>
                 <div>
