@@ -2832,7 +2832,7 @@ function AppContent({
                     className="motkarta-axis-spin"
                   />
                 </span>
-                <div>
+                <div className="places-loading-copy">
                   <strong>{placesLoadingCopy.title}</strong>
                   <span>{placesLoadingCopy.body}</span>
                 </div>

@@ -1961,7 +1961,7 @@ button.search-clear-btn:hover {
 }
 
 .motkarta-axis-spin {
-  animation: motkarta-axis-spin 1.05s linear infinite;
+  animation: motkarta-axis-spin 1.4s linear infinite;
   backface-visibility: visible;
   transform-origin: center center;
   transform-style: preserve-3d;
@@ -1987,7 +1987,7 @@ button.search-clear-btn:hover {
   text-transform: uppercase;
 }
 
-.places-loading-card span,
+.places-loading-copy span,
 .results-list-loading-copy span,
 .mobile-list-loading-state p {
   color: var(--color-stone);
