@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-09-23T12:02:17Z",
+  "updatedAt": "2026-10-01T10:58:07Z",
   "totalPlaces": 3198,
-  "photoPlaces": 1558,
+  "photoPlaces": 1577,
   "verificationStatus": "new-candidates-http-checked",
-  "addedPhotoCandidates": 903,
-  "totalPhotos": 3848,
+  "addedPhotoCandidates": 54,
+  "totalPhotos": 3902,
   "photosByPlace": {
     "3832888205": [
       {
@@ -41648,6 +41648,584 @@
         "thumbnailUrl": "https://gamlariksarkivet.com/wp-content/themes/gamlariks/images/close.svg",
         "caption": "Gamla Riksarkivet (gamlariksarkivet.com)",
         "credit": "Official Website (gamlariksarkivet.com)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "3041010946": [
+      {
+        "id": "photo-3041010946-1",
+        "placeId": 3041010946,
+        "url": "https://stacks.nu/images/stacks/facade-terrace.webp",
+        "thumbnailUrl": "https://stacks.nu/images/stacks/facade-terrace.webp",
+        "caption": "Stacks (stacks.nu)",
+        "credit": "Official Website (stacks.nu)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-3041010946-2",
+        "placeId": 3041010946,
+        "url": "https://stacks.nu/images/stacks/neon-wall-dining.webp",
+        "thumbnailUrl": "https://stacks.nu/images/stacks/neon-wall-dining.webp",
+        "caption": "Stacks (stacks.nu)",
+        "credit": "Official Website (stacks.nu)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-3041010946-3",
+        "placeId": 3041010946,
+        "url": "https://stacks.nu/images/stacks/corner-table-light.webp",
+        "thumbnailUrl": "https://stacks.nu/images/stacks/corner-table-light.webp",
+        "caption": "Stacks (stacks.nu)",
+        "credit": "Official Website (stacks.nu)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "2138163584": [
+      {
+        "id": "photo-2138163584-1",
+        "placeId": 2138163584,
+        "url": "https://artbakery.se/wp-content/uploads/2022/04/Vector-Smart-Object_merge-1024x588.png",
+        "thumbnailUrl": "https://artbakery.se/wp-content/uploads/2022/04/Vector-Smart-Object_merge-1024x588.png",
+        "caption": "Art Bakery (artbakery.se)",
+        "credit": "Official Website (artbakery.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-2138163584-2",
+        "placeId": 2138163584,
+        "url": "https://artbakery.se/wp-content/uploads/2026/03/Praliner_hemsidan3.jpg",
+        "thumbnailUrl": "https://artbakery.se/wp-content/uploads/2026/03/Praliner_hemsidan3.jpg",
+        "caption": "Art Bakery (artbakery.se)",
+        "credit": "Official Website (artbakery.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-2138163584-3",
+        "placeId": 2138163584,
+        "url": "https://artbakery.se/wp-content/uploads/2021/09/Sjopav_2021_symbol.png",
+        "thumbnailUrl": "https://artbakery.se/wp-content/uploads/2021/09/Sjopav_2021_symbol.png",
+        "caption": "Art Bakery (artbakery.se)",
+        "credit": "Official Website (artbakery.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "3454870075": [
+      {
+        "id": "photo-3454870075-1",
+        "placeId": 3454870075,
+        "url": "https://primary.jwwb.nl/public/y/s/p/temp-zvlwdltfwycdojyazxlw/1000021192-high-9i1yyo.jpg",
+        "thumbnailUrl": "https://primary.jwwb.nl/public/y/s/p/temp-zvlwdltfwycdojyazxlw/1000021192-high-9i1yyo.jpg",
+        "caption": "Liselotte Hembageri (liselottehembageri.se)",
+        "credit": "Official Website (liselottehembageri.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-3454870075-2",
+        "placeId": 3454870075,
+        "url": "https://primary.jwwb.nl/public/y/s/p/temp-zvlwdltfwycdojyazxlw/20260223_114553-high.jpg?enable-io=true&enable=upscale&fit=bounds&width=1200",
+        "thumbnailUrl": "https://primary.jwwb.nl/public/y/s/p/temp-zvlwdltfwycdojyazxlw/20260223_114553-high.jpg?enable-io=true&enable=upscale&fit=bounds&width=1200",
+        "caption": "Liselotte Hembageri (liselottehembageri.se)",
+        "credit": "Official Website (liselottehembageri.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-3454870075-3",
+        "placeId": 3454870075,
+        "url": "https://primary.jwwb.nl/pexels/25/251610.jpeg",
+        "thumbnailUrl": "https://primary.jwwb.nl/pexels/25/251610.jpeg",
+        "caption": "Liselotte Hembageri (liselottehembageri.se)",
+        "credit": "Official Website (liselottehembageri.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "931497287": [
+      {
+        "id": "photo-931497287-1",
+        "placeId": 931497287,
+        "url": "http://www.riddarbageriet.com/public/generate/collage_object.php?id=9384414&h=ba4722a58c2b909a710027b1530d27a2",
+        "thumbnailUrl": "http://www.riddarbageriet.com/public/generate/collage_object.php?id=9384414&h=ba4722a58c2b909a710027b1530d27a2",
+        "caption": "Riddarbageriet (www.riddarbageriet.com)",
+        "credit": "Official Website (www.riddarbageriet.com)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-931497287-2",
+        "placeId": 931497287,
+        "url": "https://h24-original.s3.amazonaws.com/240347/22395932-NIE2c.jpg",
+        "thumbnailUrl": "https://h24-original.s3.amazonaws.com/240347/22395932-NIE2c.jpg",
+        "caption": "Riddarbageriet (www.riddarbageriet.com)",
+        "credit": "Official Website (www.riddarbageriet.com)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-931497287-3",
+        "placeId": 931497287,
+        "url": "https://dst15js82dk7j.cloudfront.net/240347/73077103-2WuN8.jpg",
+        "thumbnailUrl": "https://dst15js82dk7j.cloudfront.net/240347/73077103-2WuN8.jpg",
+        "caption": "Riddarbageriet (www.riddarbageriet.com)",
+        "credit": "Official Website (www.riddarbageriet.com)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "177950692": [
+      {
+        "id": "photo-177950692-1",
+        "placeId": 177950692,
+        "url": "https://www.grillnsteakhouse.se/wp-content/uploads/2020/11/burger_2.jpeg",
+        "thumbnailUrl": "https://www.grillnsteakhouse.se/wp-content/uploads/2020/11/burger_2.jpeg",
+        "caption": "Gärdets grill 'n steakhouse (www.grillnsteakhouse.se)",
+        "credit": "Official Website (www.grillnsteakhouse.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-177950692-2",
+        "placeId": 177950692,
+        "url": "https://lh3.googleusercontent.com/a/AATXAJzEhtnuDdX33EUBB5sAvFSzPPjj2v6ymbnbPopR=s40-c-c0x00000000-cc-rp-mo-ba4-br100",
+        "thumbnailUrl": "https://lh3.googleusercontent.com/a/AATXAJzEhtnuDdX33EUBB5sAvFSzPPjj2v6ymbnbPopR=s40-c-c0x00000000-cc-rp-mo-ba4-br100",
+        "caption": "Gärdets grill 'n steakhouse (www.grillnsteakhouse.se)",
+        "credit": "Official Website (www.grillnsteakhouse.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-177950692-3",
+        "placeId": 177950692,
+        "url": "https://lh3.googleusercontent.com/a/AATXAJwpVZRUmqZYQK8dSpmWzMmE4xczgOYuK7B9stGm=s40-c-c0x00000000-cc-rp-mo-br100",
+        "thumbnailUrl": "https://lh3.googleusercontent.com/a/AATXAJwpVZRUmqZYQK8dSpmWzMmE4xczgOYuK7B9stGm=s40-c-c0x00000000-cc-rp-mo-br100",
+        "caption": "Gärdets grill 'n steakhouse (www.grillnsteakhouse.se)",
+        "credit": "Official Website (www.grillnsteakhouse.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "4146819906": [
+      {
+        "id": "photo-4146819906-1",
+        "placeId": 4146819906,
+        "url": "https://uddens.nu/media/tenants/uddens/images/934d67d0-12eb-4bb1-b57c-5526d53ece7e.jpg",
+        "thumbnailUrl": "https://uddens.nu/media/tenants/uddens/images/934d67d0-12eb-4bb1-b57c-5526d53ece7e.jpg",
+        "caption": "Restaurang Udden (uddens.nu)",
+        "credit": "Official Website (uddens.nu)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-4146819906-2",
+        "placeId": 4146819906,
+        "url": "http://uddens.nu/media/tenants/uddens/images/bc9bffe3-e35b-4e20-be77-2d62395ff841.png.1920.webp",
+        "thumbnailUrl": "http://uddens.nu/media/tenants/uddens/images/bc9bffe3-e35b-4e20-be77-2d62395ff841.png.1920.webp",
+        "caption": "Restaurang Udden (uddens.nu)",
+        "credit": "Official Website (uddens.nu)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-4146819906-3",
+        "placeId": 4146819906,
+        "url": "http://uddens.nu/media/library/videos/7d663d27-26e2-4f18-bdec-c0be44401e09.jpg",
+        "thumbnailUrl": "http://uddens.nu/media/library/videos/7d663d27-26e2-4f18-bdec-c0be44401e09.jpg",
+        "caption": "Restaurang Udden (uddens.nu)",
+        "credit": "Official Website (uddens.nu)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "1812992697": [
+      {
+        "id": "photo-1812992697-1",
+        "placeId": 1812992697,
+        "url": "http://files.builder.misssite.com/72/cb/72cb59e9-76fa-4101-a3dc-44e1bc16ea59.JPG",
+        "thumbnailUrl": "http://files.builder.misssite.com/72/cb/72cb59e9-76fa-4101-a3dc-44e1bc16ea59.JPG",
+        "caption": "Café Petissan (www.cafepetissan.com)",
+        "credit": "Official Website (www.cafepetissan.com)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-1812992697-2",
+        "placeId": 1812992697,
+        "url": "http://files.builder.misssite.com/e0/74/e0748a35-72fe-426c-8f34-505e20a6dca0.jpeg",
+        "thumbnailUrl": "http://files.builder.misssite.com/e0/74/e0748a35-72fe-426c-8f34-505e20a6dca0.jpeg",
+        "caption": "Café Petissan (www.cafepetissan.com)",
+        "credit": "Official Website (www.cafepetissan.com)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "1850707671": [
+      {
+        "id": "photo-1850707671-1",
+        "placeId": 1850707671,
+        "url": "https://images.ctfassets.net/ds6dz7ilx8up/44ewTtW7vLMqayZQQmoJxc/ae4561a459f7aecf1fde95e31c490e71/Tyrol_stor_ny.png",
+        "thumbnailUrl": "https://images.ctfassets.net/ds6dz7ilx8up/44ewTtW7vLMqayZQQmoJxc/ae4561a459f7aecf1fde95e31c490e71/Tyrol_stor_ny.png",
+        "caption": "Tyrol (www.gronalund.com)",
+        "credit": "Official Website (www.gronalund.com)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-1850707671-2",
+        "placeId": 1850707671,
+        "url": "https://images.ctfassets.net/ds6dz7ilx8up/5qrbFSRtXENyEwVeqJofdm/1d0d19c37cdea4079474f0210da57150/Tyrol_ny_liten.png?w=100&q=10&fm=webp",
+        "thumbnailUrl": "https://images.ctfassets.net/ds6dz7ilx8up/5qrbFSRtXENyEwVeqJofdm/1d0d19c37cdea4079474f0210da57150/Tyrol_ny_liten.png?w=100&q=10&fm=webp",
+        "caption": "Tyrol (www.gronalund.com)",
+        "credit": "Official Website (www.gronalund.com)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-1850707671-3",
+        "placeId": 1850707671,
+        "url": "https://images.ctfassets.net/ds6dz7ilx8up/5qrbFSRtXENyEwVeqJofdm/1d0d19c37cdea4079474f0210da57150/Tyrol_ny_liten.png?w=100&q=10&q=10",
+        "thumbnailUrl": "https://images.ctfassets.net/ds6dz7ilx8up/5qrbFSRtXENyEwVeqJofdm/1d0d19c37cdea4079474f0210da57150/Tyrol_ny_liten.png?w=100&q=10&q=10",
+        "caption": "Tyrol (www.gronalund.com)",
+        "credit": "Official Website (www.gronalund.com)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "3176227616": [
+      {
+        "id": "photo-3176227616-1",
+        "placeId": 3176227616,
+        "url": "https://oxlan.eu/brand/og-photo.jpg",
+        "thumbnailUrl": "https://oxlan.eu/brand/og-photo.jpg",
+        "caption": "Ox Lan (oxlan.se)",
+        "credit": "Official Website (oxlan.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-3176227616-2",
+        "placeId": 3176227616,
+        "url": "https://oxlan.se/_next/image?url=%2Fimages%2Fmenu%2FDSC05112.jpg&w=3840&q=75",
+        "thumbnailUrl": "https://oxlan.se/_next/image?url=%2Fimages%2Fmenu%2FDSC05112.jpg&w=3840&q=75",
+        "caption": "Ox Lan (oxlan.se)",
+        "credit": "Official Website (oxlan.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-3176227616-3",
+        "placeId": 3176227616,
+        "url": "https://oxlan.se/_next/image?url=%2Fimages%2Fbrand%2FDSC05341.jpg&w=3840&q=75",
+        "thumbnailUrl": "https://oxlan.se/_next/image?url=%2Fimages%2Fbrand%2FDSC05341.jpg&w=3840&q=75",
+        "caption": "Ox Lan (oxlan.se)",
+        "credit": "Official Website (oxlan.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "3686771613": [
+      {
+        "id": "photo-3686771613-1",
+        "placeId": 3686771613,
+        "url": "https://apk.tools/assets/01m1bs8hp2sf3payjz5kq4g2pr.svg",
+        "thumbnailUrl": "https://apk.tools/assets/01m1bs8hp2sf3payjz5kq4g2pr.svg",
+        "caption": "Le Rouge (www.lerouge.se)",
+        "credit": "Official Website (www.lerouge.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-3686771613-2",
+        "placeId": 3686771613,
+        "url": "https://apk.tools/assets/01m23jmrn69vsxv2k8qnf1h50p.svg",
+        "thumbnailUrl": "https://apk.tools/assets/01m23jmrn69vsxv2k8qnf1h50p.svg",
+        "caption": "Le Rouge (www.lerouge.se)",
+        "credit": "Official Website (www.lerouge.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-3686771613-3",
+        "placeId": 3686771613,
+        "url": "https://apk.tools/assets/01m23jnxg533jcvv0d47kdrrvz.svg",
+        "thumbnailUrl": "https://apk.tools/assets/01m23jnxg533jcvv0d47kdrrvz.svg",
+        "caption": "Le Rouge (www.lerouge.se)",
+        "credit": "Official Website (www.lerouge.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "1619893802": [
+      {
+        "id": "photo-1619893802-1",
+        "placeId": 1619893802,
+        "url": "https://images.deliveryhero.io/image/pandora-web/fo-eu/op/city-page/refresh-hero-city.png",
+        "thumbnailUrl": "https://images.deliveryhero.io/image/pandora-web/fo-eu/op/city-page/refresh-hero-city.png",
+        "caption": "Hot & Fresh Pizzeria (www.foodora.se)",
+        "credit": "Official Website (www.foodora.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-1619893802-2",
+        "placeId": 1619893802,
+        "url": "https://images.deliveryhero.io/image/foodpanda/marketing-20220401_SE_STHLM.jpg?width=300&height=156",
+        "thumbnailUrl": "https://images.deliveryhero.io/image/foodpanda/marketing-20220401_SE_STHLM.jpg?width=300&height=156",
+        "caption": "Hot & Fresh Pizzeria (www.foodora.se)",
+        "credit": "Official Website (www.foodora.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-1619893802-3",
+        "placeId": 1619893802,
+        "url": "https://images.deliveryhero.io/image/fd-op/LH/jxs5-listing.jpg?width=400&height=225",
+        "thumbnailUrl": "https://images.deliveryhero.io/image/fd-op/LH/jxs5-listing.jpg?width=400&height=225",
+        "caption": "Hot & Fresh Pizzeria (www.foodora.se)",
+        "credit": "Official Website (www.foodora.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "4279813978": [
+      {
+        "id": "photo-4279813978-1",
+        "placeId": 4279813978,
+        "url": "https://www.tvasmasvin.se/wp-content/uploads/2022/04/Arsta.svg",
+        "thumbnailUrl": "https://www.tvasmasvin.se/wp-content/uploads/2022/04/Arsta.svg",
+        "caption": "Två Små Svin (www.tvåsmåsvin.se)",
+        "credit": "Official Website (www.tvåsmåsvin.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-4279813978-2",
+        "placeId": 4279813978,
+        "url": "https://www.tvasmasvin.se/wp-content/uploads/2022/04/Trosa.svg",
+        "thumbnailUrl": "https://www.tvasmasvin.se/wp-content/uploads/2022/04/Trosa.svg",
+        "caption": "Två Små Svin (www.tvåsmåsvin.se)",
+        "credit": "Official Website (www.tvåsmåsvin.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-4279813978-3",
+        "placeId": 4279813978,
+        "url": "https://www.tvasmasvin.se/wp-content/uploads/2022/04/Branneriet.svg",
+        "thumbnailUrl": "https://www.tvasmasvin.se/wp-content/uploads/2022/04/Branneriet.svg",
+        "caption": "Två Små Svin (www.tvåsmåsvin.se)",
+        "credit": "Official Website (www.tvåsmåsvin.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "321928046": [
+      {
+        "id": "photo-321928046-1",
+        "placeId": 321928046,
+        "url": "https://cornershopkitchen.se/wp-content/uploads/2026/09/Jordmanen_website.jpg",
+        "thumbnailUrl": "https://cornershopkitchen.se/wp-content/uploads/2026/09/Jordmanen_website.jpg",
+        "caption": "Cornershop (cornershopkitchen.se)",
+        "credit": "Official Website (cornershopkitchen.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-321928046-2",
+        "placeId": 321928046,
+        "url": "https://i0.wp.com/cornershopkitchen.se/wp-content/uploads/2026/09/Jordmanen_website.jpg?w=1301&ssl=1",
+        "thumbnailUrl": "https://i0.wp.com/cornershopkitchen.se/wp-content/uploads/2026/09/Jordmanen_website.jpg?w=1301&ssl=1",
+        "caption": "Cornershop (cornershopkitchen.se)",
+        "credit": "Official Website (cornershopkitchen.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-321928046-3",
+        "placeId": 321928046,
+        "url": "https://i0.wp.com/cornershopkitchen.se/wp-content/uploads/2026/09/Mahlet_website.jpg?w=2000&ssl=1",
+        "thumbnailUrl": "https://i0.wp.com/cornershopkitchen.se/wp-content/uploads/2026/09/Mahlet_website.jpg?w=2000&ssl=1",
+        "caption": "Cornershop (cornershopkitchen.se)",
+        "credit": "Official Website (cornershopkitchen.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "1043248405": [
+      {
+        "id": "photo-1043248405-1",
+        "placeId": 1043248405,
+        "url": "https://www.skansen.se/wp-content/themes/skansen/public/images/info.svg",
+        "thumbnailUrl": "https://www.skansen.se/wp-content/themes/skansen/public/images/info.svg",
+        "caption": "Arturs Kafé (www.skansen.se)",
+        "credit": "Official Website (www.skansen.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-1043248405-2",
+        "placeId": 1043248405,
+        "url": "https://www.skansen.se/wp-content/themes/skansen/public/images/bulb.svg",
+        "thumbnailUrl": "https://www.skansen.se/wp-content/themes/skansen/public/images/bulb.svg",
+        "caption": "Arturs Kafé (www.skansen.se)",
+        "credit": "Official Website (www.skansen.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-1043248405-3",
+        "placeId": 1043248405,
+        "url": "https://www.skansen.se/wp-content/uploads/2022/10/Arturs-kafe.png",
+        "thumbnailUrl": "https://www.skansen.se/wp-content/uploads/2022/10/Arturs-kafe.png",
+        "caption": "Arturs Kafé (www.skansen.se)",
+        "credit": "Official Website (www.skansen.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "2997540034": [
+      {
+        "id": "photo-2997540034-1",
+        "placeId": 2997540034,
+        "url": "https://restauranglulu.se/wp-content/uploads/2024/10/lulu-social-header.jpg",
+        "thumbnailUrl": "https://restauranglulu.se/wp-content/uploads/2024/10/lulu-social-header.jpg",
+        "caption": "Lulu (restauranglulu.se)",
+        "credit": "Official Website (restauranglulu.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-2997540034-2",
+        "placeId": 2997540034,
+        "url": "https://restauranglulu.se/wp-content/uploads/2023/12/App-Store.svg",
+        "thumbnailUrl": "https://restauranglulu.se/wp-content/uploads/2023/12/App-Store.svg",
+        "caption": "Lulu (restauranglulu.se)",
+        "credit": "Official Website (restauranglulu.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-2997540034-3",
+        "placeId": 2997540034,
+        "url": "https://restauranglulu.se/wp-content/uploads/2023/12/Google-Play.svg",
+        "thumbnailUrl": "https://restauranglulu.se/wp-content/uploads/2023/12/Google-Play.svg",
+        "caption": "Lulu (restauranglulu.se)",
+        "credit": "Official Website (restauranglulu.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "915248625": [
+      {
+        "id": "photo-915248625-1",
+        "placeId": 915248625,
+        "url": "http://kersh.se/cdn/shop/files/og.jpg?v=1741786561",
+        "thumbnailUrl": "http://kersh.se/cdn/shop/files/og.jpg?v=1741786561",
+        "caption": "Kersh (www.kersh.se)",
+        "credit": "Official Website (www.kersh.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-915248625-2",
+        "placeId": 915248625,
+        "url": "https://kersh.se/cdn/shop/files/og.jpg?v=1741786561",
+        "thumbnailUrl": "https://kersh.se/cdn/shop/files/og.jpg?v=1741786561",
+        "caption": "Kersh (www.kersh.se)",
+        "credit": "Official Website (www.kersh.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-915248625-3",
+        "placeId": 915248625,
+        "url": "http://kersh.se/cdn/shop/files/kersh.png?v=1709030158&width=540",
+        "thumbnailUrl": "http://kersh.se/cdn/shop/files/kersh.png?v=1709030158&width=540",
+        "caption": "Kersh (www.kersh.se)",
+        "credit": "Official Website (www.kersh.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "1984588309": [
+      {
+        "id": "photo-1984588309-1",
+        "placeId": 1984588309,
+        "url": "https://www.nybroe.se/opengraph-image.jpg",
+        "thumbnailUrl": "https://www.nybroe.se/opengraph-image.jpg",
+        "caption": "Nybroe Smørrebrød (www.nybroe.se)",
+        "credit": "Official Website (www.nybroe.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-1984588309-2",
+        "placeId": 1984588309,
+        "url": "https://www.nybroe.se/decor1.svg",
+        "thumbnailUrl": "https://www.nybroe.se/decor1.svg",
+        "caption": "Nybroe Smørrebrød (www.nybroe.se)",
+        "credit": "Official Website (www.nybroe.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-1984588309-3",
+        "placeId": 1984588309,
+        "url": "https://www.nybroe.se/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FcnLFj-c0gCxAARkALyYYwA%2Fef0b0b29-1be7-4fe6-5ee3-8322581aa100%2Fpublic&w=3840&q=75&dpl=dpl_BKeyFN3Zjr77r4M1iPzdHfUQpAUT",
+        "thumbnailUrl": "https://www.nybroe.se/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FcnLFj-c0gCxAARkALyYYwA%2Fef0b0b29-1be7-4fe6-5ee3-8322581aa100%2Fpublic&w=3840&q=75&dpl=dpl_BKeyFN3Zjr77r4M1iPzdHfUQpAUT",
+        "caption": "Nybroe Smørrebrød (www.nybroe.se)",
+        "credit": "Official Website (www.nybroe.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "288605875": [
+      {
+        "id": "photo-288605875-1",
+        "placeId": 288605875,
+        "url": "https://dinapoli.se/og-image.png",
+        "thumbnailUrl": "https://dinapoli.se/og-image.png",
+        "caption": "Di Napoli (www.dinapoli.se)",
+        "credit": "Official Website (www.dinapoli.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "2526731116": [
+      {
+        "id": "photo-2526731116-1",
+        "placeId": 2526731116,
+        "url": "https://www.nordiskamuseet.se/wp-content/uploads/2023/12/nordiska-museet-besokare-restaurang-scaled.webp",
+        "thumbnailUrl": "https://www.nordiskamuseet.se/wp-content/uploads/2023/12/nordiska-museet-besokare-restaurang-scaled.webp",
+        "caption": "Lusknäppen (www.nordiskamuseet.se)",
+        "credit": "Official Website (www.nordiskamuseet.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-2526731116-2",
+        "placeId": 2526731116,
+        "url": "https://www.nordiskamuseet.se/wp-content/uploads/2023/12/nordiska-museet-besokare-restaurang-2048x1366.webp",
+        "thumbnailUrl": "https://www.nordiskamuseet.se/wp-content/uploads/2023/12/nordiska-museet-besokare-restaurang-2048x1366.webp",
+        "caption": "Lusknäppen (www.nordiskamuseet.se)",
+        "credit": "Official Website (www.nordiskamuseet.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-2526731116-3",
+        "placeId": 2526731116,
+        "url": "https://www.nordiskamuseet.se/wp-content/uploads/2023/11/nordiska-museets-restaurang-1080x1350-1.webp",
+        "thumbnailUrl": "https://www.nordiskamuseet.se/wp-content/uploads/2023/11/nordiska-museets-restaurang-1080x1350-1.webp",
+        "caption": "Lusknäppen (www.nordiskamuseet.se)",
+        "credit": "Official Website (www.nordiskamuseet.se)",
         "width": null,
         "height": null
       }
