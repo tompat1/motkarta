@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-01T10:57:33Z",
+  "generatedAt": "2026-11-01T13:49:28Z",
   "policy": "Monthly catalog freshness loop. Discovery sources are metadata-only. New venues remain candidates until reviewed in /admin.",
   "discoveryQueryCount": 50,
   "osm": {
@@ -505,22 +505,22 @@
   },
   "comparison": {
     "catalogTotalPlaces": 3198,
-    "newCandidatesFound": 362,
+    "newCandidatesFound": 349,
     "detectedClosuresCount": 0,
-    "placesWithMissingAttributes": 108
+    "placesWithMissingAttributes": 87
   },
   "googleMetadataSync": {
-    "google_results": 525,
-    "existing_places_enriched": 23,
+    "google_results": 516,
+    "existing_places_enriched": 3,
     "address_updates": 0,
-    "website_updates": 23,
+    "website_updates": 3,
     "official_photo_updates": 0,
     "new_candidates": 0,
-    "chains_skipped": 3
+    "chains_skipped": 4
   },
   "candidateQueue": {
     "baseline": 3184,
-    "candidate": 1050,
+    "candidate": 1037,
     "verified": 12,
     "featured": 0
   },
@@ -535,83 +535,63 @@
   "newCandidateSample": [
     {
       "source": "Google Places",
-      "name": "Neni Stockholm",
-      "googlePlaceId": "ChIJxTCQrKqdX0YRBcsvColgit8",
-      "address": "Drottningholmsvägen 22, 112 42 Stockholm, Sweden",
-      "latitude": 59.332393499999995,
-      "longitude": 18.030044999999998,
-      "website": "https://neni-stockholm.se/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "name": "Verandan på Skansen",
+      "googlePlaceId": "ChIJFQrUK-6DX0YRqxkcJRfExgI",
+      "address": "Djurgårdsslätten 49-51, 115 21 Stockholm, Sweden",
+      "latitude": 59.32529100000001,
+      "longitude": 18.1028079,
+      "website": "http://verandanpaskansen.se/",
+      "discoveredAt": "2026-11-01T13:48:16Z"
     },
     {
       "source": "Google Places",
-      "name": "Nook Restaurang",
-      "googlePlaceId": "ChIJC56Z2HCdX0YRON7G_0SVF9s",
-      "address": "Högbergsgatan 62, 118 54 Stockholm, Sweden",
-      "latitude": 59.315583600000004,
-      "longitude": 18.0633274,
-      "website": "https://www.restaurangnook.se/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "name": "Husman kök & bar",
+      "googlePlaceId": "ChIJZ0cwC1CdX0YR40RUkMfaaIE",
+      "address": "Centralplan 1, 111 21 Stockholm, Sweden",
+      "latitude": 59.33103879999999,
+      "longitude": 18.0570388,
+      "website": "https://husmankökobar.se/",
+      "discoveredAt": "2026-11-01T13:48:16Z"
     },
     {
       "source": "Google Places",
-      "name": "Petri",
-      "googlePlaceId": "ChIJsVkOdlKdX0YRewVcEbG_XuU",
-      "address": "Kommendörsgatan 16, 114 48 Stockholm, Sweden",
-      "latitude": 59.338568900000006,
-      "longitude": 18.0794848,
-      "website": "http://www.petrirestaurant.com/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "name": "Luma Café",
+      "googlePlaceId": "ChIJc0aMssd3X0YR0P2f9mgYdKQ",
+      "address": "Drottningholmsvägen 15, 112 42 Stockholm, Sweden",
+      "latitude": 59.3318696,
+      "longitude": 18.0299585,
+      "website": "",
+      "discoveredAt": "2026-11-01T13:48:16Z"
     },
     {
       "source": "Google Places",
-      "name": "Bord",
-      "googlePlaceId": "ChIJc6ZPBoSdX0YRk_RiiWFhAW8",
-      "address": "Roslagsgatan 43, 113 54 Stockholm, Sweden",
-      "latitude": 59.3493682,
-      "longitude": 18.056856099999997,
-      "website": "http://bord.restaurant/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "name": "Jollofspot",
+      "googlePlaceId": "ChIJX4nOmqOdX0YRDFZOfwWRX6E",
+      "address": "Sveavägen 39a, 111 34 Stockholm, Sweden",
+      "latitude": 59.337807000000005,
+      "longitude": 18.0611939,
+      "website": "https://www.jollofspot.se/en",
+      "discoveredAt": "2026-11-01T13:48:16Z"
     },
     {
       "source": "Google Places",
-      "name": "Bistro Zissou",
-      "googlePlaceId": "ChIJqblKio13X0YRmtxkZ2fh66o",
-      "address": "Lilla Nygatan 21, 111 28 Stockholm, Sweden",
-      "latitude": 59.323394199999996,
-      "longitude": 18.0694099,
-      "website": "https://bistrozissou.se/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "name": "Wasabi Sushi & Poké",
+      "googlePlaceId": "ChIJ9eT0vb53X0YRrw0km4SCxVE",
+      "address": "Götgatan 67, 116 21 Stockholm, Sweden",
+      "latitude": 59.312768399999996,
+      "longitude": 18.074330400000004,
+      "website": "https://www.wasabisushipoke.se/",
+      "discoveredAt": "2026-11-01T13:48:16Z"
     },
     {
       "source": "Google Places",
-      "name": "Framfickan",
-      "googlePlaceId": "ChIJt1L_owCdX0YR2jOHl8E0jkE",
-      "address": "Karlaplan 4, 114 60 Stockholm, Sweden",
-      "latitude": 59.336889400000004,
-      "longitude": 18.0888612,
-      "website": "https://www.maximstockholm.se/framfickan/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
-    },
-    {
-      "source": "Google Places",
-      "name": "Othilia",
-      "googlePlaceId": "ChIJd9OZf_udX0YRwWl8vIQyyLs",
-      "address": "Karl XII:s torg 3, 111 47 Stockholm, Sweden",
-      "latitude": 59.32982699999999,
-      "longitude": 18.071339,
-      "website": "https://operakallaren.se/othilia/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
-    },
-    {
-      "source": "Google Places",
-      "name": "Bistro Bestick Gamla Stan",
-      "googlePlaceId": "ChIJ5d-IvbWdX0YRDU05H52-F6o",
-      "address": "Skeppsbron 10, 111 30 Stockholm, Sweden",
-      "latitude": 59.3256907,
-      "longitude": 18.075045799999998,
-      "website": "https://gamlastan.bistrobestick.se/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "name": "Non Grata",
+      "googlePlaceId": "ChIJtXVio2udX0YRss7FlQ6xzxU",
+      "address": "Storgatan 35 B, 114 55 Stockholm, Sweden",
+      "latitude": 59.334846199999994,
+      "longitude": 18.088910400000003,
+      "website": "https://nongratasthlm.com/",
+      "discoveredAt": "2026-11-01T13:48:16Z"
     },
     {
       "source": "Google Places",
@@ -621,7 +601,17 @@
       "latitude": 59.3336255,
       "longitude": 18.065786,
       "website": "https://senstreetkitchen.se/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "discoveredAt": "2026-11-01T13:48:16Z"
+    },
+    {
+      "source": "Google Places",
+      "name": "Kopitiam Sthlm",
+      "googlePlaceId": "ChIJ5bnLUtCdX0YRoal5GmZQO9Y",
+      "address": "Birger Jarlsgatan 99B, 113 56 Stockholm, Sweden",
+      "latitude": 59.347490699999994,
+      "longitude": 18.0604413,
+      "website": "https://kopitiamsthlm.se/",
+      "discoveredAt": "2026-11-01T13:48:17Z"
     },
     {
       "source": "Google Places",
@@ -631,7 +621,7 @@
       "latitude": 59.3354208,
       "longitude": 18.0984658,
       "website": "https://sven-harrys.se/frost-bageri/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "discoveredAt": "2026-11-01T13:48:17Z"
     },
     {
       "source": "Google Places",
@@ -641,7 +631,7 @@
       "latitude": 59.32648099999999,
       "longitude": 18.0136806,
       "website": "https://gullegardens.se/kungsholmen/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "discoveredAt": "2026-11-01T13:48:17Z"
     },
     {
       "source": "Google Places",
@@ -651,57 +641,7 @@
       "latitude": 59.323856000000006,
       "longitude": 18.082760999999998,
       "website": "https://www.instagram.com/tapphuset/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
-    },
-    {
-      "source": "Google Places",
-      "name": "FrozenBerry - Acai & Frozen Yoghurt",
-      "googlePlaceId": "ChIJjSgsOQB3X0YRcfE3oyCI5Hc",
-      "address": "Götgatan 39, 116 21 Stockholm, Sweden",
-      "latitude": 59.315852,
-      "longitude": 18.072657799999998,
-      "website": "http://frozenberry.se/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
-    },
-    {
-      "source": "Google Places",
-      "name": "EN TILL - Slice Bar",
-      "googlePlaceId": "ChIJKRYMvmqdX0YRoqKnxe347Vs",
-      "address": "Fleminggatan 77, 112 33 Stockholm, Sweden",
-      "latitude": 59.334221,
-      "longitude": 18.033645,
-      "website": "https://www.entillslice.com/?utm_source=google&utm_medium=wix_google_business_profile&utm_campaign=5116659978168266778",
-      "discoveredAt": "2026-10-01T10:56:35Z"
-    },
-    {
-      "source": "Google Places",
-      "name": "Cycling",
-      "googlePlaceId": "ChIJq6NV23GdX0YRl4JQvZ9QSJA",
-      "address": "Norrtullsgatan 39, 113 45 Stockholm, Sweden",
-      "latitude": 59.34531109999999,
-      "longitude": 18.0483907,
-      "website": "https://cyclingstockholm.com/?utm_source=google",
-      "discoveredAt": "2026-10-01T10:56:35Z"
-    },
-    {
-      "source": "Google Places",
-      "name": "Husman kök & bar",
-      "googlePlaceId": "ChIJZ0cwC1CdX0YR40RUkMfaaIE",
-      "address": "Centralplan 15, 111 20 Stockholm, Sweden",
-      "latitude": 59.331093499999994,
-      "longitude": 18.057845900000004,
-      "website": "https://husmankökobar.se/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
-    },
-    {
-      "source": "Google Places",
-      "name": "Umi Bubble Tea",
-      "googlePlaceId": "ChIJ0a075E53X0YR9MXjAKuwpvg",
-      "address": "Safirgatan 17J, 177 68, 177 68 Järfälla, Sweden",
-      "latitude": 59.4129189,
-      "longitude": 17.875104600000004,
-      "website": "",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "discoveredAt": "2026-11-01T13:48:17Z"
     },
     {
       "source": "Google Places",
@@ -711,7 +651,7 @@
       "latitude": 59.3441299,
       "longitude": 18.057245299999998,
       "website": "https://www.vasastan.theoldbrewer.se/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "discoveredAt": "2026-11-01T13:48:17Z"
     },
     {
       "source": "Google Places",
@@ -721,47 +661,7 @@
       "latitude": 59.332824200000005,
       "longitude": 18.057581199999998,
       "website": "http://www.mapetitemaison.se/?utm_source=google&utm_medium=wix_google_business_profile&utm_campaign=14877688896329122542",
-      "discoveredAt": "2026-10-01T10:56:35Z"
-    },
-    {
-      "source": "Google Places",
-      "name": "Oxsvansen",
-      "googlePlaceId": "ChIJrf24u12dX0YR1XyFNsAZb_w",
-      "address": "Jakobsbergsgatan 34, 111 44 Stockholm, Sweden",
-      "latitude": 59.334685699999994,
-      "longitude": 18.0660766,
-      "website": "",
-      "discoveredAt": "2026-10-01T10:56:35Z"
-    },
-    {
-      "source": "Google Places",
-      "name": "Restaurant Akkurat - Södermalm",
-      "googlePlaceId": "ChIJg8hO9cR3X0YRWLVKnRc3Aok",
-      "address": "Hornsgatan 18, 118 20 Stockholm, Sweden",
-      "latitude": 59.3198621,
-      "longitude": 18.0686914,
-      "website": "https://akkurat.se/?utm_source=google",
-      "discoveredAt": "2026-10-01T10:56:35Z"
-    },
-    {
-      "source": "Google Places",
-      "name": "Oliver Twist",
-      "googlePlaceId": "ChIJF4VOz-R3X0YRz6NqrPjre3k",
-      "address": "Repslagargatan 6, 118 46 Stockholm, Sweden",
-      "latitude": 59.31832730000001,
-      "longitude": 18.0698668,
-      "website": "http://www.olivertwist.se/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
-    },
-    {
-      "source": "Google Places",
-      "name": "Stigberget’s Foot",
-      "googlePlaceId": "ChIJPcPBsJp3X0YR5EEpe9OyKNI",
-      "address": "Götgatan 5, 116 46 Stockholm, Sweden",
-      "latitude": 59.319121900000006,
-      "longitude": 18.0709479,
-      "website": "http://stigbergetsfot.se/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "discoveredAt": "2026-11-01T13:48:17Z"
     },
     {
       "source": "Google Places",
@@ -771,17 +671,117 @@
       "latitude": 59.3249171,
       "longitude": 18.0684549,
       "website": "https://wirstromspub.se/gamla-stan-1/?utm_source=google",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "discoveredAt": "2026-11-01T13:48:17Z"
     },
     {
       "source": "Google Places",
-      "name": "Hernö Gin Bar - Stockholm",
-      "googlePlaceId": "ChIJ06RlUoh3X0YREkdPG3Lgtac",
-      "address": "Hornsgatan 1, 118 46 Stockholm, Sweden",
-      "latitude": 59.3197431,
-      "longitude": 18.0703939,
-      "website": "https://hernoginbar.com/",
-      "discoveredAt": "2026-10-01T10:56:35Z"
+      "name": "The Bull and Bear Inn",
+      "googlePlaceId": "ChIJac4jeVudX0YRTJxqWcMofSM",
+      "address": "Grev Turegatan 1, 114 34 Stockholm, Sweden",
+      "latitude": 59.3351798,
+      "longitude": 18.0746294,
+      "website": "http://www.bullandbear.se/",
+      "discoveredAt": "2026-11-01T13:48:17Z"
+    },
+    {
+      "source": "Google Places",
+      "name": "Oxsvansen",
+      "googlePlaceId": "ChIJrf24u12dX0YR1XyFNsAZb_w",
+      "address": "Jakobsbergsgatan 34, 111 44 Stockholm, Sweden",
+      "latitude": 59.334685699999994,
+      "longitude": 18.0660766,
+      "website": "",
+      "discoveredAt": "2026-11-01T13:48:17Z"
+    },
+    {
+      "source": "Google Places",
+      "name": "Oliver Twist",
+      "googlePlaceId": "ChIJF4VOz-R3X0YRz6NqrPjre3k",
+      "address": "Repslagargatan 6, 118 46 Stockholm, Sweden",
+      "latitude": 59.31832730000001,
+      "longitude": 18.0698668,
+      "website": "http://www.olivertwist.se/",
+      "discoveredAt": "2026-11-01T13:48:17Z"
+    },
+    {
+      "source": "Google Places",
+      "name": "Stigberget’s Foot",
+      "googlePlaceId": "ChIJPcPBsJp3X0YR5EEpe9OyKNI",
+      "address": "Götgatan 5, 116 46 Stockholm, Sweden",
+      "latitude": 59.319121900000006,
+      "longitude": 18.0709479,
+      "website": "http://stigbergetsfot.se/",
+      "discoveredAt": "2026-11-01T13:48:17Z"
+    },
+    {
+      "source": "Google Places",
+      "name": "Savant Bar",
+      "googlePlaceId": "ChIJbyASXBSdX0YR-4Io0DfnxEA",
+      "address": "Tegnérgatan 4, 113 58 Stockholm, Sweden",
+      "latitude": 59.340617699999996,
+      "longitude": 18.0633244,
+      "website": "http://www.savantbar.se/",
+      "discoveredAt": "2026-11-01T13:48:17Z"
+    },
+    {
+      "source": "Google Places",
+      "name": "Churchill Arms Stockholm",
+      "googlePlaceId": "ChIJ35YFPWmdX0YRMF88G251KtQ",
+      "address": "Tulegatan 21, 113 57 Stockholm, Sweden",
+      "latitude": 59.34326929999999,
+      "longitude": 18.0610555,
+      "website": "http://www.churchillarms.se/",
+      "discoveredAt": "2026-11-01T13:48:17Z"
+    },
+    {
+      "source": "Google Places",
+      "name": "Tudor Arms",
+      "googlePlaceId": "ChIJHerVFlCdX0YRAyNuAc1-P8E",
+      "address": "Grevgatan 31, 114 53 Stockholm, Sweden",
+      "latitude": 59.334940499999995,
+      "longitude": 18.085291899999998,
+      "website": "http://www.tudorarms.com/",
+      "discoveredAt": "2026-11-01T13:48:17Z"
+    },
+    {
+      "source": "Google Places",
+      "name": "The Liffey",
+      "googlePlaceId": "ChIJFXcC_eJ3X0YRi5AthfTiK-c",
+      "address": "Stora Nygatan 40, 111 27 Stockholm, Sweden",
+      "latitude": 59.323466399999994,
+      "longitude": 18.0703054,
+      "website": "http://www.theliffey.se/",
+      "discoveredAt": "2026-11-01T13:48:17Z"
+    },
+    {
+      "source": "Google Places",
+      "name": "Pub Anchor",
+      "googlePlaceId": "ChIJDbCVyWidX0YRXzMpO_IVfJM",
+      "address": "Sveavägen 90, 113 59 Stockholm, Sweden",
+      "latitude": 59.34126179999999,
+      "longitude": 18.0584989,
+      "website": "http://www.pubanchor.com/",
+      "discoveredAt": "2026-11-01T13:48:17Z"
+    },
+    {
+      "source": "Google Places",
+      "name": "Restaurant Akkurat - Södermalm",
+      "googlePlaceId": "ChIJg8hO9cR3X0YRWLVKnRc3Aok",
+      "address": "Hornsgatan 18, 118 20 Stockholm, Sweden",
+      "latitude": 59.3198621,
+      "longitude": 18.0686914,
+      "website": "https://akkurat.se/?utm_source=google",
+      "discoveredAt": "2026-11-01T13:48:17Z"
+    },
+    {
+      "source": "Google Places",
+      "name": "The Auld Dub",
+      "googlePlaceId": "ChIJkfT5bmedX0YRBWojhZ1xrZY",
+      "address": "Holländargatan 1, 111 36 Stockholm, Sweden",
+      "latitude": 59.335385800000005,
+      "longitude": 18.061496299999998,
+      "website": "http://theaulddub.se/",
+      "discoveredAt": "2026-11-01T13:48:17Z"
     }
   ],
   "municipalNewVenueSample": [

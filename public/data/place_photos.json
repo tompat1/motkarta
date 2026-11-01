@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-10-01T10:58:07Z",
+  "updatedAt": "2026-11-01T13:49:53Z",
   "totalPlaces": 3198,
-  "photoPlaces": 1577,
+  "photoPlaces": 1588,
   "verificationStatus": "new-candidates-http-checked",
-  "addedPhotoCandidates": 54,
-  "totalPhotos": 3902,
+  "addedPhotoCandidates": 27,
+  "totalPhotos": 3929,
   "photosByPlace": {
     "3832888205": [
       {
@@ -42226,6 +42226,298 @@
         "thumbnailUrl": "https://www.nordiskamuseet.se/wp-content/uploads/2023/11/nordiska-museets-restaurang-1080x1350-1.webp",
         "caption": "Lusknäppen (www.nordiskamuseet.se)",
         "credit": "Official Website (www.nordiskamuseet.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "4026761287": [
+      {
+        "id": "photo-4026761287-1",
+        "placeId": 4026761287,
+        "url": "http://lillaparkkafeet.se/wp-content/uploads/2026/10/image-Photoroom-3.png",
+        "thumbnailUrl": "http://lillaparkkafeet.se/wp-content/uploads/2026/10/image-Photoroom-3.png",
+        "caption": "Lilla Parkkaféet (lillaparkkafeet.se)",
+        "credit": "Official Website (lillaparkkafeet.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-4026761287-2",
+        "placeId": 4026761287,
+        "url": "http://lillaparkkafeet.se/wp-content/uploads/2026/10/23-4.png",
+        "thumbnailUrl": "http://lillaparkkafeet.se/wp-content/uploads/2026/10/23-4.png",
+        "caption": "Lilla Parkkaféet (lillaparkkafeet.se)",
+        "credit": "Official Website (lillaparkkafeet.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-4026761287-3",
+        "placeId": 4026761287,
+        "url": "http://lillaparkkafeet.se/wp-content/uploads/2026/10/23-5.png",
+        "thumbnailUrl": "http://lillaparkkafeet.se/wp-content/uploads/2026/10/23-5.png",
+        "caption": "Lilla Parkkaféet (lillaparkkafeet.se)",
+        "credit": "Official Website (lillaparkkafeet.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "1522646407": [
+      {
+        "id": "photo-1522646407-1",
+        "placeId": 1522646407,
+        "url": "http://brodsalt.se/cdn/shop/files/bnswide.png?v=1777032584",
+        "thumbnailUrl": "http://brodsalt.se/cdn/shop/files/bnswide.png?v=1777032584",
+        "caption": "Bröd & Salt (brodsalt.se)",
+        "credit": "Official Website (brodsalt.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-1522646407-2",
+        "placeId": 1522646407,
+        "url": "https://brodsalt.se/cdn/shop/files/bnswide.png?v=1777032584",
+        "thumbnailUrl": "https://brodsalt.se/cdn/shop/files/bnswide.png?v=1777032584",
+        "caption": "Bröd & Salt (brodsalt.se)",
+        "credit": "Official Website (brodsalt.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-1522646407-3",
+        "placeId": 1522646407,
+        "url": "https://brodsalt.se/cdn/shop/files/Brod_Salt_black.svg?v=1775207599&width=250",
+        "thumbnailUrl": "https://brodsalt.se/cdn/shop/files/Brod_Salt_black.svg?v=1775207599&width=250",
+        "caption": "Bröd & Salt (brodsalt.se)",
+        "credit": "Official Website (brodsalt.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "1572117290": [
+      {
+        "id": "photo-1572117290-1",
+        "placeId": 1572117290,
+        "url": "https://www.xarcuteria.se/sv/assets/img/og-cover.jpg",
+        "thumbnailUrl": "https://www.xarcuteria.se/sv/assets/img/og-cover.jpg",
+        "caption": "Xarcuteria (www.xarcuteria.se)",
+        "credit": "Official Website (www.xarcuteria.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "26846641": [
+      {
+        "id": "photo-26846641-1",
+        "placeId": 26846641,
+        "url": "https://cdn.prod.website-files.com/66a7c06ab1fce28dd010821c/66b681100dc5bbec083b8293_il-forno-da-nova-store-gmb-p-800.jpg",
+        "thumbnailUrl": "https://cdn.prod.website-files.com/66a7c06ab1fce28dd010821c/66b681100dc5bbec083b8293_il-forno-da-nova-store-gmb-p-800.jpg",
+        "caption": "Il forno da Nova (www.ilfornodanova.com)",
+        "credit": "Official Website (www.ilfornodanova.com)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-26846641-2",
+        "placeId": 26846641,
+        "url": "https://cdn.prod.website-files.com/66a7c06ab1fce28dd010821c/66a8f9e16140a00c9beb6881_Artboard%201%20copy%202.svg",
+        "thumbnailUrl": "https://cdn.prod.website-files.com/66a7c06ab1fce28dd010821c/66a8f9e16140a00c9beb6881_Artboard%201%20copy%202.svg",
+        "caption": "Il forno da Nova (www.ilfornodanova.com)",
+        "credit": "Official Website (www.ilfornodanova.com)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-26846641-3",
+        "placeId": 26846641,
+        "url": "https://cdn.prod.website-files.com/66a7c06ab1fce28dd010821c/66a8f7f4db8145a586a37a67_il%20Forno%20Da%20Nova%20bla%CC%8A2.svg",
+        "thumbnailUrl": "https://cdn.prod.website-files.com/66a7c06ab1fce28dd010821c/66a8f7f4db8145a586a37a67_il%20Forno%20Da%20Nova%20bla%CC%8A2.svg",
+        "caption": "Il forno da Nova (www.ilfornodanova.com)",
+        "credit": "Official Website (www.ilfornodanova.com)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "3236043696": [
+      {
+        "id": "photo-3236043696-1",
+        "placeId": 3236043696,
+        "url": "https://www.habibibar.se/wp-content/uploads/bags_y1phPE.png",
+        "thumbnailUrl": "https://www.habibibar.se/wp-content/uploads/bags_y1phPE.png",
+        "caption": "Habibi Bar (www.habibibar.se)",
+        "credit": "Official Website (www.habibibar.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "666439613": [
+      {
+        "id": "photo-666439613-1",
+        "placeId": 666439613,
+        "url": "https://redrover.se/assets/img/hero-room.jpg",
+        "thumbnailUrl": "https://redrover.se/assets/img/hero-room.jpg",
+        "caption": "Red Rover (redrover.se)",
+        "credit": "Official Website (redrover.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-666439613-2",
+        "placeId": 666439613,
+        "url": "https://redrover.se/assets/img/torsk.jpg",
+        "thumbnailUrl": "https://redrover.se/assets/img/torsk.jpg",
+        "caption": "Red Rover (redrover.se)",
+        "credit": "Official Website (redrover.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-666439613-3",
+        "placeId": 666439613,
+        "url": "https://redrover.se/assets/img/old-fashioned.jpg",
+        "thumbnailUrl": "https://redrover.se/assets/img/old-fashioned.jpg",
+        "caption": "Red Rover (redrover.se)",
+        "credit": "Official Website (redrover.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "1813911651": [
+      {
+        "id": "photo-1813911651-1",
+        "placeId": 1813911651,
+        "url": "http://cafeekorren.se/wp-content/themes/ekorren-kvall/assets/hamnen.jpg",
+        "thumbnailUrl": "http://cafeekorren.se/wp-content/themes/ekorren-kvall/assets/hamnen.jpg",
+        "caption": "Café Ekorren (cafeekorren.se)",
+        "credit": "Official Website (cafeekorren.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "3740610477": [
+      {
+        "id": "photo-3740610477-1",
+        "placeId": 3740610477,
+        "url": "https://www.cafegarden.nu/files/600x600/cafegarden-logga-white.png",
+        "thumbnailUrl": "https://www.cafegarden.nu/files/600x600/cafegarden-logga-white.png",
+        "caption": "Cafe Gården (www.cafegarden.nu)",
+        "credit": "Official Website (www.cafegarden.nu)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-3740610477-2",
+        "placeId": 3740610477,
+        "url": "https://www.cafegarden.nu/assets/images/kaffe-fika-2000px.jpg",
+        "thumbnailUrl": "https://www.cafegarden.nu/assets/images/kaffe-fika-2000px.jpg",
+        "caption": "Cafe Gården (www.cafegarden.nu)",
+        "credit": "Official Website (www.cafegarden.nu)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-3740610477-3",
+        "placeId": 3740610477,
+        "url": "https://www.cafegarden.nu/assets/images/cafe-garden-1000px.jpg",
+        "thumbnailUrl": "https://www.cafegarden.nu/assets/images/cafe-garden-1000px.jpg",
+        "caption": "Cafe Gården (www.cafegarden.nu)",
+        "credit": "Official Website (www.cafegarden.nu)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "2844237721": [
+      {
+        "id": "photo-2844237721-1",
+        "placeId": 2844237721,
+        "url": "http://www.peperosso.se/img/basta casino.png",
+        "thumbnailUrl": "http://www.peperosso.se/img/basta casino.png",
+        "caption": "Pepe Rosso (www.peperosso.se)",
+        "credit": "Official Website (www.peperosso.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-2844237721-2",
+        "placeId": 2844237721,
+        "url": "http://www.peperosso.se/img/Direkt Bankooverforing.png",
+        "thumbnailUrl": "http://www.peperosso.se/img/Direkt Bankooverforing.png",
+        "caption": "Pepe Rosso (www.peperosso.se)",
+        "credit": "Official Website (www.peperosso.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-2844237721-3",
+        "placeId": 2844237721,
+        "url": "http://www.peperosso.se/img/newcasino.png",
+        "thumbnailUrl": "http://www.peperosso.se/img/newcasino.png",
+        "caption": "Pepe Rosso (www.peperosso.se)",
+        "credit": "Official Website (www.peperosso.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "3899066956": [
+      {
+        "id": "photo-3899066956-1",
+        "placeId": 3899066956,
+        "url": "https://merakikafe.se/wp-content/uploads/2026/08/1-casino-utan-svensk-licens.webp",
+        "thumbnailUrl": "https://merakikafe.se/wp-content/uploads/2026/08/1-casino-utan-svensk-licens.webp",
+        "caption": "Meraki Kafe (merakikafe.se)",
+        "credit": "Official Website (merakikafe.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-3899066956-2",
+        "placeId": 3899066956,
+        "url": "https://merakikafe.se/wp-content/uploads/2026/09/autor-img--125x150.webp",
+        "thumbnailUrl": "https://merakikafe.se/wp-content/uploads/2026/09/autor-img--125x150.webp",
+        "caption": "Meraki Kafe (merakikafe.se)",
+        "credit": "Official Website (merakikafe.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-3899066956-3",
+        "placeId": 3899066956,
+        "url": "https://merakikafe.se/wp-content/uploads/2026/09/1-casino-utan-svensk-licens.webp",
+        "thumbnailUrl": "https://merakikafe.se/wp-content/uploads/2026/09/1-casino-utan-svensk-licens.webp",
+        "caption": "Meraki Kafe (merakikafe.se)",
+        "credit": "Official Website (merakikafe.se)",
+        "width": null,
+        "height": null
+      }
+    ],
+    "2929532857": [
+      {
+        "id": "photo-2929532857-1",
+        "placeId": 2929532857,
+        "url": "https://www-static.arengrillen.se/wp-content/uploads/2023/12/Varlik-1-1.png",
+        "thumbnailUrl": "https://www-static.arengrillen.se/wp-content/uploads/2023/12/Varlik-1-1.png",
+        "caption": "Arengrillen (www.arengrillen.se)",
+        "credit": "Official Website (www.arengrillen.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-2929532857-2",
+        "placeId": 2929532857,
+        "url": "https://www-static.arengrillen.se/wp-content/uploads/2023/12/Varlik-2-1-e1755887025317.png",
+        "thumbnailUrl": "https://www-static.arengrillen.se/wp-content/uploads/2023/12/Varlik-2-1-e1755887025317.png",
+        "caption": "Arengrillen (www.arengrillen.se)",
+        "credit": "Official Website (www.arengrillen.se)",
+        "width": null,
+        "height": null
+      },
+      {
+        "id": "photo-2929532857-3",
+        "placeId": 2929532857,
+        "url": "https://www-static.arengrillen.se/wp-content/uploads/layerslider/projects/Pizzan-Slider-4/hero_bg_1_1.jpg",
+        "thumbnailUrl": "https://www-static.arengrillen.se/wp-content/uploads/layerslider/projects/Pizzan-Slider-4/hero_bg_1_1.jpg",
+        "caption": "Arengrillen (www.arengrillen.se)",
+        "credit": "Official Website (www.arengrillen.se)",
         "width": null,
         "height": null
       }

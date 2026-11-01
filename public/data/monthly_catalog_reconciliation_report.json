@@ -1,5 +1,5 @@
 {
-  "auditedAt": "2026-10-01T11:09:06Z",
+  "auditedAt": "2026-11-01T13:57:51Z",
   "totalCatalogPlaces": 3198,
   "activePlaces": 3196,
   "closedPlacesCount": 2,
@@ -20,7 +20,7 @@
   "missingAttributesCount": {
     "address": 0,
     "openingHours": 925,
-    "website": 1214
+    "website": 1211
   },
   "missingAddressSample": [],
   "missingHoursSample": [
