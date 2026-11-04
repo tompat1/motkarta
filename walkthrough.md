@@ -1,3 +1,20 @@
+# Mobile back-to-top E2E repair — 2026-11-04
+
+Updated the mobile interface test to follow the current `SiteUtilities` contract.
+The back-to-top control is now selected by its accessible name instead of removed
+implementation-specific classes. The test verifies that the control is hidden at
+the top of the page, becomes visible after scrolling beyond its threshold, and
+returns the page to the top when clicked.
+
+Verification completed with zero failures:
+
+- Focused Playwright regression: 3/3 projects passed.
+- TypeScript and lint: passed (existing lint warnings only).
+- JavaScript: 445 passed.
+- Python: 178 passed.
+- Playwright full suite: 120 passed, 6 skipped.
+- `git diff --check`: passed.
+
 # Replace Sourcery with ESLint and Ruff — 2026-09-20
 
 Removed the quota-limited Sourcery GitHub Action and `.sourcery.yaml`. Quality now

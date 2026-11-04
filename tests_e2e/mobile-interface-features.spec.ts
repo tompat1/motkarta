@@ -196,13 +196,13 @@ test.describe("Mobile Interface Features & Design Verification", () => {
   test("8. Floating top up arrow button renders and scrolls to top in mobile view", async ({ page }) => {
     await page.goto("/");
 
-    // Floating scroll top button is visible
-    const scrollTopBtn = page.locator(".mobile-floating-controls .floating-scroll-top-btn");
-    await expect(scrollTopBtn).toBeVisible();
+    const scrollTopBtn = page.getByRole("button", { name: "Till toppen" });
+    await expect(scrollTopBtn).toBeHidden();
 
     // Scroll down
     await page.evaluate(() => window.scrollTo(0, 500));
     await expect(page.evaluate(() => window.scrollY)).resolves.toBeGreaterThan(0);
+    await expect(scrollTopBtn).toBeVisible();
 
     // Click scroll to top button
     await scrollTopBtn.click();
