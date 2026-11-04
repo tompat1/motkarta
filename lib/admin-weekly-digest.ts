@@ -34,6 +34,15 @@ export type WeeklyDigestEnv = AdminAuthNotifyEnv & AdminMailEnv & {
   MOTKARTA_CRON_SECRET?: string;
 };
 
+export type WeeklyDigestResult = {
+  outcome: "sent" | "skipped" | "failed";
+  sent: boolean;
+  reason?: string;
+  snapshot?: WeeklyDigestSnapshot;
+  delivered?: number;
+  deliveryErrors?: string[];
+};
+
 const WINDOW_DAYS = 7;
 const MIN_DAYS_BETWEEN_SENDS = 6;
 
@@ -201,14 +210,14 @@ export function formatWeeklyDigestEmail(snapshot: WeeklyDigestSnapshot, adminUrl
 export async function sendWeeklyAdminDigest(
   env: WeeklyDigestEnv,
   options: { force?: boolean } = {},
-): Promise<{ sent: boolean; reason?: string; snapshot?: WeeklyDigestSnapshot; delivered?: number }> {
+): Promise<WeeklyDigestResult> {
   const db = env.DB;
   if (!db) {
-    return { sent: false, reason: "No D1 database bound." };
+    return { outcome: "failed", sent: false, reason: "No D1 database bound." };
   }
 
   if (!options.force && await recentlySentDigest(db)) {
-    return { sent: false, reason: "Digest already sent within the last 6 days." };
+    return { outcome: "skipped", sent: false, reason: "Digest already sent within the last 6 days." };
   }
 
   const snapshot = await collectWeeklyDigestSnapshot(db);
@@ -219,7 +228,7 @@ export async function sendWeeklyAdminDigest(
     || Object.values(snapshot.coverageGaps).some((count) => count > 0);
 
   if (!hasSignal && !options.force) {
-    return { sent: false, reason: "No new admin work in the digest window.", snapshot };
+    return { outcome: "skipped", sent: false, reason: "No new admin work in the digest window.", snapshot };
   }
 
   const recipients = adminNotificationEmails(env);
@@ -230,18 +239,26 @@ export async function sendWeeklyAdminDigest(
   const emailResult = await sendAdminNotificationEmail(env, { to: recipients, subject, text });
   await postAdminDigestWebhook(env, { type: "weekly_admin_digest", snapshot, text });
 
-  await recordDigestSend(db, recipients.length, snapshot);
-
-  if (emailResult.delivered === 0 && recipients.length > 0) {
+  if (emailResult.delivered === 0) {
     return {
+      outcome: "failed",
       sent: false,
       reason: emailResult.errors.join("; ") || "Email delivery failed.",
       snapshot,
       delivered: 0,
+      deliveryErrors: emailResult.errors,
     };
   }
 
-  return { sent: true, snapshot, delivered: emailResult.delivered };
+  await recordDigestSend(db, emailResult.delivered, snapshot);
+
+  return {
+    outcome: "sent",
+    sent: true,
+    snapshot,
+    delivered: emailResult.delivered,
+    ...(emailResult.errors.length ? { deliveryErrors: emailResult.errors } : {}),
+  };
 }
 
 async function recentlySentDigest(db: D1Database) {

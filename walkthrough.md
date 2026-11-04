@@ -1,3 +1,34 @@
+# Weekly admin digest delivery repair — 2026-11-04
+
+The weekly run was failing before application code executed: Cloudflare returned
+a managed-challenge `403` to GitHub-hosted runners on the custom domain. Even
+after bypassing that edge challenge, the digest still depended on MailChannels'
+retired anonymous Workers endpoint and treated `sent: false` as a successful
+Action warning. It also recorded the digest before confirming delivery and
+force-sent every scheduled invocation.
+
+The repaired workflow posts to `motkarta.pages.dev`, runs Mondays at 08:17 UTC
+to avoid start-of-hour congestion, retries transient HTTP failures, validates
+the structured API outcome, and only applies the force override to manual runs.
+Email delivery now uses Cloudflare Email Service's authenticated REST API.
+Results distinguish `sent`, `skipped`, and `failed`; delivery failures return
+HTTP 502 and never write `admin_digest_log`.
+
+Production still needs the one-time Email Service setup documented in
+[`docs/admin-login.md`](docs/admin-login.md): onboard the sending domain and add
+the narrowly scoped `MOTKARTA_CLOUDFLARE_EMAIL_API_TOKEN` Pages secret. A
+read-only account check found no sending domains onboarded, so the repair does
+not silently modify DNS or reuse the local Wrangler OAuth token.
+
+Verification completed with zero failures:
+
+- Focused weekly-digest regression suite: 10/10 passed.
+- TypeScript and lint: passed (existing lint warnings only).
+- JavaScript: 451 passed.
+- Python: 178 passed.
+- Playwright: 120 passed, 6 skipped across desktop Chromium, mobile Chrome and mobile Safari.
+- `git diff --check`: passed.
+
 # Mobile back-to-top E2E repair — 2026-11-04
 
 Updated the mobile interface test to follow the current `SiteUtilities` contract.

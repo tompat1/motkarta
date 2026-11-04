@@ -1,4 +1,6 @@
 export type AdminNotifyEnv = {
+  MOTKARTA_CLOUDFLARE_ACCOUNT_ID?: string;
+  MOTKARTA_CLOUDFLARE_EMAIL_API_TOKEN?: string;
   MOTKARTA_DIGEST_FROM_EMAIL?: string;
   MOTKARTA_DIGEST_FROM_NAME?: string;
   MOTKARTA_ADMIN_DIGEST_WEBHOOK?: string;
@@ -10,44 +12,83 @@ export type AdminEmailPayload = {
   text: string;
 };
 
+type CloudflareEmailResponse = {
+  success?: boolean;
+  errors?: Array<{ code?: number; message?: string }>;
+  result?: {
+    delivered?: string[];
+    queued?: string[];
+    permanent_bounces?: string[];
+    suppressed_recipients?: string[];
+  } | null;
+};
+
 export async function sendAdminNotificationEmail(
   env: AdminNotifyEnv,
   payload: AdminEmailPayload,
 ): Promise<{ delivered: number; errors: string[] }> {
-  const recipients = payload.to.filter(Boolean);
+  const recipients = [...new Set(payload.to.map((email) => email.trim()).filter(Boolean))];
   if (!recipients.length) {
     return { delivered: 0, errors: ["No notification recipients configured."] };
   }
 
-  const fromEmail = (env.MOTKARTA_DIGEST_FROM_EMAIL ?? "notifications@motkarta.rynell.org").trim();
-  const fromName = (env.MOTKARTA_DIGEST_FROM_NAME ?? "Motkarta Admin").trim();
-  const errors: string[] = [];
-  let delivered = 0;
-
-  for (const email of recipients) {
-    try {
-      const response = await fetch("https://api.mailchannels.net/tx/v1/send", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          personalizations: [{ to: [{ email }] }],
-          from: { email: fromEmail, name: fromName },
-          subject: payload.subject,
-          content: [{ type: "text/plain", value: payload.text }],
-        }),
-      });
-      if (!response.ok) {
-        const body = await response.text().catch(() => "");
-        errors.push(`Mailchannels ${email}: HTTP ${response.status} ${body.slice(0, 200)}`);
-        continue;
-      }
-      delivered += 1;
-    } catch (error) {
-      errors.push(`Mailchannels ${email}: ${error instanceof Error ? error.message : String(error)}`);
-    }
+  const accountId = env.MOTKARTA_CLOUDFLARE_ACCOUNT_ID?.trim();
+  const apiToken = env.MOTKARTA_CLOUDFLARE_EMAIL_API_TOKEN?.trim();
+  if (!accountId || !apiToken) {
+    return {
+      delivered: 0,
+      errors: [
+        "Cloudflare Email Service is not configured (MOTKARTA_CLOUDFLARE_ACCOUNT_ID and MOTKARTA_CLOUDFLARE_EMAIL_API_TOKEN are required).",
+      ],
+    };
   }
 
-  return { delivered, errors };
+  const fromEmail = (env.MOTKARTA_DIGEST_FROM_EMAIL ?? "notifications@motkarta.rynell.org").trim();
+  const fromName = (env.MOTKARTA_DIGEST_FROM_NAME ?? "Motkarta Admin").trim();
+  try {
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(accountId)}/email/sending/send`,
+      {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${apiToken}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          to: recipients,
+          from: { address: fromEmail, name: fromName },
+          subject: payload.subject,
+          text: payload.text,
+        }),
+      },
+    );
+    const body = await response.json().catch(() => null) as CloudflareEmailResponse | null;
+    if (!response.ok || !body?.success) {
+      const details = body?.errors
+        ?.map((error) => [error.code, error.message].filter((part) => part != null && part !== "").join(": "))
+        .filter(Boolean)
+        .join("; ");
+      return {
+        delivered: 0,
+        errors: [`Cloudflare Email Service: HTTP ${response.status}${details ? ` — ${details}` : ""}`],
+      };
+    }
+
+    const delivered = new Set([...(body.result?.delivered ?? []), ...(body.result?.queued ?? [])]).size;
+    const errors = [
+      ...(body.result?.permanent_bounces ?? []).map((email) => `Permanent bounce: ${email}`),
+      ...(body.result?.suppressed_recipients ?? []).map((email) => `Suppressed recipient: ${email}`),
+    ];
+    if (delivered === 0) {
+      errors.unshift("Cloudflare Email Service accepted no recipients.");
+    }
+    return { delivered, errors };
+  } catch (error) {
+    return {
+      delivered: 0,
+      errors: [`Cloudflare Email Service: ${error instanceof Error ? error.message : String(error)}`],
+    };
+  }
 }
 
 export async function postAdminDigestWebhook(

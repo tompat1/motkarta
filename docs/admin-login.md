@@ -36,12 +36,17 @@ Keep these Pages environment variables configured for the correct Access app:
 
 Motkarta emails a weekly summary of new review candidates, hidden-gem-ready venues, coverage gaps, and recent admin activity.
 
-- **Automatic schedule:** GitHub Actions workflow `.github/workflows/admin-weekly-digest.yml` (Mondays **08:00 UTC**). Add repository secret `MOTKARTA_CRON_SECRET` with the same value as on Cloudflare Pages. Optional repository variable `MOTKARTA_DIGEST_URL` to override the POST target (defaults to production).
-- Manual trigger: `POST /api/cron/weekly-admin-digest` with `Authorization: Bearer <MOTKARTA_CRON_SECRET>` (or header `x-motkarta-cron-secret`), or run the workflow from **Actions → Weekly admin digest → Run workflow**.
+- **Automatic schedule:** GitHub Actions workflow `.github/workflows/admin-weekly-digest.yml` (Mondays **08:17 UTC**). Add repository secret `MOTKARTA_CRON_SECRET` with the same value as on Cloudflare Pages. The workflow defaults to the production `motkarta.pages.dev` origin so Cloudflare's custom-domain bot challenge cannot intercept GitHub-hosted runners. Optional repository variable `MOTKARTA_DIGEST_URL` can override the POST target.
+- Manual trigger: `POST /api/cron/weekly-admin-digest` with `Authorization: Bearer <MOTKARTA_CRON_SECRET>` (or header `x-motkarta-cron-secret`), or run the workflow from **Actions → Weekly admin digest → Run workflow**. Only a manual workflow run sends the force header; scheduled runs retain the six-day idempotency guard.
 - Recipients: `MOTKARTA_DIGEST_EMAILS` if set, otherwise `MOTKARTA_ADMIN_EMAILS`.
+- Delivery uses the authenticated [Cloudflare Email Service REST API](https://developers.cloudflare.com/email-service/api/send-emails/rest-api/), not the retired unauthenticated MailChannels Workers endpoint.
+- Required Pages configuration:
+  - Onboard `motkarta.rynell.org` in **Cloudflare → Compute → Email Service → Email Sending** and wait until its sending DNS records are verified.
+  - Create a narrowly scoped Cloudflare API token with Email Sending permission and store it as the encrypted Pages secret `MOTKARTA_CLOUDFLARE_EMAIL_API_TOKEN` (`wrangler pages secret put MOTKARTA_CLOUDFLARE_EMAIL_API_TOKEN`). Do not reuse a Wrangler OAuth token.
+  - `MOTKARTA_CLOUDFLARE_ACCOUNT_ID` is a non-secret Wrangler variable. It defaults to the Motkarta Cloudflare account in `wrangler.toml`.
 - Optional: `MOTKARTA_DIGEST_FROM_EMAIL`, `MOTKARTA_DIGEST_FROM_NAME`, `MOTKARTA_ADMIN_DIGEST_WEBHOOK`, `MOTKARTA_PUBLIC_SITE_URL`.
 - Set the cron secret in production: `wrangler pages secret put MOTKARTA_CRON_SECRET`.
-- Mailchannels requires the `from` domain to be on Cloudflare with appropriate DNS (SPF) for outbound mail.
+- Delivery failures return HTTP `502`, fail the Action, and are not inserted into `admin_digest_log`. Intentional no-work or duplicate skips return HTTP `202` with `outcome: "skipped"`.
 
 Protect `/admin`, `/admin.html` and `/api/admin/*` with the same Access app;
 keep the public map available without login. If these paths use separate Access

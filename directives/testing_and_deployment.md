@@ -137,6 +137,18 @@ that the server must still authorize editing. Use locally generated signing
 keys for JWT tests, including missing issuer/expiration and invalid signatures;
 do not generate real login emails or change production Access policies in tests.
 
+## Weekly admin digest delivery
+
+Exercise weekly-digest delivery with mocked HTTP responses and isolated SQLite;
+never send a real email as part of the test gate. A delivery failure must return
+`outcome: "failed"`, produce a non-2xx endpoint response and leave
+`admin_digest_log` unchanged. Scheduled GitHub runs must use the `pages.dev`
+origin because the public custom domain may issue a managed challenge to hosted
+runners, and only manual runs may bypass the six-day idempotency guard. Pages
+Functions do not expose the Workers-only Email Sending binding, so use the
+authenticated Cloudflare Email Service REST API and keep its token in an
+encrypted Pages secret.
+
 ## Enrichment accuracy and synchronization
 
 Test numeric SEK prices separately from dollar symbols, split daily hours,

@@ -16,6 +16,7 @@ migrations_dir = "drizzle"
 CONCIERGE_RETRIEVAL_MODE = "lexical"
 CONCIERGE_SYNTHESIS_MODE = "template"
 MOTKARTA_PUBLIC_SITE_URL = "https://motkarta.rynell.org"
+MOTKARTA_CLOUDFLARE_ACCOUNT_ID = "16891d0ac7f5c5aad70c7b2dd0f7f032"
 
 # Pages does not support [triggers] in wrangler.toml. Schedule weekly digest via
 # Cloudflare dashboard (Cron Triggers on a Worker) or POST /api/cron/weekly-admin-digest.

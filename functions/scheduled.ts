@@ -6,7 +6,7 @@ type ScheduledContext<Env> = {
   cron: string;
 };
 
-/** Cloudflare Pages scheduled handler — Mondays 08:00 UTC. */
+/** Scheduled handler for Worker-based deployments. Pages is triggered by GitHub Actions. */
 export async function onSchedule(context: ScheduledContext<Record<string, unknown>>) {
   await sendWeeklyAdminDigest(context.env);
 }

@@ -16,7 +16,8 @@ export async function onRequestPost(context: EventContext<Record<string, unknown
   }
   const force = context.request.headers.get("x-motkarta-digest-force") === "1";
   const result = await sendWeeklyAdminDigest(context.env, { force });
-  return Response.json(result, { headers: jsonHeaders, status: result.sent ? 200 : 202 });
+  const status = result.outcome === "sent" ? 200 : result.outcome === "skipped" ? 202 : 502;
+  return Response.json(result, { headers: jsonHeaders, status });
 }
 
 export async function onRequestGet(context: EventContext<Record<string, unknown>>) {
