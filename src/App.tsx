@@ -512,10 +512,13 @@ function AppContent({
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const focusSearchInput = useCallback(() => {
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-      searchInputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
+    setMobileTab((prev) => (prev === "discover" ? "map" : prev));
+    window.requestAnimationFrame(() => {
+      if (searchInputRef.current) {
+        searchInputRef.current.focus();
+        searchInputRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    });
   }, []);
 
   const clearConciergeState = useCallback(() => {
@@ -1239,6 +1242,41 @@ function AppContent({
     [allCuisines, ranked, recordRecommendationEvents],
   );
 
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const isAnyDrawerOpen = Boolean(
+      isPlaceDetailOpen ||
+        isFilterSheetOpen ||
+        mobileRankSheet ||
+        isMobileMenuOpen ||
+        isCartOpen ||
+        isSyncModalOpen ||
+        superpowerMode ||
+        isUserPhotoUploadOpen ||
+        mapCardFeedbackType,
+    );
+    const hasMobileSlideUp = Boolean(active && mobileTab !== "discover" && mobileViewMode === "map");
+    document.body.classList.toggle("is-drawer-open", isAnyDrawerOpen);
+    document.body.classList.toggle("has-mobile-slide-up", hasMobileSlideUp);
+    return () => {
+      document.body.classList.remove("is-drawer-open");
+      document.body.classList.remove("has-mobile-slide-up");
+    };
+  }, [
+    active,
+    isCartOpen,
+    isFilterSheetOpen,
+    isMobileMenuOpen,
+    isPlaceDetailOpen,
+    isSyncModalOpen,
+    isUserPhotoUploadOpen,
+    mapCardFeedbackType,
+    mobileRankSheet,
+    mobileTab,
+    mobileViewMode,
+    superpowerMode,
+  ]);
+
   const handleOpenPlaceDetails = useCallback((id: number) => {
     setSelected(id);
     setIsPlaceDetailOpen(true);
@@ -1248,6 +1286,7 @@ function AppContent({
     (place: ScoredPlace) => {
       setSelected(place.id);
       setMapFocusRequest({ id: place.id, timestamp: Date.now() });
+      setMobileTab("map");
       setMobileViewMode("map");
       setIsPlaceDetailOpen(false);
       setIsMapCardMinimized(false);
@@ -1693,7 +1732,8 @@ function AppContent({
     setQuery(searchText);
 
     if (typeof window !== "undefined") {
-      if (window.matchMedia("(max-width: 768px)").matches) {
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      if (isMobile) {
         setMobileTab("map");
         setMobileViewMode("list");
       } else {
@@ -1701,7 +1741,9 @@ function AppContent({
       }
       setActiveDesktopNav("map");
       const scrollToPlaces = () => {
-        const target = document.getElementById("places") || document.getElementById("map");
+        const target = isMobile
+          ? document.getElementById("place-workspace") || document.getElementById("map")
+          : document.getElementById("places") || document.getElementById("map");
         if (target) {
           target.scrollIntoView({ behavior: "smooth", block: "start" });
         }
@@ -1714,7 +1756,10 @@ function AppContent({
 
     if (typeof window !== "undefined") {
       setTimeout(() => {
-        const target = document.getElementById("places") || document.getElementById("map");
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        const target = isMobile
+          ? document.getElementById("place-workspace") || document.getElementById("map")
+          : document.getElementById("places") || document.getElementById("map");
         if (target) {
           target.scrollIntoView({ behavior: "smooth", block: "start" });
         }
@@ -3539,7 +3584,7 @@ function AppContent({
         />
       ) : null}
 
-      {active && mobileTab !== "discover" ? (
+      {active && mobileTab !== "discover" && mobileViewMode === "map" ? (
         <MobilePlaceSlideUp
           place={active}
           isSaved={savedPlaceIds.includes(active.id)}
@@ -3613,6 +3658,8 @@ function AppContent({
               className="sync-toast-action-btn"
               onClick={() => {
                 selectKindFilter("Saved");
+                setMobileTab("saved");
+                setMobileViewMode("list");
                 setSyncToast(null);
               }}
             >
@@ -3680,7 +3727,14 @@ function AppContent({
 
             <nav className="mobile-menu-links">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-                <a href="#map" onClick={() => setIsMobileMenuOpen(false)} style={{ flex: 1 }}>
+                <a
+                  href="#map"
+                  onClick={() => {
+                    setMobileTab("map");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  style={{ flex: 1 }}
+                >
                   <Compass size={18} weight="bold" />
                   <span>{t.navMap}</span>
                 </a>

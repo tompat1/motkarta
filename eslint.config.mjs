@@ -31,6 +31,9 @@ const sonarBugRules = {
 export default tseslint.config(
   {
     ignores: [
+      ".agents/**",
+      ".codex/**",
+      ".github/**",
       ".venv/**",
       ".tmp/**",
       "dist/**",

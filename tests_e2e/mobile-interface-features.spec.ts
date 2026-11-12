@@ -120,7 +120,9 @@ test.describe("Mobile Interface Features & Design Verification", () => {
     const slideUp = page.locator(".mobile-place-slide-up");
     await expect(slideUp).toBeVisible({ timeout: 10000 });
     await expect(slideUp.locator(".mobile-slide-up-title")).toBeVisible();
+    await expect(slideUp.locator(".mobile-slide-up-save-btn")).toBeVisible();
     await expect(slideUp.locator(".mobile-slide-up-primary-btn")).toContainText(/visa stället|view place/i);
+    await expect(page.locator(".site-utilities")).toBeHidden();
 
     // Tapping "Varför visas detta?" expands recommendation reasons
     const whyTrigger = slideUp.locator(".mobile-slide-up-why-trigger");
@@ -130,6 +132,7 @@ test.describe("Mobile Interface Features & Design Verification", () => {
     // Tapping "Visa stället →" opens full PlaceDetailSheet overlay
     await slideUp.locator(".mobile-slide-up-primary-btn").click();
     await expect(page.locator(".place-detail-sheet-overlay")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(".site-utilities")).toBeHidden();
   });
 
   test("5b. Slide-up preview close X button dismisses the preview card", async ({ page }) => {

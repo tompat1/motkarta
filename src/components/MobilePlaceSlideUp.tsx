@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   X,
   ArrowRight,
+  BookmarkSimple,
   CaretDown,
   CaretUp,
   Sparkle,
-  ShieldCheck,
   Check,
 } from "@phosphor-icons/react";
 import type { ScoredPlace } from "../../lib/scoring";
@@ -32,6 +32,10 @@ export function MobilePlaceSlideUp({
   onClose,
 }: MobilePlaceSlideUpProps) {
   const [showWhyReason, setShowWhyReason] = useState(false);
+
+  useEffect(() => {
+    setShowWhyReason(false);
+  }, [place?.id]);
 
   if (!place) return null;
 
@@ -88,18 +92,51 @@ export function MobilePlaceSlideUp({
         <div className="mobile-slide-up-info">
           <div className="mobile-slide-up-header-row">
             <h3 className="mobile-slide-up-title">{place.name}</h3>
-            <button
-              type="button"
-              className="mobile-slide-up-close-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                onClose?.();
-              }}
-              aria-label={lang === "sv" ? "Stäng" : "Close"}
-              title={lang === "sv" ? "Stäng" : "Close"}
-            >
-              <X size={18} weight="bold" />
-            </button>
+            <div className="mobile-slide-up-header-actions">
+              {onToggleSave ? (
+                <button
+                  type="button"
+                  className={`mobile-slide-up-save-btn ${isSaved ? "is-saved" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleSave(place.id);
+                  }}
+                  aria-label={
+                    isSaved
+                      ? lang === "sv"
+                        ? "Ta bort från sparade"
+                        : "Remove from saved"
+                      : lang === "sv"
+                        ? "Spara ställe"
+                        : "Save place"
+                  }
+                  aria-pressed={Boolean(isSaved)}
+                  title={
+                    isSaved
+                      ? lang === "sv"
+                        ? "Sparad"
+                        : "Saved"
+                      : lang === "sv"
+                        ? "Spara"
+                        : "Save"
+                  }
+                >
+                  <BookmarkSimple size={18} weight={isSaved ? "fill" : "bold"} />
+                </button>
+              ) : null}
+              <button
+                type="button"
+                className="mobile-slide-up-close-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose?.();
+                }}
+                aria-label={lang === "sv" ? "Stäng" : "Close"}
+                title={lang === "sv" ? "Stäng" : "Close"}
+              >
+                <X size={18} weight="bold" />
+              </button>
+            </div>
           </div>
 
           <p className="mobile-slide-up-meta">{categoryAreaText}</p>

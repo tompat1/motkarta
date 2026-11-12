@@ -1715,7 +1715,7 @@ button.search-clear-btn:hover {
   }
 }
 
-@media (max-width: 1050px) and (min-width: 761px) {
+@media (max-width: 1050px) and (min-width: 769px) {
   .countermap-hero {
     grid-template-columns: 1fr;
     min-height: auto;
@@ -8855,7 +8855,7 @@ button.concierge-clear-btn:hover {
   z-index: auto;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 768px) {
   .admin-photo-hero-editor-body {
     grid-template-areas:
       "workspace"
@@ -13861,7 +13861,7 @@ footer {
 /* Mobile-first Map & Search Pass                                             */
 /* -------------------------------------------------------------------------- */
 
-@media (max-width: 760px) {
+@media (max-width: 768px) {
   body {
     overflow-x: clip;
   }
@@ -14513,7 +14513,7 @@ footer {
   padding: 8px 0;
   border-bottom: 1px solid #27272a;
   position: sticky;
-  top: 64px;
+  top: 60px;
   z-index: 999;
   overflow: hidden;
 }
@@ -15164,7 +15164,7 @@ footer {
   left: 0;
   right: 0;
   background: var(--color-paper, #f4f0e7);
-  padding: 14px 20px 24px;
+  padding: 14px 20px calc(24px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid #dcd7ce;
   display: flex;
   justify-content: center;
@@ -18423,21 +18423,39 @@ footer {
   text-overflow: ellipsis;
 }
 
+.mobile-slide-up-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
 .mobile-slide-up-save-btn {
-  background: none;
+  background: #f1f5f9;
   border: none;
-  padding: 2px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  padding: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   color: #1e293b;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.mobile-slide-up-save-btn:hover {
+  background: #e2e8f0;
 }
 
 .mobile-slide-up-save-btn:active {
   transform: scale(0.9);
+}
+
+.mobile-slide-up-save-btn.is-saved {
+  background: #eff6ff;
 }
 
 .mobile-slide-up-save-btn.is-saved svg {
@@ -18447,8 +18465,8 @@ footer {
 .mobile-slide-up-close-btn {
   background: #f1f5f9;
   border: none;
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   padding: 0;
   cursor: pointer;
@@ -19387,6 +19405,20 @@ body.is-drawer-open .site-utilities > * {
   .site-utilities {
     right: 16px;
     bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.has-mobile-slide-up .site-utilities {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  body.has-mobile-slide-up .site-utilities > * {
+    pointer-events: none;
+  }
+
+  .sync-toast-banner,
+  .place-added-toast-banner {
+    bottom: calc(74px + env(safe-area-inset-bottom, 0px));
   }
 
   .back-to-top {
