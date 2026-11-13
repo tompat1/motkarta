@@ -548,8 +548,10 @@ function AppContent({
   }, []);
 
   const scrollToConciergeAnswer = useCallback(() => {
-    const target = document.getElementById("concierge-answer")
-      ?? document.getElementById("concierge-answer-mobile");
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const target = isMobile
+      ? (document.getElementById("concierge-answer-mobile") ?? document.getElementById("concierge-answer") ?? workspaceRef.current)
+      : (document.getElementById("concierge-answer") ?? document.getElementById("concierge-answer-mobile"));
     target?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
@@ -605,6 +607,10 @@ function AppContent({
       setMobileTab("map");
     }
   }, [kind]);
+
+  useEffect(() => {
+    setIsContributeFabOpen(false);
+  }, [mobileTab]);
 
   const handleSelectMobileTab = useCallback(
     (tab: MobileTab) => {
@@ -801,18 +807,16 @@ function AppContent({
   useEffect(() => () => clearTimeout(locationToastTimer.current), []);
 
   const requestUserLocation = useCallback(
-    async (autoSortByDistance = false): Promise<{ latitude: number; longitude: number } | null> => {
+    async (): Promise<{ latitude: number; longitude: number } | null> => {
       const result = await requestPosition();
       clearTimeout(locationToastTimer.current);
       if (result.status === 'acquired') {
-        setUserLocation(result.location); setLocationToast(null);
-        if (autoSortByDistance) setSortMode('Distance');
+        setUserLocation(result.location);
+        setLocationToast(null);
         return result.location;
       }
-      if (autoSortByDistance) {
-        setLocationToast(locationFailureMessage(result.status, lang));
-        locationToastTimer.current = setTimeout(() => setLocationToast(null), 6000);
-      }
+      setLocationToast(locationFailureMessage(result.status, lang));
+      locationToastTimer.current = setTimeout(() => setLocationToast(null), 6000);
       return null;
     },
     [lang],
@@ -1611,8 +1615,10 @@ function AppContent({
     setConciergeMainListIds([]);
     let queryLocation = userLocation;
     if (DISTANCE_INTENT_REGEX.test(queryText)) {
-      if (!queryLocation) queryLocation = await requestUserLocation(true);
-      else setSortMode("Distance");
+      if (!queryLocation) queryLocation = await requestUserLocation();
+      if (conciergeRequest.current === controller && !controller.signal.aborted && queryLocation) {
+        setSortMode("Distance");
+      }
     }
     if (conciergeRequest.current !== controller || controller.signal.aborted) return;
 
@@ -2856,6 +2862,8 @@ function AppContent({
           <div
             className="mobile-results-header-bar"
             onTouchStart={(e) => {
+              const target = e.target as HTMLElement | null;
+              if (target && target.closest(".mobile-bottom-sheet-body")) return;
               sheetTouchStartY.current = e.touches[0]?.clientY ?? null;
               sheetTouchStartX.current = e.touches[0]?.clientX ?? null;
             }}
@@ -2871,7 +2879,10 @@ function AppContent({
                 if (deltaY > 45 && mobileViewMode === "map") {
                   setMobileViewMode("list");
                 } else if (deltaY < -45 && mobileViewMode === "list") {
-                  setMobileViewMode("map");
+                  const listEl = document.querySelector(".mobile-bottom-sheet-body");
+                  if (!listEl || listEl.scrollTop <= 5) {
+                    setMobileViewMode("map");
+                  }
                 }
               }
             }}
@@ -2904,7 +2915,7 @@ function AppContent({
                     </>
                   ) : (
                     <>
-                      <span>{formatPlaceCount(listDisplayCount)}</span>{" "}
+                      <span>{formatPlaceCount(mapDisplayCount)}</span>{" "}
                       <span>{lang === "sv" ? "ställen (Visa lista)" : "places (Show list)"}</span>
                     </>
                   )}
@@ -4024,7 +4035,7 @@ function AppContent({
       {mobileTab !== "discover" ? (
         <div className={`mobile-contribute-fab-wrap ${isContributeFabOpen ? "is-open" : ""}`}>
           {isContributeFabOpen ? (
-            <div className="mobile-contribute-fab-menu" role="menu" aria-label="Concierge superpowers">
+            <div className="mobile-contribute-fab-menu" role="group" aria-label={lang === "sv" ? "Bidra till kartan" : "Contribute options"}>
               <button
                 type="button"
                 className="superpower-chip-btn"
@@ -4099,6 +4110,12 @@ function AppContent({
           setQuery(promptText);
           setConcierge(promptText);
           setMobileTab("map");
+          if (typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches) {
+            setMobileViewMode("list");
+            window.requestAnimationFrame(() => {
+              workspaceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+          }
           void askWithQuery(promptText);
         }}
         popularPrompts={getPopularConciergePrompts(lang).slice(0, 3)}

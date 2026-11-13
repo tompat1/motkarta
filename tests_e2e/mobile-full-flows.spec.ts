@@ -306,12 +306,12 @@ test.describe("Mobile Full User Flows", () => {
 
     // Open "+" contribute FAB on mobile to reveal superpower chip buttons
     const contributeFab = page.locator(".mobile-contribute-fab");
-    if (await contributeFab.isVisible()) {
-      await contributeFab.click();
-    }
+    await expect(contributeFab).toBeVisible();
+    await contributeFab.click();
+    await expect(contributeFab).toHaveClass(/is-active/);
 
-    // Open photo modal via superpower chip button
-    const photoChip = page.locator('.superpower-chip-btn:visible', { hasText: /foto/i }).first();
+    // Open photo modal via superpower chip button inside FAB menu
+    const photoChip = page.locator('.mobile-contribute-fab-menu .superpower-chip-btn', { hasText: /foto/i });
     await expect(photoChip).toBeVisible();
     await photoChip.click();
 
@@ -366,12 +366,12 @@ test.describe("Mobile Full User Flows", () => {
 
     // Open "+" contribute FAB on mobile to reveal superpower chip buttons
     const contributeFab = page.locator(".mobile-contribute-fab");
-    if (await contributeFab.isVisible()) {
-      await contributeFab.click();
-    }
+    await expect(contributeFab).toBeVisible();
+    await contributeFab.click();
+    await expect(contributeFab).toHaveClass(/is-active/);
 
-    // Open photo modal via superpower chip button
-    const photoChip = page.locator('.superpower-chip-btn:visible', { hasText: /foto/i }).first();
+    // Open photo modal via superpower chip button inside FAB menu
+    const photoChip = page.locator('.mobile-contribute-fab-menu .superpower-chip-btn', { hasText: /foto/i });
     await expect(photoChip).toBeVisible();
     await photoChip.click();
 
@@ -409,12 +409,12 @@ test.describe("Mobile Full User Flows", () => {
 
     // Open "+" contribute FAB on mobile to reveal superpower chip buttons
     const contributeFab = page.locator(".mobile-contribute-fab");
-    if (await contributeFab.isVisible()) {
-      await contributeFab.click();
-    }
+    await expect(contributeFab).toBeVisible();
+    await contributeFab.click();
+    await expect(contributeFab).toHaveClass(/is-active/);
 
-    // Open add place modal via superpower chip button
-    const addPlaceChip = page.locator('.superpower-chip-btn:visible', { hasText: /nytt ställe/i }).first();
+    // Open add place modal via superpower chip button inside FAB menu
+    const addPlaceChip = page.locator('.mobile-contribute-fab-menu .superpower-chip-btn', { hasText: /nytt ställe/i });
     await expect(addPlaceChip).toBeVisible();
     await addPlaceChip.click();
 
@@ -491,12 +491,12 @@ test.describe("Mobile Full User Flows", () => {
 
     // Open "+" contribute FAB on mobile to reveal superpower chip buttons
     const contributeFab = page.locator(".mobile-contribute-fab");
-    if (await contributeFab.isVisible()) {
-      await contributeFab.click();
-    }
+    await expect(contributeFab).toBeVisible();
+    await contributeFab.click();
+    await expect(contributeFab).toHaveClass(/is-active/);
 
-    // Open add place modal
-    const addPlaceChip = page.locator('.superpower-chip-btn:visible', { hasText: /nytt ställe/i }).first();
+    // Open add place modal via superpower chip button inside FAB menu
+    const addPlaceChip = page.locator('.mobile-contribute-fab-menu .superpower-chip-btn', { hasText: /nytt ställe/i });
     await expect(addPlaceChip).toBeVisible();
     await addPlaceChip.click();
 

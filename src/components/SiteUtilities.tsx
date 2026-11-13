@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { ArrowRight, ArrowUp, ChatTeardropText, CircleNotch, Sparkle, X } from "@phosphor-icons/react";
 import type { Language } from "../app/shared";
 
@@ -31,6 +31,18 @@ export function SiteUtilities({
 
   const panelRef = useRef<HTMLDivElement>(null);
   const toggleBtnRef = useRef<HTMLButtonElement>(null);
+  const contactCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const activeChatTabRef = useRef(activeChatTab);
+  activeChatTabRef.current = activeChatTab;
+
+  const cancelPendingContactClose = useCallback(() => {
+    if (contactCloseTimerRef.current) {
+      clearTimeout(contactCloseTimerRef.current);
+      contactCloseTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => () => cancelPendingContactClose(), [cancelPendingContactClose]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -117,7 +129,8 @@ export function SiteUtilities({
       // Ignore storage errors
     }
 
-    setTimeout(() => {
+    cancelPendingContactClose();
+    contactCloseTimerRef.current = setTimeout(() => {
       setIsSubmitting(false);
       setStatus(
         lang === "sv"
@@ -128,9 +141,12 @@ export function SiteUtilities({
       setEmail("");
       setMessage("");
 
-      setTimeout(() => {
-        setIsContactOpen(false);
+      contactCloseTimerRef.current = setTimeout(() => {
+        if (activeChatTabRef.current === "contact") {
+          setIsContactOpen(false);
+        }
         setStatus(null);
+        contactCloseTimerRef.current = null;
       }, 3500);
     }, 400);
   };
@@ -175,7 +191,10 @@ export function SiteUtilities({
                     role="tab"
                     aria-selected={activeChatTab === "concierge"}
                     className={`contact-panel-tab ${activeChatTab === "concierge" ? "is-active" : ""}`}
-                    onClick={() => setActiveChatTab("concierge")}
+                    onClick={() => {
+                      cancelPendingContactClose();
+                      setActiveChatTab("concierge");
+                    }}
                   >
                     <Sparkle size={13} weight="fill" />
                     <span>{lang === "sv" ? "Fråga concierge" : "Ask concierge"}</span>
@@ -185,7 +204,10 @@ export function SiteUtilities({
                     role="tab"
                     aria-selected={activeChatTab === "contact"}
                     className={`contact-panel-tab ${activeChatTab === "contact" ? "is-active" : ""}`}
-                    onClick={() => setActiveChatTab("contact")}
+                    onClick={() => {
+                      cancelPendingContactClose();
+                      setActiveChatTab("contact");
+                    }}
                   >
                     <ChatTeardropText size={13} weight="bold" />
                     <span>{lang === "sv" ? "Prata med oss" : "Ask us"}</span>
@@ -208,8 +230,8 @@ export function SiteUtilities({
               <form className="contact-concierge-form" onSubmit={handleConciergeSubmit}>
                 <p className="contact-concierge-lead">
                   {lang === "sv"
-                    ? "Fråga vår oberoende AI-concierge om mat, bagerier, kaffe eller stadsdelar i Stockholm."
-                    : "Ask our independent AI concierge about food, bakeries, coffee, or neighborhoods in Stockholm."}
+                    ? "Fråga conciergen om mat, bagerier, kaffe eller stadsdelar i Stockholm."
+                    : "Ask the concierge about food, bakeries, coffee, or neighborhoods in Stockholm."}
                 </p>
                 <label>
                   <span>{lang === "sv" ? "Din fråga" : "Your question"}</span>
