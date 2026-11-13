@@ -19,6 +19,7 @@ export type Env = {
   CONCIERGE_RETRIEVAL_MODE?: string; CONCIERGE_SYNTHESIS_MODE?: string;
   CONCIERGE_MIN_SIMILARITY?: string;
   CONCIERGE_DEADLINE_MS?: string;
+  CONCIERGE_ALLOW_UNGUARDED_AI?: string;
   CONCIERGE_RATE_LIMITER?: { limit(input: { key: string }): Promise<{ success: boolean }> };
   CONCIERGE_RATE_GATE?: { fetch(request: Request): Promise<Response> };
   ASSETS?: { fetch(input: Request | string, init?: RequestInit): Promise<Response> };
@@ -194,17 +195,22 @@ export async function requestAiPermit(env: Env, key: string, units: number) {
     try { return (await withinDeadline(env.CONCIERGE_RATE_LIMITER.limit({ key }), 150)).success; }
     catch { return false; }
   }
-  if (!env.CONCIERGE_RATE_GATE) return false;
-  try {
-    const response = await withinDeadline(env.CONCIERGE_RATE_GATE.fetch(new Request('https://concierge-rate-gate.internal/limit', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ key, units }),
-    })), 500);
-    if (!response.ok) return false;
-    const body = await response.json() as { success?: unknown };
-    return body.success === true;
-  } catch { return false; }
+  if (env.CONCIERGE_RATE_GATE) {
+    try {
+      const response = await withinDeadline(env.CONCIERGE_RATE_GATE.fetch(new Request('https://concierge-rate-gate.internal/limit', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ key, units }),
+      })), 500);
+      if (!response.ok) return false;
+      const body = await response.json() as { success?: unknown };
+      return body.success === true;
+    } catch { return false; }
+  }
+  if (env.CONCIERGE_ALLOW_UNGUARDED_AI === 'true') {
+    return true;
+  }
+  return false;
 }
 export async function processConciergeQuery(query: string, env: Env = {}, context: QueryContext = {}, allowAI = false, requestUrl?: string) {
   const started = Date.now(), budget = processingDeadlineMs(env), deadline = started + budget;

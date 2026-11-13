@@ -27,6 +27,8 @@ test('Pages service-binding gate fails closed and reports requested units', asyn
   assert.deepEqual(body, { key: 'test-client', units: 2 });
   assert.equal(await requestAiPermit({ CONCIERGE_RATE_GATE: { fetch: async () => new Response(null, { status: 429 }) } }, 'x', 1), false);
   assert.equal(await requestAiPermit({ CONCIERGE_RATE_GATE: { fetch: async () => { throw new Error('down'); } } }, 'x', 1), false);
+  assert.equal(await requestAiPermit({}, 'x', 1), false);
+  assert.equal(await requestAiPermit({ CONCIERGE_ALLOW_UNGUARDED_AI: 'true' }, 'x', 1), true);
 });
 
 test('endpoint requests two units for hybrid plus synthesis and falls back when denied', async () => {
@@ -44,6 +46,22 @@ test('endpoint requests two units for hybrid plus synthesis and falls back when 
   assert.equal(result.retrievalMode, 'lexical');
   assert.equal(result.synthesisMode, 'template');
   assert.ok(result.diagnostics.fallbackReasons.includes('ai_rate_gate_closed'));
+});
+
+test('endpoint allows AI when CONCIERGE_ALLOW_UNGUARDED_AI is enabled', async () => {
+  let aiCalled = false;
+  const env = {
+    DB: { prepare: (sql) => ({ bind() { return this; }, all: async () => ({ results: sql.includes('FROM establishments') ? [{ id: 1, name: 'Magari', type: 'Restaurant', district: 'Södermalm', description: '', chain_status: 'independent' }] : sql.includes('FROM establishment_tags') ? [{ establishment_id: 1, tag: 'pizza' }] : [] }) }) },
+    CONCIERGE_SYNTHESIS_MODE: 'constrained',
+    CONCIERGE_ALLOW_UNGUARDED_AI: 'true',
+    AI: { run: async () => { aiCalled = true; return { response: JSON.stringify({ places: [{ placeId: 1, factIds: ['1:cuisine'] }] }) }; } },
+  };
+  const request = new Request('https://example.test/api/concierge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ query: 'pizza' }) });
+  const response = await onRequestPost({ request, env });
+  const result = await response.json();
+  assert.equal(aiCalled, true);
+  assert.equal(result.synthesisMode, 'constrained');
+  assert.equal(result.diagnostics.fallbackReasons.includes('ai_rate_gate_closed'), false);
 });
 
 test('rate-gate worker cannot receive public workers.dev traffic', async () => {
