@@ -57,8 +57,8 @@ export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent,
   if (intent.dinner && place.kind !== 'Restaurant') return false;
   if (intent.atmosphere) {
     const hasAtmosphere = facts.facts.some((f) =>
-      (f.field === 'atmosphere' && Boolean(f.value)) ||
-      (f.field === 'tags' && ['cozy', 'cosy', 'mysigt', 'mysig', 'quiet', 'lugnt', 'intimate', 'romantic', 'romantiskt', 'unwind', 'atmosphere', 'atmosfar'].some((t) => includesPhrase(f.value, t)))
+      (f.field === 'atmosphere' || f.field === 'tags') &&
+      ['cozy', 'cosy', 'mysigt', 'mysig', 'quiet', 'lugnt', 'intimate', 'romantic', 'romantiskt', 'unwind', 'charming', 'warm', 'rustic'].some((t) => includesPhrase(f.value, t))
     );
     if (!hasAtmosphere) return false;
   }
@@ -124,7 +124,7 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
       tokenAlternatives(normalize(cuisine)).some((term) => includesPhrase(attributes, term)));
     // Area alone must not make an unsupported food query relevant.
     const lexicalScore = matchingTerms.length / Math.max(1, intent.terms.length);
-    const relevant = exact || lexicalScore > 0 || cuisineMatch || (intent.specialty && specialtyEligible(place)) || (!intent.terms.length && (intent.area || intent.dinner || intent.hiddenGem || intent.near || intent.exclusions.length || intent.priceMax !== null || intent.filters.near_public_transport));
+    const relevant = exact || lexicalScore > 0 || cuisineMatch || (intent.specialty && specialtyEligible(place)) || (!intent.terms.length && (intent.area || intent.dinner || intent.hiddenGem || intent.atmosphere || intent.near || intent.exclusions.length || intent.priceMax !== null || intent.filters.near_public_transport));
     if (!relevant) continue;
     const preferences: import('../scoring.ts').UserPreferences = {
       kind: intent.dinner || isMealCuisine ? 'Restaurant' : intent.specialty ? 'Specialty coffee' : intent.bakery ? 'Bakery' : undefined,

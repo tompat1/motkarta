@@ -76,6 +76,22 @@ const { chromium } = require("@playwright/test");
 
   await page.screenshot({ path: "/Users/thomasrynell/.gemini/antigravity/brain/3e0607fd-1603-45dc-9c42-cc925028b299/test_specialty_sodermalm_chips.png" });
 
+  console.log("\n=== 5. Testing 'mysigt ställe på söder' ===");
+  await search.fill("mysigt ställe på söder");
+  await askBtn.click();
+  await page.waitForTimeout(2000);
+
+  const answer5 = await page.locator("#concierge-answer").first().innerText();
+  console.log("Answer 5:\n", answer5);
+
+  const chips5 = await page.locator("#concierge-answer .concierge-follow-up-chips button").allInnerTexts();
+  console.log("Follow-up chips 5:", chips5);
+
+  const places5 = await page.locator(".place-card h3").allInnerTexts();
+  console.log("Cozy places on Söder:", places5.slice(0, 5));
+
+  await page.screenshot({ path: "/Users/thomasrynell/.gemini/antigravity/brain/3e0607fd-1603-45dc-9c42-cc925028b299/test_mysigt_soder.png" });
+
   await browser.close();
   console.log("\nAll queries tested successfully!");
 })();
