@@ -1,0 +1,12 @@
+{
+  "name": "vp0",
+  "displayName": "VP0 Design Library",
+  "description": "Connects the VP0 (vp0.com) MCP server and skill to search and fetch AI-readable mobile UI design starters and screen patterns.",
+  "homepage": "https://vp0.com",
+  "suggestedPrompts": [
+    "Search VP0 for mobile map discovery and place card UI patterns",
+    "Fetch a VP0 bottom sheet or filter drawer design reference",
+    "Compare Motkarta's mobile UI against VP0 screen patterns"
+  ]
+}
+

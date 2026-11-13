@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "vp0": {
+      "command": "npx",
+      "args": ["-y", "vp0-mcp"]
+    }
+  }
+}
+
