@@ -218,6 +218,7 @@ function AppContent({
   const [mobileViewMode, setMobileViewMode] = useState<"map" | "list">("map");
   const [isContributeFabOpen, setIsContributeFabOpen] = useState(false);
   const sheetTouchStartY = useRef<number | null>(null);
+  const sheetTouchStartX = useRef<number | null>(null);
   const workspaceRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -2851,24 +2852,30 @@ function AppContent({
       </section>
 
       <section className="workspace" id="place-workspace" ref={workspaceRef}>
-        <div
-          className={`mobile-bottom-sheet ${mobileViewMode === "list" ? "is-expanded" : ""}`}
-          onTouchStart={(e) => {
-            sheetTouchStartY.current = e.touches[0]?.clientY ?? null;
-          }}
-          onTouchEnd={(e) => {
-            if (sheetTouchStartY.current === null) return;
-            const endY = e.changedTouches[0]?.clientY ?? sheetTouchStartY.current;
-            const deltaY = sheetTouchStartY.current - endY;
-            sheetTouchStartY.current = null;
-            if (deltaY > 45 && mobileViewMode === "map") {
-              setMobileViewMode("list");
-            } else if (deltaY < -45 && mobileViewMode === "list") {
-              setMobileViewMode("map");
-            }
-          }}
-        >
-          <div className="mobile-results-header-bar">
+        <div className={`mobile-bottom-sheet ${mobileViewMode === "list" ? "is-expanded" : ""}`}>
+          <div
+            className="mobile-results-header-bar"
+            onTouchStart={(e) => {
+              sheetTouchStartY.current = e.touches[0]?.clientY ?? null;
+              sheetTouchStartX.current = e.touches[0]?.clientX ?? null;
+            }}
+            onTouchEnd={(e) => {
+              if (sheetTouchStartY.current === null) return;
+              const endY = e.changedTouches[0]?.clientY ?? sheetTouchStartY.current;
+              const endX = e.changedTouches[0]?.clientX ?? (sheetTouchStartX.current ?? 0);
+              const deltaY = sheetTouchStartY.current - endY;
+              const deltaX = (sheetTouchStartX.current ?? endX) - endX;
+              sheetTouchStartY.current = null;
+              sheetTouchStartX.current = null;
+              if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                if (deltaY > 45 && mobileViewMode === "map") {
+                  setMobileViewMode("list");
+                } else if (deltaY < -45 && mobileViewMode === "list") {
+                  setMobileViewMode("map");
+                }
+              }
+            }}
+          >
             <button
               type="button"
               className={`mobile-bottom-sheet-peek floating-view-toggle-btn ${mobileViewMode === "list" ? "is-active" : ""}`}
