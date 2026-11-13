@@ -163,35 +163,44 @@ test.describe("Mobile Interface Features & Design Verification", () => {
     await expect(savedTab).toHaveClass(/is-active/);
   });
 
-  test("7. Clean single top-bar with SV/EN toggle and hamburger menu, without duplicates", async ({ page }) => {
+  test("7. Clean 3-zone mobile UI: topbar with hamburger menu, SV/EN & Formula in drawer, no duplicate nav/zoom buttons", async ({ page }) => {
     await page.goto("/");
 
     // Topbar is visible
     const topbar = page.locator(".topbar");
     await expect(topbar).toBeVisible();
 
-    // Brand logo is visible
+    // Brand logo and hamburger menu are visible
     await expect(topbar.locator(".brand-logo")).toBeVisible();
-
-    // Topbar actions: simple SV/EN toggle and hamburger menu
-    const langBtn = topbar.locator(".lang-toggle-btn");
-    await expect(langBtn).toBeVisible();
-    await expect(langBtn.locator(".lang-opt.is-active")).toHaveText("SV");
-
     const hamburgerBtn = topbar.locator(".mobile-hamburger-btn");
     await expect(hamburgerBtn).toBeVisible();
 
-    // Desktop/clutter items are hidden
+    // Clutter & moved items are hidden in mobile topbar
+    await expect(topbar.locator(".lang-toggle-btn")).toBeHidden();
     await expect(topbar.locator(".topbar-cart-btn")).toBeHidden();
     await expect(topbar.locator(".topbar-session-auth")).toBeHidden();
+
+    // Map + / - zoom buttons are hidden on mobile
+    await expect(page.locator(".map-zoom-btn").first()).toBeHidden();
+
+    // Open hamburger menu and test SV/EN toggle & Formula button inside drawer
+    await hamburgerBtn.click();
+    const drawer = page.locator(".mobile-menu-drawer");
+    await expect(drawer).toBeVisible();
+    await expect(drawer.locator(".mobile-formula-trigger-btn")).toBeVisible();
+
+    const langBtn = drawer.locator(".lang-toggle-btn");
+    await expect(langBtn).toBeVisible();
+    await expect(langBtn.locator(".lang-opt.is-active")).toHaveText("SV");
 
     // Test clicking SV/EN toggle switches language
     await langBtn.click();
     await expect(langBtn.locator(".lang-opt.is-active")).toHaveText("EN");
 
-    // Switch back to SV
+    // Switch back to SV and close drawer
     await langBtn.click();
     await expect(langBtn.locator(".lang-opt.is-active")).toHaveText("SV");
+    await drawer.locator(".mobile-menu-close").click();
 
     // Open Discover view and verify desktop content is rendered cleanly without duplicate topbars
     await page.locator('.mobile-toolbar-tab[data-tab="discover"]').click();

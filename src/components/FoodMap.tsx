@@ -607,7 +607,7 @@ export function FoodMap({
         </button>
         <button
           type="button"
-          className="map-control-btn"
+          className="map-control-btn map-zoom-btn"
           onClick={handleZoomIn}
           title={lang === "sv" ? "Zooma in" : "Zoom in"}
           aria-label={lang === "sv" ? "Zooma in" : "Zoom in"}
@@ -617,7 +617,7 @@ export function FoodMap({
         </button>
         <button
           type="button"
-          className="map-control-btn"
+          className="map-control-btn map-zoom-btn"
           onClick={handleZoomOut}
           title={lang === "sv" ? "Zooma ut" : "Zoom out"}
           aria-label={lang === "sv" ? "Zooma ut" : "Zoom out"}

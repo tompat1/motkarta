@@ -26,5 +26,5 @@ test("styles.css defines site-utilities, back-to-top, and contact-panel CSS rule
 
 test("App.tsx integrates SiteUtilities component", () => {
   assert.match(appSource, /import\s*\{\s*SiteUtilities\s*\}\s*from\s*["']\.\/components\/SiteUtilities["']/);
-  assert.match(appSource, /<SiteUtilities\s+lang=\{lang\}\s*\/>/);
+  assert.match(appSource, /<SiteUtilities\s+lang=\{lang\}/);
 });

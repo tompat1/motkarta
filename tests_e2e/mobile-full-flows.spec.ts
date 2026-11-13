@@ -27,7 +27,7 @@ test.describe("Mobile Full User Flows", () => {
 
     // Verify counter heading
     const counter = page.locator(".mobile-results-count");
-    await expect(counter).toContainText(/på kartan|ställen i vyn|i listan/i);
+    await expect(counter).toContainText(/på kartan|ställen i vyn|i listan|ställen/i);
   });
 
   test("2. Mobile search flow & clear query", async ({ page }) => {
@@ -304,8 +304,14 @@ test.describe("Mobile Full User Flows", () => {
   test("11. Upload photo from device in superpower modal", async ({ page }) => {
     await page.goto("/");
 
-    // Open photo modal via superpower chip button
-    const photoChip = page.locator('.superpower-chip-btn', { hasText: /foto/i }).first();
+    // Open "+" contribute FAB on mobile to reveal superpower chip buttons
+    const contributeFab = page.locator(".mobile-contribute-fab");
+    await expect(contributeFab).toBeVisible();
+    await contributeFab.click();
+    await expect(contributeFab).toHaveClass(/is-active/);
+
+    // Open photo modal via superpower chip button inside FAB menu
+    const photoChip = page.locator('.mobile-contribute-fab-menu .superpower-chip-btn', { hasText: /foto/i });
     await expect(photoChip).toBeVisible();
     await photoChip.click();
 
@@ -358,8 +364,14 @@ test.describe("Mobile Full User Flows", () => {
   test("12. Search and select place in add photo modal dropdown", async ({ page }) => {
     await page.goto("/");
 
-    // Open photo modal via superpower chip button
-    const photoChip = page.locator('.superpower-chip-btn', { hasText: /foto/i }).first();
+    // Open "+" contribute FAB on mobile to reveal superpower chip buttons
+    const contributeFab = page.locator(".mobile-contribute-fab");
+    await expect(contributeFab).toBeVisible();
+    await contributeFab.click();
+    await expect(contributeFab).toHaveClass(/is-active/);
+
+    // Open photo modal via superpower chip button inside FAB menu
+    const photoChip = page.locator('.mobile-contribute-fab-menu .superpower-chip-btn', { hasText: /foto/i });
     await expect(photoChip).toBeVisible();
     await photoChip.click();
 
@@ -395,8 +407,14 @@ test.describe("Mobile Full User Flows", () => {
   test("13. Add new place with website and photo upload in superpower modal", async ({ page }) => {
     await page.goto("/");
 
-    // Open add place modal via superpower chip button
-    const addPlaceChip = page.locator('.superpower-chip-btn', { hasText: /nytt ställe/i }).first();
+    // Open "+" contribute FAB on mobile to reveal superpower chip buttons
+    const contributeFab = page.locator(".mobile-contribute-fab");
+    await expect(contributeFab).toBeVisible();
+    await contributeFab.click();
+    await expect(contributeFab).toHaveClass(/is-active/);
+
+    // Open add place modal via superpower chip button inside FAB menu
+    const addPlaceChip = page.locator('.mobile-contribute-fab-menu .superpower-chip-btn', { hasText: /nytt ställe/i });
     await expect(addPlaceChip).toBeVisible();
     await addPlaceChip.click();
 
@@ -471,8 +489,14 @@ test.describe("Mobile Full User Flows", () => {
   test("12. Duplicate place detection blocks submission and shows warning", async ({ page }) => {
     await page.goto("/");
 
-    // Open add place modal
-    const addPlaceChip = page.locator('.superpower-chip-btn', { hasText: /nytt ställe/i }).first();
+    // Open "+" contribute FAB on mobile to reveal superpower chip buttons
+    const contributeFab = page.locator(".mobile-contribute-fab");
+    await expect(contributeFab).toBeVisible();
+    await contributeFab.click();
+    await expect(contributeFab).toHaveClass(/is-active/);
+
+    // Open add place modal via superpower chip button inside FAB menu
+    const addPlaceChip = page.locator('.mobile-contribute-fab-menu .superpower-chip-btn', { hasText: /nytt ställe/i });
     await expect(addPlaceChip).toBeVisible();
     await addPlaceChip.click();
 

@@ -13,7 +13,7 @@ test.describe("Map Card Fullscreen & Mobile Viewport Tests", () => {
     const isMobile = testInfo.project.name.startsWith("mobile");
 
     if (isMobile) {
-      const marker = page.locator(".leaflet-marker-icon").first();
+      const marker = page.locator(".motkarta-map-marker-container").first();
       await marker.waitFor({ state: "attached", timeout: 15000 });
       await marker.dispatchEvent("click");
     } else {
