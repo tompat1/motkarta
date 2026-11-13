@@ -345,6 +345,17 @@ const BASE_CUISINE_ALIASES: Record<string, string[]> = {
   hamburgare: ["burger", "burgers", "burgare", "burgaren", "burgarna", "hamburgare", "hamburgaren", "hamburgarna"],
   hamburgaren: ["burger", "burgers", "burgare", "burgaren", "burgarna", "hamburgare", "hamburgaren", "hamburgarna"],
   hamburgarna: ["burger", "burgers", "burgare", "burgaren", "burgarna", "hamburgare", "hamburgaren", "hamburgarna"],
+  coffee: ["coffee", "kaffe", "specialkaffe", "specialty coffee"],
+  kaffe: ["kaffe", "coffee", "specialkaffe", "specialty coffee"],
+  specialkaffe: ["specialkaffe", "specialty coffee", "specialty", "kaffe", "coffee", "roastery", "rosteri"],
+  specialty: ["specialty coffee", "specialkaffe", "specialty", "coffee", "kaffe"],
+  mysigt: ["mysigt", "mysig", "cozy", "cosy", "intimate", "charming", "atmosphere"],
+  mysig: ["mysigt", "mysig", "cozy", "cosy", "intimate", "charming", "atmosphere"],
+  cozy: ["cozy", "cosy", "mysigt", "mysig", "intimate", "charming", "atmosphere"],
+  cosy: ["cozy", "cosy", "mysigt", "mysig", "intimate", "charming", "atmosphere"],
+  intimate: ["intimate", "intimt", "cozy", "mysigt", "romantic", "romantiskt"],
+  lugnt: ["lugnt", "lugn", "quiet", "cozy", "mysigt", "peaceful"],
+  quiet: ["quiet", "lugnt", "lugn", "peaceful"],
 };
 
 function mergeAliases(base: Record<string, string[]>, extra: Record<string, string[]>): Record<string, string[]> {
