@@ -15657,6 +15657,9 @@ footer {
 
   .map-panel {
     height: calc(100dvh - 170px);
+    min-height: 480px;
+    width: 100%;
+    flex-shrink: 0;
     border-radius: 0;
     border: none;
   }

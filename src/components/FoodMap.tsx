@@ -67,15 +67,36 @@ export function FoodMap({
 
     const allPlaces = placesRef.current.filter(hasCoordinates);
     const catalogIds = new Set(allPlaces.map((place) => place.id));
+    const staleMarkers: L.Marker[] = [];
 
     for (const [id, marker] of markersRef.current.entries()) {
       if (!catalogIds.has(id)) {
-        clusterGroup.removeLayer(marker);
+        staleMarkers.push(marker);
         markersRef.current.delete(id);
       }
     }
 
-    const inBounds = filterPlacesByBounds(allPlaces, boundsFromLeaflet(map.getBounds()));
+    try {
+      map.invalidateSize({ pan: false, animate: false });
+    } catch {
+      // ignore if container is not ready
+    }
+
+    const rawBounds = boundsFromLeaflet(map.getBounds());
+    const isCollapsedBounds =
+      Math.abs(rawBounds.north - rawBounds.south) < 0.0001 ||
+      Math.abs(rawBounds.east - rawBounds.west) < 0.0001;
+    const center = map.getCenter();
+    const effectiveBounds: MapBounds = isCollapsedBounds
+      ? {
+          south: center.lat - 0.06,
+          north: center.lat + 0.06,
+          west: center.lng - 0.12,
+          east: center.lng + 0.12,
+        }
+      : rawBounds;
+
+    const inBounds = filterPlacesByBounds(allPlaces, effectiveBounds);
     const inBoundsIds = new Set(inBounds.map((place) => place.id));
     const activeId = activePlaceIdRef.current;
 
@@ -91,11 +112,16 @@ export function FoodMap({
 
     for (const [id, marker] of markersRef.current.entries()) {
       if (!renderIds.has(id)) {
-        clusterGroup.removeLayer(marker);
+        staleMarkers.push(marker);
         markersRef.current.delete(id);
       }
     }
 
+    if (staleMarkers.length > 0) {
+      clusterGroup.removeLayers(staleMarkers);
+    }
+
+    const newMarkers: L.Marker[] = [];
     for (const place of renderPlaces) {
       const isActive = place.id === activeId;
       const existing = markersRef.current.get(place.id);
@@ -122,13 +148,17 @@ export function FoodMap({
         marker.setZIndexOffset(1000);
       }
 
-      clusterGroup.addLayer(marker);
+      newMarkers.push(marker);
       markersRef.current.set(place.id, marker);
+    }
+
+    if (newMarkers.length > 0) {
+      clusterGroup.addLayers(newMarkers);
     }
 
     onViewportChangeRef.current?.({
       count: inBounds.length,
-      bounds: boundsFromLeaflet(map.getBounds()),
+      bounds: effectiveBounds,
     });
   }, [lang]);
 
@@ -340,7 +370,19 @@ export function FoodMap({
     map.on("zoomend", onViewportChange);
     syncViewportMarkers();
 
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && containerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        try {
+          map.invalidateSize({ pan: false, animate: false });
+        } catch {}
+        syncViewportMarkers();
+      });
+      resizeObserver.observe(containerRef.current);
+    }
+
     return () => {
+      resizeObserver?.disconnect();
       map.off("moveend", onViewportChange);
       map.off("zoomend", onViewportChange);
     };
@@ -591,7 +633,7 @@ export function FoodMap({
 }
 
 function isMobileMapViewport() {
-  return typeof window !== "undefined" && window.matchMedia("(max-width: 760px)").matches;
+  return typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
 }
 
 function placeIcon(place: ScoredPlace, active: boolean) {

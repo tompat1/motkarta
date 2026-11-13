@@ -108,9 +108,12 @@ test.describe("Mobile Interface Features & Design Verification", () => {
   test("5. Map marker click shows slide-up preview and 'Visa stället' opens place detail overlay", async ({ page }) => {
     await page.goto("/");
 
-    // Ensure on map tab
-    const marker = page.locator(".leaflet-marker-icon").first();
-    await marker.waitFor({ state: "attached", timeout: 15000 });
+    // Ensure map container is visible and place markers are rendered
+    const mapContainer = page.locator(".leaflet-map");
+    await expect(mapContainer).toBeVisible();
+
+    const marker = page.locator(".motkarta-map-marker-container").first();
+    await expect(marker).toBeAttached({ timeout: 15000 });
     await marker.dispatchEvent("click");
 
     // Leaflet popup bubble must NOT be visible
@@ -138,8 +141,8 @@ test.describe("Mobile Interface Features & Design Verification", () => {
   test("5b. Slide-up preview close X button dismisses the preview card", async ({ page }) => {
     await page.goto("/");
 
-    const marker = page.locator(".leaflet-marker-icon").first();
-    await marker.waitFor({ state: "attached", timeout: 15000 });
+    const marker = page.locator(".motkarta-map-marker-container").first();
+    await expect(marker).toBeAttached({ timeout: 15000 });
     await marker.dispatchEvent("click");
 
     const slideUp = page.locator(".mobile-place-slide-up");
