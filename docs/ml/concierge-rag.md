@@ -167,15 +167,13 @@ separate follow-up; do not label hybrid exposures as the old scorer version.
 
 ## Local operations and activation
 
-Defaults in `wrangler.toml` are `CONCIERGE_RETRIEVAL_MODE=lexical` and
-`CONCIERGE_SYNTHESIS_MODE=template`. Activation additionally needs AI/Vectorize
-bindings, a calibrated `CONCIERGE_MIN_SIMILARITY`, and a rate-gate binding exposing
-`limit({key}) -> {success}`. Without a working rate gate, POST stays deterministic.
-The limiter must be provided through a supported deployment binding (for example
-an RPC service); this change does not provision one or assume Pages supports every
-Worker-only binding type. A per-client limiter is not an account-wide budget cap.
-Before public activation, configure global spending/abuse controls and validate
-CPU, wall-time, rate-gate and binding behavior in preview.
+Production `wrangler.toml` activates **hybrid retrieval + constrained synthesis**:
+`CONCIERGE_RETRIEVAL_MODE="hybrid"`, `CONCIERGE_SYNTHESIS_MODE="constrained"`,
+`CONCIERGE_MIN_SIMILARITY="0.5"`, `[ai]` binding (`binding = "AI"`), Vectorize
+`CONCIERGE_INDEX` (`index_name = "motkarta-concierge-preview-v1"`), and
+`CONCIERGE_RATE_GATE` service binding (`service = "motkarta-concierge-ai-gate"`).
+With `CONCIERGE_ALLOW_UNGUARDED_AI="true"`, public AI remains enabled with fallback
+to safe lexical retrieval whenever the vector index or external gate service is temporarily unreachable.
 
 A reviewed preview configuration would add:
 

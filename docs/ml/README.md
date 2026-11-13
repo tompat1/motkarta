@@ -1,9 +1,9 @@
 # Motkarta ML system
 
 Latest concierge status: [production build repaired](../build-deployment-repair.md)
-and the [real-model trial completed](concierge-real-model-trial.md): 3,143 verified
-vectors, 128 real query captures and 23/32 accepted synthesis responses. Public
-retrieval/synthesis remain lexical and template-based pending quality improvements.
+and [production AI RAG activated](concierge-rag.md): 3,143 verified
+vectors, 128 real query captures and accepted Gemma 4 synthesis responses. Public
+retrieval and synthesis are activated in production via Cloudflare Workers AI (`@cf/baai/bge-m3` embedding, `@cf/google/gemma-4-26b-a4b-it` constrained synthesis, Vectorize `motkarta-concierge-preview-v1`, and reciprocal rank fusion).
 
 This directory is the canonical documentation for machine learning, ranking,
 recommendation telemetry, evaluation and model maintenance in Motkarta.
