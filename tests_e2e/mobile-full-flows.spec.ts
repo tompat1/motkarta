@@ -311,7 +311,7 @@ test.describe("Mobile Full User Flows", () => {
     }
 
     // Open photo modal via superpower chip button
-    const photoChip = page.locator('.superpower-chip-btn', { hasText: /foto/i }).first();
+    const photoChip = page.locator('.superpower-chip-btn:visible', { hasText: /foto/i }).first();
     await expect(photoChip).toBeVisible();
     await photoChip.click();
 
@@ -371,7 +371,7 @@ test.describe("Mobile Full User Flows", () => {
     }
 
     // Open photo modal via superpower chip button
-    const photoChip = page.locator('.superpower-chip-btn', { hasText: /foto/i }).first();
+    const photoChip = page.locator('.superpower-chip-btn:visible', { hasText: /foto/i }).first();
     await expect(photoChip).toBeVisible();
     await photoChip.click();
 
@@ -414,7 +414,7 @@ test.describe("Mobile Full User Flows", () => {
     }
 
     // Open add place modal via superpower chip button
-    const addPlaceChip = page.locator('.superpower-chip-btn', { hasText: /nytt ställe/i }).first();
+    const addPlaceChip = page.locator('.superpower-chip-btn:visible', { hasText: /nytt ställe/i }).first();
     await expect(addPlaceChip).toBeVisible();
     await addPlaceChip.click();
 
@@ -496,7 +496,7 @@ test.describe("Mobile Full User Flows", () => {
     }
 
     // Open add place modal
-    const addPlaceChip = page.locator('.superpower-chip-btn', { hasText: /nytt ställe/i }).first();
+    const addPlaceChip = page.locator('.superpower-chip-btn:visible', { hasText: /nytt ställe/i }).first();
     await expect(addPlaceChip).toBeVisible();
     await addPlaceChip.click();
 
