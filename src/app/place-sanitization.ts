@@ -65,29 +65,32 @@ const RESTAURANT_GRILL_KEYWORDS = [
 export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[] {
   // 1. Purge commercial chains
   const filtered = filterPublishedPlaces(inputPlaces).filter((p) => {
+    if (!p || typeof p.name !== "string") return false;
     const n = p.name.toLowerCase();
     return !isExcludedCatalogPlace(p) && !EXCLUDED_COMMERCIAL_CHAINS.some((chain) => n.includes(chain));
   });
 
   // 2. Replace broad location buckets with more useful regions when the data supports it.
   const regionResolved = filtered.map((place) => {
+    const baseTags = Array.isArray(place.tags) ? place.tags : [];
     const resolvedArea = resolveStockholmRegion(place);
-    if (resolvedArea === place.area) {
+    if (resolvedArea === place.area && Array.isArray(place.tags)) {
       return place;
     }
 
     return {
       ...place,
       area: resolvedArea,
-      tags: Array.from(new Set([...place.tags.filter((tag) => !isBroadStockholmArea(tag)), resolvedArea])),
+      tags: Array.from(new Set([...baseTags.filter((tag) => !isBroadStockholmArea(tag)), resolvedArea])),
     };
   });
 
   // 3. Normalize and promote matched specialty coffee venues / reclassify grills & gastropubs
   const promoted = regionResolved.map((p) => {
-    const n = p.name.toLowerCase();
+    const n = (p.name ?? "").toLowerCase();
     const cu = (p.cuisine ?? "").toLowerCase();
     const fullText = `${n} ${cu}`;
+    const baseTags = Array.isArray(p.tags) ? p.tags : [];
 
     const isGrillOrRestaurant = RESTAURANT_GRILL_KEYWORDS.some((kw) => fullText.includes(kw));
 
@@ -95,7 +98,7 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[
       return {
         ...p,
         kind: "Restaurant" as const,
-        tags: p.tags.filter((t) => t.toLowerCase() !== "specialty coffee"),
+        tags: baseTags.filter((t) => t.toLowerCase() !== "specialty coffee"),
         specialty: undefined,
       };
     }
@@ -110,7 +113,7 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[
       return {
         ...p,
         kind: "Specialty coffee" as const,
-        tags: Array.from(new Set([...p.tags, "Specialty coffee", "Filter", "Single origin"])),
+        tags: Array.from(new Set([...baseTags, "Specialty coffee", "Filter", "Single origin"])),
         specialty: {
           specialtyVerified: true,
           ownRoastery:

@@ -21,10 +21,14 @@ type PlacesPayload = {
   places?: PlaceInput[];
 };
 
-export async function fetchPlacesPayload(): Promise<PlacesPayloadResult> {
+export type FetchPlacesPayloadOptions = {
+  onStaticPlacesReady?: (snapshot: PlacesPayloadResult) => void;
+};
+
+export async function fetchPlacesPayload(options?: FetchPlacesPayloadOptions): Promise<PlacesPayloadResult> {
   // Read current admin exclusions even when the primary dataset is a static asset.
   // Fail closed if unavailable: falling back must not resurrect removed venues.
-  const visibilityResponse = await fetch("/api/place-visibility", { cache: "no-store", signal: AbortSignal.timeout(5000) });
+  const visibilityResponse = await fetch("/api/place-visibility", { cache: "no-store", signal: AbortSignal.timeout(12_000) });
   if (!visibilityResponse.ok) throw new Error("Publication status is unavailable");
   const visibility = await visibilityResponse.json() as { blocked?: PlaceIdentity[] };
   if (!Array.isArray(visibility.blocked)) throw new Error("Invalid publication status");
@@ -39,9 +43,16 @@ export async function fetchPlacesPayload(): Promise<PlacesPayloadResult> {
     const payload = (await staticResponse.json()) as PlacesPayload;
     if (payload.places?.length) {
       const staticPlaces = filterPublishedPlaces(payload.places, visibility.blocked);
+      const staticSource = sourceFromPayload(payload.source, "osm");
+      options?.onStaticPlacesReady?.({
+        source: staticSource,
+        places: staticPlaces,
+        blocked: visibility.blocked,
+        catalogDebug: { catalogMode: "static", placeCount: staticPlaces.length, liveApi: "skipped" },
+      });
       const { places: mergedPlaces, liveApi } = await mergeLiveCatalogPlaces(staticPlaces, visibility.blocked);
       const overlayApplied = catalogUsesLiveOverlay(staticPlaces, mergedPlaces);
-      const source = overlayApplied ? "d1" : sourceFromPayload(payload.source, "osm");
+      const source = overlayApplied ? "d1" : staticSource;
       const catalogMode: CatalogMode = overlayApplied ? "d1_overlay" : "static";
       return {
         source,
@@ -57,7 +68,7 @@ export async function fetchPlacesPayload(): Promise<PlacesPayloadResult> {
   }
 
   try {
-    const apiResponse = await fetch("/api/places", { cache: "no-store", signal: AbortSignal.timeout(10_000) });
+    const apiResponse = await fetch("/api/places", { cache: "no-store", signal: AbortSignal.timeout(15_000) });
     if (apiResponse.ok) {
       const payload = (await apiResponse.json()) as PlacesPayload;
       if (payload.places?.length) {
@@ -86,7 +97,7 @@ async function mergeLiveCatalogPlaces(
   blocked: PlaceIdentity[],
 ): Promise<{ places: PlaceInput[]; liveApi: LiveApiStatus }> {
   try {
-    const apiResponse = await fetch("/api/places", { cache: "no-store", signal: AbortSignal.timeout(10_000) });
+    const apiResponse = await fetch("/api/places", { cache: "no-store", signal: AbortSignal.timeout(15_000) });
     if (!apiResponse.ok) {
       return { places: staticPlaces, liveApi: "failed" };
     }

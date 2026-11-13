@@ -1,4 +1,5 @@
 import { loadPlacesFromD1 } from '../../lib/place-records.ts';
+import { enrichD1PlaceFromStatic } from '../../lib/place-catalog-merge.ts';
 import { filterPublishedPlaces, isClosedPlace, type PlaceIdentity } from '../../lib/place-visibility.ts';
 import { VERSIONS, type AiBinding, type ConciergePlace, type QueryContext, type VectorBinding } from '../../lib/concierge/contracts.ts';
 import { coordinates } from '../../lib/concierge/gates.ts';
@@ -228,19 +229,29 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
             places = assetPlaces;
             sourceNamespace = 'published_dataset';
           } else {
-            const existingIds = new Set(places.map((p) => p.id));
-            const existingOsm = new Set(places.map((p) => p.osmIdentity).filter(Boolean) as string[]);
-            const existingNameArea = new Set(places.map((p) => `${normalize(p.name)}::${normalize(p.area || '')}`));
+            const byId = new Map(places.map((p) => [p.id, p]));
+            const byOsm = new Map<string, ConciergePlace>();
+            const byNameArea = new Map<string, ConciergePlace>();
+            for (const p of places) {
+              if (p.osmIdentity) byOsm.set(p.osmIdentity, p);
+              const na = `${normalize(p.name)}::${normalize(p.area || '')}`;
+              if (na) byNameArea.set(na, p);
+            }
             for (const ap of assetPlaces) {
-              if (existingIds.has(ap.id)) continue;
-              if (ap.osmIdentity && existingOsm.has(ap.osmIdentity)) continue;
               const nameArea = `${normalize(ap.name)}::${normalize(ap.area || '')}`;
-              if (nameArea && existingNameArea.has(nameArea)) continue;
+              const existing =
+                byId.get(ap.id) ??
+                (ap.osmIdentity ? byOsm.get(ap.osmIdentity) : undefined) ??
+                (nameArea ? byNameArea.get(nameArea) : undefined);
+              if (existing) {
+                enrichD1PlaceFromStatic(existing, ap as Record<string, any>);
+                continue;
+              }
 
               places.push(ap);
-              existingIds.add(ap.id);
-              if (ap.osmIdentity) existingOsm.add(ap.osmIdentity);
-              existingNameArea.add(nameArea);
+              byId.set(ap.id, ap);
+              if (ap.osmIdentity) byOsm.set(ap.osmIdentity, ap);
+              if (nameArea) byNameArea.set(nameArea, ap);
             }
           }
         }

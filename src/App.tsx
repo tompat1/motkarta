@@ -681,37 +681,61 @@ function AppContent({
     void checkGlobalAdminSession();
   }, [checkGlobalAdminSession]);
 
+  const applyPlacesPayload = useCallback((payload: import("../lib/place-payload").PlacesPayloadResult) => {
+    let initialPlaces = payload.places;
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("motkarta_user_places");
+        if (stored) {
+          const userPlaces: PlaceInput[] = JSON.parse(stored);
+          if (Array.isArray(userPlaces) && userPlaces.length > 0) {
+            initialPlaces = [...userPlaces, ...initialPlaces];
+          }
+        }
+      } catch {}
+    }
+    const augmentedPlaces = sanitizeAndAugmentPlaces(filterPublishedPlaces(initialPlaces, payload.blocked));
+    setPlaces(augmentedPlaces);
+    setDataSource(payload.source);
+    setCatalogDebug({ ...payload.catalogDebug, placeCount: augmentedPlaces.length });
+  }, []);
+
+  const [placesReloadTick, setPlacesReloadTick] = useState(0);
+  const retryLoadPlaces = useCallback(() => {
+    setDataSource("loading");
+    setPlacesReloadTick((prev) => prev + 1);
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
 
-    async function loadPlaces() {
+    async function loadPlaces(attempt = 0) {
+      let renderedStaticSnapshot = false;
       try {
-        const payload = await fetchPlacesPayload();
+        const payload = await fetchPlacesPayload({
+          onStaticPlacesReady: (snapshot) => {
+            if (!cancelled) {
+              renderedStaticSnapshot = true;
+              applyPlacesPayload(snapshot);
+            }
+          },
+        });
 
         if (!cancelled) {
-          let initialPlaces = payload.places;
-          if (typeof window !== "undefined") {
-            try {
-              const stored = localStorage.getItem("motkarta_user_places");
-              if (stored) {
-                const userPlaces: PlaceInput[] = JSON.parse(stored);
-                if (Array.isArray(userPlaces) && userPlaces.length > 0) {
-                  initialPlaces = [...userPlaces, ...initialPlaces];
-                }
-              }
-            } catch {}
-          }
-          const augmentedPlaces = sanitizeAndAugmentPlaces(filterPublishedPlaces(initialPlaces, payload.blocked));
-          setPlaces(augmentedPlaces);
-          setDataSource(payload.source);
-          setCatalogDebug({ ...payload.catalogDebug, placeCount: augmentedPlaces.length });
+          applyPlacesPayload(payload);
         }
       } catch {
-        if (!cancelled) {
-          setPlaces([]);
-          setDataSource("unavailable");
-          setCatalogDebug(catalogDebugUnavailable());
+        if (cancelled || renderedStaticSnapshot) return;
+        if (attempt < 2) {
+          retryTimer = setTimeout(() => {
+            if (!cancelled) void loadPlaces(attempt + 1);
+          }, 1200 * (attempt + 1));
+          return;
         }
+        setPlaces([]);
+        setDataSource("unavailable");
+        setCatalogDebug(catalogDebugUnavailable());
       }
     }
 
@@ -744,13 +768,16 @@ function AppContent({
     }
 
     void loadPlaces();
-    void loadDbSources();
-    void loadDbPrompts();
+    if (placesReloadTick === 0) {
+      void loadDbSources();
+      void loadDbPrompts();
+    }
 
     return () => {
       cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
     };
-  }, []);
+  }, [applyPlacesPayload, placesReloadTick]);
 
   const preferences = useMemo(() => preferencesFromQuery(query, kind), [kind, query]);
   const scoredPlaces = useMemo(
@@ -862,23 +889,71 @@ function AppContent({
         typeof cardLat === "number" &&
         typeof cardLon === "number" &&
         cardLat !== 0 &&
-        cardLon !== 0 &&
-        scoredPlaces.length > 0
+        cardLon !== 0
       ) {
         const cardKind = ("kind" in card && typeof card.kind === "string" ? card.kind : "Restaurant") as import("../lib/scoring").EstablishmentType;
         const template = scoredPlaces[0];
-        const syntheticPlace: PlaceInput = {
-          ...template,
-          id: typeof card.id === "number" ? card.id : 980000 + idx,
-          name: card.name,
-          kind: cardKind,
-          area: card.area || "Stockholm",
-          latitude: cardLat,
-          longitude: cardLon,
-          tags: [],
-          website: card.website,
-          osmIdentity: cardOsmIdentity,
-        };
+        const syntheticPlace: PlaceInput = template
+          ? {
+              ...template,
+              id: typeof card.id === "number" ? card.id : 980000 + idx,
+              name: card.name,
+              kind: cardKind,
+              area: card.area || "Stockholm",
+              latitude: cardLat,
+              longitude: cardLon,
+              tags: [],
+              website: card.website,
+              osmIdentity: cardOsmIdentity,
+            }
+          : {
+              id: typeof card.id === "number" ? card.id : 980000 + idx,
+              name: card.name,
+              kind: cardKind,
+              area: card.area || "Stockholm",
+              note: "",
+              tags: [],
+              evidenceLabel: "Concierge",
+              ratingAverage: 4.3,
+              reliableRatingCount: 8,
+              reviewCount: 8,
+              categoryMeanRating: 4.1,
+              categoryPopularityRaw: 10,
+              localPopularityPercentile: 0.5,
+              priceLevel: 2,
+              mainstreamExposure: 10,
+              ageDays: 365,
+              daysSinceFreshEvidence: 14,
+              evidence: {
+                specialistGuide: 60,
+                independentEditorial: 60,
+                verifiedUserRating: 60,
+                repeatVisits: 50,
+                recentReviews: 50,
+                credibleReviewers: 60,
+                inspectionStatus: 70,
+                verifiedAttributes: 60,
+                dataFreshness: 85,
+                confidence: "Medium",
+              },
+              engagement: {
+                searchImpressions: 1,
+                profileViews: 1,
+                mapMarkerClicks: 1,
+                saves: 1,
+                directionRequests: 0,
+                confirmedVisits: 1,
+                repeatVisits: 0,
+                recommendations: 1,
+                recentSaves: 0,
+              },
+              x: 50,
+              y: 50,
+              latitude: cardLat,
+              longitude: cardLon,
+              website: card.website,
+              osmIdentity: cardOsmIdentity,
+            };
         match = scorePlace(syntheticPlace, preferences);
       }
 
@@ -973,10 +1048,20 @@ function AppContent({
       .filter((place) => {
         const qClean = query.trim().toLowerCase();
         if (!qClean) return true;
-        const placeSearchText = `${place.name} ${place.area} ${place.address ?? ""} ${place.cuisine ?? ""} ${place.tags.join(" ")}`.toLowerCase();
+        const placeSearchText = `${place.name} ${place.area} ${place.address ?? ""} ${place.cuisine ?? ""} ${place.kind} ${place.note ?? ""} ${place.tags.join(" ")}`.toLowerCase();
         if (placeSearchText.includes(qClean)) return true;
-        const queryTokens = qClean.split(/[,\s]+/).filter(Boolean);
-        return queryTokens.length > 0 && queryTokens.every((token) => placeSearchText.includes(token));
+        const rawTokens = qClean.split(/[,\s?.!]+/).filter(Boolean);
+        if (rawTokens.length === 0) return true;
+        const stopWords = new Set([
+          "och", "på", "i", "med", "för", "från", "till", "av", "som", "är", "en", "ett", "den", "det", "de",
+          "mest", "bortom", "eller", "var", "vad", "finns", "bästa", "bra", "ställen", "ställe", "stockholm",
+          "and", "in", "on", "with", "for", "from", "to", "of", "the", "a", "an", "or", "where", "best", "good", "places", "place", "near",
+        ]);
+        const contentTokens = rawTokens.length > 1
+          ? rawTokens.filter((token) => !stopWords.has(token) && token.length > 1)
+          : rawTokens;
+        const queryTokens = contentTokens.length > 0 ? contentTokens : rawTokens;
+        return queryTokens.every((token) => placeSearchText.includes(token));
       });
 
     const modeFilteredPlaces = filterPlacesByRankingMode(
@@ -1442,6 +1527,9 @@ function AppContent({
   }, [searchAutocompleteSuggestions, matchingSuggestions, lang]);
 
   const handleSelectAutocompleteItem = (item: { value: string; placeId?: number; isPrompt?: boolean }) => {
+    if (kind === "Saved") {
+      setKind("All places");
+    }
     setQuery(item.value);
     setConcierge(item.value);
     setIsSearchFocused(false);
@@ -1507,6 +1595,9 @@ function AppContent({
 
   async function askWithQuery(queryText: string) {
     if (!queryText.trim()) return;
+    if (kind === "Saved") {
+      setKind("All places");
+    }
 
     conciergeRequest.current?.abort();
     const controller = new AbortController();
@@ -1725,11 +1816,17 @@ function AppContent({
   }
 
   async function askFromSearch() {
-    const searchText = query.trim() || concierge.trim();
+    const typedQuery = query.trim();
+    const searchText = typedQuery || concierge.trim();
     if (!searchText) return;
 
+    if (kind === "Saved") {
+      setKind("All places");
+    }
     setConcierge(searchText);
-    setQuery(searchText);
+    if (typedQuery) {
+      setQuery(typedQuery);
+    }
 
     if (typeof window !== "undefined") {
       const isMobile = window.matchMedia("(max-width: 768px)").matches;
@@ -1921,6 +2018,9 @@ function AppContent({
             value={query}
             onChange={(event) => {
               const val = event.target.value;
+              if (val.trim() && kind === "Saved") {
+                setKind("All places");
+              }
               setQuery(val);
               setConcierge(val);
               setAutocompleteIndex(-1);
@@ -2773,6 +2873,35 @@ function AppContent({
                   <CircleNotch size={14} className="animate-spin" aria-hidden="true" />
                   <span>{placesLoadingCopy.body}</span>
                 </p>
+              ) : matchingCount === 0 && dataSource === "unavailable" ? (
+                <p className="mobile-results-count-meta">
+                  <button
+                    type="button"
+                    className="mobile-empty-reset-inline-btn"
+                    onClick={retryLoadPlaces}
+                  >
+                    {lang === "sv" ? "Kunde inte ladda platser · Försök igen" : "Could not load places · Try again"}
+                  </button>
+                </p>
+              ) : matchingCount === 0 && (kind !== "All places" || cuisine !== allCuisines || selectedTags.length > 0 || Boolean(query.trim())) ? (
+                <p className="mobile-results-count-meta">
+                  <button
+                    type="button"
+                    className="mobile-empty-reset-inline-btn"
+                    onClick={handleResetMobileFilters}
+                  >
+                    <X size={12} weight="bold" aria-hidden="true" />
+                    <span>
+                      {kind === "Saved" && savedPlaceIds.length === 0
+                        ? lang === "sv"
+                          ? "Inga sparade ställen ännu · Visa alla ställen"
+                          : "No saved places yet · Show all places"
+                        : lang === "sv"
+                          ? "Inga träffar med aktiva filter · Visa alla ställen"
+                          : "No matches with active filters · Show all places"}
+                    </span>
+                  </button>
+                </p>
               ) : matchingCount !== (mobileViewMode === "list" ? listDisplayCount : mapDisplayCount) ? (
                 <p className="mobile-results-count-meta">
                   <span>{formatPlaceCount(matchingCount)} {t.placesMatching}</span>
@@ -2849,6 +2978,7 @@ function AppContent({
                 setIsPlaceDetailOpen(true);
               }}
               onToggleSave={handleToggleSavePlace}
+              onResetFilters={handleResetMobileFilters}
             />
           )
         ) : null}

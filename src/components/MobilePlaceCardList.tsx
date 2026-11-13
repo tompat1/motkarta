@@ -30,6 +30,7 @@ interface MobilePlaceCardListProps {
   lang: Language;
   onSelectPlace: (place: ScoredPlace) => void;
   onToggleSave: (id: number) => void;
+  onResetFilters?: () => void;
 }
 
 export function MobilePlaceCardList({
@@ -40,6 +41,7 @@ export function MobilePlaceCardList({
   lang,
   onSelectPlace,
   onToggleSave,
+  onResetFilters,
 }: MobilePlaceCardListProps) {
   const [photoMap, setPhotoMap] = useState<Record<number, string | null>>({});
   const listRef = useRef<HTMLDivElement>(null);
@@ -117,6 +119,15 @@ export function MobilePlaceCardList({
         <Sparkle size={32} weight="bold" style={{ color: "var(--color-water)" }} />
         <h3>{lang === "sv" ? "Inga ställen matchar dina filter" : "No places match your filters"}</h3>
         <p>{lang === "sv" ? "Prova att justera eller återställa dina valda filter." : "Try adjusting or clearing your chosen filters."}</p>
+        {onResetFilters ? (
+          <button
+            type="button"
+            className="mobile-list-empty-reset-btn"
+            onClick={onResetFilters}
+          >
+            {lang === "sv" ? "Visa alla ställen" : "Show all places"}
+          </button>
+        ) : null}
       </div>
     );
   }

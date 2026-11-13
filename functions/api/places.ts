@@ -1,4 +1,5 @@
 import { loadPlacesFromD1 } from "../../lib/place-records.ts";
+import { enrichD1PlaceFromStatic } from "../../lib/place-catalog-merge.ts";
 import { normalize } from "../../lib/concierge/facts.ts";
 import { isExcludedCatalogPlace } from "../../lib/catalog-exclusions.ts";
 import { filterPublishedPlaces, isClosedPlace, loadUnpublishedPlaces, type PlaceIdentity, type VisibilityDatabase } from "../../lib/place-visibility.ts";
@@ -73,20 +74,31 @@ export async function onRequestGet(context: EventContext<Env>) {
       );
     }
     if (places.length && Array.isArray(fallbackPlaces)) {
-      const existingIds = new Set(places.map((p) => p.id));
-      const existingOsm = new Set(places.map((p) => (p as any).osmIdentity).filter(Boolean) as string[]);
-      const existingNameArea = new Set(places.map((p) => `${normalize(p.name)}::${normalize(p.area || '')}`));
+      const byId = new Map(places.map((p) => [p.id, p]));
+      const byOsm = new Map<string, (typeof places)[number]>();
+      const byNameArea = new Map<string, (typeof places)[number]>();
+      for (const p of places) {
+        const osmId = (p as any).osmIdentity as string | undefined;
+        if (osmId) byOsm.set(osmId, p);
+        const na = `${normalize(p.name)}::${normalize(p.area || "")}`;
+        if (na) byNameArea.set(na, p);
+      }
       for (const fp of fallbackPlaces as Array<{ id: number; name?: string; area?: string; osmIdentity?: string }>) {
         if (fp && typeof fp.id === "number") {
-          if (existingIds.has(fp.id)) continue;
-          if (fp.osmIdentity && existingOsm.has(fp.osmIdentity)) continue;
-          const nameArea = fp.name ? `${normalize(fp.name)}::${normalize(fp.area || '')}` : '';
-          if (nameArea && existingNameArea.has(nameArea)) continue;
+          const nameArea = fp.name ? `${normalize(fp.name)}::${normalize(fp.area || "")}` : "";
+          const existing =
+            byId.get(fp.id) ??
+            (fp.osmIdentity ? byOsm.get(fp.osmIdentity) : undefined) ??
+            (nameArea ? byNameArea.get(nameArea) : undefined);
+          if (existing) {
+            enrichD1PlaceFromStatic(existing as Record<string, any>, fp as Record<string, any>);
+            continue;
+          }
 
           places.push(fp as any);
-          existingIds.add(fp.id);
-          if (fp.osmIdentity) existingOsm.add(fp.osmIdentity);
-          if (nameArea) existingNameArea.add(nameArea);
+          byId.set(fp.id, fp as any);
+          if (fp.osmIdentity) byOsm.set(fp.osmIdentity, fp as any);
+          if (nameArea) byNameArea.set(nameArea, fp as any);
         }
       }
     }

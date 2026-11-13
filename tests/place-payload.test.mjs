@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
 
+import { enrichD1PlaceFromStatic } from "../lib/place-catalog-merge.ts";
 import { fetchPlacesPayload } from "../lib/place-payload.ts";
 
 const originalFetch = globalThis.fetch;
@@ -144,6 +145,94 @@ test("visibility errors stop loading instead of bypassing admin removals", async
     };
     await assert.rejects(fetchPlacesPayload(), /[Pp]ublication status/);
   }
+});
+
+test("places payload calls onStaticPlacesReady before live D1 API finishes and preserves static tags/specialty", async () => {
+  const events = [];
+  globalThis.fetch = async (url) => {
+    if (url === "/api/place-visibility") return jsonResponse({ blocked: [] });
+    if (url === "/data/places.json") {
+      return jsonResponse({
+        source: "osm_curated_open_sources",
+        places: [{
+          ...place(10, "Drop Coffee"),
+          osmIdentity: "node:1010",
+          tags: ["Specialty coffee", "Cardamom bun"],
+          specialty: {
+            specialtyVerified: true,
+            ownRoastery: true,
+            traceableCoffee: true,
+            filterCoffee: true,
+            espressoBased: true,
+            rotatingRoasters: false,
+            singleOrigin: true,
+            manualBrewMethods: ["V60"],
+            decafAvailable: true,
+            beansForSale: true,
+            verificationSources: 3,
+          },
+        }],
+      });
+    }
+    if (url === "/api/places") {
+      events.push("live_fetch_started");
+      return jsonResponse({
+        source: "d1",
+        places: [{
+          ...place(9010, "Drop Coffee"),
+          osmIdentity: "node:1010",
+          address: "Wollmar Yxkullsgatan 10",
+          tags: ["Café", "Södermalm"],
+        }],
+      });
+    }
+    throw new Error(`Unexpected URL ${url}`);
+  };
+
+  const payload = await fetchPlacesPayload({
+    onStaticPlacesReady: (snapshot) => {
+      events.push(`static_ready:${snapshot.places.length}`);
+    },
+  });
+
+  assert.deepEqual(events, ["static_ready:1", "live_fetch_started"]);
+  assert.equal(payload.places[0].address, "Wollmar Yxkullsgatan 10");
+  assert.ok(payload.places[0].tags.includes("Specialty coffee"));
+  assert.ok(payload.places[0].tags.includes("Cardamom bun"));
+  assert.equal(payload.places[0].specialty?.specialtyVerified, true);
+});
+
+test("enrichD1PlaceFromStatic enriches baseline D1 rows with static tags, cuisine, and specialty", () => {
+  const d1Row = {
+    ...place(500, "Café Pascal"),
+    cuisine: undefined,
+    tags: ["Café", "Södermalm"],
+  };
+  const staticRow = {
+    ...place(12, "Café Pascal"),
+    cuisine: "coffee_shop;bakery",
+    tags: ["Specialty coffee", "Cardamom bun"],
+    specialty: {
+      specialtyVerified: true,
+      ownRoastery: false,
+      traceableCoffee: true,
+      filterCoffee: true,
+      espressoBased: true,
+      rotatingRoasters: true,
+      singleOrigin: true,
+      manualBrewMethods: ["V60"],
+      decafAvailable: true,
+      beansForSale: true,
+      verificationSources: 3,
+    },
+  };
+
+  enrichD1PlaceFromStatic(d1Row, staticRow);
+
+  assert.equal(d1Row.cuisine, "coffee_shop;bakery");
+  assert.ok(d1Row.tags.includes("Specialty coffee"));
+  assert.ok(d1Row.tags.includes("Cardamom bun"));
+  assert.equal(d1Row.specialty?.specialtyVerified, true);
 });
 
 function jsonResponse(body) {
