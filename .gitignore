@@ -26,6 +26,7 @@ dist-ssr/
 /.wrangler/
 /.openai/
 /.sites-runtime/
+.sites-runtime/
 /.vinext/
 /outputs/
 /work/
