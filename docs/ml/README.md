@@ -32,6 +32,7 @@ for exposure concentration. It does not mean perfectly objective.
 | [Training and evaluation](training-and-evaluation.md) | Training procedure, leakage prevention, uncertainty and metrics |
 | [Operations runbook](operations-runbook.md) | Commands, artifacts, deployment prerequisites, rollback and troubleshooting |
 | [Maintenance policy](maintenance-and-change-policy.md) | Change control, reviews, compatibility, drift and agent handoff |
+| [Concierge RAG & Triad Metrics](concierge-rag.md) | Hybrid vector/lexical retrieval, Gemma 4 synthesis, RAG metrics triad and guardrails |
 | [Concierge Future Roadmap](concierge-future-roadmap.md) | Roadmap for multi-turn chat, telemetry learning loop, and web search enrichment |
 | [Underexposure model card](../discovery-model-card.md) | Formal intended-use and limitation statement for the current ML model |
 
