@@ -1,9 +1,6 @@
 # Motkarta ML system
 
-Latest concierge status: [production build repaired](../build-deployment-repair.md)
-and the [real-model trial completed](concierge-real-model-trial.md): 3,143 verified
-vectors, 128 real query captures and 23/32 accepted synthesis responses. Public
-retrieval/synthesis remain lexical and template-based pending quality improvements.
+Latest concierge status: Workers AI bindings (`@cf/baai/bge-m3` embedding, `@cf/google/gemma-4-26b-a4b-it` constrained synthesis) and Vectorize index (`motkarta-concierge-preview-v1`) are provisioned in `wrangler.toml` (`cpu_ms = 10000`). Public retrieval and synthesis remain lexical and template-based pending independent evaluation and sign-off on the holdout suite per [holdout v2](concierge-holdout-v2.md).
 
 This directory is the canonical documentation for machine learning, ranking,
 recommendation telemetry, evaluation and model maintenance in Motkarta.
@@ -32,6 +29,7 @@ for exposure concentration. It does not mean perfectly objective.
 | [Training and evaluation](training-and-evaluation.md) | Training procedure, leakage prevention, uncertainty and metrics |
 | [Operations runbook](operations-runbook.md) | Commands, artifacts, deployment prerequisites, rollback and troubleshooting |
 | [Maintenance policy](maintenance-and-change-policy.md) | Change control, reviews, compatibility, drift and agent handoff |
+| [Concierge RAG & Triad Metrics](concierge-rag.md) | Hybrid vector/lexical retrieval, Gemma 4 synthesis, RAG metrics triad and guardrails |
 | [Concierge Future Roadmap](concierge-future-roadmap.md) | Roadmap for multi-turn chat, telemetry learning loop, and web search enrichment |
 | [Underexposure model card](../discovery-model-card.md) | Formal intended-use and limitation statement for the current ML model |
 

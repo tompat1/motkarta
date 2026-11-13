@@ -27,6 +27,7 @@ test('Pages service-binding gate fails closed and reports requested units', asyn
   assert.deepEqual(body, { key: 'test-client', units: 2 });
   assert.equal(await requestAiPermit({ CONCIERGE_RATE_GATE: { fetch: async () => new Response(null, { status: 429 }) } }, 'x', 1), false);
   assert.equal(await requestAiPermit({ CONCIERGE_RATE_GATE: { fetch: async () => { throw new Error('down'); } } }, 'x', 1), false);
+  assert.equal(await requestAiPermit({}, 'x', 1), false);
 });
 
 test('endpoint requests two units for hybrid plus synthesis and falls back when denied', async () => {
@@ -44,6 +45,42 @@ test('endpoint requests two units for hybrid plus synthesis and falls back when 
   assert.equal(result.retrievalMode, 'lexical');
   assert.equal(result.synthesisMode, 'template');
   assert.ok(result.diagnostics.fallbackReasons.includes('ai_rate_gate_closed'));
+});
+
+test('endpoint distinguishes gate outage from quota denial', async () => {
+  const env = {
+    DB: { prepare: (sql) => ({ bind() { return this; }, all: async () => ({ results: sql.includes('FROM establishments') ? [{ id: 1, name: 'Magari', type: 'Restaurant', district: 'Södermalm', description: '', chain_status: 'independent' }] : sql.includes('FROM establishment_tags') ? [{ establishment_id: 1, tag: 'pizza' }] : [] }) }) },
+    CONCIERGE_RETRIEVAL_MODE: 'hybrid',
+    CONCIERGE_SYNTHESIS_MODE: 'constrained',
+    CONCIERGE_RATE_GATE: { fetch: async () => new Response(null, { status: 503 }) },
+  };
+  const request = new Request('https://example.test/api/concierge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ query: 'pizza' }) });
+  const response = await onRequestPost({ request, env });
+  const result = await response.json();
+  assert.equal(result.retrievalMode, 'lexical');
+  assert.ok(result.diagnostics.fallbackReasons.includes('ai_rate_gate_unavailable'));
+  assert.equal(result.diagnostics.fallbackReasons.includes('ai_rate_gate_closed'), false);
+});
+
+test('action and unretrievable requests do not charge the rate gate', async () => {
+  let gateCalls = 0;
+  const env = {
+    DB: { prepare: (sql) => ({ bind() { return this; }, all: async () => ({ results: sql.includes('FROM establishments') ? [{ id: 1, name: 'Magari', type: 'Restaurant', district: 'Södermalm', description: '', chain_status: 'independent' }] : sql.includes('FROM establishment_tags') ? [{ establishment_id: 1, tag: 'pizza' }] : [] }) }) },
+    CONCIERGE_RETRIEVAL_MODE: 'hybrid',
+    CONCIERGE_SYNTHESIS_MODE: 'constrained',
+    CONCIERGE_RATE_GATE: { fetch: async () => { gateCalls++; return Response.json({ success: true }); } },
+  };
+  // Action query
+  const actionReq = new Request('https://example.test/api/concierge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ query: 'Lägg till foto för Magari' }) });
+  const actionRes = await onRequestPost({ request: actionReq, env });
+  assert.equal(actionRes.status, 200);
+  assert.equal(gateCalls, 0);
+
+  // Out of Stockholm query
+  const outReq = new Request('https://example.test/api/concierge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ query: 'restaurang i Göteborg' }) });
+  const outRes = await onRequestPost({ request: outReq, env });
+  assert.equal(outRes.status, 200);
+  assert.equal(gateCalls, 0);
 });
 
 test('rate-gate worker cannot receive public workers.dev traffic', async () => {

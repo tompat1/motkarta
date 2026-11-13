@@ -1630,7 +1630,7 @@ function AppContent({
 
     const userMessageTimestamp = Date.now();
     const currentMessages = conciergeChatMessages;
-    const timer = setTimeout(() => controller.abort(), 6000);
+    const timer = setTimeout(() => controller.abort(), 12000);
     try {
       const resp = await fetch("/api/concierge", {
         method: "POST", signal: controller.signal,

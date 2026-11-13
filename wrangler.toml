@@ -2,9 +2,9 @@ name = "motkarta"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-08-13"
 
-# Verified with the full D1 catalog in the concierge preview.
+# Production stays lexical/template until holdout-v2 quality approval.
 [limits]
-cpu_ms = 1000
+cpu_ms = 10000
 
 [[d1_databases]]
 binding = "DB"
@@ -12,9 +12,22 @@ database_name = "motkarta-prod"
 database_id = "e9affd7c-51fb-4b73-8cfc-c105a0d136bd"
 migrations_dir = "drizzle"
 
+[ai]
+binding = "AI"
+
+[[vectorize]]
+binding = "CONCIERGE_INDEX"
+index_name = "motkarta-concierge-preview-v1"
+
+[[services]]
+binding = "CONCIERGE_RATE_GATE"
+service = "motkarta-concierge-ai-gate"
+
 [vars]
 CONCIERGE_RETRIEVAL_MODE = "lexical"
 CONCIERGE_SYNTHESIS_MODE = "template"
+CONCIERGE_MIN_SIMILARITY = "0.5"
+CONCIERGE_DEADLINE_MS = "10000"
 MOTKARTA_PUBLIC_SITE_URL = "https://motkarta.rynell.org"
 MOTKARTA_CLOUDFLARE_ACCOUNT_ID = "16891d0ac7f5c5aad70c7b2dd0f7f032"
 

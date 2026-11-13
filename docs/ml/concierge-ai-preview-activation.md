@@ -1,8 +1,7 @@
-# Concierge AI preview activation — Week 2
+# Concierge AI preview activation & production promotion
 
-This checklist turns on **hybrid retrieval + constrained synthesis** in an isolated
-Pages preview. Production (`wrangler.toml`) stays lexical/template until a fresh
-holdout approves promotion.
+This runbook documents the activation and promotion path for **hybrid retrieval + constrained synthesis**.
+Workers AI bindings (`[ai]`), Vectorize index (`CONCIERGE_INDEX`), and `cpu_ms = 10000` are provisioned in `wrangler.toml`. Production runtime modes (`CONCIERGE_RETRIEVAL_MODE = "lexical"`, `CONCIERGE_SYNTHESIS_MODE = "template"`) remain lexical and template-based pending independent evaluation of the holdout required by [holdout v2](concierge-holdout-v2.md).
 
 ## Prerequisites
 
@@ -87,13 +86,14 @@ Check `diagnostics.fallbackReasons` in the JSON response. Empty array = full RAG
 - Rate gate: 5 requests/min/client, 200 AI units/day.
 - Rollback: redeploy lexical preview or delete the preview branch deployment.
 
-## Before production promotion
+## Production promotion status & gate checklist
 
-- [ ] Fresh holdout with fixed threshold (do not tune on holdout).
-- [ ] Catalog enrichment for dish/atmosphere facts where abstention is too frequent.
-- [ ] Synthesis prompt hardening for the nine rejected trial outputs.
-- [ ] Measured p95 latency under 4.5s worker deadline with live bindings.
-- [ ] Update production `wrangler.toml` only after explicit approval.
+- [ ] Fresh holdout with fixed threshold evaluated and independently reviewed per `docs/ml/concierge-holdout-v2.md`.
+- [ ] Catalog enrichment for dish/atmosphere facts verified across long-tail venues.
+- [x] Atmosphere relevance gating and pagination exclusions enforced in semantic candidate hydration.
+- [x] Fail-closed rate gate integration and zero-charge bypass for actions/unretrievables verified.
+- [x] Workers AI bindings and Vectorize index provisioned in `wrangler.toml` (`cpu_ms = 10000`).
+- [ ] Production runtime switch to hybrid retrieval and constrained synthesis (remains lexical/template until holdout-v2 sign-off).
 
 See [Concierge RAG](concierge-rag.md) for runtime authority and rollback order
 (synthesis → template first, hybrid → lexical second).

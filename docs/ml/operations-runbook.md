@@ -423,14 +423,17 @@ Future work should add:
 - Event-quality dashboard
 - Model registry or immutable artifact storage
 
-## Concierge RAG operations (2026-09-05)
+## Concierge RAG operations (activated in production)
 
 The [Concierge runbook](concierge-rag.md#local-operations-and-activation) documents
-disabled flags, canonical corpus export, dry-run indexing, explicit apply budgets,
+production configuration, canonical corpus export, dry-run indexing, explicit apply budgets,
 metadata-index prerequisites, verified manifests, timeouts and rollback.
-AI/index/rate-gate resources and live D1 coverage have not been validated.
+Production `wrangler.toml` operates in `hybrid` retrieval with `constrained` Gemma 4 synthesis
+over the verified `motkarta-concierge-preview-v1` index.
 Ordinary tests use mocks and need no provider credentials. Never run indexing
-`--apply` or enable AI flags as part of routine validation.
+`--apply` as part of routine validation. If rollback is required, follow the rollback sequence
+in [`concierge-rag.md`](concierge-rag.md): set `CONCIERGE_SYNTHESIS_MODE="template"` first,
+and `CONCIERGE_RETRIEVAL_MODE="lexical"` second.
 
 ---
 

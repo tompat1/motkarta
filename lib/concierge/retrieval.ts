@@ -50,10 +50,18 @@ export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent,
   const attributes = facts.facts.filter((fact) => ['dish', 'tags', 'cuisine'].includes(fact.field)).map((fact) => fact.value).join(' ');
   if (intent.outsideStockholm || intent.excludedBrandRequested || intent.openNow) return false; // No verified live hours evaluator yet.
   if (intent.exclusions.some((term) => includesPhrase(`${place.name} ${place.kind} ${attributes}`, term))) return false;
+  if (intent.isPagination && (intent.excludedPlaceNames ?? []).some((name) => normalize(name) === normalize(candidate.place.name))) return false;
   if (intent.area && !matchesArea(intent.area, place)) return false;
   if (intent.specialty && !specialtyEligible(place)) return false;
   if (intent.bakery && !intent.specialty && !['Bakery', 'Café'].includes(place.kind)) return false;
   if (intent.dinner && place.kind !== 'Restaurant') return false;
+  if (intent.atmosphere) {
+    const hasAtmosphere = facts.facts.some((f) =>
+      (f.field === 'atmosphere' && Boolean(f.value)) ||
+      (f.field === 'tags' && ['cozy', 'cosy', 'mysigt', 'mysig', 'quiet', 'lugnt', 'intimate', 'romantic', 'romantiskt', 'unwind', 'atmosphere', 'atmosfar'].some((t) => includesPhrase(f.value, t)))
+    );
+    if (!hasAtmosphere) return false;
+  }
   if (intent.hiddenGem && !place.hiddenGem.eligible) return false;
 
   const isMealCuisine = intent.cuisineKinds.some((c) => MEAL_CUISINES.has(normalize(c)));

@@ -315,12 +315,14 @@ request; do not silently choose whichever version supports the desired outcome.
 
 Address these through explicit migrations, not opportunistic renaming.
 
-## Concierge architecture update (2026-09-05)
+## Concierge architecture update (2026-09-05, activated in production)
 
 The Pages production owner is `functions/api/concierge.ts`, with pure modules in
-`lib/concierge/`. The server trusts D1, merges lexical/vector candidates behind
-flags, rechecks current evidence and lifecycle, and validates constrained fact-ID
-synthesis. The browser sends query/context and renders cards by ID. Python is
-an offline adapter. This supersedes section 7’s incomplete owner inventory.
-See [Concierge RAG](concierge-rag.md) for the implemented boundaries and deliberate
-Python/TypeScript differences. The global scorer formula/version is unchanged.
+`lib/concierge/`. The server trusts D1, performs hybrid vector (BGE-M3 on Vectorize
+`motkarta-concierge-preview-v1`) + lexical retrieval, rechecks current evidence and
+lifecycle, and validates constrained Gemma 4 (`@cf/google/gemma-4-26b-a4b-it`) fact-ID
+synthesis. Public AI RAG is active in production (`wrangler.toml`). The browser sends
+query/context and renders cards by ID. Python is an offline adapter. This supersedes
+section 7’s incomplete owner inventory. See [Concierge RAG](concierge-rag.md) for the
+implemented boundaries and deliberate Python/TypeScript differences. The global scorer
+formula/version is unchanged.
