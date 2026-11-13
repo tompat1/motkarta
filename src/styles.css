@@ -19676,8 +19676,8 @@ body.is-drawer-open .site-utilities > * {
   }
 
   .mobile-contribute-fab {
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     background: var(--color-signal, #ff4a2f);
     color: #ffffff;
@@ -19688,7 +19688,14 @@ body.is-drawer-open .site-utilities > * {
     justify-content: center;
     cursor: pointer;
     padding: 0;
+    margin: 0;
+    line-height: 0;
     transition: transform 0.15s ease, background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-contribute-fab:active {
+    transform: scale(0.94);
   }
 
   .mobile-contribute-fab.is-active {
@@ -19696,12 +19703,12 @@ body.is-drawer-open .site-utilities > * {
   }
 
   .mobile-contribute-fab-icon {
-    font-family: var(--font-mono, monospace);
-    font-size: 24px;
-    font-weight: 700;
-    line-height: 1;
-    display: inline-block;
-    transition: transform 0.15s ease;
+    display: block;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    transform-origin: 50% 50%;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .mobile-contribute-fab.is-active .mobile-contribute-fab-icon {

@@ -94,6 +94,7 @@ import {
   Image,
   MapTrifold,
   MagnifyingGlass,
+  Plus,
   PlusCircle,
   Scales,
   ShieldCheck,
@@ -4079,7 +4080,7 @@ function AppContent({
             }
             title={lang === "sv" ? "Lägg till ställe, recension, foto eller betyg" : "Add place, review, photo, or rating"}
           >
-            <span className="mobile-contribute-fab-icon" aria-hidden="true">+</span>
+            <Plus size={26} weight="bold" className="mobile-contribute-fab-icon" aria-hidden="true" />
           </button>
         </div>
       ) : null}
