@@ -6,6 +6,7 @@ import {
   buildConciergeQuerySuccess,
   conciergeDisplayAnswer,
   conciergeModeLabel,
+  buildFollowUpChips,
 } from "../src/app/concierge-client.ts";
 import { retrieveAndSynthesize } from "../lib/concierge/response.ts";
 
@@ -44,4 +45,34 @@ test("App.tsx wires structured concierge responses into answer state", async () 
   assert.match(appSource, /buildConciergeQuerySuccess\(currentMessages, queryText, payload/);
   assert.match(appSource, /buildConciergeQuerySuccess\(currentMessages, queryText, result/);
   assert.match(appSource, /if \(conciergeResponse\?\.cards\.length && conciergePlaces\.length > 0\)/);
+});
+
+test("buildFollowUpChips dynamically adapts alternative district and context", () => {
+  const soderQuery = "specialty coffee och kardemummabulle på Södermalm";
+  const soderResponse = retrieveAndSynthesize(soderQuery, places, { language: "sv" });
+  const soderChips = buildFollowUpChips(soderQuery, soderResponse, [], "sv");
+  const soderLabels = soderChips.map((c) => c.label);
+
+  assert.equal(soderLabels.includes("På Söder då?"), false, "Must not suggest Södermalm when already queried");
+  assert.equal(soderLabels.includes("På Östermalm då?"), true, "Must suggest alternative district like Östermalm");
+  assert.equal(soderLabels.includes("Fler förslag"), true);
+
+  // When querying Vasastan, Södermalm should be suggested
+  const vasastanQuery = "bästa pizza i Vasastan";
+  const vasaResponse = retrieveAndSynthesize(vasastanQuery, places, { language: "sv" });
+  const vasaChips = buildFollowUpChips(vasastanQuery, vasaResponse, [], "sv");
+  assert.equal(vasaChips.some((c) => c.label === "På Söder då?"), true);
+  assert.equal(vasaChips.some((c) => c.label === "I Vasastan då?"), false);
+
+  // When querying citywide without district, Södermalm is suggested
+  const cityQuery = "bästa pizza i stan";
+  const cityResponse = retrieveAndSynthesize(cityQuery, places, { language: "sv" });
+  const cityChips = buildFollowUpChips(cityQuery, cityResponse, [], "sv");
+  assert.equal(cityChips.some((c) => c.label === "På Söder då?"), true);
+
+  // When price is constrained, does not suggest 'Billigare'
+  const cheapQuery = "pizza under 100";
+  const cheapChips = buildFollowUpChips(cheapQuery, undefined, [], "sv");
+  assert.equal(cheapChips.some((c) => c.label === "Billigare"), false);
+  assert.equal(cheapChips.some((c) => c.label.includes("uteservering")), true);
 });

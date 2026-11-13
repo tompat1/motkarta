@@ -9,7 +9,7 @@ import { ArrowSquareOut, CaretUp, CheckCircle, Globe, MagnifyingGlass, MapPin, M
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 
 import { formatChatTimestamp, formatChatTimestampTooltip } from "../../lib/concierge/format";
-import { conciergeModeLabel } from "../app/concierge-client";
+import { conciergeModeLabel, buildFollowUpChips } from "../app/concierge-client";
 export { formatChatTimestamp, formatChatTimestampTooltip };
 
 export function ConciergeAnswerView({
@@ -43,6 +43,10 @@ export function ConciergeAnswerView({
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [feedbackType, setFeedbackType] = useState<"up" | "down">("up");
+
+  const followUpChips = useMemo(() => {
+    return buildFollowUpChips(response?.query ?? "", response, messages, lang);
+  }, [response, messages, lang]);
 
   const handleSelect = (placeName: string, explicitId?: number) => {
     if (explicitId !== undefined) {
@@ -468,27 +472,16 @@ export function ConciergeAnswerView({
               {lang === "sv" ? "Följdfråga" : "Follow-up"}
             </div>
             <div className="concierge-follow-up-chips">
-              <button
-                type="button"
-                className="concierge-btn"
-                onClick={() => onRefineQuery(lang === "sv" ? "Ge mig fler ställen" : "Show more places")}
-              >
-                {lang === "sv" ? "Fler förslag" : "More places"}
-              </button>
-              <button
-                type="button"
-                className="concierge-btn"
-                onClick={() => onRefineQuery(lang === "sv" ? "På Södermalm då?" : "In Södermalm?")}
-              >
-                {lang === "sv" ? "På Söder då?" : "In Södermalm?"}
-              </button>
-              <button
-                type="button"
-                className="concierge-btn"
-                onClick={() => onRefineQuery(lang === "sv" ? "Något billigare alternativ?" : "More affordable options?")}
-              >
-                {lang === "sv" ? "Billigare" : "Budget friendly"}
-              </button>
+              {followUpChips.map((chip, index) => (
+                <button
+                  key={`${chip.label}-${index}`}
+                  type="button"
+                  className="concierge-btn"
+                  onClick={() => onRefineQuery(chip.query)}
+                >
+                  {chip.label}
+                </button>
+              ))}
             </div>
             <form
               onSubmit={(e) => {
