@@ -275,12 +275,15 @@ Motkarta assesses and maintains its Concierge RAG service against the industry-s
 
 ### 1. Retrieval Metrics (Did we find the right facts?)
 
-- **Precision @ K / MRR (Mean Reciprocal Rank)**:
-  - Measures whether the most relevant venue chunks rank at the top of the retrieved context.
+- **NDCG @ 5 & Exact-Name Success**:
+  - Measures ranking quality and whether relevant venues rank at the top of retrieved context.
   - *Implementation*: Dense vector retrieval (`@cf/baai/bge-m3`, 1,024 dimensions) is fused with lexical token search using **Reciprocal Rank Fusion** ($k=60$). Exact venue names are prioritized before fusion scores. Evaluated offline via `ndcgAt5` and `exactNameSuccess` in `execution/evaluate_concierge.py`.
-- **Recall / Context Sufficiency**:
-  - Measures whether all necessary venue facts required to answer the user query are retrieved from the vector database.
+- **Recall @ 50 / Context Sufficiency**:
+  - Measures whether necessary venue candidates are retrieved within the candidate budget.
   - *Implementation*: Vectorize queries top 50 candidates using metadata filtering (`eligible: true`, `corpusVersion: "concierge-facts-v1"`, and normalized `area`). Evaluated offline via `recallAt50` across the 128-query golden benchmark suite.
+- **Exposure Equity & Coverage**:
+  - Measures exposure concentration across independent establishments to prevent visibility feedback loops.
+  - *Implementation*: Evaluated offline via `catalogCoverage`, `exposureGini`, and `independentExposureShare` in `execution/evaluate_concierge.py`.
 - **Chunk Relevance**:
   - Binary/graded evaluation of whether individual retrieved chunks contain valid information.
   - *Implementation*: **1 Chunk = 1 Venue Record**. No arbitrary text slicing or token truncation across sentence boundaries. Chunks are strictly normalized from canonical schema fields (`name`, `kind`, `area`, `address`, `cuisine`, `dishes`, `tags`, verified attributes) with commercial noise stripped out.
@@ -322,7 +325,7 @@ Motkarta assesses and maintains its Concierge RAG service against the industry-s
    - Hard geographic bounding box (`STOCKHOLM_MUNICIPALITY_BBOX` and `POLICY.excludedLocalities`).
    - Commercial chain blocklist (`POLICY.excludedChains` including Starbucks, Espresso House, Wayne's Coffee) prevents chain leakage.
 4. **User Feedback Loops**:
-   - Interactive 👍 / 👎 buttons inside `ConciergeAnswerView.tsx` allow users to submit feedback with structured reason tags, streaming directly into the admin review queue.
+   - Interactive 👍 / 👎 buttons inside `ConciergeAnswerView.tsx` allow users to submit feedback with structured reason tags; feedback is saved in browser localStorage and emitted as anonymous recommendation telemetry to `/api/recommendation-events` (distinct from candidate nominations in `/api/admin/candidates`).
 
 ---
 

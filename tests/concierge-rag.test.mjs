@@ -80,6 +80,27 @@ test('semantic-only candidates improve recall without bypassing constraints', as
   const semantic = await semanticCandidates(q, places, {}, ai, { query: async () => ({ matches: [await match(place)] }) }, 0.7, Date.now() + 1000);
   assert.deepEqual(fuseCandidates(lexicalCandidates(q, places), semantic).map((p) => p.place.id), [19]);
   assert.deepEqual(await semanticCandidates('sushi', places, {}, ai, { query: async () => ({ matches: [await match(place)] }) }, 0.7, Date.now() + 1000), []);
+
+  // Candidate lacking atmosphere evidence is rejected for atmosphere queries even with high vector score
+  const nonCozyPlace = places[0];
+  const rejected = await semanticCandidates(q, [nonCozyPlace], {}, ai, { query: async () => ({ matches: [await match(nonCozyPlace)] }) }, 0.7, Date.now() + 1000);
+  assert.deepEqual(rejected, [], 'Place without atmosphere evidence must be rejected for cozy/unwind queries');
+});
+
+test('semantic retrieval respects pagination exclusions from conversation history', async () => {
+  const magari = fixture({ id: 991, name: 'Magari', cuisine: 'pizza', tags: ['Pizza'] });
+  const crispy = fixture({ id: 992, name: 'Crispy Pizza Bistro', cuisine: 'pizza', tags: ['Pizza'] });
+  const catalog = [magari, crispy];
+  const context = {
+    messages: [
+      { role: 'user', content: 'bästa pizza' },
+      { role: 'assistant', content: '### **Magari**\nGrym pizza vid Karlaplan.' },
+    ],
+  };
+
+  const matches = [await match(magari), await match(crispy)];
+  const results = await semanticCandidates('visa fler', catalog, context, ai, { query: async () => ({ matches }) }, 0.5, Date.now() + 1000);
+  assert.deepEqual(results.map((c) => c.place.name), ['Crispy Pizza Bistro'], 'Excluded place Magari must not be hydrated into semantic results');
 });
 test('embedding responses and deadlines fail closed', async () => {
   for (const data of [[], [Array(768).fill(1)], [Array(1024).fill(0)], [Array(1024).fill(NaN)]]) assert.throws(() => validateEmbedding({ data }));

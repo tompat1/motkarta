@@ -1,6 +1,6 @@
 import { scorePlace } from '../scoring.ts';
 import { EMBEDDING_MODEL, EMBEDDING_DIMENSIONS, VERSIONS, type AiBinding, type VectorBinding, type VectorMatch, type ConciergePlace, type QueryContext, type RankedCandidate } from './contracts.ts';
-import { documentHash, placeFacts } from './facts.ts';
+import { documentHash, placeFacts, normalize } from './facts.ts';
 import { eligiblePlace } from './gates.ts';
 import { parseIntent } from './intent.ts';
 import { exactNameIds, satisfiesConstraints } from './retrieval.ts';
@@ -34,11 +34,13 @@ export async function hydrateSemanticMatches(query: string, places: ConciergePla
   const catalog = new Map(places.map((place) => [String(place.id), place]));
   const candidates: RankedCandidate[] = [];
   const namedIds = exactNameIds(query, places);
+  const excludedNames = new Set((intent.excludedPlaceNames ?? []).map(normalize));
   const seen = new Set<number>();
   const matches = result.matches.slice(0, 50).sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
   for (const [rank, match] of matches.entries()) {
     const place = catalog.get(match.id);
     if (!place || (namedIds.size && !namedIds.has(place.id)) || seen.has(place.id) || !eligiblePlace(place) || typeof match.score !== 'number' || !Number.isFinite(match.score) || match.score < threshold || match.score > 1) continue;
+    if (intent.isPagination && excludedNames.has(normalize(place.name))) continue;
     if (match.metadata?.corpusVersion !== VERSIONS.corpus) continue;
     const facts = placeFacts(place);
     if (match.metadata.documentHash !== await documentHash(facts.document)) continue;

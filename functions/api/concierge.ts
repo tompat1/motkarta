@@ -19,7 +19,6 @@ export type Env = {
   CONCIERGE_RETRIEVAL_MODE?: string; CONCIERGE_SYNTHESIS_MODE?: string;
   CONCIERGE_MIN_SIMILARITY?: string;
   CONCIERGE_DEADLINE_MS?: string;
-  CONCIERGE_ALLOW_UNGUARDED_AI?: string;
   CONCIERGE_RATE_LIMITER?: { limit(input: { key: string }): Promise<{ success: boolean }> };
   CONCIERGE_RATE_GATE?: { fetch(request: Request): Promise<Response> };
   ASSETS?: { fetch(input: Request | string, init?: RequestInit): Promise<Response> };
@@ -190,27 +189,46 @@ export function validateRequest(value: unknown): { query: string; context: Query
     },
   };
 }
-export async function requestAiPermit(env: Env, key: string, units: number) {
+export async function requestAiPermit(env: Env, key: string, units: number, outStatus?: { reason?: string }): Promise<boolean> {
   if (env.CONCIERGE_RATE_LIMITER) {
-    try { return (await withinDeadline(env.CONCIERGE_RATE_LIMITER.limit({ key }), 150)).success; }
-    catch { return false; }
-  }
-  if (env.CONCIERGE_RATE_GATE) {
     try {
-      const response = await withinDeadline(env.CONCIERGE_RATE_GATE.fetch(new Request('https://concierge-rate-gate.internal/limit', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ key, units }),
-      })), 500);
-      if (!response.ok) return false;
-      const body = await response.json() as { success?: unknown };
-      return body.success === true;
-    } catch { return false; }
+      const res = await withinDeadline(env.CONCIERGE_RATE_LIMITER.limit({ key }), 150);
+      if (!res.success) {
+        if (outStatus) outStatus.reason = 'ai_rate_gate_closed';
+        return false;
+      }
+      return true;
+    } catch {
+      if (outStatus) outStatus.reason = 'ai_rate_gate_unavailable';
+      return false;
+    }
   }
-  if (env.CONCIERGE_ALLOW_UNGUARDED_AI === 'true') {
-    return true;
+  if (!env.CONCIERGE_RATE_GATE) {
+    if (outStatus) outStatus.reason = 'ai_rate_gate_closed';
+    return false;
   }
-  return false;
+  try {
+    const response = await withinDeadline(env.CONCIERGE_RATE_GATE.fetch(new Request('https://concierge-rate-gate.internal/limit', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ key, units }),
+    })), 500);
+    if (!response.ok) {
+      if (response.status >= 500) {
+        if (outStatus) outStatus.reason = 'ai_rate_gate_unavailable';
+      } else {
+        if (outStatus) outStatus.reason = 'ai_rate_gate_closed';
+      }
+      return false;
+    }
+    const body = await response.json() as { success?: unknown };
+    if (body.success === true) return true;
+    if (outStatus) outStatus.reason = 'ai_rate_gate_closed';
+    return false;
+  } catch {
+    if (outStatus) outStatus.reason = 'ai_rate_gate_unavailable';
+    return false;
+  }
 }
 export async function processConciergeQuery(query: string, env: Env = {}, context: QueryContext = {}, allowAI = false, requestUrl?: string) {
   const started = Date.now(), budget = processingDeadlineMs(env), deadline = started + budget;
@@ -319,14 +337,32 @@ export async function onRequestPost({ request, env }: EventContext) {
   let input;
   try { input = validateRequest(await withinDeadline(readBody(request), 1000)); }
   catch { return Response.json({ error: 'invalid_request', answer: 'Send a query (1–1000 characters) and optional language/location. Venue data is not accepted.' }, { headers, status: 400 }); }
-  const aiRequested = env.CONCIERGE_RETRIEVAL_MODE === 'hybrid' || env.CONCIERGE_SYNTHESIS_MODE === 'constrained';
+
+  const action = parseAction(input.query);
+  const intent = parseIntent(input.query, input.context);
+  const canRetrieve = !action && !intent.outsideStockholm && !intent.excludedBrandRequested && !intent.openNow && !(intent.near && !input.context.location);
+
+  const hybridConfigured = env.CONCIERGE_RETRIEVAL_MODE === 'hybrid';
+  const synthesisConfigured = env.CONCIERGE_SYNTHESIS_MODE === 'constrained';
+  const aiRequested = hybridConfigured || synthesisConfigured;
+
+  // Charge the gate only for AI stages that the request will actually invoke.
+  // Actions, out-of-scope, or unretrievable requests never invoke retrieval or synthesis.
+  const aiUnits = (!action && canRetrieve)
+    ? (hybridConfigured ? 1 : 0) + (synthesisConfigured ? 1 : 0)
+    : 0;
+
   let allowAI = false;
-  const aiUnits = (env.CONCIERGE_RETRIEVAL_MODE === 'hybrid' ? 1 : 0) + (env.CONCIERGE_SYNTHESIS_MODE === 'constrained' ? 1 : 0);
-  if (aiRequested) allowAI = await requestAiPermit(env, request.headers.get('cf-connecting-ip') ?? 'unknown', aiUnits);
+  const gateStatus: { reason?: string } = {};
+  if (aiUnits > 0) {
+    allowAI = await requestAiPermit(env, request.headers.get('cf-connecting-ip') ?? 'unknown', aiUnits, gateStatus);
+  }
+
   const response = await processConciergeQuery(input.query, env, input.context, allowAI, request.url);
   if (!allowAI && aiRequested && response.ok) {
     const body = await response.json() as { diagnostics: { fallbackReasons: string[] } };
-    body.diagnostics.fallbackReasons.push('ai_rate_gate_closed');
+    const reason = gateStatus.reason ?? 'ai_rate_gate_closed';
+    body.diagnostics.fallbackReasons.push(reason);
     return Response.json(body, { headers });
   }
   return response;

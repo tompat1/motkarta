@@ -1,9 +1,6 @@
 # Motkarta ML system
 
-Latest concierge status: [production build repaired](../build-deployment-repair.md)
-and [production AI RAG activated](concierge-rag.md): 3,143 verified
-vectors, 128 real query captures and accepted Gemma 4 synthesis responses. Public
-retrieval and synthesis are activated in production via Cloudflare Workers AI (`@cf/baai/bge-m3` embedding, `@cf/google/gemma-4-26b-a4b-it` constrained synthesis, Vectorize `motkarta-concierge-preview-v1`, and reciprocal rank fusion).
+Latest concierge status: Workers AI bindings (`@cf/baai/bge-m3` embedding, `@cf/google/gemma-4-26b-a4b-it` constrained synthesis) and Vectorize index (`motkarta-concierge-preview-v1`) are provisioned in `wrangler.toml` (`cpu_ms = 10000`). Public retrieval and synthesis remain lexical and template-based pending independent evaluation and sign-off on the holdout suite per [holdout v2](concierge-holdout-v2.md).
 
 This directory is the canonical documentation for machine learning, ranking,
 recommendation telemetry, evaluation and model maintenance in Motkarta.

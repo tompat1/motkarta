@@ -54,6 +54,7 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
   const specialty = /\b(specialty|specialkaffe|roastery|roaster|rosteri)\b/.test(normalize(positive));
   const bakery = /\b(bakery|bageri|hantverksbageri)\b/.test(normalize(positive));
   const dinner = /\b(dinner|middag|kvallsmat|restaurant|restaurang)\b/.test(normalize(positive));
+  const atmosphere = /\b(cozy|cosy|mysigt|mysig|unwind|quiet|lugnt|intimate|romantiskt|romantic|avkopplande)\b/.test(normalized);
   const near = /\b(near me|nearby|nara mig|narmaste|close to me)\b/.test(normalized);
   const openNow = /\b(open now|oppet nu|open tonight|oppet ikvall)\b/.test(normalized);
   const exclusions = negative.flatMap((value) => dishExclusionTerms(value));
@@ -69,7 +70,7 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
     ...(area ? area.split(' ') : [])
   ]);
   const terms = queryTerms(positive).filter((token) => !localityTokens.has(token) && !/^\d+$/.test(token) && !['under', 'below', 'less', 'than', 'max', 'hogst', 'sek', 'kr', 'kronor'].includes(token));
-  return { positive, filters, priceMax, area, isDistrictQuery: Boolean(area), outsideStockholm, excludedBrandRequested, dishes: [...new Set(dishes)], specialty, bakery, dinner, near, openNow, exclusions, cuisineKinds, terms,
+  return { positive, filters, priceMax, area, isDistrictQuery: Boolean(area), outsideStockholm, excludedBrandRequested, dishes: [...new Set(dishes)], specialty, bakery, dinner, atmosphere, near, openNow, exclusions, cuisineKinds, terms,
     hiddenGem: /\b(hidden gems?|dolda parlor|dold parla)\b/.test(normalized),
     language: context.language ?? (/\b(och|jag|nara|mig|basta|hitta|kaffe|middag|pa|oppet|polska)\b/.test(normalized) ? 'sv' : 'en'),
   };
@@ -115,6 +116,7 @@ export function parseIntent(query: string, context: QueryContext = {}) {
         specialty: base.specialty || prevTopicIntent.specialty,
         bakery: base.bakery || prevTopicIntent.bakery,
         dinner: base.dinner || prevTopicIntent.dinner,
+        atmosphere: base.atmosphere || prevTopicIntent.atmosphere,
         hiddenGem: base.hiddenGem || prevTopicIntent.hiddenGem,
         priceMax: base.priceMax ?? prevTopicIntent.priceMax,
         filters: { ...prevTopicIntent.filters, ...base.filters },
@@ -138,6 +140,7 @@ export function parseIntent(query: string, context: QueryContext = {}) {
         specialty: prevTopicIntent.specialty,
         bakery: prevTopicIntent.bakery,
         dinner: base.dinner || prevTopicIntent.dinner,
+        atmosphere: base.atmosphere || prevTopicIntent.atmosphere,
         hiddenGem: base.hiddenGem || prevTopicIntent.hiddenGem,
         priceMax: base.priceMax ?? prevTopicIntent.priceMax,
         filters: { ...prevTopicIntent.filters, ...base.filters },
