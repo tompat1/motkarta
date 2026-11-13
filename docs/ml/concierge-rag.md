@@ -338,3 +338,21 @@ Motkarta assesses and maintains its Concierge RAG service against the industry-s
 - **Query Transformation & Multi-Turn Memory**: `parseIntent` scopes negation (`utan`, `not`), expands cuisine aliases, detects area nicknames (e.g. *Söder*, *Zinken*, *Kransen*), and retains the last 10 conversation turns with millisecond timestamps.
 - **Verifiable Citations**: Clickable source cards linking directly to audited open data sources.
 - **Semantic Caching & Memory Management**: Request deduplication with AbortController, transient query processing, and 12-second client timeout for stable edge inference.
+
+---
+
+## Adaptive Contextual Follow-Up Chips & Grounded Retrieval
+
+### 1. Dynamic District & Constraint Awareness (`buildFollowUpChips`)
+Follow-up query chips rendered below the Concierge answer are generated dynamically based on active constraints:
+- **District Suppression & Rotation**: If a user queries a specific district (e.g. `"specialty coffee och kardemummabulle på Södermalm"` or `"mysigt ställe på söder"`), the queried district is suppressed from follow-up chips. The generator suggests adjacent or alternative districts instead (e.g. `"På Östermalm då?"` for Södermalm; `"På Söder då?"` for Vasastan or Kungsholmen).
+- **Whole-City Expansion**: When a query is constrained to a single district, `"I hela stan?"` is provided as an immediate expansion path.
+- **Budget Sensitivity**: If the user query already contains budget constraints (`under 150`, `billigt`), the generic `"Billigare"` chip is omitted.
+- **Pagination Availability**: When `recommendedPlaces.length > cards.length`, `"Fler förslag"` is prepended to provide seamless pagination without duplicating already recommended venues.
+
+### 2. Grounded Atmosphere & Specialty Evidence
+To guarantee zero-hallucination and evidence compliance:
+- **Atmosphere Constraint Enforcement**: Queries mentioning atmosphere (`mysigt`, `cozy`, `intimate`, `lugnt`, `unwind`) are parsed with bidirectional Swedish/English synonym expansion (`BASE_CUISINE_ALIASES`). In `satisfiesConstraints`, venues must possess explicit, verified atmosphere tags or source facts (`cozy`, `intimate`, `warm`, `rustic`, `charming`); generic non-atmosphere attributes (e.g. `outdoor seating` alone) do not qualify.
+- **Specialty Coffee Grounding**: Terms such as `specialkaffe`, `specialty coffee`, and `roastery` match against curated specialty eligibility criteria across all districts (e.g. returning *Solkant* and *Pascal* in Vasastan).
+- **Pagination Deduplication**: Assistant messages track recommended venue names in `excludedPlaceNames`, ensuring subsequent turns (`visa fler`, `fler förslag`) yield new verified options with zero overlap.
+

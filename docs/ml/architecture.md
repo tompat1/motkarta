@@ -86,6 +86,16 @@ so an old selection is not presented as the new result. Controls without backing
 public data are hidden until their data source exists. These controls do not
 change stored score outputs or authorize a learned ranker.
 
+#### Selection Scopes (`VISA URVAL`) & Scorer Mapping
+The selection scope control (`MobileRankControlSheet.tsx` on mobile, primary dropdown on desktop) applies deterministic mode filtering via `filterPlacesByRankingMode(places, mode)` in `src/app/place-ranking.ts`:
+- **All recommendations (`Alla rekommendationer`)**: Baseline catalog (3,198 places). Ranks by `place.scores.recommendation`.
+- **Hidden gems (`Dolda pärlor`)**: Strict subset (867 places) passing `place.hiddenGem?.eligible === true`. Enforces the double-locked gate: high discovery/residual ratio, low mainstream footfall, and $\ge 2$ independent citations. Ranks by `hiddenGemPriority`.
+- **Popular now (`Populära nu`)**: Top quartile (top 25%, 800 places) of `place.scores.popularity` via `topShareByModeScore`.
+- **Expert selected (`Expertvalda`)**: Subset (2,441 places) matching `expertEvidence(place) > 0` (venues documented in White Guide, Star Wine List, Tasstipset, or specialty coffee guides). Scored by guide authority + quality.
+- **Most verified (`Mest verifierade`)**: Subset (878 places) with `place.evidence?.confidence === "High"`, requiring audited complete opening hours, street address, and cross-referenced public records.
+
+Modes without backing public data (`Local favourites`, `Quality first`, `Recently opened`) are explicitly excluded (`modesWithoutBackingPublicData`). Every rendered mode is live, verifiable, and backed by production data.
+
 Mobile and desktop share the same canonical venue-type and cuisine selections.
 The mobile black panel renders the desktop type options, including Saved and
 Latest added; its popup uses the same data-derived cuisine options as desktop.

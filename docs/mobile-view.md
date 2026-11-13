@@ -172,3 +172,30 @@ Every change touching mobile viewports must be verified against the following te
   3. The active pin switches to red with a 2-second glowing CSS aura pulse (`motkarta-active-pin-pulse`) and `zIndexOffset: 1000`.
   4. The Leaflet popup automatically opens upon animation completion (`moveend`).
 
+---
+
+## 7. Selection Scopes (`VISA URVAL`) & Sort Controls (`SORTERA ORDNING`)
+
+In the mobile experience, the bottom result counter bar contains triggers for `[ VISA ]` (scope filter sheet) and `[ SORTERA ]` (sort order sheet), managed by `MobileRankControlSheet.tsx`.
+
+### Live Selection Scopes (`VISA URVAL`)
+These modes are **100% live** and directly backed by deterministic scoring formulas in `src/app/place-ranking.ts` and `lib/scoring.ts`:
+
+| Mode Label (SV) | Mode Label (EN) | Live Catalog Count | Data Filtering & Ranking Rule |
+| :--- | :--- | :--- | :--- |
+| **Alla rekommendationer** | `All recommendations` | **3,198 ställen** | Baseline catalog. Ranks venues by Motkarta composite score (quality, discovery, Bayesian rating, local independence). |
+| **Dolda pärlor** | `Hidden gems` | **867 ställen** | Strict filter: `place.hiddenGem?.eligible === true`. Requires passing the **double-lock gate**: high discovery/residual ratio, low mainstream exposure, and at least 2 independent citations. |
+| **Populära nu** | `Popular now` | **800 ställen** | Top quartile (**top 25%**) highest popularity and active engagement percentile based on recency-weighted activity (`topShareByModeScore`). |
+| **Expertvalda** | `Expert selected` | **2,441 ställen** | Filter: `expertEvidence(place) > 0`. Venues vetted and cited in curated independent specialist guides (White Guide, Star Wine List, Tasstipset, etc.). Scored by authority + quality. |
+| **Mest verifierade** | `Most verified` | **878 ställen** | Filter: `place.evidence?.confidence === "High"`. Venues with audited, complete data (verified opening hours, street address, web/contact info, and cross-referenced records). |
+
+> **Data Integrity Invariant:** Modes without sufficient backing public data (`"Local favourites"`, `"Quality first"`, `"Recently opened"`) are explicitly excluded from `visibleModes` in `src/app/place-ranking.ts`. No placeholder or speculative modes are exposed in the interface.
+
+### Sort Order (`SORTERA ORDNING`)
+The sort order controls ordering without changing the active filter scope:
+1. **Motkarta score (`Motkarta-poäng`)**: Ranks by the mode-specific score formula and tiebreakers.
+2. **Distance (`Avstånd`)**: Orders by geographical distance from the user's location (or central Stockholm).
+3. **Alphabetical (`Bokstavsordning`)**: Lexicographical order by place name (`a.name.localeCompare(b.name)`).
+4. **Surprise me (`Överraska mig`)**: Deterministic pseudo-random shuffle seeded by random seed (`onShuffle`), ensuring deterministic reproducibility during session sharing.
+
+
