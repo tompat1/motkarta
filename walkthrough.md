@@ -1,3 +1,24 @@
+# First-open mobile list scrolling repair — 2026-11-14
+
+Fixed the mobile list sheet so it owns vertical scrolling immediately on its
+first opening. Opening the list no longer calls `scrollIntoView()` on the page
+behind the fixed sheet. While the list is open, the document scroll position is
+preserved and the background is locked; closing the list restores the exact
+position. The list scroller now explicitly declares vertical touch ownership
+and contains overscroll, including the iOS momentum-scrolling path.
+
+Verification completed with zero failures:
+
+- New first-open scroll/background-lock regression: 3/3 browser projects passed.
+- Complete mobile flow suite: 53 passed; one unrelated Safari data-load timing
+  check passed on retry.
+- TypeScript and lint: passed (existing lint warnings only).
+- JavaScript: 464 passed.
+- Python: 178 passed.
+- Playwright full suite: 126 passed, 6 skipped across desktop Chromium, mobile
+  Chrome and mobile Safari.
+- `git diff --check`: passed.
+
 # Restore mobile-card MOTKARTA mark — 2026-11-14
 
 Restored the MOTKARTA counter-pin watermark on mobile venue cards without a

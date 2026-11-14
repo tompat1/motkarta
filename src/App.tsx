@@ -231,12 +231,49 @@ function AppContent({
     return () => mobileViewport.removeEventListener("change", resetDesktopView);
   }, []);
 
+  useEffect(() => {
+    if (mobileViewMode !== "list" || !window.matchMedia("(max-width: 768px)").matches) return;
+
+    const root = document.documentElement;
+    const body = document.body;
+    const scrollY = window.scrollY;
+    const previousRootOverflow = root.style.overflow;
+    const previousBodyStyles = {
+      overflow: body.style.overflow,
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+    };
+
+    root.classList.add("is-mobile-list-open");
+    body.classList.add("is-mobile-list-open");
+    root.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    body.style.width = "100%";
+
+    return () => {
+      root.classList.remove("is-mobile-list-open");
+      body.classList.remove("is-mobile-list-open");
+      root.style.overflow = previousRootOverflow;
+      body.style.overflow = previousBodyStyles.overflow;
+      body.style.position = previousBodyStyles.position;
+      body.style.top = previousBodyStyles.top;
+      body.style.left = previousBodyStyles.left;
+      body.style.right = previousBodyStyles.right;
+      body.style.width = previousBodyStyles.width;
+      window.scrollTo({ top: scrollY, behavior: "auto" });
+    };
+  }, [mobileViewMode]);
+
   const toggleMobileView = () => {
     setIsMobileBottomSheetHidden(false);
     setMobileViewMode((view) => view === "map" ? "list" : "map");
-    window.requestAnimationFrame(() => {
-      workspaceRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
-    });
   };
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [mobileRankSheet, setMobileRankSheet] = useState<RankSheetType>(null);

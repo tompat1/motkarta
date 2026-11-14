@@ -90,6 +90,39 @@ test.describe("Mobile Full User Flows", () => {
     await expect(cardList).not.toBeVisible();
   });
 
+  test("4a. First list opening owns vertical scrolling and locks the background", async ({ page }, testInfo) => {
+    await page.goto("/");
+
+    const viewToggleBtn = page.locator(".floating-view-toggle-btn");
+    const listScroller = page.locator(".mobile-bottom-sheet-body");
+    await expect(viewToggleBtn).toBeVisible();
+
+    const backgroundScrollBeforeOpen = await page.evaluate(() => window.scrollY);
+    await viewToggleBtn.click();
+
+    await expect(listScroller).toBeVisible();
+    await expect(page.locator("body")).toHaveClass(/is-mobile-list-open/);
+    await expect.poll(async () => listScroller.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true);
+    await expect.poll(async () => listScroller.evaluate((element) => getComputedStyle(element).touchAction)).toContain("pan-y");
+
+    if (testInfo.project.name === "mobile-safari") {
+      // Playwright's mobile WebKit driver cannot synthesize mouse-wheel input.
+      await listScroller.evaluate((element) => element.scrollBy({ top: 500 }));
+    } else {
+      const scrollerBox = await listScroller.boundingBox();
+      expect(scrollerBox).not.toBeNull();
+      await page.mouse.move(scrollerBox!.x + scrollerBox!.width / 2, scrollerBox!.y + scrollerBox!.height * 0.7);
+      await page.mouse.wheel(0, 500);
+    }
+
+    await expect.poll(async () => listScroller.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+    expect(await page.evaluate(() => window.scrollY)).toBe(backgroundScrollBeforeOpen);
+
+    await viewToggleBtn.click();
+    await expect(page.locator("body")).not.toHaveClass(/is-mobile-list-open/);
+    expect(await page.evaluate(() => window.scrollY)).toBe(backgroundScrollBeforeOpen);
+  });
+
   test("4b. Bottom toolbar Map tab always switches from list view to map view", async ({ page }) => {
     await page.goto("/");
 
