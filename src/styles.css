@@ -11845,6 +11845,26 @@ footer {
   opacity: 1;
 }
 
+@media (max-width: 768px), (hover: none) {
+  .photo-card {
+    cursor: default !important;
+  }
+  .photo-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .photo-card::after,
+  .photo-card:hover::after {
+    display: none !important;
+    content: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+  .place-lightbox-overlay {
+    display: none !important;
+  }
+}
+
 .lightbox-overlay {
   position: fixed;
   top: 0;

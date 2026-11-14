@@ -181,6 +181,17 @@ export function LazyPlaceMediaDrawer({
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState<boolean>(() =>
+    typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mql = window.matchMedia("(max-width: 768px)");
+    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
 
   const refreshFeedback = useCallback(() => {
     if (place) {
@@ -236,7 +247,7 @@ export function LazyPlaceMediaDrawer({
 
   return (
     <div className="lazy-media-drawer">
-      {lightboxIndex !== null && displayPhotos ? (
+      {lightboxIndex !== null && displayPhotos && !isMobile ? (
         <ImageLightboxModal
           photos={displayPhotos}
           initialIndex={lightboxIndex}
@@ -281,8 +292,11 @@ export function LazyPlaceMediaDrawer({
               <div
                 key={img.id}
                 className="photo-card"
-                title={`${img.caption} (Klicka för fullskala)`}
-                onClick={() => setLightboxIndex(idx)}
+                title={isMobile ? img.caption : `${img.caption} (Klicka för fullskala)`}
+                onClick={() => {
+                  if (isMobile) return;
+                  setLightboxIndex(idx);
+                }}
               >
                 <img
                   src={img.thumbnailUrl}
