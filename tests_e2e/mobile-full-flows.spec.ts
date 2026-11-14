@@ -132,11 +132,26 @@ test.describe("Mobile Full User Flows", () => {
     await expect(bottomSheet).not.toHaveClass(/is-hidden/);
 
     // 5. When place slide-up is active on map, Map button closes it immediately
-    const firstMarker = page.locator(".motkarta-map-marker").first();
-    await firstMarker.click();
+    await viewToggleBtn.click();
+    const firstCard = page.locator(".mobile-photo-card").first();
+    await expect(firstCard).toBeVisible({ timeout: 10000 });
+    const cardTitle = firstCard.locator("h2").first();
+    if (await cardTitle.isVisible()) {
+      await cardTitle.click();
+    } else {
+      await firstCard.click();
+    }
+    const detailSheet = page.locator(".place-detail-sheet");
+    await expect(detailSheet).toBeVisible({ timeout: 10000 });
+    const viewOnMapBtn = page.locator(".place-detail-primary-cta");
+    await expect(viewOnMapBtn).toBeVisible({ timeout: 10000 });
+    await viewOnMapBtn.click();
+    await expect(detailSheet).not.toBeVisible({ timeout: 10000 });
+
     const slideUp = page.locator(".mobile-place-slide-up");
     await expect(slideUp).toBeVisible({ timeout: 10000 });
 
+    // Tapping Map button closes the slide-up card and shows clean map
     await mapTab.click();
     await expect(slideUp).not.toBeVisible();
     await expect(bottomSheet).not.toHaveClass(/is-expanded/);
