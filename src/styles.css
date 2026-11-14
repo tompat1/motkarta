@@ -15300,8 +15300,8 @@ footer {
 
 .mobile-photo-card-dummy-logo {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 68%;
+  left: 74%;
   width: min(38%, 112px);
   height: min(38%, 112px);
   object-fit: contain;
