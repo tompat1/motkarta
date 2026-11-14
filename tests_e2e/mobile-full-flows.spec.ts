@@ -106,6 +106,42 @@ test.describe("Mobile Full User Flows", () => {
     await expect(mapTab).toHaveClass(/is-active/);
   });
 
+  test("4c. Bottom toolbar Map tab hides all open overlays, cards, and toggles pure map view", async ({ page }) => {
+    await page.goto("/");
+
+    const mapTab = page.locator('.mobile-toolbar-tab[data-tab="map"]');
+    const bottomSheet = page.locator(".mobile-bottom-sheet");
+
+    // 1. Open list view first
+    const viewToggleBtn = page.locator(".floating-view-toggle-btn");
+    await viewToggleBtn.click();
+    await expect(bottomSheet).toHaveClass(/is-expanded/);
+
+    // 2. Tapping Map button collapses list and shows map
+    await mapTab.click();
+    await expect(bottomSheet).not.toHaveClass(/is-expanded/);
+
+    // 3. Tapping Map button again when already in clean map view toggles sheet to hidden
+    await mapTab.click();
+    await expect(bottomSheet).toHaveClass(/is-hidden/);
+    const restorePill = page.locator(".mobile-restore-sheet-pill");
+    await expect(restorePill).toBeVisible();
+
+    // 4. Restoring brings the sheet back
+    await restorePill.click();
+    await expect(bottomSheet).not.toHaveClass(/is-hidden/);
+
+    // 5. When place slide-up is active on map, Map button closes it immediately
+    const firstMarker = page.locator(".motkarta-map-marker").first();
+    await firstMarker.click();
+    const slideUp = page.locator(".mobile-place-slide-up");
+    await expect(slideUp).toBeVisible({ timeout: 10000 });
+
+    await mapTab.click();
+    await expect(slideUp).not.toBeVisible();
+    await expect(bottomSheet).not.toHaveClass(/is-expanded/);
+  });
+
   test("5. Mobile place detail sheet flow", async ({ page }) => {
     await page.goto("/");
 

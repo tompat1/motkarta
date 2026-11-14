@@ -216,6 +216,7 @@ function AppContent({
   useEffect(() => () => clearTimeout(placeAddedToastTimer.current), []);
 
   const [mobileViewMode, setMobileViewMode] = useState<"map" | "list">("map");
+  const [isMobileBottomSheetHidden, setIsMobileBottomSheetHidden] = useState(false);
   const [isContributeFabOpen, setIsContributeFabOpen] = useState(false);
   const sheetTouchStartY = useRef<number | null>(null);
   const sheetTouchStartX = useRef<number | null>(null);
@@ -231,6 +232,7 @@ function AppContent({
   }, []);
 
   const toggleMobileView = () => {
+    setIsMobileBottomSheetHidden(false);
     setMobileViewMode((view) => view === "map" ? "list" : "map");
     window.requestAnimationFrame(() => {
       workspaceRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
@@ -617,23 +619,74 @@ function AppContent({
       setMobileTab(tab);
       if (tab === "discover") {
         setActiveDesktopNav("discover");
+        setIsMobileBottomSheetHidden(false);
         if (typeof window !== "undefined") {
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
       } else if (tab === "map") {
         setActiveDesktopNav("map");
+        const hasOpenOverlay =
+          mobileViewMode === "list" ||
+          selected !== null ||
+          isPlaceDetailOpen ||
+          mobileRankSheet !== null ||
+          isFilterSheetOpen ||
+          isMobileMenuOpen ||
+          isContributeFabOpen ||
+          superpowerMode !== null ||
+          isUserPhotoUploadOpen ||
+          mapCardFeedbackType !== null ||
+          isSyncModalOpen ||
+          (Boolean(answer) && !conciergeAnswerCollapsed);
+
         setMobileViewMode("map");
+        setSelected(null);
+        setIsPlaceDetailOpen(false);
+        setMobileRankSheet(null);
+        setIsFilterSheetOpen(false);
+        setIsMobileMenuOpen(false);
+        setIsContributeFabOpen(false);
+        setSuperpowerMode(null);
+        setIsUserPhotoUploadOpen(false);
+        setMapCardFeedbackType(null);
+        setIsSyncModalOpen(false);
+        setConciergeAnswerCollapsed(true);
+
+        if (!hasOpenOverlay && mobileTab === "map") {
+          setIsMobileBottomSheetHidden((prev) => !prev);
+        } else {
+          setIsMobileBottomSheetHidden(false);
+        }
+
         if (kind === "Saved") {
           selectKindFilter("All places");
         }
         document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
       } else if (tab === "saved") {
         setActiveDesktopNav("saved");
+        setIsMobileBottomSheetHidden(false);
         selectKindFilter("Saved");
         document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
       }
     },
-    [kind, selectKindFilter]
+    [
+      answer,
+      conciergeAnswerCollapsed,
+      isContributeFabOpen,
+      isFilterSheetOpen,
+      isMobileMenuOpen,
+      isPlaceDetailOpen,
+      isSyncModalOpen,
+      isUserPhotoUploadOpen,
+      kind,
+      mapCardFeedbackType,
+      mobileRankSheet,
+      mobileTab,
+      mobileViewMode,
+      selectKindFilter,
+      selected,
+      superpowerMode,
+    ]
   );
 
   const [isSourcesLoading, setIsSourcesLoading] = useState(false);
@@ -2874,7 +2927,7 @@ function AppContent({
       </section>
 
       <section className="workspace" id="place-workspace" ref={workspaceRef}>
-        <div className={`mobile-bottom-sheet ${mobileViewMode === "list" ? "is-expanded" : ""}`}>
+        <div className={`mobile-bottom-sheet ${mobileViewMode === "list" ? "is-expanded" : ""} ${isMobileBottomSheetHidden ? "is-hidden" : ""}`}>
           <div
             className="mobile-results-header-bar"
             onTouchStart={(e) => {
@@ -4136,6 +4189,18 @@ function AppContent({
         popularPrompts={getPopularConciergePrompts(lang).slice(0, 3)}
         asking={asking}
       />
+
+      {isMobileBottomSheetHidden && mobileTab !== "discover" ? (
+        <button
+          type="button"
+          className="mobile-restore-sheet-pill"
+          onClick={() => setIsMobileBottomSheetHidden(false)}
+          aria-label={lang === "sv" ? "Visa lista" : "Show list"}
+        >
+          <CaretUp size={14} weight="bold" />
+          <span>{lang === "sv" ? "Visa lista" : "Show list"}</span>
+        </button>
+      ) : null}
 
       <MobileAppToolbar
         activeTab={mobileTab}
