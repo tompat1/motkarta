@@ -68,6 +68,45 @@ export function buildFollowUpChips(
     });
   }
 
+  // 4. Missing venue suggestion: if user searched for a specific place that wasn't found exactly, or 0 places matched
+  const cleanedPlaceName = effectiveQuery
+    .replace(/^(hitta|sök|var ligger|bästa|find|where is|tipsa om|lägg till ställe)\s+/i, "")
+    .trim();
+  const isGenericCategory = Boolean(
+    intent &&
+    (intent.cuisineKinds.length > 0 ||
+      intent.dishes.length > 0 ||
+      intent.specialty ||
+      intent.bakery ||
+      intent.dinner ||
+      intent.hiddenGem ||
+      intent.atmosphere)
+  );
+  const hasExactPlaceMatch = Boolean(
+    response?.cards &&
+    response.cards.some((c) => {
+      const cNorm = c.name.toLowerCase().trim();
+      const qNorm = cleanedPlaceName.toLowerCase().trim();
+      return cNorm === qNorm || (qNorm.length > 3 && cNorm.startsWith(qNorm));
+    })
+  );
+
+  if (cleanedPlaceName && !isGenericCategory && !hasExactPlaceMatch) {
+    const chipLabel =
+      lang === "sv"
+        ? (cleanedPlaceName.length <= 18 ? `Tipsa om "${cleanedPlaceName}"` : "Tipsa om ställe")
+        : (cleanedPlaceName.length <= 18 ? `Suggest "${cleanedPlaceName}"` : "Suggest place");
+    chips.push({
+      label: chipLabel,
+      query: `Lägg till ställe ${cleanedPlaceName}`,
+    });
+  } else if (!hasCards) {
+    chips.push({
+      label: lang === "sv" ? "Tipsa om ställe" : "Suggest missing place",
+      query: `Lägg till ställe ${cleanedPlaceName || effectiveQuery}`,
+    });
+  }
+
   return chips;
 }
 

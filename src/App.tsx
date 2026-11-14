@@ -1590,9 +1590,11 @@ function AppContent({
   const resolveConciergeMainListIds = useCallback(
     (response: ConciergeResponse) => {
       const ids = response.recommendedPlaces.flatMap((recommended) => {
-        const match = scoredPlaces.find(
-          (place) => place.id === recommended.id || normalize(place.name) === normalize(recommended.name),
-        );
+        const match =
+          scoredPlaces.find((place) => place.id === recommended.id) ||
+          scoredPlaces.find(
+            (place) => place.id === recommended.id || normalize(place.name) === normalize(recommended.name),
+          );
         return match ? [match.id] : [];
       });
       return [...new Set(ids)];
@@ -1647,7 +1649,14 @@ function AppContent({
       setConciergeResponse(applied.response);
       setAnswer(applied.answer);
       setConciergeChatMessages(applied.chatMessages);
-      if (payload.action) setSuperpowerMode(payload.action);
+      if (payload.action) {
+        const placeNameArg = queryText.replace(/^(add place|lagg till stalle|skapa stalle|nytt stalle|tipsa om stalle|tipsa om|tipsa)\s+/i, '').trim();
+        if (placeNameArg) setSuperpowerInitialPlaceName(placeNameArg);
+        setSuperpowerMode(payload.action);
+      }
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        setMobileViewMode("list");
+      }
       window.requestAnimationFrame(scrollToConciergeAnswer);
     } catch {
       if (conciergeRequest.current !== controller) return;
@@ -1666,7 +1675,14 @@ function AppContent({
           setConciergeResponse(applied.response);
           setAnswer(applied.answer);
           setConciergeChatMessages(applied.chatMessages);
-          if (result.action) setSuperpowerMode(result.action);
+          if (result.action) {
+            const placeNameArg = queryText.replace(/^(add place|lagg till stalle|skapa stalle|nytt stalle|tipsa om stalle|tipsa om|tipsa)\s+/i, '').trim();
+            if (placeNameArg) setSuperpowerInitialPlaceName(placeNameArg);
+            setSuperpowerMode(result.action);
+          }
+          if (window.matchMedia("(max-width: 768px)").matches) {
+            setMobileViewMode("list");
+          }
           window.requestAnimationFrame(scrollToConciergeAnswer);
         } catch {
           if (conciergeRequest.current === controller) setAnswer(lang === 'sv' ? 'Katalogen är inte tillgänglig just nu.' : 'The catalog is currently unavailable.');
@@ -2915,7 +2931,7 @@ function AppContent({
                     </>
                   ) : (
                     <>
-                      <span>{formatPlaceCount(mapDisplayCount)}</span>{" "}
+                      <span>{formatPlaceCount(hasSearchQuery || conciergePlaces.length > 0 || conciergeResponse ? matchingCount : mapDisplayCount)}</span>{" "}
                       <span>{lang === "sv" ? "ställen (Visa lista)" : "places (Show list)"}</span>
                     </>
                   )}
@@ -3012,10 +3028,9 @@ function AppContent({
             ) : null}
           </div>
 
-          {renderConciergeAnswerPanel("mobile")}
-
           {mobileViewMode === "list" ? (
             <div className="mobile-bottom-sheet-body">
+              {renderConciergeAnswerPanel("mobile")}
               {isInitialPlacesLoading ? (
                 <div className="mobile-list-loading-state" role="status" aria-live="polite">
                   <CircleNotch size={30} className="animate-spin" aria-hidden="true" />

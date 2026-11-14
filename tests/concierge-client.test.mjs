@@ -75,4 +75,11 @@ test("buildFollowUpChips dynamically adapts alternative district and context", (
   const cheapChips = buildFollowUpChips(cheapQuery, undefined, [], "sv");
   assert.equal(cheapChips.some((c) => c.label === "Billigare"), false);
   assert.equal(cheapChips.some((c) => c.label.includes("uteservering")), true);
+
+  // When searching for an unknown specific place/POI like 450 grader, offers to add/suggest it
+  const unknownPlaceQuery = "450 grader";
+  const unknownResponse = retrieveAndSynthesize(unknownPlaceQuery, places, { language: "sv" });
+  const unknownChips = buildFollowUpChips(unknownPlaceQuery, unknownResponse, [], "sv");
+  assert.equal(unknownChips.some((c) => c.label.includes("Tipsa om")), true);
+  assert.equal(unknownChips.some((c) => c.query.includes("Lägg till ställe 450 grader")), true);
 });

@@ -164,7 +164,7 @@ export type Intent = ReturnType<typeof parseIntent>;
 export function parseAction(query: string) {
   const q = normalize(query);
   const actions = [
-    ['add_place', /^(add place|lagg till stalle|skapa stalle|nytt stalle)(?: .+)?$/],
+    ['add_place', /^(add place|lagg till stalle|skapa stalle|nytt stalle|tipsa om stalle|tipsa om|tipsa)(?: .+)?$/],
     ['add_review', /^(add review|skriv recension|lamna recension)(?: .+)?$/],
     ['add_photo', /^(add photo|lagg till foto|ladda upp bild|lagg till bild)(?: .+)?$/],
     ['rate_place', /^(rate place|ge betyg|betygsatt stalle|satt betyg)(?: .+)?$/],

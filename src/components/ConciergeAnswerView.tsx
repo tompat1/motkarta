@@ -477,7 +477,14 @@ export function ConciergeAnswerView({
                   key={`${chip.label}-${index}`}
                   type="button"
                   className="concierge-btn"
-                  onClick={() => onRefineQuery(chip.query)}
+                  onClick={() => {
+                    if (chip.query.startsWith("Lägg till ställe") && onTriggerAction) {
+                      const name = chip.query.replace(/^Lägg till ställe\s*/i, "").trim();
+                      onTriggerAction("add_place", name);
+                    } else {
+                      onRefineQuery(chip.query);
+                    }
+                  }}
                 >
                   {chip.label}
                 </button>
