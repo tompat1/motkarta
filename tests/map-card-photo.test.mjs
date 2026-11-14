@@ -6,6 +6,7 @@ const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "ut
 const stylesSource = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
 const lazyMediaSource = await readFile(new URL("../lib/lazy-media.ts", import.meta.url), "utf8");
 const detailSheetSource = await readFile(new URL("../src/components/PlaceDetailSheet.tsx", import.meta.url), "utf8");
+const mobilePlaceCardSource = await readFile(new URL("../src/components/MobilePlaceCardList.tsx", import.meta.url), "utf8");
 
 test("App.tsx replaces recommendation paragraph with map card photo container", () => {
   // Recommendation paragraph with red line is removed from map card
@@ -62,6 +63,11 @@ test("styles.css defines map card photo container and responsive styling", () =>
   assert.match(stylesSource, /\.map-card-action-controls\s*\{/);
   assert.match(stylesSource, /\.map-card-reaction-btn\s*\{/);
   assert.match(stylesSource, /\.map-card-bookmark-btn\s*\{/);
+});
+
+test("mobile cards without photos restore the Motkarta mark in light gray", () => {
+  assert.match(mobilePlaceCardSource, /src=\{DUMMY_PLACE_IMAGE_URL\}[\s\S]*?className="mobile-photo-card-dummy-logo"/);
+  assert.match(stylesSource, /\.mobile-photo-card-dummy-logo\s*\{[\s\S]*?opacity:\s*0\.42;[\s\S]*?filter:\s*grayscale\(1\) brightness\(0\) invert\(0\.82\);/);
 });
 
 const mediaDrawerSource = await readFile(new URL("../src/components/LazyPlaceMediaDrawer.tsx", import.meta.url), "utf8");

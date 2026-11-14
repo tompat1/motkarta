@@ -1,3 +1,20 @@
+# Restore mobile-card MOTKARTA mark — 2026-11-14
+
+Restored the MOTKARTA counter-pin watermark on mobile venue cards without a
+photo. The existing brand asset now renders as a single light-gray mark with
+enough contrast to remain visible on the dark card while staying subordinate to
+the venue name and practical facts.
+
+Verification completed with zero failures:
+
+- Focused mobile-card regression: 8/8 passed.
+- TypeScript and lint: passed (existing lint warnings only).
+- JavaScript: 464 passed.
+- Python: 178 passed.
+- Playwright: 123 passed, 6 skipped across desktop Chromium, mobile Chrome and mobile Safari.
+- Mobile list render inspected with no-photo and real-photo cards together.
+- `git diff --check`: passed.
+
 # Fit-all map control — 2026-11-14
 
 Replaced the ambiguous folded-map control with Phosphor's `FrameCorners` icon
