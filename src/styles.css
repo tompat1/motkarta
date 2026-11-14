@@ -15293,7 +15293,7 @@ footer {
 }
 
 .mobile-photo-card-no-photo {
-  background: #ffffff;
+  background: radial-gradient(circle at 50% 32%, #222938 0%, #0f131a 100%);
   align-items: center;
   justify-content: center;
 }
@@ -15307,6 +15307,8 @@ footer {
   object-fit: contain;
   transform: translate(-50%, -50%);
   z-index: 1;
+  opacity: 0.22;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
 }
 
 .mobile-photo-card-gradient {
@@ -15324,9 +15326,9 @@ footer {
 .mobile-photo-card-no-photo .mobile-photo-card-gradient {
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.88) 0%,
-    rgba(0, 0, 0, 0.52) 34%,
-    rgba(0, 0, 0, 0) 68%
+    rgba(10, 14, 22, 0.94) 0%,
+    rgba(15, 23, 42, 0.65) 45%,
+    rgba(15, 23, 42, 0.35) 100%
   );
 }
 
