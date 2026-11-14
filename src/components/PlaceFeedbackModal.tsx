@@ -115,55 +115,6 @@ export function PlaceFeedbackModal({
     // 1. Save structured feedback and bridge to review store
     savePlaceFeedback(data, { isNominateGem, lang });
 
-    // 2. Telemetry tracking
-    if (isNominateGem) {
-      void fetch("/api/recommendation-events", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          events: [
-            {
-              eventType: "would_return",
-              establishmentId: typeof targetId === "number" ? targetId : 0,
-              mode: "hidden_gems",
-              sortMode: "motkarta",
-              queryContextJson: JSON.stringify({
-                action: "nominate_hidden_gem",
-                targetName,
-                selectedReasons,
-                comment: comment.trim(),
-              }),
-              contextWindowSize: 1,
-              clientTimestampMs: Date.now(),
-            },
-          ],
-        }),
-      }).catch(() => {});
-    } else {
-      void fetch("/api/recommendation-events", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          events: [
-            {
-              eventType: feedbackType === "up" ? "would_return" : "rejected",
-              establishmentId: typeof targetId === "number" ? targetId : 0,
-              mode: "fast_feedback",
-              sortMode: "motkarta",
-              queryContextJson: JSON.stringify({
-                targetName,
-                feedbackType,
-                selectedReasons,
-                comment: comment.trim(),
-              }),
-              contextWindowSize: 1,
-              clientTimestampMs: Date.now(),
-            },
-          ],
-        }),
-      }).catch(() => {});
-    }
-
     if (onSubmitFeedback) {
       onSubmitFeedback(data);
     }

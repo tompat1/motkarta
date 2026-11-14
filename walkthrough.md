@@ -1,3 +1,22 @@
+# Lower-right mobile-card MOTKARTA mark — 2026-11-14
+
+Moved the light-gray MOTKARTA placeholder mark from the center of no-photo
+mobile venue cards into the lower-right quadrant. The mark remains a subdued
+background element below the content and clear of the top-right feedback and
+save controls.
+
+Verification completed with zero terminal failures:
+
+- Render inspected at the shipped 390px mobile viewport.
+- Focused mobile-card regression: 8/8 passed.
+- Impeccable layout scan: no findings.
+- TypeScript and lint: passed (existing lint warnings only).
+- JavaScript: 464 passed.
+- Python: 178 passed.
+- Playwright full suite: 125 passed, 6 skipped; one pre-existing mobile-Safari
+  map/list timing check passed on its automatic retry.
+- `git diff --check`: passed.
+
 # First-open mobile list scrolling repair — 2026-11-14
 
 Fixed the mobile list sheet so it owns vertical scrolling immediately on its

@@ -9,6 +9,69 @@ export interface FeedbackData {
   timestampMs: number;
 }
 
+export const LIKED_PLACE_IDS_STORAGE_KEY = "motkarta_liked_places";
+const SAVED_PLACE_IDS_STORAGE_KEY = "motkarta_saved_places";
+
+function feedbackStorage(): Storage | typeof globalThis.localStorage | null {
+  if (typeof window !== "undefined" && window.localStorage) return window.localStorage;
+  if (typeof globalThis.localStorage !== "undefined") return globalThis.localStorage;
+  return null;
+}
+
+function numericPlaceId(value: number | string): number | null {
+  const parsed = typeof value === "number" ? value : Number.parseInt(value, 10);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+function readStoredIds(storage: Storage | typeof globalThis.localStorage, key: string): number[] {
+  try {
+    const parsed: unknown = JSON.parse(storage.getItem(key) ?? "[]");
+    if (!Array.isArray(parsed)) return [];
+    return Array.from(new Set(parsed.filter((id): id is number => Number.isInteger(id) && id > 0)));
+  } catch {
+    return [];
+  }
+}
+
+export function getStoredLikedPlaceIds(): number[] {
+  const storage = feedbackStorage();
+  if (!storage) return [];
+
+  const explicitlyLiked = readStoredIds(storage, LIKED_PLACE_IDS_STORAGE_KEY);
+  let historicalLikes: number[] = [];
+  try {
+    const parsed: unknown = JSON.parse(storage.getItem("motkarta_rag_learning_feedback") ?? "[]");
+    if (Array.isArray(parsed)) {
+      historicalLikes = parsed
+        .filter((item): item is FeedbackData => Boolean(item && typeof item === "object" && "isPositive" in item && item.isPositive))
+        .map((item) => numericPlaceId(item.targetId))
+        .filter((id): id is number => id !== null);
+    }
+  } catch {
+    historicalLikes = [];
+  }
+
+  return Array.from(new Set([...explicitlyLiked, ...historicalLikes]));
+}
+
+function rememberPositivePlace(storage: Storage | typeof globalThis.localStorage, targetId: number | string) {
+  const id = numericPlaceId(targetId);
+  if (id === null) return { liked: false, addedToSaved: false };
+
+  const likedIds = readStoredIds(storage, LIKED_PLACE_IDS_STORAGE_KEY);
+  if (!likedIds.includes(id)) {
+    storage.setItem(LIKED_PLACE_IDS_STORAGE_KEY, JSON.stringify([...likedIds, id]));
+  }
+
+  const savedIds = readStoredIds(storage, SAVED_PLACE_IDS_STORAGE_KEY);
+  const addedToSaved = !savedIds.includes(id);
+  if (addedToSaved) {
+    storage.setItem(SAVED_PLACE_IDS_STORAGE_KEY, JSON.stringify([...savedIds, id]));
+  }
+
+  return { liked: true, addedToSaved };
+}
+
 export function savePlaceFeedback(
   data: FeedbackData,
   options?: { isNominateGem?: boolean; lang?: "sv" | "en" }
@@ -17,6 +80,7 @@ export function savePlaceFeedback(
 
   const isNominateGem = Boolean(options?.isNominateGem);
   const lang = options?.lang ?? "sv";
+  let positivePreference = { liked: false, addedToSaved: false };
 
   try {
     if (isNominateGem) {
@@ -35,6 +99,9 @@ export function savePlaceFeedback(
       const existing: FeedbackData[] = existingRaw ? JSON.parse(existingRaw) : [];
       existing.push(data);
       localStorage.setItem("motkarta_rag_learning_feedback", JSON.stringify(existing.slice(-100)));
+      if (data.isPositive) {
+        positivePreference = rememberPositivePlace(localStorage, data.targetId);
+      }
     }
   } catch {
     // Ignore storage quota errors
@@ -67,7 +134,12 @@ export function savePlaceFeedback(
   try {
     window.dispatchEvent(
       new CustomEvent("motkarta-feedback-submitted", {
-        detail: data,
+        detail: {
+          ...data,
+          isNominateGem,
+          liked: positivePreference.liked,
+          addedToSaved: positivePreference.addedToSaved,
+        },
       })
     );
   } catch {

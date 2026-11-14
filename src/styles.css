@@ -2334,6 +2334,22 @@ button.search-clear-btn:hover {
   border-color: var(--color-ink);
 }
 
+.map-card-reaction-btn:disabled,
+.map-card-reaction-btn.is-used,
+.place-detail-feedback-btn:disabled,
+.mobile-card-feedback-btn:disabled {
+  background: #d1d5db;
+  border-color: #c4c7cc;
+  color: #6b7280;
+  cursor: default;
+  box-shadow: none;
+  opacity: 0.82;
+}
+
+.map-card-reaction-btn:disabled:hover {
+  border-color: #c4c7cc;
+}
+
 .map-card-reaction-btn-up {
   color: #166534;
 }
@@ -15346,6 +15362,27 @@ footer {
   cursor: pointer;
   z-index: 2;
   transition: all 0.15s ease;
+}
+
+.mobile-card-feedback-btn {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  border: 0;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  height: 36px;
+  justify-content: center;
+  width: 36px;
+}
+
+.mobile-card-feedback-btn-up {
+  color: #166534;
+}
+
+.mobile-card-feedback-btn-down {
+  color: #991b1b;
 }
 
 .mobile-card-save-btn:active {

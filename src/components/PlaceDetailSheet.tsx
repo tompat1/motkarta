@@ -37,6 +37,7 @@ interface PlaceDetailSheetProps {
   place: ScoredPlace;
   isOpen: boolean;
   isSaved: boolean;
+  isLiked: boolean;
   userRating: number;
   userLocation?: { latitude: number; longitude: number } | null;
   lang: Language;
@@ -51,6 +52,7 @@ export function PlaceDetailSheet({
   place,
   isOpen,
   isSaved,
+  isLiked,
   userRating,
   userLocation,
   lang,
@@ -148,9 +150,12 @@ export function PlaceDetailSheet({
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <button
               type="button"
+              className={`place-detail-feedback-btn place-detail-feedback-btn-up ${isLiked ? "is-used" : ""}`}
+              disabled={isLiked}
+              aria-pressed={isLiked}
               onClick={() => setFeedbackType("up")}
               style={{
-                background: "var(--color-paper, #f8fafc)",
+                background: isLiked ? "#d1d5db" : "var(--color-paper, #f8fafc)",
                 border: "1px solid var(--color-mist, #e2e8f0)",
                 borderRadius: "50%",
                 width: "40px",
@@ -158,11 +163,13 @@ export function PlaceDetailSheet({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                cursor: "pointer",
+                cursor: isLiked ? "default" : "pointer",
               }}
-              title={lang === "sv" ? "Hjälpsam / Bra ställe" : "Helpful / Good place"}
+              title={isLiked
+                ? lang === "sv" ? "Du har redan gillat stället" : "You already liked this place"
+                : lang === "sv" ? "Hjälpsam / Bra ställe" : "Helpful / Good place"}
             >
-              <ThumbsUp size={20} weight="bold" style={{ color: "#166534" }} />
+              <ThumbsUp size={20} weight={isLiked ? "fill" : "bold"} style={{ color: isLiked ? "#6b7280" : "#166534" }} />
             </button>
 
             <button

@@ -26,6 +26,7 @@ interface MobilePlaceCardListProps {
   places: ScoredPlace[];
   activePlace: ScoredPlace | null;
   savedPlaceIds: number[];
+  likedPlaceIds: number[];
   userLocation?: { latitude: number; longitude: number } | null;
   lang: Language;
   onSelectPlace: (place: ScoredPlace) => void;
@@ -37,6 +38,7 @@ export function MobilePlaceCardList({
   places,
   activePlace,
   savedPlaceIds,
+  likedPlaceIds,
   userLocation,
   lang,
   onSelectPlace,
@@ -136,6 +138,7 @@ export function MobilePlaceCardList({
     <div className="mobile-place-card-list" ref={listRef}>
       {visiblePlaces.map((place) => {
         const isSaved = savedPlaceIds.includes(place.id);
+        const isLiked = likedPlaceIds.includes(place.id);
         const isActive = activePlace?.id === place.id;
         const photoUrl = photoMap[place.id] || null;
 
@@ -173,48 +176,30 @@ export function MobilePlaceCardList({
               <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", alignItems: "center", gap: "8px", zIndex: 5 }}>
                 <button
                   type="button"
+                  className={`mobile-card-feedback-btn mobile-card-feedback-btn-up ${isLiked ? "is-used" : ""}`}
+                  disabled={isLiked}
+                  aria-pressed={isLiked}
                   onClick={(e) => {
                     e.stopPropagation();
                     setFeedbackTarget({ id: place.id, name: place.name, type: "up" });
                   }}
-                  style={{
-                    background: "rgba(255, 255, 255, 0.9)",
-                    border: "none",
-                    borderRadius: "50%",
-                    width: "36px",
-                    height: "36px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-                  }}
-                  title={lang === "sv" ? "Hjälpsam / Bra ställe" : "Helpful / Good place"}
+                  title={isLiked
+                    ? lang === "sv" ? "Du har redan gillat stället" : "You already liked this place"
+                    : lang === "sv" ? "Hjälpsam / Bra ställe" : "Helpful / Good place"}
                 >
-                  <ThumbsUp size={18} weight="bold" style={{ color: "#166534" }} />
+                  <ThumbsUp size={18} weight={isLiked ? "fill" : "bold"} />
                 </button>
 
                 <button
                   type="button"
+                  className="mobile-card-feedback-btn mobile-card-feedback-btn-down"
                   onClick={(e) => {
                     e.stopPropagation();
                     setFeedbackTarget({ id: place.id, name: place.name, type: "down" });
                   }}
-                  style={{
-                    background: "rgba(255, 255, 255, 0.9)",
-                    border: "none",
-                    borderRadius: "50%",
-                    width: "36px",
-                    height: "36px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-                  }}
                   title={lang === "sv" ? "Inte bra / Felaktig info" : "Not good / Wrong info"}
                 >
-                  <ThumbsDown size={18} weight="bold" style={{ color: "#991b1b" }} />
+                  <ThumbsDown size={18} weight="bold" />
                 </button>
 
                 <button
