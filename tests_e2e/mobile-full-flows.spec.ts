@@ -117,17 +117,14 @@ test.describe("Mobile Full User Flows", () => {
     await viewToggleBtn.click();
     await expect(bottomSheet).toHaveClass(/is-expanded/);
 
-    // 2. Tapping Map button collapses list and shows map
+    // 2. Tapping Map button collapses list, hides all and shows map
     await mapTab.click();
     await expect(bottomSheet).not.toHaveClass(/is-expanded/);
-
-    // 3. Tapping Map button again when already in clean map view toggles sheet to hidden
-    await mapTab.click();
     await expect(bottomSheet).toHaveClass(/is-hidden/);
     const restorePill = page.locator(".mobile-restore-sheet-pill");
     await expect(restorePill).toBeVisible();
 
-    // 4. Restoring brings the sheet back
+    // 3. Restoring brings the sheet back
     await restorePill.click();
     await expect(bottomSheet).not.toHaveClass(/is-hidden/);
 

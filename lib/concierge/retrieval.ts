@@ -223,6 +223,15 @@ export function exactNameIds(query: string, places: ConciergePlace[]): Set<numbe
 function isExactPlaceMatch(query: string, name: string): boolean {
   const distinctive = queryTerms(name).some((term) => !isCuisineTerm(term) && !['cafe', 'coffee', 'bakery', 'restaurant', 'restaurang', 'stockholm', 'bar'].includes(term));
   const normName = normalize(name);
+
+  // If query contains distinctive numbers (e.g. "450" in "450 gradi"),
+  // an exact match MUST contain those numbers in its name
+  const queryNumbers = extractDistinctiveNumbers(query);
+  const nameNumbers = extractDistinctiveNumbers(name);
+  if (queryNumbers.length > 0 && !queryNumbers.every((qNum) => nameNumbers.includes(qNum))) {
+    return false;
+  }
+
   const isMatch = includesPhrase(query, name) || (normName === '450 gradi' && includesPhrase(query, '450 grader'));
   return distinctive && normName.length >= 3 && isMatch;
 }

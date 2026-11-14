@@ -625,20 +625,6 @@ function AppContent({
         }
       } else if (tab === "map") {
         setActiveDesktopNav("map");
-        const hasOpenOverlay =
-          mobileViewMode === "list" ||
-          selected !== null ||
-          isPlaceDetailOpen ||
-          mobileRankSheet !== null ||
-          isFilterSheetOpen ||
-          isMobileMenuOpen ||
-          isContributeFabOpen ||
-          superpowerMode !== null ||
-          isUserPhotoUploadOpen ||
-          mapCardFeedbackType !== null ||
-          isSyncModalOpen ||
-          (Boolean(answer) && !conciergeAnswerCollapsed);
-
         setMobileViewMode("map");
         setSelected(null);
         setIsPlaceDetailOpen(false);
@@ -652,11 +638,7 @@ function AppContent({
         setIsSyncModalOpen(false);
         setConciergeAnswerCollapsed(true);
 
-        if (!hasOpenOverlay && mobileTab === "map") {
-          setIsMobileBottomSheetHidden((prev) => !prev);
-        } else {
-          setIsMobileBottomSheetHidden(false);
-        }
+        setIsMobileBottomSheetHidden(true);
 
         if (kind === "Saved") {
           selectKindFilter("All places");
@@ -669,24 +651,7 @@ function AppContent({
         document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
       }
     },
-    [
-      answer,
-      conciergeAnswerCollapsed,
-      isContributeFabOpen,
-      isFilterSheetOpen,
-      isMobileMenuOpen,
-      isPlaceDetailOpen,
-      isSyncModalOpen,
-      isUserPhotoUploadOpen,
-      kind,
-      mapCardFeedbackType,
-      mobileRankSheet,
-      mobileTab,
-      mobileViewMode,
-      selectKindFilter,
-      selected,
-      superpowerMode,
-    ]
+    [kind, selectKindFilter]
   );
 
   const [isSourcesLoading, setIsSourcesLoading] = useState(false);

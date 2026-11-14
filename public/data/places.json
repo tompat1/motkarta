@@ -20,7 +20,7 @@
         "Pizza",
         "Restaurant"
       ],
-      "sourceName": "50 Top Pizza & Gambero Rosso",
+      "sourceName": "OpenStreetMap",
       "sourceUrl": "https://www.450gradi.se/",
       "lastUpdated": "2026-11-14",
       "evidenceLabel": "50 Top Pizza Europa · Gambero Rosso · 450 Gradi Officiell sajt",
@@ -61,7 +61,7 @@
       "categoryMeanRating": 0,
       "categoryPopularityRaw": 0,
       "localPopularityPercentile": 0,
-      "priceLevel": 2,
+      "priceLevel": 0,
       "sourceFacts": [
         {
           "placeId": 450000001,
