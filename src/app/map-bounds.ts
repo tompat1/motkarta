@@ -5,6 +5,34 @@ export type MapBounds = {
   east: number;
 };
 
+export type MapFitPadding = {
+  paddingTopLeft: [number, number];
+  paddingBottomRight: [number, number];
+};
+
+/** Keep fitted POIs clear of the mobile toolbar and pull-up results sheet. */
+export function fitAllMapPadding(
+  isMobile: boolean,
+  mapBottom?: number,
+  overlayTop?: number,
+): MapFitPadding {
+  if (!isMobile) {
+    return {
+      paddingTopLeft: [42, 42],
+      paddingBottomRight: [42, 42],
+    };
+  }
+
+  const overlayOverlap = Number.isFinite(mapBottom) && Number.isFinite(overlayTop)
+    ? Math.max(0, Number(mapBottom) - Number(overlayTop))
+    : 0;
+
+  return {
+    paddingTopLeft: [48, 48],
+    paddingBottomRight: [64, Math.max(48, overlayOverlap + 24)],
+  };
+}
+
 export function expandBounds(bounds: MapBounds, paddingRatio = 0.08): MapBounds {
   const latSpan = bounds.north - bounds.south;
   const lngSpan = bounds.east - bounds.west;

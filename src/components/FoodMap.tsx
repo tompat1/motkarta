@@ -8,11 +8,12 @@ import { cuisineLabel, cuisineParts, hasCoordinates, translations } from "../app
 import {
   MAP_AUTO_FIT_MAX_PLACES,
   boundsFromLeaflet,
+  fitAllMapPadding,
   filterPlacesByBounds,
   type MapBounds,
 } from "../app/map-bounds";
 import { requestPosition, locationFailureMessage, type LocationResult } from '../app/geolocation';
-import { ArrowsIn, ArrowsOut, Crosshair, MapTrifold, Minus, Plus } from "@phosphor-icons/react";
+import { ArrowsIn, ArrowsOut, Crosshair, FrameCorners, Minus, Plus } from "@phosphor-icons/react";
 import { SPECIALTY_COFFEE_SVG_CONTENT } from "./SpecialtyCoffeeIcon";
 
 export function FoodMap({
@@ -309,15 +310,29 @@ export function FoodMap({
     };
   }, []);
 
-  const handleRecenter = () => {
+  const handleFitAllPlaces = () => {
     const map = mapRef.current;
     if (!map) return;
+
     const bounds = L.latLngBounds([]);
-    places.filter(hasCoordinates).forEach((place) => {
+    placesRef.current.filter(hasCoordinates).forEach((place) => {
       bounds.extend([place.latitude, place.longitude]);
     });
+
     if (bounds.isValid()) {
-      map.fitBounds(bounds, { padding: [42, 42], maxZoom: 13 });
+      const mapRect = containerRef.current?.getBoundingClientRect();
+      const sheetRect = document.querySelector<HTMLElement>(".mobile-bottom-sheet")?.getBoundingClientRect();
+      const padding = fitAllMapPadding(
+        isMobileMapViewport(),
+        mapRect?.bottom,
+        sheetRect?.top,
+      );
+
+      map.closePopup();
+      map.fitBounds(bounds, {
+        ...padding,
+        maxZoom: 13,
+      });
     } else {
       map.setView([59.3293, 18.0686], 12);
     }
@@ -587,12 +602,12 @@ export function FoodMap({
         </button>
         <button
           type="button"
-          className="map-control-btn"
-          onClick={handleRecenter}
+          className="map-control-btn map-fit-all-btn"
+          onClick={handleFitAllPlaces}
           title={t.centerMap}
           aria-label={t.centerMap}
         >
-          <MapTrifold size={16} weight="bold" />
+          <FrameCorners size={16} weight="bold" aria-hidden="true" />
           <span className="map-btn-label">{t.centerMap}</span>
         </button>
         <button

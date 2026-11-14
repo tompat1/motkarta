@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   expandBounds,
+  fitAllMapPadding,
   filterPlacesByBounds,
   filterRankedPlacesByBounds,
   placeInBounds,
@@ -35,6 +36,21 @@ test("expandBounds adds padding around the viewport", () => {
   assert.ok(expanded.north > stockholmBounds.north);
   assert.ok(expanded.west < stockholmBounds.west);
   assert.ok(expanded.east > stockholmBounds.east);
+});
+
+test("fitAllMapPadding keeps fitted POIs clear of mobile overlays", () => {
+  assert.deepEqual(fitAllMapPadding(false), {
+    paddingTopLeft: [42, 42],
+    paddingBottomRight: [42, 42],
+  });
+  assert.deepEqual(fitAllMapPadding(true, 800, 680), {
+    paddingTopLeft: [48, 48],
+    paddingBottomRight: [64, 144],
+  });
+  assert.deepEqual(fitAllMapPadding(true), {
+    paddingTopLeft: [48, 48],
+    paddingBottomRight: [64, 48],
+  });
 });
 
 test("filterRankedPlacesByBounds preserves ranked order and keeps active place visible", () => {

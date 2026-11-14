@@ -1,3 +1,21 @@
+# Fit-all map control — 2026-11-14
+
+Replaced the ambiguous folded-map control with Phosphor's `FrameCorners` icon
+and explicit Swedish/English accessible labels. Activating the control now fits
+every currently matched POI into one map view. On mobile, the fitted viewport
+uses asymmetric padding derived from the pull-up results sheet so clusters are
+not hidden behind the sheet or right-side controls.
+
+Verification completed with zero failures:
+
+- Focused fit-all and map-padding regressions: 6/6 passed.
+- TypeScript and lint: passed (existing lint warnings only).
+- JavaScript: 463 passed.
+- Python: 178 passed.
+- Playwright: 123 passed, 6 skipped across desktop Chromium, mobile Chrome and mobile Safari.
+- Mobile render inspected before and after activating the fit-all control.
+- `git diff --check`: passed.
+
 # Weekly admin digest delivery repair — 2026-11-04
 
 The weekly run was failing before application code executed: Cloudflare returned
