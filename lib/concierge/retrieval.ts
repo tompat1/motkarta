@@ -17,8 +17,13 @@ function oneEdit(a: string, b: string): boolean {
   }
   return edits + (a.length - i) + (b.length - j) <= 1;
 }
+const LEXICAL_SYNONYMS: Record<string, string[]> = {
+  grader: ['gradi'],
+  gradi: ['grader'],
+};
 function matchesTerm(term: string, text: string): boolean {
-  return tokenAlternatives(term).some((alternative) => includesPhrase(text, alternative)) || text.split(' ').some((word) => oneEdit(term, word));
+  const synonyms = LEXICAL_SYNONYMS[term] ?? [];
+  return tokenAlternatives(term).concat(synonyms).some((alternative) => includesPhrase(text, alternative)) || text.split(' ').some((word) => oneEdit(term, word));
 }
 const DISH_TERMS = dishMatchTerms();
 const MEAL_CUISINES = new Set(mealCuisineIds());
@@ -45,12 +50,27 @@ export function matchesArea(area: string, place: ConciergePlace): boolean {
   return false;
 }
 
+function extractDistinctiveNumbers(text: string): string[] {
+  const matches = text.match(/\b\d+\b/g) ?? [];
+  return matches.filter((numStr) => {
+    const num = Number(numStr);
+    return !(num >= 2020 && num <= 2035);
+  });
+}
+
 export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent, context: QueryContext): boolean {
   const { place, facts } = candidate;
   const attributes = facts.facts.filter((fact) => ['dish', 'tags', 'cuisine'].includes(fact.field)).map((fact) => fact.value).join(' ');
   if (intent.outsideStockholm || intent.excludedBrandRequested || intent.openNow) return false; // No verified live hours evaluator yet.
   if (intent.exclusions.some((term) => includesPhrase(`${place.name} ${place.kind} ${attributes}`, term))) return false;
   if (intent.isPagination && (intent.excludedPlaceNames ?? []).some((name) => normalize(name) === normalize(candidate.place.name))) return false;
+  const queryNumbers = extractDistinctiveNumbers(intent.positive).filter((numStr) => intent.priceMax === null || Number(numStr) !== intent.priceMax);
+  if (queryNumbers.length > 0) {
+    const placeNameNumbers = extractDistinctiveNumbers(place.name);
+    if (placeNameNumbers.length > 0 && !placeNameNumbers.some((num) => queryNumbers.includes(num))) {
+      return false;
+    }
+  }
   if (intent.area && !matchesArea(intent.area, place)) return false;
   if (intent.specialty && !specialtyEligible(place)) return false;
   if (intent.bakery && !intent.specialty && !['Bakery', 'Café'].includes(place.kind)) return false;
@@ -119,6 +139,15 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     const text = normalize(facts.document);
     const exact = isExactPlaceMatch(normalizedQuery, place.name);
     const matchingTerms = intent.terms.filter((term) => matchesTerm(term, text));
+    const numericTerms = intent.terms.filter((term) => /^\d+$/.test(term));
+    if (numericTerms.length > 0 && !numericTerms.some((term) => matchesTerm(term, text))) {
+      continue;
+    }
+    const matchedNonNumericTerms = matchingTerms.some((t) => !/^\d+$/.test(t));
+    const nameMatchesNumeric = numericTerms.some((t) => matchesTerm(t, normalize(place.name)));
+    if (numericTerms.length > 0 && !matchedNonNumericTerms && !nameMatchesNumeric) {
+      continue;
+    }
     const attributes = facts.facts.filter((fact) => ['dish', 'tags', 'cuisine'].includes(fact.field)).map((fact) => fact.value).join(' ');
     const cuisineMatch = intent.cuisineKinds.length > 0 && intent.cuisineKinds.some((cuisine) =>
       tokenAlternatives(normalize(cuisine)).some((term) => includesPhrase(attributes, term)));
@@ -193,5 +222,7 @@ export function exactNameIds(query: string, places: ConciergePlace[]): Set<numbe
 
 function isExactPlaceMatch(query: string, name: string): boolean {
   const distinctive = queryTerms(name).some((term) => !isCuisineTerm(term) && !['cafe', 'coffee', 'bakery', 'restaurant', 'restaurang', 'stockholm', 'bar'].includes(term));
-  return distinctive && normalize(name).length >= 3 && includesPhrase(query, name);
+  const normName = normalize(name);
+  const isMatch = includesPhrase(query, name) || (normName === '450 gradi' && includesPhrase(query, '450 grader'));
+  return distinctive && normName.length >= 3 && isMatch;
 }

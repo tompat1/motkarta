@@ -323,3 +323,33 @@ test("RAG retrieveAndSynthesize returns all Chinese places on Kungsholmen for 'k
   }
 });
 
+test("RAG retrieveAndSynthesize matches '450 Gradi' for '450 grader' without false matching '800 Grader'", () => {
+  const result = retrieveAndSynthesize("450 grader", livePlaces, { language: "sv" });
+
+  assert.equal(result.status, "ok");
+  const names = result.recommendedPlaces.map((p) => p.name);
+  assert.ok(names.includes("450 Gradi"), "Should match 450 Gradi");
+  assert.equal(names.includes("800 Grader") || names.includes("800 grader"), false, "Must not false-match 800 Grader");
+});
+
+test("RAG retrieveAndSynthesize matches '800 Grader' for '800 grader' without matching '450 Gradi'", () => {
+  const result = retrieveAndSynthesize("800 grader", livePlaces, { language: "sv" });
+
+  assert.equal(result.status, "ok");
+  const names = result.recommendedPlaces.map((p) => p.name);
+  assert.ok(names.includes("800 Grader") || names.includes("800 grader"), "Should match 800 Grader");
+  assert.equal(names.includes("450 Gradi"), false, "Must not false-match 450 Gradi");
+});
+
+test("RAG retrieveAndSynthesize provides webSearch fallback when 450 Gradi is absent", () => {
+  const placesWithout450 = livePlaces.filter((p) => p.id !== 450000001);
+  const result = retrieveAndSynthesize("450 grader", placesWithout450, { language: "sv" });
+
+  assert.equal(result.status, "clarification");
+  assert.equal(result.recommendedPlaces.length, 0);
+  assert.ok(result.webSearch, "Web search fallback must trigger when no catalog place matches");
+  assert.equal(result.webSearch.query, "450 grader");
+  assert.ok(result.webSearch.links.length >= 3);
+});
+
+

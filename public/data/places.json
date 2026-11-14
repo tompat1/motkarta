@@ -2,6 +2,133 @@
   "source": "osm_curated_open_sources+enrichment",
   "places": [
     {
+      "id": 450000001,
+      "name": "450 Gradi",
+      "kind": "Restaurant",
+      "cuisine": "pizza",
+      "area": "Lidingö",
+      "address": "Brostugevägen 1, 181 39 Lidingö",
+      "note": "Hyllad och prisbelönt napolitansk pizzeria grundad av Jesper Blomqvist. Klassisk napolitansk pizza med höga kanter (canotto) bakad i 450 grader.",
+      "tags": [
+        "Canotto",
+        "Curated",
+        "50 Top Pizza",
+        "Gambero Rosso",
+        "Lidingö",
+        "Neapolitan pizza",
+        "450 grader",
+        "Pizza",
+        "Restaurant"
+      ],
+      "sourceName": "50 Top Pizza & Gambero Rosso",
+      "sourceUrl": "https://www.450gradi.se/",
+      "lastUpdated": "2026-11-14",
+      "evidenceLabel": "50 Top Pizza Europa · Gambero Rosso · 450 Gradi Officiell sajt",
+      "mainstreamExposure": 42,
+      "ageDays": 0,
+      "daysSinceFreshEvidence": 10,
+      "lifecycleState": "verified",
+      "evidence": {
+        "specialistGuide": 95,
+        "independentEditorial": 90,
+        "verifiedUserRating": 0,
+        "repeatVisits": 0,
+        "recentReviews": 0,
+        "credibleReviewers": 0,
+        "inspectionStatus": 0,
+        "verifiedAttributes": 85,
+        "dataFreshness": 90,
+        "confidence": "High"
+      },
+      "engagement": {
+        "searchImpressions": 0,
+        "profileViews": 0,
+        "mapMarkerClicks": 0,
+        "saves": 0,
+        "directionRequests": 0,
+        "confirmedVisits": 0,
+        "repeatVisits": 0,
+        "recommendations": 0,
+        "recentSaves": 0
+      },
+      "latitude": 59.3639,
+      "longitude": 18.1252,
+      "website": "https://www.450gradi.se",
+      "priceSEK": "160 - 490 SEK",
+      "ratingAverage": 0,
+      "reliableRatingCount": 0,
+      "reviewCount": 0,
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0,
+      "priceLevel": 2,
+      "sourceFacts": [
+        {
+          "placeId": 450000001,
+          "source": "50 Top Pizza Europa",
+          "url": "https://www.50toppizza.it/",
+          "verification": "verified",
+          "verifiedAt": "2026-11-14T00:00:00Z",
+          "capturedAt": "2026-11-14T00:00:00Z",
+          "id": "450000001:50toppizza:cuisine:pizza",
+          "field": "cuisine",
+          "value": "pizza"
+        },
+        {
+          "placeId": 450000001,
+          "source": "50 Top Pizza Europa",
+          "url": "https://www.50toppizza.it/",
+          "verification": "verified",
+          "verifiedAt": "2026-11-14T00:00:00Z",
+          "capturedAt": "2026-11-14T00:00:00Z",
+          "id": "450000001:50toppizza:dish:neapolitan pizza",
+          "field": "dish",
+          "value": "neapolitan pizza"
+        },
+        {
+          "placeId": 450000001,
+          "source": "450 Gradi",
+          "url": "https://www.450gradi.se/",
+          "verification": "listed",
+          "capturedAt": "2026-11-14T00:00:00Z",
+          "id": "450000001:website:priceSEK",
+          "field": "priceSEK",
+          "value": "160 - 490 SEK"
+        },
+        {
+          "placeId": 450000001,
+          "source": "450 Gradi",
+          "url": "https://www.450gradi.se/",
+          "verification": "listed",
+          "capturedAt": "2026-11-14T00:00:00Z",
+          "id": "450000001:website:dish:margherita",
+          "field": "dish",
+          "value": "margherita"
+        },
+        {
+          "placeId": 450000001,
+          "source": "450 Gradi",
+          "url": "https://www.450gradi.se/",
+          "verification": "listed",
+          "capturedAt": "2026-11-14T00:00:00Z",
+          "id": "450000001:website:tags:canotto",
+          "field": "tags",
+          "value": "canotto"
+        },
+        {
+          "placeId": 450000001,
+          "source": "450 Gradi",
+          "url": "https://www.450gradi.se/",
+          "verification": "listed",
+          "capturedAt": "2026-11-14T00:00:00Z",
+          "id": "450000001:website:tags:450 grader",
+          "field": "tags",
+          "value": "450 grader"
+        }
+      ],
+      "is_hidden_gem": true
+    },
+    {
       "id": 329797914,
       "name": "Solkant",
       "kind": "Specialty coffee",
@@ -382518,5 +382645,5 @@
       "sourceFacts": []
     }
   ],
-  "totalPlaces": 3198
+  "totalPlaces": 3199
 }

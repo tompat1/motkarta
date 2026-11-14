@@ -66,10 +66,18 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
     'birkastan', 'sofo', 'hornstull', 'mariatorget', 'nytorget', 'skanstull',
     'zinken', 'zinkensdamm', 'stureplan', 'karlaplan', 'fridhemsplan', 'odenplan',
     'bromma', 'alvik', 'kista', 'arsta', 'liljeholmen', 'aspudden', 'hagersten',
-    'enskede', 'farsta', 'skarpnack',
+    'enskede', 'farsta', 'skarpnack', 'lidingo',
     ...(area ? area.split(' ') : [])
   ]);
-  const terms = queryTerms(positive).filter((token) => !localityTokens.has(token) && !/^\d+$/.test(token) && !['under', 'below', 'less', 'than', 'max', 'hogst', 'sek', 'kr', 'kronor'].includes(token));
+  const isPriceOrCurrencyNumber = (token: string) => /^\d+$/.test(token) && (
+    (explicitPrice !== null && token === explicitPrice[1]) ||
+    new RegExp(`\\b${token}\\s*(?:kr|sek|kronor)\\b`, 'i').test(positive)
+  );
+  const terms = queryTerms(positive).filter((token) =>
+    !localityTokens.has(token) &&
+    !isPriceOrCurrencyNumber(token) &&
+    !['under', 'below', 'less', 'than', 'max', 'hogst', 'sek', 'kr', 'kronor'].includes(token)
+  );
   return { positive, filters, priceMax, area, isDistrictQuery: Boolean(area), outsideStockholm, excludedBrandRequested, dishes: [...new Set(dishes)], specialty, bakery, dinner, atmosphere, near, openNow, exclusions, cuisineKinds, terms,
     hiddenGem: /\b(hidden gems?|dolda parlor|dold parla)\b/.test(normalized),
     language: context.language ?? (/\b(och|jag|nara|mig|basta|hitta|kaffe|middag|pa|oppet|polska)\b/.test(normalized) ? 'sv' : 'en'),
