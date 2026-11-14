@@ -262,6 +262,10 @@ export function SearchablePlaceSelect({
                     className={`searchable-place-option ${isSelected ? "is-selected" : ""} ${
                       isHighlighted ? "is-highlighted" : ""
                     }`}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleSelect(place.id);
+                    }}
                     onClick={() => handleSelect(place.id)}
                     onMouseEnter={() => setHighlightedIndex(index)}
                   >
