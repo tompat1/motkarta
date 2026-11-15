@@ -3,6 +3,9 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { kindFilterLabel } from "../src/app/shared.ts";
 import { extractStructuredFilters } from "../lib/concierge/filters.ts";
+import {
+  getPlaceDrinkCategory,
+} from "../src/lib/drinkCategories.ts";
 
 const rawPlacesData = JSON.parse(await readFile(new URL("../public/data/places.json", import.meta.url), "utf8"));
 const livePlaces = rawPlacesData.places ?? rawPlacesData;
@@ -105,4 +108,29 @@ test("Concierge filters ground vinbar and cocktailbar queries", () => {
 
   const cocktailFilters = extractStructuredFilters("mysig cocktailbar i vasastan");
   assert.ok(cocktailFilters.cuisines.some((t) => ["cocktail", "cocktails", "cocktail bar", "cocktailbar"].includes(t)));
+});
+
+test("FoodMap and BarAndPubIcons correctly classify and assign map icons for bars and pubs", async () => {
+  const svejk = livePlaces.find((p) => p.name.toLowerCase().includes("svejk"));
+  assert.ok(svejk, "Soldaten Svejk should exist in places");
+  assert.equal(getPlaceDrinkCategory(svejk), "pub");
+
+  const gemma = livePlaces.find((p) => p.name.toLowerCase().includes("a bar called gemma"));
+  assert.ok(gemma, "A Bar Called Gemma should exist in places");
+  assert.equal(getPlaceDrinkCategory(gemma), "bar");
+
+  const ambar = livePlaces.find((p) => p.name.toLowerCase().includes("ambar"));
+  assert.ok(ambar, "Ambar should exist in places");
+  assert.equal(getPlaceDrinkCategory(ambar), "bar");
+
+  // Verify FoodMap.tsx contains the pub and bar marker SVGs
+  const foodMapSource = await readFile(new URL("../src/components/FoodMap.tsx", import.meta.url), "utf8");
+  assert.match(foodMapSource, /PUB_BEER_STEIN_SVG_CONTENT/);
+  assert.match(foodMapSource, /BAR_MARTINI_SVG_CONTENT/);
+  assert.match(foodMapSource, /kind-\$\{drinkCategory\}/);
+
+  // Exclude non-alcohol food counters from bar/pub classification
+  assert.equal(getPlaceDrinkCategory({ name: "Sushi Bar Kirin", kind: "Restaurant" }), null);
+  assert.equal(getPlaceDrinkCategory({ name: "Taco Bar Kungsgatan", kind: "Restaurant" }), null);
+  assert.equal(getPlaceDrinkCategory({ name: "Joe & The Juice Bar", kind: "Café" }), null);
 });

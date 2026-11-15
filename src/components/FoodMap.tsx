@@ -15,6 +15,7 @@ import {
 import { requestPosition, locationFailureMessage, type LocationResult } from '../app/geolocation';
 import { ArrowsIn, ArrowsOut, Crosshair, FrameCorners, Minus, Plus } from "@phosphor-icons/react";
 import { SPECIALTY_COFFEE_SVG_CONTENT } from "./SpecialtyCoffeeIcon";
+import { BAR_MARTINI_SVG_CONTENT, PUB_BEER_STEIN_SVG_CONTENT, getPlaceDrinkCategory } from "./BarAndPubIcons";
 
 export function FoodMap({
   places,
@@ -653,10 +654,19 @@ function isMobileMapViewport() {
 
 function placeIcon(place: ScoredPlace, active: boolean) {
   const kind = place.kind;
+  const drinkCategory = getPlaceDrinkCategory(place);
   let iconSvg = "";
   if (kind === "Restaurant") {
-    // Fork & Knife SVG
-    iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M200,32a8,8,0,0,0-8,8V104a24,24,0,0,1-24,24H160a8,8,0,0,0-8,8v80a8,8,0,0,0,16,0V144h8a40,40,0,0,0,40-40V40A8,8,0,0,0,200,32ZM96,32a8,8,0,0,0-8,8V88H72V40a8,8,0,0,0-16,0V88H40V40a8,8,0,0,0-16,0V96a40,40,0,0,0,40,40v80a8,8,0,0,0,16,0V136a40,40,0,0,0,40-40V40A8,8,0,0,0,96,32Z"/></svg>`;
+    if (drinkCategory === "pub") {
+      // Frothing Beer Stein SVG for pubs and beer halls
+      iconSvg = `<svg width="15" height="15" viewBox="0 0 256 256" fill="currentColor">${PUB_BEER_STEIN_SVG_CONTENT}</svg>`;
+    } else if (drinkCategory === "bar") {
+      // Martini Cocktail Glass SVG for cocktail bars, wine bars, and lounges
+      iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor">${BAR_MARTINI_SVG_CONTENT}</svg>`;
+    } else {
+      // Fork & Knife SVG
+      iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M200,32a8,8,0,0,0-8,8V104a24,24,0,0,1-24,24H160a8,8,0,0,0-8,8v80a8,8,0,0,0,16,0V144h8a40,40,0,0,0,40-40V40A8,8,0,0,0,200,32ZM96,32a8,8,0,0,0-8,8V88H72V40a8,8,0,0,0-16,0V88H40V40a8,8,0,0,0-16,0V96a40,40,0,0,0,40,40v80a8,8,0,0,0,16,0V136a40,40,0,0,0,40-40V40A8,8,0,0,0,96,32Z"/></svg>`;
+    }
   } else if (kind === "Bakery") {
     // Bread SVG (Phosphor Bread bold - matching filter label icon)
     iconSvg = `<svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M244,80a44.05,44.05,0,0,0-44-44H48a44,44,0,0,0-20,83.17V200a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V119.17A44,44,0,0,0,244,80ZM52,123.3A12,12,0,0,0,48,100a20,20,0,0,1,0-40h92a20,20,0,0,1,0,40,12,12,0,0,0-4,23.3V196H52ZM200,100a12,12,0,0,0-4,23.3V196H160V119.17A43.92,43.92,0,0,0,179.17,60H200a20,20,0,0,1,0,40Z"/></svg>`;
@@ -671,10 +681,11 @@ function placeIcon(place: ScoredPlace, active: boolean) {
   const iconSize: [number, number] = active ? [36, 36] : [28, 28];
   const iconAnchor: [number, number] = active ? [18, 18] : [14, 14];
   const popupAnchor: [number, number] = active ? [0, -20] : [0, -14];
+  const subKindClass = drinkCategory ? `kind-${drinkCategory}` : "";
 
   return L.divIcon({
     className: "motkarta-map-marker-container",
-    html: `<div class="motkarta-map-marker ${kindClass(kind)} ${active ? "active" : ""}">
+    html: `<div class="motkarta-map-marker ${kindClass(kind)} ${subKindClass} ${active ? "active" : ""}">
       <div class="marker-badge">
         ${iconSvg}
       </div>
