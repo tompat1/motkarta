@@ -1,3 +1,23 @@
+# Frontend Note Sanitization & Diagnostic Suppression — 2026-11-15
+
+Suppressed raw internal data-pipeline, ETL, and backend sync messages from the public consumer UI:
+
+1. **Suppression of pipeline jargon**:
+   - Filtered out internal diagnostic descriptions such as:
+     - `Needs source enrichment before quality scoring`
+     - `Bakery/Restaurant imported from OpenStreetMap...`
+     - `Added through / via Google Places`
+     - `Pending community submission · not independently verified`
+   - Added `isInternalDiagnosticNote` and `getPublicPlaceNote` in `src/app/shared.ts`.
+
+2. **Clean consumer copy**:
+   - In `MobilePlaceSlideUp.tsx` and `PlaceDetailSheet.tsx`, venues lacking a genuine editorial story or handcrafted description now display clean, natural fallback descriptions (e.g. `"Oberoende bageri i Kungsholmen."` / `"Independent bakery in Kungsholmen."`) rather than exposing raw pipeline states.
+   - Genuine editorial reviews and curator notes (e.g. for Pascal, Lillebrors, 450 Gradi) remain fully preserved.
+
+3. **Verification**:
+   - Added unit test regressions in `tests/place-card-facts.test.mjs` ensuring diagnostic text is cleanly sanitized.
+   - All 4-tier verification gates pass: TypeScript (0 errors), ESLint (0 errors), Python (178/178), Unit tests (466/466).
+
 # Hidden Gems Feature Filter & Natural Search Intent — 2026-11-15
 
 Added explicit multi-filter and search integration for Dolda pärlor (Hidden gems):
