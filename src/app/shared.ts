@@ -777,4 +777,46 @@ export function formatScrapeDate(dateStr?: string, lang: Language = "sv"): strin
   }
 }
 
+export function isInternalDiagnosticNote(note: string | undefined | null): boolean {
+  if (!note) return true;
+  const lower = note.toLowerCase();
+  return (
+    lower.includes("source enrichment") ||
+    lower.includes("needs source enrichment") ||
+    lower.includes("imported from") ||
+    lower.includes("from openstreetmap") ||
+    lower.includes("openstreetmap") ||
+    lower.includes("google places") ||
+    lower.includes("added through") ||
+    lower.includes("added via") ||
+    lower.includes("quality scoring") ||
+    lower.includes("baseline review") ||
+    lower.includes("pending community submission") ||
+    lower.includes("not independently verified")
+  );
+}
+
+export function getPublicPlaceNote(
+  place: { note?: string; discoveryReasons?: string[]; evidenceLabel?: string; kind?: string; area?: string },
+  lang: Language = "sv"
+): string {
+  if (place.note && !isInternalDiagnosticNote(place.note)) {
+    return place.note.trim();
+  }
+  if (place.discoveryReasons && place.discoveryReasons.length > 0) {
+    const candidate = place.discoveryReasons[0];
+    if (candidate && !isInternalDiagnosticNote(candidate)) {
+      return candidate.charAt(0).toUpperCase() + candidate.slice(1);
+    }
+  }
+  if (place.evidenceLabel && !isInternalDiagnosticNote(place.evidenceLabel) && place.evidenceLabel !== "No source evidence yet") {
+    return place.evidenceLabel;
+  }
+  const kindLabel = kindFilterLabel(place.kind ?? "ställe", lang).toLowerCase();
+  const areaLabel = place.area ?? "Stockholm";
+  return lang === "sv"
+    ? `Oberoende ${kindLabel} i ${areaLabel}.`
+    : `Independent ${kindLabel} in ${areaLabel}.`;
+}
+
 export type SuperpowerMode = "add_place" | "add_review" | "add_photo" | "rate_place" | "add_source";

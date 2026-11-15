@@ -25,7 +25,7 @@ import type { ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
 import { heroImageStyle } from "../../lib/photo-hero-frame";
 import { fetchPlacePhotos, type PlacePhoto } from "../../lib/lazy-media";
-import { formatDistance, distanceFromPoint } from "../app/shared";
+import { formatDistance, distanceFromPoint, isInternalDiagnosticNote } from "../app/shared";
 import { LazyPlaceMediaDrawer } from "./LazyPlaceMediaDrawer";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 import { MotkartaScoreWidget } from "./MotkartaScoreWidget";
@@ -375,7 +375,7 @@ export function PlaceDetailSheet({
           <hr className="place-detail-divider" />
 
           {/* Place Note & Story */}
-          {place.note && !place.note.toLowerCase().includes("from openstreetmap") ? (
+          {place.note && !place.note.toLowerCase().includes("from openstreetmap") && !isInternalDiagnosticNote(place.note) ? (
             <section className="place-detail-section">
               <p className="place-detail-description">{place.note}</p>
             </section>

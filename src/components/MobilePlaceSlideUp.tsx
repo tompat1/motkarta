@@ -9,7 +9,7 @@ import {
   Check,
 } from "@phosphor-icons/react";
 import type { ScoredPlace } from "../../lib/scoring";
-import { kindFilterLabel, type Language } from "../app/shared";
+import { getPublicPlaceNote, kindFilterLabel, type Language } from "../app/shared";
 import { DUMMY_PLACE_IMAGE_URL } from "../../lib/lazy-media";
 
 interface MobilePlaceSlideUpProps {
@@ -39,13 +39,7 @@ export function MobilePlaceSlideUp({
 
   if (!place) return null;
 
-  const noteText =
-    place.note?.trim() ||
-    place.discoveryReasons?.[0] ||
-    place.evidenceLabel ||
-    (lang === "sv"
-      ? "Oberoende mat- och fikaställe i Stockholm."
-      : "Independent food & coffee venue in Stockholm.");
+  const noteText = getPublicPlaceNote(place, lang);
 
   const categoryAreaText = `${place.area} · ${kindFilterLabel(place.kind, lang)}`;
 
