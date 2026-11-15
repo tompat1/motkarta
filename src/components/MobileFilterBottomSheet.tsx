@@ -20,7 +20,7 @@ interface MobileFilterBottomSheetProps {
   cuisineOptions: string[];
   onSelectCuisine: (cuisine: string) => void;
   selectedTags: string[];
-  onToggleFeature: (feature: "Dog friendly" | "Wi-Fi") => void;
+  onToggleFeature: (feature: "Dog friendly" | "Wi-Fi" | "Hidden gems") => void;
   hasActiveFilters: boolean;
   onResetFilters: () => void;
   matchingCount: number;
@@ -135,6 +135,10 @@ export function MobileFilterBottomSheet({
           <section className="filter-sheet-section">
             <h3 className="filter-sheet-section-title">{lang === "sv" ? "Egenskaper" : "Features"}</h3>
             <div className="filter-sheet-grid" role="group" aria-label={lang === "sv" ? "Egenskaper" : "Features"}>
+              <button type="button" className={`filter-pill-button ${selectedTags.includes("Hidden gems") ? "is-selected" : ""}`} aria-pressed={selectedTags.includes("Hidden gems")} onClick={() => onToggleFeature("Hidden gems")}>
+                {selectedTags.includes("Hidden gems") ? <Check size={14} weight="bold" className="filter-pill-check" /> : <Sparkle size={16} weight="bold" />}
+                <span>{lang === "sv" ? "Dolda pärlor" : "Hidden gems"}</span>
+              </button>
               <button type="button" className={`filter-pill-button ${selectedTags.includes("Dog friendly") ? "is-selected" : ""}`} aria-pressed={selectedTags.includes("Dog friendly")} onClick={() => onToggleFeature("Dog friendly")}>
                 {selectedTags.includes("Dog friendly") ? <Check size={14} weight="bold" className="filter-pill-check" /> : <PawPrint size={16} weight="bold" />}
                 <span>{lang === "sv" ? "Hundvänligt" : "Dog Friendly"}</span>

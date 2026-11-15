@@ -645,7 +645,7 @@ function AppContent({
     setCuisine(allCuisines);
   }, [clearConciergeState]);
 
-  const toggleFeatureFilter = useCallback((feature: "Dog friendly" | "Wi-Fi") => {
+  const toggleFeatureFilter = useCallback((feature: "Dog friendly" | "Wi-Fi" | "Hidden gems") => {
     clearConciergeState();
     setSelectedTags((previous) => previous.includes(feature)
       ? previous.filter((tag) => tag !== feature)
@@ -1091,6 +1091,10 @@ function AppContent({
           const evLabelLower = (place.evidenceLabel ?? "").toLowerCase();
           const placeTags = (place.tags ?? []).map((pt) => pt.toLowerCase());
 
+          if (tLower === "hidden gems" || tLower === "dolda pärlor" || tLower === "hidden gem" || tLower === "dold pärla") {
+            return place.hiddenGem?.eligible === true;
+          }
+
           if (tLower === "dog friendly" || tLower === "hundvänligt") {
             return (
               searchStr.includes("dog friendly") ||
@@ -1132,9 +1136,15 @@ function AppContent({
       .filter((place) => {
         const qClean = query.trim().toLowerCase();
         if (!qClean) return true;
+        const isHiddenGemSearch = /\b(hidden gems?|dolda pärlor|dolda parlor|dold pärla|dold parla)\b/i.test(qClean);
+        if (isHiddenGemSearch && !place.hiddenGem?.eligible) return false;
+
         const placeSearchText = `${place.name} ${place.area} ${place.address ?? ""} ${place.cuisine ?? ""} ${place.kind} ${place.note ?? ""} ${place.tags.join(" ")}`.toLowerCase();
         if (placeSearchText.includes(qClean)) return true;
-        const rawTokens = qClean.split(/[,\s?.!]+/).filter(Boolean);
+        const rawTokens = qClean
+          .replace(/\b(hidden gems?|dolda pärlor|dolda parlor|dold pärla|dold parla)\b/gi, "")
+          .split(/[,\s?.!]+/)
+          .filter(Boolean);
         if (rawTokens.length === 0) return true;
         const stopWords = new Set([
           "och", "på", "i", "med", "för", "från", "till", "av", "som", "är", "en", "ett", "den", "det", "de",
@@ -2922,6 +2932,14 @@ function AppContent({
         <div className="chips feature-chips" aria-label="Filter egenskaper">
           <span className="filter-label">{lang === "sv" ? "Egenskaper" : "Features"}</span>
           <div className="chip-row">
+            <button
+              className={selectedTags.includes("Hidden gems") ? "active" : ""}
+              onClick={() => toggleFeatureFilter("Hidden gems")}
+              type="button"
+            >
+              <Sparkle size={18} weight={selectedTags.includes("Hidden gems") ? "fill" : "bold"} />
+              <span>{lang === "sv" ? "Dolda pärlor" : "Hidden gems"}</span>
+            </button>
             <button
               className={selectedTags.includes("Dog friendly") ? "active" : ""}
               onClick={() => toggleFeatureFilter("Dog friendly")}

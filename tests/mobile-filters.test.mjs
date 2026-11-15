@@ -55,12 +55,15 @@ test("dog friendly filter returns verified venues across Stockholm", () => {
   assert.ok(sampleNames.some((n) => n.includes("drop coffee") || n.includes("bambino") || n.includes("kvarnen")));
 });
 
-test("Wi-Fi feature filter is exposed in desktop and mobile controls", async () => {
+test("Wi-Fi and Hidden gems feature filters are exposed in desktop and mobile controls", async () => {
   const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
   const mobileSource = await readFile(new URL("../src/components/MobileFilterBottomSheet.tsx", import.meta.url), "utf8");
 
   assert.match(appSource, /selectedTags\.includes\("Wi-Fi"\)/);
   assert.match(appSource, /toggleFeatureFilter\("Wi-Fi"\)/);
-  assert.match(mobileSource, /onToggleFeature: \(feature: "Dog friendly" \| "Wi-Fi"\)/);
+  assert.match(appSource, /selectedTags\.includes\("Hidden gems"\)/);
+  assert.match(appSource, /toggleFeatureFilter\("Hidden gems"\)/);
+  assert.match(mobileSource, /onToggleFeature: \(feature: "Dog friendly" \| "Wi-Fi" \| "Hidden gems"\)/);
   assert.match(mobileSource, /<span>Wi-Fi<\/span>/);
+  assert.match(mobileSource, /<span>\{lang === "sv" \? "Dolda pärlor" : "Hidden gems"\}<\/span>/);
 });
