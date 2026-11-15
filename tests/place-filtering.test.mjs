@@ -101,3 +101,16 @@ test("concierge responses update the main list and structured answer state", asy
   assert.match(appSource, /setConciergeResponse\(applied\.response\)/);
 });
 
+test("search autocomplete box and container stack above mobile controls bar", async () => {
+  const css = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
+
+  // .search-container-relative must have z-index higher than mobile-controls-bar (645)
+  assert.match(css, /\.search-container-relative\s*\{[^}]*z-index:\s*(?:7[0-9]{2}|8[0-9]{2}|9[0-9]{2}|[1-9][0-9]{3,})/);
+
+  // .search-autocomplete-box must have high overlay z-index
+  assert.match(css, /\.search-autocomplete-box\s*\{[^}]*z-index:\s*[1-9][0-9]{3,}/);
+
+  // In mobile media query, .countermap-concierge-panel .search-container-relative must also have z-index >= 700
+  assert.match(css, /\.countermap-concierge-panel\s+\.search-container-relative\s*\{[^}]*z-index:\s*(?:7[0-9]{2}|8[0-9]{2}|9[0-9]{2}|[1-9][0-9]{3,})/);
+});
+

@@ -39,6 +39,10 @@ test.describe("Mobile Full User Flows", () => {
     await searchInput.fill("Solkant");
     await expect(searchInput).toHaveValue("Solkant");
 
+    // Verify autocomplete box appears
+    const autocompleteBox = page.locator(".search-autocomplete-box");
+    await expect(autocompleteBox).toBeVisible({ timeout: 5000 });
+
     // Verify search clear button appears
     const clearBtn = page.locator(".search-clear-btn").first();
     await expect(clearBtn).toBeVisible();
