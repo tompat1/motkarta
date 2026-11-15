@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFile } from "node:fs/promises";
 
 import {
   openingHoursFact,
@@ -66,4 +67,20 @@ test("getPublicPlaceNote hides internal pipeline notes and provides clean user-f
     note: "Känt för sina nygräddade kardemummabullar och surdegsbröd.",
   };
   assert.equal(getPublicPlaceNote(genuinePlace, "sv"), "Känt för sina nygräddade kardemummabullar och surdegsbröd.");
+});
+
+test("mobile photo card CSS does not center no-photo content or cause horizontal clipping", async () => {
+  const css = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
+
+  // .mobile-photo-card-no-photo should not override align-items or justify-content to center
+  const noPhotoMatch = css.match(/\.mobile-photo-card-no-photo\s*\{([^}]+)\}/);
+  assert.ok(noPhotoMatch, ".mobile-photo-card-no-photo rule must exist");
+  const noPhotoRules = noPhotoMatch[1];
+  assert.equal(/align-items\s*:\s*center/i.test(noPhotoRules), false, "Must not set align-items: center on no-photo card container");
+  assert.equal(/justify-content\s*:\s*center/i.test(noPhotoRules), false, "Must not set justify-content: center on no-photo card container");
+
+  // .mobile-photo-card-content must stretch 100% width
+  const contentMatch = css.match(/\.mobile-photo-card-content\s*\{([^}]+)\}/);
+  assert.ok(contentMatch, ".mobile-photo-card-content rule must exist");
+  assert.match(contentMatch[1], /width\s*:\s*100%/);
 });
