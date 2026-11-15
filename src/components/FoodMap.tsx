@@ -467,15 +467,14 @@ export function FoodMap({
     const activeChanged = prevActivePlaceIdRef.current !== currentActiveId;
     activePlaceIdRef.current = currentActiveId;
 
-    if (activeChanged) {
-      syncViewportMarkers();
-    }
-
-    // Track both activePlace ID change and explicit focusRequest triggers
     const focusKey = `${currentActiveId ?? ""}_${focusRequest?.timestamp ?? ""}`;
     const shouldFocus =
       activeChanged ||
       (focusRequest && prevFocusKeyRef.current !== focusKey);
+
+    if (activeChanged || shouldFocus) {
+      syncViewportMarkers();
+    }
 
     if (shouldFocus) {
       const prevId = prevActivePlaceIdRef.current;
@@ -529,7 +528,11 @@ export function FoodMap({
 
         if (!activePlace) return;
 
-        const activeMarker = markersRef.current.get(activePlace.id);
+        let activeMarker = markersRef.current.get(activePlace.id);
+        if (!activeMarker) {
+          syncViewportMarkers();
+          activeMarker = markersRef.current.get(activePlace.id);
+        }
         if (!activeMarker) {
           window.requestAnimationFrame(() => {
             window.setTimeout(runFocusSequence, 50);

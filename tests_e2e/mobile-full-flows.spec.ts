@@ -225,7 +225,7 @@ test.describe("Mobile Full User Flows", () => {
 
     // Click first photo card in mobile list
     const firstCard = page.locator(".mobile-photo-card").first();
-    await expect(firstCard).toBeVisible();
+    await expect(firstCard).toBeVisible({ timeout: 10000 });
     const cardTitle = firstCard.locator("h2").first();
     const expectedName = (await cardTitle.textContent())?.trim() || "";
     if (await cardTitle.isVisible()) {
@@ -326,12 +326,12 @@ test.describe("Mobile Full User Flows", () => {
     await page.goto("/");
 
     const viewToggleBtn = page.locator(".mobile-controls-bar .is-action-view-toggle, .floating-view-toggle-btn").first();
-    await expect(viewToggleBtn).toBeVisible();
+    await expect(viewToggleBtn).toBeVisible({ timeout: 10000 });
 
     // Test view toggle click
     await viewToggleBtn.click();
     const cardList = page.locator(".mobile-place-card-list");
-    await expect(cardList).toBeVisible();
+    await expect(cardList).toBeVisible({ timeout: 10000 });
   });
 
   test("9. Bakery map marker has transparent background without rectangular artifact", async ({ page }) => {

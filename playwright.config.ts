@@ -12,7 +12,7 @@ export default defineConfig({
   // These projects exercise the same responsive controls at three viewports.
   // Serial execution avoids resource-contention flakes in map/list transitions.
   workers: 1,
-  reporter: "html",
+  reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: e2eBaseURL,
     trace: "on-first-retry",
