@@ -9,7 +9,7 @@ npm run test:python
 npm run test:e2e
 
 echo "📦 Building production bundle..."
-vite build
+npx vite build
 rm -rf dist/admin
 cp dist/index.html dist/admin
 cp dist/index.html dist/admin.html

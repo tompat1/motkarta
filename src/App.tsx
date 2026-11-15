@@ -131,6 +131,7 @@ import {
 import { MobileRankControlSheet, type RankSheetType } from "./components/MobileRankControlSheet";
 import { PlaceDetailSheet } from "./components/PlaceDetailSheet";
 import { PlaceFeedbackModal } from "./components/PlaceFeedbackModal";
+import { getStoredLikedPlaceIds } from "../lib/place-feedback";
 import { UserPhotoUploadModal } from "./components/UserPhotoUploadModal";
 import { MobilePlaceCardList } from "./components/MobilePlaceCardList";
 import { MobileAppToolbar, type MobileTab } from "./components/MobileAppToolbar";
@@ -330,6 +331,27 @@ function AppContent({
     }
     return [];
   });
+
+  const [likedPlaceIds, setLikedPlaceIds] = useState<number[]>(() => {
+    if (typeof window !== "undefined") {
+      return getStoredLikedPlaceIds();
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      if (typeof window !== "undefined") {
+        setLikedPlaceIds(getStoredLikedPlaceIds());
+        try {
+          const saved = localStorage.getItem("motkarta_saved_places");
+          if (saved) setSavedPlaceIds(JSON.parse(saved));
+        } catch {}
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
 
@@ -3097,6 +3119,7 @@ function AppContent({
                   places={listPlaces}
                   activePlace={active}
                   savedPlaceIds={savedPlaceIds}
+                  likedPlaceIds={likedPlaceIds}
                   userLocation={userLocation}
                   lang={lang}
                   onSelectPlace={(place) => {
@@ -3827,6 +3850,7 @@ function AppContent({
           place={active}
           isOpen={isPlaceDetailOpen}
           isSaved={savedPlaceIds.includes(active.id)}
+          isLiked={likedPlaceIds.includes(active.id)}
           userRating={userRatings[active.id] ?? 0}
           userLocation={userLocation}
           lang={lang}
@@ -3872,6 +3896,7 @@ function AppContent({
           initialType={mapCardFeedbackType ?? "up"}
           lang={lang}
           onClose={() => setMapCardFeedbackType(null)}
+          onSubmitFeedback={() => setLikedPlaceIds(getStoredLikedPlaceIds())}
         />
       ) : null}
 

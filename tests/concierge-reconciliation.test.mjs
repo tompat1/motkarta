@@ -35,8 +35,37 @@ test('repair derives only missing facts, leaves source inputs and numeric IDs in
   assert.throws(() => repairSql({ changes: [{ ...result.plan.changes[0], guard: {} }] }), /Incomplete repair guard/);
 });
 
-test('guarded repair and rollback work in SQLite and preserve foreign-key references', () => {
+test('guarded repair and rollback work in SQLite and preserve foreign-key references', async () => {
   const plan = planRepairs(raw(), [publicPlace], [source], stamp).plan;
+  const sql = repairSql(plan);
+  const rollback = repairSql(plan, true);
+
+  let DatabaseSync;
+  try {
+    const sqlite = await import('node:sqlite');
+    DatabaseSync = sqlite.DatabaseSync;
+  } catch {}
+
+  if (DatabaseSync) {
+    const db = new DatabaseSync(':memory:');
+    db.exec('PRAGMA foreign_keys=ON;');
+    db.exec('CREATE TABLE establishments(id INTEGER PRIMARY KEY,name TEXT,osm_type TEXT,osm_id TEXT,updated_at TEXT,lifecycle_state TEXT,validation_label TEXT,validation_notes TEXT,address TEXT,latitude REAL,longitude REAL);');
+    db.exec('CREATE TABLE reference(establishment_id INTEGER REFERENCES establishments(id));');
+    const r = { ...row, ...identity };
+    db.prepare('INSERT INTO establishments VALUES(?,?,?,?,?,?,?,?,?,?,?)').run(r.id, r.name, r.osm_type, r.osm_id, r.updated_at, r.lifecycle_state, r.validation_label, r.validation_notes, r.address, r.latitude, r.longitude);
+    db.exec('INSERT INTO reference VALUES(1);');
+    const original = db.prepare('SELECT * FROM establishments').all().map(x => ({ ...x }));
+    db.exec(sql);
+    assert.deepEqual({ ...db.prepare('SELECT latitude,address FROM establishments').get() }, { latitude: 59.31, address: 'Test Street 1' });
+    db.exec(rollback);
+    assert.deepEqual(db.prepare('SELECT * FROM establishments').all().map(x => ({ ...x })), original);
+    db.exec("UPDATE establishments SET updated_at='newer-review';");
+    db.exec(sql);
+    assert.deepEqual({ ...db.prepare('SELECT latitude,address FROM establishments').get() }, { latitude: 0, address: null });
+    assert.deepEqual(db.prepare('SELECT * FROM reference').all().map(x => ({ ...x })), [{ establishment_id: 1 }]);
+    return;
+  }
+
   const result = execFileSync('python3', ['-c', `
 import sqlite3,json,sys
 p=json.load(sys.stdin);db=sqlite3.connect(':memory:');db.execute('PRAGMA foreign_keys=ON')
