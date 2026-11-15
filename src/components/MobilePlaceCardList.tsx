@@ -2,11 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { LIST_SCROLL_BATCH_SIZE } from "../app/map-bounds";
 import {
   MapPin,
-  Star,
   BookmarkSimple,
-  Heart,
   Sparkle,
-  Compass,
   ThumbsUp,
   ThumbsDown,
   Clock,
@@ -172,7 +169,7 @@ export function MobilePlaceCardList({
               ) : null}
               <div className="mobile-photo-card-gradient" />
 
-              {/* Action Buttons Top Right */}
+              {/* Action Buttons Top Right: Thumbs Up & Bookmark */}
               <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", alignItems: "center", gap: "8px", zIndex: 5 }}>
                 <button
                   type="button"
@@ -192,18 +189,6 @@ export function MobilePlaceCardList({
 
                 <button
                   type="button"
-                  className="mobile-card-feedback-btn mobile-card-feedback-btn-down"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFeedbackTarget({ id: place.id, name: place.name, type: "down" });
-                  }}
-                  title={lang === "sv" ? "Inte bra / Felaktig info" : "Not good / Wrong info"}
-                >
-                  <ThumbsDown size={18} weight="bold" />
-                </button>
-
-                <button
-                  type="button"
                   className={`mobile-card-save-btn ${isSaved ? "is-saved" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -217,6 +202,21 @@ export function MobilePlaceCardList({
                     weight={isSaved ? "fill" : "bold"}
                     style={{ color: isSaved ? "#2563EB" : "#ffffff" }}
                   />
+                </button>
+              </div>
+
+              {/* Action Button Lower Right: Thumbs Down */}
+              <div style={{ position: "absolute", bottom: "12px", right: "12px", zIndex: 5 }}>
+                <button
+                  type="button"
+                  className="mobile-card-feedback-btn mobile-card-feedback-btn-down"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFeedbackTarget({ id: place.id, name: place.name, type: "down" });
+                  }}
+                  title={lang === "sv" ? "Inte bra / Felaktig info" : "Not good / Wrong info"}
+                >
+                  <ThumbsDown size={18} weight="bold" />
                 </button>
               </div>
 
