@@ -117,8 +117,14 @@ export async function onRequestPost(context: EventContext<Env>) {
   try {
     let stored = 0;
     for (const event of parsed.events) {
-      const result = await insertEvent(db, event);
-      stored += Number(result.meta?.changes ?? 0);
+      try {
+        const resolvedId = await resolveEstablishmentId(db, event.establishmentId);
+        if (resolvedId == null) continue;
+        const result = await insertEvent(db, { ...event, establishmentId: resolvedId });
+        stored += Number(result.meta?.changes ?? 0);
+      } catch (insertError) {
+        console.warn("Failed to insert single recommendation event", insertError);
+      }
     }
 
     return Response.json(
@@ -134,17 +140,17 @@ export async function onRequestPost(context: EventContext<Env>) {
       { headers: jsonHeaders, status: 202 },
     );
   } catch (error) {
-    console.error("Failed to ingest recommendation events", error);
+    console.warn("Failed to ingest recommendation events", error);
     return Response.json(
       {
         source: "unavailable",
         accepted: parsed.events.length,
         stored: 0,
         duplicates: 0,
-        error: "Recommendation event storage is unavailable or missing the latest migration.",
+        warning: "Recommendation event storage is unavailable or missing the latest migration.",
         trainingUse: false,
       },
-      { headers: jsonHeaders, status: 503 },
+      { headers: jsonHeaders, status: 202 },
     );
   }
 }
@@ -271,6 +277,21 @@ async function parseEventBatch(request: Request, retentionDays: number) {
   }
 
   return { ok: true as const, events };
+}
+
+async function resolveEstablishmentId(db: D1Database, rawId: number): Promise<number | null> {
+  try {
+    const { results } = await db
+      .prepare("SELECT id FROM establishments WHERE id = ? OR osm_id = ? LIMIT 1")
+      .bind(rawId, String(rawId))
+      .all<{ id: number }>();
+    if (results && results.length > 0 && typeof results[0]?.id === "number") {
+      return results[0].id;
+    }
+    return null;
+  } catch {
+    return rawId;
+  }
 }
 
 async function insertEvent(db: D1Database, event: RecommendationEventRow) {

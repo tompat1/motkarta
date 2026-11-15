@@ -258,6 +258,31 @@ test("recommendation events endpoint stores events idempotently with privacy met
   assert.equal(db.events[0].query_context_json.includes("best dinner"), false);
 });
 
+test("recommendation events endpoint resolves osm IDs and skips unmapped establishments without 503", async () => {
+  const db = fakeEventsD1();
+  const response = await postRecommendationEvents({
+    request: requestWithEvents([
+      validEvent({
+        establishmentId: 6958798,
+        idempotencyKey: "session_test:osm_resolve:6958798:0:transparent-scorer-v1.1:ctx",
+      }),
+      validEvent({
+        establishmentId: 999999999,
+        idempotencyKey: "session_test:unmapped:999999999:1:transparent-scorer-v1.1:ctx",
+      }),
+    ]),
+    env: { DB: db },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 202);
+  assert.equal(payload.source, "d1");
+  assert.equal(payload.accepted, 2);
+  assert.equal(payload.stored, 1);
+  assert.equal(db.events.length, 1);
+  assert.equal(db.events[0].establishment_id, 42);
+});
+
 test("recommendation events report is admin protected and summarizes shadow data quality", async () => {
   const db = fakeEventsD1();
   await postRecommendationEvents({
@@ -431,6 +456,11 @@ function fakeEventsD1() {
           return { success: true, meta: { changes: 0 } };
         },
         async all() {
+          if (query.includes("SELECT id FROM establishments")) {
+            if (this.values[0] === 999999999) return { results: [] };
+            if (this.values[0] === 6958798 || this.values[1] === "6958798") return { results: [{ id: 42 }] };
+            return { results: [{ id: Number(this.values[0]) }] };
+          }
           if (query.includes("COUNT(*) AS value FROM recommendation_events WHERE occurred_at")) {
             return { results: [{ value: db.events.length }] };
           }
