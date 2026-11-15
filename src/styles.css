@@ -15432,7 +15432,7 @@ footer {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-right: 96px;
+  padding-right: 56px;
   box-sizing: border-box;
 }
 
@@ -15494,7 +15494,7 @@ footer {
   max-width: 100%;
   overflow: hidden;
   box-sizing: border-box;
-  padding-right: 50px;
+  padding-right: 96px;
 }
 
 .mobile-photo-card-meta span {

@@ -169,24 +169,8 @@ export function MobilePlaceCardList({
               ) : null}
               <div className="mobile-photo-card-gradient" />
 
-              {/* Action Buttons Top Right: Thumbs Up & Bookmark */}
-              <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", alignItems: "center", gap: "8px", zIndex: 5 }}>
-                <button
-                  type="button"
-                  className={`mobile-card-feedback-btn mobile-card-feedback-btn-up ${isLiked ? "is-used" : ""}`}
-                  disabled={isLiked}
-                  aria-pressed={isLiked}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFeedbackTarget({ id: place.id, name: place.name, type: "up" });
-                  }}
-                  title={isLiked
-                    ? lang === "sv" ? "Du har redan gillat stället" : "You already liked this place"
-                    : lang === "sv" ? "Hjälpsam / Bra ställe" : "Helpful / Good place"}
-                >
-                  <ThumbsUp size={18} weight={isLiked ? "fill" : "bold"} />
-                </button>
-
+              {/* Action Button Top Right: Bookmark */}
+              <div style={{ position: "absolute", top: "12px", right: "12px", zIndex: 5 }}>
                 <button
                   type="button"
                   className={`mobile-card-save-btn ${isSaved ? "is-saved" : ""}`}
@@ -205,8 +189,24 @@ export function MobilePlaceCardList({
                 </button>
               </div>
 
-              {/* Action Button Lower Right: Thumbs Down */}
-              <div style={{ position: "absolute", bottom: "12px", right: "12px", zIndex: 5 }}>
+              {/* Action Buttons Lower Right: Thumbs Up & Thumbs Down */}
+              <div style={{ position: "absolute", bottom: "12px", right: "12px", display: "flex", alignItems: "center", gap: "8px", zIndex: 5 }}>
+                <button
+                  type="button"
+                  className={`mobile-card-feedback-btn mobile-card-feedback-btn-up ${isLiked ? "is-used" : ""}`}
+                  disabled={isLiked}
+                  aria-pressed={isLiked}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFeedbackTarget({ id: place.id, name: place.name, type: "up" });
+                  }}
+                  title={isLiked
+                    ? lang === "sv" ? "Du har redan gillat stället" : "You already liked this place"
+                    : lang === "sv" ? "Hjälpsam / Bra ställe" : "Helpful / Good place"}
+                >
+                  <ThumbsUp size={18} weight={isLiked ? "fill" : "bold"} />
+                </button>
+
                 <button
                   type="button"
                   className="mobile-card-feedback-btn mobile-card-feedback-btn-down"
