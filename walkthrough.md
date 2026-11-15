@@ -1,3 +1,19 @@
+# Hidden Gems Feature Filter & Natural Search Intent — 2026-11-15
+
+Added explicit multi-filter and search integration for Dolda pärlor (Hidden gems):
+
+1. **Feature filter chips (Mobile drawer & Desktop)**:
+   - Added `Dolda pärlor` / `Hidden gems` pill with `<Sparkle />` icon under `Egenskaper` / `Features`.
+   - Allows combining with any venue type and cuisine (e.g. `Restaurang` + `Italienskt` + `Dolda pärlor`).
+   - Filter strictly verifies `place.hiddenGem?.eligible === true` according to the 5 double-lock gates.
+
+2. **Search Box Intent Matching**:
+   - Typing `dolda pärlor`, `dold pärla`, `hidden gems`, or `hidden gem` in the search input directly activates the hidden gem gate constraint rather than failing on literal text matching in OSM place notes.
+   - Preserves compound searches like `dolda pärlor pizza` or `hidden gems södermalm`.
+
+3. **Concierge Singular/Plural Harmonization**:
+   - Added singular variants (`gem`, `dold`, `parla`) to descriptors in `lib/concierge/intent.ts`. Queries like "har ni någon dold pärla" now cleanly return top curated picks.
+
 # Cloudflare Pages Build Fix & TypeScript/Test Harmonization — 2026-11-15
 
 Resolved build and verification failures blocking Cloudflare Pages deployments:
