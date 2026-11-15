@@ -21,6 +21,9 @@ CITYWIDE_DISCOVERY_QUERIES: tuple[str, ...] = (
     "new bakeries Stockholm",
     "new coffee shops Stockholm",
     "independent pubs Stockholm",
+    "wine bar Stockholm",
+    "cocktail bar Stockholm",
+    "natural wine bar Stockholm",
 )
 
 DISTRICT_DISCOVERY_TEMPLATES: tuple[str, ...] = (
@@ -29,6 +32,8 @@ DISTRICT_DISCOVERY_TEMPLATES: tuple[str, ...] = (
     "pizzeria {district} Stockholm",
     "bakery {district} Stockholm",
     "coffee shop {district} Stockholm",
+    "wine bar {district} Stockholm",
+    "cocktail bar {district} Stockholm",
 )
 
 

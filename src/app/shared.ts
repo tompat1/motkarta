@@ -637,7 +637,7 @@ export function kindFilterLabel(kind: EstablishmentFilter | string, lang: Langua
   if (kind === "All places") return translations[lang].allPlaces;
   if (kind === "Curated") return lang === "sv" ? "★ Handplockat" : "★ Curated";
   if (kind === "Saved") return lang === "sv" ? "Sparade ★" : "Saved ★";
-  if (kind === "Latest") return lang === "sv" ? "⚡ Senast tillagda" : "⚡ Latest added";
+  if (kind === "Latest") return lang === "sv" ? "Senast tillagda" : "Latest added";
   if (kind === "Restaurant") return translations[lang].legendRestaurant;
   if (kind === "Bakery") return translations[lang].legendBakery;
   if (kind === "Café") return "Café";

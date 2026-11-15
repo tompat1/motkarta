@@ -63,7 +63,7 @@ test("Wi-Fi and Hidden gems feature filters are exposed in desktop and mobile co
   assert.match(appSource, /toggleFeatureFilter\("Wi-Fi"\)/);
   assert.match(appSource, /selectedTags\.includes\("Hidden gems"\)/);
   assert.match(appSource, /toggleFeatureFilter\("Hidden gems"\)/);
-  assert.match(mobileSource, /onToggleFeature: \(feature: "Dog friendly" \| "Wi-Fi" \| "Hidden gems"\)/);
+  assert.match(mobileSource, /onToggleFeature: \(feature: "Dog friendly" \| "Wi-Fi" \| "Hidden gems"/);
   assert.match(mobileSource, /<span>Wi-Fi<\/span>/);
   assert.match(mobileSource, /<span>\{lang === "sv" \? "Dolda pärlor" : "Hidden gems"\}<\/span>/);
 });

@@ -245,16 +245,16 @@ test("RAG retrieveAndSynthesize lists ALL places in region when user writes Gaml
   const resultGamlaStanLower = retrieveAndSynthesize("gamla stan", livePlaces, { language: "sv" });
   const resultGamlastan = retrieveAndSynthesize("gamlastan", livePlaces, { language: "sv" });
 
-  // In live places, there were 128 places in Gamla Stan (2 are Espresso House chains, leaving 126 eligible).
-  // With Café Skeppsholmen and Harö Krog moved to Skeppsholmen, and Brasserie Hutton and Lilla Gästabud moved to Riddarholmen, there are 122 eligible places in Gamla Stan.
-  assert.equal(resultGamlaStan.cards.length, 122, "Should return all 122 places in Gamla Stan");
-  assert.equal(resultGamlaStanLower.cards.length, 122, "Case-insensitive query should also return all places");
-  assert.equal(resultGamlastan.cards.length, 122, "Compound word gamlastan should also return all places");
-  assert.equal(resultGamlaStan.recommendedPlaces.length, 122);
+  // With Bacchi Söte added, there are 123 eligible places in Gamla Stan.
+  const gamlaStanCount = 123;
+  assert.equal(resultGamlaStan.cards.length, gamlaStanCount, `Should return all ${gamlaStanCount} places in Gamla Stan`);
+  assert.equal(resultGamlaStanLower.cards.length, gamlaStanCount, "Case-insensitive query should also return all places");
+  assert.equal(resultGamlastan.cards.length, gamlaStanCount, "Compound word gamlastan should also return all places");
+  assert.equal(resultGamlaStan.recommendedPlaces.length, gamlaStanCount);
 
   assert.ok(
-    resultGamlaStan.intro.includes("alla 122 ställen i Gamla Stan"),
-    `Intro should state all 122 places in Gamla Stan, got: ${resultGamlaStan.intro}`,
+    resultGamlaStan.intro.includes(`alla ${gamlaStanCount} ställen i Gamla Stan`),
+    `Intro should state all ${gamlaStanCount} places in Gamla Stan, got: ${resultGamlaStan.intro}`,
   );
 
   // Riddarholmen (4 places: Riddaren Mat & Catering, Mälardrottningen Brasserie Hutton, Lilla Gästabud, Gamla Riksarkivet)
@@ -277,9 +277,9 @@ test("RAG retrieveAndSynthesize lists ALL places in region when user writes Gaml
   assert.equal(resultKransen.cards.length, 41, "Should return all 41 places in Kransen");
   assert.ok(resultKransen.intro.includes("alla 41 ställen i Kransen"));
 
-  // Vasastan (205 places)
+  // Vasastan (209 places)
   const resultVasastan = retrieveAndSynthesize("Vasastan", livePlaces, { language: "sv" });
-  assert.equal(resultVasastan.cards.length, 205, "Should return all 205 places in Vasastan");
+  assert.equal(resultVasastan.cards.length, 209, "Should return all 209 places in Vasastan");
 
   // Non-cuisine browse query still capped at 5 on map and in answer
   const resultGeneric = retrieveAndSynthesize("cardamom bun and filter coffee", livePlaces);

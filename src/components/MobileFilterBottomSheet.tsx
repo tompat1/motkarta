@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Check, X, ArrowCounterClockwise, ForkKnife, Bread, Coffee, MapTrifold, Star, Sparkle, PawPrint, WifiHigh } from "@phosphor-icons/react";
+import { Check, X, ArrowCounterClockwise, ForkKnife, Bread, Coffee, MapTrifold, Star, Sparkle, PawPrint, WifiHigh, Lightning, Wine, Martini, BeerStein } from "@phosphor-icons/react";
 import { SpecialtyCoffeeIcon } from "./SpecialtyCoffeeIcon";
 import {
   allCuisines,
@@ -20,7 +20,7 @@ interface MobileFilterBottomSheetProps {
   cuisineOptions: string[];
   onSelectCuisine: (cuisine: string) => void;
   selectedTags: string[];
-  onToggleFeature: (feature: "Dog friendly" | "Wi-Fi" | "Hidden gems") => void;
+  onToggleFeature: (feature: "Dog friendly" | "Wi-Fi" | "Hidden gems" | "Wine bar" | "Cocktail bar" | "Pub & beer") => void;
   hasActiveFilters: boolean;
   onResetFilters: () => void;
   matchingCount: number;
@@ -111,7 +111,7 @@ export function MobileFilterBottomSheet({
                   ) : item === "Saved" ? (
                     <Star size={16} weight="bold" aria-hidden="true" />
                   ) : item === "Latest" ? (
-                    <Sparkle size={16} weight="bold" aria-hidden="true" />
+                    <Lightning size={16} weight="bold" aria-hidden="true" />
                   ) : null}
                   <span>{kindFilterLabel(item, lang)}</span>
                 </button>
@@ -146,6 +146,23 @@ export function MobileFilterBottomSheet({
               <button type="button" className={`filter-pill-button ${selectedTags.includes("Wi-Fi") ? "is-selected" : ""}`} aria-pressed={selectedTags.includes("Wi-Fi")} onClick={() => onToggleFeature("Wi-Fi")}>
                 {selectedTags.includes("Wi-Fi") ? <Check size={14} weight="bold" className="filter-pill-check" /> : <WifiHigh size={16} weight="bold" />}
                 <span>Wi-Fi</span>
+              </button>
+            </div>
+          </section>
+          <section className="filter-sheet-section">
+            <h3 className="filter-sheet-section-title">{lang === "sv" ? "Bar & Dryck" : "Bars & Drinks"}</h3>
+            <div className="filter-sheet-grid" role="group" aria-label={lang === "sv" ? "Bar & Dryck" : "Bars & Drinks"}>
+              <button type="button" className={`filter-pill-button ${selectedTags.includes("Wine bar") ? "is-selected" : ""}`} aria-pressed={selectedTags.includes("Wine bar")} onClick={() => onToggleFeature("Wine bar")}>
+                {selectedTags.includes("Wine bar") ? <Check size={14} weight="bold" className="filter-pill-check" /> : <Wine size={16} weight="bold" />}
+                <span>{lang === "sv" ? "Vinbar" : "Wine bar"}</span>
+              </button>
+              <button type="button" className={`filter-pill-button ${selectedTags.includes("Cocktail bar") ? "is-selected" : ""}`} aria-pressed={selectedTags.includes("Cocktail bar")} onClick={() => onToggleFeature("Cocktail bar")}>
+                {selectedTags.includes("Cocktail bar") ? <Check size={14} weight="bold" className="filter-pill-check" /> : <Martini size={16} weight="bold" />}
+                <span>{lang === "sv" ? "Cocktailbar" : "Cocktail bar"}</span>
+              </button>
+              <button type="button" className={`filter-pill-button ${selectedTags.includes("Pub & beer") ? "is-selected" : ""}`} aria-pressed={selectedTags.includes("Pub & beer")} onClick={() => onToggleFeature("Pub & beer")}>
+                {selectedTags.includes("Pub & beer") ? <Check size={14} weight="bold" className="filter-pill-check" /> : <BeerStein size={16} weight="bold" />}
+                <span>{lang === "sv" ? "Öl & Pub" : "Pub & Beer"}</span>
               </button>
             </div>
           </section>

@@ -110,6 +110,10 @@ import {
   X,
   PawPrint,
   WifiHigh,
+  Lightning,
+  Wine,
+  Martini,
+  BeerStein,
   DeviceMobile,
   QrCode,
   ArrowRight,
@@ -645,7 +649,7 @@ function AppContent({
     setCuisine(allCuisines);
   }, [clearConciergeState]);
 
-  const toggleFeatureFilter = useCallback((feature: "Dog friendly" | "Wi-Fi" | "Hidden gems") => {
+  const toggleFeatureFilter = useCallback((feature: "Dog friendly" | "Wi-Fi" | "Hidden gems" | "Wine bar" | "Cocktail bar" | "Pub & beer") => {
     clearConciergeState();
     setSelectedTags((previous) => previous.includes(feature)
       ? previous.filter((tag) => tag !== feature)
@@ -1124,6 +1128,47 @@ function AppContent({
           if (tLower === "wi-fi" || tLower === "wifi") {
             return ["wifi", "wi-fi", "wi fi", "wireless internet", "free internet", "free wifi", "trådlöst internet", "trådlöst nätverk"]
               .some((term) => searchStr.includes(term) || noteLower.includes(term) || placeTags.some((pt) => pt.includes(term)));
+          }
+          if (tLower === "wine bar" || tLower === "vinbar" || tLower === "wine" || tLower === "vin") {
+            return (
+              searchStr.includes("wine bar") ||
+              searchStr.includes("vinbar") ||
+              searchStr.includes("wine") ||
+              searchStr.includes("vin") ||
+              nameLower.includes("vin") ||
+              nameLower.includes("wine") ||
+              noteLower.includes("vin") ||
+              noteLower.includes("wine") ||
+              placeTags.some((pt) => ["vinbar", "wine bar", "vin", "wine", "natural wine", "naturvin"].includes(pt) || pt.includes("vin") || pt.includes("wine"))
+            );
+          }
+          if (tLower === "cocktail bar" || tLower === "cocktailbar" || tLower === "cocktail") {
+            return (
+              searchStr.includes("cocktail") ||
+              searchStr.includes("drink") ||
+              nameLower.includes("cocktail") ||
+              noteLower.includes("cocktail") ||
+              noteLower.includes("drink") ||
+              placeTags.some((pt) => ["cocktail", "cocktails", "cocktail bar", "cocktailbar", "drinkar"].includes(pt) || pt.includes("cocktail"))
+            );
+          }
+          if (tLower === "pub & beer" || tLower === "öl & pub" || tLower === "pub" || tLower === "beer" || tLower === "öl") {
+            return (
+              searchStr.includes("pub") ||
+              searchStr.includes("öl") ||
+              searchStr.includes("beer") ||
+              searchStr.includes("brewery") ||
+              searchStr.includes("bryggeri") ||
+              searchStr.includes("taproom") ||
+              nameLower.includes("pub") ||
+              nameLower.includes("öl") ||
+              nameLower.includes("beer") ||
+              noteLower.includes("pub") ||
+              noteLower.includes("öl") ||
+              noteLower.includes("beer") ||
+              noteLower.includes("bryggeri") ||
+              placeTags.some((pt) => ["pub", "öl", "beer", "craft beer", "bryggeri", "brewery", "starköl", "taproom"].includes(pt) || pt.includes("pub") || pt.includes("beer"))
+            );
           }
           return (
             searchStr.includes(tLower) ||
@@ -2907,7 +2952,7 @@ function AppContent({
                 {item === "Café" ? <Coffee size={18} weight="bold" aria-hidden="true" /> : null}
                 {item === "All places" ? <MapTrifold size={18} weight="bold" aria-hidden="true" /> : null}
                 {item === "Saved" ? <Star size={18} weight="bold" aria-hidden="true" /> : null}
-                {item === "Latest" ? <Sparkle size={18} weight="bold" aria-hidden="true" /> : null}
+                {item === "Latest" ? <Lightning size={18} weight="bold" aria-hidden="true" /> : null}
                 {kindFilterLabel(item, lang)}
               </button>
             ))}
@@ -2955,6 +3000,30 @@ function AppContent({
             >
               <WifiHigh size={18} weight={selectedTags.includes("Wi-Fi") ? "fill" : "bold"} />
               <span>Wi-Fi</span>
+            </button>
+            <button
+              className={selectedTags.includes("Wine bar") ? "active" : ""}
+              onClick={() => toggleFeatureFilter("Wine bar")}
+              type="button"
+            >
+              <Wine size={18} weight={selectedTags.includes("Wine bar") ? "fill" : "bold"} />
+              <span>{lang === "sv" ? "Vinbar" : "Wine bar"}</span>
+            </button>
+            <button
+              className={selectedTags.includes("Cocktail bar") ? "active" : ""}
+              onClick={() => toggleFeatureFilter("Cocktail bar")}
+              type="button"
+            >
+              <Martini size={18} weight={selectedTags.includes("Cocktail bar") ? "fill" : "bold"} />
+              <span>{lang === "sv" ? "Cocktailbar" : "Cocktail bar"}</span>
+            </button>
+            <button
+              className={selectedTags.includes("Pub & beer") ? "active" : ""}
+              onClick={() => toggleFeatureFilter("Pub & beer")}
+              type="button"
+            >
+              <BeerStein size={18} weight={selectedTags.includes("Pub & beer") ? "fill" : "bold"} />
+              <span>{lang === "sv" ? "Öl & Pub" : "Pub & Beer"}</span>
             </button>
           </div>
         </div>
