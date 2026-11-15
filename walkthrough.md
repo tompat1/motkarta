@@ -1,3 +1,29 @@
+# Cloudflare Pages Build Fix & TypeScript/Test Harmonization — 2026-11-15
+
+Resolved build and verification failures blocking Cloudflare Pages deployments:
+
+1. **TypeScript compilation errors in `src/App.tsx`:**
+   - Initialized `likedPlaceIds` via `useState<number[]>(() => getStoredLikedPlaceIds())`.
+   - Wired `likedPlaceIds={likedPlaceIds}` to `<MobilePlaceCardList />`.
+   - Wired `isLiked={likedPlaceIds.includes(active.id)}` to `<PlaceDetailSheet />`.
+   - Added `onSubmitFeedback={() => setLikedPlaceIds(getStoredLikedPlaceIds())}` to `<PlaceFeedbackModal />`.
+
+2. **Vite build invocation in `scripts/build-verified.sh`:**
+   - Invoked `npx vite build` instead of bare `vite build` so environments without `node_modules/.bin` in standard PATH build successfully.
+
+3. **In-memory SQLite test isolation in `tests/concierge-reconciliation.test.mjs`:**
+   - Leveraged Node's native `DatabaseSync` (`node:sqlite`) for guarded SQL repair and foreign key verification, eliminating external subprocess execution in sandboxed environments.
+
+4. **Static artifact validation in `public/data/places.json`:**
+   - Ensured `450 Gradi` adheres to allowed static sources (`OpenStreetMap`) and neutral rating/price levels (`priceLevel: 0`).
+
+Verification completed with 100% pass rate:
+- `npm run typecheck`: Passed (exit code 0).
+- `npm run lint`: Passed (0 errors).
+- `npm test`: 464/464 passed (exit code 0).
+- `npm run test:python`: 178/178 passed (exit code 0).
+- `CF_PAGES=1 bash scripts/build-verified.sh`: Full production bundle built and validated with Cloudflare Pages Worker (exit code 0).
+
 # Lower-right mobile-card MOTKARTA mark — 2026-11-14
 
 Moved the light-gray MOTKARTA placeholder mark from the center of no-photo
