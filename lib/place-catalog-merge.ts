@@ -56,6 +56,40 @@ function mergedOverlaySpecialty(staticPlace: PlaceInput, livePlace: PlaceInput):
   return livePlace.specialty ?? staticPlace.specialty;
 }
 
+export function mergedOverlayEvidence(
+  staticEv?: PlaceInput["evidence"],
+  liveEv?: PlaceInput["evidence"],
+): PlaceInput["evidence"] | undefined {
+  if (!staticEv) return liveEv;
+  if (!liveEv) return staticEv;
+  const confLevels: Record<string, number> = { High: 3, Medium: 2, Low: 1 };
+  const staticConf = confLevels[staticEv.confidence] ?? 1;
+  const liveConf = confLevels[liveEv.confidence] ?? 1;
+  const confidence = liveConf >= staticConf ? liveEv.confidence : staticEv.confidence;
+
+  return {
+    specialistGuide: Math.max(staticEv.specialistGuide ?? 0, liveEv.specialistGuide ?? 0),
+    independentEditorial: Math.max(staticEv.independentEditorial ?? 0, liveEv.independentEditorial ?? 0),
+    verifiedUserRating: Math.max(staticEv.verifiedUserRating ?? 0, liveEv.verifiedUserRating ?? 0),
+    repeatVisits: Math.max(staticEv.repeatVisits ?? 0, liveEv.repeatVisits ?? 0),
+    recentReviews: Math.max(staticEv.recentReviews ?? 0, liveEv.recentReviews ?? 0),
+    credibleReviewers: Math.max(staticEv.credibleReviewers ?? 0, liveEv.credibleReviewers ?? 0),
+    inspectionStatus: Math.max(staticEv.inspectionStatus ?? 0, liveEv.inspectionStatus ?? 0),
+    verifiedAttributes: Math.max(staticEv.verifiedAttributes ?? 0, liveEv.verifiedAttributes ?? 0),
+    dataFreshness: Math.max(staticEv.dataFreshness ?? 0, liveEv.dataFreshness ?? 0),
+    confidence,
+  };
+}
+
+export function mergedOverlayEvidenceLabel(staticLabel?: string, liveLabel?: string): string | undefined {
+  const live = (liveLabel ?? "").trim();
+  const staticL = (staticLabel ?? "").trim();
+  if (live && live !== "No source evidence yet") {
+    return live;
+  }
+  return staticL || live || undefined;
+}
+
 export function overlayPlaceFromLive(staticPlace: PlaceInput, livePlace: PlaceInput): PlaceInput {
   const staticCatalog = staticPlace as CatalogPlace;
   const liveCatalog = livePlace as CatalogPlace;
@@ -64,6 +98,18 @@ export function overlayPlaceFromLive(staticPlace: PlaceInput, livePlace: PlaceIn
   const liveEvidenceSources = Array.isArray(liveCatalog.evidenceSources) && liveCatalog.evidenceSources.length > 0
     ? liveCatalog.evidenceSources
     : staticCatalog.evidenceSources;
+  const evidence = mergedOverlayEvidence(staticPlace.evidence, livePlace.evidence);
+  const evidenceLabel = mergedOverlayEvidenceLabel(staticPlace.evidenceLabel, livePlace.evidenceLabel);
+  const is_hidden_gem = livePlace.is_hidden_gem !== undefined ? livePlace.is_hidden_gem : staticPlace.is_hidden_gem;
+  const validationLabel = livePlace.validationLabel !== undefined ? livePlace.validationLabel : staticPlace.validationLabel;
+  const daysSinceFreshEvidence =
+    livePlace.daysSinceFreshEvidence !== undefined && livePlace.daysSinceFreshEvidence > 0
+      ? livePlace.daysSinceFreshEvidence
+      : (staticPlace.daysSinceFreshEvidence ?? livePlace.daysSinceFreshEvidence);
+  const mainstreamExposure =
+    livePlace.mainstreamExposure !== undefined && livePlace.mainstreamExposure > 0
+      ? livePlace.mainstreamExposure
+      : (staticPlace.mainstreamExposure ?? livePlace.mainstreamExposure);
 
   return {
     ...staticPlace,
@@ -77,6 +123,12 @@ export function overlayPlaceFromLive(staticPlace: PlaceInput, livePlace: PlaceIn
     openingHours: livePlace.openingHours || staticPlace.openingHours,
     website: livePlace.website || staticPlace.website,
     priceSEK: livePlace.priceSEK ?? staticPlace.priceSEK,
+    ...(evidence ? { evidence } : {}),
+    ...(evidenceLabel ? { evidenceLabel } : {}),
+    ...(is_hidden_gem !== undefined ? { is_hidden_gem } : {}),
+    ...(validationLabel !== undefined ? { validationLabel } : {}),
+    ...(daysSinceFreshEvidence !== undefined ? { daysSinceFreshEvidence } : {}),
+    ...(mainstreamExposure !== undefined ? { mainstreamExposure } : {}),
     ...(liveEvidenceSources ? { evidenceSources: liveEvidenceSources } : {}),
   };
 }
@@ -107,6 +159,24 @@ export function enrichD1PlaceFromStatic<T extends Record<string, any>>(d1Place: 
   }
   if (!d1Place.address && staticPlace.address) {
     (d1Place as any).address = staticPlace.address;
+  }
+  if (staticPlace.evidence) {
+    (d1Place as any).evidence = mergedOverlayEvidence(staticPlace.evidence, (d1Place as any).evidence);
+  }
+  if ((!d1Place.evidenceLabel || d1Place.evidenceLabel === "No source evidence yet") && staticPlace.evidenceLabel) {
+    (d1Place as any).evidenceLabel = staticPlace.evidenceLabel;
+  }
+  if (d1Place.is_hidden_gem === undefined && staticPlace.is_hidden_gem !== undefined) {
+    (d1Place as any).is_hidden_gem = staticPlace.is_hidden_gem;
+  }
+  if (d1Place.validationLabel === undefined && staticPlace.validationLabel !== undefined) {
+    (d1Place as any).validationLabel = staticPlace.validationLabel;
+  }
+  if ((d1Place.daysSinceFreshEvidence === undefined || d1Place.daysSinceFreshEvidence === 0) && staticPlace.daysSinceFreshEvidence !== undefined) {
+    (d1Place as any).daysSinceFreshEvidence = staticPlace.daysSinceFreshEvidence;
+  }
+  if ((d1Place.mainstreamExposure === undefined || d1Place.mainstreamExposure === 0) && staticPlace.mainstreamExposure !== undefined) {
+    (d1Place as any).mainstreamExposure = staticPlace.mainstreamExposure;
   }
   return d1Place;
 }

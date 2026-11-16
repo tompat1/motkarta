@@ -110,6 +110,51 @@ test("isManualAdminCatalogPlace detects admin_entry evidence", () => {
   );
 });
 
+test("overlayPlaceFromLive preserves static evidence and hidden gem signals when live D1 has baseline zeroes", () => {
+  const staticPlace = place({
+    id: 10,
+    name: "Hidden Gem Bistro",
+    is_hidden_gem: true,
+    evidenceLabel: "White Guide Nordic",
+    evidence: {
+      specialistGuide: 0.8,
+      independentEditorial: 1,
+      verifiedUserRating: 0,
+      repeatVisits: 0,
+      recentReviews: 0,
+      credibleReviewers: 0,
+      inspectionStatus: 80,
+      verifiedAttributes: 35,
+      dataFreshness: 85,
+      confidence: "High",
+    },
+  });
+  const livePlace = place({
+    id: 999,
+    name: "Hidden Gem Bistro",
+    evidenceLabel: "No source evidence yet",
+    evidence: {
+      specialistGuide: 0,
+      independentEditorial: 0,
+      verifiedUserRating: 0,
+      repeatVisits: 0,
+      recentReviews: 0,
+      credibleReviewers: 0,
+      inspectionStatus: 60,
+      verifiedAttributes: 0,
+      dataFreshness: 0,
+      confidence: "Low",
+    },
+  });
+
+  const overlaid = overlayPlaceFromLive(staticPlace, livePlace);
+  assert.equal(overlaid.is_hidden_gem, true);
+  assert.equal(overlaid.evidenceLabel, "White Guide Nordic");
+  assert.equal(overlaid.evidence?.specialistGuide, 0.8);
+  assert.equal(overlaid.evidence?.independentEditorial, 1);
+  assert.equal(overlaid.evidence?.confidence, "High");
+});
+
 function place(overrides) {
   return {
     id: 1,

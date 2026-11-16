@@ -2432,10 +2432,17 @@ function AppContent({
           <a
             className={currentDesktopNav === "map" ? "is-active" : ""}
             href="#map"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               setActiveDesktopNav("map");
               if (kind === "Saved") selectKindFilter("All places");
-              document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+              const mapEl = document.getElementById("map");
+              if (mapEl) {
+                const topbar = document.querySelector(".topbar");
+                const topbarHeight = topbar ? topbar.getBoundingClientRect().height : 74;
+                const targetY = mapEl.getBoundingClientRect().top + window.scrollY - topbarHeight;
+                window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+              }
             }}
           >
             <MapTrifold size={18} weight={currentDesktopNav === "map" ? "fill" : "bold"} /> {lang === "sv" ? "Kartan" : "Map"}
@@ -2443,10 +2450,17 @@ function AppContent({
           <a
             className={currentDesktopNav === "saved" ? "is-active" : ""}
             href="#map"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               setActiveDesktopNav("saved");
               selectKindFilter("Saved");
-              document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+              const mapEl = document.getElementById("map");
+              if (mapEl) {
+                const topbar = document.querySelector(".topbar");
+                const topbarHeight = topbar ? topbar.getBoundingClientRect().height : 74;
+                const targetY = mapEl.getBoundingClientRect().top + window.scrollY - topbarHeight;
+                window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+              }
             }}
           >
             <BookmarkSimple size={18} weight={currentDesktopNav === "saved" ? "fill" : "bold"} /> {lang === "sv" ? "Sparade" : "Saved"}
