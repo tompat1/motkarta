@@ -706,12 +706,16 @@ function AppContent({
         if (kind === "Saved") {
           selectKindFilter("All places");
         }
-        document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+        const mapPanel = document.querySelector(".map-panel") as HTMLElement | null;
+        const target = mapPanel || document.getElementById("place-workspace") || document.getElementById("map");
+        target?.scrollIntoView({ behavior: "smooth", block: "center" });
       } else if (tab === "saved") {
         setActiveDesktopNav("saved");
         setIsMobileBottomSheetHidden(false);
         selectKindFilter("Saved");
-        document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+        const mapPanel = document.querySelector(".map-panel") as HTMLElement | null;
+        const target = mapPanel || document.getElementById("place-workspace") || document.getElementById("map");
+        target?.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     },
     [kind, selectKindFilter]
@@ -2436,13 +2440,9 @@ function AppContent({
               e.preventDefault();
               setActiveDesktopNav("map");
               if (kind === "Saved") selectKindFilter("All places");
-              const mapEl = document.getElementById("map");
-              if (mapEl) {
-                const topbar = document.querySelector(".topbar");
-                const topbarHeight = topbar ? topbar.getBoundingClientRect().height : 74;
-                const targetY = mapEl.getBoundingClientRect().top + window.scrollY - topbarHeight;
-                window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
-              }
+              const mapPanel = document.querySelector(".map-panel") as HTMLElement | null;
+              const target = mapPanel || document.getElementById("place-workspace") || document.getElementById("map");
+              target?.scrollIntoView({ behavior: "smooth", block: "center" });
             }}
           >
             <MapTrifold size={18} weight={currentDesktopNav === "map" ? "fill" : "bold"} /> {lang === "sv" ? "Kartan" : "Map"}
@@ -2454,13 +2454,9 @@ function AppContent({
               e.preventDefault();
               setActiveDesktopNav("saved");
               selectKindFilter("Saved");
-              const mapEl = document.getElementById("map");
-              if (mapEl) {
-                const topbar = document.querySelector(".topbar");
-                const topbarHeight = topbar ? topbar.getBoundingClientRect().height : 74;
-                const targetY = mapEl.getBoundingClientRect().top + window.scrollY - topbarHeight;
-                window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
-              }
+              const mapPanel = document.querySelector(".map-panel") as HTMLElement | null;
+              const target = mapPanel || document.getElementById("place-workspace") || document.getElementById("map");
+              target?.scrollIntoView({ behavior: "smooth", block: "center" });
             }}
           >
             <BookmarkSimple size={18} weight={currentDesktopNav === "saved" ? "fill" : "bold"} /> {lang === "sv" ? "Sparade" : "Saved"}
