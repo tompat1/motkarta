@@ -677,6 +677,29 @@ function AppContent({
     setIsContributeFabOpen(false);
   }, [mobileTab]);
 
+  const scrollToMapWorkspace = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (isMobile) {
+      const mapPanel = document.querySelector(".map-panel") as HTMLElement | null;
+      const target = mapPanel || document.getElementById("place-workspace") || document.getElementById("map");
+      target?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      const workspace = document.getElementById("place-workspace");
+      if (workspace) {
+        const topbar = document.querySelector(".topbar");
+        const controls = document.querySelector(".countermap-controls");
+        const topbarH = topbar?.getBoundingClientRect().height || 74;
+        const controlsH = controls?.getBoundingClientRect().height || 91;
+        const offset = topbarH + controlsH;
+        const targetY = workspace.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: Math.max(0, Math.round(targetY)), behavior: "smooth" });
+      } else {
+        document.getElementById("map")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, []);
+
   const handleSelectMobileTab = useCallback(
     (tab: MobileTab) => {
       setMobileTab(tab);
@@ -706,19 +729,15 @@ function AppContent({
         if (kind === "Saved") {
           selectKindFilter("All places");
         }
-        const mapPanel = document.querySelector(".map-panel") as HTMLElement | null;
-        const target = mapPanel || document.getElementById("place-workspace") || document.getElementById("map");
-        target?.scrollIntoView({ behavior: "smooth", block: "center" });
+        scrollToMapWorkspace();
       } else if (tab === "saved") {
         setActiveDesktopNav("saved");
         setIsMobileBottomSheetHidden(false);
         selectKindFilter("Saved");
-        const mapPanel = document.querySelector(".map-panel") as HTMLElement | null;
-        const target = mapPanel || document.getElementById("place-workspace") || document.getElementById("map");
-        target?.scrollIntoView({ behavior: "smooth", block: "center" });
+        scrollToMapWorkspace();
       }
     },
-    [kind, selectKindFilter]
+    [kind, scrollToMapWorkspace, selectKindFilter]
   );
 
   const [isSourcesLoading, setIsSourcesLoading] = useState(false);
@@ -2440,9 +2459,7 @@ function AppContent({
               e.preventDefault();
               setActiveDesktopNav("map");
               if (kind === "Saved") selectKindFilter("All places");
-              const mapPanel = document.querySelector(".map-panel") as HTMLElement | null;
-              const target = mapPanel || document.getElementById("place-workspace") || document.getElementById("map");
-              target?.scrollIntoView({ behavior: "smooth", block: "center" });
+              scrollToMapWorkspace();
             }}
           >
             <MapTrifold size={18} weight={currentDesktopNav === "map" ? "fill" : "bold"} /> {lang === "sv" ? "Kartan" : "Map"}
@@ -2454,9 +2471,7 @@ function AppContent({
               e.preventDefault();
               setActiveDesktopNav("saved");
               selectKindFilter("Saved");
-              const mapPanel = document.querySelector(".map-panel") as HTMLElement | null;
-              const target = mapPanel || document.getElementById("place-workspace") || document.getElementById("map");
-              target?.scrollIntoView({ behavior: "smooth", block: "center" });
+              scrollToMapWorkspace();
             }}
           >
             <BookmarkSimple size={18} weight={currentDesktopNav === "saved" ? "fill" : "bold"} /> {lang === "sv" ? "Sparade" : "Saved"}
