@@ -309,6 +309,13 @@ export function isBroadStockholmArea(area?: string | null) {
   return BROAD_STOCKHOLM_AREAS.has(normalizeRegionText(area));
 }
 
+export function getAreaAliases(area?: string | null): string[] {
+  if (!area) return [];
+  const normalized = normalizeRegionText(area);
+  const entry = AREA_ALIASES.find((e) => normalizeRegionText(e.region) === normalized);
+  return entry ? entry.aliases : [];
+}
+
 function normalizeRegionText(value: string) {
   return value
     .toLowerCase()

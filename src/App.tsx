@@ -25,6 +25,7 @@ import { requestPosition, locationFailureMessage } from "./app/geolocation";
 import {
   DISTANCE_INTENT_REGEX,
   INITIAL_CURATED_SOURCES,
+  getAreaAliases,
   getPopularConciergePrompts,
   SEARCH_CUISINE_SUGGESTIONS,
   STOCKHOLM_REGION_OPTIONS,
@@ -1207,7 +1208,8 @@ function AppContent({
         const isHiddenGemSearch = /\b(hidden gems?|dolda pärlor|dolda parlor|dold pärla|dold parla)\b/i.test(qClean);
         if (isHiddenGemSearch && !place.hiddenGem?.eligible) return false;
 
-        const placeSearchText = `${place.name} ${place.area} ${place.address ?? ""} ${place.cuisine ?? ""} ${place.kind} ${place.note ?? ""} ${place.tags.join(" ")}`.toLowerCase();
+        const areaAliases = getAreaAliases(place.area).join(" ");
+        const placeSearchText = `${place.name} ${place.area} ${areaAliases} ${place.address ?? ""} ${place.cuisine ?? ""} ${place.kind} ${place.note ?? ""} ${place.tags.join(" ")}`.toLowerCase();
         if (placeSearchText.includes(qClean)) return true;
         const rawTokens = qClean
           .replace(/\b(hidden gems?|dolda pärlor|dolda parlor|dold pärla|dold parla)\b/gi, "")

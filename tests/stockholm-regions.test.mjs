@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { isBroadStockholmArea, resolveStockholmRegion } from "../lib/stockholm-regions.ts";
+import { getAreaAliases, isBroadStockholmArea, resolveStockholmRegion } from "../lib/stockholm-regions.ts";
 
 test("keeps already specific Stockholm regions", () => {
   assert.equal(resolveStockholmRegion({ name: "Existing", area: "Vasastan" }), "Vasastan");
@@ -301,5 +301,21 @@ test("reclassifies southern suburbs (Farsta, Sköndal, Fagersjö) to Söderort a
     }),
     "Södermalm",
   );
+});
+
+test("getAreaAliases returns sub-district aliases for search expansion", () => {
+  const vasastanAliases = getAreaAliases("Vasastan");
+  assert.ok(vasastanAliases.includes("birkastan"), "Vasastan should include birkastan alias");
+  assert.ok(vasastanAliases.includes("odenplan"), "Vasastan should include odenplan alias");
+  assert.ok(vasastanAliases.includes("rörstrandsgatan"), "Vasastan should include rörstrandsgatan alias");
+
+  const soderortAliases = getAreaAliases("Söderort");
+  assert.ok(soderortAliases.includes("farsta"), "Söderort should include farsta alias");
+  assert.ok(soderortAliases.includes("sköndal"), "Söderort should include sköndal alias");
+  assert.ok(soderortAliases.includes("fagersjö"), "Söderort should include fagersjö alias");
+
+  const soderAliases = getAreaAliases("Södermalm");
+  assert.ok(soderAliases.includes("sofo"), "Södermalm should include sofo alias");
+  assert.ok(soderAliases.includes("hornstull"), "Södermalm should include hornstull alias");
 });
 

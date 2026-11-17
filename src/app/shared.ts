@@ -5,7 +5,8 @@ import type {
   ScoredPlace,
   UserPreferences,
 } from "../../lib/scoring.ts";
-import { isBroadStockholmArea, resolveStockholmRegion } from "../../lib/stockholm-regions.ts";
+import { getAreaAliases, isBroadStockholmArea, resolveStockholmRegion } from "../../lib/stockholm-regions.ts";
+export { getAreaAliases };
 import type { Mode, SortMode } from "./place-ranking.ts";
 export { cuisineOptionsFromPlaces, cuisineParts, resolveCuisineFilter } from "./cuisine-options.ts";
 export {
