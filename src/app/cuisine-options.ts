@@ -53,6 +53,17 @@ export function cuisineParts(place: Pick<PlaceInput, "cuisine" | "tags"> & { nam
     parts.push("belgian");
   }
 
+  const isMexican =
+    nameLower.includes("taco") ||
+    nameLower.includes("mexican") ||
+    nameLower.includes("mexikansk") ||
+    nameLower.includes("burrito") ||
+    tagsLower.some((t) => t.includes("mexican") || t.includes("mexikansk") || t.includes("taco") || t.includes("burrito"));
+
+  if (isMexican && !parts.includes("mexican")) {
+    parts.push("mexican");
+  }
+
   return parts;
 }
 

@@ -466,5 +466,13 @@ test("RAG full-text search indexes editorial notes and complex descriptive queri
   assert.ok(neapolitan.cards.some((c) => c.name.includes("450 Gradi") || c.name.includes("Napolitanska") || c.name.includes("800 Grader")));
 });
 
+test("Dirty Taco is included in Mexican cuisine and recommended for best tacos queries", () => {
+  const tacoRes = retrieveAndSynthesize("bästa tacos i stan", livePlaces, { language: "sv" });
+  assert.equal(tacoRes.status, "ok");
+  assert.ok(tacoRes.cards.length >= 3);
+  assert.ok(tacoRes.cards.some((c) => c.name === "Dirty Taco"), "Must recommend Dirty Taco for best tacos queries");
+  assert.equal(tacoRes.cards[0].name, "Dirty Taco", "Dirty Taco must be prioritized in top recommendations for best tacos");
+});
+
 
 

@@ -333,8 +333,12 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     const aPrestige = ((a.place.tags ?? []).some((t) => ['curated', 'white guide nordic', 'spotted by locals'].includes(t.toLowerCase())) ? 15 : 0) + (a.place.is_hidden_gem ? 5 : 0);
     const bPrestige = ((b.place.tags ?? []).some((t) => ['curated', 'white guide nordic', 'spotted by locals'].includes(t.toLowerCase())) ? 15 : 0) + (b.place.is_hidden_gem ? 5 : 0);
 
-    const aScore = a.place.scores.recommendation + aPrestige + dataCompletenessBonus(a);
-    const bScore = b.place.scores.recommendation + bPrestige + dataCompletenessBonus(b);
+    const isTacoQuery = intent.cuisineKinds.includes('mexican') || intent.dishes.includes('tacos') || intent.terms.some((t) => t.includes('taco'));
+    const aTacoBonus = isTacoQuery && a.place.name.toLowerCase().includes('dirty taco') ? 25 : 0;
+    const bTacoBonus = isTacoQuery && b.place.name.toLowerCase().includes('dirty taco') ? 25 : 0;
+
+    const aScore = a.place.scores.recommendation + aPrestige + aTacoBonus + dataCompletenessBonus(a);
+    const bScore = b.place.scores.recommendation + bPrestige + bTacoBonus + dataCompletenessBonus(b);
     if (bScore !== aScore) return bScore - aScore;
 
     return a.place.id - b.place.id;

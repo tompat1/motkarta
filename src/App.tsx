@@ -2196,7 +2196,6 @@ function AppContent({
             id="desktop-discovery-search"
             ref={searchInputRef}
             aria-label={lang === "sv" ? "Sök ställe, kök, område eller fråga" : "Search place, cuisine, region or ask"}
-            list="concierge-places-datalist"
             value={query}
             onChange={(event) => {
               const val = event.target.value;
@@ -2213,11 +2212,6 @@ function AppContent({
             onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
             placeholder={lang === "sv" ? "Sök ställe, kök, stadsdel eller ställ en fråga till concierge..." : "Search place, cuisine, region or ask concierge..."}
           />
-          <datalist id="concierge-places-datalist">
-            {places.map((p) => (
-              <option key={`dl-${p.id}`} value={p.name} label={`${p.area} • ${p.kind}`} />
-            ))}
-          </datalist>
           {query.trim() ? (
             <button
               type="button"
