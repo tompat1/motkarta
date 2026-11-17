@@ -105,6 +105,19 @@ export const DEFAULT_CURATED_SOURCES: CuratedSource[] = [
     coveragePercent: 91.2,
     lastScrapedAt: "2026-09-08T12:00:00Z",
   },
+  {
+    id: "burgerdudes",
+    name: "Burgerdudes",
+    url: "https://www.burgerdudes.se",
+    type: "Verified Guide",
+    description: "Världens ledande hamburgarguide, grundad i Stockholm 2014, som recenserar och rankar Stockholms bästa hantverksburgare och oberoende hamburgerställen.",
+    license: "Redaktionell hamburgarguide (burgerdudes.se)",
+    verifiedCount: 18,
+    scrapedPoints: 25,
+    importedCount: 18,
+    coveragePercent: 95.0,
+    lastScrapedAt: "2026-10-15T10:00:00Z",
+  },
 ];
 
 export const DEFAULT_CONCIERGE_PROMPTS = [

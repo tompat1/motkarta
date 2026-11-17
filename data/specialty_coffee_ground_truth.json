@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Solkant, Café & Roastery",
+    "area": "Kungsholmen",
+    "address": "Pipersgatan 24",
+    "roastery": true
+  },
+  {
+    "name": "Drop Coffee",
+    "area": "Södermalm",
+    "address": "Wollmar Yxkullsgatan 10",
+    "roastery": true
+  },
+  {
+    "name": "Johan & Nyström",
+    "area": "Södermalm",
+    "address": "Swedenborgsgatan 7",
+    "roastery": true
+  },
+  {
+    "name": "Volca Coffee Roaster",
+    "area": "Kungsholmen",
+    "address": "Hantverkargatan 8",
+    "roastery": true
+  },
+  {
+    "name": "Pascal Café & Bakery",
+    "area": "Södermalm",
+    "address": "Skånegatan 76",
+    "roastery": false
+  },
+  {
+    "name": "Pascal Kaffebar",
+    "area": "Östermalm",
+    "address": "Sturegatan 8",
+    "roastery": false
+  },
+  {
+    "name": "Pascal Café",
+    "area": "Vasastan",
+    "address": "Norrtullsgatan 4",
+    "roastery": false
+  },
+  {
+    "name": "Café Blom",
+    "area": "Skeppsholmen",
+    "address": "Exercisplan 2a",
+    "roastery": false
+  },
+  {
+    "name": "Lykke",
+    "area": "Södermalm",
+    "address": "Nytorgsgatan 38",
+    "roastery": true
+  },
+  {
+    "name": "Höga Kusten Kaffe Rosteri",
+    "area": "Kungsholmen",
+    "address": "Fleminggatan 53",
+    "roastery": true
+  },
+  {
+    "name": "Gast",
+    "area": "Vasastan",
+    "address": "Rådmansgatan 57",
+    "roastery": false
+  },
+  {
+    "name": "Muttley & Jack's Coffee Roasters",
+    "area": "Södermalm",
+    "address": "Barnängsgatan 13",
+    "roastery": true
+  },
+  {
+    "name": "Nordic Brew Lab Stockholm",
+    "area": "Vasastan",
+    "address": "Torsgatan 46",
+    "roastery": true
+  },
+  {
+    "name": "A.B.Café",
+    "area": "Hägersten",
+    "address": "Valborgsmässovägen 34",
+    "roastery": false
+  },
+  {
+    "name": "Standout Coffee",
+    "area": "Östermalm",
+    "address": "Frihamnsgatan 23",
+    "roastery": true
+  }
+]

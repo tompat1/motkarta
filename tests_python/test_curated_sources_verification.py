@@ -4,8 +4,8 @@ from scripts.verify_curated_sources import verify_all_curated_sources
 def test_verify_all_curated_sources():
     summary = verify_all_curated_sources(quiet=True)
     assert summary["status"] == "PASS"
-    assert summary["total_sources"] == 7
-    assert summary["sources_passed"] == 7
+    assert summary["total_sources"] == 8
+    assert summary["sources_passed"] == 8
 
     sources_by_id = {s["id"]: s for s in summary["sources"]}
 
@@ -47,3 +47,8 @@ def test_verify_all_curated_sources():
     assert sources_by_id["tasstipset"]["matched_places"] >= 150
     assert sources_by_id["tasstipset"]["out_of_scope"] == 0
     assert sources_by_id["tasstipset"]["status"] == "PASS"
+
+    # 8. Burgerdudes (Verified Burger Guide)
+    assert "burgerdudes" in sources_by_id
+    assert sources_by_id["burgerdudes"]["coverage_pct"] >= 85.0
+    assert sources_by_id["burgerdudes"]["status"] == "PASS"

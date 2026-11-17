@@ -611,7 +611,8 @@ export function computeVerificationBreakdown(place: PlaceInput): VerificationBre
     evidence.specialistGuide >= 0.4 ||
     (place.evidenceLabel?.toLowerCase().includes("guide") ?? false) ||
     (place.evidenceLabel?.toLowerCase().includes("specialist") ?? false) ||
-    tags.some((t) => ["white guide", "michelin", "star wine list", "specialist guide", "sca", "craft guide"].includes(t.toLowerCase()));
+    (place.evidenceLabel?.toLowerCase().includes("burgerdudes") ?? false) ||
+    tags.some((t) => ["white guide", "michelin", "star wine list", "specialist guide", "sca", "craft guide", "burgerdudes"].includes(t.toLowerCase()));
 
   const editorialVerified =
     evidence.independentEditorial >= 0.3 ||

@@ -1,0 +1,12 @@
+[
+  {"name": "Flippin' Burgers", "area": "Kungsholmen", "category": "Craft Burger", "url": "https://www.burgerdudes.se/sweden/stockholm/flippin-burgers/"},
+  {"name": "Franky's Burger", "area": "Vasastan", "category": "Craft Burger", "url": "https://www.burgerdudes.se/sweden/stockholm/frankys/"},
+  {"name": "Barrels Burgers & Beer", "area": "Gamla Stan", "category": "Craft Burger", "url": "https://www.burgerdudes.se/sweden/stockholm/barrels-burgers-beer/"},
+  {"name": "Bun Meat Bun", "area": "Söderort", "category": "Smash Burger", "url": "https://www.burgerdudes.se/sweden/stockholm/bun-meat-bun-farsta-strand/"},
+  {"name": "Rockin Grill", "area": "Söderort", "category": "Craft Burger", "url": "https://www.burgerdudes.se/sweden/stockholm/rockin-grill/"},
+  {"name": "Jettz Burger", "area": "Söderort", "category": "Craft Burger", "url": "https://www.burgerdudes.se/sweden/stockholm/jettz-burger/"},
+  {"name": "Lily's Burger", "area": "Kungsholmen", "category": "Diner Burger", "url": "https://www.burgerdudes.se/sweden/stockholm/lilys-burger/"},
+  {"name": "Prime Burgers and Smokehouse", "area": "Norrmalm", "category": "Craft Burger", "url": "https://www.burgerdudes.se/sweden/stockholm/prime-burger/"},
+  {"name": "Gnarly Burger", "area": "Kungsholmen", "category": "Craft Burger", "url": "https://www.burgerdudes.se/sweden/stockholm/gnarly-burger/"},
+  {"name": "Stigbergets Fot", "area": "Södermalm", "category": "Brewpub & Burgers", "url": "https://www.burgerdudes.se/sweden/stockholm/stigbergets-fot/"}
+]

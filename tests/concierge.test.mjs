@@ -219,6 +219,10 @@ test("RAG retrieveAndSynthesize returns top burger spots and deduplicates establ
   assert.ok(namesSv.some((n) => n.includes("Franky") || n.includes("Lily") || n.includes("Bun Meat Bun")), `Expected top burger venue in Swedish, got: ${namesSv.join(", ")}`);
   assert.ok(namesEn.some((n) => n.includes("Franky") || n.includes("Lily") || n.includes("Bun Meat Bun")), `Expected top burger venue in English, got: ${namesEn.join(", ")}`);
 
+  // Burgerdudes-verified venues are prioritized in top cards
+  const topBurgerCards = resultSv.cards.map((c) => c.name);
+  assert.ok(topBurgerCards.some((n) => n.includes("Franky") || n.includes("Lily") || n.includes("Rockin Grill") || n.includes("Bun Meat Bun")));
+
   const idsSv = resultSv.recommendedPlaces.map((place) => place.id);
   assert.equal(idsSv.length, new Set(idsSv).size, "Should not return duplicate place ids in results");
   assert.ok(resultSv.recommendedPlaces.length > resultSv.cards.length, "Burger cuisine browse should list all matches on the map");

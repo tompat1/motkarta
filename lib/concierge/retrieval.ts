@@ -330,15 +330,19 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     const bPrimary = intent.cuisineKinds.some((c) => includesPhrase(`${b.place.cuisine ?? ''} ${(b.place.tags ?? []).join(' ')}`, c));
     if (bPrimary !== aPrimary) return Number(bPrimary) - Number(aPrimary);
 
-    const aPrestige = ((a.place.tags ?? []).some((t) => ['curated', 'white guide nordic', 'spotted by locals'].includes(t.toLowerCase())) ? 15 : 0) + (a.place.is_hidden_gem ? 5 : 0);
-    const bPrestige = ((b.place.tags ?? []).some((t) => ['curated', 'white guide nordic', 'spotted by locals'].includes(t.toLowerCase())) ? 15 : 0) + (b.place.is_hidden_gem ? 5 : 0);
+    const aPrestige = ((a.place.tags ?? []).some((t) => ['curated', 'white guide nordic', 'spotted by locals', 'burgerdudes'].includes(t.toLowerCase())) ? 15 : 0) + (a.place.is_hidden_gem ? 5 : 0);
+    const bPrestige = ((b.place.tags ?? []).some((t) => ['curated', 'white guide nordic', 'spotted by locals', 'burgerdudes'].includes(t.toLowerCase())) ? 15 : 0) + (b.place.is_hidden_gem ? 5 : 0);
 
     const isTacoQuery = intent.cuisineKinds.includes('mexican') || intent.dishes.includes('tacos') || intent.terms.some((t) => t.includes('taco'));
     const aTacoBonus = isTacoQuery && a.place.name.toLowerCase().includes('dirty taco') ? 25 : 0;
     const bTacoBonus = isTacoQuery && b.place.name.toLowerCase().includes('dirty taco') ? 25 : 0;
 
-    const aScore = a.place.scores.recommendation + aPrestige + aTacoBonus + dataCompletenessBonus(a);
-    const bScore = b.place.scores.recommendation + bPrestige + bTacoBonus + dataCompletenessBonus(b);
+    const isBurgerQuery = intent.cuisineKinds.includes('burger') || intent.dishes.includes('burgers') || intent.terms.some((t) => t.includes('burgar') || t.includes('burger'));
+    const aBurgerBonus = isBurgerQuery && (a.place.tags ?? []).some((t) => t.toLowerCase() === 'burgerdudes') ? 25 : 0;
+    const bBurgerBonus = isBurgerQuery && (b.place.tags ?? []).some((t) => t.toLowerCase() === 'burgerdudes') ? 25 : 0;
+
+    const aScore = a.place.scores.recommendation + aPrestige + aTacoBonus + aBurgerBonus + dataCompletenessBonus(a);
+    const bScore = b.place.scores.recommendation + bPrestige + bTacoBonus + bBurgerBonus + dataCompletenessBonus(b);
     if (bScore !== aScore) return bScore - aScore;
 
     return a.place.id - b.place.id;

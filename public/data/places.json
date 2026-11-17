@@ -326,7 +326,8 @@
         "Taproom",
         "Södermalm",
         "Curated",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Burgerdudes"
       ],
       "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
       "sourceUrl": "https://www.visitstockholm.se/",
@@ -337,7 +338,7 @@
       "daysSinceFreshEvidence": 30,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.7,
+        "specialistGuide": 0.85,
         "independentEditorial": 1,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
@@ -370,7 +371,19 @@
       "categoryMeanRating": 0,
       "categoryPopularityRaw": 0,
       "localPopularityPercentile": 0,
-      "priceLevel": 0
+      "priceLevel": 0,
+      "sourceFacts": [
+        {
+          "placeId": 2049797667,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "2049797667:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
+        }
+      ]
     },
     {
       "id": 3041790500,
@@ -9546,7 +9559,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -9576,7 +9591,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0.5,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
@@ -9667,6 +9682,16 @@
           "id": "1673196533:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 1673196533,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "1673196533:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -27082,7 +27107,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -27113,7 +27140,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -27122,7 +27149,7 @@
         "inspectionStatus": 70,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -27234,6 +27261,16 @@
           "id": "2954023020:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 2954023020,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "2954023020:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -69551,7 +69588,9 @@
         "Restaurant",
         "Tasstipset",
         "Website",
-        "Söderort"
+        "Söderort",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -69582,7 +69621,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0.75,
         "verifiedUserRating": 0.6,
         "repeatVisits": 25,
@@ -69673,6 +69712,16 @@
           "id": "1292966744:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 1292966744,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "1292966744:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -69689,7 +69738,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Söderort"
+        "Söderort",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -69720,7 +69771,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -69729,7 +69780,7 @@
         "inspectionStatus": 70,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -69790,6 +69841,16 @@
           "id": "2945097116:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 2945097116,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "2945097116:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -90213,7 +90274,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -90244,7 +90307,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -90253,7 +90316,7 @@
         "inspectionStatus": 70,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -90325,6 +90388,16 @@
           "id": "3225366090:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 3225366090,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "3225366090:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -103598,7 +103671,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -103629,7 +103704,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -103638,7 +103713,7 @@
         "inspectionStatus": 70,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -103720,6 +103795,16 @@
           "id": "3174034755:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 3174034755,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "3174034755:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -153511,7 +153596,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -153542,7 +153629,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -153551,7 +153638,7 @@
         "inspectionStatus": 70,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -153663,6 +153750,16 @@
           "id": "1834709855:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 1834709855,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "1834709855:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -177919,7 +178016,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -177950,7 +178049,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -177959,7 +178058,7 @@
         "inspectionStatus": 70,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -178061,6 +178160,16 @@
           "id": "1723010121:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 1723010121,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "1723010121:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -218208,7 +218317,9 @@
         "Opening hours",
         "Restaurant",
         "Spotted by Locals",
-        "Hidden Gem"
+        "Hidden Gem",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": true,
       "is_structural_anomaly": false,
@@ -218350,6 +218461,16 @@
           "id": "3803373905:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 3803373905,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "3803373905:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -226005,7 +226126,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -226036,7 +226159,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -226045,7 +226168,7 @@
         "inspectionStatus": 70,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -226147,6 +226270,16 @@
           "id": "1292142471:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 1292142471,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "1292142471:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -255835,7 +255968,9 @@
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -255865,7 +256000,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
@@ -255874,7 +256009,7 @@
         "inspectionStatus": 60,
         "verifiedAttributes": 0,
         "dataFreshness": 80,
-        "confidence": "Low"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -255904,6 +256039,16 @@
           "url": "https://tasstipset.se",
           "verification": "listed",
           "capturedAt": "2026-09-07T18:54:46Z"
+        },
+        {
+          "placeId": 1785791076,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "1785791076:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -261270,7 +261415,9 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -261302,7 +261449,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0.75,
         "verifiedUserRating": 0.6,
         "repeatVisits": 25,
@@ -261413,6 +261560,16 @@
           "id": "2476779516:osm:dish:clam chowder",
           "field": "dish",
           "value": "clam chowder"
+        },
+        {
+          "placeId": 2476779516,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "2476779516:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -282779,7 +282936,9 @@
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -282810,7 +282969,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0.25,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
@@ -282819,7 +282978,7 @@
         "inspectionStatus": 70,
         "verifiedAttributes": 28.33,
         "dataFreshness": 80,
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -282870,6 +283029,16 @@
           "id": "3713270407:osm:atmosphere:indoor",
           "field": "atmosphere",
           "value": "indoor seating"
+        },
+        {
+          "placeId": 3713270407,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "3713270407:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -292923,7 +293092,9 @@
         "Burger",
         "Central Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -292953,7 +293124,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
@@ -292962,7 +293133,7 @@
         "inspectionStatus": 60,
         "verifiedAttributes": 0,
         "dataFreshness": 80,
-        "confidence": "Low"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -293002,6 +293173,16 @@
           "id": "1396866734:osm:tags:diet_vegetarian",
           "field": "tags",
           "value": "Vegetarian options"
+        },
+        {
+          "placeId": 1396866734,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "1396866734:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ],
       "openingHours": "Mo,Tu 11:00-23:15, We-Sa 11:00-02:15, Su 11:00-23:15"
@@ -304104,7 +304285,9 @@
         "Opening hours",
         "Pizza",
         "Restaurant",
-        "Website"
+        "Website",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -304135,7 +304318,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0.75,
         "verifiedUserRating": 0.6,
         "repeatVisits": 25,
@@ -304246,6 +304429,16 @@
           "id": "412193810:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 412193810,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "412193810:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -304517,7 +304710,9 @@
         "Opening hours",
         "Restaurant",
         "Spotted by Locals",
-        "Hidden Gem"
+        "Hidden Gem",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": true,
       "is_structural_anomaly": false,
@@ -304669,6 +304864,16 @@
           "id": "1953440894:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 1953440894,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "1953440894:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },
@@ -306376,7 +306581,9 @@
         "Burger",
         "OpenStreetMap",
         "Restaurant",
-        "Söderort"
+        "Söderort",
+        "Burgerdudes",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -306406,7 +306613,7 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.85,
         "independentEditorial": 0,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
@@ -306415,7 +306622,7 @@
         "inspectionStatus": 60,
         "verifiedAttributes": 0,
         "dataFreshness": 80,
-        "confidence": "Low"
+        "confidence": "High"
       },
       "engagement": {
         "searchImpressions": 0,
@@ -306465,6 +306672,16 @@
           "id": "2995567046:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 2995567046,
+          "source": "Burgerdudes",
+          "url": "https://www.burgerdudes.se",
+          "verification": "reviewed",
+          "capturedAt": "2026-10-15T10:00:00Z",
+          "id": "2995567046:burgerdudes:reviewed",
+          "field": "tags",
+          "value": "Burgerdudes Verified Best Burger"
         }
       ]
     },

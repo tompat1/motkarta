@@ -356,7 +356,7 @@ export const translations = {
     featureLink: "Visa på karta",
     selectionReadoutPlaces: "ställen i urvalet",
     attributionTitle: "KÄLLTILLSKRIVNING & UPPHOVSRÄTT",
-    attributionBody: "Kurerade källor används som källhänvisad plats- och evidensdata, inte som importerade betyg. Guidedata kan komma från Anders Husa & Kaitlin Orr Guide, White Guide Nordic, Specialty Coffee Sweden Registry och Visit Stockholm. Tillsynsdata från Stockholms stad (CC0). Kartdata från OpenStreetMap (ODbL).",
+    attributionBody: "Kurerade källor används som källhänvisad plats- och evidensdata, inte som importerade betyg. Guidedata kan komma från Anders Husa & Kaitlin Orr Guide, White Guide Nordic, Burgerdudes, Specialty Coffee Sweden Registry och Visit Stockholm. Tillsynsdata från Stockholms stad (CC0). Kartdata från OpenStreetMap (ODbL).",
   },
   en: {
     brandDescriptor: "Stockholm's independent food map",
@@ -553,7 +553,7 @@ export const translations = {
     featureLink: "View on map",
     selectionReadoutPlaces: "places in selection",
     attributionTitle: "SOURCE ATTRIBUTION & COPYRIGHT",
-    attributionBody: "Curated sources are used as attributed place and evidence data, not imported ratings. Guide data may come from Anders Husa & Kaitlin Orr Guide, White Guide Nordic, Specialty Coffee Sweden Registry, and Visit Stockholm. Inspection data from Stockholm City (CC0). Map data from OpenStreetMap (ODbL).",
+    attributionBody: "Curated sources are used as attributed place and evidence data, not imported ratings. Guide data may come from Anders Husa & Kaitlin Orr Guide, White Guide Nordic, Burgerdudes, Specialty Coffee Sweden Registry, and Visit Stockholm. Inspection data from Stockholm City (CC0). Map data from OpenStreetMap (ODbL).",
   },
 };
 

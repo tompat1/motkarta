@@ -35,6 +35,7 @@ HUSA_GT_FILE = ROOT / "data" / "husa_guide_ground_truth.json"
 WHITE_GUIDE_GT_FILE = ROOT / "data" / "white_guide_ground_truth.json"
 VISIT_STHLM_GT_FILE = ROOT / "data" / "visit_stockholm_ground_truth.json"
 SPECIALTY_GT_FILE = ROOT / "data" / "specialty_coffee_ground_truth.json"
+BURGERDUDES_GT_FILE = ROOT / "data" / "burgerdudes_ground_truth.json"
 TASSTIPSET_GT_FILE = ROOT / "data" / "tasstipset_stockholm_ground_truth.csv"
 TASSTIPSET_SCRAPED_FILE = ROOT / "outputs" / "tasstipset_dog_places_stockholm.json"
 
@@ -292,6 +293,34 @@ def verify_all_curated_sources(
         "target_coverage_pct": 60.0,
         "out_of_scope": tasstipset_out_of_scope,
         "status": "PASS" if tasstipset_pass else "FAIL",
+    })
+
+    # =========================================================================
+    # 8. Burgerdudes (Verified Craft Burger Guide)
+    # =========================================================================
+    bd_gt = []
+    if BURGERDUDES_GT_FILE.exists():
+        with open(BURGERDUDES_GT_FILE, encoding="utf-8") as f:
+            bd_gt = json.load(f)
+
+    bd_matched = 0
+    for item in bd_gt:
+        gn = norm(item.get("name"))
+        if any(gn == pn or (len(gn) >= 5 and (gn in pn or pn in gn)) for pn in places_norm):
+            bd_matched += 1
+
+    bd_cov_pct = (bd_matched / len(bd_gt) * 100) if bd_gt else 0.0
+    bd_pass = len(bd_gt) >= 5 and bd_cov_pct >= 85.0
+    sources_report.append({
+        "id": "burgerdudes",
+        "name": "Burgerdudes (Verified Burger Guide)",
+        "type": "Verified Guide",
+        "license": "Redaktionell hamburgarguide (burgerdudes.se)",
+        "source_data_points": len(bd_gt) or 10,
+        "matched_places": bd_matched,
+        "coverage_pct": round(bd_cov_pct, 1),
+        "target_coverage_pct": 85.0,
+        "status": "PASS" if bd_pass else "FAIL",
     })
 
     all_passed = all(s["status"] == "PASS" for s in sources_report)

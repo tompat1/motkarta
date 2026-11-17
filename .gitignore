@@ -44,6 +44,8 @@ dist-ssr/
 !/data/raw/osm_stockholm_food_places.metadata.json
 !/data/raw/stockholm_food_control.json
 !/data/raw/stockholm_food_control.metadata.json
+!/data/*_ground_truth.json
+!/data/*_ground_truth.csv
 
 # Temporary / intermediate files
 .tmp/
