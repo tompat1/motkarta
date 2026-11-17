@@ -148,15 +148,30 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     ["kanelbullar", "bakery"],
     ["surdegsbröd", "bakery"],
     ["surdeg", "bakery"],
+    ["bar", "bar"],
+    ["baren", "bar"],
+    ["barer", "bar"],
+    ["barerna", "bar"],
     ["vinbar", "wine bar"],
     ["wine bar", "wine bar"],
+    ["vinbaren", "wine bar"],
     ["vinbarer", "wine bar"],
     ["cocktailbar", "cocktail"],
+    ["cocktailbaren", "cocktail"],
     ["cocktail", "cocktail"],
     ["cocktails", "cocktail"],
+    ["drinkar", "cocktail"],
     ["cocktailbarer", "cocktail"],
     ["pub", "pub"],
+    ["puben", "pub"],
     ["pubar", "pub"],
+    ["pubarna", "pub"],
+    ["ölbar", "pub"],
+    ["ölhall", "pub"],
+    ["ölhus", "pub"],
+    ["ölhak", "pub"],
+    ["taproom", "pub"],
+    ["speakeasy", "cocktail"],
     ["burger", "burger"],
     ["burgers", "burger"],
     ["burgare", "burger"],
@@ -184,8 +199,11 @@ export function extractStructuredFilters(query: string): StructuredFilters {
   ];
 
   for (const [term, norm] of knownCuisines) {
-    const matched = term === "pub"
-      ? (/(?:^|[^a-zåäö])pub(s|ar|en)?(?:[^a-zåäö]|$)/i.test(qLower))
+    if (norm === "bar" && (qLower.includes("salad bar") || qLower.includes("salladsbar") || qLower.includes("juice bar") || qLower.includes("espresso bar") || qLower.includes("glassbar") || qLower.includes("ice cream bar"))) {
+      continue;
+    }
+    const matched = (term === "pub" || term === "bar")
+      ? (new RegExp(`(?:^|[^a-zåäö])${term}(?:[^a-zåäö]|$)`, "i").test(qLower))
       : (term === "kina" || term === "china")
         ? (new RegExp(`(?:^|[^a-zåäö])${term}(?:[^a-zåäö]|$)`, "i").test(qLower))
         : qLower.includes(term);
@@ -274,15 +292,46 @@ const BASE_CUISINE_ALIASES: Record<string, string[]> = {
   tjeckiskt: ["czech", "tjeckisk", "tjeckiskt", "tjeckiska", "tjeckien", "schnitzel", "pub"],
   tjeckiska: ["czech", "tjeckisk", "tjeckiskt", "tjeckiska", "tjeckien", "schnitzel", "pub"],
   tjeckien: ["czech", "tjeckisk", "tjeckiskt", "tjeckiska", "tjeckien", "schnitzel", "pub"],
-  pub: ["pub", "ölhus", "ölhall", "kvarterskrog", "bar", "czech"],
-  ölhus: ["pub", "ölhus", "ölhall", "czech", "german"],
-  ölhall: ["pub", "ölhus", "ölhall", "czech", "german"],
-  kvarterskrog: ["pub", "kvarterskrog", "ölhus", "czech"],
-  vinbar: ["wine bar", "vinbar", "wine", "vin", "naturvin"],
-  "wine bar": ["wine bar", "vinbar", "wine", "vin", "naturvin"],
-  cocktailbar: ["cocktail", "cocktails", "cocktail bar", "cocktailbar", "drinkar"],
-  "cocktail bar": ["cocktail", "cocktails", "cocktail bar", "cocktailbar", "drinkar"],
-  cocktails: ["cocktail", "cocktails", "cocktail bar", "cocktailbar", "drinkar"],
+  pub: [
+    "pub", "puben", "pubar", "pubarna",
+    "ölhus", "ölhall", "ölbar", "kvarterskrog",
+    "craft beer", "hantverksöl", "beer", "öl",
+    "taproom", "gastropub", "bar", "ale", "pilsner", "starköl", "czech"
+  ],
+  puben: ["pub", "puben", "pubar", "pubarna", "ölhus", "ölhall", "ölbar", "craft beer", "hantverksöl", "beer", "öl", "taproom", "bar"],
+  pubar: ["pub", "puben", "pubar", "pubarna", "ölhus", "ölhall", "ölbar", "craft beer", "hantverksöl", "beer", "öl", "taproom", "bar"],
+  pubarna: ["pub", "puben", "pubar", "pubarna", "ölhus", "ölhall", "ölbar", "craft beer", "hantverksöl", "beer", "öl", "taproom", "bar"],
+  ölhus: ["pub", "puben", "ölhus", "ölhall", "craft beer", "hantverksöl", "bar", "czech", "german"],
+  ölhall: ["pub", "puben", "ölhus", "ölhall", "craft beer", "hantverksöl", "bar", "czech", "german"],
+  ölbar: ["pub", "puben", "ölbar", "ölhall", "ölhus", "craft beer", "hantverksöl", "bar"],
+  taproom: ["pub", "puben", "taproom", "craft beer", "hantverksöl", "beer", "öl", "bar"],
+  bar: [
+    "bar", "baren", "barer", "barerna",
+    "cocktail", "cocktails", "cocktailbar", "cocktail bar", "cocktailbaren",
+    "vinbar", "wine bar", "vinbaren", "vinbarer", "naturvin", "natural wine",
+    "pub", "puben", "pubar", "pubarna", "ölhall", "ölhus", "ölbar",
+    "craft beer", "hantverksöl", "taproom", "drinkar", "speakeasy", "gastropub", "bodega", "öl", "beer"
+  ],
+  baren: [
+    "bar", "baren", "barer", "barerna",
+    "cocktail", "cocktails", "cocktailbar", "cocktail bar", "cocktailbaren",
+    "vinbar", "wine bar", "vinbaren", "vinbarer", "naturvin", "natural wine",
+    "pub", "puben", "pubar", "pubarna", "ölhall", "ölhus", "ölbar",
+    "craft beer", "hantverksöl", "taproom", "drinkar", "speakeasy", "gastropub", "bodega", "öl", "beer"
+  ],
+  barer: ["bar", "baren", "barer", "barerna", "cocktailbar", "vinbar", "wine bar", "pub", "ölhall", "taproom"],
+  barerna: ["bar", "baren", "barer", "barerna", "cocktailbar", "vinbar", "wine bar", "pub", "ölhall", "taproom"],
+  kvarterskrog: ["pub", "kvarterskrog", "ölhus", "krog", "restaurang", "czech"],
+  vinbar: ["wine bar", "vinbar", "vinbaren", "vinbarer", "wine", "vin", "naturvin", "natural wine", "bar"],
+  "wine bar": ["wine bar", "vinbar", "vinbaren", "vinbarer", "wine", "vin", "naturvin", "natural wine", "bar"],
+  vinbaren: ["wine bar", "vinbar", "vinbaren", "vinbarer", "wine", "vin", "naturvin", "natural wine", "bar"],
+  vinbarer: ["wine bar", "vinbar", "vinbaren", "vinbarer", "wine", "vin", "naturvin", "natural wine", "bar"],
+  cocktail: ["cocktail", "cocktails", "cocktail bar", "cocktailbar", "cocktailbaren", "cocktailbarer", "drinkar", "speakeasy", "bar"],
+  cocktails: ["cocktail", "cocktails", "cocktail bar", "cocktailbar", "cocktailbaren", "cocktailbarer", "drinkar", "speakeasy", "bar"],
+  cocktailbar: ["cocktail", "cocktails", "cocktail bar", "cocktailbar", "cocktailbaren", "cocktailbarer", "drinkar", "speakeasy", "bar"],
+  "cocktail bar": ["cocktail", "cocktails", "cocktail bar", "cocktailbar", "cocktailbaren", "cocktailbarer", "drinkar", "speakeasy", "bar"],
+  cocktailbaren: ["cocktail", "cocktails", "cocktail bar", "cocktailbar", "cocktailbaren", "cocktailbarer", "drinkar", "speakeasy", "bar"],
+  drinkar: ["cocktail", "cocktails", "cocktail bar", "cocktailbar", "cocktailbaren", "drinkar", "speakeasy", "bar"],
   french: ["french", "france", "fransk", "franskt", "bistro", "brasserie"],
   france: ["french", "france", "fransk", "franskt", "bistro", "brasserie"],
   fransk: ["french", "france", "fransk", "franskt", "bistro", "brasserie"],
@@ -344,6 +393,14 @@ const BASE_CUISINE_ALIASES: Record<string, string[]> = {
   "dim sum": ["dim sum", "dimsum", "dumplings", "chinese", "cantonese"],
   vietnamese: ["vietnamese", "vietnamesisk", "vietnamesiska"],
   vietnamesisk: ["vietnamese", "vietnamesisk", "vietnamesiska"],
+  bakery: ["bakery", "bageri", "bageriet", "bagerier", "bagerierna", "hantverksbageri", "surdegsbageri", "konditori", "konditoriet", "surdeg", "surdegsbröd", "bullar", "kanelbulle", "kanelbullar", "kardemummabulle", "kardemummabullar", "fika"],
+  bageri: ["bakery", "bageri", "bageriet", "bagerier", "bagerierna", "hantverksbageri", "surdegsbageri", "konditori", "konditoriet", "surdeg", "surdegsbröd", "bullar", "kanelbulle", "kanelbullar", "kardemummabulle", "kardemummabullar", "fika"],
+  bageriet: ["bakery", "bageri", "bageriet", "bagerier", "bagerierna", "hantverksbageri", "surdegsbageri", "konditori", "konditoriet", "surdeg", "surdegsbröd", "bullar", "kanelbulle", "kanelbullar", "kardemummabulle", "kardemummabullar", "fika"],
+  konditori: ["bakery", "konditori", "konditoriet", "bageri", "bageriet", "fika", "kafé", "café"],
+  konditoriet: ["bakery", "konditori", "konditoriet", "bageri", "bageriet", "fika", "kafé", "café"],
+  fika: ["cafe", "cafeet", "kafe", "kafeet", "fik", "fika", "fiket", "kaffebar", "konditori", "bakery", "bageri"],
+  fik: ["cafe", "cafeet", "kafe", "kafeet", "fik", "fika", "fiket", "kaffebar", "konditori", "bakery", "bageri"],
+  fiket: ["cafe", "cafeet", "kafe", "kafeet", "fik", "fika", "fiket", "kaffebar", "konditori", "bakery", "bageri"],
   kardemummabulle: ["bakery", "cardamom", "kardemumma", "fika"],
   kardemumma: ["bakery", "cardamom", "kardemumma", "fika"],
   surdegsbröd: ["bakery", "sourdough", "surdeg", "bread"],

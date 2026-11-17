@@ -93,15 +93,27 @@ export function buildResponse(query: string, candidates: RankedCandidate[], tota
   const action = parseAction(query);
   const sv = intent.language === 'sv';
   const isDistrictQuery = Boolean(intent.area);
+  const isCategoryBrowse = !action && !intent.isPagination && (intent.bar || intent.cocktail || intent.wineBar || intent.pub || intent.bakery || intent.cafe || intent.specialty);
   const isCuisineBrowse = !action && !intent.isPagination && intent.cuisineKinds.length > 0;
   const cardPicks = action ? [] : (isDistrictQuery ? candidates : candidates.slice(0, 5));
-  const mapPicks = action ? [] : (isDistrictQuery || isCuisineBrowse ? candidates : cardPicks);
+  const mapPicks = action ? [] : (isDistrictQuery || isCuisineBrowse || isCategoryBrowse ? candidates : cardPicks);
   let intro = sv ? 'Här är träffar från Motkartas katalog. Saknade uppgifter är markerade.' : 'Based on our auditable open dataset, here are catalog matches. Missing facts are marked.';
   if (isDistrictQuery && mapPicks.length > 0) {
     const areaName = intent.area ? (CANONICAL_AREA_NAMES[intent.area] || intent.area.split(' ').map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')) : '';
     intro = sv
       ? `Här är alla ${mapPicks.length} ställen i ${areaName} från Motkartas katalog. Saknade uppgifter är markerade.`
       : `Based on our auditable open dataset, here are all ${mapPicks.length} places in ${areaName}. Missing facts are marked.`;
+  } else if (isCategoryBrowse && mapPicks.length > 0) {
+    const categoryLabel = intent.cocktail ? (sv ? 'cocktailbarer' : 'cocktail bars')
+      : intent.wineBar ? (sv ? 'vinbarer' : 'wine bars')
+      : intent.pub ? (sv ? 'pubar och ölbarer' : 'pubs and beer bars')
+      : intent.bar ? (sv ? 'barer och pubar' : 'bars and pubs')
+      : intent.bakery ? (sv ? 'bagerier' : 'bakeries')
+      : intent.cafe ? (sv ? 'kaféer och fikaställen' : 'cafés')
+      : (sv ? 'specialkaffeställen' : 'specialty coffee places');
+    intro = sv
+      ? `Här är ${mapPicks.length} bekräftade ${categoryLabel} i Motkartas katalog. Topp ${Math.min(5, cardPicks.length)} visas nedan; alla finns på kartan och i listan.`
+      : `Here are ${mapPicks.length} confirmed ${categoryLabel} in the Motkarta catalog. The top ${Math.min(5, cardPicks.length)} are below; all matches are on the map and list.`;
   } else if (isCuisineBrowse && mapPicks.length > 0) {
     const cuisineLabel = intent.cuisineKinds[0]?.replaceAll('_', ' ') ?? (sv ? 'valt kök' : 'selected cuisine');
     intro = sv

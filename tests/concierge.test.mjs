@@ -361,4 +361,63 @@ test("RAG retrieveAndSynthesize provides webSearch fallback when 450 Gradi is ab
   assert.ok(result.webSearch.links.length >= 3);
 });
 
+test("RAG retrieveAndSynthesize handles semantic bar and drinks retrieval for 'Bästa baren i stan'", () => {
+  const result = retrieveAndSynthesize("Bästa baren i stan", livePlaces, { language: "sv" });
+  assert.equal(result.status, "ok");
+  assert.ok(result.recommendedPlaces.length >= 20, `Expected at least 20 bars on map, got ${result.recommendedPlaces.length}`);
+  assert.equal(result.cards.length, 5, "Card picks should be capped at top 5 recommendations");
+
+  const topCardNames = result.cards.map((c) => c.name);
+  // Ensure top picks are real, curated Stockholm drinking spots
+  const knownTopBars = [
+    "A Bar Called Gemma",
+    "Lucy's Flower Shop",
+    "Tjoget",
+    "Bar Montan",
+    "Savant Bar",
+    "Tyge & Sessil",
+    "Röda Huset",
+    "Pharmarium",
+    "Grus Grus",
+    "Restaurant Akkurat",
+    "Erlands"
+  ];
+  const matchedTopBars = topCardNames.filter((name) => knownTopBars.includes(name));
+  assert.ok(matchedTopBars.length >= 3, `Expected at least 3 renowned bars in top 5, got: ${topCardNames.join(", ")}`);
+
+  // Verify non-drinking venues (salad bar, etc.) are excluded
+  const allNames = result.recommendedPlaces.map((p) => p.name.toLowerCase());
+  assert.equal(allNames.some((name) => name.includes("mix'n'go") || name.includes("salad bar")), false, "Must never return salad bars for bar queries");
+
+  assert.ok(result.intro.includes("bekräftade barer och pubar"), `Intro should mention bars and pubs, got: ${result.intro}`);
+});
+
+test("RAG retrieveAndSynthesize handles cocktail bars and wine bars queries conceptually", () => {
+  const cocktails = retrieveAndSynthesize("Bästa cocktailbaren i stan", livePlaces, { language: "sv" });
+  assert.equal(cocktails.status, "ok");
+  const cocktailCardNames = cocktails.cards.map((c) => c.name);
+  assert.ok(cocktailCardNames.includes("A Bar Called Gemma") || cocktailCardNames.includes("Lucy's Flower Shop") || cocktailCardNames.includes("Tjoget"));
+  assert.ok(cocktails.intro.includes("cocktailbarer"));
+
+  const wineBars = retrieveAndSynthesize("Vinbar i Stockholm", livePlaces, { language: "sv" });
+  assert.equal(wineBars.status, "ok");
+  const wineCardNames = wineBars.cards.map((c) => c.name);
+  assert.ok(wineCardNames.includes("Savant Bar") || wineCardNames.includes("Tyge & Sessil") || wineCardNames.includes("Grus Grus") || wineCardNames.includes("Folie"));
+  assert.ok(wineBars.intro.includes("vinbarer"));
+});
+
+test("extractStructuredFilters and intent morphological stemming handles Swedish inflected forms", () => {
+  const barFilter = extractStructuredFilters("bästa baren i stan");
+  assert.deepEqual(barFilter.cuisines, ["bar"]);
+
+  const pubFilter = extractStructuredFilters("trevliga puben");
+  assert.deepEqual(pubFilter.cuisines, ["pub"]);
+
+  const pizzaFilter = extractStructuredFilters("bästa pizzerian");
+  assert.deepEqual(pizzaFilter.cuisines, ["pizza"]);
+
+  const burgerFilter = extractStructuredFilters("godaste burgaren");
+  assert.deepEqual(burgerFilter.cuisines, ["burger"]);
+});
+
 

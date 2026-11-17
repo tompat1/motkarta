@@ -58,6 +58,92 @@ function extractDistinctiveNumbers(text: string): string[] {
   });
 }
 
+export function isBarVenue(place: ConciergePlace | import('../scoring.ts').PlaceInput): boolean {
+  const cuisine = (place.cuisine || '').toLowerCase();
+  const tags = (place.tags || []).map((t) => (typeof t === 'string' ? t.toLowerCase() : ''));
+  const name = (place.name || '').toLowerCase();
+  const kind = (place.kind || '').toLowerCase();
+
+  // Exclude non-drinking "bars" and bakeries
+  if (
+    cuisine === 'salad bar' || tags.includes('salad bar') ||
+    name.includes('salad bar') || name.includes('salladsbar') ||
+    name.includes('juice bar') || name.includes('espresso bar') ||
+    name.includes('ice cream bar') || name.includes('glassbar') ||
+    name.includes('nail bar')
+  ) {
+    return false;
+  }
+  if (kind === 'bakery') return false;
+
+  const barCuisines = ['pub', 'cocktails', 'wine bar', 'beer'];
+  if (barCuisines.some((c) => cuisine.includes(c))) return true;
+
+  const barTags = [
+    'pub', 'beer', 'öl & pub', 'bar', 'craft beer', 'gastropub',
+    'cocktailbar', 'cocktail bar', 'cocktails', 'vinbar', 'wine bar',
+    'natural wine', 'naturvin', 'speakeasy', 'taproom', 'bodega',
+    'starköl', 'barmeny'
+  ];
+  if (tags.some((t) => barTags.includes(t))) return true;
+
+  if (/\b(ölhall|ölhus|taproom|speakeasy|cocktailbar|vinbar|bodega)\b/i.test(name)) return true;
+  if (/\bbar\b/i.test(name) && !kind.includes('coffee') && !name.includes('sallad') && !name.includes('juice') && !name.includes('kaffe') && !name.includes('sushi') && !name.includes('taco bar')) {
+    return true;
+  }
+
+  return false;
+}
+
+export function isCocktailVenue(place: ConciergePlace | import('../scoring.ts').PlaceInput): boolean {
+  if (!isBarVenue(place)) return false;
+  const cuisine = (place.cuisine || '').toLowerCase();
+  const tags = (place.tags || []).map((t) => (typeof t === 'string' ? t.toLowerCase() : ''));
+  const name = (place.name || '').toLowerCase();
+  if (cuisine.includes('cocktail')) return true;
+  if (tags.some((t) => ['cocktailbar', 'cocktail bar', 'cocktails', 'speakeasy'].includes(t))) return true;
+  if (/\b(cocktail|speakeasy|drinkar)\b/i.test(name)) return true;
+  return false;
+}
+
+export function isWineBarVenue(place: ConciergePlace | import('../scoring.ts').PlaceInput): boolean {
+  if (!isBarVenue(place)) return false;
+  const cuisine = (place.cuisine || '').toLowerCase();
+  const tags = (place.tags || []).map((t) => (typeof t === 'string' ? t.toLowerCase() : ''));
+  const name = (place.name || '').toLowerCase();
+  if (cuisine.includes('wine bar') || cuisine.includes('wine')) return true;
+  if (tags.some((t) => ['vinbar', 'wine bar', 'natural wine', 'naturvin', 'vin'].includes(t))) return true;
+  if (/\b(vinbar|wine bar)\b/i.test(name)) return true;
+  return false;
+}
+
+export function isPubVenue(place: ConciergePlace | import('../scoring.ts').PlaceInput): boolean {
+  if (!isBarVenue(place)) return false;
+  const cuisine = (place.cuisine || '').toLowerCase();
+  const tags = (place.tags || []).map((t) => (typeof t === 'string' ? t.toLowerCase() : ''));
+  const name = (place.name || '').toLowerCase();
+  if (cuisine.includes('pub') || cuisine.includes('beer')) return true;
+  if (tags.some((t) => ['pub', 'beer', 'öl & pub', 'craft beer', 'taproom', 'starköl'].includes(t))) return true;
+  if (tags.includes('gastropub') && !name.includes('sushi')) return true;
+  if (/\b(pub|ölhall|ölhus|taproom|bryggeri|brygghus)\b/i.test(name)) return true;
+  return false;
+}
+
+export function isBakeryVenue(place: ConciergePlace | import('../scoring.ts').PlaceInput): boolean {
+  const cuisine = (place.cuisine || '').toLowerCase();
+  const tags = (place.tags || []).map((t) => (typeof t === 'string' ? t.toLowerCase() : ''));
+  const kind = (place.kind || '').toLowerCase();
+  if (kind === 'bakery' || cuisine === 'bakery') return true;
+  return tags.some((t) => ['bakery', 'bageri', 'hantverksbageri', 'surdegsbageri', 'konditori'].includes(t));
+}
+
+export function isCafeVenue(place: ConciergePlace | import('../scoring.ts').PlaceInput): boolean {
+  const kind = (place.kind || '').toLowerCase();
+  const tags = (place.tags || []).map((t) => (typeof t === 'string' ? t.toLowerCase() : ''));
+  if (['café', 'cafe', 'specialty coffee'].includes(kind)) return true;
+  return tags.some((t) => ['café', 'cafe', 'coffee shop', 'fika', 'konditori', 'specialty coffee'].includes(t));
+}
+
 export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent, context: QueryContext): boolean {
   const { place, facts } = candidate;
   const attributes = facts.facts.filter((fact) => ['dish', 'tags', 'cuisine'].includes(fact.field)).map((fact) => fact.value).join(' ');
@@ -72,9 +158,14 @@ export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent,
     }
   }
   if (intent.area && !matchesArea(intent.area, place)) return false;
+  if (intent.bar && !isBarVenue(place)) return false;
+  if (intent.cocktail && !isCocktailVenue(place)) return false;
+  if (intent.wineBar && !isWineBarVenue(place)) return false;
+  if (intent.pub && !isPubVenue(place)) return false;
   if (intent.specialty && !specialtyEligible(place)) return false;
-  if (intent.bakery && !intent.specialty && !['Bakery', 'Café'].includes(place.kind)) return false;
-  if (intent.dinner && place.kind !== 'Restaurant') return false;
+  if (intent.bakery && !intent.specialty && !['Bakery', 'Café'].includes(place.kind) && !isBakeryVenue(place)) return false;
+  if (intent.cafe && !['Café', 'Specialty coffee'].includes(place.kind) && !isCafeVenue(place)) return false;
+  if (intent.dinner && place.kind !== 'Restaurant' && !isBarVenue(place)) return false;
   if (intent.atmosphere) {
     const hasAtmosphere = facts.facts.some((f) =>
       (f.field === 'atmosphere' || f.field === 'tags') &&
@@ -92,7 +183,19 @@ export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent,
     }
   }
 
-  if (intent.cuisineKinds.length && !intent.cuisineKinds.some((cuisine) => tokenAlternatives(normalize(cuisine)).some((term) => includesPhrase(attributes, term)))) return false;
+  const matchPlaceForCuisine = (cuisine: string) => {
+    const norm = normalize(cuisine);
+    if (norm === 'bar' && isBarVenue(place)) return true;
+    if (norm === 'pub' && isPubVenue(place)) return true;
+    if ((norm === 'wine bar' || norm === 'vinbar') && isWineBarVenue(place)) return true;
+    if (norm === 'cocktail' && isCocktailVenue(place)) return true;
+    if (norm === 'bakery' && isBakeryVenue(place)) return true;
+    if ((norm === 'cafe' || norm === 'fika') && isCafeVenue(place)) return true;
+    const terms = tokenAlternatives(norm);
+    return terms.some((term) => includesPhrase(attributes, term));
+  };
+
+  if (intent.cuisineKinds.length && !intent.cuisineKinds.some(matchPlaceForCuisine)) return false;
   if (intent.dishes.some((dish) => !(DISH_TERMS[dish] ?? [dish]).some((term) => includesPhrase(attributes, term)))) return false;
   if (intent.filters.dog_friendly && !facts.facts.some((f) => (f.field === 'dogFriendly' && f.value === 'true') || (f.field === 'tags' && ['dog friendly', 'hundvanlig', 'hundvanligt'].some((t) => includesPhrase(f.value, t))))) return false;
   if (intent.filters.wifi && !facts.facts.some((f) => f.field === 'tags' && ['wifi', 'wi-fi', 'wi fi', 'wireless internet', 'free internet', 'free wifi', 'tradlost internet', 'tradlost natverk'].some((t) => includesPhrase(f.value, t)))) return false;
@@ -149,14 +252,41 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
       continue;
     }
     const attributes = facts.facts.filter((fact) => ['dish', 'tags', 'cuisine'].includes(fact.field)).map((fact) => fact.value).join(' ');
-    const cuisineMatch = intent.cuisineKinds.length > 0 && intent.cuisineKinds.some((cuisine) =>
-      tokenAlternatives(normalize(cuisine)).some((term) => includesPhrase(attributes, term)));
+    const isBar = isBarVenue(place);
+    const isCocktail = isCocktailVenue(place);
+    const isWine = isWineBarVenue(place);
+    const isPub = isPubVenue(place);
+    const isBakery = isBakeryVenue(place);
+    const isCafe = isCafeVenue(place);
+
+    const matchPlaceForCuisine = (cuisine: string) => {
+      const norm = normalize(cuisine);
+      if (norm === 'bar' && isBar) return true;
+      if (norm === 'pub' && isPub) return true;
+      if ((norm === 'wine bar' || norm === 'vinbar') && isWine) return true;
+      if (norm === 'cocktail' && isCocktail) return true;
+      if (norm === 'bakery' && isBakery) return true;
+      if ((norm === 'cafe' || norm === 'fika') && isCafe) return true;
+      const terms = tokenAlternatives(norm);
+      return terms.some((term) => includesPhrase(attributes, term));
+    };
+    const cuisineMatch = intent.cuisineKinds.length > 0 && intent.cuisineKinds.some(matchPlaceForCuisine);
+
+    const categoryRelevant =
+      (intent.bar && isBar) ||
+      (intent.cocktail && isCocktail) ||
+      (intent.wineBar && isWine) ||
+      (intent.pub && isPub) ||
+      (intent.bakery && isBakery) ||
+      (intent.cafe && isCafe) ||
+      (intent.specialty && specialtyEligible(place));
+
     // Area alone must not make an unsupported food query relevant.
     const lexicalScore = matchingTerms.length / Math.max(1, intent.terms.length);
-    const relevant = exact || lexicalScore > 0 || cuisineMatch || (intent.specialty && specialtyEligible(place)) || (!intent.terms.length && (intent.area || intent.dinner || intent.hiddenGem || intent.atmosphere || intent.near || intent.exclusions.length || intent.priceMax !== null || intent.filters.near_public_transport));
+    const relevant = exact || lexicalScore > 0 || cuisineMatch || categoryRelevant || (!intent.terms.length && (intent.area || intent.bar || intent.cocktail || intent.wineBar || intent.pub || intent.bakery || intent.cafe || intent.dinner || intent.hiddenGem || intent.atmosphere || intent.near || intent.exclusions.length || intent.priceMax !== null || intent.filters.near_public_transport));
     if (!relevant) continue;
     const preferences: import('../scoring.ts').UserPreferences = {
-      kind: intent.dinner || isMealCuisine ? 'Restaurant' : intent.specialty ? 'Specialty coffee' : intent.bakery ? 'Bakery' : undefined,
+      kind: intent.dinner || isMealCuisine || intent.bar ? 'Restaurant' : intent.specialty ? 'Specialty coffee' : intent.bakery ? 'Bakery' : intent.cafe ? 'Café' : undefined,
       district: intent.area,
       tags: [...intent.cuisineKinds, ...intent.dishes],
       independentOnly: true,
@@ -169,12 +299,18 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     if (Number(b.exact) !== Number(a.exact)) return Number(b.exact) - Number(a.exact);
     if (b.lexicalScore !== a.lexicalScore) return b.lexicalScore - a.lexicalScore;
 
+    if (intent.bar) {
+      const aBar = isBarVenue(a.place);
+      const bBar = isBarVenue(b.place);
+      if (aBar !== bBar) return Number(bBar) - Number(aBar);
+    }
+
     const aPrimary = intent.cuisineKinds.some((c) => includesPhrase(`${a.place.cuisine ?? ''} ${(a.place.tags ?? []).join(' ')}`, c));
     const bPrimary = intent.cuisineKinds.some((c) => includesPhrase(`${b.place.cuisine ?? ''} ${(b.place.tags ?? []).join(' ')}`, c));
     if (bPrimary !== aPrimary) return Number(bPrimary) - Number(aPrimary);
 
-    const aPrestige = ((a.place.tags ?? []).some((t) => ['curated', 'spotted by locals'].includes(t.toLowerCase())) ? 10 : 0) + (a.place.is_hidden_gem ? 5 : 0);
-    const bPrestige = ((b.place.tags ?? []).some((t) => ['curated', 'spotted by locals'].includes(t.toLowerCase())) ? 10 : 0) + (b.place.is_hidden_gem ? 5 : 0);
+    const aPrestige = ((a.place.tags ?? []).some((t) => ['curated', 'white guide nordic', 'spotted by locals'].includes(t.toLowerCase())) ? 15 : 0) + (a.place.is_hidden_gem ? 5 : 0);
+    const bPrestige = ((b.place.tags ?? []).some((t) => ['curated', 'white guide nordic', 'spotted by locals'].includes(t.toLowerCase())) ? 15 : 0) + (b.place.is_hidden_gem ? 5 : 0);
 
     const aScore = a.place.scores.recommendation + aPrestige + dataCompletenessBonus(a);
     const bScore = b.place.scores.recommendation + bPrestige + dataCompletenessBonus(b);
