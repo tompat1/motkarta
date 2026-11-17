@@ -231,3 +231,75 @@ test("resolves Riddarholmen places correctly", () => {
   );
 });
 
+test("reclassifies southern suburbs (Farsta, Sköndal, Fagersjö) to Söderort away from Södermalm", () => {
+  // Farsta strandpunkten
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Farsta strandpunkten",
+      area: "Södermalm",
+      address: "East Stockholm, Stockholm",
+      latitude: 59.2355021,
+      longitude: 18.1019577,
+    }),
+    "Söderort",
+  );
+
+  // Sköndals Konditori
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Sköndals Konditori",
+      area: "Södermalm",
+      address: "Spritsvägen 7, Södermalm",
+      latitude: 59.2564482,
+      longitude: 18.106531,
+    }),
+    "Söderort",
+  );
+
+  // Fagersjö Pizza & Grill
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Fagersjö Pizza & Grill",
+      area: "Södermalm",
+      address: "South Stockholm, Stockholm",
+      latitude: 59.2464731,
+      longitude: 18.0623183,
+    }),
+    "Söderort",
+  );
+
+  // Kinahörnet at Farsta Torg without coordinates
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Kinahörnet",
+      area: "Södermalm",
+      address: "Farsta Torg 25, Södermalm",
+    }),
+    "Söderort",
+  );
+
+  // Farsta Värdshus
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Farsta Värdshus",
+      area: "Södermalm",
+      address: "Farstaängsvägen 22, Södermalm",
+      latitude: 59.2389154,
+      longitude: 18.0825664,
+    }),
+    "Söderort",
+  );
+
+  // Genuine Södermalm place remains Södermalm
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Kafé 44",
+      area: "Södermalm",
+      address: "Tjärhovsgatan 44, Södermalm",
+      latitude: 59.3155,
+      longitude: 18.0821,
+    }),
+    "Södermalm",
+  );
+});
+

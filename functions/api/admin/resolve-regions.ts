@@ -1,6 +1,6 @@
 import { syncReviewLabelCheckpoint } from "../../../lib/admin-label-exports.ts";
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
-import { isBroadStockholmArea, resolveStockholmRegion } from "../../../lib/stockholm-regions.ts";
+import { isBroadStockholmArea, isMisplacedSodermalmRegion, resolveStockholmRegion } from "../../../lib/stockholm-regions.ts";
 
 type D1RunResult = {
   success?: boolean;
@@ -81,7 +81,14 @@ async function handleResolveRegions(context: EventContext<Env>) {
 
   for (const row of rows) {
     const currentDistrict = row.district?.trim() ?? "";
-    if (!isBroadStockholmArea(currentDistrict)) {
+    const isMisplaced = isMisplacedSodermalmRegion({
+      name: row.name,
+      area: currentDistrict,
+      address: row.address ?? undefined,
+      latitude: row.latitude ?? undefined,
+      longitude: row.longitude ?? undefined,
+    });
+    if (!isBroadStockholmArea(currentDistrict) && !isMisplaced) {
       continue;
     }
 

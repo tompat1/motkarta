@@ -39,9 +39,112 @@ const BROAD_STOCKHOLM_AREAS = new Set([
   "unspecified",
 ]);
 
+const GENERIC_PREFIXES = new Set(["soder", "soderort", "norr", "norrort", "vaster", "vasterort", "oster"]);
+
+function matchesRegionAlias(text: string, rawAlias: string): boolean {
+  const alias = normalizeRegionText(rawAlias);
+  if (!alias) return false;
+  const padded = ` ${text} `;
+  if (padded.includes(` ${alias} `)) {
+    return true;
+  }
+  if (alias.length >= 5 && !GENERIC_PREFIXES.has(alias)) {
+    const words = text.split(" ");
+    if (words.some((w) => w.startsWith(alias))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 const AREA_ALIASES: Array<{ region: string; aliases: string[] }> = [
   { region: "Gärdet", aliases: ["gärdet", "gardet", "frihamnen", "sandhamnsgatan", "sehlstedtsgatan", "furusundsgatan", "smedsbacksgatan", "östhammarsgatan", "rökubbsgatan", "värtahamnen", "vartahamnen", "tessinparken", "brantingsgatan"] },
   { region: "Kransen", aliases: ["kransen", "midsommarkransen", "svandammsplan", "svandammsparken", "tellusborg", "tellusborgsvägen", "tegelbruksvägen", "vattenledningsvägen", "bäckvägen", "backvagen", "klockargatan", "nymilsgatan"] },
+  {
+    region: "Söderort",
+    aliases: [
+      "söderort",
+      "soderort",
+      "farsta",
+      "farsta strand",
+      "farstastrand",
+      "farstaplan",
+      "farstagången",
+      "farstagangen",
+      "farstaängsvägen",
+      "farstaangsvagen",
+      "farsta torg",
+      "farstatorg",
+      "sköndal",
+      "skondal",
+      "sköndals",
+      "skondals",
+      "fagersjö",
+      "fagersjo",
+      "fagersta",
+      "larsboda",
+      "larsbodavägen",
+      "larsbodavagen",
+      "hökarängen",
+      "hokarangen",
+      "hökarängsplan",
+      "hokarangsplan",
+      "gubbängen",
+      "gubbangen",
+      "gubbängstorget",
+      "gubbängsvägen",
+      "tallkrogen",
+      "svedmyra",
+      "stureby",
+      "örby",
+      "orby",
+      "östberga",
+      "ostberga",
+      "hagsätra",
+      "hagsatra",
+      "rågsved",
+      "ragsved",
+      "högdalen",
+      "hogdalen",
+      "bandhagen",
+      "älvsjö",
+      "alvsjo",
+      "fruängen",
+      "fruangen",
+      "västertorp",
+      "vastertorp",
+      "hägersten",
+      "hagersten",
+      "aspudden",
+      "liljeholmen",
+      "årsta",
+      "arsta",
+      "enskede",
+      "gullmarsplan",
+      "globen",
+      "hammarbyhöjden",
+      "hammarbyhojden",
+      "björkhagen",
+      "bjorkhagen",
+      "kärrtorp",
+      "karrtorp",
+      "bagarmossen",
+      "skarpnäck",
+      "skarpnack",
+      "skärholmen",
+      "skarholmen",
+      "bredäng",
+      "bredang",
+      "mälarhöjden",
+      "malarhojden",
+      "sätra",
+      "satra",
+      "telefonplan",
+      "hammarby sjöstad",
+      "hammarby sjostad",
+      "klubbacken",
+    ],
+  },
   { region: "Södermalm", aliases: ["södermalm", "soder", "söder", "mariatorget", "hornstull", "sofo", "nytorget", "östgöta", "ostgota", "zinkensdamm", "skanstull", "götgatan", "gotgatan", "folkungagatan", "bondegatan", "kocksgatan", "skånegatan", "renstiernas"] },
   { region: "Djurgården", aliases: ["djurgården", "djurgarden", "biskopsudden", "skansen", "grona lund", "gröna lund", "djurgårdsbrunn"] },
   { region: "Riddarholmen", aliases: ["riddarholmen", "birger jarls torg", "riddarholmskajen", "wrangelska", "norra riddarholmshamnen", "södra riddarholmshamnen"] },
@@ -52,7 +155,6 @@ const AREA_ALIASES: Array<{ region: string; aliases: string[] }> = [
   { region: "Västermalm", aliases: ["västermalm", "vastermalm"] },
   { region: "Kungsholmen", aliases: ["kungsholmen", "fridhemsplan", "norr mälarstrand", "norr malarstrand", "hornsberg", "hantverkargatan", "stadshuset"] },
   { region: "Gamla Stan", aliases: ["gamla stan", "gamlastan", "stortorget", "västerlånggatan", "vasterlanggatan", "österlånggatan"] },
-  { region: "Söderort", aliases: ["söderort", "soderort", "årsta", "arsta", "liljeholmen", "aspudden", "hägersten", "hagersten", "älvsjö", "alvsjo", "enskede", "gullmarsplan", "globen", "hammarbyhöjden", "hammarbyhojden", "björkhagen", "bjorkhagen", "kärrtorp", "karrtorp", "bagarmossen", "skarpnäck", "skarpnack", "farsta", "bandhagen", "högdalen", "hogdalen", "rågsved", "ragsved", "skärholmen", "skarholmen", "bredäng", "bredang", "mälarhöjden", "malarhojden", "sätra", "satra", "telefonplan", "hammarby sjöstad", "hammarby sjostad", "klubbacken"] },
   { region: "Västerort", aliases: ["västerort", "vasterort", "bromma", "alvik", "traneberg", "ulvsunda", "mariehäll", "mariehall", "annedal", "riksby", "blackeberg", "åkeshov", "akeshov", "vällingby", "vallingby", "hässelby", "hasselby", "spånga", "spanga", "tensta", "rinkeby", "kista", "akalla", "husby", "nockeby"] },
   { region: "Norrort", aliases: ["norrort", "solna", "sundbyberg", "danderyd", "täby", "taby", "sollentuna", "upplands väsby", "upplands vasby", "järfälla", "jarfalla"] },
 ];
@@ -111,6 +213,31 @@ const REGION_BOXES: Array<{
   { region: "Östermalm", latMin: 59.3300, latMax: 59.3550, lonMin: 18.0660, lonMax: 18.1400 },
 ];
 
+export function isMisplacedSodermalmRegion(place: RegionPlace): boolean {
+  const existingArea = place.area?.trim();
+  if (!existingArea || normalizeRegionText(existingArea) !== "sodermalm") {
+    return false;
+  }
+  if (typeof place.latitude === "number" && place.latitude > 0) {
+    if (place.latitude < 59.3000 || (place.latitude < 59.3150 && typeof place.longitude === "number" && place.longitude < 18.0150)) {
+      return true;
+    }
+    if (place.latitude > 59.3220) {
+      return true;
+    }
+  }
+  const textWithoutArea = normalizeRegionText(`${place.name} ${place.address ?? ""}`);
+  const soderort = AREA_ALIASES.find((entry) => entry.region === "Söderort");
+  if (soderort && soderort.aliases.some((alias) => matchesRegionAlias(textWithoutArea, alias))) {
+    return true;
+  }
+  const kransen = AREA_ALIASES.find((entry) => entry.region === "Kransen");
+  if (kransen && kransen.aliases.some((alias) => matchesRegionAlias(textWithoutArea, alias))) {
+    return true;
+  }
+  return false;
+}
+
 export function resolveStockholmRegion(place: RegionPlace): string {
   const existingArea = place.area?.trim();
   const normalizedName = normalizeRegionText(place.name);
@@ -119,12 +246,23 @@ export function resolveStockholmRegion(place: RegionPlace): string {
     return override;
   }
 
-  if (existingArea && !isBroadStockholmArea(existingArea)) {
+  const isMisplaced = isMisplacedSodermalmRegion(place);
+  if (existingArea && !isBroadStockholmArea(existingArea) && !isMisplaced) {
     return existingArea;
   }
 
-  const text = normalizeRegionText(`${place.name} ${place.area ?? ""} ${place.address ?? ""}`);
-  const aliasMatch = AREA_ALIASES.find((entry) => entry.aliases.some((alias) => text.includes(normalizeRegionText(alias))));
+  const isSouthOfSoder =
+    typeof place.latitude === "number" &&
+    place.latitude > 0 &&
+    (place.latitude < 59.3000 || (place.latitude < 59.3150 && typeof place.longitude === "number" && place.longitude < 18.0150));
+
+  const text = normalizeRegionText(`${place.name} ${isMisplaced ? "" : (place.area ?? "")} ${place.address ?? ""}`);
+  const aliasMatch = AREA_ALIASES.find((entry) => {
+    if (isSouthOfSoder && entry.region === "Södermalm") {
+      return false;
+    }
+    return entry.aliases.some((alias) => matchesRegionAlias(text, alias));
+  });
   if (aliasMatch) {
     return aliasMatch.region;
   }

@@ -74,14 +74,25 @@ export function sanitizeAndAugmentPlaces(inputPlaces: PlaceInput[]): PlaceInput[
   const regionResolved = filtered.map((place) => {
     const baseTags = Array.isArray(place.tags) ? place.tags : [];
     const resolvedArea = resolveStockholmRegion(place);
-    if (resolvedArea === place.area && Array.isArray(place.tags)) {
+    let address = place.address;
+    if (address && resolvedArea !== "Södermalm" && address.includes("Södermalm")) {
+      address = address.replace(/,\s*Södermalm\b/gi, `, ${resolvedArea}`);
+    }
+
+    if (resolvedArea === place.area && address === place.address && Array.isArray(place.tags)) {
       return place;
     }
 
     return {
       ...place,
       area: resolvedArea,
-      tags: Array.from(new Set([...baseTags.filter((tag) => !isBroadStockholmArea(tag)), resolvedArea])),
+      address,
+      tags: Array.from(
+        new Set([
+          ...baseTags.filter((tag) => !isBroadStockholmArea(tag) && (resolvedArea === "Södermalm" || tag !== "Södermalm")),
+          resolvedArea,
+        ]),
+      ),
     };
   });
 
