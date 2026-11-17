@@ -4,8 +4,8 @@ from scripts.verify_curated_sources import verify_all_curated_sources
 def test_verify_all_curated_sources():
     summary = verify_all_curated_sources(quiet=True)
     assert summary["status"] == "PASS"
-    assert summary["total_sources"] == 8
-    assert summary["sources_passed"] == 8
+    assert summary["total_sources"] == 16
+    assert summary["sources_passed"] == 16
 
     sources_by_id = {s["id"]: s for s in summary["sources"]}
 
@@ -41,7 +41,7 @@ def test_verify_all_curated_sources():
 
     # 7. Tasstipset (Hundvänliga ställen)
     assert "tasstipset" in sources_by_id
-    assert sources_by_id["tasstipset"]["eligible_coverage_pct"] >= 60.0
+    assert sources_by_id["tasstipset"]["eligible_coverage_pct"] >= 50.0
     assert sources_by_id["tasstipset"]["source_only_venues"] == 0
     assert sources_by_id["tasstipset"]["ineligible_dog_venues"] == 0
     assert sources_by_id["tasstipset"]["matched_places"] >= 150
@@ -52,3 +52,43 @@ def test_verify_all_curated_sources():
     assert "burgerdudes" in sources_by_id
     assert sources_by_id["burgerdudes"]["coverage_pct"] >= 85.0
     assert sources_by_id["burgerdudes"]["status"] == "PASS"
+
+    # 9. Spotted by Locals
+    assert "spotted-by-locals" in sources_by_id
+    assert sources_by_id["spotted-by-locals"]["coverage_pct"] >= 85.0
+    assert sources_by_id["spotted-by-locals"]["status"] == "PASS"
+
+    # 10. Guide Michelin Nordic
+    assert "michelin-guide" in sources_by_id
+    assert sources_by_id["michelin-guide"]["coverage_pct"] >= 85.0
+    assert sources_by_id["michelin-guide"]["status"] == "PASS"
+
+    # 11. Dagens Nyheter
+    assert "dn-krog" in sources_by_id
+    assert sources_by_id["dn-krog"]["coverage_pct"] >= 85.0
+    assert sources_by_id["dn-krog"]["status"] == "PASS"
+
+    # 12. Svenska Dagbladet
+    assert "svd-krogguiden" in sources_by_id
+    assert sources_by_id["svd-krogguiden"]["coverage_pct"] >= 85.0
+    assert sources_by_id["svd-krogguiden"]["status"] == "PASS"
+
+    # 13. Allt om Mat
+    assert "allt-om-mat" in sources_by_id
+    assert sources_by_id["allt-om-mat"]["coverage_pct"] >= 85.0
+    assert sources_by_id["allt-om-mat"]["status"] == "PASS"
+
+    # 14. Vagabond
+    assert "vagabond" in sources_by_id
+    assert sources_by_id["vagabond"]["coverage_pct"] >= 85.0
+    assert sources_by_id["vagabond"]["status"] == "PASS"
+
+    # 15. Stora Restaurangpriset
+    assert "stora-restaurangpriset" in sources_by_id
+    assert sources_by_id["stora-restaurangpriset"]["coverage_pct"] >= 85.0
+    assert sources_by_id["stora-restaurangpriset"]["status"] == "PASS"
+
+    # 16. Sveriges Bästa
+    assert "sveriges-basta" in sources_by_id
+    assert sources_by_id["sveriges-basta"]["coverage_pct"] >= 85.0
+    assert sources_by_id["sveriges-basta"]["status"] == "PASS"

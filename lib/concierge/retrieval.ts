@@ -330,8 +330,25 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     const bPrimary = intent.cuisineKinds.some((c) => includesPhrase(`${b.place.cuisine ?? ''} ${(b.place.tags ?? []).join(' ')}`, c));
     if (bPrimary !== aPrimary) return Number(bPrimary) - Number(aPrimary);
 
-    const aPrestige = ((a.place.tags ?? []).some((t) => ['curated', 'white guide nordic', 'spotted by locals', 'burgerdudes'].includes(t.toLowerCase())) ? 15 : 0) + (a.place.is_hidden_gem ? 5 : 0);
-    const bPrestige = ((b.place.tags ?? []).some((t) => ['curated', 'white guide nordic', 'spotted by locals', 'burgerdudes'].includes(t.toLowerCase())) ? 15 : 0) + (b.place.is_hidden_gem ? 5 : 0);
+    const PRESTIGE_TAGS = [
+      'curated',
+      'white guide nordic',
+      'white guide',
+      'michelin',
+      'guide michelin',
+      'stora restaurangpriset',
+      'svenska gastronomipriset',
+      'sveriges bästa',
+      'sveriges basta',
+      'dn krogkommissionen',
+      'svd krogguiden',
+      'allt om mat',
+      'vagabond',
+      'spotted by locals',
+      'burgerdudes',
+    ];
+    const aPrestige = ((a.place.tags ?? []).some((t) => PRESTIGE_TAGS.includes(t.toLowerCase())) ? 15 : 0) + (a.place.is_hidden_gem ? 5 : 0);
+    const bPrestige = ((b.place.tags ?? []).some((t) => PRESTIGE_TAGS.includes(t.toLowerCase())) ? 15 : 0) + (b.place.is_hidden_gem ? 5 : 0);
 
     const isTacoQuery = intent.cuisineKinds.includes('mexican') || intent.dishes.includes('tacos') || intent.terms.some((t) => t.includes('taco'));
     const aTacoBonus = isTacoQuery && a.place.name.toLowerCase().includes('dirty taco') ? 25 : 0;

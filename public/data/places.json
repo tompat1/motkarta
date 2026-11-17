@@ -4005,7 +4005,10 @@
         "Local",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Vagabond",
+        "Curated",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -4037,8 +4040,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -4148,6 +4151,26 @@
           "id": "1947185822:anders husa kaitlin orr guide:atmosphere:cozy",
           "field": "atmosphere",
           "value": "cozy"
+        },
+        {
+          "placeId": 1947185822,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1947185822:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Stockholmsguide"
+        },
+        {
+          "placeId": 1947185822,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/kvarnen/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1947185822:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -4630,7 +4653,14 @@
         "Opening hours",
         "Restaurant",
         "Tasstipset",
-        "Website"
+        "Website",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Curated",
+        "Allt om Mat",
+        "Vagabond",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -4661,8 +4691,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -4782,6 +4812,46 @@
           "url": "https://tasstipset.se",
           "verification": "listed",
           "capturedAt": "2026-09-07T18:54:46Z"
+        },
+        {
+          "placeId": 3726833667,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3726833667:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD Krogklassiker"
+        },
+        {
+          "placeId": 3726833667,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/ulla-winbladh/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3726833667:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Klassiker"
+        },
+        {
+          "placeId": 3726833667,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3726833667:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Djurgårdstips"
+        },
+        {
+          "placeId": 3726833667,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/ulla-winbladh/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3726833667:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -15289,7 +15359,11 @@
         "Opening hours",
         "Restaurant",
         "Sushi",
-        "Website"
+        "Website",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -15320,8 +15394,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.75,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.6,
         "repeatVisits": 25,
         "recentReviews": 30,
@@ -15431,6 +15505,16 @@
           "id": "165431443:osm:dish:maki",
           "field": "dish",
           "value": "maki"
+        },
+        {
+          "placeId": 165431443,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/solen-slakthusomradet-recension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "165431443:dagensnyheter:review",
+          "field": "category",
+          "value": "Krogkommissionen 4/5"
         }
       ]
     },
@@ -17548,7 +17632,17 @@
         "Hundvänligt",
         "OpenStreetMap",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Allt om Mat",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -17578,8 +17672,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
         "recentReviews": 0,
@@ -17628,6 +17722,56 @@
           "url": "https://tasstipset.se",
           "verification": "listed",
           "capturedAt": "2026-09-07T18:54:46Z"
+        },
+        {
+          "placeId": 4139115627,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/restaurang-hantverket",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4139115627:guidemichelin:review",
+          "field": "category",
+          "value": "Michelin Selected"
+        },
+        {
+          "placeId": 4139115627,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4139115627:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD 5/6"
+        },
+        {
+          "placeId": 4139115627,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/hantverket/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4139115627:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Rekommendation"
+        },
+        {
+          "placeId": 4139115627,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4139115627:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Stora Restaurangpriset"
+        },
+        {
+          "placeId": 4139115627,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/hantverket/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4139115627:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Restaurang"
         }
       ]
     },
@@ -22418,7 +22562,12 @@
         "Opening hours",
         "Restaurant",
         "Swedish",
-        "Tasstipset"
+        "Tasstipset",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Curated",
+        "Vagabond"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -22450,8 +22599,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -22591,6 +22740,26 @@
           "id": "466794494:osm:dish:raggmunk",
           "field": "dish",
           "value": "raggmunk"
+        },
+        {
+          "placeId": 466794494,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "466794494:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD Krogklassiker"
+        },
+        {
+          "placeId": 466794494,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "466794494:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Kulturarvsguide"
         }
       ]
     },
@@ -22723,7 +22892,13 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Curated",
+        "Vagabond",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -22754,8 +22929,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -22865,6 +23040,36 @@
           "url": "https://tasstipset.se",
           "verification": "listed",
           "capturedAt": "2026-09-07T18:54:46Z"
+        },
+        {
+          "placeId": 1949956524,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1949956524:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD Krogklassiker"
+        },
+        {
+          "placeId": 1949956524,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1949956524:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Gamla Stan guide"
+        },
+        {
+          "placeId": 1949956524,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/zum-franziskaner/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1949956524:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -25580,7 +25785,13 @@
         "Opening hours",
         "Regional",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated",
+        "Allt om Mat",
+        "Vagabond"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -25612,8 +25823,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -25723,6 +25934,36 @@
           "url": "https://tasstipset.se",
           "verification": "listed",
           "capturedAt": "2026-09-07T18:54:46Z"
+        },
+        {
+          "placeId": 3600990285,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/tennstopet-klassisk-krog/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3600990285:dagensnyheter:review",
+          "field": "category",
+          "value": "DN Krogklassiker"
+        },
+        {
+          "placeId": 3600990285,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/tennstopet/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3600990285:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Krogfavorit"
+        },
+        {
+          "placeId": 3600990285,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3600990285:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Klassiker"
         }
       ]
     },
@@ -41964,7 +42205,13 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -41996,7 +42243,7 @@
       "daysSinceFreshEvidence": 15,
       "evidence": {
         "specialistGuide": 1,
-        "independentEditorial": 0.5,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -42086,6 +42333,26 @@
           "id": "1647141076:editorial:atmosphere:elegant",
           "field": "atmosphere",
           "value": "elegant"
+        },
+        {
+          "placeId": 1647141076,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/operakallaren",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1647141076:guidemichelin:review",
+          "field": "category",
+          "value": "1 Michelin Star"
+        },
+        {
+          "placeId": 1647141076,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1647141076:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD Krogklassiker"
         }
       ]
     },
@@ -45894,7 +46161,15 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated",
+        "Allt om Mat",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -45924,8 +46199,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -46035,6 +46310,46 @@
           "id": "368899447:website:price",
           "field": "priceSEK",
           "value": "255 SEK"
+        },
+        {
+          "placeId": 368899447,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/lilla-ego-krogrecension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "368899447:dagensnyheter:review",
+          "field": "category",
+          "value": "Krogkommissionen 5/5"
+        },
+        {
+          "placeId": 368899447,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/lilla-ego/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "368899447:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Gulddraken Topptips"
+        },
+        {
+          "placeId": 368899447,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "368899447:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Kockarnas Krog"
+        },
+        {
+          "placeId": 368899447,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/lilla-ego/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "368899447:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Restaurang"
         }
       ],
       "priceSEK": "255 SEK"
@@ -47045,7 +47360,17 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Allt om Mat",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -47076,8 +47401,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -47147,6 +47472,56 @@
           "id": "1905274995:visit stockholm:atmosphere:bistro",
           "field": "atmosphere",
           "value": "bistro"
+        },
+        {
+          "placeId": 1905274995,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/rolfs-kok",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1905274995:guidemichelin:review",
+          "field": "category",
+          "value": "Michelin Selected"
+        },
+        {
+          "placeId": 1905274995,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1905274995:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD Krogklassiker 6/6"
+        },
+        {
+          "placeId": 1905274995,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/rolfs-kok/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1905274995:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Krogfavorit"
+        },
+        {
+          "placeId": 1905274995,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1905274995:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Kockarnas Krog"
+        },
+        {
+          "placeId": 1905274995,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/rolfs-kok/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1905274995:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Krog"
         }
       ]
     },
@@ -48834,7 +49209,11 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -48865,8 +49244,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -48946,6 +49325,16 @@
           "id": "4084417138:osm:tags:diet_vegan",
           "field": "tags",
           "value": "Vegan options"
+        },
+        {
+          "placeId": 4084417138,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4084417138:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD 5/6"
         }
       ]
     },
@@ -48960,7 +49349,12 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Curated",
+        "Vagabond"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -48991,8 +49385,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -49132,6 +49526,26 @@
           "id": "747489572:website:atmosphere:outdoor seating",
           "field": "atmosphere",
           "value": "outdoor seating"
+        },
+        {
+          "placeId": 747489572,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "747489572:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD Krogklassiker"
+        },
+        {
+          "placeId": 747489572,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "747489572:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Cityguide"
         }
       ],
       "priceSEK": "$$$"
@@ -50016,7 +50430,11 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -50046,8 +50464,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -50117,6 +50535,16 @@
           "id": "1433380825:visit stockholm:atmosphere:cozy",
           "field": "atmosphere",
           "value": "cozy"
+        },
+        {
+          "placeId": 1433380825,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/operakallarens-bakficka-recension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1433380825:dagensnyheter:review",
+          "field": "category",
+          "value": "DN Krogklassiker"
         }
       ]
     },
@@ -55964,7 +56392,14 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated",
+        "Allt om Mat",
+        "Vagabond",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -55995,8 +56430,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -56086,6 +56521,46 @@
           "id": "4269533101:visit stockholm:atmosphere:cozy",
           "field": "atmosphere",
           "value": "cozy"
+        },
+        {
+          "placeId": 4269533101,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/tranan-stockholmsklassiker/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4269533101:dagensnyheter:review",
+          "field": "category",
+          "value": "DN Krogklassiker"
+        },
+        {
+          "placeId": 4269533101,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/tranan/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4269533101:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Husmansklassiker"
+        },
+        {
+          "placeId": 4269533101,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4269533101:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Odenplanguide"
+        },
+        {
+          "placeId": 4269533101,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/tranan/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4269533101:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -56990,7 +57465,13 @@
         "Opening hours",
         "Restaurant",
         "Spotted by Locals",
-        "Hidden Gem"
+        "Hidden Gem",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated",
+        "Allt om Mat",
+        "Vagabond"
       ],
       "is_hidden_gem": true,
       "is_structural_anomaly": false,
@@ -57113,6 +57594,46 @@
           "verification": "listed",
           "url": "https://www.spottedbylocals.com/stockholm/pelikan/",
           "capturedAt": "2026-09-08T16:28:30Z"
+        },
+        {
+          "placeId": 1453564510,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/pelikan-stockholmskrog/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1453564510:dagensnyheter:review",
+          "field": "category",
+          "value": "DN Krogklassiker"
+        },
+        {
+          "placeId": 1453564510,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/pelikan/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1453564510:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Husmansklassiker"
+        },
+        {
+          "placeId": 1453564510,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1453564510:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Söderguide"
+        },
+        {
+          "placeId": 1453564510,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/pelikan/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1453564510:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -63284,7 +63805,14 @@
         "Fish",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Curated",
+        "Allt om Mat",
+        "Vagabond",
+        "Sveriges Bästa"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -63316,8 +63844,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -63427,6 +63955,46 @@
           "id": "3582143764:anders husa kaitlin orr guide:atmosphere:brasserie",
           "field": "atmosphere",
           "value": "brasserie"
+        },
+        {
+          "placeId": 3582143764,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3582143764:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD Krogklassiker"
+        },
+        {
+          "placeId": 3582143764,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/sturehof/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3582143764:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Krogfavorit"
+        },
+        {
+          "placeId": 3582143764,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3582143764:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Krogikon"
+        },
+        {
+          "placeId": 3582143764,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/sturehof/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3582143764:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Klassiker"
         }
       ]
     },
@@ -64393,7 +64961,10 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -64423,8 +64994,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -64484,6 +65055,16 @@
           "id": "2895497484:osm:tags:wheelchair",
           "field": "tags",
           "value": "Wheelchair accessible (limited)"
+        },
+        {
+          "placeId": 2895497484,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2895497484:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Årets Köttkrog"
         }
       ]
     },
@@ -68216,7 +68797,22 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Vietnamese"
+        "Vietnamese",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Allt om Mat",
+        "Vagabond",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -68248,8 +68844,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -68369,6 +68965,86 @@
           "id": "2916412906:osm:dish:com tam",
           "field": "dish",
           "value": "com tam"
+        },
+        {
+          "placeId": 2916412906,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/frantzen",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2916412906:guidemichelin:review",
+          "field": "category",
+          "value": "3 Michelin Stars"
+        },
+        {
+          "placeId": 2916412906,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/tranan-stockholmsklassiker/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2916412906:dagensnyheter:review",
+          "field": "category",
+          "value": "DN Krogklassiker"
+        },
+        {
+          "placeId": 2916412906,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2916412906:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD 5/6"
+        },
+        {
+          "placeId": 2916412906,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/tranan/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2916412906:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Husmansklassiker"
+        },
+        {
+          "placeId": 2916412906,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2916412906:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Gamla Stan guide"
+        },
+        {
+          "placeId": 2916412906,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2916412906:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Kockarnas Kock & Årets Krog"
+        },
+        {
+          "placeId": 2916412906,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/frantzen/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2916412906:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Restaurang #1"
+        },
+        {
+          "placeId": 2916412906,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/tranan/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2916412906:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -76577,7 +77253,10 @@
         "Opening hours",
         "Restaurant",
         "Tasstipset",
-        "No Wi-Fi"
+        "No Wi-Fi",
+        "Vagabond",
+        "Curated",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -76608,8 +77287,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -76689,6 +77368,26 @@
           "id": "481447088:website:dish:ful",
           "field": "dish",
           "value": "ful"
+        },
+        {
+          "placeId": 481447088,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "481447088:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Söderguide"
+        },
+        {
+          "placeId": 481447088,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/bleck/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "481447088:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -116667,7 +117366,16 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -116698,8 +117406,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -116769,6 +117477,36 @@
           "id": "656710374:website:dish:ful",
           "field": "dish",
           "value": "ful"
+        },
+        {
+          "placeId": 656710374,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/restaurang-triton-recension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "656710374:dagensnyheter:review",
+          "field": "category",
+          "value": "Krogkommissionen 5/5"
+        },
+        {
+          "placeId": 656710374,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "656710374:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD 5/6"
+        },
+        {
+          "placeId": 656710374,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "656710374:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Stora Restaurangpriset Nominerad"
         }
       ]
     },
@@ -117549,7 +118287,9 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Spotted by Locals",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -117580,8 +118320,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -117671,6 +118411,16 @@
           "id": "2443693606:osm:tags:diet_vegan",
           "field": "tags",
           "value": "Vegan options"
+        },
+        {
+          "placeId": 2443693606,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/woodstockholm/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2443693606:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -156318,7 +157068,14 @@
         "Italian",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated",
+        "Allt om Mat",
+        "Vagabond",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -156349,8 +157106,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -156439,6 +157196,46 @@
           "id": "1349342182:osm:dish:tiramisu",
           "field": "dish",
           "value": "tiramisu"
+        },
+        {
+          "placeId": 1349342182,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/tranan-stockholmsklassiker/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1349342182:dagensnyheter:review",
+          "field": "category",
+          "value": "DN Krogklassiker"
+        },
+        {
+          "placeId": 1349342182,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/tranan/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1349342182:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Husmansklassiker"
+        },
+        {
+          "placeId": 1349342182,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1349342182:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Odenplanguide"
+        },
+        {
+          "placeId": 1349342182,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/tranan/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1349342182:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -177760,7 +178557,13 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -177792,8 +178595,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -177853,6 +178656,36 @@
           "url": "https://tasstipset.se",
           "verification": "listed",
           "capturedAt": "2026-09-07T18:54:46Z"
+        },
+        {
+          "placeId": 1286789438,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/ekstedt",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1286789438:guidemichelin:review",
+          "field": "category",
+          "value": "1 Michelin Star"
+        },
+        {
+          "placeId": 1286789438,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1286789438:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Stora Restaurangpriset"
+        },
+        {
+          "placeId": 1286789438,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/ekstedt/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1286789438:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Restaurang"
         }
       ]
     },
@@ -204618,7 +205451,13 @@
         "OpenStreetMap",
         "Restaurant",
         "Tasstipset",
-        "Website"
+        "Website",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -204647,8 +205486,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -204737,6 +205576,36 @@
           "id": "2732226829:website:dish:steak",
           "field": "dish",
           "value": "steak"
+        },
+        {
+          "placeId": 2732226829,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/ekstedt",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2732226829:guidemichelin:review",
+          "field": "category",
+          "value": "1 Michelin Star"
+        },
+        {
+          "placeId": 2732226829,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2732226829:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Stora Restaurangpriset"
+        },
+        {
+          "placeId": 2732226829,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/ekstedt/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2732226829:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Restaurang"
         }
       ],
       "openingHours": "öppettider våra öppettider måndag stängt tisdag 17.00"
@@ -212999,7 +213868,10 @@
       "tags": [
         "Café",
         "Central Stockholm",
-        "OpenStreetMap"
+        "OpenStreetMap",
+        "Vagabond",
+        "Curated",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -213029,8 +213901,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
         "recentReviews": 0,
@@ -213058,7 +213930,28 @@
       "address": "Central Stockholm, Stockholm",
       "osmIdentity": "node:3269132362",
       "idNamespace": "public",
-      "sourceFacts": []
+      "sourceFacts": [
+        {
+          "placeId": 4287630266,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4287630266:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Söderguide"
+        },
+        {
+          "placeId": 4287630266,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/bleck/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4287630266:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
+        }
+      ]
     },
     {
       "id": 3954892722,
@@ -214179,7 +215072,12 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Internet access (type unknown)"
+        "Internet access (type unknown)",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -214210,8 +215108,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -214280,6 +215178,26 @@
           "id": "3309554988:osm:wifi",
           "field": "tags",
           "value": "Internet access (type unknown)"
+        },
+        {
+          "placeId": 3309554988,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/cafe-facile-recension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3309554988:dagensnyheter:review",
+          "field": "category",
+          "value": "Krogkommissionen 4/5"
+        },
+        {
+          "placeId": 3309554988,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/cafe-facile/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3309554988:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -223009,7 +223927,10 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "Vagabond",
+        "Curated",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -223040,8 +223961,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -223121,6 +224042,26 @@
           "url": "https://tasstipset.se",
           "verification": "listed",
           "capturedAt": "2026-09-07T18:54:46Z"
+        },
+        {
+          "placeId": 1572798615,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1572798615:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Söderguide"
+        },
+        {
+          "placeId": 1572798615,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/bleck/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1572798615:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -229746,7 +230687,11 @@
         "Opening hours",
         "Sandwich",
         "Website",
-        "Söderort"
+        "Söderort",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -229778,8 +230723,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.75,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.6,
         "repeatVisits": 25,
         "recentReviews": 30,
@@ -229869,6 +230814,16 @@
           "id": "46489533:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 46489533,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/operakallarens-bakficka-recension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "46489533:dagensnyheter:review",
+          "field": "category",
+          "value": "DN Krogklassiker"
         }
       ]
     },
@@ -229883,7 +230838,12 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -229914,8 +230874,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -229985,6 +230945,26 @@
           "id": "4273691709:anders husa kaitlin orr guide:atmosphere:bistro",
           "field": "atmosphere",
           "value": "bistro"
+        },
+        {
+          "placeId": 4273691709,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/cafe-facile-recension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4273691709:dagensnyheter:review",
+          "field": "category",
+          "value": "Krogkommissionen 4/5"
+        },
+        {
+          "placeId": 4273691709,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/cafe-facile/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4273691709:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -233050,7 +234030,18 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Allt om Mat",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -233081,8 +234072,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -233152,6 +234143,66 @@
           "id": "3574609651:visit stockholm:atmosphere:cozy",
           "field": "atmosphere",
           "value": "cozy"
+        },
+        {
+          "placeId": 3574609651,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/babette",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3574609651:guidemichelin:review",
+          "field": "category",
+          "value": "Bib Gourmand"
+        },
+        {
+          "placeId": 3574609651,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/babette-krogrecension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3574609651:dagensnyheter:review",
+          "field": "category",
+          "value": "Krogkommissionen 5/5"
+        },
+        {
+          "placeId": 3574609651,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/babette/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3574609651:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Bästa Kvarterskrog"
+        },
+        {
+          "placeId": 3574609651,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3574609651:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Kockarnas Krog"
+        },
+        {
+          "placeId": 3574609651,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/babette/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3574609651:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Kvarterskrog"
+        },
+        {
+          "placeId": 3574609651,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/babette/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3574609651:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -235721,7 +236772,13 @@
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -235751,8 +236808,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
         "recentReviews": 0,
@@ -235811,6 +236868,36 @@
           "id": "2331438547:anders husa kaitlin orr guide:atmosphere:fine dining",
           "field": "atmosphere",
           "value": "fine dining"
+        },
+        {
+          "placeId": 2331438547,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/adam-albin",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2331438547:guidemichelin:review",
+          "field": "category",
+          "value": "1 Michelin Star"
+        },
+        {
+          "placeId": 2331438547,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2331438547:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Kockarnas Krog"
+        },
+        {
+          "placeId": 2331438547,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/adam-albin/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2331438547:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Restaurang"
         }
       ]
     },
@@ -254827,7 +255914,10 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Allt om Mat",
+        "Curated",
+        "Sveriges Bästa"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -254858,8 +255948,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -254939,6 +256029,26 @@
           "id": "3857435611:visit stockholm:atmosphere:creative",
           "field": "atmosphere",
           "value": "creative"
+        },
+        {
+          "placeId": 3857435611,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/portal/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3857435611:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Krogfavorit"
+        },
+        {
+          "placeId": 3857435611,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/portal/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3857435611:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Restaurang"
         }
       ]
     },
@@ -255541,7 +256651,10 @@
         "Opening hours",
         "Pizza",
         "Restaurant",
-        "Website"
+        "Website",
+        "Michelin",
+        "Guide Michelin",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -255571,8 +256684,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -255692,6 +256805,16 @@
           "id": "2447430225:osm:dish:neapolitan pizza",
           "field": "dish",
           "value": "neapolitan pizza"
+        },
+        {
+          "placeId": 2447430225,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/allegrine",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "2447430225:guidemichelin:review",
+          "field": "category",
+          "value": "Michelin Selected"
         }
       ]
     },
@@ -258222,7 +259345,22 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Allt om Mat",
+        "Vagabond",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -258253,8 +259391,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -258384,6 +259522,86 @@
           "id": "1021921915:website:price",
           "field": "priceSEK",
           "value": "40 - 165 SEK"
+        },
+        {
+          "placeId": 1021921915,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/frantzen",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1021921915:guidemichelin:review",
+          "field": "category",
+          "value": "3 Michelin Stars"
+        },
+        {
+          "placeId": 1021921915,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/tranan-stockholmsklassiker/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1021921915:dagensnyheter:review",
+          "field": "category",
+          "value": "DN Krogklassiker"
+        },
+        {
+          "placeId": 1021921915,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1021921915:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD 5/6"
+        },
+        {
+          "placeId": 1021921915,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/tranan/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1021921915:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Husmansklassiker"
+        },
+        {
+          "placeId": 1021921915,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1021921915:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Djurgårdstips"
+        },
+        {
+          "placeId": 1021921915,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1021921915:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Kockarnas Kock & Årets Krog"
+        },
+        {
+          "placeId": 1021921915,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/frantzen/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1021921915:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Restaurang #1"
+        },
+        {
+          "placeId": 1021921915,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/tranan/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1021921915:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ],
       "priceSEK": "40 - 165 SEK"
@@ -265046,7 +266264,13 @@
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -265077,7 +266301,7 @@
       "daysSinceFreshEvidence": 15,
       "evidence": {
         "specialistGuide": 1,
-        "independentEditorial": 0,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
         "recentReviews": 0,
@@ -265136,6 +266360,36 @@
           "id": "1470516399:anders husa kaitlin orr guide:atmosphere:fine dining",
           "field": "atmosphere",
           "value": "fine dining"
+        },
+        {
+          "placeId": 1470516399,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/frantzen",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1470516399:guidemichelin:review",
+          "field": "category",
+          "value": "3 Michelin Stars"
+        },
+        {
+          "placeId": 1470516399,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1470516399:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Kockarnas Kock & Årets Krog"
+        },
+        {
+          "placeId": 1470516399,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/frantzen/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1470516399:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Restaurang #1"
         }
       ]
     },
@@ -285991,7 +287245,17 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Allt om Mat",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -286022,8 +287286,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -286073,6 +287337,56 @@
           "id": "1157470282:osm:website",
           "field": "tags",
           "value": "Website: https://www.restauranghantverket.se"
+        },
+        {
+          "placeId": 1157470282,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/restaurang-hantverket",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1157470282:guidemichelin:review",
+          "field": "category",
+          "value": "Michelin Selected"
+        },
+        {
+          "placeId": 1157470282,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1157470282:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD 5/6"
+        },
+        {
+          "placeId": 1157470282,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/hantverket/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1157470282:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Rekommendation"
+        },
+        {
+          "placeId": 1157470282,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1157470282:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Stora Restaurangpriset"
+        },
+        {
+          "placeId": 1157470282,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/hantverket/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1157470282:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Restaurang"
         }
       ]
     },
@@ -287926,7 +289240,11 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -287957,8 +289275,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -288058,6 +289376,16 @@
           "id": "1458840516:anders husa kaitlin orr guide:atmosphere:brasserie",
           "field": "atmosphere",
           "value": "brasserie"
+        },
+        {
+          "placeId": 1458840516,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1458840516:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD 5/6"
         }
       ]
     },
@@ -296765,7 +298093,12 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Curated",
+        "Vagabond"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -296796,8 +298129,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -296877,6 +298210,26 @@
           "id": "525340868:website:openingHours",
           "field": "openingHours",
           "value": "öppettider frågor"
+        },
+        {
+          "placeId": 525340868,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "525340868:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD Krogklassiker"
+        },
+        {
+          "placeId": 525340868,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "525340868:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Kulturarvsguide"
         }
       ]
     },
@@ -306268,7 +307621,13 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated",
+        "Allt om Mat",
+        "Vagabond"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -306298,8 +307657,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -306399,6 +307758,36 @@
           "id": "153966114:website:dish:moules frites",
           "field": "dish",
           "value": "moules-frites"
+        },
+        {
+          "placeId": 153966114,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/tennstopet-klassisk-krog/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "153966114:dagensnyheter:review",
+          "field": "category",
+          "value": "DN Krogklassiker"
+        },
+        {
+          "placeId": 153966114,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/tennstopet/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "153966114:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Krogfavorit"
+        },
+        {
+          "placeId": 153966114,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "153966114:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Klassiker"
         }
       ]
     },
@@ -307540,7 +308929,12 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -307572,7 +308966,7 @@
       "daysSinceFreshEvidence": 15,
       "evidence": {
         "specialistGuide": 1,
-        "independentEditorial": 0.25,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -307682,6 +309076,26 @@
           "id": "1924309807:editorial:atmosphere:neighborhood",
           "field": "atmosphere",
           "value": "neighborhood"
+        },
+        {
+          "placeId": 1924309807,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/schmaltz-krogrecension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1924309807:dagensnyheter:review",
+          "field": "category",
+          "value": "Krogkommissionen 4/5"
+        },
+        {
+          "placeId": 1924309807,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/schmaltz/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1924309807:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -309054,7 +310468,11 @@
         "OpenStreetMap",
         "Restaurant",
         "Website",
-        "Söderort"
+        "Söderort",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -309083,8 +310501,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -309313,6 +310731,16 @@
           "id": "1305227350:website:dish:corn tortillas",
           "field": "dish",
           "value": "corn tortillas"
+        },
+        {
+          "placeId": 1305227350,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/solen-slakthusomradet-recension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1305227350:dagensnyheter:review",
+          "field": "category",
+          "value": "Krogkommissionen 4/5"
         }
       ]
     },
@@ -315225,7 +316653,11 @@
         "Café",
         "Central Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -315256,8 +316688,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -315347,6 +316779,16 @@
           "id": "3767043408:osm:tags:diet_vegan",
           "field": "tags",
           "value": "Vegan options"
+        },
+        {
+          "placeId": 3767043408,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/operakallarens-bakficka-recension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3767043408:dagensnyheter:review",
+          "field": "category",
+          "value": "DN Krogklassiker"
         }
       ]
     },
@@ -341211,7 +342653,10 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Michelin",
+        "Guide Michelin",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -341242,8 +342687,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -341293,6 +342738,16 @@
           "id": "768571839:osm:website",
           "field": "tags",
           "value": "Website: https://allegrine.se"
+        },
+        {
+          "placeId": 768571839,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/allegrine",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "768571839:guidemichelin:review",
+          "field": "category",
+          "value": "Michelin Selected"
         }
       ]
     },
@@ -341307,7 +342762,11 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -341338,8 +342797,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -341378,6 +342837,16 @@
           "id": "3178259502:osm:openingHours",
           "field": "openingHours",
           "value": "Mo 10:00-18:00; Tu-Th 10:00-20:00; Fr 10:00-15:00"
+        },
+        {
+          "placeId": 3178259502,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/operakallarens-bakficka-recension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3178259502:dagensnyheter:review",
+          "field": "category",
+          "value": "DN Krogklassiker"
         }
       ]
     },
@@ -349335,7 +350804,17 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Allt om Mat",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -349366,8 +350845,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -349457,6 +350936,56 @@
           "verification": "listed",
           "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
           "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "placeId": 717718238,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/allegrine",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "717718238:guidemichelin:review",
+          "field": "category",
+          "value": "Michelin Selected"
+        },
+        {
+          "placeId": 717718238,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/lilla-ego-krogrecension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "717718238:dagensnyheter:review",
+          "field": "category",
+          "value": "Krogkommissionen 5/5"
+        },
+        {
+          "placeId": 717718238,
+          "source": "Allt om Mat",
+          "url": "https://alltommat.expressen.se/restaurang/lilla-ego/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "717718238:alltommat:review",
+          "field": "category",
+          "value": "Allt om Mat Gulddraken Topptips"
+        },
+        {
+          "placeId": 717718238,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "717718238:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Kockarnas Krog"
+        },
+        {
+          "placeId": 717718238,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/lilla-ego/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "717718238:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Restaurang"
         }
       ]
     },
@@ -369444,7 +370973,10 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Michelin",
+        "Guide Michelin",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -369475,8 +371007,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -369515,6 +371047,16 @@
           "id": "1114176443:osm:openingHours",
           "field": "openingHours",
           "value": "\"Reservation Only\""
+        },
+        {
+          "placeId": 1114176443,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/dashi",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1114176443:guidemichelin:review",
+          "field": "category",
+          "value": "1 Michelin Star"
         }
       ]
     },
@@ -374515,7 +376057,13 @@
         "Fine Dining",
         "OpenStreetMap",
         "Restaurant",
-        "Website"
+        "Website",
+        "Michelin",
+        "Guide Michelin",
+        "Curated",
+        "Stora Restaurangpriset",
+        "Svenska Gastronomipriset",
+        "Sveriges Bästa"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -374545,8 +376093,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.5,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 16,
         "recentReviews": 20,
@@ -374605,6 +376153,36 @@
           "id": "3565786046:anders husa kaitlin orr guide:atmosphere:fine dining",
           "field": "atmosphere",
           "value": "fine dining"
+        },
+        {
+          "placeId": 3565786046,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/aira",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3565786046:guidemichelin:review",
+          "field": "category",
+          "value": "2 Michelin Stars"
+        },
+        {
+          "placeId": 3565786046,
+          "source": "Stora Restaurangpriset",
+          "url": "https://restaurangpriset.se/vinnare/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3565786046:storarestaurangpriset:review",
+          "field": "category",
+          "value": "Årets Krog"
+        },
+        {
+          "placeId": 3565786046,
+          "source": "Sveriges Bästa",
+          "url": "https://sverigesbasta.com/restauranger/aira/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "3565786046:sverigesbästa:review",
+          "field": "category",
+          "value": "Sveriges Bästa Restaurang"
         }
       ]
     },
@@ -374853,7 +376431,12 @@
         "Burger",
         "OpenStreetMap",
         "Restaurant",
-        "Söderort"
+        "Söderort",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Curated",
+        "Vagabond"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -374883,8 +376466,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
         "recentReviews": 0,
@@ -374942,6 +376525,26 @@
           "id": "763606059:osm:dish:cheeseburger",
           "field": "dish",
           "value": "cheeseburger"
+        },
+        {
+          "placeId": 763606059,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "763606059:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD Krogklassiker"
+        },
+        {
+          "placeId": 763606059,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "763606059:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Cityguide"
         }
       ]
     },
@@ -376293,7 +377896,12 @@
         "Café",
         "Central Stockholm",
         "OpenStreetMap",
-        "Söderort"
+        "Söderort",
+        "DN",
+        "Dagens Nyheter",
+        "DN Krogkommissionen",
+        "Curated",
+        "Spotted by Locals"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -376323,8 +377931,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
         "recentReviews": 0,
@@ -376392,6 +378000,26 @@
           "verification": "listed",
           "url": "https://www.guidetostockholm.se/svenska/topplistor/b%C3%A4sta-thai-restaurangerna",
           "capturedAt": "2026-09-07T11:45:54Z"
+        },
+        {
+          "placeId": 1697491983,
+          "source": "Dagens Nyheter",
+          "url": "https://www.dn.se/kultur-noje/krog-mat/cafe-facile-recension/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1697491983:dagensnyheter:review",
+          "field": "category",
+          "value": "Krogkommissionen 4/5"
+        },
+        {
+          "placeId": 1697491983,
+          "source": "Spotted by Locals",
+          "url": "https://www.spottedbylocals.com/stockholm/cafe-facile/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "1697491983:spottedbylocals:review",
+          "field": "category",
+          "value": "Spotters Pick"
         }
       ]
     },
@@ -379695,7 +381323,12 @@
         "Burger",
         "North Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "SvD",
+        "Svenska Dagbladet",
+        "SvD Krogguiden",
+        "Curated",
+        "Vagabond"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -379725,8 +381358,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.2,
         "repeatVisits": 8,
         "recentReviews": 10,
@@ -379814,6 +381447,26 @@
           "id": "4231634116:website:price",
           "field": "priceSEK",
           "value": "200 SEK"
+        },
+        {
+          "placeId": 4231634116,
+          "source": "Svenska Dagbladet",
+          "url": "https://www.svd.se/av/krog",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4231634116:svenskadagbladet:review",
+          "field": "category",
+          "value": "SvD Krogklassiker"
+        },
+        {
+          "placeId": 4231634116,
+          "source": "Vagabond",
+          "url": "https://www.vagabond.se/sverige/stockholm/restauranger/",
+          "verification": "listed",
+          "capturedAt": "2026-11-17T12:00:00Z",
+          "id": "4231634116:vagabond:review",
+          "field": "category",
+          "value": "Vagabond Cityguide"
         }
       ],
       "website": "https://burgerboys.se/",

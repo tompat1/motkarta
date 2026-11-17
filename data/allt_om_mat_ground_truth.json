@@ -1,0 +1,12 @@
+[
+  {"name": "Lilla Ego", "area": "Vasastan", "category": "Allt om Mat Gulddraken Topptips", "url": "https://alltommat.expressen.se/restaurang/lilla-ego/"},
+  {"name": "Rolfs kök", "area": "Norrmalm", "category": "Allt om Mat Krogfavorit", "url": "https://alltommat.expressen.se/restaurang/rolfs-kok/"},
+  {"name": "Tranan", "area": "Vasastan", "category": "Allt om Mat Husmansklassiker", "url": "https://alltommat.expressen.se/restaurang/tranan/"},
+  {"name": "Tennstopet", "area": "Vasastan", "category": "Allt om Mat Krogfavorit", "url": "https://alltommat.expressen.se/restaurang/tennstopet/"},
+  {"name": "Babette", "area": "Vasastan", "category": "Allt om Mat Bästa Kvarterskrog", "url": "https://alltommat.expressen.se/restaurang/babette/"},
+  {"name": "Sturehof", "area": "Östermalm", "category": "Allt om Mat Krogfavorit", "url": "https://alltommat.expressen.se/restaurang/sturehof/"},
+  {"name": "Hantverket", "area": "Östermalm", "category": "Allt om Mat Rekommendation", "url": "https://alltommat.expressen.se/restaurang/hantverket/"},
+  {"name": "Pelikan", "area": "Södermalm", "category": "Allt om Mat Husmansklassiker", "url": "https://alltommat.expressen.se/restaurang/pelikan/"},
+  {"name": "Portal", "area": "Vasastan", "category": "Allt om Mat Krogfavorit", "url": "https://alltommat.expressen.se/restaurang/portal/"},
+  {"name": "Ulla Winbladh", "area": "Djurgården", "category": "Allt om Mat Klassiker", "url": "https://alltommat.expressen.se/restaurang/ulla-winbladh/"}
+]

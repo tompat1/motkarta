@@ -1,0 +1,12 @@
+[
+  {"name": "Rolfs kök", "area": "Norrmalm", "category": "SvD Krogklassiker 6/6", "url": "https://www.svd.se/av/krog"},
+  {"name": "Hantverket", "area": "Östermalm", "category": "SvD 5/6", "url": "https://www.svd.se/av/krog"},
+  {"name": "Brasserie Astoria", "area": "Östermalm", "category": "SvD 5/6", "url": "https://www.svd.se/av/krog"},
+  {"name": "Restaurang Triton", "area": "Södermalm", "category": "SvD 5/6", "url": "https://www.svd.se/av/krog"},
+  {"name": "Ulla Winbladh", "area": "Djurgården", "category": "SvD Krogklassiker", "url": "https://www.svd.se/av/krog"},
+  {"name": "Zum Franziskaner", "area": "Gamla Stan", "category": "SvD Krogklassiker", "url": "https://www.svd.se/av/krog"},
+  {"name": "Den Gyldene Freden", "area": "Gamla Stan", "category": "SvD Krogklassiker", "url": "https://www.svd.se/av/krog"},
+  {"name": "Sturehof", "area": "Östermalm", "category": "SvD Krogklassiker", "url": "https://www.svd.se/av/krog"},
+  {"name": "Prinsen", "area": "Norrmalm", "category": "SvD Krogklassiker", "url": "https://www.svd.se/av/krog"},
+  {"name": "Operakällaren", "area": "Norrmalm", "category": "SvD Krogklassiker", "url": "https://www.svd.se/av/krog"}
+]

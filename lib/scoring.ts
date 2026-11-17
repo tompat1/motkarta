@@ -612,7 +612,21 @@ export function computeVerificationBreakdown(place: PlaceInput): VerificationBre
     (place.evidenceLabel?.toLowerCase().includes("guide") ?? false) ||
     (place.evidenceLabel?.toLowerCase().includes("specialist") ?? false) ||
     (place.evidenceLabel?.toLowerCase().includes("burgerdudes") ?? false) ||
-    tags.some((t) => ["white guide", "michelin", "star wine list", "specialist guide", "sca", "craft guide", "burgerdudes"].includes(t.toLowerCase()));
+    tags.some((t) => [
+      "white guide",
+      "white guide nordic",
+      "michelin",
+      "guide michelin",
+      "star wine list",
+      "specialist guide",
+      "sca",
+      "craft guide",
+      "burgerdudes",
+      "stora restaurangpriset",
+      "svenska gastronomipriset",
+      "sveriges bästa",
+      "sveriges basta",
+    ].includes(t.toLowerCase()));
 
   const editorialVerified =
     evidence.independentEditorial >= 0.3 ||
@@ -620,7 +634,19 @@ export function computeVerificationBreakdown(place: PlaceInput): VerificationBre
     (place.evidenceLabel?.toLowerCase().includes("official site") ?? false) ||
     (place.evidenceLabel?.toLowerCase().includes("osm") ?? false) ||
     Boolean(place.sourceName) ||
-    (place.specialty?.specialtyVerified === true);
+    (place.specialty?.specialtyVerified === true) ||
+    tags.some((t) => [
+      "dn",
+      "dagens nyheter",
+      "dn krogkommissionen",
+      "svd",
+      "svenska dagbladet",
+      "svd krogguiden",
+      "allt om mat",
+      "vagabond",
+      "spotted by locals",
+      "visit stockholm",
+    ].includes(t.toLowerCase()));
 
   const communityCount =
     finiteNumber(place.specialty?.verificationSources) +

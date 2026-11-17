@@ -478,5 +478,23 @@ test("Dirty Taco is included in Mexican cuisine and recommended for best tacos q
   assert.equal(tacoRes.cards[0].name, "Dirty Taco", "Dirty Taco must be prioritized in top recommendations for best tacos");
 });
 
+test("Curated sources and awards queries prioritize recognized fine dining & award winners", () => {
+  const michelinRes = retrieveAndSynthesize("Guide Michelin", livePlaces, { language: "sv" });
+  assert.equal(michelinRes.status, "ok");
+  assert.ok(michelinRes.cards.length >= 3);
+  assert.ok(
+    michelinRes.cards.some((c) => ["Operakällaren", "Ekstedt", "Allegrine", "Frantzén", "AIRA"].includes(c.name)),
+    "Must recommend top verified Michelin venues for Guide Michelin queries",
+  );
+
+  const svdRes = retrieveAndSynthesize("SvD", livePlaces, { language: "sv" });
+  assert.equal(svdRes.status, "ok");
+  assert.ok(svdRes.cards.length >= 3);
+
+  const dnRes = retrieveAndSynthesize("Dagens Nyheter", livePlaces, { language: "sv" });
+  assert.equal(dnRes.status, "ok");
+  assert.ok(dnRes.cards.length >= 3);
+});
+
 
 

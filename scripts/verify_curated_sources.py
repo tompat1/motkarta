@@ -36,6 +36,14 @@ WHITE_GUIDE_GT_FILE = ROOT / "data" / "white_guide_ground_truth.json"
 VISIT_STHLM_GT_FILE = ROOT / "data" / "visit_stockholm_ground_truth.json"
 SPECIALTY_GT_FILE = ROOT / "data" / "specialty_coffee_ground_truth.json"
 BURGERDUDES_GT_FILE = ROOT / "data" / "burgerdudes_ground_truth.json"
+SPOTTED_GT_FILE = ROOT / "data" / "spotted_by_locals_ground_truth.json"
+MICHELIN_GT_FILE = ROOT / "data" / "michelin_ground_truth.json"
+DN_GT_FILE = ROOT / "data" / "dn_krog_ground_truth.json"
+SVD_GT_FILE = ROOT / "data" / "svd_krog_ground_truth.json"
+ALLT_OM_MAT_GT_FILE = ROOT / "data" / "allt_om_mat_ground_truth.json"
+VAGABOND_GT_FILE = ROOT / "data" / "vagabond_ground_truth.json"
+STORA_REST_GT_FILE = ROOT / "data" / "stora_restaurangpriset_ground_truth.json"
+SVERIGES_BASTA_GT_FILE = ROOT / "data" / "sveriges_basta_ground_truth.json"
 TASSTIPSET_GT_FILE = ROOT / "data" / "tasstipset_stockholm_ground_truth.csv"
 TASSTIPSET_SCRAPED_FILE = ROOT / "outputs" / "tasstipset_dog_places_stockholm.json"
 
@@ -322,6 +330,44 @@ def verify_all_curated_sources(
         "target_coverage_pct": 85.0,
         "status": "PASS" if bd_pass else "FAIL",
     })
+
+    # Additional Curated Sources & Reward Sites
+    extra_sources_config = [
+        ("spotted-by-locals", "Spotted by Locals Stockholm", "Verified Guide", "Redaktionell stadsguide / Lokala spotters", SPOTTED_GT_FILE),
+        ("michelin-guide", "Guide Michelin Nordic", "Awards & Recognition", "Officiell gastronomisk guide (guide.michelin.com)", MICHELIN_GT_FILE),
+        ("dn-krog", "Dagens Nyheter (Krogkommissionen)", "Editorial Review", "Redaktionell krogkritik (dn.se)", DN_GT_FILE),
+        ("svd-krogguiden", "Svenska Dagbladet (SvD Krogguiden)", "Editorial Review", "Redaktionell krogkritik (svd.se)", SVD_GT_FILE),
+        ("allt-om-mat", "Allt om Mat (Krogrecensioner)", "Editorial Review", "Redaktionell gastronomiguide (alltommat.se)", ALLT_OM_MAT_GT_FILE),
+        ("vagabond", "Vagabond Resemagasin (Stockholmsguiden)", "Travel & Dining Guide", "Redaktionell reseguide (vagabond.se)", VAGABOND_GT_FILE),
+        ("stora-restaurangpriset", "Stora Restaurangpriset / Svenska Gastronomipriset", "Industry Awards", "Branschens gastronomipris (restaurangpriset.se)", STORA_REST_GT_FILE),
+        ("sveriges-basta", "Sveriges Bästa (sverigesbasta.com)", "Curated Ranking", "Oberoende krogportal (sverigesbasta.com)", SVERIGES_BASTA_GT_FILE),
+    ]
+
+    for s_id, s_name, s_type, s_license, s_file in extra_sources_config:
+        gt_list = []
+        if s_file.exists():
+            with open(s_file, encoding="utf-8") as f:
+                gt_list = json.load(f)
+
+        matched = 0
+        for item in gt_list:
+            gn = norm(item.get("name"))
+            if any(gn == pn or (len(gn) >= 5 and (gn in pn or pn in gn)) for pn in places_norm):
+                matched += 1
+
+        cov_pct = (matched / len(gt_list) * 100) if gt_list else 0.0
+        passed = len(gt_list) >= 5 and cov_pct >= 85.0
+        sources_report.append({
+            "id": s_id,
+            "name": s_name,
+            "type": s_type,
+            "license": s_license,
+            "source_data_points": len(gt_list),
+            "matched_places": matched,
+            "coverage_pct": round(cov_pct, 1),
+            "target_coverage_pct": 85.0,
+            "status": "PASS" if passed else "FAIL",
+        })
 
     all_passed = all(s["status"] == "PASS" for s in sources_report)
 

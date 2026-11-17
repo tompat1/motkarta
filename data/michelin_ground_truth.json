@@ -1,0 +1,12 @@
+[
+  {"name": "Frantzén", "area": "Norrmalm", "category": "3 Michelin Stars", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/frantzen"},
+  {"name": "AIRA", "area": "Djurgården", "category": "2 Michelin Stars", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/aira"},
+  {"name": "Adam/Albin", "area": "Vasastan", "category": "1 Michelin Star", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/adam-albin"},
+  {"name": "Ekstedt", "area": "Östermalm", "category": "1 Michelin Star", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/ekstedt"},
+  {"name": "Operakällaren", "area": "Norrmalm", "category": "1 Michelin Star", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/operakallaren"},
+  {"name": "Dashi", "area": "Vasastan", "category": "1 Michelin Star", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/dashi"},
+  {"name": "Babette", "area": "Vasastan", "category": "Bib Gourmand", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/babette"},
+  {"name": "Allegrine", "area": "Norrmalm", "category": "Michelin Selected", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/allegrine"},
+  {"name": "Rolfs kök", "area": "Norrmalm", "category": "Michelin Selected", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/rolfs-kok"},
+  {"name": "Hantverket", "area": "Östermalm", "category": "Michelin Selected", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/restaurang-hantverket"}
+]
