@@ -93,10 +93,10 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
       .filter(([word]) => includesPhrase(positive, word))
       .map(([, dish]) => dish),
   )];
-  const bar = /\b(bar|baren|barer|barerna|cocktail|cocktails|cocktailbar|cocktail bar|cocktailbaren|vinbar|vinbaren|vinbarer|wine bar|pub|puben|pubar|pubarna|olhall|olhallen|olhus|olhuset|olbar|taproom|speakeasy|bodega|drinkar|hantverksol|craft beer)\b/i.test(normPositive) && !/\b(salad bar|salladsbar|juice bar|espresso bar|glassbar|ice cream bar)\b/i.test(normPositive);
+  const bar = /\b(bar|baren|barer|barerna|cocktail|cocktails|cocktailbar|cocktail bar|cocktailbaren|vinbar|vinbaren|vinbarer|wine bar|pub|puben|pubar|pubarna|olhall|olhallen|olhus|olhuset|olbar|taproom|speakeasy|bodega|drinkar|hantverksol|craft beer|ol|olen|vin|vinet)\b/i.test(normPositive) && !/\b(salad bar|salladsbar|juice bar|espresso bar|glassbar|ice cream bar)\b/i.test(normPositive);
   const cocktail = /\b(cocktail|cocktails|cocktailbar|cocktail bar|cocktailbaren|cocktailbarer|drinkar|speakeasy)\b/i.test(normPositive);
-  const wineBar = /\b(vinbar|vinbaren|vinbarer|wine bar|naturvin|natural wine)\b/i.test(normPositive);
-  const pub = /\b(pub|puben|pubar|pubarna|olhall|olhallen|olhus|olhuset|olbar|taproom|craft beer|hantverksol)\b/i.test(normPositive);
+  const wineBar = /\b(vinbar|vinbaren|vinbarer|wine bar|naturvin|natural wine|vin|vinet)\b/i.test(normPositive);
+  const pub = /\b(pub|puben|pubar|pubarna|olhall|olhallen|olhus|olhuset|olbar|taproom|craft beer|hantverksol|ol|olen|beer)\b/i.test(normPositive);
   const specialty = /\b(specialty|specialkaffe|roastery|roaster|rosteri)\b/.test(normPositive);
   const bakery = /\b(bakery|bageri|bageriet|bagerier|bagerierna|hantverksbageri|surdegsbageri|konditori|konditoriet|bullar|kanelbulle|kanelbullar|kardemummabulle|kardemummabullar|surdeg|surdegstbrod)\b/i.test(normPositive);
   const cafe = /\b(cafe|cafeet|kafe|kafeet|fik|fika|fiket|kaffebar|konditori|konditoriet|kaffestalle|kaffestallen)\b/i.test(normPositive);

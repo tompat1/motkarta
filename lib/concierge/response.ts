@@ -123,9 +123,18 @@ export function buildResponse(query: string, candidates: RankedCandidate[], tota
     intro = sv ? 'Här är fler rekommenderade ställen från Motkartas katalog.' : 'Here are more recommended places from the Motkarta catalog.';
   }
   if (!mapPicks.length) {
-    intro = intent.isPagination
-      ? (sv ? 'Det finns inga fler ställen som matchar dina kriterier i katalogen.' : 'There are no more places matching your criteria in the catalog.')
-      : (sv ? 'Inga ställen kunde bekräftas för alla dina krav. Försök med ett annat kök eller område.' : 'No places could be confirmed for all your requirements. Try another cuisine or area.');
+    if (intent.isPagination) {
+      intro = sv ? 'Det finns inga fler ställen som matchar dina kriterier i katalogen.' : 'There are no more places matching your criteria in the catalog.';
+    } else if (intent.area && (intent.cuisineKinds.length || intent.bar || intent.pub || intent.wineBar || intent.cocktail || intent.bakery || intent.cafe || intent.dishes.length)) {
+      const areaName = intent.area ? (CANONICAL_AREA_NAMES[intent.area] || intent.area.split(' ').map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')) : '';
+      intro = sv
+        ? `Vi hittade inga bekräftade ställen just i ${areaName}. Vill du prova i hela Stockholm, eller i en närliggande stadsdel som Södermalm eller Vasastan?`
+        : `No confirmed places found in ${areaName}. Would you like to check across all of Stockholm or in a nearby district like Södermalm or Vasastan?`;
+    } else {
+      intro = sv
+        ? `Jag är inte helt säker på vad du söker med "${query}". Letar du efter mat (t.ex. pizza, hamburgare, krog), en bra bar eller mysigt fika? Välj ett förslag nedan så guidar jag dig!`
+        : `I'm not quite sure what you're looking for with "${query}". Are you looking for food (e.g. pizza, burgers, dining), a great bar, or a café? Pick a suggestion below to guide you!`;
+    }
   }
   if (intent.near && !context.location) intro = sv ? 'Dela din position eller ange ett område för att hitta ställen nära dig.' : 'Share your location or specify an area to find places near you.';
   if (intent.openNow) intro = sv ? 'Aktuella öppettider är inte verifierade. Kontrollera med stället.' : 'Current opening hours are unverified. Check with the venue.';

@@ -166,10 +166,23 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     ["puben", "pub"],
     ["pubar", "pub"],
     ["pubarna", "pub"],
+    ["öl", "pub"],
+    ["ölen", "pub"],
     ["ölbar", "pub"],
     ["ölhall", "pub"],
     ["ölhus", "pub"],
     ["ölhak", "pub"],
+    ["hantverksöl", "pub"],
+    ["craft beer", "pub"],
+    ["beer", "pub"],
+    ["vin", "wine bar"],
+    ["vinet", "wine bar"],
+    ["naturvin", "wine bar"],
+    ["natural wine", "wine bar"],
+    ["krog", "bistro"],
+    ["krogen", "bistro"],
+    ["krogar", "bistro"],
+    ["krogarna", "bistro"],
     ["taproom", "pub"],
     ["speakeasy", "cocktail"],
     ["burger", "burger"],
@@ -198,15 +211,15 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     ...dishCuisineSearchTerms(),
   ];
 
+  const wordBoundaryTerms = new Set(["pub", "bar", "öl", "ölen", "vin", "vinet", "krog", "krogen", "kina", "china"]);
+
   for (const [term, norm] of knownCuisines) {
     if (norm === "bar" && (qLower.includes("salad bar") || qLower.includes("salladsbar") || qLower.includes("juice bar") || qLower.includes("espresso bar") || qLower.includes("glassbar") || qLower.includes("ice cream bar"))) {
       continue;
     }
-    const matched = (term === "pub" || term === "bar")
+    const matched = wordBoundaryTerms.has(term)
       ? (new RegExp(`(?:^|[^a-zåäö])${term}(?:[^a-zåäö]|$)`, "i").test(qLower))
-      : (term === "kina" || term === "china")
-        ? (new RegExp(`(?:^|[^a-zåäö])${term}(?:[^a-zåäö]|$)`, "i").test(qLower))
-        : qLower.includes(term);
+      : qLower.includes(term);
     if (matched) {
       cuisines.push(norm);
     }
@@ -305,6 +318,12 @@ const BASE_CUISINE_ALIASES: Record<string, string[]> = {
   ölhall: ["pub", "puben", "ölhus", "ölhall", "craft beer", "hantverksöl", "bar", "czech", "german"],
   ölbar: ["pub", "puben", "ölbar", "ölhall", "ölhus", "craft beer", "hantverksöl", "bar"],
   taproom: ["pub", "puben", "taproom", "craft beer", "hantverksöl", "beer", "öl", "bar"],
+  öl: ["pub", "puben", "pubar", "öl", "ölen", "ölbar", "ölhall", "ölhus", "beer", "craft beer", "hantverksöl", "bar", "taproom"],
+  ölen: ["pub", "puben", "pubar", "öl", "ölen", "ölbar", "ölhall", "ölhus", "beer", "craft beer", "hantverksöl", "bar", "taproom"],
+  vin: ["wine bar", "vinbar", "vin", "vinet", "wine", "naturvin", "natural wine", "bar"],
+  vinet: ["wine bar", "vinbar", "vin", "vinet", "wine", "naturvin", "natural wine", "bar"],
+  krog: ["krog", "krogen", "krogar", "restaurang", "restaurangen", "bistro", "kvarterskrog", "pub"],
+  krogen: ["krog", "krogen", "krogar", "restaurang", "restaurangen", "bistro", "kvarterskrog", "pub"],
   bar: [
     "bar", "baren", "barer", "barerna",
     "cocktail", "cocktails", "cocktailbar", "cocktail bar", "cocktailbaren",

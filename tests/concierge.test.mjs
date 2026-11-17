@@ -420,4 +420,35 @@ test("extractStructuredFilters and intent morphological stemming handles Swedish
   assert.deepEqual(burgerFilter.cuisines, ["burger"]);
 });
 
+test("RAG retrieveAndSynthesize handles Swedish definite concept queries like Ölen, Vinet, Krogen, Pizzan, Hamburgaren, Puben, Kinesiska", () => {
+  const olen = retrieveAndSynthesize("Ölen", livePlaces, { language: "sv" });
+  assert.equal(olen.status, "ok");
+  assert.ok(olen.recommendedPlaces.length >= 5);
+  assert.ok(olen.intro.includes("pubar och ölbarer"));
+
+  const vinet = retrieveAndSynthesize("Vinet", livePlaces, { language: "sv" });
+  assert.equal(vinet.status, "ok");
+  assert.ok(vinet.recommendedPlaces.length >= 5);
+  assert.ok(vinet.intro.includes("vinbarer"));
+
+  const pizzan = retrieveAndSynthesize("Pizzan", livePlaces, { language: "sv" });
+  assert.equal(pizzan.status, "ok");
+  assert.ok(pizzan.recommendedPlaces.length >= 50);
+
+  const burgaren = retrieveAndSynthesize("Hamburgaren", livePlaces, { language: "sv" });
+  assert.equal(burgaren.status, "ok");
+  assert.ok(burgaren.recommendedPlaces.length >= 20);
+
+  const krogen = retrieveAndSynthesize("Krogen", livePlaces, { language: "sv" });
+  assert.equal(krogen.status, "ok");
+  assert.ok(krogen.recommendedPlaces.length >= 10);
+});
+
+test("RAG retrieveAndSynthesize guides user with helpful follow-up question when RAG is not sure", () => {
+  const result = retrieveAndSynthesize("hittaintehär12345", livePlaces, { language: "sv" });
+  assert.equal(result.status, "clarification");
+  assert.equal(result.recommendedPlaces.length, 0);
+  assert.ok(result.intro.includes("Jag är inte helt säker på vad du söker"));
+});
+
 

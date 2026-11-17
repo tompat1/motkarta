@@ -53,22 +53,53 @@ export function buildFollowUpChips(
     });
   }
 
-  // 3. Price or feature refinement
-  const hasPriceConstraint =
-    intent?.priceMax != null || /under|billig|cheap|budget|max/i.test(effectiveQuery);
-  if (!hasPriceConstraint) {
+  // 3. Concept-specific narrowing for broad queries
+  const isPizza = intent?.cuisineKinds.includes("pizza");
+  const isBurger = intent?.cuisineKinds.includes("burger");
+  const isChinese = intent?.cuisineKinds.includes("chinese");
+  const isBarOrPub = intent?.bar || intent?.pub;
+  const isWine = intent?.wineBar;
+  const isDinner = intent?.dinner;
+
+  if (isPizza) {
     chips.push({
-      label: lang === "sv" ? "Billigare" : "Budget friendly",
-      query: lang === "sv" ? "Något billigare alternativ?" : "More affordable options?",
+      label: lang === "sv" ? "Napolitansk pizza" : "Neapolitan pizza",
+      query: lang === "sv" ? "Napolitansk pizza" : "Neapolitan pizza",
     });
-  } else {
+  } else if (isWine) {
     chips.push({
-      label: lang === "sv" ? "Med uteservering?" : "Outdoor seating?",
-      query: lang === "sv" ? "Har de uteservering?" : "Do they have outdoor seating?",
+      label: lang === "sv" ? "Naturvin" : "Natural wine",
+      query: lang === "sv" ? "Vinbar med naturvin" : "Wine bar with natural wine",
+    });
+  } else if (isBarOrPub) {
+    if (!intent?.cocktail) {
+      chips.push({
+        label: lang === "sv" ? "Cocktailbar" : "Cocktail bar",
+        query: lang === "sv" ? "Bästa cocktailbaren" : "Best cocktail bar",
+      });
+    }
+    chips.push({
+      label: lang === "sv" ? "Hantverksöl & pub" : "Craft beer & pub",
+      query: lang === "sv" ? "Hantverksöl och pub" : "Craft beer and pub",
+    });
+  } else if (isBurger) {
+    chips.push({
+      label: lang === "sv" ? "Smashburgare" : "Smash burgers",
+      query: lang === "sv" ? "Smashburgare" : "Smash burgers",
+    });
+  } else if (isChinese) {
+    chips.push({
+      label: lang === "sv" ? "Dumplings & dim sum" : "Dim sum & dumplings",
+      query: lang === "sv" ? "Dumplings och dim sum" : "Dumplings and dim sum",
+    });
+  } else if (isDinner) {
+    chips.push({
+      label: lang === "sv" ? "Kvarterskrog" : "Neighborhood bistro",
+      query: lang === "sv" ? "Mysig kvarterskrog" : "Cozy neighborhood bistro",
     });
   }
 
-  // 4. Missing venue suggestion: if user searched for a specific place that wasn't found exactly, or 0 places matched
+  // 4. Missing venue or fallback suggestions
   const cleanedPlaceName = effectiveQuery
     .replace(/^(hitta|sök|var ligger|bästa|find|where is|tipsa om|lägg till ställe)\s+/i, "")
     .trim();
@@ -91,7 +122,8 @@ export function buildFollowUpChips(
     })
   );
 
-  if (cleanedPlaceName && !isGenericCategory && !hasExactPlaceMatch) {
+  const isSpecificPlaceSearch = Boolean(cleanedPlaceName && !isGenericCategory && !hasExactPlaceMatch);
+  if (isSpecificPlaceSearch) {
     const chipLabel =
       lang === "sv"
         ? (cleanedPlaceName.length <= 18 ? `Tipsa om "${cleanedPlaceName}"` : "Tipsa om ställe")
@@ -100,14 +132,44 @@ export function buildFollowUpChips(
       label: chipLabel,
       query: `Lägg till ställe ${cleanedPlaceName}`,
     });
-  } else if (!hasCards) {
+  } else if (!hasCards && !currentArea && !isGenericCategory) {
+    chips.push({
+      label: lang === "sv" ? "Bästa baren i stan" : "Best bar in town",
+      query: lang === "sv" ? "Bästa baren i stan" : "Best bar in town",
+    });
+    chips.push({
+      label: lang === "sv" ? "Godaste pizzan" : "Best pizza",
+      query: lang === "sv" ? "Bästa pizzerian" : "Best pizza",
+    });
+    chips.push({
+      label: lang === "sv" ? "Mysigt fik" : "Cozy café",
+      query: lang === "sv" ? "Mysigt fik" : "Cozy café",
+    });
+  }
+
+  // 5. Price or feature refinement
+  const hasPriceConstraint =
+    intent?.priceMax != null || /under|billig|cheap|budget|max/i.test(effectiveQuery);
+  if (!hasPriceConstraint) {
+    chips.push({
+      label: lang === "sv" ? "Billigare" : "Budget friendly",
+      query: lang === "sv" ? "Något billigare alternativ?" : "More affordable options?",
+    });
+  } else {
+    chips.push({
+      label: lang === "sv" ? "Med uteservering?" : "Outdoor seating?",
+      query: lang === "sv" ? "Har de uteservering?" : "Do they have outdoor seating?",
+    });
+  }
+
+  if (!hasCards && !isSpecificPlaceSearch && !chips.some((c) => c.label.includes("Tipsa om"))) {
     chips.push({
       label: lang === "sv" ? "Tipsa om ställe" : "Suggest missing place",
       query: `Lägg till ställe ${cleanedPlaceName || effectiveQuery}`,
     });
   }
 
-  return chips;
+  return chips.slice(0, 5);
 }
 
 /** Text shown in the concierge answer panel for a structured API response. */
