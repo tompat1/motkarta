@@ -6,6 +6,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { OnboardingModal } from "./components/OnboardingModal";
 import { AdminReviewPanel, isAdminRoutePath, readStoredAdminToken, type AdminSessionStatus } from "./admin/AdminReviewPanel";
 import { ConciergeAnswerView } from "./components/ConciergeAnswerView";
+import { MobileConciergeIntegratedHeader } from "./components/MobileConciergeIntegratedHeader";
 import { ConciergeSuperpowerModal } from "./components/ConciergeSuperpowerModal";
 import { CuratedSourcesPanel } from "./components/CuratedSourcesPanel";
 import { ExternalMapLinks } from "./components/ExternalMapLinks";
@@ -3092,54 +3093,74 @@ function AppContent({
               }
             }}
           >
-            <button
-              type="button"
-              className={`mobile-bottom-sheet-peek floating-view-toggle-btn ${mobileViewMode === "list" ? "is-active" : ""}`}
-              onClick={toggleMobileView}
-              aria-controls="place-workspace"
-              aria-expanded={mobileViewMode === "list"}
-              aria-label={
-                mobileViewMode === "map"
-                  ? lang === "sv"
-                    ? "Växla till lista"
-                    : "Switch to list"
-                  : lang === "sv"
-                    ? "Växla till karta"
-                    : "Switch to map"
-              }
-            >
-              <span className="mobile-bottom-sheet-handle" aria-hidden="true" />
-              <div className="mobile-bottom-sheet-peek-row">
-                <h2 className="mobile-results-count">
-                  {isInitialPlacesLoading ? (
-                    <span>{placesLoadingCopy.title}</span>
-                  ) : mobileViewMode === "list" ? (
-                    <>
-                      <span>{formatPlaceCount(listDisplayCount)}</span>{" "}
-                      <span>{t.placesInList}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>{formatPlaceCount(hasSearchQuery || conciergePlaces.length > 0 || conciergeResponse ? matchingCount : mapDisplayCount)}</span>{" "}
-                      <span>{lang === "sv" ? "ställen (Visa lista)" : "places (Show list)"}</span>
-                    </>
-                  )}
-                </h2>
-                <span className="mobile-bottom-sheet-toggle-badge">
-                  {mobileViewMode === "map" ? (
-                    <>
-                      <CaretUp size={14} weight="bold" />
-                      <span>{lang === "sv" ? "Visa lista" : "Show list"}</span>
-                    </>
-                  ) : (
-                    <>
-                      <MapTrifold size={14} weight="bold" />
-                      <span>{lang === "sv" ? "Visa karta" : "Show map"}</span>
-                    </>
-                  )}
-                </span>
-              </div>
-            </button>
+            {answer ? (
+              <MobileConciergeIntegratedHeader
+                answer={answer}
+                response={conciergeResponse}
+                places={places}
+                messages={conciergeChatMessages}
+                onSelectPlace={handleSelectPlace}
+                onRefineQuery={(extra) => void askWithQuery(extra)}
+                onDismiss={dismissConciergeAnswer}
+                onToggleView={toggleMobileView}
+                mobileViewMode={mobileViewMode}
+                lang={lang}
+                onTriggerAction={(action, prefillName) => {
+                  setSuperpowerInitialPlaceName(prefillName);
+                  setSuperpowerMode(action);
+                }}
+                recommendedCount={conciergeMainListIds.length}
+              />
+            ) : (
+              <button
+                type="button"
+                className={`mobile-bottom-sheet-peek floating-view-toggle-btn ${mobileViewMode === "list" ? "is-active" : ""}`}
+                onClick={toggleMobileView}
+                aria-controls="place-workspace"
+                aria-expanded={mobileViewMode === "list"}
+                aria-label={
+                  mobileViewMode === "map"
+                    ? lang === "sv"
+                      ? "Växla till lista"
+                      : "Switch to list"
+                    : lang === "sv"
+                      ? "Växla till karta"
+                      : "Switch to map"
+                }
+              >
+                <span className="mobile-bottom-sheet-handle" aria-hidden="true" />
+                <div className="mobile-bottom-sheet-peek-row">
+                  <h2 className="mobile-results-count">
+                    {isInitialPlacesLoading ? (
+                      <span>{placesLoadingCopy.title}</span>
+                    ) : mobileViewMode === "list" ? (
+                      <>
+                        <span>{formatPlaceCount(listDisplayCount)}</span>{" "}
+                        <span>{t.placesInList}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{formatPlaceCount(hasSearchQuery || conciergePlaces.length > 0 || conciergeResponse ? matchingCount : mapDisplayCount)}</span>{" "}
+                        <span>{lang === "sv" ? "ställen (Visa lista)" : "places (Show list)"}</span>
+                      </>
+                    )}
+                  </h2>
+                  <span className="mobile-bottom-sheet-toggle-badge">
+                    {mobileViewMode === "map" ? (
+                      <>
+                        <CaretUp size={14} weight="bold" />
+                        <span>{lang === "sv" ? "Visa lista" : "Show list"}</span>
+                      </>
+                    ) : (
+                      <>
+                        <MapTrifold size={14} weight="bold" />
+                        <span>{lang === "sv" ? "Visa karta" : "Show map"}</span>
+                      </>
+                    )}
+                  </span>
+                </div>
+              </button>
+            )}
 
             {isInitialPlacesLoading ? (
               <p className="mobile-results-count-meta" aria-live="polite">
@@ -3219,7 +3240,6 @@ function AppContent({
 
           {mobileViewMode === "list" ? (
             <div className="mobile-bottom-sheet-body">
-              {renderConciergeAnswerPanel("mobile")}
               {isInitialPlacesLoading ? (
                 <div className="mobile-list-loading-state" role="status" aria-live="polite">
                   <CircleNotch size={30} className="animate-spin" aria-hidden="true" />

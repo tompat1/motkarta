@@ -20096,3 +20096,187 @@ body.is-drawer-open .site-utilities > * {
   }
 }
 
+/* ==========================================================================
+   IDEA C: INTEGRATED EDITORIAL HEADER FOR MOBILE BOTTOM SHEET
+   ========================================================================== */
+.mobile-concierge-integrated-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0 8px;
+  width: 100%;
+}
+
+.integrated-header-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.integrated-header-lead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.integrated-spark-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: var(--editorial-blue, #2864f0);
+  color: #ffffff;
+  border-radius: 999px;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.integrated-query-title {
+  font-family: var(--font-display, "Space Grotesk", sans-serif);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-ink, #111111);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.integrated-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.integrated-view-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--color-ink, #111111);
+  color: #ffffff;
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.integrated-dismiss-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #ffffff;
+  border: 1px solid var(--color-mist, #e5e2d9);
+  border-radius: 50%;
+  color: var(--color-ink, #111);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.integrated-summary-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f4f2ea;
+  border: 1px solid var(--color-mist, #e5e2d9);
+  border-left: 3.5px solid var(--editorial-blue, #2864f0);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.integrated-intro-quote {
+  font-family: var(--font-body, Georgia, serif);
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--color-ink, #111);
+  margin: 0;
+}
+
+.integrated-follow-up-chips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.integrated-chip-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: #ffffff;
+  border: 1px solid var(--color-mist, #e5e2d9);
+  border-radius: 999px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-ink, #111);
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.integrated-chip-pill:hover {
+  background: #eeebe3;
+}
+
+.integrated-details-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.integrated-count-readout {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-stone, #666);
+}
+
+.integrated-expand-analysis-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: transparent;
+  border: 1px solid var(--color-mist, #e5e2d9);
+  border-radius: 6px;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-ink, #111);
+  cursor: pointer;
+}
+
+.integrated-full-analysis-container {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--color-mist, #e5e2d9);
+  max-height: 380px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 769px) {
+  .mobile-concierge-integrated-header {
+    display: none !important;
+  }
+}
+
