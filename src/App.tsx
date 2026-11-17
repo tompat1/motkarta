@@ -6,6 +6,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { OnboardingModal } from "./components/OnboardingModal";
 import { AdminReviewPanel, isAdminRoutePath, readStoredAdminToken, type AdminSessionStatus } from "./admin/AdminReviewPanel";
 import { ConciergeAnswerView } from "./components/ConciergeAnswerView";
+import { MobileConciergeDrawer } from "./components/MobileConciergeDrawer";
 import { ConciergeSuperpowerModal } from "./components/ConciergeSuperpowerModal";
 import { CuratedSourcesPanel } from "./components/CuratedSourcesPanel";
 import { ExternalMapLinks } from "./components/ExternalMapLinks";
@@ -570,6 +571,7 @@ function AppContent({
   };
   const [answer, setAnswer] = useState<string | null>(null);
   const [conciergeAnswerCollapsed, setConciergeAnswerCollapsed] = useState(false);
+  const [isMobileConciergeDrawerOpen, setIsMobileConciergeDrawerOpen] = useState(false);
   const [conciergeResponse, setConciergeResponse] = useState<ConciergeResponse | null>(null);
   const [conciergeMainListIds, setConciergeMainListIds] = useState<number[]>([]);
   const conciergeRequest = useRef<AbortController | null>(null);
@@ -593,6 +595,7 @@ function AppContent({
     conciergeRequest.current?.abort();
     setAnswer(null);
     setConciergeAnswerCollapsed(false);
+    setIsMobileConciergeDrawerOpen(false);
     setConciergeResponse(null);
     setConciergeMainListIds([]);
     setConciergeChatMessages([]);
@@ -604,12 +607,14 @@ function AppContent({
     conciergeRequest.current?.abort();
     setAnswer(null);
     setConciergeAnswerCollapsed(false);
+    setIsMobileConciergeDrawerOpen(false);
     setConciergeResponse(null);
     setConciergeChatMessages([]);
   }, []);
 
   const hideConciergeAnswerPanel = useCallback(() => {
     setConciergeAnswerCollapsed(true);
+    setIsMobileConciergeDrawerOpen(false);
   }, []);
 
   const scrollToConciergeAnswer = useCallback(() => {
@@ -622,9 +627,12 @@ function AppContent({
 
   const openConciergeAnswerPanel = useCallback(() => {
     setConciergeAnswerCollapsed(false);
-    if (mobileViewMode === "map") setMobileViewMode("list");
-    window.requestAnimationFrame(scrollToConciergeAnswer);
-  }, [mobileViewMode, scrollToConciergeAnswer]);
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches) {
+      setIsMobileConciergeDrawerOpen(true);
+    } else {
+      window.requestAnimationFrame(scrollToConciergeAnswer);
+    }
+  }, [scrollToConciergeAnswer]);
 
   const selectKindFilter = useCallback(
     (newKind: EstablishmentFilter) => {
@@ -1809,10 +1817,11 @@ function AppContent({
         if (placeNameArg) setSuperpowerInitialPlaceName(placeNameArg);
         setSuperpowerMode(payload.action);
       }
-      if (window.matchMedia("(max-width: 768px)").matches) {
-        setMobileViewMode("list");
+      if (typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches) {
+        setIsMobileConciergeDrawerOpen(true);
+      } else {
+        window.requestAnimationFrame(scrollToConciergeAnswer);
       }
-      window.requestAnimationFrame(scrollToConciergeAnswer);
     } catch {
       if (conciergeRequest.current !== controller) return;
       if (!controller.signal.aborted) {
@@ -1835,10 +1844,11 @@ function AppContent({
             if (placeNameArg) setSuperpowerInitialPlaceName(placeNameArg);
             setSuperpowerMode(result.action);
           }
-          if (window.matchMedia("(max-width: 768px)").matches) {
-            setMobileViewMode("list");
+          if (typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches) {
+            setIsMobileConciergeDrawerOpen(true);
+          } else {
+            window.requestAnimationFrame(scrollToConciergeAnswer);
           }
-          window.requestAnimationFrame(scrollToConciergeAnswer);
         } catch {
           if (conciergeRequest.current === controller) setAnswer(lang === 'sv' ? 'Katalogen är inte tillgänglig just nu.' : 'The catalog is currently unavailable.');
         }
@@ -3219,7 +3229,6 @@ function AppContent({
 
           {mobileViewMode === "list" ? (
             <div className="mobile-bottom-sheet-body">
-              {renderConciergeAnswerPanel("mobile")}
               {isInitialPlacesLoading ? (
                 <div className="mobile-list-loading-state" role="status" aria-live="polite">
                   <CircleNotch size={30} className="animate-spin" aria-hidden="true" />
@@ -4340,6 +4349,43 @@ function AppContent({
           <span>{lang === "sv" ? "Visa lista" : "Show list"}</span>
         </button>
       ) : null}
+
+      {answer && !isMobileConciergeDrawerOpen && mobileTab !== "discover" ? (
+        <button
+          type="button"
+          className="mobile-concierge-floating-pill"
+          onClick={() => setIsMobileConciergeDrawerOpen(true)}
+          aria-label={lang === "sv" ? "Visa Concierge-dialog" : "Show Concierge dialogue"}
+        >
+          <Sparkle size={15} weight="fill" />
+          <span>Concierge</span>
+          {conciergeMainListIds.length > 0 ? (
+            <strong className="count-badge">{conciergeMainListIds.length}</strong>
+          ) : null}
+        </button>
+      ) : null}
+
+      <MobileConciergeDrawer
+        answer={answer}
+        response={conciergeResponse}
+        places={places}
+        messages={conciergeChatMessages}
+        isOpen={isMobileConciergeDrawerOpen}
+        onClose={() => setIsMobileConciergeDrawerOpen(false)}
+        onSelectPlace={handleSelectPlace}
+        onRefineQuery={(extra) => void askWithQuery(extra)}
+        onViewOnMap={() => {
+          setIsMobileConciergeDrawerOpen(false);
+          setMobileViewMode("map");
+          setIsMobileBottomSheetHidden(false);
+        }}
+        lang={lang}
+        onTriggerAction={(action, prefillName) => {
+          setSuperpowerInitialPlaceName(prefillName);
+          setSuperpowerMode(action);
+        }}
+        recommendedCount={conciergeMainListIds.length}
+      />
 
       <MobileAppToolbar
         activeTab={mobileTab}
