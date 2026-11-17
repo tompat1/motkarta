@@ -24,7 +24,7 @@ binding = "CONCIERGE_RATE_GATE"
 service = "motkarta-concierge-ai-gate"
 
 [vars]
-CONCIERGE_RETRIEVAL_MODE = "lexical"
+CONCIERGE_RETRIEVAL_MODE = "hybrid"
 CONCIERGE_SYNTHESIS_MODE = "template"
 CONCIERGE_MIN_SIMILARITY = "0.5"
 CONCIERGE_DEADLINE_MS = "10000"

@@ -451,4 +451,20 @@ test("RAG retrieveAndSynthesize guides user with helpful follow-up question when
   assert.ok(result.intro.includes("Jag är inte helt säker på vad du söker"));
 });
 
+test("RAG full-text search indexes editorial notes and complex descriptive queries across catalog", () => {
+  const husman = retrieveAndSynthesize("husmanskost", livePlaces, { language: "sv" });
+  assert.equal(husman.status, "ok");
+  assert.ok(husman.cards.length >= 1, "Must return venues offering husmanskost");
+
+  const caskAle = retrieveAndSynthesize("cask ale", livePlaces, { language: "sv" });
+  assert.equal(caskAle.status, "ok");
+  assert.ok(caskAle.cards.some((c) => c.name === "Tudor Arms" || c.name === "Restaurant Akkurat"), "Must find British/ale pubs mentioned in editorial notes");
+
+  const neapolitan = retrieveAndSynthesize("napolitansk surdegspizza", livePlaces, { language: "sv" });
+  assert.equal(neapolitan.status, "ok");
+  assert.ok(neapolitan.cards.length >= 3, "Must return authentic Neapolitan pizza spots like 450 Gradi");
+  assert.ok(neapolitan.cards.some((c) => c.name.includes("450 Gradi") || c.name.includes("Napolitanska") || c.name.includes("800 Grader")));
+});
+
+
 

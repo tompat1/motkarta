@@ -146,7 +146,7 @@ export function isCafeVenue(place: ConciergePlace | import('../scoring.ts').Plac
 
 export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent, context: QueryContext): boolean {
   const { place, facts } = candidate;
-  const attributes = facts.facts.filter((fact) => ['dish', 'tags', 'cuisine'].includes(fact.field)).map((fact) => fact.value).join(' ');
+  const attributes = `${facts.facts.filter((fact) => ['dish', 'tags', 'cuisine'].includes(fact.field)).map((fact) => fact.value).join(' ')} ${place.cuisine || ''} ${(place.tags || []).join(' ')} ${place.note || ''}`;
   if (intent.outsideStockholm || intent.excludedBrandRequested || intent.openNow) return false; // No verified live hours evaluator yet.
   if (intent.exclusions.some((term) => includesPhrase(`${place.name} ${place.kind} ${attributes}`, term))) return false;
   if (intent.isPagination && (intent.excludedPlaceNames ?? []).some((name) => normalize(name) === normalize(candidate.place.name))) return false;
@@ -239,11 +239,13 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     if (intent.isPagination && excludedNames.has(normalize(place.name))) continue;
     seen.add(place.id);
     const facts = placeFacts(place);
-    const text = normalize(facts.document);
+    const placeTags = (place.tags || []).join(' ');
+    const placeNote = place.note || '';
+    const searchableText = normalize(`${facts.document} ${place.name} ${place.kind || ''} ${place.area || ''} ${place.cuisine || ''} ${placeNote} ${placeTags}`);
     const exact = isExactPlaceMatch(normalizedQuery, place.name);
-    const matchingTerms = intent.terms.filter((term) => matchesTerm(term, text));
+    const matchingTerms = intent.terms.filter((term) => matchesTerm(term, searchableText));
     const numericTerms = intent.terms.filter((term) => /^\d+$/.test(term));
-    if (numericTerms.length > 0 && !numericTerms.some((term) => matchesTerm(term, text))) {
+    if (numericTerms.length > 0 && !numericTerms.some((term) => matchesTerm(term, searchableText))) {
       continue;
     }
     const matchedNonNumericTerms = matchingTerms.some((t) => !/^\d+$/.test(t));
@@ -251,7 +253,7 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
     if (numericTerms.length > 0 && !matchedNonNumericTerms && !nameMatchesNumeric) {
       continue;
     }
-    const attributes = facts.facts.filter((fact) => ['dish', 'tags', 'cuisine'].includes(fact.field)).map((fact) => fact.value).join(' ');
+    const attributes = `${facts.facts.filter((fact) => ['dish', 'tags', 'cuisine'].includes(fact.field)).map((fact) => fact.value).join(' ')} ${place.cuisine || ''} ${placeTags} ${placeNote}`;
     const isBar = isBarVenue(place);
     const isCocktail = isCocktailVenue(place);
     const isWine = isWineBarVenue(place);
@@ -281,8 +283,27 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
       (intent.cafe && isCafe) ||
       (intent.specialty && specialtyEligible(place));
 
-    // Area alone must not make an unsupported food query relevant.
-    const lexicalScore = matchingTerms.length / Math.max(1, intent.terms.length);
+    // Multi-field full-text BM25-style weighting
+    const normName = normalize(place.name);
+    const normCuisine = normalize(place.cuisine || '');
+    const normTags = normalize(placeTags);
+    const normNote = normalize(placeNote);
+    let fullTextScore = 0;
+    if (intent.terms.length > 0) {
+      let weightSum = 0;
+      for (const term of intent.terms) {
+        let maxWeight = 0;
+        if (matchesTerm(term, normName)) maxWeight = Math.max(maxWeight, 4.0);
+        if (matchesTerm(term, normCuisine)) maxWeight = Math.max(maxWeight, 3.5);
+        if (matchesTerm(term, normTags)) maxWeight = Math.max(maxWeight, 2.5);
+        if (matchesTerm(term, normNote)) maxWeight = Math.max(maxWeight, 2.0);
+        if (matchesTerm(term, normalize(facts.document))) maxWeight = Math.max(maxWeight, 1.0);
+        weightSum += maxWeight;
+      }
+      fullTextScore = weightSum / (4.0 * intent.terms.length);
+    }
+
+    const lexicalScore = Math.max(matchingTerms.length / Math.max(1, intent.terms.length), fullTextScore);
     const relevant = exact || lexicalScore > 0 || cuisineMatch || categoryRelevant || (!intent.terms.length && (intent.area || intent.bar || intent.cocktail || intent.wineBar || intent.pub || intent.bakery || intent.cafe || intent.dinner || intent.hiddenGem || intent.atmosphere || intent.near || intent.exclusions.length || intent.priceMax !== null || intent.filters.near_public_transport));
     if (!relevant) continue;
     const preferences: import('../scoring.ts').UserPreferences = {
@@ -357,17 +378,33 @@ export function exactNameIds(query: string, places: ConciergePlace[]): Set<numbe
 }
 
 function isExactPlaceMatch(query: string, name: string): boolean {
-  const distinctive = queryTerms(name).some((term) => !isCuisineTerm(term) && !['cafe', 'coffee', 'bakery', 'restaurant', 'restaurang', 'stockholm', 'bar'].includes(term));
+  const normQuery = normalize(query);
   const normName = normalize(name);
+  if (normName.length < 3) return false;
 
-  // If query contains distinctive numbers (e.g. "450" in "450 gradi"),
-  // an exact match MUST contain those numbers in its name
+  // Direct match or known alias
+  if (normQuery === normName || (normName === '450 gradi' && normQuery === '450 grader')) {
+    return true;
+  }
+
+  // Common intent prefix before place name
+  const strippedQuery = normQuery.replace(/^(hitta|sok|var ligger|basta|find|where is|tipsa om|tipsa|tell me about|info om)\s+/i, '').trim();
+  if (strippedQuery === normName || (normName === '450 gradi' && strippedQuery === '450 grader')) {
+    return true;
+  }
+
+  const nameTokens = queryTerms(name);
+  const hasDistinctiveToken = nameTokens.some((term) =>
+    !isCuisineTerm(term) &&
+    !['cafe', 'coffee', 'bakery', 'restaurant', 'restaurang', 'stockholm', 'bar', 'pub', 'krog', 'mat', 'food', 'pizza', 'pizzeria', 'surdegspizza', 'bageri', 'vinbar', 'olhall', 'sushi', 'taco'].includes(term)
+  );
+  if (!hasDistinctiveToken) return false;
+
   const queryNumbers = extractDistinctiveNumbers(query);
   const nameNumbers = extractDistinctiveNumbers(name);
   if (queryNumbers.length > 0 && !queryNumbers.every((qNum) => nameNumbers.includes(qNum))) {
     return false;
   }
 
-  const isMatch = includesPhrase(query, name) || (normName === '450 gradi' && includesPhrase(query, '450 grader'));
-  return distinctive && normName.length >= 3 && isMatch;
+  return includesPhrase(query, name);
 }
