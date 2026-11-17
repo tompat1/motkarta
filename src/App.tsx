@@ -6,6 +6,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { OnboardingModal } from "./components/OnboardingModal";
 import { AdminReviewPanel, isAdminRoutePath, readStoredAdminToken, type AdminSessionStatus } from "./admin/AdminReviewPanel";
 import { ConciergeAnswerView } from "./components/ConciergeAnswerView";
+import { MobileConciergeFloatingCapsule } from "./components/MobileConciergeFloatingCapsule";
 import { ConciergeSuperpowerModal } from "./components/ConciergeSuperpowerModal";
 import { CuratedSourcesPanel } from "./components/CuratedSourcesPanel";
 import { ExternalMapLinks } from "./components/ExternalMapLinks";
@@ -622,9 +623,10 @@ function AppContent({
 
   const openConciergeAnswerPanel = useCallback(() => {
     setConciergeAnswerCollapsed(false);
-    if (mobileViewMode === "map") setMobileViewMode("list");
-    window.requestAnimationFrame(scrollToConciergeAnswer);
-  }, [mobileViewMode, scrollToConciergeAnswer]);
+    if (typeof window !== "undefined" && !window.matchMedia("(max-width: 768px)").matches) {
+      window.requestAnimationFrame(scrollToConciergeAnswer);
+    }
+  }, [scrollToConciergeAnswer]);
 
   const selectKindFilter = useCallback(
     (newKind: EstablishmentFilter) => {
@@ -1809,10 +1811,9 @@ function AppContent({
         if (placeNameArg) setSuperpowerInitialPlaceName(placeNameArg);
         setSuperpowerMode(payload.action);
       }
-      if (window.matchMedia("(max-width: 768px)").matches) {
-        setMobileViewMode("list");
+      if (typeof window !== "undefined" && !window.matchMedia("(max-width: 768px)").matches) {
+        window.requestAnimationFrame(scrollToConciergeAnswer);
       }
-      window.requestAnimationFrame(scrollToConciergeAnswer);
     } catch {
       if (conciergeRequest.current !== controller) return;
       if (!controller.signal.aborted) {
@@ -1835,10 +1836,9 @@ function AppContent({
             if (placeNameArg) setSuperpowerInitialPlaceName(placeNameArg);
             setSuperpowerMode(result.action);
           }
-          if (window.matchMedia("(max-width: 768px)").matches) {
-            setMobileViewMode("list");
+          if (typeof window !== "undefined" && !window.matchMedia("(max-width: 768px)").matches) {
+            window.requestAnimationFrame(scrollToConciergeAnswer);
           }
-          window.requestAnimationFrame(scrollToConciergeAnswer);
         } catch {
           if (conciergeRequest.current === controller) setAnswer(lang === 'sv' ? 'Katalogen är inte tillgänglig just nu.' : 'The catalog is currently unavailable.');
         }
@@ -3219,7 +3219,6 @@ function AppContent({
 
           {mobileViewMode === "list" ? (
             <div className="mobile-bottom-sheet-body">
-              {renderConciergeAnswerPanel("mobile")}
               {isInitialPlacesLoading ? (
                 <div className="mobile-list-loading-state" role="status" aria-live="polite">
                   <CircleNotch size={30} className="animate-spin" aria-hidden="true" />
@@ -4339,6 +4338,28 @@ function AppContent({
           <CaretUp size={14} weight="bold" />
           <span>{lang === "sv" ? "Visa lista" : "Show list"}</span>
         </button>
+      ) : null}
+
+      {answer && mobileTab !== "discover" ? (
+        <MobileConciergeFloatingCapsule
+          answer={answer}
+          response={conciergeResponse}
+          places={places}
+          messages={conciergeChatMessages}
+          onSelectPlace={handleSelectPlace}
+          onRefineQuery={(extra) => void askWithQuery(extra)}
+          onDismiss={dismissConciergeAnswer}
+          onOpenList={() => {
+            setMobileViewMode("list");
+            setIsMobileBottomSheetHidden(false);
+          }}
+          lang={lang}
+          onTriggerAction={(action, prefillName) => {
+            setSuperpowerInitialPlaceName(prefillName);
+            setSuperpowerMode(action);
+          }}
+          recommendedCount={conciergeMainListIds.length}
+        />
       ) : null}
 
       <MobileAppToolbar
