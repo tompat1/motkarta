@@ -272,10 +272,10 @@ test("RAG retrieveAndSynthesize lists ALL places in region when user writes Gaml
   assert.equal(resultGardet.cards.length, 39, "Should return all 39 places in Gärdet");
   assert.ok(resultGardet.intro.includes("alla 39 ställen i Gärdet"));
 
-  // Kransen (45 places)
+  // Kransen (49 places with Midsommarkransen restored from Södermalm)
   const resultKransen = retrieveAndSynthesize("Kransen", livePlaces, { language: "sv" });
-  assert.equal(resultKransen.cards.length, 45, "Should return all 45 places in Kransen");
-  assert.ok(resultKransen.intro.includes("alla 45 ställen i Kransen"));
+  assert.equal(resultKransen.cards.length, 49, "Should return all 49 places in Kransen");
+  assert.ok(resultKransen.intro.includes("alla 49 ställen i Kransen"));
 
   // Vasastan (209 places)
   const resultVasastan = retrieveAndSynthesize("Vasastan", livePlaces, { language: "sv" });

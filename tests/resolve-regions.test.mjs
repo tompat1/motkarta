@@ -159,11 +159,11 @@ function fakeD1(initialRows) {
         },
         async run() {
           if (query.includes("UPDATE establishments")) {
-            const [resolved, updatedAt, id] = this.values;
+            const id = this.values[this.values.length - 1];
+            const resolved = this.values[0];
             const row = db.rows.find((r) => r.id === id);
             if (row) {
               row.district = resolved;
-              row.updatedAt = updatedAt;
             }
             return { success: true, meta: { changes: 1 } };
           }

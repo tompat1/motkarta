@@ -301,6 +301,100 @@ test("reclassifies southern suburbs (Farsta, Sköndal, Fagersjö) to Söderort a
     }),
     "Södermalm",
   );
+
+  // Hagsätra
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Pizza 9",
+      area: "Södermalm",
+      address: "Hagsätra torg 6, Södermalm",
+      latitude: 59.2629063,
+      longitude: 18.0135766,
+    }),
+    "Söderort",
+  );
+
+  // Rågsved
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Dimas",
+      area: "Södermalm",
+      address: "Rågsvedstorget 2, Södermalm",
+      latitude: 59.2568369,
+      longitude: 18.0270893,
+    }),
+    "Söderort",
+  );
+
+  // Högdalen
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Högdalens grill",
+      area: "Södermalm",
+      address: "Högdalsgången 9, Södermalm",
+      latitude: 59.2632282,
+      longitude: 18.0429248,
+    }),
+    "Söderort",
+  );
+
+  // Örby
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Örby Pizzeria",
+      area: "Södermalm",
+      address: "Turingevägen 46, Södermalm",
+      latitude: 59.2728857,
+      longitude: 18.0195573,
+    }),
+    "Söderort",
+  );
+
+  // Hammarby Sjöstad
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Nya Carnegiebryggeriet",
+      area: "Södermalm",
+      address: "Ljusslingan 17, Södermalm",
+      latitude: 59.3054102,
+      longitude: 18.0985902,
+    }),
+    "Söderort",
+  );
+
+  // Liljeholmen
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Bastard Burgers",
+      area: "Södermalm",
+      address: "Liljeholmstorget 5, Södermalm",
+      latitude: 59.309643,
+      longitude: 18.0224993,
+    }),
+    "Söderort",
+  );
+
+  // Legitimate Södermalm waterfront places remain Södermalm
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Thaiboat",
+      area: "Södermalm",
+      address: "Östgötagatan 100, 116 64 Stockholm",
+      latitude: 59.3043767,
+      longitude: 18.0818893,
+    }),
+    "Södermalm",
+  );
+  assert.equal(
+    resolveStockholmRegion({
+      name: "YUC TANTO",
+      area: "Södermalm",
+      address: "Hornstulls Strand 17, Södermalm",
+      latitude: 59.3139475,
+      longitude: 18.0345157,
+    }),
+    "Södermalm",
+  );
 });
 
 test("getAreaAliases returns sub-district aliases for search expansion", () => {
@@ -313,6 +407,15 @@ test("getAreaAliases returns sub-district aliases for search expansion", () => {
   assert.ok(soderortAliases.includes("farsta"), "Söderort should include farsta alias");
   assert.ok(soderortAliases.includes("sköndal"), "Söderort should include sköndal alias");
   assert.ok(soderortAliases.includes("fagersjö"), "Söderort should include fagersjö alias");
+  assert.ok(soderortAliases.includes("hagsätra"), "Söderort should include hagsätra alias");
+  assert.ok(soderortAliases.includes("rågsved"), "Söderort should include rågsved alias");
+  assert.ok(soderortAliases.includes("högdalen"), "Söderort should include högdalen alias");
+  assert.ok(soderortAliases.includes("örby"), "Söderort should include örby alias");
+  assert.ok(soderortAliases.includes("gröndal"), "Söderort should include gröndal alias");
+  assert.ok(soderortAliases.includes("västberga"), "Söderort should include västberga alias");
+  assert.ok(soderortAliases.includes("vårberg"), "Söderort should include vårberg alias");
+  assert.ok(soderortAliases.includes("enskededalen"), "Söderort should include enskededalen alias");
+  assert.ok(soderortAliases.includes("herrängen"), "Söderort should include herrängen alias");
 
   const soderAliases = getAreaAliases("Södermalm");
   assert.ok(soderAliases.includes("sofo"), "Södermalm should include sofo alias");

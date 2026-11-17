@@ -101,13 +101,18 @@ async function handleResolveRegions(context: EventContext<Env>) {
     });
 
     if (resolved && resolved !== currentDistrict && !isBroadStockholmArea(resolved)) {
+      let newAddress = row.address ?? undefined;
+      if (newAddress && resolved !== "Södermalm" && newAddress.includes("Södermalm")) {
+        newAddress = newAddress.replace(/,\s*Södermalm\b/gi, `, ${resolved}`);
+      }
+
       await db
         .prepare(
           `UPDATE establishments
-           SET district = ?, updated_at = ?
+           SET district = ?, address = COALESCE(?, address), updated_at = ?
            WHERE id = ?`,
         )
-        .bind(resolved, updatedAt, row.id)
+        .bind(resolved, newAddress ?? null, updatedAt, row.id)
         .run();
 
       try {

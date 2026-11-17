@@ -293,6 +293,11 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
     longitude: row.longitude ?? undefined,
   });
 
+  let address = row.address ?? undefined;
+  if (address && area !== "Södermalm" && address.includes("Södermalm")) {
+    address = address.replace(/,\s*Södermalm\b/gi, `, ${area}`);
+  }
+
   return {
     id: row.id,
     idNamespace: 'd1',
@@ -305,7 +310,7 @@ export function rowToPlaceInput(row: PlaceRow, evidenceRows: EvidenceRow[], tagR
     kind: row.type,
     cuisine: cuisine || undefined,
     area,
-    address: row.address ?? undefined,
+    address,
     openingHours: row.opening_hours ?? undefined,
     priceSEK: row.price_sek ?? undefined,
     note: row.description,
