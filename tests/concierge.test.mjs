@@ -281,9 +281,9 @@ test("RAG retrieveAndSynthesize lists ALL places in region when user writes Gaml
   assert.equal(resultKransen.cards.length, 49, "Should return all 49 places in Kransen");
   assert.ok(resultKransen.intro.includes("alla 49 ställen i Kransen"));
 
-  // Vasastan (206 independent places with commercial chains excluded)
+  // Vasastan (207 independent places with Curbside Stockholm added and commercial chains excluded)
   const resultVasastan = retrieveAndSynthesize("Vasastan", livePlaces, { language: "sv" });
-  assert.equal(resultVasastan.cards.length, 206, "Should return all 206 places in Vasastan");
+  assert.equal(resultVasastan.cards.length, 207, "Should return all 207 places in Vasastan");
 
   // Non-cuisine browse query still capped at 5 on map and in answer
   const resultGeneric = retrieveAndSynthesize("cardamom bun and filter coffee", livePlaces);

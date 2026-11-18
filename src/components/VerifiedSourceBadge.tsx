@@ -1,0 +1,219 @@
+import React from "react";
+import {
+  Star,
+  ForkKnife,
+  Medal,
+  Newspaper,
+  Coffee,
+  PawPrint,
+  Sparkle,
+  ArrowSquareOut,
+} from "@phosphor-icons/react";
+import type { VerifiedSourceInfo } from "../app/verified-sources";
+import type { Language } from "../app/shared";
+
+function BurgerIcon({ size = 13 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      style={{ flexShrink: 0 }}
+    >
+      <path d="M20.5 10.5C20.5 6.36 16.69 3 12 3S3.5 6.36 3.5 10.5c0 .28.02.55.05.82C3.19 11.66 3 12.31 3 13c0 1.66 1.34 3 3 3h12c1.66 0 3-1.34 3-3 0-.69-.19-1.34-.55-1.68.03-.27.05-.54.05-.82zM4.5 18c0 1.66 1.34 3 3 3h9c1.66 0 3-1.34 3-3v-.5h-15v.5z" />
+    </svg>
+  );
+}
+
+export function renderSourceIcon(type: VerifiedSourceInfo["iconType"], size = 13) {
+  switch (type) {
+    case "burger":
+      return <BurgerIcon size={size} />;
+    case "star":
+      return <Star size={size} weight="fill" />;
+    case "fork-knife":
+      return <ForkKnife size={size} weight="bold" />;
+    case "award":
+      return <Medal size={size} weight="fill" />;
+    case "newspaper":
+      return <Newspaper size={size} weight="bold" />;
+    case "coffee":
+      return <Coffee size={size} weight="fill" />;
+    case "dog":
+      return <PawPrint size={size} weight="fill" />;
+    case "sparkle":
+    default:
+      return <Sparkle size={size} weight="fill" />;
+  }
+}
+
+interface VerifiedSourceBadgeProps {
+  source: VerifiedSourceInfo;
+  lang?: Language;
+  variant?: "pill" | "card" | "detail";
+}
+
+export function VerifiedSourceBadge({
+  source,
+  lang = "sv",
+  variant = "pill",
+}: VerifiedSourceBadgeProps) {
+  const description = lang === "sv" ? source.descriptionSv : source.descriptionEn;
+
+  if (variant === "detail") {
+    return (
+      <div
+        className={`verified-source-detail-card verified-source-${source.id}`}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "10px",
+          background: source.bgColor,
+          border: `1px solid ${source.borderColor}`,
+          color: source.color,
+          padding: "8px 12px",
+          borderRadius: "10px",
+          marginTop: "6px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+          <span style={{ display: "flex", alignItems: "center" }}>
+            {renderSourceIcon(source.iconType, 16)}
+          </span>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: "13px", lineHeight: "1.2" }}>
+              {source.label}
+            </div>
+            <div
+              style={{
+                fontSize: "11px",
+                opacity: 0.9,
+                marginTop: "2px",
+                lineHeight: "1.3",
+                color: "#1e293b",
+              }}
+            >
+              {description}
+            </div>
+          </div>
+        </div>
+
+        {source.url ? (
+          <a
+            href={source.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              fontSize: "11px",
+              fontWeight: 600,
+              color: source.color,
+              textDecoration: "underline",
+              flexShrink: 0,
+            }}
+            title={lang === "sv" ? `Läs recension hos ${source.name}` : `Read review on ${source.name}`}
+          >
+            <span>{lang === "sv" ? "Källa" : "Source"}</span>
+            <ArrowSquareOut size={12} weight="bold" />
+          </a>
+        ) : null}
+      </div>
+    );
+  }
+
+  // Pill badge for list cards and slide-up preview
+  return (
+    <span
+      className={`verified-source-pill verified-source-${source.id}`}
+      title={description}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "4px",
+        background: source.bgColor,
+        color: source.color,
+        border: `1px solid ${source.borderColor}`,
+        padding: "3px 8px",
+        borderRadius: "999px",
+        fontSize: "11px",
+        fontWeight: 700,
+        lineHeight: "1",
+        letterSpacing: "0.01em",
+        whiteSpace: "nowrap",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
+      }}
+    >
+      {renderSourceIcon(source.iconType, 12)}
+      <span>{source.shortLabel}</span>
+    </span>
+  );
+}
+
+interface VerifiedSourceBadgeListProps {
+  sources: VerifiedSourceInfo[];
+  lang?: Language;
+  maxVisible?: number;
+  variant?: "pill" | "card" | "detail";
+}
+
+export function VerifiedSourceBadgeList({
+  sources,
+  lang = "sv",
+  maxVisible = 2,
+  variant = "pill",
+}: VerifiedSourceBadgeListProps) {
+  if (!sources || sources.length === 0) return null;
+
+  if (variant === "detail") {
+    return (
+      <div className="verified-source-detail-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        {sources.map((s) => (
+          <VerifiedSourceBadge key={s.id} source={s} lang={lang} variant="detail" />
+        ))}
+      </div>
+    );
+  }
+
+  const visibleSources = sources.slice(0, maxVisible);
+  const remainingCount = sources.length - maxVisible;
+
+  return (
+    <div
+      className="verified-source-badges-row"
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: "5px",
+      }}
+    >
+      {visibleSources.map((s) => (
+        <VerifiedSourceBadge key={s.id} source={s} lang={lang} variant="pill" />
+      ))}
+      {remainingCount > 0 ? (
+        <span
+          className="verified-source-more-badge"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            background: "rgba(255, 255, 255, 0.85)",
+            color: "#1e293b",
+            border: "1px solid rgba(0, 0, 0, 0.12)",
+            padding: "2px 6px",
+            borderRadius: "999px",
+            fontSize: "10px",
+            fontWeight: 700,
+          }}
+          title={lang === "sv" ? `Ytterligare ${remainingCount} oberoende källor` : `${remainingCount} more independent sources`}
+        >
+          +{remainingCount}
+        </span>
+      ) : null}
+    </div>
+  );
+}

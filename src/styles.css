@@ -20096,3 +20096,23 @@ body.is-drawer-open .site-utilities > * {
   }
 }
 
+/* Verified Proven Source Badges & Signs */
+.verified-source-pill {
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.verified-source-pill:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.verified-source-detail-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.verified-source-detail-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+

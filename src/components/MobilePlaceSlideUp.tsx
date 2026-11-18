@@ -11,6 +11,8 @@ import {
 import type { ScoredPlace } from "../../lib/scoring";
 import { getPublicPlaceNote, kindFilterLabel, type Language } from "../app/shared";
 import { DUMMY_PLACE_IMAGE_URL } from "../../lib/lazy-media";
+import { getPlaceVerifiedSources } from "../app/verified-sources";
+import { VerifiedSourceBadgeList } from "./VerifiedSourceBadge";
 
 interface MobilePlaceSlideUpProps {
   place: ScoredPlace | null;
@@ -132,6 +134,16 @@ export function MobilePlaceSlideUp({
               </button>
             </div>
           </div>
+
+          {(() => {
+            const verifiedSources = getPlaceVerifiedSources(place);
+            if (verifiedSources.length === 0) return null;
+            return (
+              <div style={{ marginTop: "4px", marginBottom: "4px" }}>
+                <VerifiedSourceBadgeList sources={verifiedSources} lang={lang} maxVisible={2} variant="pill" />
+              </div>
+            );
+          })()}
 
           <p className="mobile-slide-up-meta">{categoryAreaText}</p>
           <p className="mobile-slide-up-note">{noteText}</p>

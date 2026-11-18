@@ -16,6 +16,8 @@ import { DUMMY_PLACE_IMAGE_URL, fetchPlacePhotos } from "../../lib/lazy-media";
 import { formatDistance, distanceFromPoint, hasCoordinates } from "../app/shared";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 import { openingHoursFact, priceFact, wifiFact } from "../app/place-card-facts";
+import { getPlaceVerifiedSources } from "../app/verified-sources";
+import { VerifiedSourceBadgeList } from "./VerifiedSourceBadge";
 
 import { firstAvailablePhoto } from "../../lib/photo-loading";
 
@@ -222,6 +224,15 @@ export function MobilePlaceCardList({
 
               {/* Card Meta & Title */}
               <div className="mobile-photo-card-content">
+                {(() => {
+                  const verifiedSources = getPlaceVerifiedSources(place);
+                  if (verifiedSources.length === 0) return null;
+                  return (
+                    <div style={{ marginBottom: "6px" }}>
+                      <VerifiedSourceBadgeList sources={verifiedSources} lang={lang} maxVisible={2} variant="pill" />
+                    </div>
+                  );
+                })()}
                 <h2 className="mobile-photo-card-title">{place.name}</h2>
                 <div className="mobile-photo-card-facts" aria-label={lang === "sv" ? "Platsfakta" : "Place facts"}>
                   {(() => {

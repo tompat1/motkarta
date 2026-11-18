@@ -5,8 +5,14 @@
   {"name": "Ekstedt", "area": "Östermalm", "category": "1 Michelin Star", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/ekstedt"},
   {"name": "Operakällaren", "area": "Norrmalm", "category": "1 Michelin Star", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/operakallaren"},
   {"name": "Dashi", "area": "Vasastan", "category": "1 Michelin Star", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/dashi"},
+  {"name": "Nour", "area": "Östermalm", "category": "1 Michelin Star", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/nour"},
+  {"name": "Persona", "area": "Östermalm", "category": "1 Michelin Star", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/persona"},
+  {"name": "Seafood Gastro", "area": "Norrmalm", "category": "1 Michelin Star", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/seafood-gastro"},
   {"name": "Babette", "area": "Vasastan", "category": "Bib Gourmand", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/babette"},
+  {"name": "Bar Agrikultur", "area": "Södermalm", "category": "Bib Gourmand", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/bar-agrikultur"},
   {"name": "Allegrine", "area": "Norrmalm", "category": "Michelin Selected", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/allegrine"},
   {"name": "Rolfs kök", "area": "Norrmalm", "category": "Michelin Selected", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/rolfs-kok"},
-  {"name": "Hantverket", "area": "Östermalm", "category": "Michelin Selected", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/restaurang-hantverket"}
+  {"name": "Hantverket", "area": "Östermalm", "category": "Michelin Selected", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/restaurang-hantverket"},
+  {"name": "Lilla Ego", "area": "Vasastan", "category": "Michelin Selected", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/lilla-ego"},
+  {"name": "Kagges", "area": "Gamla Stan", "category": "Michelin Selected", "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/kagges"}
 ]

@@ -23,6 +23,8 @@ import {
 } from "@phosphor-icons/react";
 import type { ScoredPlace } from "../../lib/scoring";
 import type { Language } from "../app/shared";
+import { getPlaceVerifiedSources } from "../app/verified-sources";
+import { VerifiedSourceBadgeList } from "./VerifiedSourceBadge";
 import { heroImageStyle } from "../../lib/photo-hero-frame";
 import { fetchPlacePhotos, type PlacePhoto } from "../../lib/lazy-media";
 import { formatDistance, distanceFromPoint, isInternalDiagnosticNote } from "../app/shared";
@@ -212,6 +214,20 @@ export function PlaceDetailSheet({
           <div className="place-detail-identity">
             <h1 className="place-detail-title">{place.name}</h1>
             <p className="place-detail-subtitle">{subtitle}</p>
+
+            {/* Verified Proven Sources Badges */}
+            {(() => {
+              const verifiedSources = getPlaceVerifiedSources(place);
+              if (verifiedSources.length === 0) return null;
+              return (
+                <div style={{ marginTop: "12px", marginBottom: "8px" }}>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--color-water, #2563eb)", marginBottom: "6px" }}>
+                    {lang === "sv" ? "Utvald av oberoende källor" : "Selected by independent sources"}
+                  </div>
+                  <VerifiedSourceBadgeList sources={verifiedSources} lang={lang} variant="detail" />
+                </div>
+              );
+            })()}
 
             {/* Hidden Gem Status Badge / Community Nomination */}
             <div style={{ marginTop: "10px", display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
