@@ -35,6 +35,6 @@ export default defineConfig({
     command: `npm run dev -- --port ${e2ePort} --strictPort`,
     env: { MOTKARTA_E2E: "1" },
     url: e2eBaseURL,
-    reuseExistingServer: false,
+    reuseExistingServer: !process.env.CI,
   },
 });
