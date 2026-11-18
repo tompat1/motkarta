@@ -59,13 +59,15 @@ const restaurantGrillKeywords = [
   "sportsbar",
 ];
 
+const restaurantGrillPattern = new RegExp(`\\b(?:${restaurantGrillKeywords.join("|")})\\b`, "i");
+
 export function isPrimeSpecialtyCoffee(name: string = "", category: string = "", cuisine: string = ""): boolean {
   const n = name.trim().toLowerCase();
   const c = category.trim().toLowerCase();
   const cu = cuisine.trim().toLowerCase();
   const fullText = `${n} ${c} ${cu}`;
 
-  if (restaurantGrillKeywords.some((kw) => fullText.includes(kw))) {
+  if (restaurantGrillPattern.test(fullText)) {
     return false;
   }
 
@@ -83,10 +85,13 @@ export function normalizeOsmEstablishmentType(row: Pick<OsmFoodPlaceRow, "catego
     return null;
   }
   const category = row.category.trim().toLowerCase();
+  if (category === "public_bath" || category === "bathing_place") {
+    return null;
+  }
   const cuisine = row.cuisine?.trim().toLowerCase() ?? "";
   const fullText = `${name} ${category} ${cuisine}`.toLowerCase();
 
-  if (restaurantGrillKeywords.some((kw) => fullText.includes(kw))) {
+  if (restaurantGrillPattern.test(fullText)) {
     return "Restaurant";
   }
 

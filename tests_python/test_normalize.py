@@ -10,6 +10,14 @@ def test_osm_category_normalization_keeps_plain_cafe_as_cafe():
     assert normalize_osm_establishment_type("pub") == "Restaurant"
 
 
+def test_osm_category_normalization_rejects_bathing_spots_and_public_baths():
+    assert normalize_osm_establishment_type("public_bath", "", "Badplats") is None
+    assert normalize_osm_establishment_type("public_bath", "", "Vattenhuset") is None
+    assert normalize_osm_establishment_type("bathing_place", "", "Strandbad") is None
+    assert normalize_osm_establishment_type("restaurant", "", "Badplats") is None
+    assert normalize_osm_establishment_type("public_bath") is None
+
+
 def test_osm_tags_and_description():
     place = OsmFoodPlace(
         osm_type="node",

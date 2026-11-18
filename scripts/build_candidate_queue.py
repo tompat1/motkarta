@@ -250,6 +250,8 @@ def comparison_candidate_entries(
     payload = json.loads(path.read_text(encoding="utf-8"))
     entries = []
     for candidate in payload.get("newCandidates", []):
+        if is_excluded_catalog_name(candidate.get("name")):
+            continue
         source_name = clean_text(candidate.get("source") or "Catalog comparison")
         source_key = "google"
         source_type = "google_metadata"

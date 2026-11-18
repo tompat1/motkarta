@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
+
+from motkarta.catalog_exclusions import is_excluded_catalog_name
 
 
 ESTABLISHMENT_TYPES = {"Restaurant", "Bakery", "Café", "Specialty coffee"}
@@ -62,6 +65,11 @@ RESTAURANT_GRILL_KEYWORDS = [
     "sportsbar",
 ]
 
+RESTAURANT_GRILL_PATTERN = re.compile(
+    r"\b(?:" + "|".join(RESTAURANT_GRILL_KEYWORDS) + r")\b",
+    re.IGNORECASE,
+)
+
 
 def is_prime_specialty_coffee(name: str = "", category: str = "", cuisine: str = "") -> bool:
     n = name.strip().lower()
@@ -69,7 +77,7 @@ def is_prime_specialty_coffee(name: str = "", category: str = "", cuisine: str =
     cu = cuisine.strip().lower()
     full_text = f"{n} {c} {cu}"
 
-    if any(kw in full_text for kw in RESTAURANT_GRILL_KEYWORDS):
+    if RESTAURANT_GRILL_PATTERN.search(full_text):
         return False
 
     if any(p in n for p in PRIME_SPECIALTY_NAMES):
@@ -83,12 +91,18 @@ def is_prime_specialty_coffee(name: str = "", category: str = "", cuisine: str =
 
 def normalize_osm_establishment_type(category: str, cuisine: str = "", name: str = "") -> str | None:
     """Map OSM food categories to the four product establishment types."""
-    n = name.strip().lower()
+    if name and is_excluded_catalog_name(name):
+        return None
+
     c = category.strip().lower()
+    if c in {"public_bath", "bathing_place"}:
+        return None
+
+    n = name.strip().lower()
     cu = cuisine.strip().lower()
     full_text = f"{n} {c} {cu}"
 
-    if any(kw in full_text for kw in RESTAURANT_GRILL_KEYWORDS):
+    if RESTAURANT_GRILL_PATTERN.search(full_text):
         return "Restaurant"
 
     if is_prime_specialty_coffee(name, category, cuisine):

@@ -2426,7 +2426,6 @@ node,7010937890,Subway,fast_food,Restaurant,sandwich,,,,,,,59.3316142,18.0556879
 node,7028880034,Pomme Crêperie,restaurant,Restaurant,,,,,,,https://www.pomme.nu,59.348297,18.0476346,2025-11-13T19:18:01Z,OpenStreetMap
 node,7033420513,Happy Wiener,fast_food,Restaurant,hot_dog,Mo 11:00-16:00; Tu-Fr 11:00-19:00; Sa-Su 11:00-16:00,,,,,http://happywiener.se,59.3435817,18.0500964,2025-11-16T09:49:17Z,OpenStreetMap
 node,7035887409,Café Wickholm & P,cafe,Café,,,,,,,,59.3493183,18.044422,2022-06-01T16:05:31Z,OpenStreetMap
-node,7036030721,Vattenhuset,public_bath,Restaurant,,,,,,,,59.3498425,18.0458038,2019-12-14T06:50:12Z,OpenStreetMap
 node,7044176092,Cucina Povera,restaurant,Restaurant,italian,Mo 11:00-14:00; Mo 17:00-21:00; Tu-Fr 11:00-22:00; Sa 12:00-22:00; Su 12:00-21:00,,,,,https://www.cucinapovera.se,59.3433452,18.052214,2026-08-29T18:53:22Z,OpenStreetMap
 node,7049205981,L'Avventura,restaurant,Restaurant,,"Mo-Th 16:30-24:00, Fr 16:30-01:00, Sa 16:00-01:00",,,,,https://lavventura.se,59.344331,18.0546018,2025-11-30T17:41:53Z,OpenStreetMap
 node,7052054742,Madame Thu,restaurant,Restaurant,,Mo-Fr 11:00-21:00; Sa 17:00-22:00,,,,,,59.3018144,18.103095,2025-02-22T16:49:04Z,OpenStreetMap
@@ -3118,7 +3117,6 @@ node,12016977795,Sushibar,restaurant,Restaurant,sushi,"Mo-Fr 11:00-21:00; Sa,Su 
 node,12017343176,Xulo,restaurant,Restaurant,mexican,Tu-We 11:00-22:00; Th-Sa 11:00-23:00,,,,,https://www.xulo.se,59.3393543,18.0617941,2025-11-30T17:41:53Z,OpenStreetMap
 node,12017343177,Allegrine,restaurant,Restaurant,,Mo-Th 11:30-23:00; Fr 11:30-01:00; Sa 17:00-01:00,,,Kammakargatan,22,https://allegrine.se,59.3389843,18.061127,2025-11-30T17:41:53Z,OpenStreetMap
 node,12017343178,Resturang Cirkeln och Cirkeln Bakfickan,restaurant,Restaurant,,Mo 10:00-18:00; Tu-Th 10:00-20:00; Fr 10:00-15:00,,,,,,59.3387192,18.06003,2025-06-01T19:15:08Z,OpenStreetMap
-node,12023707270,Badplats,public_bath,Restaurant,,,,,,,,59.2421264,18.1689925,2024-08-02T14:12:13Z,OpenStreetMap
 node,12025152959,Ichiban,restaurant,Restaurant,sushi,,,,,,,59.2940655,17.9767838,2024-07-01T07:35:49Z,OpenStreetMap
 node,12025184141,Cachay,restaurant,Restaurant,,,,,,,,59.2940156,17.976807,2026-09-01T08:13:40Z,OpenStreetMap
 node,12025218620,Tang Ji,restaurant,Restaurant,,,,,,,,59.3042013,17.9748353,2024-07-01T07:12:59Z,OpenStreetMap
@@ -3171,7 +3169,6 @@ node,12037539313,Lao Lao,restaurant,Restaurant,chinese,Mo 11:00-15:00; Tu-Th 11:
 node,12040163324,Ari's Corner,cafe,Café,,Mo-Fr 11:30-17:30,,,,,https://ariscorner.se,59.310255,18.0981741,2025-12-13T16:29:08Z,OpenStreetMap
 node,12040166189,Il Nostro,restaurant,Restaurant,italian,Mo-Fr 09:30-23:00; Sa-Su 08:00-00:30,,,,,https://ilnostro.nu,59.3097454,18.0978506,2025-12-13T11:27:15Z,OpenStreetMap
 node,12041088255,Mezefabriken,restaurant,Restaurant,,Mo-Fr 10:00-19:00; Sa-Su off,,,,,https://www.mezefabriken.se/,59.314301,18.0729579,2025-12-11T22:48:33Z,OpenStreetMap
-node,12041237569,Motalaparkens plaskdamm,public_bath,Restaurant,,week 21-34,,,,,https://parker.stockholm/hitta-lekplatser-parklekar-plaskdammar/plaskdamm/motalaparkens-plaskdamm,59.3533853,18.093555,2026-07-31T12:51:13Z,OpenStreetMap
 node,12045664465,Hantverksbageriet,bakery,Bakery,,"Mo-Fr 08:00-17:00; Sa,Su 08:00-15:00",,,,,,59.3593093,18.0930696,2025-11-11T14:39:14Z,OpenStreetMap
 node,12045708331,Ocra,restaurant,Restaurant,,,,,,,,59.3582604,18.0926856,2026-08-15T13:30:12Z,OpenStreetMap
 node,12047709537,Ayas,cafe,Café,,,,,,,,59.2895715,18.0943636,2025-01-29T11:34:23Z,OpenStreetMap
@@ -3421,7 +3418,6 @@ node,13912278810,Sweets by Camilla,pastry,Bakery,,,,,,,,59.3387467,18.039471,202
 node,13931219640,Enter/Exit,fast_food,Restaurant,burger,,,,,,,59.3223476,18.0731213,2026-08-17T09:36:58Z,OpenStreetMap
 node,13938244701,Balue,cafe,Café,coffee_shop,We-Su 12:00-18:00,,,,,,59.3110403,18.0969385,2026-08-16T16:13:55Z,OpenStreetMap
 node,13943354810,Valhallabageriet,bakery,Bakery,,,,,,,,59.3459644,18.0640257,2026-06-15T17:07:46Z,OpenStreetMap
-node,13969478604,Ålstenängens strand,public_bath,Restaurant,,24/7,,,,,,59.3162097,17.952651,2026-06-27T00:52:46Z,OpenStreetMap
 node,13972418303,Sin Ramen Slaughterhouse,restaurant,Restaurant,ramen,"We-Th 11:00-15:00,16:00-22:00; Fr 11:00-15:00,16:00-23:00; Sa 12:00-23:00; Su 12:00-21:00",,,Hallvägen,13,https://www.sinramen.se/home/#restaurants,59.2911852,18.078425,2026-06-29T08:02:15Z,OpenStreetMap
 node,13974198401,Lucy’s Flower Shop,bar,Restaurant,,,,,,,https://lucysstockholm.se/,59.336632,18.0719567,2026-06-29T08:36:58Z,OpenStreetMap
 node,13975229327,KJ's Cookies,pastry,Bakery,,,,,Ninni Kronbergs Gata,8,https://www.kjscookies.se/,59.3486219,18.0343724,2026-06-29T17:14:28Z,OpenStreetMap
@@ -3494,7 +3490,6 @@ way,152108293,Gretes,fast_food,Restaurant,,Mo-Su 10:30-17:00,,,,,https://www.gre
 way,152108299,Glashuset,restaurant,Restaurant,,Mo-Su 11:30-24:00,,,,,https://www.glashuset.com/,59.3312427,18.082517,2026-05-29T09:50:24Z,OpenStreetMap
 way,152108316,Happy,cafe,Café,,,,,,,,59.331271,18.0839508,2022-03-20T08:21:26Z,OpenStreetMap
 way,152385853,Bergsholmstorpet,cafe,Café,,,,,,,https://www.hembygd.se/bergholmtorpet,59.2709077,18.1302303,2018-02-24T15:22:26Z,OpenStreetMap
-way,158140306,Tessinparkens plaskdamm,public_bath,Restaurant,,,,,,,,59.3437553,18.095925,2024-05-06T09:34:08Z,OpenStreetMap
 way,159705080,Gunnars Pizzeria,fast_food,Restaurant,,,,,,,,59.2757484,17.9612266,2024-05-15T13:53:53Z,OpenStreetMap
 way,161920885,Bagisgrillen,fast_food,Restaurant,burger,,,,,,,59.2770169,18.1317818,2025-03-06T18:47:49Z,OpenStreetMap
 way,161921888,Gula pizzeria,fast_food,Restaurant,pizza,,,,Stångåvägen,79,https://www.gulapizzeria.se,59.2765793,18.1377524,2020-05-11T06:55:54Z,OpenStreetMap

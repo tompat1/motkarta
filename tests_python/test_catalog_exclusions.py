@@ -127,3 +127,30 @@ def test_commercial_chains_are_excluded():
     assert not is_excluded_catalog_name("Bastard Burgers")
 
 
+def test_bathing_places_and_swimming_spots_are_excluded():
+    bathing_spots = [
+        "Badplats",
+        "Flatenbadet badplats",
+        "Farsta strandbad",
+        "Fredhälls klippbad",
+        "Eriksdals friluftsbad",
+        "Hellasgårdens sjöbad",
+        "Motalaparkens plaskdamm",
+        "Tessinparkens plaskdamm",
+        "Strandbad",
+        "Klippbadet",
+    ]
+    for spot in bathing_spots:
+        assert is_excluded_catalog_name(spot), f"Expected {spot} to be excluded"
+
+    legitimate_venues = [
+        "Badcafét",
+        "Ecobaren (Centralbadet)",
+        "Sjöcafé Lövstabadet",
+        "Restaurang Eriksdalsbadet",
+        "Krogen vid Klippbadet",
+    ]
+    for venue in legitimate_venues:
+        assert not is_excluded_catalog_name(venue), f"Expected {venue} to remain included"
+
+

@@ -20,6 +20,14 @@ test("OSM normalization maps known categories to establishment types", () => {
   assert.equal(normalizeOsmEstablishmentType({ category: "coffee" }), "Specialty coffee");
 });
 
+test("OSM normalization rejects non-food bathing spots and public baths", () => {
+  assert.equal(normalizeOsmEstablishmentType({ category: "public_bath", name: "Badplats" }), null);
+  assert.equal(normalizeOsmEstablishmentType({ category: "public_bath", name: "Vattenhuset" }), null);
+  assert.equal(normalizeOsmEstablishmentType({ category: "bathing_place", name: "Strandbad" }), null);
+  assert.equal(normalizeOsmEstablishmentType({ category: "restaurant", name: "Badplats" }), null);
+  assert.equal(normalizeOsmEstablishmentType({ category: "public_bath" }), null);
+});
+
 test("OSM tags preserve structured source clues", () => {
   assert.deepEqual(
     osmTags({

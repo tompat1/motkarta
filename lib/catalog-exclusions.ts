@@ -26,6 +26,13 @@ export function isExcludedCatalogName(name: unknown): boolean {
   if (/\b(?:minigolf\s*kiosk|bangolf(?:\s*&\s*caf[eé])?|badkiosk|strandkiosk|campingkiosk)\b/i.test(trimmed)) return true;
   if (/^kiosk,\s*caf[eé],\s*snabbmat$/i.test(trimmed)) return true;
 
+  // Bathing places, outdoor swimming spots, public baths, and paddling pools
+  if (
+    /\b(?:badplats|badställe|strandbad|klippbad|friluftsbad|bryggbad|hundbad|sjöbad|utomhusbad|nakenbad|vinterbad|plaskdamm)(?:en|et|er|erna)?\b/i.test(trimmed)
+    && !/\b(?:caf[eé]|restaurang(?:en)?|krog(?:en)?|bistro(?:n)?|bar(?:en)?|bageri(?:et)?|konditori(?:et)?)\b/i.test(trimmed)
+  ) return true;
+  if (/^badplats$/i.test(trimmed)) return true;
+
   // Institutional non-commercial dining: schools, preschools, retirement & care facilities
   if (/(?:^|[^a-zA-ZåäöÅÄÖ0-9])(?:grundskol|förskol|forskol|gymnasi|dagis|fritidshem)[a-zA-ZåäöÅÄÖ0-9]*(?![a-zA-ZåäöÅÄÖ0-9])/i.test(trimmed)) return true;
   if (/(?:^|[^a-zA-ZåäöÅÄÖ0-9])[a-zA-ZåäöÅÄÖ0-9]*skol(?:a|an|or|orna)(?![a-zA-ZåäöÅÄÖ0-9])/i.test(trimmed)) return true;

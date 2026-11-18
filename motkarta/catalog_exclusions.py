@@ -36,6 +36,17 @@ def is_excluded_catalog_name(name: object) -> bool:
         return True
     if re.search(r"^kiosk,\s*caf[eé],\s*snabbmat$", trimmed, re.IGNORECASE):
         return True
+    if (
+        re.search(
+            r"\b(?:badplats|badställe|strandbad|klippbad|friluftsbad|bryggbad|hundbad|sjöbad|utomhusbad|nakenbad|vinterbad|plaskdamm)(?:en|et|er|erna)?\b",
+            trimmed,
+            re.IGNORECASE,
+        )
+        and not re.search(r"\b(?:caf[eé]|restaurang(?:en)?|krog(?:en)?|bistro(?:n)?|bar(?:en)?|bageri(?:et)?|konditori(?:et)?)\b", trimmed, re.IGNORECASE)
+    ):
+        return True
+    if re.search(r"^badplats$", trimmed, re.IGNORECASE):
+        return True
     if re.search(r"(?:^|[^a-zA-ZåäöÅÄÖ0-9])(?:grundskol|förskol|forskol|gymnasi|dagis|fritidshem)[a-zA-ZåäöÅÄÖ0-9]*(?![a-zA-ZåäöÅÄÖ0-9])", trimmed, re.IGNORECASE):
         return True
     if re.search(r"(?:^|[^a-zA-ZåäöÅÄÖ0-9])[a-zA-ZåäöÅÄÖ0-9]*skol(?:a|an|or|orna)(?![a-zA-ZåäöÅÄÖ0-9])", trimmed, re.IGNORECASE):

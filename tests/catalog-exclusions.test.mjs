@@ -44,6 +44,36 @@ test("seasonal kiosks and institutional facilities are excluded by isExcludedCat
   assert.equal(isExcludedCatalogName("Sköndals Konditori"), false);
 });
 
+test("bathing places, outdoor swimming spots, and public baths are excluded by isExcludedCatalogName", () => {
+  const bathingSpots = [
+    "Badplats",
+    "Flatenbadet badplats",
+    "Farsta strandbad",
+    "Fredhälls klippbad",
+    "Eriksdals friluftsbad",
+    "Hellasgårdens sjöbad",
+    "Motalaparkens plaskdamm",
+    "Tessinparkens plaskdamm",
+    "Strandbad",
+    "Klippbadet",
+  ];
+  for (const spot of bathingSpots) {
+    assert.equal(isExcludedCatalogName(spot), true, `Expected ${spot} to be excluded`);
+  }
+
+  // Legitimate food places mentioning baths or adjacent to them must remain included
+  const legitimateVenues = [
+    "Badcafét",
+    "Ecobaren (Centralbadet)",
+    "Sjöcafé Lövstabadet",
+    "Restaurang Eriksdalsbadet",
+    "Krogen vid Klippbadet",
+  ];
+  for (const venue of legitimateVenues) {
+    assert.equal(isExcludedCatalogName(venue), false, `Expected ${venue} to remain included`);
+  }
+});
+
 test("commercial chains like Pizza Hut, Max, McDonalds, and Subway are excluded by isExcludedCatalogName", () => {
   const chains = [
     "Pizza Hut",
