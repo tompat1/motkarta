@@ -13,6 +13,7 @@ export const STOCKHOLM_REGIONS = [
   "Kransen",
   "Kungsholmen",
   "Västermalm",
+  "Norra Djurgården",
   "Norrmalm",
   "Östermalm",
   "Riddarholmen",
@@ -223,6 +224,76 @@ const AREA_ALIASES: Array<{ region: string; aliases: string[] }> = [
   },
   { region: "Södermalm", aliases: ["södermalm", "soder", "söder", "mariatorget", "hornstull", "sofo", "nytorget", "östgöta", "ostgota", "zinkensdamm", "skanstull", "götgatan", "gotgatan", "folkungagatan", "bondegatan", "kocksgatan", "skånegatan", "renstiernas"] },
   { region: "Djurgården", aliases: ["djurgården", "djurgarden", "biskopsudden", "skansen", "grona lund", "gröna lund", "djurgårdsbrunn"] },
+  {
+    region: "Norra Djurgården",
+    aliases: [
+      "norra djurgården",
+      "norra djurgarden",
+      "frescati",
+      "frescativägen",
+      "frescativagen",
+      "stora skuggan",
+      "stora skuggans",
+      "stora skuggans väg",
+      "stora skuggans vag",
+      "lilla skuggan",
+      "lilla skuggans väg",
+      "lilla skuggans vag",
+      "albano",
+      "albanovägen",
+      "albanovagen",
+      "bergianska",
+      "bergianska trädgården",
+      "bergianska tradgarden",
+      "gustafsborgsvägen",
+      "gustafsborgsvagen",
+      "lappkärrsberget",
+      "lappkarrsberget",
+      "professorsslingan",
+      "docentbacken",
+      "ekhagen",
+      "ekhagsstigen",
+      "lill-jansskogen",
+      "lilljansskogen",
+      "fiskartorpet",
+      "björnnäsbacken",
+      "bjornnasbacken",
+      "södra fiskartorpsvägen",
+      "sodra fiskartorpsvagen",
+      "fiskartorpsvägen",
+      "fiskartorpsvagen",
+      "kth",
+      "drottning kristinas väg",
+      "drottning kristinas vag",
+      "teknikringen",
+      "brinellvägen",
+      "brinellvagen",
+      "osquars backe",
+      "lindstedtsvägen",
+      "lindstedtsvagen",
+      "malvinas väg",
+      "malvinas vag",
+      "universitetet",
+      "universitetsvägen",
+      "universitetsvagen",
+      "svante arrhenius väg",
+      "svante arrhenius vag",
+      "kräftriket",
+      "kraftriket",
+      "norra djurgårdsstaden",
+      "norra djurgardsstaden",
+      "bobergsgatan",
+      "storängstorget",
+      "storangstorget",
+      "storängsgatan",
+      "storangsgatan",
+      "husarviksgatan",
+      "husarvikstorget",
+      "gasverket",
+      "jägmästargatan",
+      "jagmastargatan",
+    ],
+  },
   { region: "Riddarholmen", aliases: ["riddarholmen", "birger jarls torg", "riddarholmskajen", "wrangelska", "norra riddarholmshamnen", "södra riddarholmshamnen"] },
   { region: "Skeppsholmen", aliases: ["skeppsholmen", "kastellholmen", "svensksundsvägen", "svensksundsvagen", "exercisplan", "flaggmansvägen", "flaggmansvagen", "sjöbacksstigen", "sjobacksstigen"] },
   { region: "Vasastan", aliases: ["vasastan", "vasastaden", "odenplan", "birkastan", "st eriksplan", "rörstrandsgatan", "rorstrandsgatan", "sankt eriksplan"] },
@@ -272,6 +343,44 @@ const PLACE_OVERRIDES = new Map<string, string>([
   ["loopen marina", "Södermalm"],
   ["yuc tanto", "Södermalm"],
   ["boda", "Söderort"],
+  ["skafferiet i ekoparken", "Norra Djurgården"],
+  ["fiskartorpet", "Norra Djurgården"],
+  ["harpaviljongen", "Norra Djurgården"],
+  ["carolas eko", "Norra Djurgården"],
+  ["frescati stories", "Norra Djurgården"],
+  ["bistro naturhistoriska", "Norra Djurgården"],
+  ["the coffice albano", "Norra Djurgården"],
+  ["proviant albano", "Norra Djurgården"],
+  ["fågelängens catering", "Norra Djurgården"],
+  ["fagelangens catering", "Norra Djurgården"],
+  ["fågelängens catering lunchrestaurang", "Norra Djurgården"],
+  ["fagelangens catering lunchrestaurang", "Norra Djurgården"],
+  ["prego d-huset", "Norra Djurgården"],
+  ["prego allhuset", "Norra Djurgården"],
+  ["prego studenthuset", "Norra Djurgården"],
+  ["café bojan", "Norra Djurgården"],
+  ["cafe bojan", "Norra Djurgården"],
+  ["lantis", "Norra Djurgården"],
+  ["accelerator café", "Norra Djurgården"],
+  ["accelerator cafe", "Norra Djurgården"],
+  ["restaurang picnic", "Norra Djurgården"],
+  ["sushi garden", "Norra Djurgården"],
+  ["kth fika", "Norra Djurgården"],
+  ["kth stories", "Norra Djurgården"],
+  ["syster o bror", "Norra Djurgården"],
+  ["la campus", "Norra Djurgården"],
+  ["restaurang propellern", "Norra Djurgården"],
+  ["restaurang nymble", "Norra Djurgården"],
+  ["ths-cafe", "Norra Djurgården"],
+  ["dino", "Norra Djurgården"],
+  ["järnvägsrestaurangen östra station", "Norra Djurgården"],
+  ["jarnvagsrestaurangen ostra station", "Norra Djurgården"],
+  ["östra bageriet", "Norra Djurgården"],
+  ["ostra bageriet", "Norra Djurgården"],
+  ["stora skuggans bageri", "Norra Djurgården"],
+  ["värdshuset kräftan", "Norra Djurgården"],
+  ["vardshuset kraftan", "Norra Djurgården"],
+  ["brazilia restaurang", "Norra Djurgården"],
 ]);
 
 const REGION_BOXES: Array<{
@@ -287,11 +396,12 @@ const REGION_BOXES: Array<{
   { region: "Södermalm", latMin: 59.3080, latMax: 59.3210, lonMin: 18.0320, lonMax: 18.1050 },
   { region: "Djurgården", latMin: 59.3180, latMax: 59.3370, lonMin: 18.0850, lonMax: 18.1600 },
   { region: "Gärdet", latMin: 59.3400, latMax: 59.3560, lonMin: 18.0920, lonMax: 18.1350 },
+  { region: "Norra Djurgården", latMin: 59.3458, latMax: 59.3750, lonMin: 18.0480, lonMax: 18.1020 },
   { region: "Kransen", latMin: 59.2970, latMax: 59.3075, lonMin: 18.0000, lonMax: 18.0200 },
   { region: "Kungsholmen", latMin: 59.3230, latMax: 59.3440, lonMin: 17.9850, lonMax: 18.0600 },
   { region: "Vasastan", latMin: 59.3375, latMax: 59.3620, lonMin: 18.0200, lonMax: 18.0660 },
   { region: "Norrmalm", latMin: 59.3260, latMax: 59.3375, lonMin: 18.0440, lonMax: 18.0720 },
-  { region: "Östermalm", latMin: 59.3300, latMax: 59.3550, lonMin: 18.0660, lonMax: 18.1400 },
+  { region: "Östermalm", latMin: 59.3300, latMax: 59.3455, lonMin: 18.0660, lonMax: 18.1400 },
 ];
 
 export function isMisplacedSodermalmRegion(place: RegionPlace): boolean {
@@ -323,6 +433,29 @@ export function isMisplacedSodermalmRegion(place: RegionPlace): boolean {
   return false;
 }
 
+export function isMisplacedOstermalmRegion(place: RegionPlace): boolean {
+  const existingArea = place.area?.trim();
+  const normalizedArea = existingArea ? normalizeRegionText(existingArea) : "";
+  if (normalizedArea !== "ostermalm" && normalizedArea !== "norrort" && normalizedArea !== "vasastan") {
+    return false;
+  }
+  const normalizedName = normalizeRegionText(place.name);
+  if (PLACE_OVERRIDES.has(normalizedName)) {
+    return PLACE_OVERRIDES.get(normalizedName) === "Norra Djurgården";
+  }
+  const textWithoutArea = normalizeRegionText(`${place.name} ${place.address ?? ""}`);
+  const norraDjurgarden = AREA_ALIASES.find((entry) => entry.region === "Norra Djurgården");
+  if (norraDjurgarden && norraDjurgarden.aliases.some((alias) => matchesRegionAlias(textWithoutArea, alias))) {
+    return true;
+  }
+  if (typeof place.latitude === "number" && typeof place.longitude === "number" && place.latitude > 0 && place.longitude > 0) {
+    if (place.latitude >= 59.3458 && place.latitude <= 59.3750 && place.longitude >= 18.0480 && place.longitude <= 18.1020) {
+      return !(place.latitude <= 59.3560 && place.longitude >= 18.0920); // Exclude Gärdet
+    }
+  }
+  return false;
+}
+
 export function resolveStockholmRegion(place: RegionPlace): string {
   const existingArea = place.area?.trim();
   const normalizedName = normalizeRegionText(place.name);
@@ -331,7 +464,7 @@ export function resolveStockholmRegion(place: RegionPlace): string {
     return override;
   }
 
-  const isMisplaced = isMisplacedSodermalmRegion(place);
+  const isMisplaced = isMisplacedSodermalmRegion(place) || isMisplacedOstermalmRegion(place);
   if (existingArea && !isBroadStockholmArea(existingArea) && !isMisplaced) {
     return existingArea;
   }
@@ -370,6 +503,12 @@ export function resolveStockholmRegion(place: RegionPlace): string {
     if (place.longitude < 17.9850) {
       return "Västerort";
     }
+    if (place.latitude >= 59.3458 && place.latitude <= 59.3750 && place.longitude >= 18.0480 && place.longitude <= 18.1020) {
+      if (place.latitude <= 59.3560 && place.longitude >= 18.0920) {
+        return "Gärdet";
+      }
+      return "Norra Djurgården";
+    }
     if (place.latitude > 59.3550) {
       return "Norrort";
     }
@@ -378,6 +517,9 @@ export function resolveStockholmRegion(place: RegionPlace): string {
     }
     if (place.latitude <= 59.3375) {
       return place.longitude > 18.0700 ? "Östermalm" : "Norrmalm";
+    }
+    if (place.latitude > 59.3375 && place.latitude <= 59.3455) {
+      return place.longitude > 18.0660 ? "Östermalm" : "Vasastan";
     }
     if (place.latitude > 59.3375) {
       return "Vasastan";

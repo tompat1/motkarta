@@ -24,7 +24,7 @@ import pandas as pd
 from scipy.spatial.distance import jensenshannon
 
 
-INNER_DISTRICTS = {"södermalm", "norrmalm", "östermalm", "vasastan", "gamla stan", "kungsholmen", "gärdet", "riddarholmen", "skeppsholmen"}
+INNER_DISTRICTS = {"södermalm", "norrmalm", "östermalm", "vasastan", "gamla stan", "kungsholmen", "gärdet", "riddarholmen", "skeppsholmen", "norra djurgården"}
 
 
 @dataclass(frozen=True)

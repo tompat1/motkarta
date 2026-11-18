@@ -2868,13 +2868,14 @@
       "name": "Skafferiet i Ekoparken",
       "kind": "Café",
       "cuisine": "coffee shop",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap. Cuisine tag: coffee shop. Address: Stora Skuggans Väg 38.",
       "tags": [
         "Café",
         "Coffee Shop",
         "North Stockholm",
-        "OpenStreetMap"
+        "OpenStreetMap",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -2973,12 +2974,13 @@
       "name": "Fiskartorpet",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -3418,12 +3420,13 @@
       "name": "Harpaviljongen",
       "kind": "Café",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "Central Stockholm",
-        "OpenStreetMap"
+        "OpenStreetMap",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -5134,7 +5137,7 @@
       "name": "Järnvägsrestaurangen Östra Station",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
@@ -5144,7 +5147,8 @@
         "Opening hours",
         "Restaurant",
         "Tasstipset",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -5243,13 +5247,14 @@
       "name": "Östra Bageriet",
       "kind": "Café",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "Central Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -14307,7 +14312,7 @@
       "name": "La Campus",
       "kind": "Restaurant",
       "cuisine": "pizza;burger;thai",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: pizza;burger;thai.",
       "tags": [
         "Burger",
@@ -14317,7 +14322,8 @@
         "Pizza",
         "Restaurant",
         "Thai",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -14546,13 +14552,14 @@
       "name": "Bullens",
       "kind": "Café",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "Central Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -14693,13 +14700,14 @@
       "name": "Corella Östermalm",
       "kind": "Café",
       "cuisine": "italian",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap. Cuisine tag: italian.",
       "tags": [
         "Café",
         "Central Stockholm",
         "Italian",
-        "OpenStreetMap"
+        "OpenStreetMap",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -14847,13 +14855,14 @@
       "name": "Kebab Kitchen",
       "kind": "Restaurant",
       "cuisine": "kebab",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: kebab.",
       "tags": [
         "Central Stockholm",
         "Kebab",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -14932,7 +14941,7 @@
       "name": "Nopo 1988",
       "kind": "Restaurant",
       "cuisine": "korean",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: korean.",
       "tags": [
         "Central Stockholm",
@@ -14940,7 +14949,8 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -15080,14 +15090,15 @@
       "name": "Asian wokhouse",
       "kind": "Restaurant",
       "cuisine": "asian",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: asian.",
       "tags": [
         "Asian",
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -15168,7 +15179,7 @@
       "name": "Dino",
       "kind": "Restaurant",
       "cuisine": "pizza;kebab",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: pizza;kebab.",
       "tags": [
         "Central Stockholm",
@@ -15176,7 +15187,8 @@
         "OpenStreetMap",
         "Opening hours",
         "Pizza",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -25299,14 +25311,15 @@
       "name": "Bistro Naturhistoriska",
       "kind": "Restaurant",
       "cuisine": "bistro;cafe",
-      "area": "Norrort",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: bistro;cafe.",
       "tags": [
         "Bistro",
         "Cafe",
         "North Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -54577,7 +54590,7 @@
       "name": "Syster O Bror",
       "kind": "Restaurant",
       "cuisine": "regional",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: regional.",
       "tags": [
         "Central Stockholm",
@@ -54585,7 +54598,8 @@
         "Opening hours",
         "Regional",
         "Restaurant",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -54642,7 +54656,7 @@
       "longitude": 18.0709291,
       "x": 64.19,
       "y": 44.97,
-      "address": "Drottning Kristinas Väg 20, Östermalm",
+      "address": "Drottning Kristinas Väg 20, Norra Djurgården",
       "osmIdentity": "node:602788514",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 10:30-14:00",
@@ -78471,14 +78485,15 @@
       "name": "Taste by Nordrest",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -78567,13 +78582,14 @@
       "name": "Brazilia Restaurang",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Vasastan",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -80309,7 +80325,7 @@
       "name": "Restaurang Propellern",
       "kind": "Restaurant",
       "cuisine": "regional;coffee shop",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: regional;coffee shop.",
       "tags": [
         "Central Stockholm",
@@ -80318,7 +80334,8 @@
         "Opening hours",
         "Regional",
         "Restaurant",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -84429,14 +84446,15 @@
       "name": "Prego D-Huset",
       "kind": "Café",
       "cuisine": "",
-      "area": "Norrort",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -84555,14 +84573,15 @@
       "name": "Prego Allhuset",
       "kind": "Café",
       "cuisine": "",
-      "area": "Norrort",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -104689,13 +104708,14 @@
       "name": "Café Bojan",
       "kind": "Restaurant",
       "cuisine": "thai",
-      "area": "Norrort",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: thai.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Restaurant",
-        "Thai"
+        "Thai",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -125252,13 +125272,14 @@
       "name": "Sophiahemmet lunchrestaurang",
       "kind": "Restaurant",
       "cuisine": "regional",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: regional.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
         "Regional",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -153521,14 +153542,15 @@
       "name": "THS-Cafe",
       "kind": "Café",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -158485,14 +158507,15 @@
       "name": "KTH Stories",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Address: Osquars Backe 31.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -158549,7 +158572,7 @@
       "longitude": 18.0728004,
       "x": 64.56,
       "y": 45.25,
-      "address": "Osquars Backe 31, Östermalm",
+      "address": "Osquars Backe 31, Norra Djurgården",
       "osmIdentity": "node:1675829423",
       "idNamespace": "public",
       "openingHours": "Mo-Th 08:00-17:00; Fr 08:00-16:30",
@@ -159334,13 +159357,14 @@
       "name": "Lantis",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Norrort",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -159419,13 +159443,14 @@
       "name": "Frescati Stories",
       "kind": "Café",
       "cuisine": "",
-      "area": "Norrort",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "North Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -164530,7 +164555,7 @@
       "name": "Restaurang Nymble",
       "kind": "Restaurant",
       "cuisine": "regional",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: regional.",
       "tags": [
         "Central Stockholm",
@@ -164538,7 +164563,8 @@
         "Opening hours",
         "Regional",
         "Restaurant",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -175965,14 +175991,15 @@
       "name": "Petite Sabis Svea artilleri",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -189183,14 +189210,15 @@
       "name": "Värdshuset Kräftan",
       "kind": "Restaurant",
       "cuisine": "regional",
-      "area": "Vasastan",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: regional. Address: Kräftriket 9C.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Regional",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": true,
@@ -199820,7 +199848,7 @@
       "name": "Selma Deli",
       "kind": "Café",
       "cuisine": "coffee shop",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap. Cuisine tag: coffee shop.",
       "tags": [
         "Café",
@@ -199828,7 +199856,8 @@
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -203301,13 +203330,14 @@
       "name": "Pizzeria La Carda",
       "kind": "Restaurant",
       "cuisine": "pizza",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: pizza.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Pizza",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -209047,13 +209077,14 @@
       "name": "Soso",
       "kind": "Restaurant",
       "cuisine": "ramen",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: ramen.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
         "Ramen",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -209161,14 +209192,15 @@
       "name": "Two fat ladies in Stockholm",
       "kind": "Café",
       "cuisine": "sushi",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap. Cuisine tag: sushi.",
       "tags": [
         "Café",
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Sushi"
+        "Sushi",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -209568,13 +209600,14 @@
       "name": "Doch",
       "kind": "Café",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "North Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -210097,14 +210130,15 @@
       "name": "Mare Blu",
       "kind": "Café",
       "cuisine": "italian",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap. Cuisine tag: italian.",
       "tags": [
         "Café",
         "Italian",
         "North Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -212153,14 +212187,15 @@
       "name": "Café Olive",
       "kind": "Café",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -214208,14 +214243,15 @@
       "name": "Arigato sushi",
       "kind": "Restaurant",
       "cuisine": "sushi",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: sushi.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Sushi"
+        "Sushi",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -221322,7 +221358,7 @@
       "name": "Sushi Garden",
       "kind": "Restaurant",
       "cuisine": "sushi;japanese;thai;asian",
-      "area": "Norrort",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: sushi;japanese;thai;asian. Address: Professorsslingan 15.",
       "tags": [
         "Asian",
@@ -221333,7 +221369,8 @@
         "Restaurant",
         "Sushi",
         "Thai",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -221921,13 +221958,14 @@
       "name": "Prego Studenthuset",
       "kind": "Café",
       "cuisine": "",
-      "area": "Norrort",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "North Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -225883,13 +225921,14 @@
       "name": "Open café",
       "kind": "Café",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "Central Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -237700,7 +237739,7 @@
       "name": "Beiruts Brygga",
       "kind": "Restaurant",
       "cuisine": "pizza",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: pizza.",
       "tags": [
         "North Stockholm",
@@ -237708,7 +237747,8 @@
         "Opening hours",
         "Pizza",
         "Restaurant",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -237764,7 +237804,7 @@
       "longitude": 18.0864648,
       "x": 67.29,
       "y": 41.51,
-      "address": "Husarviksgatan 12, Östermalm",
+      "address": "Husarviksgatan 12, Norra Djurgården",
       "osmIdentity": "node:4612475998",
       "idNamespace": "public",
       "openingHours": "Mo-Su 11:00-21:00",
@@ -241529,14 +241569,15 @@
       "name": "Bamboo",
       "kind": "Restaurant",
       "cuisine": "asian",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: asian.",
       "tags": [
         "Asian",
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -241594,7 +241635,7 @@
       "longitude": 18.0882034,
       "x": 67.64,
       "y": 43.09,
-      "address": "Storängstorget 3, Östermalm",
+      "address": "Storängstorget 3, Norra Djurgården",
       "osmIdentity": "node:4885376124",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 11:00-21:00; Sa 12:00-21:00; Su 15:00-21:00",
@@ -242767,14 +242808,15 @@
       "name": "Akasaka",
       "kind": "Restaurant",
       "cuisine": "sushi",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: sushi.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Sushi"
+        "Sushi",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -242903,14 +242945,15 @@
       "name": "Wang Sushi & Dumplings",
       "kind": "Restaurant",
       "cuisine": "sushi",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: sushi. Address: Bobergsgatan 63.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Sushi"
+        "Sushi",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -242967,7 +243010,7 @@
       "longitude": 18.0921462,
       "x": 68.43,
       "y": 41.13,
-      "address": "Bobergsgatan 63, Östermalm",
+      "address": "Bobergsgatan 63, Norra Djurgården",
       "osmIdentity": "node:5005094648",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 11:00-21:00; Sa, Su 12:00-21:00",
@@ -244088,7 +244131,7 @@
       "name": "Restaurang Picnic",
       "kind": "Restaurant",
       "cuisine": "pizza;kebab;hamburger;pasta;salad;falafel",
-      "area": "Norrort",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: pizza;kebab;hamburger;pasta;salad;falafel.",
       "tags": [
         "Falafel",
@@ -244101,7 +244144,8 @@
         "Pizza",
         "Restaurant",
         "Salad",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -250518,7 +250562,7 @@
       "name": "The Coffice",
       "kind": "Café",
       "cuisine": "coffee shop;sandwich",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap. Cuisine tag: coffee shop;sandwich. Address: Drottning Kristinas väg 36A.",
       "tags": [
         "Café",
@@ -250527,7 +250571,8 @@
         "OpenStreetMap",
         "Opening hours",
         "Sandwich",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -250584,7 +250629,7 @@
       "longitude": 18.0682438,
       "x": 63.65,
       "y": 44.2,
-      "address": "Drottning Kristinas väg 36A, Östermalm",
+      "address": "Drottning Kristinas väg 36A, Norra Djurgården",
       "osmIdentity": "node:5548016531",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 07:00-18:00; Sa,Su 10:00-15:00",
@@ -253513,7 +253558,7 @@
       "name": "Texas Longhorn",
       "kind": "Restaurant",
       "cuisine": "steak house",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: steak house.",
       "tags": [
         "North Stockholm",
@@ -253521,7 +253566,8 @@
         "Opening hours",
         "Restaurant",
         "Steak House",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -255407,7 +255453,7 @@
       "name": "Bullar & Bröd",
       "kind": "Café",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
@@ -255416,7 +255462,8 @@
         "Hundvänligt",
         "OpenStreetMap",
         "Opening hours",
-        "Tasstipset"
+        "Tasstipset",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -256110,7 +256157,7 @@
       "name": "Café Två Bönor",
       "kind": "Café",
       "cuisine": "raw;breakfast;lunch;coffee shop;sandwich;swedish",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap. Cuisine tag: raw;breakfast;lunch;coffee shop;sandwich;swedish.",
       "tags": [
         "Breakfast",
@@ -256127,7 +256174,8 @@
         "Swedish",
         "Tasstipset",
         "Website",
-        "Internet access (type unknown)"
+        "Internet access (type unknown)",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -270169,12 +270217,13 @@
       "name": "Stora Skuggans Bageri",
       "kind": "Bakery",
       "cuisine": "",
-      "area": "Vasastan",
+      "area": "Norra Djurgården",
       "note": "Bakery from OpenStreetMap.",
       "tags": [
         "Bakery",
         "Central Stockholm",
-        "OpenStreetMap"
+        "OpenStreetMap",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -278544,13 +278593,14 @@
       "name": "Matkafé Mätarhuset",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Restaurant",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -278627,7 +278677,7 @@
       "name": "Rockin Grill",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "North Stockholm",
@@ -278636,7 +278686,8 @@
         "Restaurant",
         "Burgerdudes",
         "Curated",
-        "Sveriges Bästa Burgare"
+        "Sveriges Bästa Burgare",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -281251,13 +281302,14 @@
       "name": "Jompas hörna",
       "kind": "Café",
       "cuisine": "coffee shop",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap. Cuisine tag: coffee shop.",
       "tags": [
         "Café",
         "Coffee Shop",
         "North Stockholm",
-        "OpenStreetMap"
+        "OpenStreetMap",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -282115,13 +282167,14 @@
       "name": "KTH Fika",
       "kind": "Café",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap. Address: Teknikringen 68A.",
       "tags": [
         "Café",
         "North Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -282178,7 +282231,7 @@
       "longitude": 18.0725362,
       "x": 64.51,
       "y": 44.19,
-      "address": "Teknikringen 68A, Östermalm",
+      "address": "Teknikringen 68A, Norra Djurgården",
       "osmIdentity": "node:8790091260",
       "idNamespace": "public",
       "openingHours": "Mo-Th 07:30-17:00; Fr 07:30-16:00; Sa-Su off",
@@ -286090,12 +286143,13 @@
       "name": "Pesso Cafe Bar",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -293954,13 +294008,14 @@
       "name": "Lilla Mama Rosa",
       "kind": "Restaurant",
       "cuisine": "pizza",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: pizza.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Pizza",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -296120,13 +296175,14 @@
       "name": "The Coffice Albano",
       "kind": "Café",
       "cuisine": "",
-      "area": "Vasastan",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "North Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -296205,14 +296261,15 @@
       "name": "Fågelängens Catering lunchrestaurang",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Vasastan",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -303487,13 +303544,14 @@
       "name": "Proviant Albano",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Vasastan",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -304591,13 +304649,14 @@
       "name": "Accelerator café",
       "kind": "Café",
       "cuisine": "",
-      "area": "Norrort",
+      "area": "Norra Djurgården",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "North Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -305784,7 +305843,7 @@
       "name": "ONE MORE Vietnamesisk Smak",
       "kind": "Restaurant",
       "cuisine": "asian",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: asian.",
       "tags": [
         "Asian",
@@ -305792,7 +305851,8 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -340563,13 +340623,14 @@
       "name": "Hantverksbageriet",
       "kind": "Bakery",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Bakery from OpenStreetMap.",
       "tags": [
         "Bakery",
         "North Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -340658,12 +340719,13 @@
       "name": "Ocra",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -368404,13 +368466,14 @@
       "name": "Carolas Eko",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Östermalm",
+      "area": "Norra Djurgården",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "North Stockholm",
         "OpenStreetMap",
         "Restaurant",
-        "Website"
+        "Website",
+        "Norra Djurgården"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,

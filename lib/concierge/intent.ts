@@ -73,6 +73,7 @@ function parseSingleIntent(query: string, context: QueryContext = {}) {
     else if (/\b(ostermalm|oster|pa ostermalm|stureplan|karlaplan|humlegarden)\b/i.test(normalized)) rawArea = 'ostermalm';
     else if (/\b(kungsholmen|fridhemsplan|stadshagen|kristineberg|fredhall|marieberg)\b/i.test(normalized)) rawArea = 'kungsholmen';
     else if (/\b(norrmalm|city|hotorget|t-centralen|tcentralen|sergels torg|klara)\b/i.test(normalized)) rawArea = 'norrmalm';
+    else if (/\b(norra djurgarden|norra djurgården|norra djurgardsstaden|norra djurgårdsstaden)\b/i.test(normalized)) rawArea = 'norra djurgarden';
     else if (/\b(djurgarden|djurgardsbrunn)\b/i.test(normalized)) rawArea = 'djurgarden';
     else if (/\b(riddarholmen)\b/i.test(normalized)) rawArea = 'riddarholmen';
     else if (/\b(skeppsholmen|kastellholmen)\b/i.test(normalized)) rawArea = 'skeppsholmen';

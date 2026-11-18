@@ -11,6 +11,7 @@ STOCKHOLM_DISCOVERY_DISTRICTS: tuple[str, ...] = (
     "Kungsholmen",
     "Gamla Stan",
     "Djurgården",
+    "Norra Djurgården",
     "Gärdet",
     "Söderort",
 )

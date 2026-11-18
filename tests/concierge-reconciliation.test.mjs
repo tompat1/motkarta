@@ -115,7 +115,7 @@ test('map bridge uses full OSM identity without changing public or D1 IDs', () =
 test('source locality survives derived region labels but never overrides exclusions or impossible coordinates', () => {
   const loaded = rowsToPlaceInputs([{ ...row, latitude: 59.36, longitude: 18.08, osm_type: 'node', osm_id: '123' }])[0];
   assert.equal(loaded.idNamespace, 'd1'); assert.equal(loaded.osmIdentity, 'node:123');
-  assert.equal(loaded.area, 'Norrort'); assert.equal(loaded.sourceArea, 'Stockholm');
+  assert.equal(loaded.area, 'Norra Djurgården'); assert.equal(loaded.sourceArea, 'Stockholm');
   assert.equal(eligiblePlace(loaded), true);
   assert.equal(eligiblePlace({ ...loaded, address: 'Solna, Stockholm' }), false);
   assert.equal(eligiblePlace({ ...loaded, latitude: 0, longitude: 0 }), false);

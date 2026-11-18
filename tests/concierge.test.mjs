@@ -281,9 +281,14 @@ test("RAG retrieveAndSynthesize lists ALL places in region when user writes Gaml
   assert.equal(resultKransen.cards.length, 49, "Should return all 49 places in Kransen");
   assert.ok(resultKransen.intro.includes("alla 49 ställen i Kransen"));
 
-  // Vasastan (207 independent places with Curbside Stockholm added and commercial chains excluded)
+  // Norra Djurgården (63 places in KTH, Albano, Frescati, Bergianska, Stora Skuggan, Norra Djurgårdsstaden)
+  const resultNorraDjurgarden = retrieveAndSynthesize("Norra Djurgården", livePlaces, { language: "sv" });
+  assert.equal(resultNorraDjurgarden.cards.length, 63, "Should return all 63 places in Norra Djurgården");
+  assert.ok(resultNorraDjurgarden.intro.includes("alla 63 ställen i Norra Djurgården"));
+
+  // Vasastan (201 independent places with Albano & Kräftriket properly placed in Norra Djurgården)
   const resultVasastan = retrieveAndSynthesize("Vasastan", livePlaces, { language: "sv" });
-  assert.equal(resultVasastan.cards.length, 207, "Should return all 207 places in Vasastan");
+  assert.equal(resultVasastan.cards.length, 201, "Should return all 201 places in Vasastan");
 
   // Non-cuisine browse query still capped at 5 on map and in answer
   const resultGeneric = retrieveAndSynthesize("cardamom bun and filter coffee", livePlaces);

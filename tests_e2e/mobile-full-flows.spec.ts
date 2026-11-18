@@ -350,7 +350,9 @@ test.describe("Mobile Full User Flows", () => {
     const zoomInBtn = page.locator('.map-control-btn', { hasText: '+' }).first();
     if (await zoomInBtn.isVisible()) {
       await zoomInBtn.click();
+      await page.waitForTimeout(200);
       await zoomInBtn.click();
+      await page.waitForTimeout(200);
       await zoomInBtn.click();
     }
 
@@ -373,7 +375,9 @@ test.describe("Mobile Full User Flows", () => {
     const zoomInBtn = page.locator('.map-control-btn', { hasText: '+' }).first();
     if (await zoomInBtn.isVisible()) {
       await zoomInBtn.click();
+      await page.waitForTimeout(200);
       await zoomInBtn.click();
+      await page.waitForTimeout(200);
       await zoomInBtn.click();
     }
 

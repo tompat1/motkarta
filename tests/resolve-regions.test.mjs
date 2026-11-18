@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-  onRequestGet as getResolveRegions,
   onRequestPost as postResolveRegions,
 } from "../functions/api/admin/resolve-regions.ts";
 import { isBroadStockholmArea, resolveStockholmRegion } from "../lib/stockholm-regions.ts";
@@ -20,6 +19,7 @@ test("broad stockholm area detection recognizes generic labels and missing value
   assert.equal(isBroadStockholmArea("Vasastan"), false);
   assert.equal(isBroadStockholmArea("Djurgården"), false);
   assert.equal(isBroadStockholmArea("Gärdet"), false);
+  assert.equal(isBroadStockholmArea("Norra Djurgården"), false);
   assert.equal(isBroadStockholmArea("Kransen"), false);
   assert.equal(isBroadStockholmArea("Skeppsholmen"), false);
   assert.equal(isBroadStockholmArea("Riddarholmen"), false);
@@ -66,6 +66,28 @@ test("resolveStockholmRegion resolves broad/unspecified places into specific reg
   assert.equal(
     resolveStockholmRegion({ name: "Outer North Spot", area: "Stockholm", latitude: 59.38, longitude: 18.07 }),
     "Norrort",
+  );
+
+  // Norra Djurgården resolution & reclassification from Östermalm
+  assert.equal(
+    resolveStockholmRegion({ name: "Skafferiet i Ekoparken", area: "Östermalm", address: "Stora Skuggans Väg 38", latitude: 59.3650517, longitude: 18.0713552 }),
+    "Norra Djurgården",
+  );
+  assert.equal(
+    resolveStockholmRegion({ name: "Järnvägsrestaurangen Östra Station", area: "Östermalm", address: "Drottning Kristinas väg 1", latitude: 59.346092, longitude: 18.0713793 }),
+    "Norra Djurgården",
+  );
+  assert.equal(
+    resolveStockholmRegion({ name: "Dino", area: "Östermalm", address: "Frescativägen 40", latitude: 59.347335, longitude: 18.0669831 }),
+    "Norra Djurgården",
+  );
+  assert.equal(
+    resolveStockholmRegion({ name: "The Coffice Albano", area: "Vasastan", address: "North Stockholm, Stockholm", latitude: 59.3542494, longitude: 18.0572915 }),
+    "Norra Djurgården",
+  );
+  assert.equal(
+    resolveStockholmRegion({ name: "Sturehof", area: "Östermalm", address: "Stureplan 2", latitude: 59.336, longitude: 18.073 }),
+    "Östermalm",
   );
 });
 

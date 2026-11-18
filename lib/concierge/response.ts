@@ -79,6 +79,7 @@ const CANONICAL_AREA_NAMES: Record<string, string> = {
   'ostermalm': 'Östermalm',
   'kungsholmen': 'Kungsholmen',
   'norrmalm': 'Norrmalm',
+  'norra djurgarden': 'Norra Djurgården',
   'djurgarden': 'Djurgården',
   'gardet': 'Gärdet',
   'kransen': 'Kransen',

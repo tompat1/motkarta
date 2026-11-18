@@ -594,6 +594,7 @@ export const STOCKHOLM_REGION_OPTIONS = [
   { label: "Gärdet", value: "Gärdet", aliases: ["gärdet", "gardet", "frihamnen", "sandhamnsgatan", "tessinparken", "sehlstedtsgatan"] },
   { label: "Kungsholmen", value: "Kungsholmen", aliases: ["kungsholmen", "fridhemsplan", "kronobergsgatan"] },
   { label: "Djurgården", value: "Djurgården", aliases: ["djurgården", "djurgarden"] },
+  { label: "Norra Djurgården", value: "Norra Djurgården", aliases: ["norra djurgården", "norra djurgarden", "frescati", "kth", "albano", "stora skuggan", "lilla skuggan", "bergianska", "lappkärrsberget", "ekhagen", "universitetet", "norra djurgårdsstaden"] },
   { label: "Riddarholmen", value: "Riddarholmen", aliases: ["riddarholmen", "birger jarls torg", "riddarholmskajen"] },
   { label: "Skeppsholmen", value: "Skeppsholmen", aliases: ["skeppsholmen", "kastellholmen"] },
   { label: "Kransen (Midsommarkransen)", value: "Kransen", aliases: ["kransen", "midsommarkransen", "tellusborg", "svandammsplan"] },
