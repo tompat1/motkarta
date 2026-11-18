@@ -13,9 +13,27 @@ import {
   type MapBounds,
 } from "../app/map-bounds";
 import { requestPosition, locationFailureMessage, type LocationResult } from '../app/geolocation';
-import { ArrowsIn, ArrowsOut, Crosshair, FrameCorners, Minus, Plus } from "@phosphor-icons/react";
+import { ArrowsIn, ArrowsOut, Check, Crosshair, FrameCorners, Minus, Plus, Stack } from "@phosphor-icons/react";
 import { SPECIALTY_COFFEE_SVG_CONTENT } from "./SpecialtyCoffeeIcon";
 import { BAR_MARTINI_SVG_CONTENT, PUB_BEER_STEIN_SVG_CONTENT, getPlaceDrinkCategory } from "./BarAndPubIcons";
+
+export type MapLayerMode = "default" | "satellite" | "hybrid";
+
+const MAP_LAYER_STORAGE_KEY = "motkarta_map_layer";
+const CARTO_API_KEY = "cb1_3lj2_1_a3e8aa97d669a225931f55fe";
+
+function readInitialMapLayer(): MapLayerMode {
+  if (typeof window === "undefined") return "default";
+  try {
+    const stored = window.localStorage.getItem(MAP_LAYER_STORAGE_KEY);
+    if (stored === "default" || stored === "satellite" || stored === "hybrid") {
+      return stored;
+    }
+  } catch {
+    // ignore storage errors
+  }
+  return "default";
+}
 
 export function FoodMap({
   places,
@@ -40,12 +58,16 @@ export function FoodMap({
   const t = translations[lang];
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
+  const baseLayerRef = useRef<L.TileLayer | null>(null);
+  const overlayLayerRef = useRef<L.TileLayer | null>(null);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const markersRef = useRef<Map<number, L.Marker>>(new Map());
   const userMarkerRef = useRef<L.Marker | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [locating, setLocating] = useState(false);
   const [locationFailure, setLocationFailure] = useState<Exclude<LocationResult['status'], 'acquired'> | null>(null);
+  const [mapLayer, setMapLayer] = useState<MapLayerMode>(readInitialMapLayer);
+  const [isLayerMenuOpen, setIsLayerMenuOpen] = useState(false);
   const lastFitKeyRef = useRef<string>("");
   const fitBoundsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevActivePlaceIdRef = useRef<number | null>(null);
@@ -222,26 +244,10 @@ export function FoodMap({
     const map = L.map(containerRef.current, {
       center: [59.3293, 18.0686],
       zoom: 12,
+      maxZoom: 19,
       zoomControl: false,
       scrollWheelZoom: true,
     });
-
-    const cartoApiKey = "cb1_3lj2_1_a3e8aa97d669a225931f55fe";
-    const tileUrl = `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}`;
-
-    const tileLayer = L.tileLayer(tileUrl, {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
-      subdomains: "abcd",
-      maxZoom: 20,
-    });
-
-    tileLayer.on("tileerror", () => {
-      // Safe fallback to OSM HOT tiles if Carto encounters network issues
-      tileLayer.setUrl("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png");
-    });
-
-    tileLayer.addTo(map);
 
     const clusterGroup = L.markerClusterGroup({
       showCoverageOnHover: false,
@@ -306,10 +312,93 @@ export function FoodMap({
       clusterGroup.clearLayers();
       map.remove();
       mapRef.current = null;
+      baseLayerRef.current = null;
+      overlayLayerRef.current = null;
       clusterGroupRef.current = null;
       setMapReady(false);
     };
   }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!mapReady || !map) return;
+
+    if (baseLayerRef.current) {
+      map.removeLayer(baseLayerRef.current);
+      baseLayerRef.current = null;
+    }
+    if (overlayLayerRef.current) {
+      map.removeLayer(overlayLayerRef.current);
+      overlayLayerRef.current = null;
+    }
+
+    if (mapLayer === "satellite" || mapLayer === "hybrid") {
+      const imageryLayer = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+          attribution:
+            'Tiles &copy; <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a> &mdash; Esri, Maxar, Earthstar Geographics',
+          maxZoom: 19,
+        },
+      );
+      imageryLayer.addTo(map);
+      baseLayerRef.current = imageryLayer;
+
+      if (mapLayer === "hybrid") {
+        const labelsLayer = L.tileLayer(
+          `https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png?key=${CARTO_API_KEY}`,
+          {
+            attribution:
+              '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+            subdomains: "abcd",
+            maxZoom: 20,
+            zIndex: 400,
+          },
+        );
+        labelsLayer.on("tileerror", () => {
+          labelsLayer.setUrl(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+          );
+        });
+        labelsLayer.addTo(map);
+        overlayLayerRef.current = labelsLayer;
+      }
+    } else {
+      const tileUrl = `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${CARTO_API_KEY}`;
+      const tileLayer = L.tileLayer(tileUrl, {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+        subdomains: "abcd",
+        maxZoom: 20,
+      });
+      tileLayer.on("tileerror", () => {
+        tileLayer.setUrl("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png");
+      });
+      tileLayer.addTo(map);
+      baseLayerRef.current = tileLayer;
+    }
+  }, [mapReady, mapLayer]);
+
+  useEffect(() => {
+    if (!isLayerMenuOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsLayerMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isLayerMenuOpen]);
+
+  const handleSelectMapLayer = (nextLayer: MapLayerMode) => {
+    setMapLayer(nextLayer);
+    setIsLayerMenuOpen(false);
+    try {
+      window.localStorage.setItem(MAP_LAYER_STORAGE_KEY, nextLayer);
+    } catch {
+      // ignore storage errors
+    }
+  };
 
   const handleFitAllPlaces = () => {
     const map = mapRef.current;
@@ -578,13 +667,31 @@ export function FoodMap({
     }
   }, [activePlace, focusRequest, places, syncViewportMarkers, lang]);
 
+  const layerOptions: Array<{ id: MapLayerMode; label: string }> = [
+    { id: "default", label: lang === "sv" ? "Standard" : "Default" },
+    { id: "satellite", label: lang === "sv" ? "Satellit" : "Satellite" },
+    { id: "hybrid", label: "Hybrid" },
+  ];
+
   return (
-    <div className="leaflet-shell">
+    <div className="leaflet-shell" data-map-layer={mapLayer}>
       {locationFailure ? <div className="location-toast" role="status">
         <span>{locationFailureMessage(locationFailure, lang)}</span>
         <button type="button" onClick={() => setLocationFailure(null)} aria-label={lang === 'sv' ? 'Stäng' : 'Close'}>×</button>
       </div> : null}
       <div className="map-toolbar" role="toolbar" aria-label={lang === "sv" ? "Kartkontroller" : "Map controls"}>
+        <button
+          type="button"
+          className={`map-control-btn map-layers-btn ${mapLayer !== "default" || isLayerMenuOpen ? "is-active" : ""}`}
+          onClick={() => setIsLayerMenuOpen((open) => !open)}
+          aria-expanded={isLayerMenuOpen}
+          aria-haspopup="dialog"
+          title={lang === "sv" ? "Byt kartlager (Standard, Satellit, Hybrid)" : "Switch map layer (Default, Satellite, Hybrid)"}
+          aria-label={lang === "sv" ? "Kartlager" : "Map layers"}
+        >
+          <Stack size={16} weight="bold" aria-hidden="true" />
+          <span className="map-btn-label">{lang === "sv" ? "Lager" : "Layers"}</span>
+        </button>
         <button
           type="button"
           className={`map-control-btn map-locate-btn ${locating ? "is-active" : ""}`}
@@ -642,6 +749,45 @@ export function FoodMap({
           <span className="map-btn-label">{lang === "sv" ? "Zooma ut" : "Zoom out"}</span>
         </button>
       </div>
+
+      {isLayerMenuOpen ? (
+        <div
+          className="map-layer-menu-backdrop"
+          onClick={() => setIsLayerMenuOpen(false)}
+          role="presentation"
+        >
+          <div
+            className="map-layer-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label={lang === "sv" ? "Välj kartlager" : "Choose map layer"}
+            onClick={(event) => event.stopPropagation()}
+          >
+            {layerOptions.map((option) => {
+              const isSelected = mapLayer === option.id;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  className={`map-layer-option ${isSelected ? "is-selected" : ""}`}
+                  aria-pressed={isSelected}
+                  onClick={() => handleSelectMapLayer(option.id)}
+                >
+                  <span>{option.label}</span>
+                  {isSelected ? <Check size={16} weight="bold" aria-hidden="true" /> : null}
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              className="map-layer-option map-layer-cancel"
+              onClick={() => setIsLayerMenuOpen(false)}
+            >
+              <span>{lang === "sv" ? "Avbryt" : "Cancel"}</span>
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <div ref={containerRef} className="leaflet-map" aria-label="Interactive Stockholm food map" />
     </div>

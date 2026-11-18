@@ -234,5 +234,46 @@ test.describe("Mobile Interface Features & Design Verification", () => {
       timeout: 5000,
     }).toBeLessThanOrEqual(50);
   });
+
+  test("9. Map layer switcher supports Default, Satellite, and Hybrid views", async ({ page }) => {
+    await page.goto("/");
+
+    const mapShell = page.locator(".leaflet-shell");
+    await expect(mapShell).toHaveAttribute("data-map-layer", "default");
+
+    const layersBtn = page.locator(".map-layers-btn");
+    await expect(layersBtn).toBeVisible();
+    await layersBtn.click();
+
+    const menu = page.locator(".map-layer-menu");
+    await expect(menu).toBeVisible();
+    await expect(menu.locator(".map-layer-option", { hasText: /Standard|Default/i })).toBeVisible();
+    await expect(menu.locator(".map-layer-option", { hasText: /Satellit|Satellite/i })).toBeVisible();
+    await expect(menu.locator(".map-layer-option", { hasText: /Hybrid/i })).toBeVisible();
+
+    // Switch to Satellite
+    await menu.locator(".map-layer-option", { hasText: /Satellit|Satellite/i }).click();
+    await expect(menu).toBeHidden();
+    await expect(mapShell).toHaveAttribute("data-map-layer", "satellite");
+
+    // Switch to Hybrid
+    await layersBtn.click();
+    await expect(menu).toBeVisible();
+    await menu.locator(".map-layer-option", { hasText: /Hybrid/i }).click();
+    await expect(menu).toBeHidden();
+    await expect(mapShell).toHaveAttribute("data-map-layer", "hybrid");
+
+    // Cancel closes without changing layer
+    await layersBtn.click();
+    await expect(menu).toBeVisible();
+    await menu.locator(".map-layer-cancel").click();
+    await expect(menu).toBeHidden();
+    await expect(mapShell).toHaveAttribute("data-map-layer", "hybrid");
+
+    // Switch back to Default
+    await layersBtn.click();
+    await menu.locator(".map-layer-option", { hasText: /Standard|Default/i }).click();
+    await expect(mapShell).toHaveAttribute("data-map-layer", "default");
+  });
 });
 
