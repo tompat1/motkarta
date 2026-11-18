@@ -249,8 +249,8 @@ test("RAG retrieveAndSynthesize lists ALL places in region when user writes Gaml
   const resultGamlaStanLower = retrieveAndSynthesize("gamla stan", livePlaces, { language: "sv" });
   const resultGamlastan = retrieveAndSynthesize("gamlastan", livePlaces, { language: "sv" });
 
-  // With Bacchi Söte added, there are 123 eligible places in Gamla Stan.
-  const gamlaStanCount = 123;
+  // With Vapiano commercial chain excluded, there are 122 eligible independent places in Gamla Stan.
+  const gamlaStanCount = 122;
   assert.equal(resultGamlaStan.cards.length, gamlaStanCount, `Should return all ${gamlaStanCount} places in Gamla Stan`);
   assert.equal(resultGamlaStanLower.cards.length, gamlaStanCount, "Case-insensitive query should also return all places");
   assert.equal(resultGamlastan.cards.length, gamlaStanCount, "Compound word gamlastan should also return all places");
@@ -281,9 +281,9 @@ test("RAG retrieveAndSynthesize lists ALL places in region when user writes Gaml
   assert.equal(resultKransen.cards.length, 49, "Should return all 49 places in Kransen");
   assert.ok(resultKransen.intro.includes("alla 49 ställen i Kransen"));
 
-  // Vasastan (209 places)
+  // Vasastan (206 independent places with commercial chains excluded)
   const resultVasastan = retrieveAndSynthesize("Vasastan", livePlaces, { language: "sv" });
-  assert.equal(resultVasastan.cards.length, 209, "Should return all 209 places in Vasastan");
+  assert.equal(resultVasastan.cards.length, 206, "Should return all 206 places in Vasastan");
 
   // Non-cuisine browse query still capped at 5 on map and in answer
   const resultGeneric = retrieveAndSynthesize("cardamom bun and filter coffee", livePlaces);

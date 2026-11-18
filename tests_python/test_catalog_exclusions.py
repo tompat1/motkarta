@@ -95,3 +95,35 @@ def test_seasonal_kiosks_and_institutional_facilities_are_excluded():
     for name in included_names:
         assert not is_excluded_catalog_name(name), f"Expected {name} to be included"
 
+
+def test_commercial_chains_are_excluded():
+    chains = [
+        "Pizza Hut",
+        "Subway",
+        "McDonald's",
+        "McDonalds",
+        "MAX",
+        "Max Burgers",
+        "Burger King",
+        "KFC",
+        "Taco Bell",
+        "Domino's Pizza",
+        "Vapiano",
+        "Pinchos",
+        "Espresso House",
+        "Starbucks",
+        "Wayne's Coffee",
+        "Joe & The Juice",
+        "Nespresso",
+        "Kahls",
+        "Bönor och Blad",
+    ]
+    for chain in chains:
+        assert is_excluded_catalog_name(chain), f"Expected {chain} to be excluded"
+
+    assert not is_excluded_catalog_name("Café Två Bönor")
+    assert not is_excluded_catalog_name("Sibyllans Kaffe & Tehandel")
+    assert not is_excluded_catalog_name("Pizzeria Domino")
+    assert not is_excluded_catalog_name("Bastard Burgers")
+
+

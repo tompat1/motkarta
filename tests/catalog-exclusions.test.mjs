@@ -44,6 +44,40 @@ test("seasonal kiosks and institutional facilities are excluded by isExcludedCat
   assert.equal(isExcludedCatalogName("Sköndals Konditori"), false);
 });
 
+test("commercial chains like Pizza Hut, Max, McDonalds, and Subway are excluded by isExcludedCatalogName", () => {
+  const chains = [
+    "Pizza Hut",
+    "Subway",
+    "McDonald's",
+    "McDonalds",
+    "MAX",
+    "Max Burgers",
+    "Burger King",
+    "KFC",
+    "Taco Bell",
+    "Domino's Pizza",
+    "Vapiano",
+    "Pinchos",
+    "Espresso House",
+    "Starbucks",
+    "Wayne's Coffee",
+    "Joe & The Juice",
+    "Nespresso",
+    "Kahls",
+    "Bönor och Blad",
+  ];
+  for (const chain of chains) {
+    assert.equal(isExcludedCatalogName(chain), true, `Expected ${chain} to be excluded`);
+  }
+
+  // Legitimate independent places must remain included
+  assert.equal(isExcludedCatalogName("Café Två Bönor"), false);
+  assert.equal(isExcludedCatalogName("Sibyllans Kaffe & Tehandel"), false);
+  assert.equal(isExcludedCatalogName("Pizzeria Domino"), false);
+  assert.equal(isExcludedCatalogName("Soldaten Svejk"), false);
+  assert.equal(isExcludedCatalogName("Bastard Burgers"), false);
+});
+
 test("Tasstipset-only venues stay excluded while existing venues keep dog-friendly provenance", () => {
   assert.equal(isExcludedCatalogPlace({ id: 1015019099, name: "Scandic Continental" }), true);
   assert.equal(isExcludedCatalogPlace({ id: 1015019099, name: "Unrelated D1 venue" }), false);

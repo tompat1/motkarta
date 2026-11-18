@@ -26,6 +26,10 @@ def is_excluded_catalog_name(name: object) -> bool:
         return True
     if re.search(r"^stf\s+stockholm(?:\s|\/).*\bvandrarhem\b", trimmed, re.IGNORECASE):
         return True
+    if re.search(r"\b(?:mcdonald[\s'’‘`´-]*s?|max\s+(?:burgers?|hamburgare|restaurang(?:er)?)|burger\s*king|pizza\s*hut|subway|kfc|kentucky\s+fried\s+chicken|taco\s*bell|domino[\s'’‘`´-]*s(?:\s+pizza)?|vapiano|pinchos|dunkin(?:\s*donuts?)?|espresso\s*house|starbucks|wayne[\s'’‘`´-]*s\s+coffee|joe\s*(?:&|and)\s*(?:the\s*)?juice|nespresso|kahls(?:\s+(?:the|te|kaffe)[\w\s&]*)?|b[öo]nor\s*(?:&|och)\s*blad|pressbyr[aå]n|7\s*[-–]?\s*eleven)\b", trimmed, re.IGNORECASE):
+        return True
+    if re.search(r"^max$", trimmed, re.IGNORECASE):
+        return True
     if "\n" in trimmed or len(trimmed) > 300:
         return False
     if re.search(r"\b(?:minigolf\s*kiosk|bangolf(?:\s*&\s*caf[eé])?|badkiosk|strandkiosk|campingkiosk)\b", trimmed, re.IGNORECASE):
