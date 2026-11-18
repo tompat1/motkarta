@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const e2ePort = process.env.MOTKARTA_E2E_PORT ?? "4173";
+const e2ePort = process.env.MOTKARTA_E2E_PORT ?? "4175";
 const e2eBaseURL = `http://localhost:${e2ePort}`;
 
 export default defineConfig({
@@ -35,6 +35,6 @@ export default defineConfig({
     command: `npm run dev -- --port ${e2ePort} --strictPort`,
     env: { MOTKARTA_E2E: "1" },
     url: e2eBaseURL,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
   },
 });

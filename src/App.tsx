@@ -3903,19 +3903,20 @@ function AppContent({
             </p>
           </article>
         </div>
-
-        <CuratedSourcesPanel
-          sources={curatedSources}
-          isLoading={isSourcesLoading}
-          lang={lang}
-        />
-
         <div className="disclaimer">
           {t.dataNoteLabel}
           <span>{t.dataNoteText}</span>
           <CmsEditFlag cmsKey="dataNoteText" label="Källnotering: Text" />
         </div>
       </section>
+
+      <div style={{ padding: "0 6vw 40px", background: "var(--color-paper)" }}>
+        <CuratedSourcesPanel
+          sources={curatedSources}
+          isLoading={isSourcesLoading}
+          lang={lang}
+        />
+      </div>
 
       <MerchPanel
         lang={lang}
