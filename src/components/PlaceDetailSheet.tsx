@@ -402,7 +402,15 @@ export function PlaceDetailSheet({
             <div className="meta-row">
               <MapPin size={18} weight="bold" style={{ color: "var(--color-water)", flexShrink: 0 }} />
               <span>
-                {place.address ? `${place.address}, ${place.area}` : `${place.area}, Stockholm`}
+                {(() => {
+                  if (!place.address) return `${place.area}, Stockholm`;
+                  const addr = place.address.trim();
+                  const area = place.area?.trim();
+                  if (area && addr.toLowerCase().includes(area.toLowerCase())) {
+                    return addr;
+                  }
+                  return `${addr}, ${area}`;
+                })()}
                 {directionsUrl ? (
                   <>
                     {" · "}

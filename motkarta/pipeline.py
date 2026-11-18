@@ -591,12 +591,13 @@ def assign_neighbourhood(row: pd.Series) -> str:
     lon = row.get("longitude")
     if pd.isna(lat) or pd.isna(lon):
         return "Unknown"
+    # Söderort / South Stockholm is south of Södermalm (lat <= 59.31)
+    if lat <= 59.31:
+        return "South Stockholm"
     if lat >= 59.35:
         return "North Stockholm"
-    if lon >= 18.1:
+    if lon >= 18.10 and lat > 59.31:
         return "East Stockholm"
-    if lat <= 59.29:
-        return "South Stockholm"
     return "Central Stockholm"
 
 

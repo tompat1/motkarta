@@ -237,7 +237,7 @@ test("reclassifies southern suburbs (Farsta, Sköndal, Fagersjö) to Söderort a
     resolveStockholmRegion({
       name: "Farsta strandpunkten",
       area: "Södermalm",
-      address: "East Stockholm, Stockholm",
+      address: "Farsta Strandplan 10, Farsta Strand",
       latitude: 59.2355021,
       longitude: 18.1019577,
     }),

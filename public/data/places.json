@@ -4108,9 +4108,11 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Address: Mårbackagatan 21.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Söderort",
+        "South Stockholm",
+        "Farsta Strand"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -4166,7 +4168,7 @@
       "longitude": 18.1128555,
       "x": 72.57,
       "y": 85.18,
-      "address": "Stureplan 13, 111 45 Stockholm, Sweden",
+      "address": "Mårbackagatan 21, Farsta Strand",
       "website": "https://east.se/",
       "osmIdentity": "node:269235539",
       "idNamespace": "public",
@@ -25820,8 +25822,9 @@
       "note": "Bakery from OpenStreetMap.",
       "tags": [
         "Bakery",
-        "East Stockholm",
-        "OpenStreetMap"
+        "OpenStreetMap",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -25877,7 +25880,7 @@
       "longitude": 18.1040411,
       "x": 70.81,
       "y": 61.95,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:434473552",
       "idNamespace": "public",
       "sourceFacts": [
@@ -33390,7 +33393,7 @@
       "longitude": 18.1019577,
       "x": 70.39,
       "y": 86.85,
-      "address": "East Stockholm, Stockholm",
+      "address": "Farsta Strandplan 10",
       "osmIdentity": "node:456937191",
       "idNamespace": "public",
       "sourceFacts": [
@@ -39082,7 +39085,7 @@
       "longitude": 18.0957283,
       "x": 69.15,
       "y": 70.43,
-      "address": "South Stockholm, Stockholm",
+      "address": "Sockenvägen 479",
       "osmIdentity": "node:471629918",
       "idNamespace": "public",
       "sourceFacts": []
@@ -43784,7 +43787,7 @@
       "longitude": 18.093375,
       "x": 68.68,
       "y": 82.52,
-      "address": "South Stockholm, Stockholm",
+      "address": "Lysviksgatan 50",
       "osmIdentity": "node:499605017",
       "idNamespace": "public",
       "sourceFacts": []
@@ -43855,7 +43858,7 @@
       "longitude": 18.0933137,
       "x": 68.66,
       "y": 82.49,
-      "address": "South Stockholm, Stockholm",
+      "address": "Lysviksgatan 50",
       "osmIdentity": "node:499605019",
       "idNamespace": "public",
       "sourceFacts": []
@@ -65938,14 +65941,15 @@
       "note": "Restaurant from OpenStreetMap. Cuisine tag: burger. Address: Lugnets Allé 75.",
       "tags": [
         "Burger",
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
         "Website",
         "Burgerdudes",
         "Sveriges Bästa Burgare",
-        "Curated"
+        "Curated",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -67172,7 +67176,7 @@
       "longitude": 17.956049,
       "x": 41.21,
       "y": 62.36,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Mälarhöjdsvägen 2",
       "osmIdentity": "node:697044049",
       "idNamespace": "public",
       "sourceFacts": []
@@ -71340,7 +71344,7 @@
       "longitude": 18.0885734,
       "x": 67.71,
       "y": 67.27,
-      "address": "South Stockholm, Stockholm",
+      "address": "Nynäsvägen 297",
       "osmIdentity": "node:716580332",
       "idNamespace": "public",
       "sourceFacts": [
@@ -73307,7 +73311,7 @@
       "longitude": 17.9675477,
       "x": 43.51,
       "y": 65.42,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Störtloppsvägen 26",
       "osmIdentity": "node:722557035",
       "idNamespace": "public",
       "sourceFacts": [
@@ -73481,7 +73485,7 @@
       "longitude": 18.094115,
       "x": 68.82,
       "y": 83.41,
-      "address": "South Stockholm, Stockholm",
+      "address": "Larsbodavägen 55",
       "osmIdentity": "node:724394627",
       "idNamespace": "public",
       "sourceFacts": []
@@ -73552,7 +73556,7 @@
       "longitude": 18.093372,
       "x": 68.67,
       "y": 83.92,
-      "address": "South Stockholm, Stockholm",
+      "address": "Kroppaplan 3",
       "osmIdentity": "node:724466767",
       "idNamespace": "public",
       "sourceFacts": []
@@ -73623,7 +73627,7 @@
       "longitude": 18.1181205,
       "x": 73.62,
       "y": 68.18,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:725382968",
       "idNamespace": "public",
       "sourceFacts": []
@@ -74288,9 +74292,10 @@
       "note": "Bakery from OpenStreetMap.",
       "tags": [
         "Bakery",
-        "East Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -74347,7 +74352,7 @@
       "longitude": 18.1019114,
       "x": 70.38,
       "y": 61.98,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:727716871",
       "idNamespace": "public",
       "openingHours": "Su 12:00-21:00; Mo-Sa 10:00-22:00",
@@ -74791,7 +74796,7 @@
       "longitude": 18.1160657,
       "x": 73.21,
       "y": 65.16,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:729911001",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 11:00-21:00; Sa-Su 12:00-21:00",
@@ -84708,7 +84713,7 @@
       "longitude": 17.9924373,
       "x": 48.49,
       "y": 63.26,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Dialoggatan 11",
       "osmIdentity": "node:804687569",
       "idNamespace": "public",
       "sourceFacts": []
@@ -88281,7 +88286,7 @@
       "longitude": 18.070625,
       "x": 64.12,
       "y": 70.89,
-      "address": "South Stockholm, Stockholm",
+      "address": "Handelsvägen 184",
       "osmIdentity": "node:849644262",
       "idNamespace": "public",
       "sourceFacts": [
@@ -88363,7 +88368,7 @@
       "longitude": 18.0673921,
       "x": 63.48,
       "y": 71.18,
-      "address": "South Stockholm, Stockholm",
+      "address": "Tussmötevägen",
       "osmIdentity": "node:849699273",
       "idNamespace": "public",
       "sourceFacts": []
@@ -92411,7 +92416,7 @@
       "longitude": 18.0324736,
       "x": 56.49,
       "y": 64.92,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Brunnbyvägen 7",
       "osmIdentity": "node:884569804",
       "idNamespace": "public",
       "sourceFacts": []
@@ -106626,7 +106631,7 @@
       "longitude": 18.0935357,
       "x": 68.71,
       "y": 83.72,
-      "address": "South Stockholm, Stockholm",
+      "address": "Kroppaplan 2",
       "osmIdentity": "node:1200603482",
       "idNamespace": "public",
       "sourceFacts": []
@@ -106779,7 +106784,7 @@
       "longitude": 18.1110719,
       "x": 72.21,
       "y": 86.17,
-      "address": "East Stockholm, Stockholm",
+      "address": "Frykdalsbacken 12",
       "osmIdentity": "node:1205556280",
       "idNamespace": "public",
       "sourceFacts": []
@@ -107106,7 +107111,7 @@
       "longitude": 18.0874772,
       "x": 67.5,
       "y": 63.54,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Olaus Magnus Väg 13",
       "osmIdentity": "node:1209267384",
       "idNamespace": "public",
       "sourceFacts": [
@@ -109410,7 +109415,7 @@
       "longitude": 18.080559,
       "x": 66.11,
       "y": 78.96,
-      "address": "South Stockholm, Stockholm",
+      "address": "Pepparvägen 2",
       "osmIdentity": "node:1227022139",
       "idNamespace": "public",
       "sourceFacts": [
@@ -111868,11 +111873,12 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Address: Midskeppsgatan 31.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -113946,7 +113952,7 @@
       "longitude": 18.0897972,
       "x": 67.96,
       "y": 68.91,
-      "address": "South Stockholm, Stockholm",
+      "address": "Stora Gungans väg 9",
       "osmIdentity": "node:1252633169",
       "idNamespace": "public",
       "sourceFacts": [
@@ -118085,7 +118091,7 @@
       "longitude": 17.9724256,
       "x": 44.49,
       "y": 64.62,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Terrängvägen 16",
       "osmIdentity": "node:1267079960",
       "idNamespace": "public",
       "sourceFacts": []
@@ -118505,7 +118511,7 @@
       "longitude": 18.080992,
       "x": 66.2,
       "y": 64.22,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Arenavägen 7",
       "osmIdentity": "node:1278506316",
       "idNamespace": "public",
       "sourceFacts": []
@@ -119234,7 +119240,7 @@
       "longitude": 18.0680531,
       "x": 63.61,
       "y": 65.07,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Veterinärgränd 6",
       "osmIdentity": "node:1278547985",
       "idNamespace": "public",
       "sourceFacts": []
@@ -119785,7 +119791,7 @@
       "longitude": 18.0836744,
       "x": 66.73,
       "y": 73.29,
-      "address": "South Stockholm, Stockholm",
+      "address": "Tallkrogsplan 91",
       "osmIdentity": "node:1300988523",
       "idNamespace": "public",
       "sourceFacts": []
@@ -121487,7 +121493,7 @@
       "longitude": 18.0491676,
       "x": 59.83,
       "y": 72.2,
-      "address": "South Stockholm, Stockholm",
+      "address": "Bäckaskiftsvägen 7",
       "osmIdentity": "node:1315465155",
       "idNamespace": "public",
       "sourceFacts": []
@@ -121560,7 +121566,7 @@
       "longitude": 18.1084695,
       "x": 71.69,
       "y": 70.5,
-      "address": "East Stockholm, Stockholm",
+      "address": "Gamla Tyresövägen 376",
       "osmIdentity": "node:1316552869",
       "idNamespace": "public",
       "sourceFacts": []
@@ -121768,7 +121774,7 @@
       "longitude": 18.1037136,
       "x": 70.74,
       "y": 73.71,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:1324187502",
       "idNamespace": "public",
       "sourceFacts": []
@@ -122164,7 +122170,7 @@
       "longitude": 18.0689449,
       "x": 63.79,
       "y": 73.15,
-      "address": "South Stockholm, Stockholm",
+      "address": "Oppundavägen 4",
       "osmIdentity": "node:1332775162",
       "idNamespace": "public",
       "sourceFacts": [
@@ -127847,7 +127853,7 @@
       "longitude": 18.0819032,
       "x": 66.38,
       "y": 66.02,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Rökerigatan 19",
       "osmIdentity": "node:1391202761",
       "idNamespace": "public",
       "sourceFacts": []
@@ -136742,7 +136748,7 @@
       "longitude": 17.9041253,
       "x": 30.83,
       "y": 33.64,
-      "address": "North Stockholm, Stockholm",
+      "address": "Stormbyvägen 2-4",
       "osmIdentity": "node:1458492629",
       "idNamespace": "public",
       "sourceFacts": []
@@ -144396,7 +144402,7 @@
       "longitude": 17.905965,
       "x": 31.19,
       "y": 47.44,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Färjestadsvägen 6",
       "osmIdentity": "node:1513084666",
       "idNamespace": "public",
       "sourceFacts": []
@@ -144835,7 +144841,7 @@
       "longitude": 17.938666,
       "x": 37.73,
       "y": 52.28,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Västerled 183",
       "osmIdentity": "node:1516347784",
       "idNamespace": "public",
       "sourceFacts": [
@@ -160759,7 +160765,7 @@
       "longitude": 18.0266966,
       "x": 55.34,
       "y": 67.73,
-      "address": "South Stockholm, Stockholm",
+      "address": "Annebodavägen 23-25",
       "osmIdentity": "node:1713953855",
       "idNamespace": "public",
       "sourceFacts": []
@@ -162349,7 +162355,7 @@
       "longitude": 18.0531523,
       "x": 60.63,
       "y": 73.44,
-      "address": "South Stockholm, Stockholm",
+      "address": "Skönviksvägen 281",
       "osmIdentity": "node:1728262036",
       "idNamespace": "public",
       "sourceFacts": [
@@ -162452,7 +162458,7 @@
       "longitude": 18.0521326,
       "x": 60.43,
       "y": 75.41,
-      "address": "South Stockholm, Stockholm",
+      "address": "Björksundsslingan 21",
       "osmIdentity": "node:1728279179",
       "idNamespace": "public",
       "sourceFacts": [
@@ -162702,7 +162708,7 @@
       "longitude": 18.0362221,
       "x": 57.24,
       "y": 75.56,
-      "address": "South Stockholm, Stockholm",
+      "address": "Skebokvarnsvägen 197",
       "osmIdentity": "node:1728379740",
       "idNamespace": "public",
       "sourceFacts": []
@@ -163089,7 +163095,7 @@
       "longitude": 18.1281169,
       "x": 75.62,
       "y": 75.13,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:1737384815",
       "idNamespace": "public",
       "sourceFacts": [
@@ -163212,7 +163218,7 @@
       "longitude": 18.1280423,
       "x": 75.61,
       "y": 75.16,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:1737385673",
       "idNamespace": "public",
       "sourceFacts": [
@@ -163394,8 +163400,8 @@
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
-        "East Stockholm",
-        "OpenStreetMap"
+        "OpenStreetMap",
+        "South Stockholm"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -163451,7 +163457,7 @@
       "longitude": 18.1035414,
       "x": 70.71,
       "y": 59.71,
-      "address": "East Stockholm, Stockholm",
+      "address": "Södermalm, Stockholm",
       "osmIdentity": "node:1740704814",
       "idNamespace": "public",
       "sourceFacts": [
@@ -163495,11 +163501,11 @@
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: indian.",
       "tags": [
-        "East Stockholm",
         "Indian",
         "OpenStreetMap",
         "Restaurant",
-        "Website"
+        "Website",
+        "South Stockholm"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -163555,7 +163561,7 @@
       "longitude": 18.103744,
       "x": 70.75,
       "y": 59.61,
-      "address": "East Stockholm, Stockholm",
+      "address": "Södermalm, Stockholm",
       "osmIdentity": "node:1740704828",
       "idNamespace": "public",
       "website": "http://www.indianstreetfood.se/",
@@ -164705,7 +164711,7 @@
       "longitude": 17.9687169,
       "x": 43.74,
       "y": 49.94,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Ulvsundavägen 10",
       "osmIdentity": "node:1745782291",
       "idNamespace": "public",
       "sourceFacts": []
@@ -171046,11 +171052,11 @@
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "South Stockholm"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -171106,7 +171112,7 @@
       "longitude": 18.1019218,
       "x": 70.38,
       "y": 59.37,
-      "address": "East Stockholm, Stockholm",
+      "address": "Södermalm, Stockholm",
       "osmIdentity": "node:1806455621",
       "idNamespace": "public",
       "openingHours": "Su 12:00-22:00; Mo-Th 10:30-22:00; Fr 10:30-23:00; Sa 11:00-23:00",
@@ -177783,7 +177789,7 @@
       "longitude": 18.10754,
       "x": 71.51,
       "y": 78.93,
-      "address": "East Stockholm, Stockholm",
+      "address": "Bagarfruvägen 3",
       "osmIdentity": "node:1969425447",
       "idNamespace": "public",
       "sourceFacts": [
@@ -177925,10 +177931,11 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: steak house.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
         "Restaurant",
-        "Steak House"
+        "Steak House",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -177985,7 +177992,7 @@
       "longitude": 18.1055216,
       "x": 71.1,
       "y": 62.38,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:1970338717",
       "idNamespace": "public",
       "sourceFacts": []
@@ -181869,9 +181876,9 @@
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "South Stockholm"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -181927,7 +181934,7 @@
       "longitude": 18.1033604,
       "x": 70.67,
       "y": 59.79,
-      "address": "East Stockholm, Stockholm",
+      "address": "Södermalm, Stockholm",
       "osmIdentity": "node:2120468008",
       "idNamespace": "public",
       "sourceFacts": []
@@ -181941,8 +181948,9 @@
       "note": "Café from OpenStreetMap. Address: Babordsgatan 25.",
       "tags": [
         "Café",
-        "East Stockholm",
-        "OpenStreetMap"
+        "OpenStreetMap",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -184874,7 +184882,7 @@
       "longitude": 17.9931883,
       "x": 48.64,
       "y": 68.55,
-      "address": "South Stockholm, Stockholm",
+      "address": "Älvsjövägen 90",
       "osmIdentity": "node:2209033048",
       "idNamespace": "public",
       "sourceFacts": [
@@ -185517,7 +185525,7 @@
       "longitude": 17.9860678,
       "x": 47.21,
       "y": 70.03,
-      "address": "South Stockholm, Stockholm",
+      "address": "Svartlösavägen 79",
       "osmIdentity": "node:2257451471",
       "idNamespace": "public",
       "sourceFacts": []
@@ -186288,7 +186296,7 @@
       "longitude": 18.1159745,
       "x": 73.19,
       "y": 69.09,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:2282482515",
       "idNamespace": "public",
       "sourceFacts": [
@@ -187126,7 +187134,6 @@
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: pizza.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Pizza",
@@ -187187,7 +187194,7 @@
       "longitude": 18.1041184,
       "x": 70.82,
       "y": 59.23,
-      "address": "East Stockholm, Stockholm",
+      "address": "Södermalm, Stockholm",
       "osmIdentity": "node:2293430583",
       "idNamespace": "public",
       "openingHours": "PH,Mo-Su 11:00-21:00, Fr,Sa 11:00-22:00",
@@ -187397,7 +187404,7 @@
       "longitude": 18.0225249,
       "x": 54.5,
       "y": 72.48,
-      "address": "South Stockholm, Stockholm",
+      "address": "Gamla Huddingevägen 450",
       "osmIdentity": "node:2295624790",
       "idNamespace": "public",
       "sourceFacts": [
@@ -187928,7 +187935,7 @@
       "longitude": 18.0084016,
       "x": 51.68,
       "y": 70.75,
-      "address": "South Stockholm, Stockholm",
+      "address": "Johan Skyttes Väg 188",
       "osmIdentity": "node:2303568589",
       "idNamespace": "public",
       "sourceFacts": []
@@ -188001,7 +188008,7 @@
       "longitude": 18.1024702,
       "x": 70.49,
       "y": 67.22,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:2307554309",
       "idNamespace": "public",
       "openingHours": "Mo-Su 10:00-22:00",
@@ -188159,7 +188166,7 @@
       "longitude": 17.9951927,
       "x": 49.04,
       "y": 65.95,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Hökmossevägen 22",
       "osmIdentity": "node:2311123843",
       "idNamespace": "public",
       "sourceFacts": []
@@ -190677,7 +190684,7 @@
       "longitude": 17.8978172,
       "x": 29.56,
       "y": 32.95,
-      "address": "North Stockholm, Stockholm",
+      "address": "Spånga torgväg 11",
       "osmIdentity": "node:2411550519",
       "idNamespace": "public",
       "sourceFacts": [
@@ -194065,12 +194072,13 @@
       "note": "Restaurant from OpenStreetMap. Cuisine tag: indian;bengali. Address: Skeppsmäklargatan 9.",
       "tags": [
         "Bengali",
-        "East Stockholm",
         "Indian",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -195887,7 +195895,7 @@
       "longitude": 18.0847963,
       "x": 66.96,
       "y": 66.34,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Arenavägen 69",
       "osmIdentity": "node:2516117037",
       "idNamespace": "public",
       "sourceFacts": []
@@ -195959,7 +195967,7 @@
       "longitude": 18.0836673,
       "x": 66.73,
       "y": 66.11,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Arenavägen 69",
       "osmIdentity": "node:2516117040",
       "idNamespace": "public",
       "sourceFacts": []
@@ -196031,7 +196039,7 @@
       "longitude": 18.0843378,
       "x": 66.87,
       "y": 66.4,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Arenavägen 69",
       "osmIdentity": "node:2516117043",
       "idNamespace": "public",
       "sourceFacts": []
@@ -196103,7 +196111,7 @@
       "longitude": 18.0846998,
       "x": 66.94,
       "y": 66.29,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Arenavägen 69",
       "osmIdentity": "node:2516117048",
       "idNamespace": "public",
       "sourceFacts": []
@@ -197385,7 +197393,7 @@
       "longitude": 18.0834199,
       "x": 66.68,
       "y": 79.12,
-      "address": "South Stockholm, Stockholm",
+      "address": "Sirapsvägen 22",
       "osmIdentity": "node:2539515763",
       "idNamespace": "public",
       "sourceFacts": []
@@ -200974,7 +200982,7 @@
       "longitude": 17.9531322,
       "x": 40.63,
       "y": 68.07,
-      "address": "South Stockholm, Stockholm",
+      "address": "Vantörsvägen 279",
       "osmIdentity": "node:2707948046",
       "idNamespace": "public",
       "sourceFacts": []
@@ -203920,7 +203928,7 @@
       "longitude": 18.0160865,
       "x": 53.22,
       "y": 63.29,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Vretensborgsvägen 20",
       "osmIdentity": "node:2853138559",
       "idNamespace": "public",
       "sourceFacts": []
@@ -205303,12 +205311,12 @@
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: lebanese.",
       "tags": [
-        "East Stockholm",
         "Lebanese",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "South Stockholm"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -205365,7 +205373,7 @@
       "longitude": 18.1031949,
       "x": 70.64,
       "y": 59.87,
-      "address": "East Stockholm, Stockholm",
+      "address": "Södermalm, Stockholm",
       "osmIdentity": "node:2956920963",
       "idNamespace": "public",
       "openingHours": "Mo-Th 17:30-23:00; Fr-Sa 17:00-01:00; Su 17:00-00:00",
@@ -209707,7 +209715,7 @@
       "longitude": 17.9508633,
       "x": 40.17,
       "y": 68.05,
-      "address": "South Stockholm, Stockholm",
+      "address": "Vantörsvägen 282",
       "osmIdentity": "node:3153682310",
       "idNamespace": "public",
       "sourceFacts": [
@@ -216040,7 +216048,7 @@
       "longitude": 18.0939475,
       "x": 68.79,
       "y": 66.84,
-      "address": "South Stockholm, Stockholm",
+      "address": "Sofielundsvägen",
       "osmIdentity": "node:3480751953",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 10:00-21:00; Sa-Su 11:00-21:00",
@@ -222059,7 +222067,7 @@
       "longitude": 18.1017898,
       "x": 70.36,
       "y": 64.65,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:3687556319",
       "idNamespace": "public",
       "sourceFacts": []
@@ -222619,7 +222627,7 @@
       "longitude": 18.115146,
       "x": 73.03,
       "y": 68.84,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:3723792931",
       "idNamespace": "public",
       "website": "https://99sushi.se/",
@@ -222943,7 +222951,7 @@
       "longitude": 18.114759,
       "x": 72.95,
       "y": 68.88,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:3723792933",
       "idNamespace": "public",
       "sourceFacts": [
@@ -223518,7 +223526,7 @@
       "longitude": 18.1344259,
       "x": 76.89,
       "y": 75.55,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:3733740560",
       "idNamespace": "public",
       "sourceFacts": [
@@ -228501,7 +228509,7 @@
       "longitude": 18.1029009,
       "x": 70.58,
       "y": 65.2,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:3979190456",
       "idNamespace": "public",
       "sourceFacts": [
@@ -231107,7 +231115,7 @@
       "longitude": 18.1093962,
       "x": 71.88,
       "y": 65.07,
-      "address": "East Stockholm, Stockholm",
+      "address": "Malmövägen",
       "osmIdentity": "node:4073144538",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 07:00-19:00; Sa,Su 08:00-18:00",
@@ -235067,7 +235075,7 @@
       "longitude": 18.001802,
       "x": 50.36,
       "y": 62.05,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Kransbindarvägen 22",
       "osmIdentity": "node:4349473222",
       "idNamespace": "public",
       "openingHours": "Mo-Sa 08:00-17:00, Su 09:00-17:00",
@@ -237091,7 +237099,7 @@
       "longitude": 17.9724425,
       "x": 44.49,
       "y": 52.28,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Västerled 8",
       "osmIdentity": "node:4512076605",
       "idNamespace": "public",
       "sourceFacts": []
@@ -241985,7 +241993,7 @@
       "longitude": 17.9561914,
       "x": 41.24,
       "y": 54.36,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Ålstensgatan 18",
       "osmIdentity": "node:4901977483",
       "idNamespace": "public",
       "sourceFacts": []
@@ -243106,7 +243114,7 @@
       "longitude": 18.0753592,
       "x": 65.07,
       "y": 54.45,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Skeppsbron",
       "osmIdentity": "node:5009869721",
       "idNamespace": "public",
       "website": "https://www.brodsalt.se/",
@@ -248157,7 +248165,7 @@
       "longitude": 18.0592759,
       "x": 61.86,
       "y": 65.57,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Johanneshovsvägen",
       "osmIdentity": "node:5320371698",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 10:00-21:00; Sa,Su 11:00-21:00",
@@ -248470,7 +248478,7 @@
       "longitude": 17.9429651,
       "x": 38.59,
       "y": 25.27,
-      "address": "North Stockholm, Stockholm",
+      "address": "Kista torg 3",
       "osmIdentity": "node:5325564127",
       "idNamespace": "public",
       "sourceFacts": []
@@ -248863,9 +248871,9 @@
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Address: Jan Inghes Torg 52.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "South Stockholm"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -248921,7 +248929,7 @@
       "longitude": 18.1017673,
       "x": 70.35,
       "y": 59.46,
-      "address": "East Stockholm, Stockholm",
+      "address": "Jan Inghes Torg 52",
       "osmIdentity": "node:5383026148",
       "idNamespace": "public",
       "sourceFacts": []
@@ -250110,11 +250118,12 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: pizza.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Pizza",
-        "Restaurant"
+        "Restaurant",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -250171,7 +250180,7 @@
       "longitude": 18.1065296,
       "x": 71.31,
       "y": 60.99,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:5501707772",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 11:00-21:00; Sa 12:00-21:00",
@@ -250236,12 +250245,13 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: indian.",
       "tags": [
-        "East Stockholm",
         "Indian",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -250298,7 +250308,7 @@
       "longitude": 18.1066863,
       "x": 71.34,
       "y": 60.94,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:5501707773",
       "idNamespace": "public",
       "openingHours": "Mo-Sa 16:00-22:00; Su 16:00-21:00",
@@ -250384,11 +250394,12 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: sushi.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Sushi"
+        "Sushi",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -250445,7 +250456,7 @@
       "longitude": 18.1059263,
       "x": 71.19,
       "y": 61.16,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:5520565280",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 11:00-20:00; Sa,Su 12:00-20:00",
@@ -250793,12 +250804,13 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: pizza.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Pizza",
         "Restaurant",
-        "Website"
+        "Website",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -250854,7 +250866,7 @@
       "longitude": 18.106786,
       "x": 71.36,
       "y": 61.18,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:5584907011",
       "idNamespace": "public",
       "openingHours": "Mo-Su 11:00-21:00",
@@ -250920,10 +250932,11 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: pizza.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
         "Pizza",
-        "Restaurant"
+        "Restaurant",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -250979,7 +250992,7 @@
       "longitude": 18.1077981,
       "x": 71.56,
       "y": 60.76,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:5598964874",
       "idNamespace": "public",
       "sourceFacts": [
@@ -251023,13 +251036,14 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: japanese;korean. Address: Skeppsmäklargatan 37.",
       "tags": [
-        "East Stockholm",
         "Japanese",
         "Korean",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -251755,7 +251769,6 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: sushi;japanese;korean;thai. Address: Skeppsmäklargatan 3.",
       "tags": [
-        "East Stockholm",
         "Japanese",
         "Korean",
         "OpenStreetMap",
@@ -251763,7 +251776,9 @@
         "Restaurant",
         "Sushi",
         "Thai",
-        "Website"
+        "Website",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -252036,11 +252051,12 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Address: Skeppsmäklargatan 5.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -252153,7 +252169,6 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: pizza.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Pizza",
@@ -252161,7 +252176,9 @@
         "Website",
         "Michelin",
         "Guide Michelin",
-        "Curated"
+        "Curated",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -252217,7 +252234,7 @@
       "longitude": 18.1027798,
       "x": 70.56,
       "y": 62.3,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:5659015461",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 10:00-21:00; Sa 11:00-21:00",
@@ -253013,11 +253030,12 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: sushi.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Sushi"
+        "Sushi",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -253074,7 +253092,7 @@
       "longitude": 18.1036039,
       "x": 70.72,
       "y": 61.82,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:5694849316",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 10:00-21:00; Sa 11:00-21:00",
@@ -253139,9 +253157,10 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -253252,10 +253271,11 @@
       "note": "Restaurant from OpenStreetMap. Cuisine tag: asian.",
       "tags": [
         "Asian",
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -253313,7 +253333,7 @@
       "longitude": 18.1011638,
       "x": 70.23,
       "y": 61.88,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:5697169285",
       "idNamespace": "public",
       "openingHours": "Mo-Th 11:00-14:30,16:00-20:00; Fr 11:00-14:30,16:00-21:00; Sa 12:00-21:00; Su 12:00-20:00",
@@ -253379,11 +253399,11 @@
       "note": "Restaurant from OpenStreetMap. Cuisine tag: asian.",
       "tags": [
         "Asian",
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "South Stockholm"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -253624,10 +253644,11 @@
       "note": "Bakery from OpenStreetMap.",
       "tags": [
         "Bakery",
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Website"
+        "Website",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -253683,7 +253704,7 @@
       "longitude": 18.1021877,
       "x": 70.44,
       "y": 62.22,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:5758650423",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 07:00-18:00; Sa,Su 08:00-17:00",
@@ -263497,7 +263518,7 @@
       "longitude": 17.9855051,
       "x": 47.1,
       "y": 68.8,
-      "address": "South Stockholm, Stockholm",
+      "address": "Svartlösavägen 52",
       "osmIdentity": "node:6792292164",
       "idNamespace": "public",
       "sourceFacts": []
@@ -267765,10 +267786,11 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -267825,7 +267847,7 @@
       "longitude": 18.103095,
       "x": 70.62,
       "y": 62.29,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:7052054742",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 11:00-21:00; Sa 17:00-22:00",
@@ -271316,7 +271338,7 @@
       "longitude": 17.9494125,
       "x": 39.88,
       "y": 40.48,
-      "address": "North Stockholm, Stockholm",
+      "address": "Bällstavägen 53",
       "osmIdentity": "node:7207084872",
       "idNamespace": "public",
       "sourceFacts": [
@@ -272369,12 +272391,13 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: hawaiian.",
       "tags": [
-        "East Stockholm",
         "Hawaiian",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -272431,7 +272454,7 @@
       "longitude": 18.11176,
       "x": 72.35,
       "y": 60.66,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:7244921563",
       "idNamespace": "public",
       "openingHours": "Mo-Su 11:00-20:00",
@@ -274205,7 +274228,7 @@
       "longitude": 18.0896904,
       "x": 67.94,
       "y": 82.75,
-      "address": "South Stockholm, Stockholm",
+      "address": "Forshagagatan",
       "osmIdentity": "node:7453641791",
       "idNamespace": "public",
       "sourceFacts": []
@@ -275227,7 +275250,7 @@
       "longitude": 18.1198193,
       "x": 73.96,
       "y": 81.63,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:7590697422",
       "idNamespace": "public",
       "sourceFacts": []
@@ -275636,7 +275659,7 @@
       "longitude": 18.1326018,
       "x": 76.52,
       "y": 71.26,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:7600913844",
       "idNamespace": "public",
       "openingHours": "Tu-Fr 15:00-23:00; Sa,Su 11:00-23:00",
@@ -276431,7 +276454,7 @@
       "longitude": 18.1484625,
       "x": 79.69,
       "y": 73.89,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:7681323913",
       "idNamespace": "public",
       "sourceFacts": []
@@ -278272,12 +278295,13 @@
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: greek. Address: Lugnets Allé 67.",
       "tags": [
-        "East Stockholm",
         "Greek",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -279726,7 +279750,7 @@
       "longitude": 18.1081651,
       "x": 71.63,
       "y": 70.32,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:8504077893",
       "idNamespace": "public",
       "website": "https://www.boxsushi.se/",
@@ -279851,7 +279875,7 @@
       "longitude": 18.1328902,
       "x": 76.58,
       "y": 71.42,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:8511345581",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 11:00-21:00; Sa,Su 12:00-21:00",
@@ -279936,7 +279960,7 @@
       "longitude": 18.1329922,
       "x": 76.6,
       "y": 71.34,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:8511360752",
       "idNamespace": "public",
       "openingHours": "Mo-Sa 09:00-21:00; Su 10:00-21:00",
@@ -280231,7 +280255,7 @@
       "longitude": 18.1328795,
       "x": 76.58,
       "y": 71.27,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:8580538597",
       "idNamespace": "public",
       "openingHours": "Mo-Su 11:00-21:00",
@@ -280354,7 +280378,7 @@
       "longitude": 18.1321561,
       "x": 76.43,
       "y": 71.32,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:8580538599",
       "idNamespace": "public",
       "website": "https://www.bagarmossenbar.se/menu/",
@@ -284105,7 +284129,7 @@
       "longitude": 18.1323455,
       "x": 76.47,
       "y": 71.24,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:9006384218",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 11:00-21:00; Sa-Su 12:00-21:00",
@@ -290573,7 +290597,7 @@
       "longitude": 18.1232302,
       "x": 74.65,
       "y": 68.03,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:9613472163",
       "idNamespace": "public",
       "website": "https://www.bkbk.se/sida/?ID=216722",
@@ -295473,7 +295497,7 @@
       "longitude": 18.1168783,
       "x": 73.38,
       "y": 66.66,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:9878819286",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 10:00-21:00; Sa-Su 11:00-21:00",
@@ -295821,7 +295845,7 @@
       "longitude": 18.1260184,
       "x": 75.2,
       "y": 46.59,
-      "address": "East Stockholm, Stockholm",
+      "address": "Frihamnsgatan 52",
       "osmIdentity": "node:9895082881",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 10:00-21:00; Sa, Su 11:00-21:00",
@@ -296014,9 +296038,10 @@
       "note": "Café from OpenStreetMap. Address: Båtbyggargatan 24.",
       "tags": [
         "Café",
-        "East Stockholm",
         "OpenStreetMap",
-        "Opening hours"
+        "Opening hours",
+        "South Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -300632,7 +300657,7 @@
       "longitude": 18.1017804,
       "x": 70.36,
       "y": 64.58,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:10253513071",
       "idNamespace": "public",
       "website": "https://www.malmgrenskakrogen.se/",
@@ -300737,7 +300762,7 @@
       "longitude": 18.1027033,
       "x": 70.54,
       "y": 64.63,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:10253523917",
       "idNamespace": "public",
       "website": "http://www.hammarbypizzeria.se/",
@@ -300937,7 +300962,7 @@
       "longitude": 18.1018458,
       "x": 70.37,
       "y": 64.77,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:10253527595",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 07:00-18:00; Sa,Su 08:00-17:00",
@@ -301033,7 +301058,7 @@
       "longitude": 18.1026705,
       "x": 70.53,
       "y": 64.57,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:10253532565",
       "idNamespace": "public",
       "website": "http://www.wok88.se/",
@@ -301128,7 +301153,7 @@
       "longitude": 18.1017904,
       "x": 70.36,
       "y": 64.62,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:10253549216",
       "idNamespace": "public",
       "website": "https://www.tsuki.se/",
@@ -306912,7 +306937,7 @@
       "longitude": 18.1274016,
       "x": 75.48,
       "y": 75.96,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:11107873295",
       "idNamespace": "public",
       "sourceFacts": []
@@ -306983,7 +307008,7 @@
       "longitude": 18.1262491,
       "x": 75.25,
       "y": 75.63,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:11107954142",
       "idNamespace": "public",
       "sourceFacts": []
@@ -314184,7 +314209,7 @@
       "longitude": 18.1294197,
       "x": 75.88,
       "y": 75.07,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:11542794959",
       "idNamespace": "public",
       "openingHours": "Mo-Sa 10:00-21:00; Su 11:00-21:00",
@@ -314269,7 +314294,7 @@
       "longitude": 18.1332456,
       "x": 76.65,
       "y": 75.54,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:11542813763",
       "idNamespace": "public",
       "sourceFacts": []
@@ -314343,7 +314368,7 @@
       "longitude": 18.1342176,
       "x": 76.84,
       "y": 75.65,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:11542818869",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 11:00-20:00; Sa,Su 12:00-20:00",
@@ -314469,7 +314494,7 @@
       "longitude": 18.1349359,
       "x": 76.99,
       "y": 75.73,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:11542818871",
       "idNamespace": "public",
       "openingHours": "Su-Th 11:00-23:00, Fr,Sa 11:00-01:00",
@@ -314586,7 +314611,7 @@
       "longitude": 18.1337559,
       "x": 76.75,
       "y": 75.59,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:11542833934",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 11:00-21:00; Sa-Su 12:00-21:00; 2024 Jul 10-31 off",
@@ -314671,7 +314696,7 @@
       "longitude": 18.1280643,
       "x": 75.61,
       "y": 74.75,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:11542904187",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 07:00-18:00; Sa,Su 09:00-18:00",
@@ -318399,7 +318424,7 @@
       "longitude": 18.1027309,
       "x": 70.55,
       "y": 67.22,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:11881294341",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 11:00-21:00; Sa,Su 12:00-21:00",
@@ -327560,7 +327585,7 @@
       "longitude": 18.1135752,
       "x": 72.72,
       "y": 64.06,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:12003312495",
       "idNamespace": "public",
       "openingHours": "Sa-Su 11:00-17:00; Fr 11:00-21:00",
@@ -328965,7 +328990,7 @@
       "longitude": 17.9141193,
       "x": 32.82,
       "y": 20.41,
-      "address": "North Stockholm, Stockholm",
+      "address": "Sibeliusgången 24C",
       "osmIdentity": "node:12006055067",
       "idNamespace": "public",
       "sourceFacts": [
@@ -333376,7 +333401,7 @@
       "longitude": 18.1008161,
       "x": 70.16,
       "y": 86.19,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:12014364837",
       "idNamespace": "public",
       "openingHours": "Mo-Fr 11:00-20:00; Sa-Su 12:00-20:00",
@@ -339738,7 +339763,7 @@
       "longitude": 18.1148985,
       "x": 72.98,
       "y": 68.86,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:12035318837",
       "idNamespace": "public",
       "sourceFacts": [
@@ -339840,7 +339865,7 @@
       "longitude": 18.1139434,
       "x": 72.79,
       "y": 69.11,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:12035324167",
       "idNamespace": "public",
       "sourceFacts": []
@@ -344705,7 +344730,7 @@
       "longitude": 18.1006549,
       "x": 70.13,
       "y": 84.83,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:12196777808",
       "idNamespace": "public",
       "openingHours": "Mo-Th 12:00-22:00; Fr,Sa 12:00-24:00; Su 12:00-22:00",
@@ -346562,7 +346587,7 @@
       "longitude": 17.9406016,
       "x": 38.12,
       "y": 24.45,
-      "address": "North Stockholm, Stockholm",
+      "address": "Köpenhamnsgatan 4",
       "osmIdentity": "node:12463394202",
       "idNamespace": "public",
       "sourceFacts": [
@@ -351585,7 +351610,7 @@
       "longitude": 18.0345939,
       "x": 56.92,
       "y": 56.97,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Hornsbruksgatan 26",
       "osmIdentity": "node:12754694051",
       "idNamespace": "public",
       "openingHours": "Mo-Th 11:00-22:00; Fr 11:00-23:00; Sa 12:00-23:00; Su 12:00-22:00",
@@ -355565,7 +355590,7 @@
       "longitude": 18.1317973,
       "x": 76.36,
       "y": 71.65,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "node:13230146341",
       "idNamespace": "public",
       "openingHours": "Mo-Su 11:00-16:00",
@@ -370999,7 +371024,6 @@
       "note": "Café from OpenStreetMap. Address: Klockstapelsbacken 3.",
       "tags": [
         "Café",
-        "East Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Website",
@@ -371536,7 +371560,7 @@
       "longitude": 18.192239,
       "x": 88.45,
       "y": 86.32,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "way:142984314",
       "idNamespace": "public",
       "sourceFacts": []
@@ -371921,7 +371945,7 @@
       "longitude": 18.1302303,
       "x": 76.05,
       "y": 73.74,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "way:152385853",
       "idNamespace": "public",
       "website": "https://www.hembygd.se/bergholmtorpet",
@@ -372076,7 +372100,7 @@
       "longitude": 18.1317818,
       "x": 76.36,
       "y": 71.48,
-      "address": "East Stockholm, Stockholm",
+      "address": "Söderort, Stockholm",
       "osmIdentity": "way:161920885",
       "idNamespace": "public",
       "sourceFacts": [
@@ -372640,7 +372664,7 @@
       "longitude": 17.9694819,
       "x": 43.9,
       "y": 60.04,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Eolshällsvägen 10",
       "osmIdentity": "way:173336548",
       "idNamespace": "public",
       "sourceFacts": []
@@ -372924,7 +372948,7 @@
       "longitude": 18.1460786,
       "x": 79.22,
       "y": 72.17,
-      "address": "East Stockholm, Stockholm",
+      "address": "Ljusnevägen 73",
       "osmIdentity": "way:187198130",
       "idNamespace": "public",
       "sourceFacts": [
@@ -373962,7 +373986,7 @@
       "longitude": 17.8690828,
       "x": 23.82,
       "y": 32.27,
-      "address": "North Stockholm, Stockholm",
+      "address": "Sörgårdsvägen 157",
       "osmIdentity": "way:323160912",
       "idNamespace": "public",
       "sourceFacts": [
