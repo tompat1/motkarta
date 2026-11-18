@@ -1548,6 +1548,7 @@ function AppContent({
       setSelected(place.id);
       setMapFocusRequest({ id: place.id, timestamp: Date.now() });
       setMobileTab("map");
+      setActiveDesktopNav("map");
       setMobileViewMode("map");
       setIsPlaceDetailOpen(false);
       setIsMapCardMinimized(false);
@@ -1555,20 +1556,17 @@ function AppContent({
       if (!isVisibleInRanked) {
         setKind("All places");
         setCuisine(allCuisines);
+        setSelectedTags([]);
+        setConciergeMainListIds([]);
         setQuery("");
       }
       window.requestAnimationFrame(() => {
         window.setTimeout(() => {
-          const mapPanel = document.querySelector(".map-panel");
-          if (mapPanel && window.matchMedia("(max-width: 768px)").matches) {
-            mapPanel.scrollIntoView({ behavior: "smooth", block: "start" });
-          } else {
-            workspaceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
+          scrollToMapWorkspace();
         }, 0);
       });
     },
-    [allCuisines, ranked],
+    [allCuisines, ranked, scrollToMapWorkspace],
   );
 
   const mapPlaces = useMemo(

@@ -269,6 +269,39 @@ test.describe("Mobile Full User Flows", () => {
     await expect(page.locator(".place-detail-sheet-overlay")).toBeVisible({ timeout: 10000 });
   });
 
+  test("5c. Mobile place detail 'View on Map' centers and focuses distant venue (Bun Meat Bun)", async ({ page }) => {
+    await page.goto("/");
+
+    // Search for Bun Meat Bun
+    const searchInput = page.locator('input[aria-label*="Sök"], input[aria-label*="Search"]').first();
+    await expect(searchInput).toBeVisible({ timeout: 10000 });
+    await searchInput.fill("Bun Meat Bun");
+
+    // Select suggestion in dropdown
+    const suggestion = page.locator('button, [role="button"], li', { hasText: /^Bun Meat Bun/i }).first();
+    await expect(suggestion).toBeVisible({ timeout: 10000 });
+    await suggestion.click();
+
+    // Open detail sheet from slide-up
+    const slideUp = page.locator(".mobile-place-slide-up");
+    await expect(slideUp).toBeVisible({ timeout: 10000 });
+    await slideUp.locator(".mobile-slide-up-content").click();
+
+    // Click VIEW ON MAP / VISA PÅ KARTAN
+    const detailSheet = page.locator(".place-detail-sheet");
+    await expect(detailSheet).toBeVisible({ timeout: 10000 });
+    const viewOnMapBtn = page.locator(".place-detail-primary-cta");
+    await expect(viewOnMapBtn).toBeVisible({ timeout: 10000 });
+    await viewOnMapBtn.click();
+
+    // Detail sheet closes and active marker in Farsta Strand is focused
+    await expect(detailSheet).not.toBeVisible({ timeout: 10000 });
+    const activeMarker = page.locator(".motkarta-map-marker.active");
+    await expect(activeMarker).toBeVisible({ timeout: 10000 });
+    await expect(slideUp).toBeVisible({ timeout: 10000 });
+    await expect(slideUp).toContainText(/Bun Meat Bun/i);
+  });
+
   test("6. Device sync modal flow", async ({ page }) => {
     await page.goto("/");
 

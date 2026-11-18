@@ -559,21 +559,18 @@ export function FoodMap({
         activeMarker.unbindPopup();
         currentMap.closePopup();
 
-        if (typeof (clusterGroupRef.current as any)?.zoomToShowLayer === "function") {
-          try {
-            (clusterGroupRef.current as any).zoomToShowLayer(activeMarker, () => {
-              currentMap.flyTo(flyCenter, targetZoom, {
-                duration: 0.35,
-                easeLinearity: 0.25,
-              });
-            });
-            return;
-          } catch {}
-        }
-
         currentMap.flyTo(flyCenter, targetZoom, {
           duration: 0.35,
           easeLinearity: 0.25,
+        });
+
+        // If at max zoom multiple places share exact coordinates, spiderfy cluster if needed
+        currentMap.once("moveend", () => {
+          if (typeof (clusterGroupRef.current as any)?.zoomToShowLayer === "function") {
+            try {
+              (clusterGroupRef.current as any).zoomToShowLayer(activeMarker);
+            } catch {}
+          }
         });
       };
 
