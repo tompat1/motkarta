@@ -378209,10 +378209,10 @@
       ],
       "x": 59.3155,
       "y": 18.161,
-      "ratingAverage": 4.9,
-      "reviewCount": 850,
-      "reliableRatingCount": 800,
-      "priceLevel": 2,
+      "ratingAverage": 0,
+      "reviewCount": 0,
+      "reliableRatingCount": 0,
+      "priceLevel": 0,
       "evidenceLabel": "Verified by Burgerdudes Hall of Fame & Sveriges Bästa Burgare",
       "is_hidden_gem": true,
       "evidence": {
@@ -378243,7 +378243,13 @@
           "field": "category",
           "value": "Hall of Fame / Sveriges Bästa Burgare #1"
         }
-      ]
+      ],
+      "source": "burgerdudes",
+      "sourceName": "Burgerdudes",
+      "sourceUrl": "https://www.burgerdudes.se",
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0
     },
     {
       "id": 3829104012,
@@ -378269,10 +378275,10 @@
       ],
       "x": 59.3482,
       "y": 18.0336,
-      "ratingAverage": 4.7,
-      "reviewCount": 340,
-      "reliableRatingCount": 300,
-      "priceLevel": 2,
+      "ratingAverage": 0,
+      "reviewCount": 0,
+      "reliableRatingCount": 0,
+      "priceLevel": 0,
       "evidenceLabel": "Verified by Burgerdudes Guide",
       "is_hidden_gem": true,
       "evidence": {
@@ -378303,7 +378309,13 @@
           "field": "category",
           "value": "Craft Burger Hagastaden"
         }
-      ]
+      ],
+      "source": "burgerdudes",
+      "sourceName": "Burgerdudes",
+      "sourceUrl": "https://www.burgerdudes.se",
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0
     },
     {
       "id": 3829104013,
@@ -378330,10 +378342,10 @@
       ],
       "x": 59.3142,
       "y": 18.0345,
-      "ratingAverage": 4.6,
-      "reviewCount": 280,
-      "reliableRatingCount": 250,
-      "priceLevel": 2,
+      "ratingAverage": 0,
+      "reviewCount": 0,
+      "reliableRatingCount": 0,
+      "priceLevel": 0,
       "evidenceLabel": "Verified by Burgerdudes Guide",
       "is_hidden_gem": true,
       "evidence": {
@@ -378364,7 +378376,13 @@
           "field": "category",
           "value": "Smash Burger Hornstull"
         }
-      ]
+      ],
+      "source": "burgerdudes",
+      "sourceName": "Burgerdudes",
+      "sourceUrl": "https://www.burgerdudes.se",
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0
     },
     {
       "id": 3829104014,
@@ -378391,10 +378409,10 @@
       ],
       "x": 59.2952,
       "y": 17.9332,
-      "ratingAverage": 4.6,
-      "reviewCount": 190,
-      "reliableRatingCount": 170,
-      "priceLevel": 2,
+      "ratingAverage": 0,
+      "reviewCount": 0,
+      "reliableRatingCount": 0,
+      "priceLevel": 0,
       "evidenceLabel": "Verified by Burgerdudes Guide",
       "is_hidden_gem": true,
       "evidence": {
@@ -378425,7 +378443,13 @@
           "field": "category",
           "value": "Street Food & Burgers"
         }
-      ]
+      ],
+      "source": "burgerdudes",
+      "sourceName": "Burgerdudes",
+      "sourceUrl": "https://www.burgerdudes.se",
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0
     },
     {
       "id": 3829104015,
@@ -378449,10 +378473,10 @@
       ],
       "x": 59.4233,
       "y": 17.8347,
-      "ratingAverage": 4.5,
-      "reviewCount": 160,
-      "reliableRatingCount": 140,
-      "priceLevel": 1,
+      "ratingAverage": 0,
+      "reviewCount": 0,
+      "reliableRatingCount": 0,
+      "priceLevel": 0,
       "evidenceLabel": "Verified by Burgerdudes Guide",
       "is_hidden_gem": false,
       "evidence": {
@@ -378482,7 +378506,13 @@
           "field": "category",
           "value": "Smash & Streetfood"
         }
-      ]
+      ],
+      "source": "burgerdudes",
+      "sourceName": "Burgerdudes",
+      "sourceUrl": "https://www.burgerdudes.se",
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0
     }
   ],
   "totalPlaces": 3125

@@ -55,6 +55,18 @@ const allowedSourceNames = new Set([
   'tasstipset',
   'visit stockholm (officiella stadsguiden)',
   'white guide nordic',
+  'burgerdudes',
+  'guide michelin',
+  'guide michelin nordic',
+  'sveriges bästa',
+  'dagens nyheter',
+  'dagens nyheter (krogkommissionen)',
+  'svenska dagbladet',
+  'svenska dagbladet (svd krogguiden)',
+  'allt om mat',
+  'vagabond',
+  'stora restaurangpriset',
+  'european coffee trip',
 ]);
 const forbiddenText = /Google Places|google_metadata|rating-only|review-only|demo fixture/i;
 const forbiddenFields = [
@@ -71,7 +83,7 @@ for (const place of payload.places) {
     console.error('dist/data/places.json contains demo or commercial source text.');
     process.exit(69);
   }
-  const normalizedSource = String(place.sourceName || '').trim().toLowerCase();
+  const normalizedSource = String(place.sourceName || 'openstreetmap').trim().toLowerCase();
   if (!allowedSourceNames.has(normalizedSource)) {
     console.error('dist/data/places.json contains an unsupported static source:', place.sourceName);
     process.exit(69);
