@@ -32,7 +32,11 @@ const SODERORT_SUB = [
   'soderort', 'arsta', 'liljeholmen', 'aspudden', 'hagersten', 'enskede',
   'farsta', 'skarpnack', 'bagarmossen', 'gubbangen', 'hokerangen',
   'bandhagen', 'hogdalen', 'ragsved', 'hagsatra', 'skarholmen',
-  'bredang', 'fruangen', 'vastberga', 'johanneshov',
+  'bredang', 'fruangen', 'vastberga', 'johanneshov', 'skondal',
+  'alvsjo', 'orby', 'solberga', 'stureby', 'svedmyra', 'tallkrogen',
+  'fagersjo', 'larsboda', 'orhem', 'trangsund', 'grondal', 'malarhojden',
+  'satra', 'varberg', 'bjorkhagen', 'hammarbyhojden', 'karrtorp',
+  'telefonplan', 'midsommarkransen',
 ];
 
 export function matchesArea(area: string, place: ConciergePlace): boolean {
@@ -40,12 +44,14 @@ export function matchesArea(area: string, place: ConciergePlace): boolean {
   if ((area === 'norrmalm' || area === 'city') && place.area && (includesPhrase(place.area, 'city') || includesPhrase(place.area, 'norrmalm'))) return true;
   if (area === 'soderort' && place.area && includesPhrase(place.area, 'soderort')) return true;
 
-  const isBroad = !place.area || /^(stockholm|central stockholm|north stockholm|south stockholm|east stockholm|west stockholm|sweden|sverige|unspecified)$/i.test(place.area.trim());
-  const { address } = place;
-  if (isBroad && address) {
-    if (includesPhrase(address, area)) return true;
-    if ((area === 'norrmalm' || area === 'city') && (includesPhrase(address, 'city') || includesPhrase(address, 'norrmalm'))) return true;
-    if (area === 'soderort' && SODERORT_SUB.some((sub) => includesPhrase(address, sub))) return true;
+  const isBroad = !place.area || /^(stockholm|central stockholm|north stockholm|south stockholm|east stockholm|west stockholm|sweden|sverige|unspecified|söderort|soderort|västerort|vasterort|norrort)$/i.test(place.area.trim());
+  const searchTarget = `${place.address ?? ''} ${place.name ?? ''}`;
+  if (isBroad && searchTarget.trim()) {
+    if (includesPhrase(searchTarget, area)) return true;
+    const normArea = normalize(area);
+    if (normArea.length >= 4 && normalize(searchTarget).split(' ').some((w) => w === normArea || w.startsWith(normArea))) return true;
+    if ((area === 'norrmalm' || area === 'city') && (includesPhrase(searchTarget, 'city') || includesPhrase(searchTarget, 'norrmalm'))) return true;
+    if (area === 'soderort' && SODERORT_SUB.some((sub) => includesPhrase(searchTarget, sub))) return true;
   }
   return false;
 }

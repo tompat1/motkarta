@@ -19,6 +19,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+from motkarta.catalog_exclusions import is_excluded_catalog_name
 from motkarta.dog_friendly import is_tasstipset_source
 from motkarta.municipal_signals import (
     is_food_venue_business_type,
@@ -171,6 +172,8 @@ def unmatched_food_control_entries(
             continue
         if not is_food_venue_business_type(row.get("business_type"), row.get("facility_type")):
             continue
+        if is_excluded_catalog_name(row.get("name")):
+            continue
         validation = validations.get(f"municipal:{source_id}") or validations.get(normalized_name(row.get("name"))) or {}
         entry = {
             "id": f"municipal-food-control:{source_id}",
@@ -210,6 +213,8 @@ def unmatched_serving_permit_entries(
     for row in permit_rows:
         permit_id = clean_text(row.get("permit_id") or row.get("source_id"))
         if not permit_id or permit_id in matched_permit_ids:
+            continue
+        if is_excluded_catalog_name(row.get("name")):
             continue
         validation = validations.get(f"serving_permit:{permit_id}") or validations.get(normalized_name(row.get("name"))) or {}
         entry = {
@@ -283,6 +288,8 @@ def google_candidate_entries(path: Path, validations: dict[str, dict[str, Any]])
     payload = json.loads(path.read_text(encoding="utf-8"))
     entries = []
     for candidate in payload.get("candidates", []):
+        if is_excluded_catalog_name(candidate.get("name")):
+            continue
         google_place_id = clean_text(candidate.get("googlePlaceId"))
         validation = validations.get(f"google:{google_place_id}") or validations.get(normalized_name(candidate.get("name"))) or {}
         entry = {

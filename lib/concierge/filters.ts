@@ -49,7 +49,9 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     ["trattoria", "italian"],
     ["trattorias", "italian"],
     ["pizza", "pizza"],
+    ["pizzan", "pizza"],
     ["pizzeria", "pizza"],
+    ["pizzerian", "pizza"],
     ["pizzerior", "pizza"],
     ["pizzeriorna", "pizza"],
     ["pizzaställe", "pizza"],
@@ -217,8 +219,8 @@ export function extractStructuredFilters(query: string): StructuredFilters {
     if (norm === "bar" && (qLower.includes("salad bar") || qLower.includes("salladsbar") || qLower.includes("juice bar") || qLower.includes("espresso bar") || qLower.includes("glassbar") || qLower.includes("ice cream bar"))) {
       continue;
     }
-    const matched = wordBoundaryTerms.has(term)
-      ? (new RegExp(`(?:^|[^a-zåäö])${term}(?:[^a-zåäö]|$)`, "i").test(qLower))
+    const matched = (wordBoundaryTerms.has(term) || !term.includes(" "))
+      ? (new RegExp(`(?:^|[^a-zåäö0-9])${term}(?:[^a-zåäö0-9]|$)`, "i").test(qLower))
       : qLower.includes(term);
     if (matched) {
       cuisines.push(norm);
@@ -278,8 +280,10 @@ const BASE_CUISINE_ALIASES: Record<string, string[]> = {
   italienska: ["italian", "italy", "italiensk", "italienska", "pasta", "pizza", "trattoria"],
   trattoria: ["italian", "trattoria", "trattorias", "pasta", "pizza"],
   trattorias: ["italian", "trattoria", "trattorias", "pasta", "pizza"],
-  pizza: ["pizza", "pizzeria", "pizzerior", "pizzeriorna", "pizzastalle", "pizzastallen"],
-  pizzeria: ["pizza", "pizzeria", "pizzerior", "pizzeriorna", "pizzastalle", "pizzastallen"],
+  pizza: ["pizza", "pizzan", "pizzeria", "pizzerian", "pizzerior", "pizzeriorna", "pizzastalle", "pizzastallen"],
+  pizzan: ["pizza", "pizzan", "pizzeria", "pizzerian", "pizzerior", "pizzeriorna", "pizzastalle", "pizzastallen"],
+  pizzeria: ["pizza", "pizzan", "pizzeria", "pizzerian", "pizzerior", "pizzeriorna", "pizzastalle", "pizzastallen"],
+  pizzerian: ["pizza", "pizzan", "pizzeria", "pizzerian", "pizzerior", "pizzeriorna", "pizzastalle", "pizzastallen"],
   pizzerior: ["pizza", "pizzeria", "pizzerior", "pizzeriorna", "pizzastalle", "pizzastallen"],
   pizzeriorna: ["pizza", "pizzeria", "pizzerior", "pizzeriorna", "pizzastalle", "pizzastallen"],
   pizzastalle: ["pizza", "pizzeria", "pizzerior", "pizzeriorna", "pizzastalle", "pizzastallen"],

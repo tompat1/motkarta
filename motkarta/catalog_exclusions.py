@@ -19,7 +19,23 @@ def is_olearys_name(name: object) -> bool:
 
 
 def is_excluded_catalog_name(name: object) -> bool:
-    return is_olearys_name(name) or (
-        isinstance(name, str)
-        and bool(re.search(r"^stf\s+stockholm(?:\s|\/).*\bvandrarhem\b", name.strip(), re.IGNORECASE))
-    )
+    if not isinstance(name, str):
+        return False
+    trimmed = name.strip()
+    if is_olearys_name(trimmed):
+        return True
+    if re.search(r"^stf\s+stockholm(?:\s|\/).*\bvandrarhem\b", trimmed, re.IGNORECASE):
+        return True
+    if "\n" in trimmed or len(trimmed) > 300:
+        return False
+    if re.search(r"\b(?:minigolf\s*kiosk|bangolf(?:\s*&\s*caf[eé])?|badkiosk|strandkiosk|campingkiosk)\b", trimmed, re.IGNORECASE):
+        return True
+    if re.search(r"^kiosk,\s*caf[eé],\s*snabbmat$", trimmed, re.IGNORECASE):
+        return True
+    if re.search(r"(?:^|[^a-zA-ZåäöÅÄÖ0-9])(?:grundskol|förskol|forskol|gymnasi|dagis|fritidshem)[a-zA-ZåäöÅÄÖ0-9]*(?![a-zA-ZåäöÅÄÖ0-9])", trimmed, re.IGNORECASE):
+        return True
+    if re.search(r"(?:^|[^a-zA-ZåäöÅÄÖ0-9])[a-zA-ZåäöÅÄÖ0-9]*skol(?:a|an|or|orna)(?![a-zA-ZåäöÅÄÖ0-9])", trimmed, re.IGNORECASE):
+        return True
+    if re.search(r"(?:^|[^a-zA-ZåäöÅÄÖ0-9])(?:äldreboende|aldreboende|vårdboende|vardboende|servicehus|gruppboende|sjukhus)[a-zA-ZåäöÅÄÖ0-9]*(?![a-zA-ZåäöÅÄÖ0-9])", trimmed, re.IGNORECASE):
+        return True
+    return False

@@ -10,8 +10,22 @@ export function isExcludedCatalogPlace(place: { id?: number; name?: unknown; sou
 
 /** Explicit catalog exclusions apply to every branch, regardless of chain metadata. */
 export function isExcludedCatalogName(name: unknown): boolean {
-  return typeof name === "string" && (
-    /\bo[\s'’‘`´-]*learys\b/i.test(name)
-    || /^stf\s+stockholm(?:\s|\/).*\bvandrarhem\b/i.test(name.trim())
-  );
+  if (typeof name !== "string") return false;
+  const trimmed = name.trim();
+  if (/\bo[\s'’‘`´-]*learys\b/i.test(trimmed)) return true;
+  if (/^stf\s+stockholm(?:\s|\/).*\bvandrarhem\b/i.test(trimmed)) return true;
+
+  // If passed an entire file content (multi-line or extremely long string), don't treat embedded URLs/addresses as place names
+  if (trimmed.includes("\n") || trimmed.length > 300) return false;
+
+  // Seasonal shacks, bathing kiosks, and minigolf huts
+  if (/\b(?:minigolf\s*kiosk|bangolf(?:\s*&\s*caf[eé])?|badkiosk|strandkiosk|campingkiosk)\b/i.test(trimmed)) return true;
+  if (/^kiosk,\s*caf[eé],\s*snabbmat$/i.test(trimmed)) return true;
+
+  // Institutional non-commercial dining: schools, preschools, retirement & care facilities
+  if (/(?:^|[^a-zA-ZåäöÅÄÖ0-9])(?:grundskol|förskol|forskol|gymnasi|dagis|fritidshem)[a-zA-ZåäöÅÄÖ0-9]*(?![a-zA-ZåäöÅÄÖ0-9])/i.test(trimmed)) return true;
+  if (/(?:^|[^a-zA-ZåäöÅÄÖ0-9])[a-zA-ZåäöÅÄÖ0-9]*skol(?:a|an|or|orna)(?![a-zA-ZåäöÅÄÖ0-9])/i.test(trimmed)) return true;
+  if (/(?:^|[^a-zA-ZåäöÅÄÖ0-9])(?:äldreboende|aldreboende|vårdboende|vardboende|servicehus|gruppboende|sjukhus)[a-zA-ZåäöÅÄÖ0-9]*(?![a-zA-ZåäöÅÄÖ0-9])/i.test(trimmed)) return true;
+
+  return false;
 }

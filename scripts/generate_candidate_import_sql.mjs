@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { sql } from "../lib/import-utils.ts";
+import { isExcludedCatalogName } from "../lib/catalog-exclusions.ts";
 
 const args = process.argv.slice(2);
 const input = resolve(args[0] ?? "outputs/candidate_queue.json");
@@ -46,7 +47,7 @@ let skipped = 0;
 for (const entry of entries) {
   assertNoForbiddenValueFields(entry);
 
-  if (!entry || typeof entry !== "object" || !entry.name) {
+  if (!entry || typeof entry !== "object" || !entry.name || isExcludedCatalogName(entry.name)) {
     skipped += 1;
     continue;
   }

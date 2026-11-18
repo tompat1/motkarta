@@ -1208,8 +1208,11 @@ function AppContent({
         const isHiddenGemSearch = /\b(hidden gems?|dolda pärlor|dolda parlor|dold pärla|dold parla)\b/i.test(qClean);
         if (isHiddenGemSearch && !place.hiddenGem?.eligible) return false;
 
-        const areaAliases = getAreaAliases(place.area).join(" ");
-        const placeSearchText = `${place.name} ${place.area} ${areaAliases} ${place.address ?? ""} ${place.cuisine ?? ""} ${place.kind} ${place.note ?? ""} ${place.tags.join(" ")}`.toLowerCase();
+        const isSuburbanSector = /^(söderort|soderort|västerort|vasterort|norrort|stockholm)$/i.test(place.area?.trim() ?? "");
+        const areaAliases = isSuburbanSector
+          ? [place.area?.toLowerCase() ?? ""]
+          : getAreaAliases(place.area);
+        const placeSearchText = `${place.name} ${place.area ?? ""} ${areaAliases.join(" ")} ${place.address ?? ""} ${place.cuisine ?? ""} ${place.kind} ${place.note ?? ""} ${place.tags.join(" ")}`.toLowerCase();
         if (placeSearchText.includes(qClean)) return true;
         const rawTokens = qClean
           .replace(/\b(hidden gems?|dolda pärlor|dolda parlor|dold pärla|dold parla)\b/gi, "")

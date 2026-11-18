@@ -26,6 +26,24 @@ test("published catalog and SQL seeds contain no O'Learys entries or dependent r
   }
 });
 
+test("seasonal kiosks and institutional facilities are excluded by isExcludedCatalogName", () => {
+  assert.equal(isExcludedCatalogName("Kiosk, Cafe, snabbmat"), true);
+  assert.equal(isExcludedCatalogName("Minigolf kiosk"), true);
+  assert.equal(isExcludedCatalogName("Kanaans Bangolf & Café"), true);
+  assert.equal(isExcludedCatalogName("Äldreboendet Trekanten"), true);
+  assert.equal(isExcludedCatalogName("Sköndals Skola"), true);
+  assert.equal(isExcludedCatalogName("Bromma Gymnasium Köket"), true);
+  assert.equal(isExcludedCatalogName("Dalahöjdens Äldreboende"), true);
+  assert.equal(isExcludedCatalogName("Academica Förskolan Vinterelvan"), true);
+
+  // Legitimate establishments must remain included
+  assert.equal(isExcludedCatalogName("Apotekskiosken"), false);
+  assert.equal(isExcludedCatalogName("Brokiosken"), false);
+  assert.equal(isExcludedCatalogName("Matteus Kiosk & Grill"), false);
+  assert.equal(isExcludedCatalogName("Flitiga Lisa"), false);
+  assert.equal(isExcludedCatalogName("Sköndals Konditori"), false);
+});
+
 test("Tasstipset-only venues stay excluded while existing venues keep dog-friendly provenance", () => {
   assert.equal(isExcludedCatalogPlace({ id: 1015019099, name: "Scandic Continental" }), true);
   assert.equal(isExcludedCatalogPlace({ id: 1015019099, name: "Unrelated D1 venue" }), false);

@@ -69,3 +69,29 @@ def test_tasstipset_rejects_lodging_but_keeps_explicit_food_categories():
                                 kind=map_category_to_kind(category), area="Stockholm", address="",
                                 latitude=59.33, longitude=18.06)
         assert is_food_establishment(record)
+
+
+def test_seasonal_kiosks_and_institutional_facilities_are_excluded():
+    excluded_names = [
+        "Kiosk, Cafe, snabbmat",
+        "Minigolf kiosk",
+        "Kanaans Bangolf & Café",
+        "Äldreboendet Trekanten",
+        "Sköndals Skola",
+        "Bromma Gymnasium Köket",
+        "Dalahöjdens Äldreboende",
+        "Academica Förskolan Vinterelvan",
+    ]
+    for name in excluded_names:
+        assert is_excluded_catalog_name(name), f"Expected {name} to be excluded"
+
+    included_names = [
+        "Apotekskiosken",
+        "Brokiosken",
+        "Matteus Kiosk & Grill",
+        "Flitiga Lisa",
+        "Sköndals Konditori",
+    ]
+    for name in included_names:
+        assert not is_excluded_catalog_name(name), f"Expected {name} to be included"
+

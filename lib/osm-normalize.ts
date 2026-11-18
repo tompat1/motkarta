@@ -1,4 +1,5 @@
 import type { EstablishmentType } from "./scoring.ts";
+import { isExcludedCatalogName } from "./catalog-exclusions.ts";
 
 export type OsmFoodPlaceRow = {
   osm_type: string;
@@ -78,6 +79,9 @@ export function normalizeOsmEstablishmentType(row: Pick<OsmFoodPlaceRow, "catego
   | EstablishmentType
   | null {
   const name = row.name?.trim() ?? "";
+  if (name && isExcludedCatalogName(name)) {
+    return null;
+  }
   const category = row.category.trim().toLowerCase();
   const cuisine = row.cuisine?.trim().toLowerCase() ?? "";
   const fullText = `${name} ${category} ${cuisine}`.toLowerCase();
