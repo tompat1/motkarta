@@ -21,7 +21,7 @@ export function CuratedSourcesPanel({
     lang === "sv"
       ? {
           kicker: "Källregister",
-          title: "Kurerade öppna källor & Skraparstatus",
+          title: "Kurerade öppna källor & verifierade guider",
           description:
             "Auditerbara datakällor och verifierade guider som driver Motkartas ranking, med tidpunkt för senaste skrapning och antal insamlade datapunkter.",
           addSource: "Lägg till ny källa",
@@ -34,7 +34,7 @@ export function CuratedSourcesPanel({
         }
       : {
           kicker: "Source registry",
-          title: "Curated open sources & Scraper status",
+          title: "Curated open sources & verified guides",
           description:
             "Auditable data sources and verified guides powering Motkarta's ranking, with last scrape timestamp and total collected data points.",
           addSource: "Add new source",
@@ -50,8 +50,11 @@ export function CuratedSourcesPanel({
     <section className="admin-curated-sources-panel" id="sources" aria-labelledby="sources-title">
       <div className="admin-curated-sources-head">
         <div>
+          <p className="admin-source-kicker" style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--color-stone)", margin: "0 0 6px" }}>
+            📜 {copy.kicker}
+          </p>
           <h2 id="sources-title">
-            📜 {copy.title} ({sources.length})
+            {copy.title} ({sources.length})
           </h2>
           <p>{copy.description}</p>
         </div>

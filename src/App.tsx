@@ -98,6 +98,7 @@ import {
   Plus,
   PlusCircle,
   Scales,
+  Scroll,
   ShieldCheck,
   SignOut,
   ShoppingBag,
@@ -286,11 +287,19 @@ function AppContent({
   const [isPlaceDetailOpen, setIsPlaceDetailOpen] = useState(false);
   const [mapCardFeedbackType, setMapCardFeedbackType] = useState<"up" | "down" | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [activeDesktopNav, setActiveDesktopNav] = useState<"discover" | "map" | "saved">("discover");
+  const [activeDesktopNav, setActiveDesktopNav] = useState<"discover" | "map" | "saved" | "sources">("discover");
 
   useEffect(() => {
     const handleScroll = () => {
       if (kind === "Saved") return;
+      const sourcesElement = document.getElementById("sources");
+      if (sourcesElement) {
+        const sourcesRect = sourcesElement.getBoundingClientRect();
+        if (sourcesRect.top <= 220 && sourcesRect.bottom >= 100) {
+          setActiveDesktopNav("sources");
+          return;
+        }
+      }
       const mapElement = document.getElementById("map");
       if (!mapElement) return;
       const rect = mapElement.getBoundingClientRect();
@@ -2475,6 +2484,19 @@ function AppContent({
           >
             <BookmarkSimple size={18} weight={currentDesktopNav === "saved" ? "fill" : "bold"} /> {lang === "sv" ? "Sparade" : "Saved"}
           </a>
+          <a
+            className={currentDesktopNav === "sources" ? "is-active" : ""}
+            href="#sources"
+            onClick={(e) => {
+              e.preventDefault();
+              setActiveDesktopNav("sources");
+              if (kind === "Saved") selectKindFilter("All places");
+              const el = document.getElementById("sources");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            <Scroll size={18} weight={currentDesktopNav === "sources" ? "fill" : "bold"} /> {lang === "sv" ? "Källor" : "Sources"}
+          </a>
         </nav>
         <div className="topbar-actions">
           <p className="editorial-desktop-nav-note">
@@ -2555,7 +2577,16 @@ function AppContent({
             <ListDashes size={20} weight="bold" />
           </button>
 
-          <a className="about" href="#method">
+          <a
+            className="about"
+            href="#sources"
+            onClick={(e) => {
+              e.preventDefault();
+              setActiveDesktopNav("sources");
+              const el = document.getElementById("sources");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
             <span className={`status-dot status-dot-${dataSource}`} />
             {dataSource === "osm"
               ? t.dataSourceLiveOsm
@@ -3872,6 +3903,13 @@ function AppContent({
             </p>
           </article>
         </div>
+
+        <CuratedSourcesPanel
+          sources={curatedSources}
+          isLoading={isSourcesLoading}
+          lang={lang}
+        />
+
         <div className="disclaimer">
           {t.dataNoteLabel}
           <span>{t.dataNoteText}</span>
@@ -4140,6 +4178,21 @@ function AppContent({
                   <span>{t.navMethod}</span>
                 </a>
                 <CmsEditFlag cmsKey="navMethod" label="Nav: Metod" />
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                <a
+                  href="#sources"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    const el = document.getElementById("sources");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  style={{ flex: 1 }}
+                >
+                  <Scroll size={18} weight="bold" />
+                  <span>{lang === "sv" ? "Verifierade källor" : "Verified Sources"}</span>
+                </a>
+                <CmsEditFlag cmsKey="navSources" label="Nav: Källor" />
               </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
                 <a
