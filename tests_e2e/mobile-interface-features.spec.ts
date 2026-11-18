@@ -170,13 +170,20 @@ test.describe("Mobile Interface Features & Design Verification", () => {
     const topbar = page.locator(".topbar");
     await expect(topbar).toBeVisible();
 
-    // Brand logo and hamburger menu are visible
+    // Brand logo, SV/EN toggle, and hamburger menu are visible
     await expect(topbar.locator(".brand-logo")).toBeVisible();
+    const topbarLangBtn = topbar.locator(".lang-toggle-btn");
+    await expect(topbarLangBtn).toBeVisible();
+    await expect(topbarLangBtn.locator(".lang-opt.is-active")).toHaveText("SV");
+    await topbarLangBtn.click();
+    await expect(topbarLangBtn.locator(".lang-opt.is-active")).toHaveText("EN");
+    await topbarLangBtn.click();
+    await expect(topbarLangBtn.locator(".lang-opt.is-active")).toHaveText("SV");
+
     const hamburgerBtn = topbar.locator(".mobile-hamburger-btn");
     await expect(hamburgerBtn).toBeVisible();
 
     // Clutter & moved items are hidden in mobile topbar
-    await expect(topbar.locator(".lang-toggle-btn")).toBeHidden();
     await expect(topbar.locator(".topbar-cart-btn")).toBeHidden();
     await expect(topbar.locator(".topbar-session-auth")).toBeHidden();
 

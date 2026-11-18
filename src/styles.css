@@ -19625,11 +19625,6 @@ body.is-drawer-open .site-utilities > * {
     padding: 0 14px;
   }
 
-  /* Move SV/EN into hamburger menu only on mobile */
-  .topbar .lang-toggle-btn {
-    display: none !important;
-  }
-
   /* Hide redundant headings, search label, starter row, and desktop filter panel on mobile */
   .countermap-controls-head,
   .countermap-panel-heading,
