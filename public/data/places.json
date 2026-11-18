@@ -89122,101 +89122,6 @@
       ]
     },
     {
-      "id": 151747436,
-      "name": "Bankomat",
-      "kind": "Restaurant",
-      "cuisine": "",
-      "area": "Södermalm",
-      "note": "Restaurant from OpenStreetMap.",
-      "tags": [
-        "Central Stockholm",
-        "OpenStreetMap",
-        "Opening hours",
-        "Restaurant"
-      ],
-      "is_hidden_gem": false,
-      "is_structural_anomaly": false,
-      "discoveryReasons": [
-        "it appears independent",
-        "it has lower local visibility",
-        "opening hours are listed"
-      ],
-      "discoverySignals": {
-        "independent_business": true,
-        "underrepresented_cuisine": false,
-        "low_local_visibility": true,
-        "verified_open": true,
-        "complete_profile": false,
-        "recently_updated": false
-      },
-      "sourceName": "OpenStreetMap",
-      "lastUpdated": "",
-      "evidenceLabel": "OpenStreetMap verified open data",
-      "ratingAverage": 0,
-      "reliableRatingCount": 0,
-      "reviewCount": 0,
-      "categoryMeanRating": 0,
-      "categoryPopularityRaw": 0,
-      "localPopularityPercentile": 0,
-      "priceLevel": 0,
-      "mainstreamExposure": 17.2,
-      "ageDays": 1200,
-      "daysSinceFreshEvidence": 15,
-      "evidence": {
-        "specialistGuide": 0,
-        "independentEditorial": 0.25,
-        "verifiedUserRating": 0.2,
-        "repeatVisits": 8,
-        "recentReviews": 10,
-        "credibleReviewers": 6,
-        "inspectionStatus": 70,
-        "verifiedAttributes": 28.33,
-        "dataFreshness": 80,
-        "confidence": "Medium"
-      },
-      "engagement": {
-        "searchImpressions": 0,
-        "profileViews": 0,
-        "mapMarkerClicks": 0,
-        "saves": 0,
-        "directionRequests": 0,
-        "confirmedVisits": 0,
-        "repeatVisits": 0,
-        "recommendations": 0,
-        "recentSaves": 0
-      },
-      "latitude": 59.3076959,
-      "longitude": 18.0305063,
-      "x": 56.1,
-      "y": 60.11,
-      "address": "Central Stockholm, Stockholm",
-      "osmIdentity": "node:858575535",
-      "idNamespace": "public",
-      "openingHours": "Mo-Fr 10:30-24:00; Sa 12:00-24:00; Su 12:00-23:00",
-      "sourceFacts": [
-        {
-          "placeId": 151747436,
-          "source": "OpenStreetMap",
-          "url": "https://www.openstreetmap.org/node/858575535",
-          "verification": "listed",
-          "capturedAt": "2026-11-01T13:47:36.253730+00:00",
-          "id": "151747436:osm:openingHours",
-          "field": "openingHours",
-          "value": "Mo-Fr 10:30-24:00; Sa 12:00-24:00; Su 12:00-23:00"
-        },
-        {
-          "placeId": 151747436,
-          "source": "OpenStreetMap",
-          "url": "https://www.openstreetmap.org/node/858575535",
-          "verification": "listed",
-          "capturedAt": "2026-11-01T13:47:36.253730+00:00",
-          "id": "151747436:osm:atmosphere:outdoor",
-          "field": "atmosphere",
-          "value": "outdoor seating"
-        }
-      ]
-    },
-    {
       "id": 1331604743,
       "name": "Nästan hemma",
       "kind": "Café",
@@ -378584,5 +378489,5 @@
       "localPopularityPercentile": 0
     }
   ],
-  "totalPlaces": 3125
+  "totalPlaces": 3124
 }

@@ -33,6 +33,9 @@ export function isExcludedCatalogName(name: unknown): boolean {
   ) return true;
   if (/^badplats$/i.test(trimmed)) return true;
 
+  // Non-food financial & cash service POIs (ATMs / cash machines / currency exchange)
+  if (/\b(?:bankomat(?:en)?|uttagsautomat(?:en)?|kontantautomat(?:en)?|kontantuttag|v[äa]xlingskontor(?:et)?|cash\s+machine|atm)\b/i.test(trimmed)) return true;
+
   // Institutional non-commercial dining: schools, preschools, retirement & care facilities
   if (/(?:^|[^a-zA-ZåäöÅÄÖ0-9])(?:grundskol|förskol|forskol|gymnasi|dagis|fritidshem)[a-zA-ZåäöÅÄÖ0-9]*(?![a-zA-ZåäöÅÄÖ0-9])/i.test(trimmed)) return true;
   if (/(?:^|[^a-zA-ZåäöÅÄÖ0-9])[a-zA-ZåäöÅÄÖ0-9]*skol(?:a|an|or|orna)(?![a-zA-ZåäöÅÄÖ0-9])/i.test(trimmed)) return true;

@@ -154,3 +154,17 @@ def test_bathing_places_and_swimming_spots_are_excluded():
         assert not is_excluded_catalog_name(venue), f"Expected {venue} to remain included"
 
 
+def test_atms_and_bankomat_are_excluded():
+    for poi in [
+        "Bankomat",
+        "Bankomaten",
+        "Uttagsautomat",
+        "Kontantautomat",
+        "ATM",
+        "Euronet ATM",
+        "Växlingskontor",
+    ]:
+        assert is_excluded_catalog_name(poi), f"Expected {poi} to be excluded"
+
+
+

@@ -74,6 +74,21 @@ test("bathing places, outdoor swimming spots, and public baths are excluded by i
   }
 });
 
+test("ATMs, Bankomat, and cash machines are excluded by isExcludedCatalogName", () => {
+  const cashMachines = [
+    "Bankomat",
+    "Bankomaten",
+    "Uttagsautomat",
+    "Kontantautomat",
+    "ATM",
+    "Euronet ATM",
+    "Växlingskontor",
+  ];
+  for (const poi of cashMachines) {
+    assert.equal(isExcludedCatalogName(poi), true, `Expected ${poi} to be excluded`);
+  }
+});
+
 test("commercial chains like Pizza Hut, Max, McDonalds, and Subway are excluded by isExcludedCatalogName", () => {
   const chains = [
     "Pizza Hut",
