@@ -10192,7 +10192,7 @@
       "name": "Gandhi",
       "kind": "Restaurant",
       "cuisine": "indian",
-      "area": "Södermalm",
+      "area": "Kungsholmen",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: indian.",
       "tags": [
         "Central Stockholm",
@@ -10200,7 +10200,8 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Kungsholmen"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -10257,7 +10258,7 @@
       "longitude": 18.0313402,
       "x": 56.27,
       "y": 51.43,
-      "address": "Folkungagatan 95, 116 30 Stockholm, Sweden",
+      "address": "Kungsholmen, Stockholm",
       "website": "http://www.restauranggandhi.se/",
       "osmIdentity": "node:320554037",
       "idNamespace": "public",
@@ -52356,14 +52357,15 @@
       "name": "Frithiofs skafferi",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Södermalm",
+      "area": "Söderort",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Website"
+        "Website",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -61973,14 +61975,15 @@
       "name": "Gandhi",
       "kind": "Restaurant",
       "cuisine": "indian",
-      "area": "Norrmalm",
+      "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: indian.",
       "tags": [
         "Central Stockholm",
         "Indian",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -254800,12 +254803,13 @@
       "name": "Café Cul-De-Sac",
       "kind": "Café",
       "cuisine": "",
-      "area": "Södermalm",
+      "area": "Söderort",
       "note": "Café from OpenStreetMap.",
       "tags": [
         "Café",
         "Central Stockholm",
-        "OpenStreetMap"
+        "OpenStreetMap",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -258583,7 +258587,7 @@
       "name": "Cafe Söderberg",
       "kind": "Café",
       "cuisine": "coffee shop",
-      "area": "Södermalm",
+      "area": "Norrmalm",
       "note": "Café from OpenStreetMap. Cuisine tag: coffee shop.",
       "tags": [
         "Café",
@@ -258591,7 +258595,8 @@
         "Coffee Shop",
         "OpenStreetMap",
         "Opening hours",
-        "Website"
+        "Website",
+        "Norrmalm"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -258647,7 +258652,7 @@
       "longitude": 18.0710054,
       "x": 64.2,
       "y": 51.65,
-      "address": "Jussi björlings allé 10, Södermalm",
+      "address": "Jussi Björlings allé 10, Norrmalm",
       "osmIdentity": "node:6188609205",
       "idNamespace": "public",
       "openingHours": "Mo-Su 10:00-19:00",
@@ -313585,7 +313590,7 @@
       "name": "Färgfabrikens Kafé",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Södermalm",
+      "area": "Söderort",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
@@ -313594,7 +313599,8 @@
         "White Guide",
         "White Guide Nordic",
         "Curated",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -313650,7 +313656,7 @@
       "longitude": 18.0193396,
       "x": 53.87,
       "y": 57.29,
-      "address": "Lövholmsbrinken 1, Södermalm",
+      "address": "Lövholmsbrinken 1, Söderort",
       "osmIdentity": "node:11524355976",
       "idNamespace": "public",
       "sourceFacts": [

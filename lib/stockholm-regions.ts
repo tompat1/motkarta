@@ -420,6 +420,9 @@ export function isMisplacedSodermalmRegion(place: RegionPlace): boolean {
     if (place.latitude > 59.3220) {
       return true;
     }
+    if (typeof place.longitude === "number" && place.longitude > 0 && place.longitude < 18.0210) {
+      return true;
+    }
   }
   const textWithoutArea = normalizeRegionText(`${place.name} ${place.address ?? ""}`);
   const soderort = AREA_ALIASES.find((entry) => entry.region === "Söderort");
@@ -473,10 +476,18 @@ export function resolveStockholmRegion(place: RegionPlace): string {
     typeof place.latitude === "number" &&
     place.latitude > 0 &&
     (place.latitude < 59.3070 || (place.latitude < 59.3130 && typeof place.longitude === "number" && place.longitude < 18.0300));
+  const isNorthOfSoder =
+    typeof place.latitude === "number" &&
+    place.latitude > 59.3220;
+  const isWestOfSoder =
+    typeof place.longitude === "number" &&
+    place.longitude > 0 &&
+    place.longitude < 18.0210;
+  const isOutsideSoder = isSouthOfSoder || isNorthOfSoder || isWestOfSoder;
 
   const text = normalizeRegionText(`${place.name} ${isMisplaced ? "" : (place.area ?? "")} ${place.address ?? ""}`);
   const aliasMatch = AREA_ALIASES.find((entry) => {
-    if (isSouthOfSoder && entry.region === "Södermalm") {
+    if (isOutsideSoder && entry.region === "Södermalm") {
       return false;
     }
     return entry.aliases.some((alias) => matchesRegionAlias(text, alias));
@@ -513,7 +524,7 @@ export function resolveStockholmRegion(place: RegionPlace): string {
       return "Norrort";
     }
     if (place.latitude < 59.3210) {
-      return "Södermalm";
+      return place.longitude < 18.0210 ? "Söderort" : "Södermalm";
     }
     if (place.latitude <= 59.3375) {
       return place.longitude > 18.0700 ? "Östermalm" : "Norrmalm";

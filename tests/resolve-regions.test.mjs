@@ -162,6 +162,39 @@ test("resolve-regions endpoint updates D1 for establishments with broad/missing 
   assert.equal(db.auditEvents[0].action, "resolve_region");
 });
 
+test("reclassifies places north or west of Södermalm (Gandhi on Kungsholmen, Cafe Söderberg in Norrmalm, Färgfabrikens Kafé in Söderort)", () => {
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Gandhi",
+      area: "Södermalm",
+      address: "Folkungagatan 95, 116 30 Stockholm, Sweden",
+      latitude: 59.331138,
+      longitude: 18.0313402,
+    }),
+    "Kungsholmen",
+  );
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Cafe Söderberg",
+      area: "Södermalm",
+      address: "Jussi björlings allé 10, Södermalm",
+      latitude: 59.3305503,
+      longitude: 18.0710054,
+    }),
+    "Norrmalm",
+  );
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Färgfabrikens Kafé",
+      area: "Södermalm",
+      address: "Lövholmsbrinken 1, Södermalm",
+      latitude: 59.3153217,
+      longitude: 18.0193396,
+    }),
+    "Söderort",
+  );
+});
+
 function fakeD1(initialRows) {
   const db = {
     rows: [...initialRows],
