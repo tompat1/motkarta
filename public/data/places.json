@@ -118261,14 +118261,15 @@
       "name": "Mama Ye's",
       "kind": "Restaurant",
       "cuisine": "asian",
-      "area": "Södermalm",
+      "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: asian.",
       "tags": [
         "Asian",
         "Central Stockholm",
         "OpenStreetMap",
         "Restaurant",
-        "Website"
+        "Website",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -246616,12 +246617,13 @@
       "name": "Marrakech Resturang",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Södermalm",
+      "area": "Söderort",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
-        "Restaurant"
+        "Restaurant",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -277304,13 +277306,14 @@
       "name": "NIDa Catering och festvåning",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Södermalm",
+      "area": "Söderort",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
         "Restaurant",
-        "Website"
+        "Website",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -365306,13 +365309,14 @@
       "name": "Mackverket",
       "kind": "Restaurant",
       "cuisine": "",
-      "area": "Södermalm",
+      "area": "Söderort",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Söderort"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,

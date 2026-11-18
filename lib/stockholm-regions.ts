@@ -414,7 +414,7 @@ export function isMisplacedSodermalmRegion(place: RegionPlace): boolean {
     return false;
   }
   if (typeof place.latitude === "number" && place.latitude > 0) {
-    if (place.latitude < 59.3070 || (place.latitude < 59.3130 && typeof place.longitude === "number" && place.longitude < 18.0300)) {
+    if (place.latitude < 59.3070 || (place.latitude < 59.3130 && typeof place.longitude === "number" && place.longitude < 18.0325)) {
       return true;
     }
     if (place.latitude > 59.3220) {
@@ -475,7 +475,7 @@ export function resolveStockholmRegion(place: RegionPlace): string {
   const isSouthOfSoder =
     typeof place.latitude === "number" &&
     place.latitude > 0 &&
-    (place.latitude < 59.3070 || (place.latitude < 59.3130 && typeof place.longitude === "number" && place.longitude < 18.0300));
+    (place.latitude < 59.3070 || (place.latitude < 59.3130 && typeof place.longitude === "number" && place.longitude < 18.0325));
   const isNorthOfSoder =
     typeof place.latitude === "number" &&
     place.latitude > 59.3220;
@@ -508,7 +508,7 @@ export function resolveStockholmRegion(place: RegionPlace): string {
       return boxMatch.region;
     }
 
-    if (place.latitude < 59.3070 || (place.latitude < 59.3130 && place.longitude < 18.0300)) {
+    if (place.latitude < 59.3070 || (place.latitude < 59.3130 && place.longitude < 18.0325)) {
       return "Söderort";
     }
     if (place.longitude < 17.9850) {

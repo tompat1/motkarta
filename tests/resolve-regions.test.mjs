@@ -193,6 +193,46 @@ test("reclassifies places north or west of Södermalm (Gandhi on Kungsholmen, Ca
     }),
     "Söderort",
   );
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Marrakech Resturang",
+      area: "Södermalm",
+      address: "Central Stockholm, Stockholm",
+      latitude: 59.3096235,
+      longitude: 18.030495,
+    }),
+    "Söderort",
+  );
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Mackverket",
+      area: "Södermalm",
+      address: "Central Stockholm, Stockholm",
+      latitude: 59.3103302,
+      longitude: 18.0311401,
+    }),
+    "Söderort",
+  );
+  assert.equal(
+    resolveStockholmRegion({
+      name: "NIDa Catering och festvåning",
+      area: "Södermalm",
+      address: "Central Stockholm, Stockholm",
+      latitude: 59.3100886,
+      longitude: 18.03051,
+    }),
+    "Söderort",
+  );
+  assert.equal(
+    resolveStockholmRegion({
+      name: "Loopen",
+      area: "Södermalm",
+      address: "Central Stockholm, Stockholm",
+      latitude: 59.3133811,
+      longitude: 18.0331356,
+    }),
+    "Södermalm",
+  );
 });
 
 function fakeD1(initialRows) {
