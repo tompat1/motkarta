@@ -152,6 +152,66 @@ test("motkarta score mode ties are broken by mode-specific evidence", () => {
   assert.equal(sortedIds([broadMatch, deeplyVerified], "Most verified", "Motkarta score")[0], 2);
 });
 
+test("Most verified ranks venues with the most verified independent source badges first", () => {
+  const highOsmNoBadges = scoredPlace({
+    id: 10,
+    name: "Brisket & Friends",
+    tags: ["Restaurant", "OpenStreetMap"],
+    evidence: {
+      ...scoredPlace().evidence,
+      confidence: "High",
+      inspectionStatus: 95,
+      verifiedAttributes: 95,
+    },
+    scores: { ...scoredPlace().scores, recommendation: 90, quality: 85 },
+  });
+  const oneBadge = scoredPlace({
+    id: 11,
+    name: "Mahalo",
+    tags: ["Restaurant", "Anders Husa"],
+    evidence: {
+      ...scoredPlace().evidence,
+      confidence: "High",
+      inspectionStatus: 90,
+      verifiedAttributes: 85,
+    },
+    scores: { ...scoredPlace().scores, recommendation: 88, quality: 84 },
+  });
+  const threeBadges = scoredPlace({
+    id: 12,
+    name: "Bun Meat Bun",
+    tags: ["Restaurant", "Burgerdudes", "Sveriges Bästa", "Tasstipset"],
+    evidence: {
+      ...scoredPlace().evidence,
+      confidence: "High",
+      specialistGuide: 0.95,
+      independentEditorial: 0.95,
+      inspectionStatus: 80,
+      verifiedAttributes: 75,
+    },
+    scores: { ...scoredPlace().scores, recommendation: 82, quality: 80 },
+  });
+  const fiveBadges = scoredPlace({
+    id: 13,
+    name: "Operakällaren",
+    tags: ["Restaurant", "Michelin", "White Guide", "Sveriges Bästa", "Svenska Dagbladet", "Anders Husa"],
+    evidence: {
+      ...scoredPlace().evidence,
+      confidence: "High",
+      specialistGuide: 0.95,
+      independentEditorial: 0.95,
+      inspectionStatus: 80,
+      verifiedAttributes: 75,
+    },
+    scores: { ...scoredPlace().scores, recommendation: 80, quality: 79 },
+  });
+
+  assert.deepEqual(
+    sortedIds([highOsmNoBadges, oneBadge, threeBadges, fiveBadges], "Most verified", "Motkarta score"),
+    [13, 12, 11, 10],
+  );
+});
+
 test("ranking mode menu omits modes without backing public data", () => {
   assert.equal(visibleModes.includes("All recommendations"), true);
   assert.equal(visibleModes.includes("Local favourites"), false);

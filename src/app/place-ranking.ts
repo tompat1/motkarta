@@ -1,4 +1,5 @@
 import type { PlaceInput, ScoredPlace } from "../../lib/scoring";
+import { getPlaceVerifiedSources } from "./verified-sources.ts";
 
 export const modes = [
   "All recommendations",
@@ -159,6 +160,7 @@ function modeTieBreakers(
 ): Array<[number, number]> {
   if (mode === "Most verified") {
     return [
+      [verifiedBadgeCount(a), verifiedBadgeCount(b)],
       [verificationDepth(a), verificationDepth(b)],
       [freshTimestamp(a), freshTimestamp(b)],
       [a.scores.quality, b.scores.quality],
@@ -205,15 +207,25 @@ function modeTieBreakers(
   ];
 }
 
+function verifiedBadgeCount(place: ScoredPlace) {
+  return getPlaceVerifiedSources(place).length;
+}
+
+function normalizeUnitMetric(value: number | undefined) {
+  if (typeof value !== "number" || !Number.isFinite(value)) return 0;
+  return value > 1 ? value / 100 : value;
+}
+
 function verificationDepth(place: ScoredPlace) {
   const evidence = place.evidence;
   return (
     confidenceScore(evidence?.confidence) +
+    verifiedBadgeCount(place) * 30 +
     (place.verification?.verifiedSourcesCount ?? 0) * 20 +
-    (evidence?.specialistGuide ?? 0) * 12 +
-    (evidence?.independentEditorial ?? 0) * 10 +
-    (evidence?.inspectionStatus ?? 0) * 8 +
-    (evidence?.verifiedAttributes ?? 0) * 6 +
+    normalizeUnitMetric(evidence?.specialistGuide) * 12 +
+    normalizeUnitMetric(evidence?.independentEditorial) * 10 +
+    normalizeUnitMetric(evidence?.inspectionStatus) * 8 +
+    normalizeUnitMetric(evidence?.verifiedAttributes) * 6 +
     (place.hiddenGem?.independentEvidenceCount ?? 0) * 5
   );
 }
