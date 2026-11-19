@@ -2149,17 +2149,17 @@ function AppContent({
               : "Review candidates, export labels, and check that the D1 admin schema is ready."}
           </p>
         </section>
-        <CuratedSourcesPanel
-          sources={curatedSources}
-          isLoading={isSourcesLoading}
-          lang={lang}
-          onAddSource={() => setSuperpowerMode("add_source")}
-        />
         <AdminReviewPanel
           lang={lang}
           adminSession={adminSession}
           onSessionChange={setAdminSession}
           onLogout={handleGlobalAdminLogout}
+        />
+        <CuratedSourcesPanel
+          sources={curatedSources}
+          isLoading={isSourcesLoading}
+          lang={lang}
+          onAddSource={() => setSuperpowerMode("add_source")}
         />
         {superpowerMode === "add_source" ? (
           <ConciergeSuperpowerModal

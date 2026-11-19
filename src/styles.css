@@ -20219,5 +20219,447 @@ body.is-drawer-open .site-utilities > * {
   box-shadow: 0 0 0 2.5px #ffffff, 0 4px 14px rgba(0, 0, 0, 0.6);
 }
 
+/* ==========================================================================
+   ADMIN VENUE REGISTRY TABLE (Concourse Table — #111111 / #F4F0E7 / #326BFF / #FF4A2F)
+   ========================================================================== */
+.admin-venue-table-section {
+  margin: 18px 0 24px;
+  background: #fffdf8;
+  border: 2px solid var(--color-ink, #111111);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 4px 4px 0 var(--color-ink, #111111);
+}
+
+.admin-venue-table-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--color-paper, #f4f0e7);
+  border-bottom: 1.5px solid var(--color-ink, #111111);
+}
+
+.admin-venue-table-heading h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-ink, #111111);
+}
+
+.admin-venue-table-heading p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #4b4a45;
+}
+
+.admin-venue-table-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  color: var(--color-ink, #111111);
+}
+
+.admin-venue-table-summary strong {
+  font-weight: 800;
+}
+
+.admin-venue-table-summary span {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(50, 107, 255, 0.12);
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+.admin-venue-table-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 12px 20px;
+  background: #faf7f0;
+  border-bottom: 1px solid #d8d4cb;
+}
+
+.admin-venue-table-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+  flex: 1 1 150px;
+}
+
+.admin-venue-table-filters label span {
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #57534e;
+}
+
+.admin-venue-table-filters select {
+  height: 36px;
+  padding: 0 10px;
+  border: 1.5px solid #c7c2b6;
+  border-radius: 7px;
+  background: #ffffff;
+  color: var(--color-ink, #111111);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-venue-table-filters select:focus {
+  outline: none;
+  border-color: #326bff;
+}
+
+.admin-filter-reset {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 7px;
+  border: 1.5px solid var(--color-ink, #111111);
+  background: #ffffff;
+  color: var(--color-ink, #111111);
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.admin-filter-reset:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-venue-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-venue-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-venue-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f4f0e7;
+  border-bottom: 1.5px solid var(--color-ink, #111111);
+  padding: 0;
+  white-space: nowrap;
+}
+
+.admin-venue-table thead th button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: #3f3d38;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.admin-venue-table thead th button:hover,
+.admin-venue-table thead th button.is-active {
+  color: var(--color-ink, #111111);
+  background: rgba(17, 17, 17, 0.05);
+}
+
+.admin-table-action-heading {
+  padding: 10px 14px !important;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #3f3d38;
+  text-align: right;
+}
+
+.admin-venue-table tbody tr {
+  border-bottom: 1px solid #e7e2d6;
+  transition: background 0.12s ease;
+}
+
+.admin-venue-table tbody tr:hover {
+  background: #faf7f0;
+}
+
+.admin-venue-table tbody tr.is-selected {
+  background: #eff4ff;
+}
+
+.admin-venue-table tbody td {
+  padding: 11px 14px;
+  vertical-align: middle;
+}
+
+.admin-venue-identity-cell {
+  min-width: 220px;
+}
+
+.admin-venue-name-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: var(--color-ink, #111111);
+}
+
+.admin-venue-name-button strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.admin-venue-name-button small {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: #6b685f;
+}
+
+.admin-venue-row-mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex: 0 0 8px;
+  background: #a8a29e;
+}
+
+.admin-venue-row-mark.tone-verified {
+  background: #16a34a;
+}
+
+.admin-venue-row-mark.tone-risk {
+  background: #ff4a2f;
+}
+
+.admin-table-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #ece8dd;
+  color: #292524;
+  white-space: nowrap;
+}
+
+.admin-table-status.state-verified,
+.admin-table-status.state-featured {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.admin-table-status.state-candidate {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.admin-table-cell-note {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  color: #6b685f;
+}
+
+.admin-confidence-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-confidence-label.confidence-high { color: #166534; }
+.admin-confidence-label.confidence-medium { color: #92400e; }
+.admin-confidence-label.confidence-low { color: #991b1b; }
+
+.admin-confidence-meter {
+  display: block;
+  width: 76px;
+  height: 5px;
+  margin-top: 4px;
+  border-radius: 999px;
+  background: #e5e0d5;
+  overflow: hidden;
+}
+
+.admin-confidence-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #326bff;
+}
+
+.admin-table-source {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-ink, #111111);
+}
+
+.admin-freshness-label {
+  display: inline-block;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-freshness-label.freshness-fresh { color: #166534; }
+.admin-freshness-label.freshness-stale { color: #b45309; }
+.admin-freshness-label.freshness-unknown { color: #78716c; }
+
+.admin-conflict-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #fca5a5;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-gap-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #b45309;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admin-no-conflict {
+  font-size: 12px;
+  color: #78716c;
+}
+
+.admin-table-row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.admin-table-review-btn {
+  height: 30px;
+  padding: 0 11px;
+  border-radius: 6px;
+  border: 1.5px solid var(--color-ink, #111111);
+  background: var(--color-ink, #111111);
+  color: #fffdf8;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-table-review-btn:hover {
+  background: #326bff;
+  border-color: #326bff;
+}
+
+.admin-table-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1.5px solid #c7c2b6;
+  background: #ffffff;
+  color: var(--color-ink, #111111);
+  cursor: pointer;
+}
+
+.admin-table-icon-btn:hover {
+  border-color: var(--color-ink, #111111);
+}
+
+.admin-table-remove-btn {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1.5px solid #fca5a5;
+  background: #fff5f5;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-table-remove-btn:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+
+.admin-table-remove-btn.is-restore {
+  border-color: #86efac;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.admin-table-remove-btn.is-restore:hover {
+  background: #dcfce7;
+}
+
+.admin-table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 36px 20px;
+  color: #57534e;
+  text-align: center;
+}
+
+.admin-table-empty button {
+  padding: 6px 14px;
+  border-radius: 7px;
+  border: 1.5px solid var(--color-ink, #111111);
+  background: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 
 

@@ -49,6 +49,7 @@ type AdminVenueTableProps<T extends AdminVenueTableRow> = {
   onSelectCandidate: (candidate: T) => void;
   onOpenReview: (candidate: T) => void;
   onEditCandidate: (candidate: T) => void;
+  onToggleRemoved?: (candidate: T) => void;
 };
 
 export function AdminVenueTable<T extends AdminVenueTableRow>({
@@ -59,6 +60,7 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
   onSelectCandidate,
   onOpenReview,
   onEditCandidate,
+  onToggleRemoved,
 }: AdminVenueTableProps<T>) {
   const [sortKey, setSortKey] = useState<SortKey>("conflicts");
   const [sortDirection, setSortDirection] = useState<SortDirection>("descending");
@@ -200,8 +202,9 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
               const confidence = venueConfidence(candidate);
               const freshness = venueFreshness(candidate);
               const selected = candidate.id === selectedCandidateId;
+              const isRemoved = candidate.validationLabel === "closed_wrong_category";
               return (
-                <tr key={candidate.id} className={selected ? "is-selected" : ""} aria-busy={busyId === candidate.id}>
+                <tr key={candidate.id} className={`admin-candidate-row${selected ? " is-selected" : ""}`} aria-busy={busyId === candidate.id}>
                   <td className="admin-venue-identity-cell">
                     <button type="button" className="admin-venue-name-button" onClick={() => onSelectCandidate(candidate)}>
                       <span className={`admin-venue-row-mark tone-${rowTone(candidate)}`} aria-hidden="true" />
@@ -273,6 +276,18 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
                       >
                         <PencilSimple size={15} weight="bold" />
                       </button>
+                      {onToggleRemoved ? (
+                        <button
+                          type="button"
+                          className={`admin-table-remove-btn ${isRemoved ? "is-restore" : ""}`}
+                          onClick={() => onToggleRemoved(candidate)}
+                          disabled={busyId === candidate.id}
+                        >
+                          {isRemoved
+                            ? (lang === "sv" ? "Återställ" : "Restore")
+                            : (lang === "sv" ? "Ta bort från kartan" : "Remove from map")}
+                        </button>
+                      ) : null}
                     </div>
                   </td>
                 </tr>

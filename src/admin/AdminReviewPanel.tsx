@@ -1777,6 +1777,13 @@ export function AdminReviewPanel({
               setPlaceEditorDraft(candidateToPlaceDraft(candidate));
               setPlaceEditorOpen(true);
             }}
+            onToggleRemoved={(candidate) =>
+              void promoteCandidate(
+                candidate,
+                candidate.validationLabel === "closed_wrong_category" ? "baseline" : "candidate",
+                candidate.validationLabel === "closed_wrong_category" ? null : "closed_wrong_category",
+              )
+            }
           />
         ) : null
       ) : null}
