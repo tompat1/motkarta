@@ -1,8 +1,8 @@
 import React from "react";
-import { Compass, MapTrifold, BookmarkSimple } from "@phosphor-icons/react";
+import { Compass, MapTrifold, Diamond, BookmarkSimple } from "@phosphor-icons/react";
 import type { Language } from "../app/shared";
 
-export type MobileTab = "discover" | "map" | "saved";
+export type MobileTab = "discover" | "map" | "gems" | "saved";
 
 interface MobileAppToolbarProps {
   activeTab: MobileTab;
@@ -27,6 +27,11 @@ export function MobileAppToolbar({
       id: "map",
       label: lang === "sv" ? "Kartan" : "Map",
       icon: <MapTrifold size={24} weight={activeTab === "map" ? "fill" : "regular"} />,
+    },
+    {
+      id: "gems",
+      label: lang === "sv" ? "Pärlor" : "Gems",
+      icon: <Diamond size={24} weight={activeTab === "gems" ? "fill" : "regular"} />,
     },
     {
       id: "saved",

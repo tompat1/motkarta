@@ -739,15 +739,37 @@ function AppContent({
         if (kind === "Saved") {
           selectKindFilter("All places");
         }
+        if (mode === "Hidden gems") {
+          setMode("All recommendations");
+        }
+        scrollToMapWorkspace();
+      } else if (tab === "gems") {
+        setActiveDesktopNav("map");
+        setMobileViewMode("map");
+        setSelected(null);
+        setIsPlaceDetailOpen(false);
+        setMobileRankSheet(null);
+        setIsFilterSheetOpen(false);
+        setIsMobileMenuOpen(false);
+        setIsContributeFabOpen(false);
+        setConciergeAnswerCollapsed(true);
+        setIsMobileBottomSheetHidden(false);
+        if (kind === "Saved") {
+          selectKindFilter("All places");
+        }
+        setMode("Hidden gems");
         scrollToMapWorkspace();
       } else if (tab === "saved") {
         setActiveDesktopNav("saved");
         setIsMobileBottomSheetHidden(false);
+        if (mode === "Hidden gems") {
+          setMode("All recommendations");
+        }
         selectKindFilter("Saved");
         scrollToMapWorkspace();
       }
     },
-    [kind, scrollToMapWorkspace, selectKindFilter]
+    [kind, mode, scrollToMapWorkspace, selectKindFilter]
   );
 
   const [isSourcesLoading, setIsSourcesLoading] = useState(false);

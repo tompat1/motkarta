@@ -10,7 +10,7 @@ test.describe("Mobile Interface Features & Design Verification", () => {
     });
   });
 
-  test("1. Bottom app toolbar renders 3 tabs with active indicator", async ({ page }) => {
+  test("1. Bottom app toolbar renders 4 tabs with active indicator and Gems filter", async ({ page }) => {
     await page.goto("/");
 
     const toolbar = page.locator(".mobile-app-toolbar");
@@ -18,15 +18,26 @@ test.describe("Mobile Interface Features & Design Verification", () => {
 
     const discoverTab = toolbar.locator('.mobile-toolbar-tab[data-tab="discover"]');
     const mapTab = toolbar.locator('.mobile-toolbar-tab[data-tab="map"]');
+    const gemsTab = toolbar.locator('.mobile-toolbar-tab[data-tab="gems"]');
     const savedTab = toolbar.locator('.mobile-toolbar-tab[data-tab="saved"]');
 
     await expect(discoverTab).toBeVisible();
     await expect(mapTab).toBeVisible();
+    await expect(gemsTab).toBeVisible();
     await expect(savedTab).toBeVisible();
 
     // Default tab is "map"
     await expect(mapTab).toHaveClass(/is-active/);
     await expect(mapTab.locator(".mobile-toolbar-active-indicator")).toBeVisible();
+
+    // Tapping "Pärlor" / "Gems" activates the gems tab and filters to Hidden gems
+    await gemsTab.click();
+    await expect(gemsTab).toHaveClass(/is-active/);
+    await expect(gemsTab.locator(".mobile-toolbar-active-indicator")).toBeVisible();
+
+    // Returning to Map restores the map tab
+    await mapTab.click();
+    await expect(mapTab).toHaveClass(/is-active/);
   });
 
   test("2. Discover ('Upptäck') view displays editorial hero & inspiration section", async ({ page }) => {
