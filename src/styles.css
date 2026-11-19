@@ -20200,5 +20200,24 @@ body.is-drawer-open .site-utilities > * {
   }
 }
 
+/* High-contrast Hybrid labels & Satellite/Hybrid marker legibility */
+.map-hybrid-roads-layer {
+  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.75));
+}
+
+.map-hybrid-labels-layer {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+}
+
+.leaflet-shell[data-map-layer="satellite"] .motkarta-map-marker .pin-circle,
+.leaflet-shell[data-map-layer="hybrid"] .motkarta-map-marker .pin-circle {
+  box-shadow: 0 0 0 2.5px #ffffff, 0 4px 12px rgba(0, 0, 0, 0.55);
+}
+
+.leaflet-shell[data-map-layer="satellite"] .motkarta-cluster-blob,
+.leaflet-shell[data-map-layer="hybrid"] .motkarta-cluster-blob {
+  box-shadow: 0 0 0 2.5px #ffffff, 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+
 
 

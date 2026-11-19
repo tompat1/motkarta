@@ -59,7 +59,7 @@ export function FoodMap({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const baseLayerRef = useRef<L.TileLayer | null>(null);
-  const overlayLayerRef = useRef<L.TileLayer | null>(null);
+  const overlayLayersRef = useRef<L.TileLayer[]>([]);
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
   const markersRef = useRef<Map<number, L.Marker>>(new Map());
   const userMarkerRef = useRef<L.Marker | null>(null);
@@ -313,7 +313,7 @@ export function FoodMap({
       map.remove();
       mapRef.current = null;
       baseLayerRef.current = null;
-      overlayLayerRef.current = null;
+      overlayLayersRef.current = [];
       clusterGroupRef.current = null;
       setMapReady(false);
     };
@@ -327,9 +327,9 @@ export function FoodMap({
       map.removeLayer(baseLayerRef.current);
       baseLayerRef.current = null;
     }
-    if (overlayLayerRef.current) {
-      map.removeLayer(overlayLayerRef.current);
-      overlayLayerRef.current = null;
+    if (overlayLayersRef.current.length > 0) {
+      overlayLayersRef.current.forEach((layer) => map.removeLayer(layer));
+      overlayLayersRef.current = [];
     }
 
     if (mapLayer === "satellite" || mapLayer === "hybrid") {
@@ -345,23 +345,26 @@ export function FoodMap({
       baseLayerRef.current = imageryLayer;
 
       if (mapLayer === "hybrid") {
-        const labelsLayer = L.tileLayer(
-          `https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png?key=${CARTO_API_KEY}`,
+        // Esri official Hybrid pair: road network + street names & place/district labels in white with dark halos
+        const roadsLayer = L.tileLayer(
+          "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}",
           {
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
-            subdomains: "abcd",
-            maxZoom: 20,
+            maxZoom: 19,
             zIndex: 400,
+            className: "map-hybrid-roads-layer",
           },
         );
-        labelsLayer.on("tileerror", () => {
-          labelsLayer.setUrl(
-            "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
-          );
-        });
-        labelsLayer.addTo(map);
-        overlayLayerRef.current = labelsLayer;
+        const placesLayer = L.tileLayer(
+          "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+          {
+            maxZoom: 19,
+            zIndex: 410,
+            className: "map-hybrid-labels-layer",
+          },
+        );
+        roadsLayer.addTo(map);
+        placesLayer.addTo(map);
+        overlayLayersRef.current = [roadsLayer, placesLayer];
       }
     } else {
       const tileUrl = `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${CARTO_API_KEY}`;
