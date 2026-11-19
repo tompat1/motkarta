@@ -1,0 +1,54 @@
+{
+  "title": "Choose the admin dashboard structure",
+  "question": "Which first-view composition should guide Motkarta's internal data desk?",
+  "options": [
+    {
+      "id": "concourse-table",
+      "kind": "assigned",
+      "label": "Concourse Table",
+      "kicker": "THE ROLL",
+      "lineage": "Stockholm transit information boards and civic data desks",
+      "thesis": "A dense, calm venue table owns the screen; urgent rows announce themselves without breaking the grid.",
+      "palette": ["#111111", "#F4F0E7", "#326BFF", "#FF4A2F"],
+      "materials": ["fine rules", "fixed data columns", "evidence lamps"],
+      "viewport": "A narrow navigation rail, action summary, advanced filters, and the sortable venue table fill the first viewport.",
+      "risk": "The density needs careful column priority on smaller screens.",
+      "html": ".impeccable/mocks/decision/admin-concourse-table.html",
+      "comp": ".impeccable/mocks/decision/admin-concourse-table.webp"
+    },
+    {
+      "id": "evidence-workbench",
+      "kind": "dealt",
+      "label": "Evidence Workbench",
+      "lineage": "Editorial verification desks and source comparison workspaces",
+      "thesis": "The queue and the selected venue share the screen so provenance and conflicts stay beside the decision.",
+      "palette": ["#F4F0E7", "#FFFDF8", "#111111", "#326BFF"],
+      "materials": ["split workspace", "source ledger", "annotation rail"],
+      "viewport": "A compact filter rail and venue list occupy the left two-thirds while a persistent evidence inspector occupies the right.",
+      "risk": "The inspector reduces comparison width and needs a strong collapsed state.",
+      "html": ".impeccable/mocks/decision/admin-evidence-workbench.html",
+      "comp": ".impeccable/mocks/decision/admin-evidence-workbench.webp"
+    },
+    {
+      "id": "operations-index",
+      "kind": "dealt",
+      "label": "Operations Index",
+      "lineage": "Scandinavian civic-service indexes and newsroom planning sheets",
+      "thesis": "Quality, freshness, and queue pressure lead; the venue table begins immediately below the operating picture.",
+      "palette": ["#FFFDF8", "#111111", "#D8D4CB", "#FF4A2F"],
+      "materials": ["summary bands", "editorial hierarchy", "ruled index"],
+      "viewport": "A top navigation, broad quality band, prioritized work queues, and the first venue rows form one vertical operating index.",
+      "risk": "Summary content can delay the core venue work if allowed to grow.",
+      "html": ".impeccable/mocks/decision/admin-operations-index.html",
+      "comp": ".impeccable/mocks/decision/admin-operations-index.webp"
+    }
+  ],
+  "reroll": {
+    "registers": ["safer", "bolder"]
+  },
+  "buildPath": {
+    "value": "code",
+    "toggle": true
+  },
+  "steer": true
+}

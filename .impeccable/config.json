@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/admin-operations-index.html"
+        ],
+        "createdAt": "2026-11-19T16:37:12.331Z",
+        "reason": "Repository DESIGN.md mandates Paper #F4F0E7 and White #FFFDF8 as Motkarta's primary light surfaces."
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/admin-evidence-workbench.html"
+        ],
+        "createdAt": "2026-11-19T16:37:12.333Z",
+        "reason": "Repository DESIGN.md mandates Paper #F4F0E7 and White #FFFDF8 as Motkarta's primary light surfaces."
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "files": [
+          ".impeccable/mocks/decision/admin-operations-index.html"
+        ],
+        "createdAt": "2026-11-19T16:37:12.333Z",
+        "reason": "Repository DESIGN.md mandates Inter for body and UI typography."
+      }
+    ]
+  }
+}

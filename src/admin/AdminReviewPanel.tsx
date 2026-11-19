@@ -12,6 +12,7 @@ import { AdminMapView, type AdminMapCandidate } from "./AdminMapView";
 import { AdminPhotoManager, type AdminPhotoManagerSaveHandle } from "./AdminPhotoManager";
 import { AdminPlaceEditor, AdminPriceLevelPicker, candidateToPlaceDraft, emptyPlaceDraft, type AdminPlaceDraft } from "./AdminPlaceEditor";
 import { AdminDistrictManager } from "./AdminDistrictManager";
+import { AdminVenueTable } from "./AdminVenueTable";
 import {
   ArrowClockwise,
   ArrowRight,
@@ -35,6 +36,7 @@ import {
   ShieldCheck,
   Sliders,
   Sparkle,
+  Table as TableIcon,
   WarningCircle,
   X,
 } from "@phosphor-icons/react";
@@ -192,7 +194,7 @@ export function AdminReviewPanel({
   const [searchQuery, setSearchQuery] = useState("");
   const queueSectionRef = useRef<HTMLDivElement>(null);
   const syncCardRef = useRef<HTMLDivElement>(null);
-  const [viewMode, setViewMode] = useState<"list" | "map">("list");
+  const [viewMode, setViewMode] = useState<"table" | "list" | "map">("table");
   const [selectedCandidateId, setSelectedCandidateId] = useState<number | null>(null);
   const [candidates, setCandidates] = useState<AdminCandidate[]>([]);
   const [reviewNotes, setReviewNotes] = useState<Record<number, string>>({});
@@ -395,13 +397,13 @@ export function AdminReviewPanel({
       if (target.kind === "ml_dashboard") {
         setQueueFocus("all");
         setStateFilter("ml_dashboard");
-        setViewMode("list");
+        setViewMode("table");
         scrollToSection(queueSectionRef);
         return;
       }
 
       setStateFilter("candidate");
-      setViewMode("list");
+      setViewMode("table");
       setQueueFocus(target.focus);
       scrollToSection(queueSectionRef);
     },
@@ -1702,14 +1704,26 @@ export function AdminReviewPanel({
         <div className="admin-view-switcher" role="tablist" aria-label={lang === "sv" ? "Växla vy" : "Switch view"}>
           <button
             type="button"
+            className={`admin-view-btn ${viewMode === "table" ? "active" : ""}`}
+            onClick={() => setViewMode("table")}
+            role="tab"
+            aria-selected={viewMode === "table"}
+            title={lang === "sv" ? "Sorterbar tabell över platsregistret" : "Sortable venue registry table"}
+          >
+            <TableIcon size={16} weight="bold" />
+            <span>{lang === "sv" ? "Tabell" : "Table"}</span>
+            <span className="admin-view-count">{filteredCandidates.length}</span>
+          </button>
+          <button
+            type="button"
             className={`admin-view-btn ${viewMode === "list" ? "active" : ""}`}
             onClick={() => setViewMode("list")}
             role="tab"
             aria-selected={viewMode === "list"}
-            title={lang === "sv" ? "Lista med granskningskort" : "Card list"}
+            title={lang === "sv" ? "Detaljerade granskningskort" : "Detailed review cards"}
           >
             <ListBullets size={16} weight="bold" />
-            <span>{lang === "sv" ? "Lista" : "List"}</span>
+            <span>{lang === "sv" ? "Detaljer" : "Details"}</span>
             <span className="admin-view-count">{filteredCandidates.length}</span>
           </button>
           <button
@@ -1741,6 +1755,30 @@ export function AdminReviewPanel({
             {lang === "sv" ? "Visa alla kandidater" : "Show all candidates"}
           </button>
         </div>
+      ) : null}
+
+      {stateFilter !== "ml_dashboard" && hasAdminAuth && schemaStatus?.ready && !loading ? (
+        viewMode === "table" ? (
+          <AdminVenueTable
+            candidates={filteredCandidates}
+            lang={lang}
+            busyId={busyId}
+            selectedCandidateId={selectedCandidateId}
+            onSelectCandidate={(candidate) => setSelectedCandidateId(candidate.id)}
+            onOpenReview={(candidate) => {
+              setSelectedCandidateId(candidate.id);
+              setViewMode("list");
+              window.requestAnimationFrame(() => {
+                document.getElementById(`admin-place-${candidate.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+              });
+            }}
+            onEditCandidate={(candidate) => {
+              setPlaceEditorMode("edit");
+              setPlaceEditorDraft(candidateToPlaceDraft(candidate));
+              setPlaceEditorOpen(true);
+            }}
+          />
+        ) : null
       ) : null}
 
       {showGuide ? (
@@ -1869,7 +1907,7 @@ export function AdminReviewPanel({
           onSelectPlace={(placeId) => {
             setSearchQuery(String(placeId));
             setStateFilter("all");
-            setViewMode("list");
+            setViewMode("table");
             scrollToSection(queueSectionRef);
           }}
         />
@@ -2014,7 +2052,7 @@ export function AdminReviewPanel({
           <CircleNotch size={18} className="animate-spin" />
           <span>{lang === "sv" ? "Laddar kandidater..." : "Loading candidates..."}</span>
         </div>
-      ) : viewMode === "map" ? (
+      ) : viewMode === "table" ? null : viewMode === "map" ? (
         <AdminMapView
           candidates={filteredCandidates}
           selectedCandidateId={selectedCandidateId}
