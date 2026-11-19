@@ -55,7 +55,7 @@ test("admin can cancel, remove, find and restore a venue without deleting its re
   await expect(page.getByRole("button", { name: /Återställ|Restore/, exact: true })).toBeVisible();
   expect(writes).toBe(1);
   await page.getByRole("button", { name: /Borttagna|Removed/, exact: true }).click();
-  await expect(page.locator(".admin-candidate-row")).toHaveCount(1);
+  await expect(page.locator(".admin-venue-table-row")).toHaveCount(1);
   await page.screenshot({ path: testInfo.outputPath("admin-removed.png"), fullPage: true });
 
   await page.goto("/");
@@ -67,7 +67,7 @@ test("admin can cancel, remove, find and restore a venue without deleting its re
   await page.getByRole("button", { name: /Borttagna|Removed/, exact: true }).click();
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByRole("button", { name: /Återställ|Restore/, exact: true }).click();
-  await expect(page.locator(".admin-candidate-row")).toHaveCount(0);
+  await expect(page.locator(".admin-venue-table-row")).toHaveCount(0);
   expect(writes).toBe(2);
   await page.getByRole("button", { name: /Alla|All/, exact: true }).click();
   await expect(remove).toBeVisible();

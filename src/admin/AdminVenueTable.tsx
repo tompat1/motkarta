@@ -181,7 +181,12 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
         </button>
       </div>
 
-      <div className="admin-venue-table-scroll" tabIndex={0} aria-label={lang === "sv" ? "Sorterbar tabell över platser" : "Sortable venue table"}>
+      <div
+        className="admin-venue-table-scroll"
+        role="region"
+        tabIndex={0}
+        aria-label={lang === "sv" ? "Sorterbar tabell över platser" : "Sortable venue table"}
+      >
         <table className="admin-venue-table">
           <caption className="sr-only">
             {lang === "sv" ? "Platsregister med proveniens och datakvalitet" : "Venue registry with provenance and data quality"}
@@ -204,9 +209,14 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
               const selected = candidate.id === selectedCandidateId;
               const isRemoved = candidate.validationLabel === "closed_wrong_category";
               return (
-                <tr key={candidate.id} className={`admin-candidate-row${selected ? " is-selected" : ""}`} aria-busy={busyId === candidate.id}>
+                <tr key={candidate.id} className={`admin-venue-table-row${selected ? " is-selected" : ""}`} aria-busy={busyId === candidate.id}>
                   <td className="admin-venue-identity-cell">
-                    <button type="button" className="admin-venue-name-button" onClick={() => onSelectCandidate(candidate)}>
+                    <button
+                      type="button"
+                      className="admin-venue-name-button"
+                      aria-pressed={selected}
+                      onClick={() => onSelectCandidate(candidate)}
+                    >
                       <span className={`admin-venue-row-mark tone-${rowTone(candidate)}`} aria-hidden="true" />
                       <span>
                         <strong>{candidate.name}</strong>
