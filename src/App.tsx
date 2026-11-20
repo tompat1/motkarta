@@ -3504,13 +3504,6 @@ function AppContent({
           {active && !isMapCardClosed ? (
           <article className={`map-card ${isMapCardMinimized ? "is-minimized" : ""}`}>
             <div className="map-card-header">
-              <div className="map-card-title-meta">
-                <span className="map-card-kind-badge">
-                  {kindFilterLabel(active.kind, lang)} · {active.area}
-                  {userLocation && hasCoordinates(active) ? ` · 📍 ${formatDistance(distanceFromPoint(active, userLocation), lang)}` : ""}
-                </span>
-                <h3 className="map-card-header-title">{active.name}</h3>
-              </div>
               <div className="map-card-header-actions">
                 <div className="map-card-action-controls">
                   <button
@@ -3549,41 +3542,50 @@ function AppContent({
                     />
                   </button>
                 </div>
-                <button
-                  type="button"
-                  className="map-card-toggle-btn"
-                  onClick={() => setIsMapCardMinimized(!isMapCardMinimized)}
-                  title={
-                    isMapCardMinimized
-                      ? lang === "sv"
-                        ? "Visa alla detaljer"
-                        : "Expand details"
-                      : lang === "sv"
-                        ? "Minimera kort"
-                        : "Minimize card"
-                  }
-                >
-                  {isMapCardMinimized ? (
-                    <>
-                      <CaretDown size={14} weight="bold" />
-                      <span>{lang === "sv" ? "Visa" : "Expand"}</span>
-                    </>
-                  ) : (
-                    <>
-                      <CaretUp size={14} weight="bold" />
-                      <span>{lang === "sv" ? "Dölj" : "Minimize"}</span>
-                    </>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  className="map-card-close-btn"
-                  onClick={() => setIsMapCardClosed(true)}
-                  title={lang === "sv" ? "Stäng platspanel" : "Close place panel"}
-                  aria-label={lang === "sv" ? "Stäng platspanel" : "Close place panel"}
-                >
-                  <X size={16} weight="bold" aria-hidden="true" />
-                </button>
+                <div className="map-card-window-controls">
+                  <button
+                    type="button"
+                    className="map-card-toggle-btn"
+                    onClick={() => setIsMapCardMinimized(!isMapCardMinimized)}
+                    title={
+                      isMapCardMinimized
+                        ? lang === "sv"
+                          ? "Visa alla detaljer"
+                          : "Expand details"
+                        : lang === "sv"
+                          ? "Minimera kort"
+                          : "Minimize card"
+                    }
+                  >
+                    {isMapCardMinimized ? (
+                      <>
+                        <CaretDown size={14} weight="bold" />
+                        <span>{lang === "sv" ? "Visa" : "Expand"}</span>
+                      </>
+                    ) : (
+                      <>
+                        <CaretUp size={14} weight="bold" />
+                        <span>{lang === "sv" ? "Dölj" : "Minimize"}</span>
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    className="map-card-close-btn"
+                    onClick={() => setIsMapCardClosed(true)}
+                    title={lang === "sv" ? "Stäng platspanel" : "Close place panel"}
+                    aria-label={lang === "sv" ? "Stäng platspanel" : "Close place panel"}
+                  >
+                    <X size={16} weight="bold" aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
+              <div className="map-card-title-meta">
+                <span className="map-card-kind-badge">
+                  {kindFilterLabel(active.kind, lang)} · {active.area}
+                  {userLocation && hasCoordinates(active) ? ` · 📍 ${formatDistance(distanceFromPoint(active, userLocation), lang)}` : ""}
+                </span>
+                <h3 className="map-card-header-title">{active.name}</h3>
               </div>
             </div>
 
