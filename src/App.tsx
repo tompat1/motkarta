@@ -163,6 +163,8 @@ import { fetchPlacesPayload, type DataSource } from "../lib/place-payload";
 import { CatalogDebugChip } from "./components/CatalogDebugChip";
 import { filterPublishedPlaces } from "../lib/place-visibility";
 import { openingHoursFact, priceFact, visibleTagLabels, wifiFact } from "./app/place-card-facts";
+import { getPlaceVerifiedSources } from "./app/verified-sources";
+import { VerifiedSourceBadgeList } from "./components/VerifiedSourceBadge";
 import {
   getSeasonalHeroImage,
   getSeasonalTheme,
@@ -2813,6 +2815,7 @@ function AppContent({
           <div className="editorial-feature-grid">
             {seasonalPlaces.slice(0, 3).map((place, index) => {
               const photoUrl = seasonalPhotos[place.id];
+              const cardVerifiedSources = getPlaceVerifiedSources(place);
               return (
                 <button
                   key={place.id}
@@ -2825,6 +2828,11 @@ function AppContent({
                     document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
                   }}
                 >
+                  {cardVerifiedSources.length > 0 ? (
+                    <div className="editorial-feature-card-badges">
+                      <VerifiedSourceBadgeList sources={cardVerifiedSources} lang={lang} maxVisible={2} variant="pill" />
+                    </div>
+                  ) : null}
                   {photoUrl ? (
                     <img src={photoUrl} alt={place.name} referrerPolicy="no-referrer" />
                   ) : (
@@ -3581,6 +3589,15 @@ function AppContent({
                     </span>
                   ) : null}
                 </div>
+                {(() => {
+                  const activeVerifiedSources = getPlaceVerifiedSources(active);
+                  if (activeVerifiedSources.length === 0) return null;
+                  return (
+                    <div className="map-card-verified-badges" style={{ marginBottom: "8px" }}>
+                      <VerifiedSourceBadgeList sources={activeVerifiedSources} lang={lang} maxVisible={3} variant="pill" />
+                    </div>
+                  );
+                })()}
                 <div className="tag-row">
                   {(() => {
                     const hours = openingHoursFact(active, lang);

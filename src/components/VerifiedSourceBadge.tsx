@@ -7,6 +7,8 @@ import {
   Coffee,
   PawPrint,
   Sparkle,
+  Compass,
+  MapPin,
   ArrowSquareOut,
 } from "@phosphor-icons/react";
 import type { VerifiedSourceInfo } from "../app/verified-sources";
@@ -43,6 +45,10 @@ export function renderSourceIcon(type: VerifiedSourceInfo["iconType"], size = 13
       return <Coffee size={size} weight="fill" />;
     case "dog":
       return <PawPrint size={size} weight="fill" />;
+    case "compass":
+      return <Compass size={size} weight="bold" />;
+    case "map-pin":
+      return <MapPin size={size} weight="fill" />;
     case "sparkle":
     default:
       return <Sparkle size={size} weight="fill" />;

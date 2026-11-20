@@ -3,7 +3,7 @@ export interface VerifiedSourceInfo {
   name: string;
   label: string;
   shortLabel: string;
-  iconType: "burger" | "star" | "fork-knife" | "award" | "newspaper" | "coffee" | "dog" | "sparkle";
+  iconType: "burger" | "star" | "fork-knife" | "award" | "newspaper" | "coffee" | "dog" | "sparkle" | "compass" | "map-pin";
   descriptionSv: string;
   descriptionEn: string;
   url: string;
@@ -16,15 +16,34 @@ export function getPlaceVerifiedSources(
   place: {
     tags?: string[];
     sourceFacts?: Array<{ source?: string; verification?: string }>;
+    sourceName?: string;
+    evidenceLabel?: string;
+    evidence?: unknown;
     kind?: string;
     specialty?: { specialtyVerified?: boolean };
   } | null | undefined,
 ): VerifiedSourceInfo[] {
   if (!place) return [];
   const tags = (place.tags || []).map((t) => t.toLowerCase());
-  const facts = (place.sourceFacts || []).map((f) => (f.source || "").toLowerCase());
+  const evidenceEntries = Array.isArray(place.evidence)
+    ? place.evidence.map((entry) => {
+        if (typeof entry === "string") return entry.toLowerCase();
+        if (entry && typeof entry === "object") {
+          const rec = entry as { source?: string; label?: string; sourceType?: string };
+          return `${rec.source || ""} ${rec.label || ""} ${rec.sourceType || ""}`.toLowerCase();
+        }
+        return "";
+      })
+    : [];
+  const facts = [
+    ...(place.sourceFacts || []).map((f) => (f.source || "").toLowerCase()),
+    (place.sourceName || "").toLowerCase(),
+    (place.evidenceLabel || "").toLowerCase(),
+    ...evidenceEntries,
+  ].filter(Boolean);
   const hasTag = (term: string) => tags.some((t) => t.includes(term.toLowerCase()));
   const hasFact = (term: string) => facts.some((f) => f.includes(term.toLowerCase()));
+  const hasAny = (...terms: string[]) => terms.some((term) => hasTag(term) || hasFact(term));
 
   const sources: VerifiedSourceInfo[] = [];
 
@@ -165,7 +184,7 @@ export function getPlaceVerifiedSources(
   }
 
   // 9. Anders Husa & Kaitlin Orr Guide
-  if (hasTag("anders husa") || hasFact("anders husa")) {
+  if (hasAny("anders husa")) {
     sources.push({
       id: "husa-guide",
       name: "Anders Husa & Kaitlin Orr",
@@ -178,6 +197,91 @@ export function getPlaceVerifiedSources(
       color: "#be123c",
       bgColor: "#ffe4e6",
       borderColor: "#fecdd3",
+    });
+  }
+
+  // 10. Stora Restaurangpriset / Svenska Gastronomipriset
+  if (hasAny("stora restaurangpriset", "gastronomipriset", "restaurangpriset")) {
+    sources.push({
+      id: "stora-restaurangpriset",
+      name: "Stora Restaurangpriset",
+      label: "Stora Restaurangpriset",
+      shortLabel: "Restaurangpriset",
+      iconType: "award",
+      descriptionSv: "Utmärkt av Sveriges främsta kockar och sommelierer i Stora Restaurangpriset / Svenska Gastronomipriset",
+      descriptionEn: "Awarded by Sweden's top chefs and sommeliers in Stora Restaurangpriset",
+      url: "https://restaurangpriset.se",
+      color: "#9a3412",
+      bgColor: "#ffedd5",
+      borderColor: "#fed7aa",
+    });
+  }
+
+  // 11. Allt om Mat
+  if (hasAny("allt om mat")) {
+    sources.push({
+      id: "allt-om-mat",
+      name: "Allt om Mat",
+      label: "Allt om Mat",
+      shortLabel: "Allt om Mat",
+      iconType: "fork-knife",
+      descriptionSv: "Krogtestad och rekommenderad av redaktionen på Allt om Mat",
+      descriptionEn: "Reviewed and recommended by Allt om Mat editors",
+      url: "https://alltommat.expressen.se/restaurang/",
+      color: "#166534",
+      bgColor: "#dcfce7",
+      borderColor: "#bbf7d0",
+    });
+  }
+
+  // 12. Vagabond
+  if (hasAny("vagabond")) {
+    sources.push({
+      id: "vagabond",
+      name: "Vagabond",
+      label: "Vagabond",
+      shortLabel: "Vagabond",
+      iconType: "compass",
+      descriptionSv: "Handplockad i Vagabonds redaktionella Stockholmsguide",
+      descriptionEn: "Handpicked in Vagabond's editorial Stockholm guide",
+      url: "https://www.vagabond.se/sverige/stockholm/",
+      color: "#0369a1",
+      bgColor: "#e0f2fe",
+      borderColor: "#bae6fd",
+    });
+  }
+
+  // 13. Spotted by Locals Stockholm
+  if (hasAny("spotted by locals")) {
+    sources.push({
+      id: "spotted-by-locals",
+      name: "Spotted by Locals",
+      label: "Spotted by Locals",
+      shortLabel: "Spotted by Locals",
+      iconType: "map-pin",
+      descriptionSv: "Handplockat lokalt tips från Stockholms-spotters på Spotted by Locals",
+      descriptionEn: "Handpicked local tip from Stockholm spotters on Spotted by Locals",
+      url: "https://www.spottedbylocals.com/stockholm/",
+      color: "#4338ca",
+      bgColor: "#e0e7ff",
+      borderColor: "#c7d2fe",
+    });
+  }
+
+  // 14. Visit Stockholm
+  if (hasAny("visit stockholm")) {
+    sources.push({
+      id: "visit-stockholm",
+      name: "Visit Stockholm",
+      label: "Visit Stockholm",
+      shortLabel: "Visit Stockholm",
+      iconType: "compass",
+      descriptionSv: "Utvald i Stockholms stads officiella mat- och restaurangguide Visit Stockholm",
+      descriptionEn: "Featured in Stockholm's official city dining guide Visit Stockholm",
+      url: "https://www.visitstockholm.se",
+      color: "#0f766e",
+      bgColor: "#f0fdfa",
+      borderColor: "#99f6e4",
     });
   }
 

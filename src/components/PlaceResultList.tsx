@@ -7,6 +7,8 @@ import {
   LIST_WINDOW_OVERSCAN,
 } from "../app/map-bounds";
 import { useWindowedList } from "../app/use-windowed-list";
+import { getPlaceVerifiedSources } from "../app/verified-sources";
+import { VerifiedSourceBadgeList } from "./VerifiedSourceBadge";
 import {
   distanceFromPoint,
   formatDistance,
@@ -77,6 +79,7 @@ export function PlaceResultList({
           {visibleItems.map((place, visibleIndex) => {
             const index = startIndex + visibleIndex;
             const isActive = activePlace?.id === place.id;
+            const verifiedSources = getPlaceVerifiedSources(place);
 
             return (
               <div
@@ -102,6 +105,11 @@ export function PlaceResultList({
                       : ""}
                   </small>
                   <strong>{place.name}</strong>
+                  {verifiedSources.length > 0 ? (
+                    <div className="place-result-verified-badges" style={{ marginTop: "4px" }}>
+                      <VerifiedSourceBadgeList sources={verifiedSources} lang={lang} maxVisible={2} variant="pill" />
+                    </div>
+                  ) : null}
                   <span>{place.tags.slice(0, 2).join(" · ")}</span>
                 </span>
                 <span className="total">
