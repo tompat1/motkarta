@@ -690,6 +690,7 @@ export function FoodMap({
           aria-expanded={isLayerMenuOpen}
           aria-haspopup="dialog"
           title={lang === "sv" ? "Byt kartlager (Standard, Satellit, Hybrid)" : "Switch map layer (Default, Satellite, Hybrid)"}
+          data-tooltip={lang === "sv" ? "Kartlager" : "Map layers"}
           aria-label={lang === "sv" ? "Kartlager" : "Map layers"}
         >
           <Stack size={16} weight="bold" aria-hidden="true" />
@@ -702,6 +703,7 @@ export function FoodMap({
           disabled={locating}
           aria-busy={locating}
           title={lang === "sv" ? "Visa min position & ställen nära mig" : "Show my location & places near me"}
+          data-tooltip={lang === "sv" ? "Nära mig" : "Near me"}
           aria-label={lang === "sv" ? "Nära mig" : "Near me"}
         >
           <Crosshair size={16} weight="bold" />
@@ -716,6 +718,7 @@ export function FoodMap({
           className="map-control-btn map-fit-all-btn"
           onClick={handleFitAllPlaces}
           title={t.centerMap}
+          data-tooltip={t.centerMap}
           aria-label={t.centerMap}
         >
           <FrameCorners size={16} weight="bold" aria-hidden="true" />
@@ -726,6 +729,7 @@ export function FoodMap({
           className={`map-control-btn ${isFullscreen ? "is-active" : ""}`}
           onClick={handleToggleFullscreen}
           title={isFullscreen ? t.exitFullscreen : t.fullscreen}
+          data-tooltip={isFullscreen ? t.exitFullscreen : t.fullscreen}
           aria-label={isFullscreen ? t.exitFullscreen : t.fullscreen}
         >
           {isFullscreen ? <ArrowsIn size={16} weight="bold" /> : <ArrowsOut size={16} weight="bold" />}
@@ -736,6 +740,7 @@ export function FoodMap({
           className="map-control-btn map-zoom-btn"
           onClick={handleZoomIn}
           title={lang === "sv" ? "Zooma in" : "Zoom in"}
+          data-tooltip={lang === "sv" ? "Zooma in" : "Zoom in"}
           aria-label={lang === "sv" ? "Zooma in" : "Zoom in"}
         >
           <Plus size={16} weight="bold" />
@@ -746,6 +751,7 @@ export function FoodMap({
           className="map-control-btn map-zoom-btn"
           onClick={handleZoomOut}
           title={lang === "sv" ? "Zooma ut" : "Zoom out"}
+          data-tooltip={lang === "sv" ? "Zooma ut" : "Zoom out"}
           aria-label={lang === "sv" ? "Zooma ut" : "Zoom out"}
         >
           <Minus size={16} weight="bold" />

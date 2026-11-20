@@ -220,6 +220,7 @@ function AppContent({
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number | null>(null);
   const [isMapCardMinimized, setIsMapCardMinimized] = useState(false);
+  const [isMapCardClosed, setIsMapCardClosed] = useState(false);
   const [isUserPhotoUploadOpen, setIsUserPhotoUploadOpen] = useState(false);
   const [mapFocusRequest, setMapFocusRequest] = useState<{ id: number; timestamp: number } | null>(null);
   const [mapViewportCount, setMapViewportCount] = useState<number | null>(null);
@@ -1574,6 +1575,7 @@ function AppContent({
       setMobileViewMode("map");
       setMobileTab("map");
       setIsMapCardMinimized(false);
+      setIsMapCardClosed(false);
       recordRecommendationEvents([{ establishmentId: id, eventType: "profile_view", queryContext: { surface: "map" } }]);
       const isVisibleInRanked = ranked.some((p) => p.id === id);
       if (!isVisibleInRanked) {
@@ -1634,6 +1636,7 @@ function AppContent({
       setMobileViewMode("map");
       setIsPlaceDetailOpen(false);
       setIsMapCardMinimized(false);
+      setIsMapCardClosed(false);
       const isVisibleInRanked = ranked.some((p) => p.id === place.id);
       if (!isVisibleInRanked) {
         setKind("All places");
@@ -1957,6 +1960,7 @@ function AppContent({
       setMobileViewMode("map");
       setIsPlaceDetailOpen(false);
       setIsMapCardMinimized(false);
+      setIsMapCardClosed(false);
       setKind("All places");
       setCuisine(allCuisines);
       setQuery("");
@@ -3487,7 +3491,7 @@ function AppContent({
             ) : null}
           </div>
 
-          {active ? (
+          {active && !isMapCardClosed ? (
           <article className={`map-card ${isMapCardMinimized ? "is-minimized" : ""}`}>
             <div className="map-card-header">
               <div className="map-card-title-meta">
@@ -3560,6 +3564,15 @@ function AppContent({
                       <span>{lang === "sv" ? "Dölj" : "Minimize"}</span>
                     </>
                   )}
+                </button>
+                <button
+                  type="button"
+                  className="map-card-close-btn"
+                  onClick={() => setIsMapCardClosed(true)}
+                  title={lang === "sv" ? "Stäng platspanel" : "Close place panel"}
+                  aria-label={lang === "sv" ? "Stäng platspanel" : "Close place panel"}
+                >
+                  <X size={16} weight="bold" aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -3896,6 +3909,9 @@ function AppContent({
               totalScoreLabel={t.totalScoreLabel}
               onSelectPlace={(place, index) => {
                 setSelected(place.id);
+                setIsMapCardClosed(false);
+                setIsMapCardMinimized(false);
+      setIsMapCardClosed(false);
                 recordRecommendationEvents([
                   {
                     establishmentId: place.id,
