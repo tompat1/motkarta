@@ -378491,7 +378491,129 @@
       "categoryMeanRating": 0,
       "categoryPopularityRaw": 0,
       "localPopularityPercentile": 0
+    },
+    {
+      "id": 4100001001,
+      "name": "Fotografiska",
+      "kind": "Restaurant",
+      "cuisine": "fine dining",
+      "area": "Södermalm",
+      "address": "Stadsgårdshamnen 22, 116 45 Stockholm",
+      "note": "Sustainable, plant-forward gastronomy and bistro overlooking the Stockholm waterfront at Stadsgårdshamnen. Awarded a Michelin Green Star and White Guide Master Class.",
+      "tags": [
+        "Fine Dining",
+        "Plant-forward",
+        "Sustainable",
+        "Waterfront view",
+        "Michelin",
+        "Guide Michelin",
+        "White Guide",
+        "Anders Husa",
+        "Visit Stockholm"
+      ],
+      "is_hidden_gem": false,
+      "is_structural_anomaly": false,
+      "discoveryReasons": [
+        "it appears independent",
+        "verified by Guide Michelin (Green Star), White Guide, Anders Husa & Visit Stockholm",
+        "opening hours are listed"
+      ],
+      "discoverySignals": {
+        "independent_business": true,
+        "underrepresented_cuisine": true,
+        "low_local_visibility": false,
+        "verified_open": true,
+        "complete_profile": true,
+        "recently_updated": true
+      },
+      "sourceName": "Guide Michelin · White Guide · Visit Stockholm",
+      "sourceUrl": "https://www.fotografiska.com/sto/en/the-restaurant/",
+      "lastUpdated": "2026-11-20T12:28:22.344Z",
+      "evidenceLabel": "Guide Michelin · White Guide · Anders Husa · Visit Stockholm",
+      "ratingAverage": 0,
+      "reliableRatingCount": 0,
+      "reviewCount": 0,
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0,
+      "priceLevel": 3,
+      "mainstreamExposure": 18,
+      "ageDays": 1000,
+      "daysSinceFreshEvidence": 1,
+      "lifecycleState": "verified",
+      "evidence": {
+        "specialistGuide": 1,
+        "independentEditorial": 0.95,
+        "verifiedUserRating": 0.4,
+        "repeatVisits": 16,
+        "recentReviews": 20,
+        "credibleReviewers": 12,
+        "inspectionStatus": 80,
+        "verifiedAttributes": 85,
+        "dataFreshness": 95,
+        "confidence": "High"
+      },
+      "engagement": {
+        "searchImpressions": 0,
+        "profileViews": 0,
+        "mapMarkerClicks": 0,
+        "saves": 0,
+        "directionRequests": 0,
+        "confirmedVisits": 0,
+        "repeatVisits": 0,
+        "recommendations": 0,
+        "recentSaves": 0
+      },
+      "latitude": 59.317096,
+      "longitude": 18.084882,
+      "x": 68.4,
+      "y": 62.1,
+      "idNamespace": "public",
+      "openingHours": "We-Sa 17:00-23:00; Mo-Fr 11:00-15:00; Sa-Su 11:00-16:00",
+      "website": "https://www.fotografiska.com/sto/en/the-restaurant/",
+      "sourceFacts": [
+        {
+          "placeId": 4100001001,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/fotografiska",
+          "verification": "listed",
+          "capturedAt": "2026-11-20T12:28:22.344Z",
+          "id": "4100001001:guidemichelin:review",
+          "field": "category",
+          "value": "Michelin Green Star"
+        },
+        {
+          "placeId": 4100001001,
+          "source": "White Guide",
+          "url": "https://whiteguide.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-20T12:28:22.344Z",
+          "id": "4100001001:whiteguide:review",
+          "field": "category",
+          "value": "Mästarklass"
+        },
+        {
+          "placeId": 4100001001,
+          "source": "Anders Husa & Kaitlin Orr Guide",
+          "url": "https://andershusa.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-20T12:28:22.344Z",
+          "id": "4100001001:andershusa:review",
+          "field": "category",
+          "value": "Sustainable Gastronomy"
+        },
+        {
+          "placeId": 4100001001,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-20T12:28:22.344Z",
+          "id": "4100001001:visitstockholm:review",
+          "field": "category",
+          "value": "Hållbar gastronomi"
+        }
+      ]
     }
   ],
-  "totalPlaces": 3124
+  "totalPlaces": 3125
 }
