@@ -162,8 +162,8 @@ import type { CatalogDebug } from "../lib/catalog-debug.ts";
 import { fetchPlacesPayload, type DataSource } from "../lib/place-payload";
 import { CatalogDebugChip } from "./components/CatalogDebugChip";
 import { filterPublishedPlaces } from "../lib/place-visibility";
-import { openingHoursFact, priceFact, visibleTagLabels, wifiFact } from "./app/place-card-facts";
-import { getPlaceVerifiedSources } from "./app/verified-sources";
+import { curatedAttributeTags, openingHoursFact, priceFact, wifiFact } from "./app/place-card-facts";
+import { getPlaceVerifiedSources, type VerifiedSourceInfo } from "./app/verified-sources";
 import { VerifiedSourceBadgeList } from "./components/VerifiedSourceBadge";
 import {
   getSeasonalHeroImage,
@@ -299,6 +299,7 @@ function AppContent({
   const [mapCardFeedbackType, setMapCardFeedbackType] = useState<"up" | "down" | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [seasonalFilterActive, setSeasonalFilterActive] = useState(false);
+  const [selectedSourceFilter, setSelectedSourceFilter] = useState<VerifiedSourceInfo | null>(null);
   const [activeDesktopNav, setActiveDesktopNav] = useState<"discover" | "map" | "saved" | "sources">("discover");
 
   useEffect(() => {
@@ -327,7 +328,7 @@ function AppContent({
 
   const currentDesktopNav = kind === "Saved" ? "saved" : activeDesktopNav;
   const activeFilterCount = Number(kind !== "All places") +
-    Number(cuisine !== allCuisines) + selectedTags.length + Number(seasonalFilterActive);
+    Number(cuisine !== allCuisines) + selectedTags.length + Number(seasonalFilterActive) + Number(Boolean(selectedSourceFilter));
 
   useEffect(() => {
     setIsMapCardMinimized(false);
@@ -652,6 +653,7 @@ function AppContent({
     (newKind: EstablishmentFilter) => {
       clearConciergeState();
       setSeasonalFilterActive(false);
+      setSelectedSourceFilter(null);
       setKind(newKind);
     },
     [clearConciergeState],
@@ -661,6 +663,7 @@ function AppContent({
     (newCuisine: CuisineFilter) => {
       clearConciergeState();
       setSeasonalFilterActive(false);
+      setSelectedSourceFilter(null);
       setCuisine(newCuisine);
     },
     [clearConciergeState],
@@ -669,6 +672,7 @@ function AppContent({
   const handleResetMobileFilters = useCallback(() => {
     clearConciergeState();
     setSeasonalFilterActive(false);
+    setSelectedSourceFilter(null);
     setSelectedTags([]);
     setKind("All places");
     setCuisine(allCuisines);
@@ -678,9 +682,31 @@ function AppContent({
   const toggleFeatureFilter = useCallback((feature: "Dog friendly" | "Wi-Fi" | "Hidden gems" | "Wine bar" | "Cocktail bar" | "Pub & beer") => {
     clearConciergeState();
     setSeasonalFilterActive(false);
+    setSelectedSourceFilter(null);
     setSelectedTags((previous) => previous.includes(feature)
       ? previous.filter((tag) => tag !== feature)
       : [...previous, feature]);
+  }, [clearConciergeState]);
+
+  const handleToggleAttributeTag = useCallback((tag: string) => {
+    clearConciergeState();
+    setSeasonalFilterActive(false);
+    setSelectedSourceFilter(null);
+    setSelectedTags((previous) =>
+      previous.some((t) => t.toLowerCase() === tag.toLowerCase())
+        ? previous.filter((t) => t.toLowerCase() !== tag.toLowerCase())
+        : [...previous, tag],
+    );
+  }, [clearConciergeState]);
+
+  const handleFilterByVerifiedSource = useCallback((source: VerifiedSourceInfo) => {
+    clearConciergeState();
+    setSeasonalFilterActive(false);
+    setKind("All places");
+    setCuisine(allCuisines);
+    setSelectedTags([]);
+    setQuery("");
+    setSelectedSourceFilter(source);
   }, [clearConciergeState]);
 
   const [mobileTab, setMobileTab] = useState<MobileTab>(() => {
@@ -1170,6 +1196,16 @@ function AppContent({
     };
   }, [seasonalPlaces]);
 
+  const verifiedSourceCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const place of scoredPlaces) {
+      for (const source of getPlaceVerifiedSources(place)) {
+        counts[source.id] = (counts[source.id] ?? 0) + 1;
+      }
+    }
+    return counts;
+  }, [scoredPlaces]);
+
   const ranked = useMemo(() => {
     if (conciergeMainListIds.length > 0) {
       const byId = new Map(scoredPlaces.map((place) => [place.id, place]));
@@ -1190,6 +1226,7 @@ function AppContent({
     }
     const baseFilteredPlaces = scoredPlaces
       .filter((place) => !seasonalFilterActive || seasonalPlaceIds.has(place.id))
+      .filter((place) => !selectedSourceFilter || getPlaceVerifiedSources(place).some((s) => s.id === selectedSourceFilter.id))
       .filter((place) => matchesEstablishmentFilter(place, kind, savedPlaceIds))
       .filter((place) => cuisine === allCuisines || cuisineParts(place).includes(cuisine))
       .filter((place) => {
@@ -1357,6 +1394,7 @@ function AppContent({
       scoredPlaces,
       seasonalFilterActive,
       seasonalPlaceIds,
+      selectedSourceFilter,
       sortMode,
       userLocation,
     ],
@@ -3104,7 +3142,7 @@ function AppContent({
               <strong>{lang === "sv" ? "Smakindex" : "Taste index"}</strong>
               <small>{lang === "sv" ? "Urvalet uppdateras direkt" : "Selection updates instantly"}</small>
             </div>
-            {(query.trim() || kind !== "All places" || cuisine !== allCuisines || selectedTags.length > 0 || seasonalFilterActive) ? (
+            {(query.trim() || kind !== "All places" || cuisine !== allCuisines || selectedTags.length > 0 || seasonalFilterActive || selectedSourceFilter) ? (
               <div className="countermap-filter-active-actions">
                 {seasonalFilterActive ? (
                   <button
@@ -3117,6 +3155,31 @@ function AppContent({
                     <X size={13} weight="bold" aria-hidden="true" />
                   </button>
                 ) : null}
+                {selectedSourceFilter ? (
+                  <button
+                    type="button"
+                    className="seasonal-active-filter-pill"
+                    onClick={() => setSelectedSourceFilter(null)}
+                    title={lang === "sv" ? "Rensa källfilter" : "Clear source filter"}
+                  >
+                    <span>
+                      {selectedSourceFilter.shortLabel} ({verifiedSourceCounts[selectedSourceFilter.id] ?? ranked.length})
+                    </span>
+                    <X size={13} weight="bold" aria-hidden="true" />
+                  </button>
+                ) : null}
+                {selectedTags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    className="seasonal-active-filter-pill"
+                    onClick={() => handleToggleAttributeTag(tag)}
+                    title={lang === "sv" ? `Ta bort filter: ${tag}` : `Remove filter: ${tag}`}
+                  >
+                    <span>{tag}</span>
+                    <X size={13} weight="bold" aria-hidden="true" />
+                  </button>
+                ))}
                 <button
                   type="button"
                   className="countermap-reset-button"
@@ -3619,7 +3682,14 @@ function AppContent({
                   if (activeVerifiedSources.length === 0) return null;
                   return (
                     <div className="map-card-verified-badges" style={{ marginBottom: "8px" }}>
-                      <VerifiedSourceBadgeList sources={activeVerifiedSources} lang={lang} maxVisible={3} variant="pill" />
+                      <VerifiedSourceBadgeList
+                        sources={activeVerifiedSources}
+                        lang={lang}
+                        maxVisible={3}
+                        variant="pill"
+                        onFilterBySource={handleFilterByVerifiedSource}
+                        sourceCounts={verifiedSourceCounts}
+                      />
                     </div>
                   );
                 })()}
@@ -3645,9 +3715,30 @@ function AppContent({
                       </>
                     );
                   })()}
-                  {visibleTagLabels(active.tags).map((tag: string) => (
-                    <span key={tag}>{tag}</span>
-                  ))}
+                  {curatedAttributeTags(active.tags, lang).map((tag: string) => {
+                    const isTagActive = selectedTags.some((t) => t.toLowerCase() === tag.toLowerCase());
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        className={`map-card-tag-btn${isTagActive ? " is-active" : ""}`}
+                        aria-pressed={isTagActive}
+                        onClick={() => handleToggleAttributeTag(tag)}
+                        title={
+                          isTagActive
+                            ? lang === "sv"
+                              ? `Ta bort filter: ${tag}`
+                              : `Remove filter: ${tag}`
+                            : lang === "sv"
+                              ? `Filtrera kartan på ${tag}`
+                              : `Filter map by ${tag}`
+                        }
+                      >
+                        <span>{tag}</span>
+                        {isTagActive ? <X size={11} weight="bold" aria-hidden="true" /> : null}
+                      </button>
+                    );
+                  })}
                 </div>
                 <button
                   type="button"

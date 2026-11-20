@@ -70,3 +70,97 @@ export function wifiFact(place: Pick<ScoredPlace, "tags">, lang: Language): Plac
 export function visibleTagLabels(tags: string[]): string[] {
   return tags.filter((tag) => !WIFI_LABELS.includes(tag));
 }
+
+const NOISE_AND_SOURCE_TAGS = new Set([
+  "openstreetmap",
+  "opening hours",
+  "curated",
+  "central stockholm",
+  "north stockholm",
+  "south stockholm",
+  "west stockholm",
+  "stockholm",
+  "local",
+  "regional",
+  "independent",
+  "food",
+  "place",
+  "coffee shop",
+  "café",
+  "cafe",
+  "restaurant",
+  "restaurang",
+  "bakery",
+  "bageri",
+  "södermalm",
+  "norrmalm",
+  "östermalm",
+  "vasastan",
+  "kungsholmen",
+  "gamla stan",
+  "djurgården",
+  "norra djurgården",
+  "söderort",
+  "västerort",
+  "norrort",
+  "white guide",
+  "white guide nordic",
+  "guide michelin",
+  "michelin",
+  "burgerdudes",
+  "sveriges bästa",
+  "dn",
+  "dn krog",
+  "dn krogkommissionen",
+  "dagens nyheter",
+  "svd",
+  "svd krog",
+  "svd krogguiden",
+  "svenska dagbladet",
+  "specialty coffee sweden registry",
+  "tasstipset",
+  "anders husa",
+  "anders husa & kaitlin orr",
+  "husa guide",
+  "visit stockholm",
+  "spotted by locals",
+  "spotted by locals stockholm",
+  "allt om mat",
+  "vagabond",
+  "stora restaurangpriset",
+  "svenska gastronomipriset",
+  "world's 50 best discovery",
+]);
+
+const BILINGUAL_TAG_PAIRS: Array<{ keys: string[]; sv: string; en: string }> = [
+  { keys: ["dog friendly", "hundvänligt", "hundvänlig"], sv: "Hundvänligt", en: "Dog friendly" },
+  { keys: ["hidden gem", "hidden gems", "dold pärla", "dolda pärlor"], sv: "Dold pärla", en: "Hidden gem" },
+];
+
+/**
+ * Returns clean, deduplicated, consumer-meaningful craft & venue attribute tags
+ * (stripping internal pipeline metadata, districts, and reference source names
+ * that are already shown as VerifiedSourceBadge pills).
+ */
+export function curatedAttributeTags(tags: string[], lang: Language = "sv", maxCount = 6): string[] {
+  const result: string[] = [];
+  const seen = new Set<string>();
+
+  for (const raw of visibleTagLabels(tags)) {
+    const trimmed = raw.trim();
+    if (!trimmed) continue;
+    const lower = trimmed.toLowerCase();
+    if (NOISE_AND_SOURCE_TAGS.has(lower)) continue;
+
+    const bilingual = BILINGUAL_TAG_PAIRS.find((pair) => pair.keys.includes(lower));
+    const display = bilingual ? bilingual[lang] : trimmed;
+    const dedupeKey = bilingual ? bilingual.keys[0] : lower;
+    if (seen.has(dedupeKey)) continue;
+
+    seen.add(dedupeKey);
+    result.push(display);
+    if (result.length >= maxCount) break;
+  }
+
+  return result;
+}

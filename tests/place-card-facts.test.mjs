@@ -5,6 +5,7 @@ import { readFile } from "node:fs/promises";
 import {
   openingHoursFact,
   priceFact,
+  curatedAttributeTags,
   visibleTagLabels,
   wifiFact,
 } from "../src/app/place-card-facts.ts";
@@ -35,6 +36,44 @@ test("place card facts display sourced values and hide duplicate Wi-Fi tags", ()
   assert.equal(priceFact({ priceSEK: "145 SEK" }, "sv").label, "$ · 145 SEK");
   assert.equal(wifiFact({ tags: ["Wi-Fi", "Free Wi-Fi", "Bakery"] }, "en").label, "Free Wi-Fi");
   assert.deepEqual(visibleTagLabels(["Wi-Fi", "Free Wi-Fi", "Bakery"]), ["Bakery"]);
+});
+
+test("curatedAttributeTags strips pipeline noise, districts, source duplicates, and bilingual duplicates", () => {
+  const noisy = [
+    "Café",
+    "Central Stockholm",
+    "Coffee Shop",
+    "Dog friendly",
+    "Filter",
+    "Hundvänligt",
+    "OpenStreetMap",
+    "Opening hours",
+    "Own roastery",
+    "Single origin",
+    "Specialty Coffee Sweden Registry",
+    "Specialty coffee",
+    "Tasstipset",
+    "White Guide",
+    "White Guide Nordic",
+    "Curated",
+    "Anders Husa",
+    "World's 50 Best Discovery",
+    "Visit Stockholm",
+  ];
+  assert.deepEqual(curatedAttributeTags(noisy, "en"), [
+    "Dog friendly",
+    "Filter",
+    "Own roastery",
+    "Single origin",
+    "Specialty coffee",
+  ]);
+  assert.deepEqual(curatedAttributeTags(noisy, "sv"), [
+    "Hundvänligt",
+    "Filter",
+    "Own roastery",
+    "Single origin",
+    "Specialty coffee",
+  ]);
 });
 
 test("isInternalDiagnosticNote identifies backend pipeline and import messages", () => {
