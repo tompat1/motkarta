@@ -935,12 +935,46 @@ function AppContent({
     async function loadDbSources() {
       setIsSourcesLoading(true);
       try {
-        const resp = await fetch("/api/sources");
-        if (resp.ok) {
-          const payload = (await resp.json()) as { sources?: CuratedSource[] };
-          if (!cancelled && payload.sources?.length) {
-            setCuratedSources(payload.sources);
+        const [apiResp, statusResp] = await Promise.all([
+          fetch("/api/sources").catch(() => null),
+          fetch("/data/curated_sources_status.json").catch(() => null),
+        ]);
+        let nextSources: CuratedSource[] = INITIAL_CURATED_SOURCES;
+        if (apiResp?.ok) {
+          const payload = (await apiResp.json()) as { sources?: CuratedSource[] };
+          if (payload.sources?.length) {
+            nextSources = payload.sources;
           }
+        }
+        if (statusResp?.ok) {
+          const statusPayload = (await statusResp.json()) as {
+            sources?: Array<{
+              id: string;
+              lastScrapedAt?: string;
+              scrapedPoints?: number;
+              verifiedCount?: number;
+              importedCount?: number;
+              coveragePercent?: number;
+            }>;
+          };
+          if (statusPayload.sources?.length) {
+            const byId = new Map(statusPayload.sources.map((entry) => [entry.id, entry]));
+            nextSources = nextSources.map((src) => {
+              const fresh = byId.get(src.id);
+              if (!fresh) return src;
+              return {
+                ...src,
+                lastScrapedAt: fresh.lastScrapedAt ?? src.lastScrapedAt,
+                scrapedPoints: typeof fresh.scrapedPoints === "number" ? fresh.scrapedPoints : src.scrapedPoints,
+                verifiedCount: typeof fresh.verifiedCount === "number" ? fresh.verifiedCount : src.verifiedCount,
+                importedCount: typeof fresh.importedCount === "number" ? fresh.importedCount : src.importedCount,
+                coveragePercent: typeof fresh.coveragePercent === "number" ? fresh.coveragePercent : src.coveragePercent,
+              };
+            });
+          }
+        }
+        if (!cancelled) {
+          setCuratedSources(nextSources);
         }
       } catch {}
       if (!cancelled) setIsSourcesLoading(false);

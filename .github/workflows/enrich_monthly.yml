@@ -56,6 +56,22 @@ jobs:
         run: python scripts/run_monthly_catalog_freshness.py
 
       # -----------------------------------------------------------------------
+      # Phase A2: Curated open sources & verified guides monthly refresh (all 16)
+      # 1. Refresh Tasstipset dog-friendly venues (feature-only enrichment)
+      # 2. Sync neutral curated open-source records into places.json
+      # 3. Probe all 16 curated sources & write public/data/curated_sources_status.json
+      # -----------------------------------------------------------------------
+      - name: Refresh Tasstipset dog-friendly venue directory
+        run: python scripts/fetch_tasstipset_dog_places.py --sync --quiet
+        continue-on-error: true
+
+      - name: Sync curated open-source records into places.json
+        run: python scripts/sync_curated_sources.py --quiet
+
+      - name: Audit and refresh all 16 curated open sources status
+        run: python scripts/refresh_curated_sources.py
+
+      # -----------------------------------------------------------------------
       # Phase B: Website photo scraping
       # Scrapes og:image / srcset from official venue websites for places that
       # still have no photos after metadata sync. HTTP-validates candidates.
@@ -174,6 +190,8 @@ jobs:
             public/data/enrichment_run_report.json \
             public/data/monthly_catalog_reconciliation_report.json \
             public/data/catalog_freshness_report.json \
+            public/data/curated_sources_status.json \
+            data/curated_open_places.json \
             data/enrichment_overlay.json \
             data/human_validation_labels.json \
             data/stockholm_food_places.csv \
