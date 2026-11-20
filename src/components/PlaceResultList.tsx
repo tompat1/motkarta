@@ -106,7 +106,7 @@ export function PlaceResultList({
                   </small>
                   <strong>{place.name}</strong>
                   {verifiedSources.length > 0 ? (
-                    <div className="place-result-verified-badges" style={{ marginTop: "4px" }}>
+                    <div className="place-result-verified-badges">
                       <VerifiedSourceBadgeList sources={verifiedSources} lang={lang} maxVisible={2} variant="pill" />
                     </div>
                   ) : null}
