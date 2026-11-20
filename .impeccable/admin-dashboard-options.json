@@ -13,7 +13,6 @@
       "materials": ["fine rules", "fixed data columns", "evidence lamps"],
       "viewport": "A narrow navigation rail, action summary, advanced filters, and the sortable venue table fill the first viewport.",
       "risk": "The density needs careful column priority on smaller screens.",
-      "html": ".impeccable/mocks/decision/admin-concourse-table.html",
       "comp": ".impeccable/mocks/decision/admin-concourse-table.webp"
     },
     {
@@ -26,7 +25,6 @@
       "materials": ["split workspace", "source ledger", "annotation rail"],
       "viewport": "A compact filter rail and venue list occupy the left two-thirds while a persistent evidence inspector occupies the right.",
       "risk": "The inspector reduces comparison width and needs a strong collapsed state.",
-      "html": ".impeccable/mocks/decision/admin-evidence-workbench.html",
       "comp": ".impeccable/mocks/decision/admin-evidence-workbench.webp"
     },
     {
@@ -39,7 +37,6 @@
       "materials": ["summary bands", "editorial hierarchy", "ruled index"],
       "viewport": "A top navigation, broad quality band, prioritized work queues, and the first venue rows form one vertical operating index.",
       "risk": "Summary content can delay the core venue work if allowed to grow.",
-      "html": ".impeccable/mocks/decision/admin-operations-index.html",
       "comp": ".impeccable/mocks/decision/admin-operations-index.webp"
     }
   ],
@@ -47,7 +44,7 @@
     "registers": ["safer", "bolder"]
   },
   "buildPath": {
-    "value": "code",
+    "value": "comp",
     "toggle": true
   },
   "steer": true

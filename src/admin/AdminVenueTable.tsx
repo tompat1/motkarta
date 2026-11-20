@@ -123,7 +123,7 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
     <section className="admin-venue-table-section" id="admin-venue-table" aria-labelledby="admin-venue-table-title">
       <div className="admin-venue-table-heading">
         <div>
-          <h4 id="admin-venue-table-title">{lang === "sv" ? "Platsregister" : "Venue registry"}</h4>
+          <h3 id="admin-venue-table-title">{lang === "sv" ? "Platsregister" : "Venue registry"}</h3>
           <p>
             {lang === "sv"
               ? "Jämför status, proveniens, evidensstyrka, aktualitet och konflikter. Evidensstyrka är inte ett kvalitetsbetyg."
@@ -136,8 +136,8 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
         </div>
       </div>
 
-      <div className="admin-advanced-filters" aria-label={lang === "sv" ? "Avancerade filter" : "Advanced filters"}>
-        <span className="admin-advanced-filter-label">
+      <div className="admin-advanced-filters" role="group" aria-labelledby="admin-advanced-filter-title">
+        <span className="admin-advanced-filter-label" id="admin-advanced-filter-title">
           <Funnel size={14} weight="bold" />
           {lang === "sv" ? "Avancerade filter" : "Advanced filters"}
           {activeFilterCount > 0 ? <b>{activeFilterCount}</b> : null}
@@ -205,7 +205,7 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
           <tbody>
             {visibleCandidates.map((candidate) => {
               const confidence = venueConfidence(candidate);
-              const freshness = venueFreshness(candidate);
+              const freshness = venueFreshness(candidate, lang);
               const selected = candidate.id === selectedCandidateId;
               const isRemoved = candidate.validationLabel === "closed_wrong_category";
               return (
@@ -228,7 +228,7 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
                     <span className={`admin-table-status state-${candidate.lifecycleState}`}>
                       {lifecycleLabel(candidate.lifecycleState, lang)}
                     </span>
-                    {candidate.validationLabel ? <small className="admin-table-cell-note">{candidate.validationLabel.replaceAll("_", " ")}</small> : null}
+                    {candidate.validationLabel ? <small className="admin-table-cell-note">{validationLabelText(candidate.validationLabel, lang)}</small> : null}
                   </td>
                   <td>
                     <span className={`admin-confidence-label confidence-${confidence.level}`}>
@@ -353,17 +353,17 @@ export function venueConfidence(candidate: AdminVenueTableRow) {
   return { level: "low" as const, percent: 34 };
 }
 
-export function venueFreshness(candidate: AdminVenueTableRow) {
+export function venueFreshness(candidate: AdminVenueTableRow, lang: Language = "en") {
   const rawDate = candidate.latestEvidenceAt ?? candidate.updatedAt;
-  if (!rawDate) return { days: null, state: "unknown" as const, timestamp: Number.POSITIVE_INFINITY, dateLabel: "—" };
+  if (!rawDate) return { days: null, state: "unknown" as const, timestamp: Number.NEGATIVE_INFINITY, dateLabel: "—" };
   const date = new Date(rawDate);
-  if (Number.isNaN(date.getTime())) return { days: null, state: "unknown" as const, timestamp: Number.POSITIVE_INFINITY, dateLabel: "—" };
+  if (Number.isNaN(date.getTime())) return { days: null, state: "unknown" as const, timestamp: Number.NEGATIVE_INFINITY, dateLabel: "—" };
   const days = Math.max(0, Math.floor((Date.now() - date.getTime()) / 86_400_000));
   return {
     days,
     state: days <= 90 ? "fresh" as const : "stale" as const,
     timestamp: date.getTime(),
-    dateLabel: new Intl.DateTimeFormat("en-SE", { dateStyle: "medium" }).format(date),
+    dateLabel: new Intl.DateTimeFormat(lang === "sv" ? "sv-SE" : "en-GB", { dateStyle: "medium" }).format(date),
   };
 }
 
@@ -372,7 +372,7 @@ function compareVenueRows(left: AdminVenueTableRow, right: AdminVenueTableRow, s
   if (sortKey === "status") return left.lifecycleState.localeCompare(right.lifecycleState, "sv");
   if (sortKey === "confidence") return venueConfidence(left).percent - venueConfidence(right).percent;
   if (sortKey === "source") return String(left.candidateSourceType ?? "").localeCompare(String(right.candidateSourceType ?? ""), "sv");
-  if (sortKey === "freshness") return venueFreshness(right).timestamp - venueFreshness(left).timestamp;
+  if (sortKey === "freshness") return venueFreshness(left).timestamp - venueFreshness(right).timestamp;
   return left.possibleDuplicateCount - right.possibleDuplicateCount;
 }
 
@@ -391,6 +391,16 @@ function lifecycleLabel(state: string, lang: Language) {
   };
   const pair = labels[state];
   return pair ? pair[lang === "sv" ? 0 : 1] : state.replaceAll("_", " ");
+}
+
+function validationLabelText(label: string, lang: Language) {
+  const labels: Record<string, { sv: string; en: string }> = {
+    known_mainstream: { sv: "Känd mainstream", en: "Known mainstream" },
+    known_hidden_gem: { sv: "Känd dold pärla", en: "Known hidden gem" },
+    not_enough_evidence: { sv: "Otillräckliga belägg", en: "Not enough evidence" },
+    closed_wrong_category: { sv: "Stängd/fel kategori", en: "Closed/wrong category" },
+  };
+  return labels[label]?.[lang] ?? label.replaceAll("_", " ");
 }
 
 function rowTone(candidate: AdminVenueTableRow) {

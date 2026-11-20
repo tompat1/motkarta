@@ -20247,7 +20247,7 @@ body.is-drawer-open .site-utilities > * {
   min-width: 0;
 }
 
-.admin-venue-table-heading h4 {
+.admin-venue-table-heading h3 {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(20px, 2vw, 26px);

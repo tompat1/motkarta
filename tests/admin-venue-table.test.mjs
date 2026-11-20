@@ -22,6 +22,7 @@ test("venue registry exposes sorting, advanced data-quality filters, and row act
     "aria-sort",
     "aria-pressed={selected}",
     "role=\"region\"",
+    "role=\"group\"",
     "candidateSourceType",
     "possibleDuplicateCount",
     "onOpenReview",
@@ -30,6 +31,17 @@ test("venue registry exposes sorting, advanced data-quality filters, and row act
   ]) {
     assert.ok(tableSource.includes(expected), `AdminVenueTable should include ${expected}`);
   }
+});
+
+test("freshness ordering keeps unknown dates last when newest records lead", () => {
+  assert.match(tableSource, /timestamp: Number\.NEGATIVE_INFINITY/);
+  assert.match(tableSource, /venueFreshness\(left\)\.timestamp - venueFreshness\(right\)\.timestamp/);
+  assert.match(tableSource, /lang === "sv" \? "sv-SE" : "en-GB"/);
+});
+
+test("operator-facing status labels do not leak raw validation codes", () => {
+  assert.match(tableSource, /validationLabelText\(candidate\.validationLabel, lang\)/);
+  assert.match(tableSource, /closed_wrong_category: \{ sv: "Stängd\/fel kategori", en: "Closed\/wrong category" \}/);
 });
 
 test("every literal AdminVenueTable class has a matching CSS selector", () => {
