@@ -208,8 +208,9 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
               const freshness = venueFreshness(candidate, lang);
               const selected = candidate.id === selectedCandidateId;
               const isRemoved = candidate.validationLabel === "closed_wrong_category";
+              const isAlert = rowTone(candidate) === "risk";
               return (
-                <tr key={candidate.id} className={`admin-venue-table-row${selected ? " is-selected" : ""}`} aria-busy={busyId === candidate.id}>
+                <tr key={candidate.id} className={`admin-venue-table-row${selected ? " is-selected" : ""}${isAlert ? " is-alert" : ""}`} aria-busy={busyId === candidate.id}>
                   <td className="admin-venue-identity-cell">
                     <button
                       type="button"

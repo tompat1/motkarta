@@ -12,7 +12,7 @@ import { AdminMapView, type AdminMapCandidate } from "./AdminMapView";
 import { AdminPhotoManager, type AdminPhotoManagerSaveHandle } from "./AdminPhotoManager";
 import { AdminPlaceEditor, AdminPriceLevelPicker, candidateToPlaceDraft, emptyPlaceDraft, type AdminPlaceDraft } from "./AdminPlaceEditor";
 import { AdminDistrictManager } from "./AdminDistrictManager";
-import { AdminVenueTable } from "./AdminVenueTable";
+import { AdminVenueTable, venueFreshness } from "./AdminVenueTable";
 import {
   ArrowClockwise,
   ArrowRight,
@@ -34,6 +34,7 @@ import {
   PlusCircle,
   Scales,
   ShieldCheck,
+  SignOut,
   Sliders,
   Sparkle,
   Table as TableIcon,
@@ -42,6 +43,7 @@ import {
 } from "@phosphor-icons/react";
 
 type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all" | "removed";
+type ConcourseRailTab = "desk" | "queue" | "duplicates" | "coverage" | "sources" | "ml" | "runbooks";
 type AdminValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
 type DashboardQueueFocus = "all" | "new" | "hidden_gem_ready" | "missing_cuisine" | "needs_evidence" | "duplicates";
 type DashboardNavTarget =
@@ -174,21 +176,28 @@ export {
   localizeD1QuotaMessage,
 };
 
-const adminStateFilters: AdminStateFilter[] = ["all", "removed", "candidate", "baseline", "verified", "featured", "unresolved_region", "needs_input", "ml_dashboard"];
+const adminStateFilters: AdminStateFilter[] = ["all", "removed", "candidate", "baseline", "verified", "featured", "unresolved_region", "needs_input"];
 
 export function AdminReviewPanel({
   lang = "sv",
+  onSetLang,
+  publishedCount,
   adminSession: propAdminSession,
   onSessionChange,
   onLogout,
+  sourcesPanel,
 }: {
   lang?: Language;
+  onSetLang?: (next: Language) => void;
+  publishedCount?: number;
   adminSession?: AdminSessionStatus | null;
   onSessionChange?: (session: AdminSessionStatus | null) => void;
   onLogout?: () => void;
+  sourcesPanel?: React.ReactNode;
 }) {
   const [tokenInput, setTokenInput] = useState(readStoredAdminToken);
   const [adminToken, setAdminToken] = useState(readStoredAdminToken);
+  const [railTab, setRailTab] = useState<ConcourseRailTab>("desk");
   const [stateFilter, setStateFilter] = useState<AdminStateFilter>("candidate");
   const [queueFocus, setQueueFocus] = useState<DashboardQueueFocus>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -1541,525 +1550,804 @@ export function AdminReviewPanel({
     }
   };
 
-  return (
-    <section className="admin-review-panel" id="admin-review" aria-labelledby="admin-review-title">
-      <div className="admin-review-head">
-        <div>
-          <p className="admin-review-kicker">
-            <ShieldCheck size={14} weight="bold" /> {lang === "sv" ? "Adminflöde" : "Admin workflow"}
-          </p>
-          <h3 id="admin-review-title">
-            {lang === "sv" ? "Granskningskö" : "Review queue"}
-          </h3>
-        </div>
+  const isDeskRailTab = railTab === "desk" || railTab === "queue" || railTab === "duplicates";
+  const duplicateCount =
+    dashboard?.counts?.possibleDuplicateCount ??
+    candidates.filter((candidate) => candidate.possibleDuplicateCount > 0).length;
+  const reviewQueueCount =
+    dashboard?.counts?.candidateCount ??
+    candidates.filter((candidate) => candidate.lifecycleState === "candidate").length;
+  const freshCount = candidates.filter((candidate) => venueFreshness(candidate, lang).state === "fresh").length;
+  const freshPercentLabel =
+    candidates.length > 0 ? `${Math.round((freshCount / candidates.length) * 100)}%` : "—";
+  const coveredCount = candidates.filter(
+    (candidate) => Boolean(candidate.address && candidate.area && !isBroadStockholmArea(candidate.area)),
+  ).length;
+  const coveragePercentLabel =
+    candidates.length > 0 ? `${Math.round((coveredCount / candidates.length) * 100)}%` : "—";
+  const publishedDisplayCount = publishedCount && publishedCount > 0 ? publishedCount : candidates.length;
+  const todayLabel = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })
+    .format(new Date())
+    .toUpperCase();
 
-        {!hasAdminAuth ? (
-          <form className="admin-review-auth" onSubmit={handleUnlock}>
-            <label className="sr-only" htmlFor="admin-token">
-              {lang === "sv" ? "Lokal admin-token" : "Local admin token"}
-            </label>
-            <input
-              id="admin-token"
-              type="password"
-              value={tokenInput}
-              onChange={(event) => setTokenInput(event.target.value)}
-              placeholder={lang === "sv" ? "Lokal/dev-token" : "Local/dev token"}
-              autoComplete="off"
-            />
-            <button type="submit" disabled={checkingSession} title={lang === "sv" ? "Lås upp lokal granskningskö" : "Unlock local review queue"}>
-              {checkingSession ? <CircleNotch size={14} className="animate-spin" /> : <ShieldCheck size={14} weight="bold" />}
-              {checkingSession ? (lang === "sv" ? "Kollar" : "Checking") : lang === "sv" ? "Lås upp" : "Unlock"}
-            </button>
-            {tokenInput || adminToken ? (
-              <button
-                type="button"
-                className="admin-review-ghost-btn"
-                onClick={handleForgetToken}
-                title={lang === "sv" ? "Glöm lokal token" : "Forget local token"}
-              >
-                <X size={14} weight="bold" />
-              </button>
-            ) : null}
-          </form>
-        ) : null}
-      </div>
-
-      <div
-        ref={queueSectionRef}
-        className="admin-review-toolbar"
-        aria-label={lang === "sv" ? "Filter för granskningskö" : "Review queue filters"}
-      >
-        <div className="admin-state-tabs">
-          {adminStateFilters.map((state) => (
-            <button
-              key={state}
-              type="button"
-              className={stateFilter === state ? "active" : ""}
-              aria-pressed={stateFilter === state}
-              onClick={() => {
+  const nextAction =
+    duplicateCount > 0
+      ? {
+          label:
+            lang === "sv"
+              ? `Lös ${duplicateCount} dubbletter →`
+              : `Resolve ${duplicateCount} duplicates →`,
+          onClick: () => {
+            setRailTab("duplicates");
+            setStateFilter("candidate");
+            setQueueFocus("duplicates");
+            setViewMode("table");
+          },
+        }
+      : reviewQueueCount > 0
+        ? {
+            label:
+              lang === "sv"
+                ? `Granska ${reviewQueueCount} kandidater →`
+                : `Review ${reviewQueueCount} candidates →`,
+            onClick: () => {
+              setRailTab("queue");
+              setStateFilter("candidate");
+              setQueueFocus("all");
+              setViewMode("table");
+            },
+          }
+        : (dashboard?.counts?.unexportedReviewCount ?? 0) > 0
+          ? {
+              label:
+                lang === "sv"
+                  ? `Synka ${dashboard?.counts?.unexportedReviewCount} beslut →`
+                  : `Sync ${dashboard?.counts?.unexportedReviewCount} decisions →`,
+              onClick: () => setRailTab("runbooks"),
+            }
+          : {
+              label: lang === "sv" ? "Öppna platsregistret →" : "Open venue desk →",
+              onClick: () => {
+                setRailTab("desk");
+                setStateFilter("all");
                 setQueueFocus("all");
-                setStateFilter(state);
-              }}
-            >
-              {lifecycleStateLabel(state, lang)}
-            </button>
-          ))}
-        </div>
-        <div className="admin-toolbar-actions">
-          <button
-            type="button"
-            className="admin-resolve-regions-btn"
-            onClick={() => {
-              setPlaceEditorMode("create");
-              setPlaceEditorDraft(emptyPlaceDraft());
-              setPlaceEditorOpen(true);
-            }}
-            disabled={!hasAdminAuth || schemaStatus?.ready !== true}
-            title={lang === "sv" ? "Lägg till en ny plats manuellt" : "Add a new place manually"}
-          >
-            <PlusCircle size={14} weight="bold" />
-            {lang === "sv" ? "Ny plats" : "Add place"}
-          </button>
-          <button
-            type="button"
-            className="admin-resolve-regions-btn"
-            onClick={() => setDistrictManagerOpen(true)}
-            disabled={!hasAdminAuth || schemaStatus?.ready !== true}
-            title={lang === "sv" ? "Byt namn, slå ihop eller granska stadsdelar" : "Rename, merge or review districts"}
-          >
-            <MapPin size={14} weight="bold" />
-            {lang === "sv" ? "Stadsdelar" : "Districts"}
-          </button>
-          <button
-            type="button"
-            className="admin-resolve-regions-btn"
-            onClick={() => void resolvePlacesWithoutRegion()}
-            disabled={!hasAdminAuth || resolvingRegions || loading || schemaStatus?.ready !== true}
-            title={
-              lang === "sv"
-                ? "Lös regioner för alla platser utan specifik region (t.ex. Djurgården, Södermalm, Norrmalm, Vasastan, Söderort, Västerort)"
-                : "Resolve regions for all places without a specific region"
-            }
-          >
-            {resolvingRegions ? <CircleNotch size={14} className="animate-spin" /> : <MapPin size={14} weight="bold" />}
-            {lang === "sv" ? "Lös saknade regioner" : "Resolve missing regions"}
-          </button>
-          <button
-            type="button"
-            className="admin-refresh-btn"
-            onClick={() => void loadCandidates()}
-            disabled={!hasAdminAuth || loading || schemaStatus?.ready !== true}
-            title={lang === "sv" ? "Ladda om från D1" : "Reload from D1"}
-          >
-            {loading ? <CircleNotch size={14} className="animate-spin" /> : <ArrowClockwise size={14} weight="bold" />}
-            {lang === "sv" ? "Ladda om" : "Reload"}
-          </button>
-          <button
-            type="button"
-            className={`admin-guide-toggle-btn ${showGuide ? "active" : ""}`}
-            onClick={() => setShowGuide((prev) => !prev)}
-            title={lang === "sv" ? "Öppna adminhandbok & ML-rutiner (SOP)" : "Open Admin Playbook & ML SOP"}
-          >
-            <BookOpen size={14} weight="bold" />
-            {lang === "sv" ? "Guide & Rutiner (SOP)" : "Playbook & SOP"}
-          </button>
-        </div>
-      </div>
+                setViewMode("table");
+              },
+            };
 
-      <div className="admin-search-and-view-row">
-        <div className="admin-search-box">
-          <MagnifyingGlass size={16} weight="bold" className="admin-search-icon" />
-          <input
-            type="search"
-            className="admin-search-input"
-            placeholder={
-              lang === "sv"
-                ? "Sök ställe (namn, gatuadress, stadsdel, id, typ)..."
-                : "Search place (name, street address, district, id, type)..."
-            }
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                void loadCandidates(undefined, searchQuery);
-              }
+  return (
+    <div className="admin-concourse-shell" id="admin-review">
+      <aside className="admin-concourse-rail" aria-label={lang === "sv" ? "Adminnavigering" : "Admin navigation"}>
+        <a className="admin-concourse-brand" href="/" aria-label="MOTKARTA">
+          MOTKARTA<i aria-hidden="true" />
+        </a>
+
+        <nav className="admin-concourse-nav">
+          <button
+            type="button"
+            className={`admin-concourse-nav-item ${railTab === "desk" ? "on" : ""}`}
+            aria-current={railTab === "desk" ? "page" : undefined}
+            onClick={() => {
+              setRailTab("desk");
+              setQueueFocus("all");
+              if (stateFilter === "ml_dashboard") setStateFilter("candidate");
             }}
-          />
-          {searchQuery ? (
+          >
+            <span>{lang === "sv" ? "Platsdesk" : "Venue desk"}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`admin-concourse-nav-item ${railTab === "queue" ? "on" : ""}`}
+            aria-current={railTab === "queue" ? "page" : undefined}
+            onClick={() => {
+              setRailTab("queue");
+              setStateFilter("candidate");
+              setQueueFocus("all");
+              setViewMode("table");
+            }}
+          >
+            <span>{lang === "sv" ? "Granskningskö" : "Review queue"}</span>
+            <span className="admin-concourse-nav-count">{reviewQueueCount}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`admin-concourse-nav-item ${railTab === "duplicates" ? "on" : ""}`}
+            aria-current={railTab === "duplicates" ? "page" : undefined}
+            onClick={() => {
+              setRailTab("duplicates");
+              setStateFilter("candidate");
+              setQueueFocus("duplicates");
+              setViewMode("table");
+            }}
+          >
+            <span>{lang === "sv" ? "Dubbletter" : "Duplicates"}</span>
+            <span className="admin-concourse-nav-count">{duplicateCount}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`admin-concourse-nav-item ${railTab === "coverage" ? "on" : ""}`}
+            aria-current={railTab === "coverage" ? "page" : undefined}
+            onClick={() => setRailTab("coverage")}
+          >
+            <span>{lang === "sv" ? "Täckning" : "Coverage"}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`admin-concourse-nav-item ${railTab === "sources" ? "on" : ""}`}
+            aria-current={railTab === "sources" ? "page" : undefined}
+            onClick={() => setRailTab("sources")}
+          >
+            <span>{lang === "sv" ? "Källor" : "Sources"}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`admin-concourse-nav-item ${railTab === "ml" ? "on" : ""}`}
+            aria-current={railTab === "ml" ? "page" : undefined}
+            onClick={() => {
+              setRailTab("ml");
+              setStateFilter("ml_dashboard");
+            }}
+          >
+            <span>{lang === "sv" ? "ML & utvärdering" : "ML & evaluation"}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`admin-concourse-nav-item ${railTab === "runbooks" ? "on" : ""}`}
+            aria-current={railTab === "runbooks" ? "page" : undefined}
+            onClick={() => setRailTab("runbooks")}
+          >
+            <span>{lang === "sv" ? "Handbok & synk" : "Runbooks"}</span>
+          </button>
+        </nav>
+
+        <div className="admin-concourse-rail-foot">
+          <div className="admin-concourse-rail-role">ADMINISTRATOR</div>
+          <div className="admin-concourse-rail-email">
+            {adminSession?.email
+              ? adminSession.email
+              : hasAdminAuth
+                ? lang === "sv"
+                  ? "Adminsession aktiv"
+                  : "Admin session active"
+                : lang === "sv"
+                  ? "Ej inloggad"
+                  : "Not signed in"}
+          </div>
+          <div className={`admin-concourse-rail-status ${d1QuotaExceeded ? "is-warn" : schemaStatus?.ready ? "is-ready" : ""}`}>
+            {d1QuotaExceeded
+              ? lang === "sv"
+                ? "Pausad (D1-kvot)"
+                : "Paused (D1 quota)"
+              : schemaStatus?.ready
+                ? lang === "sv"
+                  ? "Runtime redo"
+                  : "Runtime ready"
+                : schemaBusy
+                  ? lang === "sv"
+                    ? "Kontrollerar..."
+                    : "Checking..."
+                  : lang === "sv"
+                    ? "Runtime-check"
+                    : "Runtime check"}
+          </div>
+          {hasAdminAuth && onLogout ? (
             <button
               type="button"
-              className="admin-search-clear"
-              onClick={() => {
-                setSearchQuery("");
-                void loadCandidates(undefined, "");
-              }}
-              title={lang === "sv" ? "Rensa sökning" : "Clear search"}
-              aria-label="Clear search"
+              className="admin-concourse-rail-logout"
+              onClick={onLogout}
+              title={lang === "sv" ? "Logga ut från adminsession" : "Log out from admin session"}
             >
-              <X size={14} weight="bold" />
+              <SignOut size={13} weight="bold" />
+              {adminSession?.authMode === "token"
+                ? lang === "sv"
+                  ? "Glöm token"
+                  : "Forget token"
+                : lang === "sv"
+                  ? "Logga ut"
+                  : "Log out"}
             </button>
           ) : null}
         </div>
+      </aside>
 
-        <div className="admin-view-switcher" role="tablist" aria-label={lang === "sv" ? "Växla vy" : "Switch view"}>
-          <button
-            type="button"
-            className={`admin-view-btn ${viewMode === "table" ? "active" : ""}`}
-            onClick={() => setViewMode("table")}
-            role="tab"
-            aria-selected={viewMode === "table"}
-            title={lang === "sv" ? "Sorterbar tabell över platsregistret" : "Sortable venue registry table"}
-          >
-            <TableIcon size={16} weight="bold" />
-            <span>{lang === "sv" ? "Tabell" : "Table"}</span>
-            <span className="admin-view-count">{filteredCandidates.length}</span>
-          </button>
-          <button
-            type="button"
-            className={`admin-view-btn ${viewMode === "list" ? "active" : ""}`}
-            onClick={() => setViewMode("list")}
-            role="tab"
-            aria-selected={viewMode === "list"}
-            title={lang === "sv" ? "Detaljerade granskningskort" : "Detailed review cards"}
-          >
-            <ListBullets size={16} weight="bold" />
-            <span>{lang === "sv" ? "Detaljer" : "Details"}</span>
-            <span className="admin-view-count">{filteredCandidates.length}</span>
-          </button>
-          <button
-            type="button"
-            className={`admin-view-btn ${viewMode === "map" ? "active" : ""}`}
-            onClick={() => setViewMode("map")}
-            role="tab"
-            aria-selected={viewMode === "map"}
-            title={lang === "sv" ? "Interaktiv kartvy över ställen" : "Interactive map view"}
-          >
-            <MapTrifold size={16} weight="bold" />
-            <span>{lang === "sv" ? "Karta" : "Map"}</span>
-            <span className="admin-view-count">
-              {filteredCandidates.filter((c) => typeof c.latitude === "number" && typeof c.longitude === "number").length}
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <div className="admin-filter-guide-banner" role="note">
-        <Info size={14} weight="bold" className="filter-guide-icon" />
-        <span>{stateFilterHelpText(stateFilter, lang)}</span>
-      </div>
-
-      {stateFilter === "candidate" && queueFocus !== "all" ? (
-        <div className="admin-queue-focus-banner" role="status">
-          <span>{queueFocusHelpText(queueFocus, lang)}</span>
-          <button type="button" className="admin-queue-focus-clear" onClick={() => setQueueFocus("all")}>
-            {lang === "sv" ? "Visa alla kandidater" : "Show all candidates"}
-          </button>
-        </div>
-      ) : null}
-
-      {stateFilter !== "ml_dashboard" && hasAdminAuth && schemaStatus?.ready && !loading ? (
-        viewMode === "table" ? (
-          <AdminVenueTable
-            candidates={filteredCandidates}
-            lang={lang}
-            busyId={busyId}
-            selectedCandidateId={selectedCandidateId}
-            onSelectCandidate={(candidate) => setSelectedCandidateId(candidate.id)}
-            onOpenReview={(candidate) => {
-              setSelectedCandidateId(candidate.id);
-              setViewMode("list");
-              window.requestAnimationFrame(() => {
-                document.getElementById(`admin-place-${candidate.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-              });
-            }}
-            onEditCandidate={(candidate) => {
-              setPlaceEditorMode("edit");
-              setPlaceEditorDraft(candidateToPlaceDraft(candidate));
-              setPlaceEditorOpen(true);
-            }}
-            onToggleRemoved={(candidate) =>
-              void promoteCandidate(
-                candidate,
-                candidate.validationLabel === "closed_wrong_category" ? "baseline" : "candidate",
-                candidate.validationLabel === "closed_wrong_category" ? null : "closed_wrong_category",
-              )
-            }
-          />
-        ) : null
-      ) : null}
-
-      {showGuide ? (
-        <AdminGuidePanel lang={lang} onClose={() => setShowGuide(false)} />
-      ) : null}
-
-      {d1QuotaExceeded ? (
-        <div className="admin-d1-quota-banner" role="alert">
-          <div className="admin-d1-quota-content">
-            <span className="admin-d1-quota-icon">⏳</span>
-            <div className="admin-d1-quota-text">
-              <strong>
-                {lang === "sv"
-                  ? "Cloudflare D1-kvot uppnådd (daglig radläsningsgräns nådd)"
-                  : "Cloudflare D1 Quota Reached (Daily Read Limit Exceeded)"}
-              </strong>
-              <p>
-                {lang === "sv"
-                  ? `Kontots kostnadsfria gräns för D1-radläsningar har överskridits. Automatiska runtime-checks är pausade för att spara bandbredd och undvika onödiga Cloudflare-anrop. Kvoten återställs ${formatEuropeanResetTime(undefined, lang)}.`
-                  : `The account's free tier daily row read limit for D1 has been exceeded. Automatic runtime checks are paused to conserve bandwidth and prevent unnecessary Cloudflare requests. Limit resets at ${formatEuropeanResetTime(undefined, lang)}.`}
-              </p>
-            </div>
+      <main className="admin-concourse-main">
+        <header className="admin-concourse-top">
+          <strong>{lang === "sv" ? "Datahantering & admin" : "Data management dashboard"}</strong>
+          <div className="admin-concourse-top-meta">
+            <span className="admin-concourse-account">STOCKHOLM · {todayLabel}</span>
+            {onSetLang ? (
+              <div className="admin-concourse-lang" aria-label="Language selector">
+                <button
+                  type="button"
+                  className={lang === "sv" ? "active" : ""}
+                  onClick={() => onSetLang("sv")}
+                >
+                  SV
+                </button>
+                <span aria-hidden="true">/</span>
+                <button
+                  type="button"
+                  className={lang === "en" ? "active" : ""}
+                  onClick={() => onSetLang("en")}
+                >
+                  EN
+                </button>
+              </div>
+            ) : null}
+            <a className="admin-concourse-map-link" href="/">
+              ← {lang === "sv" ? "Karta" : "Map"}
+            </a>
           </div>
-          <div className="admin-d1-quota-actions">
-            <button
-              type="button"
-              className="admin-d1-quota-btn"
-              onClick={() => void runAdminSelfCheck(undefined, true)}
-              disabled={schemaBusy}
-            >
-              {lang === "sv" ? "Kör kontroll ändå" : "Force check anyway"}
-            </button>
-            <button
-              type="button"
-              className="admin-d1-quota-btn secondary"
-              onClick={clearD1QuotaBlock}
-            >
-              {lang === "sv" ? "Återställ spärr" : "Reset pause"}
-            </button>
-          </div>
-        </div>
-      ) : null}
+        </header>
 
-      {hasAdminAuth ? (
-        <div className={`admin-schema-panel ${d1QuotaExceeded ? "quota-paused" : schemaStatus?.ready ? "ready" : "needs-setup"}`}>
-          <div className="admin-schema-copy">
-            <span>
-              {d1QuotaExceeded
-                ? (lang === "sv" ? "Pausad (D1-kvot nådd)" : "Paused (D1 quota reached)")
-                : schemaStatus?.ready
-                  ? (lang === "sv" ? "Runtime redo" : "Runtime ready")
-                  : lang === "sv" ? "Runtime-check" : "Runtime check"}
-            </span>
-            <small>
-              {d1QuotaExceeded
-                ? (lang === "sv" ? "Automatiska Cloudflare-anrop stoppade för att spara bandbredd" : "Automatic Cloudflare requests paused to conserve bandwidth")
-                : schemaStatusText(schemaStatus, lang)}
-            </small>
-          </div>
-          <button
-            type="button"
-            className="admin-schema-btn"
-            onClick={() => void runAdminSelfCheck(undefined, true)}
-            disabled={!hasAdminAuth || schemaBusy}
-            title={
-              d1QuotaExceeded
-                ? (lang === "sv" ? "Kör runtime-check mot Cloudflare ändå" : "Run runtime check against Cloudflare anyway")
-                : (lang === "sv" ? "Kontrollera token, DB och adminschema" : "Check token, DB, and admin schema")
-            }
-          >
-            {schemaBusy ? <CircleNotch size={14} className="animate-spin" /> : <ShieldCheck size={14} weight="bold" />}
-            {schemaBusy
-              ? (lang === "sv" ? "Kollar" : "Checking")
-              : d1QuotaExceeded
-                ? (lang === "sv" ? "Kör ändå" : "Check anyway")
-                : schemaStatus?.ready
-                  ? (lang === "sv" ? "Kolla igen" : "Recheck")
-                  : lang === "sv" ? "Kör check" : "Run check"}
-          </button>
-        </div>
-      ) : null}
-
-      {hasAdminAuth && schemaStatus?.ready ? (
-        <div className={`admin-session-dashboard step-${dashboard?.nextStep ?? "loading"}`} aria-live="polite">
-          <button
-            type="button"
-            className="admin-session-summary admin-session-action"
-            onClick={() => navigateDashboardTarget(dashboardActionForStep(dashboard?.nextStep))}
-            title={dashboardActionHint(dashboard?.nextStep, lang)}
-          >
-            <span className="admin-session-badge">
-              {dashboardStepLabel(dashboard?.nextStep, loadingDashboard, lang)}
-            </span>
-            <strong>{dashboardHeadline(dashboard, loadingDashboard, lang)}</strong>
-            <small>{dashboardSubcopy(dashboard, loadingDashboard, lang)}</small>
-            <span className="admin-session-action-hint">
-              <ArrowRight size={14} weight="bold" />
-              {dashboardActionHint(dashboard?.nextStep, lang)}
-            </span>
-          </button>
-          <div className="admin-session-metrics">
-            {dashboardMetrics(dashboard, lang).map((metric) => (
-              <button
-                key={metric.key}
-                type="button"
-                className={`admin-session-metric admin-session-action tone-${metric.tone} ${
-                  metric.focusKey && queueFocus === metric.focusKey && stateFilter === "candidate" ? "is-active" : ""
-                }`}
-                onClick={() => navigateDashboardTarget(metric.action)}
-                title={metric.actionHint}
-                aria-pressed={Boolean(metric.focusKey && queueFocus === metric.focusKey && stateFilter === "candidate")}
-              >
-                <span className="admin-session-metric-icon">{metric.icon}</span>
-                <span>{metric.label}</span>
-                <b>{metric.value}</b>
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      {hasAdminAuth ? (
-        <AdminCoveragePanel
-          lang={lang}
-          adminToken={adminToken}
-          onSelectPlace={(placeId) => {
-            setSearchQuery(String(placeId));
-            setStateFilter("all");
-            setViewMode("table");
-            scrollToSection(queueSectionRef);
-          }}
-        />
-      ) : null}
-
-      <div className="admin-sync-card" ref={syncCardRef}>
-        <div className="admin-sync-header">
-          <div className="admin-sync-title-group">
-            <ShieldCheck size={20} weight="bold" className="admin-sync-icon" />
+        <section className="admin-concourse-content" aria-labelledby="admin-app-title">
+          <div className="admin-concourse-head">
             <div>
-              <h5 className="admin-sync-title">
-                {lang === "sv" ? "Automatiskt sparad & Pipeline-synk" : "Auto-Saved & Pipeline Sync"}
-              </h5>
-              <p className="admin-sync-desc">
-                {lang === "sv"
-                  ? "Granskningsbeslut och pipeline-checkpoint sparas automatiskt efter varje åtgärd. Borttagna ställen döljs vid nästa sidladdning. JSON-backup och månatlig CI-synk finns vid behov."
-                  : "Review decisions and pipeline checkpoints save automatically after each action. Removed places are hidden on the next page load. JSON backup and monthly CI sync remain available when needed."}
+              <h1 id="admin-app-title">
+                {railTab === "coverage"
+                  ? lang === "sv"
+                    ? "TÄCKNING & DISTRIKT"
+                    : "COVERAGE & DISTRICTS"
+                  : railTab === "sources"
+                    ? lang === "sv"
+                      ? "KÄLLREGISTER"
+                      : "CURATED SOURCES"
+                    : railTab === "ml"
+                      ? lang === "sv"
+                        ? "ML & UTVÄRDERING"
+                        : "ML & EVALUATION"
+                      : railTab === "runbooks"
+                        ? lang === "sv"
+                          ? "HANDBOK & PIPELINE-SYNK"
+                          : "RUNBOOKS & SYNC"
+                        : lang === "sv"
+                          ? "PLATSREGISTER · DATA DESK"
+                          : "VENUE DATA DESK"}
+              </h1>
+              <p>
+                {railTab === "coverage"
+                  ? lang === "sv"
+                    ? "Överblick över stadsdelar, saknade regioner och katalogtäckning i Stockholm."
+                    : "District coverage, unresolved regions, and catalog completeness across Stockholm."
+                  : railTab === "sources"
+                    ? lang === "sv"
+                      ? "Redaktionella guider, källverifiering och oberoende signaler."
+                      : "Editorial guides, source provenance, and independent verification signals."
+                    : railTab === "ml"
+                      ? lang === "sv"
+                        ? "Live-telemetri för rekommendationsranking, positionsbias och rättvisegrinder."
+                        : "Live recommendation telemetry, position bias, and representation gates."
+                      : railTab === "runbooks"
+                        ? lang === "sv"
+                          ? "Standardrutiner (SOP), runtime-kontroll och synkronisering av granskningsetiketter."
+                          : "Operating runbooks, D1 runtime checks, and human-label pipeline sync."
+                        : lang === "sv"
+                          ? "Granska proveniens, aktualitet och konflikter i den öppna katalogen."
+                          : "Review provenance, freshness and conflicts across the public catalog."}
               </p>
             </div>
+            <button
+              type="button"
+              className="admin-concourse-primary-btn"
+              onClick={() => {
+                setPlaceEditorMode("create");
+                setPlaceEditorDraft(emptyPlaceDraft());
+                setPlaceEditorOpen(true);
+              }}
+              disabled={!hasAdminAuth || schemaStatus?.ready !== true}
+              title={lang === "sv" ? "Lägg till en ny plats manuellt" : "Add a new place manually"}
+            >
+              + {lang === "sv" ? "Lägg till plats" : "Add venue"}
+            </button>
           </div>
-          <div className="admin-sync-status-pill">
-            {(dashboard?.counts?.unexportedReviewCount ?? 0) === 0 ? (
-              <span className="sync-pill-tag synced">
-                <CheckCircle size={14} weight="bold" />
-                {lang === "sv" ? "Allt synkat med pipeline" : "All synced with pipeline"}
-              </span>
-            ) : (
-              <span className="sync-pill-tag pending">
-                <ArrowClockwise size={14} weight="bold" />
-                {lang === "sv"
-                  ? `${dashboard?.counts?.unexportedReviewCount} nya beslut redo för ML`
-                  : `${dashboard?.counts?.unexportedReviewCount} new decisions ready for ML`}
-              </span>
-            )}
-          </div>
-        </div>
 
-        <div className="admin-sync-actions">
-          <button
-            type="button"
-            className="admin-sync-btn-primary"
-            onClick={() => void syncPipelineDirectly()}
-            disabled={!hasAdminAuth || syncingPipeline || schemaStatus?.ready !== true}
-            title={lang === "sv" ? "Synka D1-checkpoint direkt utan filnedladdning" : "Sync D1 checkpoint directly without file download"}
-          >
-            {syncingPipeline ? <CircleNotch size={15} className="animate-spin" /> : <ArrowClockwise size={15} weight="bold" />}
-            <span>{lang === "sv" ? "Synka pipeline direkt" : "Sync pipeline directly"}</span>
-          </button>
+          {!hasAdminAuth ? (
+            <form className="admin-review-auth admin-concourse-auth" onSubmit={handleUnlock}>
+              <label className="sr-only" htmlFor="admin-token">
+                {lang === "sv" ? "Lokal admin-token" : "Local admin token"}
+              </label>
+              <input
+                id="admin-token"
+                type="password"
+                value={tokenInput}
+                onChange={(event) => setTokenInput(event.target.value)}
+                placeholder={lang === "sv" ? "Lokal/dev-token" : "Local/dev token"}
+                autoComplete="off"
+              />
+              <button type="submit" disabled={checkingSession} title={lang === "sv" ? "Lås upp lokal granskningskö" : "Unlock local review queue"}>
+                {checkingSession ? <CircleNotch size={14} className="animate-spin" /> : <ShieldCheck size={14} weight="bold" />}
+                {checkingSession ? (lang === "sv" ? "Kollar" : "Checking") : lang === "sv" ? "Lås upp" : "Unlock"}
+              </button>
+              {tokenInput || adminToken ? (
+                <button
+                  type="button"
+                  className="admin-review-ghost-btn"
+                  onClick={handleForgetToken}
+                  title={lang === "sv" ? "Glöm lokal token" : "Forget local token"}
+                >
+                  <X size={14} weight="bold" />
+                </button>
+              ) : null}
+            </form>
+          ) : null}
 
-          <button
-            type="button"
-            className="admin-sync-btn-secondary"
-            onClick={() => void exportReviewLabels()}
-            disabled={!hasAdminAuth || exportingLabels || schemaStatus?.ready !== true}
-            title={lang === "sv" ? "Valfritt: Ladda ner manuell JSON-backup" : "Optional: Download manual JSON backup"}
-          >
-            {exportingLabels ? <CircleNotch size={15} className="animate-spin" /> : <DownloadSimple size={15} weight="bold" />}
-            <span>{lang === "sv" ? "Ladda ner backup (JSON)" : "Download backup (JSON)"}</span>
-          </button>
-
-          <div className="admin-sync-cli-hint">
-            <span className="cli-hint-label">Terminal:</span>
-            <code className="cli-hint-code">npm run sync:labels</code>
-          </div>
-        </div>
-
-        {labelExportStatus ? (
-          <div className="admin-sync-status-msg" aria-live="polite">
-            <CheckCircle size={14} weight="bold" />
-            <span>{labelExportStatus}</span>
-          </div>
-        ) : null}
-      </div>
-
-      {error || status ? (
-        <div
-          className={`admin-status-toast-banner ${error ? "is-error" : "is-status"}`}
-          role="status"
-          aria-live="polite"
-        >
-          <div className="status-toast-main">
-            {error ? (
-              <WarningCircle size={20} weight="bold" className="status-toast-icon error" />
-            ) : (
-              <CheckCircle size={20} weight="bold" className="status-toast-icon success" />
-            )}
-            <div className="status-toast-text">
-              <span className="status-toast-title">
-                {error
-                  ? lang === "sv"
-                    ? "Åtgärdsfel"
-                    : "Action Error"
-                  : lang === "sv"
-                    ? "Statusuppdatering"
-                    : "Status Update"}
-              </span>
-              <p className="status-toast-msg">{error ?? status}</p>
+          {isDeskRailTab ? (
+            <div className="admin-concourse-pulse" aria-live="polite">
+              <button
+                type="button"
+                className="admin-concourse-pulse-cell is-next"
+                onClick={nextAction.onClick}
+                disabled={!hasAdminAuth}
+              >
+                <span className="admin-concourse-pulse-label">
+                  {lang === "sv" ? "NÄSTA ÅTGÄRD" : "NEXT DEFENSIBLE ACTION"}
+                </span>
+                <b>{nextAction.label}</b>
+              </button>
+              <button
+                type="button"
+                className="admin-concourse-pulse-cell"
+                onClick={() => {
+                  setRailTab("desk");
+                  setStateFilter("all");
+                  setQueueFocus("all");
+                }}
+              >
+                <span className="admin-concourse-pulse-label">
+                  {lang === "sv" ? "PUBLICERADE PLATSER" : "PUBLISHED VENUES"}
+                </span>
+                <b>{publishedDisplayCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b>
+              </button>
+              <button
+                type="button"
+                className="admin-concourse-pulse-cell"
+                onClick={() => {
+                  setRailTab("queue");
+                  setStateFilter("candidate");
+                  setQueueFocus("all");
+                }}
+              >
+                <span className="admin-concourse-pulse-label">
+                  {lang === "sv" ? "ATT GRANSKA" : "NEEDS REVIEW"}
+                </span>
+                <b>{reviewQueueCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}</b>
+              </button>
+              <div className="admin-concourse-pulse-cell">
+                <span className="admin-concourse-pulse-label">
+                  {lang === "sv" ? "FÄRSK ≤ 90 DAGAR" : "FRESH ≤ 90 DAYS"}
+                </span>
+                <b>{freshPercentLabel}</b>
+              </div>
+              <button
+                type="button"
+                className="admin-concourse-pulse-cell"
+                onClick={() => setRailTab("coverage")}
+              >
+                <span className="admin-concourse-pulse-label">
+                  {lang === "sv" ? "TÄCKNING" : "COVERAGE"}
+                </span>
+                <b>{coveragePercentLabel}</b>
+              </button>
             </div>
-          </div>
-          <button
-            type="button"
-            className="status-toast-dismiss"
-            onClick={() => {
-              setError(null);
-              setStatus("");
-            }}
-            aria-label={lang === "sv" ? "Stäng notis" : "Dismiss notice"}
-          >
-            <X size={16} weight="bold" />
-          </button>
-        </div>
-      ) : null}
+          ) : null}
 
-      {stateFilter === "ml_dashboard" ? (
-        <AdminMlDashboard lang={lang} adminHeaders={adminHeaders} hasAdminAuth={hasAdminAuth} />
-      ) : !hasAdminAuth ? (
-        <div className="admin-review-empty">
-          {checkingSession ? <CircleNotch size={18} className="animate-spin" /> : <ShieldCheck size={18} weight="bold" />}
-          <span>
-            {checkingSession
-              ? lang === "sv"
-                ? "Kontrollerar adminsession..."
-                : "Checking admin session..."
-              : adminSession?.reason ??
-                (lang === "sv"
-                  ? "Admin-konto krävs. I produktion ska /admin skyddas med Cloudflare Access."
-                  : "Admin account required. In production, /admin should be protected by Cloudflare Access.")}
-          </span>
-        </div>
-      ) : schemaBusy || !schemaStatus ? (
-        <div className="admin-review-empty">
-          <CircleNotch size={18} className="animate-spin" />
-          <span>{lang === "sv" ? "Kör runtime-check mot Cloudflare..." : "Running runtime check against Cloudflare..."}</span>
-        </div>
-      ) : schemaStatus.ready === false ? (
-        <div className="admin-review-empty">
-          <ShieldCheck size={18} weight="bold" />
-          <span>{schemaStatusText(schemaStatus, lang)}</span>
-        </div>
-      ) : loading ? (
-        <div className="admin-review-empty">
-          <CircleNotch size={18} className="animate-spin" />
-          <span>{lang === "sv" ? "Laddar kandidater..." : "Loading candidates..."}</span>
-        </div>
-      ) : viewMode === "table" ? null : viewMode === "map" ? (
+          {d1QuotaExceeded ? (
+            <div className="admin-d1-quota-banner" role="alert">
+              <div className="admin-d1-quota-content">
+                <span className="admin-d1-quota-icon">⏳</span>
+                <div className="admin-d1-quota-text">
+                  <strong>
+                    {lang === "sv"
+                      ? "Cloudflare D1-kvot uppnådd (daglig radläsningsgräns nådd)"
+                      : "Cloudflare D1 Quota Reached (Daily Read Limit Exceeded)"}
+                  </strong>
+                  <p>
+                    {lang === "sv"
+                      ? `Kontots kostnadsfria gräns för D1-radläsningar har överskridits. Automatiska runtime-checks är pausade för att spara bandbredd och undvika onödiga Cloudflare-anrop. Kvoten återställs ${formatEuropeanResetTime(undefined, lang)}.`
+                      : `The account's free tier daily row read limit for D1 has been exceeded. Automatic runtime checks are paused to conserve bandwidth and prevent unnecessary Cloudflare requests. Limit resets at ${formatEuropeanResetTime(undefined, lang)}.`}
+                  </p>
+                </div>
+              </div>
+              <div className="admin-d1-quota-actions">
+                <button
+                  type="button"
+                  className="admin-d1-quota-btn"
+                  onClick={() => void runAdminSelfCheck(undefined, true)}
+                  disabled={schemaBusy}
+                >
+                  {lang === "sv" ? "Kör kontroll ändå" : "Force check anyway"}
+                </button>
+                <button
+                  type="button"
+                  className="admin-d1-quota-btn secondary"
+                  onClick={clearD1QuotaBlock}
+                >
+                  {lang === "sv" ? "Återställ spärr" : "Reset pause"}
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {error || status ? (
+            <div
+              className={`admin-status-toast-banner ${error ? "is-error" : "is-status"}`}
+              role="status"
+              aria-live="polite"
+            >
+              <div className="status-toast-main">
+                {error ? (
+                  <WarningCircle size={20} weight="bold" className="status-toast-icon error" />
+                ) : (
+                  <CheckCircle size={20} weight="bold" className="status-toast-icon success" />
+                )}
+                <div className="status-toast-text">
+                  <span className="status-toast-title">
+                    {error
+                      ? lang === "sv"
+                        ? "Åtgärdsfel"
+                        : "Action Error"
+                      : lang === "sv"
+                        ? "Statusuppdatering"
+                        : "Status Update"}
+                  </span>
+                  <p className="status-toast-msg">{error ?? status}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="status-toast-dismiss"
+                onClick={() => {
+                  setError(null);
+                  setStatus("");
+                }}
+                aria-label={lang === "sv" ? "Stäng notis" : "Dismiss notice"}
+              >
+                <X size={16} weight="bold" />
+              </button>
+            </div>
+          ) : null}
+
+          {railTab === "coverage" ? (
+            hasAdminAuth ? (
+              <AdminCoveragePanel
+                lang={lang}
+                adminToken={adminToken}
+                onSelectPlace={(placeId) => {
+                  setSearchQuery(String(placeId));
+                  setRailTab("desk");
+                  setStateFilter("all");
+                  setViewMode("table");
+                  scrollToSection(queueSectionRef);
+                }}
+              />
+            ) : (
+              <div className="admin-review-empty">
+                <ShieldCheck size={18} weight="bold" />
+                <span>{lang === "sv" ? "Logga in för att visa distriktstäckning." : "Sign in to view district coverage."}</span>
+              </div>
+            )
+          ) : railTab === "sources" ? (
+            sourcesPanel ?? null
+          ) : railTab === "ml" ? (
+            <AdminMlDashboard lang={lang} adminHeaders={adminHeaders} hasAdminAuth={hasAdminAuth} />
+          ) : railTab === "runbooks" ? (
+            <div className="admin-concourse-runbooks">
+              {hasAdminAuth ? (
+                <div className={`admin-schema-panel ${d1QuotaExceeded ? "quota-paused" : schemaStatus?.ready ? "ready" : "needs-setup"}`}>
+                  <div className="admin-schema-copy">
+                    <span>
+                      {d1QuotaExceeded
+                        ? (lang === "sv" ? "Pausad (D1-kvot nådd)" : "Paused (D1 quota reached)")
+                        : schemaStatus?.ready
+                          ? (lang === "sv" ? "Runtime redo" : "Runtime ready")
+                          : lang === "sv" ? "Runtime-check" : "Runtime check"}
+                    </span>
+                    <small>
+                      {d1QuotaExceeded
+                        ? (lang === "sv" ? "Automatiska Cloudflare-anrop stoppade för att spara bandbredd" : "Automatic Cloudflare requests paused to conserve bandwidth")
+                        : schemaStatusText(schemaStatus, lang)}
+                    </small>
+                  </div>
+                  <button
+                    type="button"
+                    className="admin-schema-btn"
+                    onClick={() => void runAdminSelfCheck(undefined, true)}
+                    disabled={!hasAdminAuth || schemaBusy}
+                  >
+                    {schemaBusy ? <CircleNotch size={14} className="animate-spin" /> : <ShieldCheck size={14} weight="bold" />}
+                    {schemaBusy
+                      ? (lang === "sv" ? "Kollar" : "Checking")
+                      : schemaStatus?.ready
+                        ? (lang === "sv" ? "Kolla igen" : "Recheck")
+                        : lang === "sv" ? "Kör check" : "Run check"}
+                  </button>
+                </div>
+              ) : null}
+
+              <div className="admin-sync-card" ref={syncCardRef}>
+                <div className="admin-sync-header">
+                  <div className="admin-sync-title-group">
+                    <ShieldCheck size={20} weight="bold" className="admin-sync-icon" />
+                    <div>
+                      <h5 className="admin-sync-title">
+                        {lang === "sv" ? "Automatiskt sparad & Pipeline-synk" : "Auto-Saved & Pipeline Sync"}
+                      </h5>
+                      <p className="admin-sync-desc">
+                        {lang === "sv"
+                          ? "Granskningsbeslut och pipeline-checkpoint sparas automatiskt efter varje åtgärd. Borttagna ställen döljs vid nästa sidladdning. JSON-backup och månatlig CI-synk finns vid behov."
+                          : "Review decisions and pipeline checkpoints save automatically after each action. Removed places are hidden on the next page load. JSON backup and monthly CI sync remain available when needed."}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="admin-sync-status-pill">
+                    {(dashboard?.counts?.unexportedReviewCount ?? 0) === 0 ? (
+                      <span className="sync-pill-tag synced">
+                        <CheckCircle size={14} weight="bold" />
+                        {lang === "sv" ? "Allt synkat med pipeline" : "All synced with pipeline"}
+                      </span>
+                    ) : (
+                      <span className="sync-pill-tag pending">
+                        <ArrowClockwise size={14} weight="bold" />
+                        {lang === "sv"
+                          ? `${dashboard?.counts?.unexportedReviewCount} nya beslut redo för ML`
+                          : `${dashboard?.counts?.unexportedReviewCount} new decisions ready for ML`}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="admin-sync-actions">
+                  <button
+                    type="button"
+                    className="admin-sync-btn-primary"
+                    onClick={() => void syncPipelineDirectly()}
+                    disabled={!hasAdminAuth || syncingPipeline || schemaStatus?.ready !== true}
+                  >
+                    {syncingPipeline ? <CircleNotch size={15} className="animate-spin" /> : <ArrowClockwise size={15} weight="bold" />}
+                    <span>{lang === "sv" ? "Synka pipeline direkt" : "Sync pipeline directly"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="admin-sync-btn-secondary"
+                    onClick={() => void exportReviewLabels()}
+                    disabled={!hasAdminAuth || exportingLabels || schemaStatus?.ready !== true}
+                  >
+                    {exportingLabels ? <CircleNotch size={15} className="animate-spin" /> : <DownloadSimple size={15} weight="bold" />}
+                    <span>{lang === "sv" ? "Ladda ner backup (JSON)" : "Download backup (JSON)"}</span>
+                  </button>
+
+                  <div className="admin-sync-cli-hint">
+                    <span className="cli-hint-label">Terminal:</span>
+                    <code className="cli-hint-code">npm run sync:labels</code>
+                  </div>
+                </div>
+
+                {labelExportStatus ? (
+                  <div className="admin-sync-status-msg" aria-live="polite">
+                    <CheckCircle size={14} weight="bold" />
+                    <span>{labelExportStatus}</span>
+                  </div>
+                ) : null}
+              </div>
+
+              <AdminGuidePanel lang={lang} onClose={() => setRailTab("desk")} />
+            </div>
+          ) : (
+            <>
+              <div className="admin-concourse-tools" ref={queueSectionRef}>
+                <div className="admin-search-box admin-concourse-search">
+                  <MagnifyingGlass size={16} weight="bold" className="admin-search-icon" />
+                  <input
+                    type="search"
+                    className="admin-search-input"
+                    placeholder={
+                      lang === "sv"
+                        ? "Sök namn, adress, stadsdel eller källa..."
+                        : "Search name, address, district or source..."
+                    }
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        void loadCandidates(undefined, searchQuery);
+                      }
+                    }}
+                  />
+                  {searchQuery ? (
+                    <button
+                      type="button"
+                      className="admin-search-clear"
+                      onClick={() => {
+                        setSearchQuery("");
+                        void loadCandidates(undefined, "");
+                      }}
+                      title={lang === "sv" ? "Rensa sökning" : "Clear search"}
+                      aria-label="Clear search"
+                    >
+                      <X size={14} weight="bold" />
+                    </button>
+                  ) : null}
+                </div>
+
+                <div className="admin-view-switcher admin-concourse-views" role="tablist" aria-label={lang === "sv" ? "Växla vy" : "Switch view"}>
+                  <button
+                    type="button"
+                    className={`admin-view-btn ${viewMode === "table" ? "active" : ""}`}
+                    onClick={() => setViewMode("table")}
+                    role="tab"
+                    aria-selected={viewMode === "table"}
+                  >
+                    <TableIcon size={15} weight="bold" />
+                    <span>{lang === "sv" ? "Tabell" : "Table"}</span>
+                    <span className="admin-view-count">{filteredCandidates.length}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`admin-view-btn ${viewMode === "list" ? "active" : ""}`}
+                    onClick={() => setViewMode("list")}
+                    role="tab"
+                    aria-selected={viewMode === "list"}
+                  >
+                    <ListBullets size={15} weight="bold" />
+                    <span>{lang === "sv" ? "Detaljer" : "Details"}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`admin-view-btn ${viewMode === "map" ? "active" : ""}`}
+                    onClick={() => setViewMode("map")}
+                    role="tab"
+                    aria-selected={viewMode === "map"}
+                  >
+                    <MapTrifold size={15} weight="bold" />
+                    <span>{lang === "sv" ? "Karta" : "Map"}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="admin-concourse-filterbar" aria-label={lang === "sv" ? "Filter för granskningskö" : "Review queue filters"}>
+                <div className="admin-state-tabs admin-concourse-tabs">
+                  {adminStateFilters.map((state) => (
+                    <button
+                      key={state}
+                      type="button"
+                      className={stateFilter === state ? "active" : ""}
+                      aria-pressed={stateFilter === state}
+                      onClick={() => {
+                        setQueueFocus("all");
+                        setStateFilter(state);
+                      }}
+                    >
+                      {lifecycleStateLabel(state, lang)}
+                    </button>
+                  ))}
+                </div>
+                <div className="admin-concourse-util-actions">
+                  <button
+                    type="button"
+                    className="admin-concourse-util-btn"
+                    onClick={() => setDistrictManagerOpen(true)}
+                    disabled={!hasAdminAuth || schemaStatus?.ready !== true}
+                  >
+                    <MapPin size={13} weight="bold" />
+                    {lang === "sv" ? "Stadsdelar" : "Districts"}
+                  </button>
+                  <button
+                    type="button"
+                    className="admin-concourse-util-btn"
+                    onClick={() => void resolvePlacesWithoutRegion()}
+                    disabled={!hasAdminAuth || resolvingRegions || loading || schemaStatus?.ready !== true}
+                  >
+                    {resolvingRegions ? <CircleNotch size={13} className="animate-spin" /> : <MapPin size={13} weight="bold" />}
+                    {lang === "sv" ? "Lös regioner" : "Resolve regions"}
+                  </button>
+                  <button
+                    type="button"
+                    className="admin-concourse-util-btn"
+                    onClick={() => void loadCandidates()}
+                    disabled={!hasAdminAuth || loading || schemaStatus?.ready !== true}
+                  >
+                    {loading ? <CircleNotch size={13} className="animate-spin" /> : <ArrowClockwise size={13} weight="bold" />}
+                    {lang === "sv" ? "Ladda om" : "Reload"}
+                  </button>
+                </div>
+              </div>
+
+              {stateFilter === "candidate" && queueFocus !== "all" ? (
+                <div className="admin-queue-focus-banner" role="status">
+                  <span>{queueFocusHelpText(queueFocus, lang)}</span>
+                  <button type="button" className="admin-queue-focus-clear" onClick={() => setQueueFocus("all")}>
+                    {lang === "sv" ? "Visa alla kandidater" : "Show all candidates"}
+                  </button>
+                </div>
+              ) : null}
+
+              {!hasAdminAuth ? (
+                <div className="admin-review-empty">
+                  {checkingSession ? <CircleNotch size={18} className="animate-spin" /> : <ShieldCheck size={18} weight="bold" />}
+                  <span>
+                    {checkingSession
+                      ? lang === "sv"
+                        ? "Kontrollerar adminsession..."
+                        : "Checking admin session..."
+                      : adminSession?.reason ??
+                        (lang === "sv"
+                          ? "Admin-konto krävs. I produktion ska /admin skyddas med Cloudflare Access."
+                          : "Admin account required. In production, /admin should be protected by Cloudflare Access.")}
+                  </span>
+                </div>
+              ) : schemaBusy || !schemaStatus ? (
+                <div className="admin-review-empty">
+                  <CircleNotch size={18} className="animate-spin" />
+                  <span>{lang === "sv" ? "Kör runtime-check mot Cloudflare..." : "Running runtime check against Cloudflare..."}</span>
+                </div>
+              ) : schemaStatus.ready === false ? (
+                <div className="admin-review-empty">
+                  <ShieldCheck size={18} weight="bold" />
+                  <span>{schemaStatusText(schemaStatus, lang)}</span>
+                </div>
+              ) : loading ? (
+                <div className="admin-review-empty">
+                  <CircleNotch size={18} className="animate-spin" />
+                  <span>{lang === "sv" ? "Laddar kandidater..." : "Loading candidates..."}</span>
+                </div>
+              ) : viewMode === "table" ? (
+                <>
+                  <AdminVenueTable
+                    candidates={filteredCandidates}
+                    lang={lang}
+                    busyId={busyId}
+                    selectedCandidateId={selectedCandidateId}
+                    onSelectCandidate={(candidate) => setSelectedCandidateId(candidate.id)}
+                    onOpenReview={(candidate) => {
+                      setSelectedCandidateId(candidate.id);
+                      setViewMode("list");
+                      window.requestAnimationFrame(() => {
+                        document.getElementById(`admin-place-${candidate.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      });
+                    }}
+                    onEditCandidate={(candidate) => {
+                      setPlaceEditorMode("edit");
+                      setPlaceEditorDraft(candidateToPlaceDraft(candidate));
+                      setPlaceEditorOpen(true);
+                    }}
+                    onToggleRemoved={(candidate) =>
+                      void promoteCandidate(
+                        candidate,
+                        candidate.validationLabel === "closed_wrong_category" ? "baseline" : "candidate",
+                        candidate.validationLabel === "closed_wrong_category" ? null : "closed_wrong_category",
+                      )
+                    }
+                  />
+                  <div className="admin-concourse-table-foot">
+                    <span>
+                      {filteredCandidates.length.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}{" "}
+                      {lang === "sv" ? "av" : "of"}{" "}
+                      {publishedDisplayCount.toLocaleString(lang === "sv" ? "sv-SE" : "en-US")}{" "}
+                      {lang === "sv" ? "platser · sorterat efter åtgärdsprioritet" : "venues · sorted by action priority"}
+                    </span>
+                    <div className="admin-concourse-table-foot-links">
+                      <button type="button" onClick={() => void exportReviewLabels()} disabled={exportingLabels}>
+                        {lang === "sv" ? "Exportera JSON" : "Export"}
+                      </button>
+                      <span aria-hidden="true">·</span>
+                      <button type="button" onClick={() => setViewMode("map")}>
+                        {lang === "sv" ? "Kartvy" : "Map view"}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : viewMode === "map" ? (
         <AdminMapView
           candidates={filteredCandidates}
           selectedCandidateId={selectedCandidateId}
@@ -2521,8 +2809,12 @@ export function AdminReviewPanel({
               {lang === "sv" ? "Rensa sökning" : "Clear search"}
             </button>
           ) : null}
-        </div>
-      )}
+            </div>
+          )}
+            </>
+          )}
+        </section>
+      </main>
       <AdminPlaceEditor
         lang={lang}
         open={placeEditorOpen}
@@ -2571,7 +2863,7 @@ export function AdminReviewPanel({
         }}
       />
       <AdminToastContainer toasts={toasts} onDismiss={dismissToast} />
-    </section>
+    </div>
   );
 }
 

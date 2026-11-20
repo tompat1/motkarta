@@ -2087,79 +2087,22 @@ function AppContent({
 
   if (isAdminRoute) {
     return (
-      <main className="admin-app-shell">
-        <header className="admin-app-topbar">
-          <a className="brand" href="/" aria-label="MOTKARTA">
-            <img src="/motkarta_drop_divided_black_red.svg" alt="MOTKARTA Pin" className="brand-counter-pin" />
-            <img src="/logo.webp" alt="MOTKARTA" className="brand-logo" />
-            <span>{t.brandDescriptor}</span>
-          </a>
-          <div className="admin-topbar-actions">
-            {adminSession?.admin ? (
-              <div className="admin-session-auth" aria-live="polite">
-                <ShieldCheck size={14} weight="bold" />
-                <span>
-                  {adminSession.email
-                    ? adminSession.email
-                    : lang === "sv"
-                      ? "Adminsession aktiv"
-                      : "Admin session active"}
-                </span>
-                <button
-                  type="button"
-                  className="admin-review-ghost-btn admin-logout-btn"
-                  onClick={handleGlobalAdminLogout}
-                  title={lang === "sv" ? "Logga ut från adminsession" : "Log out from admin session"}
-                >
-                  <SignOut size={14} weight="bold" />
-                  {adminSession.authMode === "token"
-                    ? lang === "sv"
-                      ? "Glöm token"
-                      : "Forget token"
-                    : lang === "sv"
-                      ? "Logga ut"
-                      : "Log out"}
-                </button>
-              </div>
-            ) : null}
-            <div className="lang-switcher" aria-label="Language selector">
-              <button
-                type="button"
-                className={`lang-btn ${lang === "sv" ? "active" : ""}`}
-                onClick={() => handleSetLang("sv")}
-              >
-                SV
-              </button>
-              <button
-                type="button"
-                className={`lang-btn ${lang === "en" ? "active" : ""}`}
-                onClick={() => handleSetLang("en")}
-              >
-                EN
-              </button>
-            </div>
-          </div>
-        </header>
-        <section className="admin-app-intro" aria-labelledby="admin-app-title">
-          <p className="eyebrow">{lang === "sv" ? "Skyddad adminyta" : "Protected admin area"}</p>
-          <h1 id="admin-app-title">{lang === "sv" ? "Operationskö" : "Operations queue"}</h1>
-          <p>
-            {lang === "sv"
-              ? "Granska kandidater, exportera labels och kontrollera att D1-adminschemat är redo."
-              : "Review candidates, export labels, and check that the D1 admin schema is ready."}
-          </p>
-        </section>
+      <div className="admin-app-shell admin-concourse-root">
         <AdminReviewPanel
           lang={lang}
+          onSetLang={handleSetLang}
+          publishedCount={places.length}
           adminSession={adminSession}
           onSessionChange={setAdminSession}
           onLogout={handleGlobalAdminLogout}
-        />
-        <CuratedSourcesPanel
-          sources={curatedSources}
-          isLoading={isSourcesLoading}
-          lang={lang}
-          onAddSource={() => setSuperpowerMode("add_source")}
+          sourcesPanel={
+            <CuratedSourcesPanel
+              sources={curatedSources}
+              isLoading={isSourcesLoading}
+              lang={lang}
+              onAddSource={() => setSuperpowerMode("add_source")}
+            />
+          }
         />
         {superpowerMode === "add_source" ? (
           <ConciergeSuperpowerModal
@@ -2175,7 +2118,7 @@ function AppContent({
             lang={lang}
           />
         ) : null}
-      </main>
+      </div>
     );
   }
 
