@@ -42317,7 +42317,8 @@
           "field": "category",
           "value": "Klassisk gastronomi"
         }
-      ]
+      ],
+      "priceSEK": "$$$$"
     },
     {
       "id": 2138163584,
@@ -177147,7 +177148,8 @@
           "field": "category",
           "value": "1 Michelin-stjärna"
         }
-      ]
+      ],
+      "priceSEK": "$$$$"
     },
     {
       "id": 1254659704,
@@ -261720,7 +261722,8 @@
           "field": "category",
           "value": "3 Michelin-stjärnor"
         }
-      ]
+      ],
+      "priceSEK": "$$$$"
     },
     {
       "id": 677668365,
@@ -336102,7 +336105,8 @@
           "field": "category",
           "value": "Michelin Selected"
         }
-      ]
+      ],
+      "priceSEK": "$$$"
     },
     {
       "id": 3178259502,
@@ -368719,7 +368723,8 @@
           "field": "category",
           "value": "2 Michelin-stjärnor"
         }
-      ]
+      ],
+      "priceSEK": "$$$$"
     },
     {
       "id": 510195244,
@@ -378616,7 +378621,8 @@
           "field": "category",
           "value": "Hållbar gastronomi"
         }
-      ]
+      ],
+      "priceSEK": "$$$"
     },
     {
       "id": 4100001002,
@@ -378737,7 +378743,8 @@
           "field": "category",
           "value": "Nordic"
         }
-      ]
+      ],
+      "priceSEK": "$$$"
     },
     {
       "id": 4100001003,
@@ -378856,7 +378863,8 @@
           "field": "category",
           "value": "Fine Dining"
         }
-      ]
+      ],
+      "priceSEK": "$$$$"
     },
     {
       "id": 4100001004,
@@ -378965,7 +378973,8 @@
           "field": "category",
           "value": "Sourdough"
         }
-      ]
+      ],
+      "priceSEK": "$$"
     },
     {
       "id": 4100001005,
@@ -379073,7 +379082,8 @@
           "field": "category",
           "value": "Wood-fired"
         }
-      ]
+      ],
+      "priceSEK": "$$$"
     },
     {
       "id": 4100001006,
@@ -379181,7 +379191,8 @@
           "field": "category",
           "value": "French bistro"
         }
-      ]
+      ],
+      "priceSEK": "$$$"
     },
     {
       "id": 4100001007,
@@ -379290,7 +379301,8 @@
           "field": "category",
           "value": "Fine Dining"
         }
-      ]
+      ],
+      "priceSEK": "$$$$"
     },
     {
       "id": 4100001008,
@@ -379399,7 +379411,8 @@
           "field": "category",
           "value": "Seasonal"
         }
-      ]
+      ],
+      "priceSEK": "$$$$"
     },
     {
       "id": 4100001009,
@@ -379497,7 +379510,8 @@
           "field": "category",
           "value": "Konditori"
         }
-      ]
+      ],
+      "priceSEK": "$$"
     },
     {
       "id": 4100001010,
@@ -379595,7 +379609,8 @@
           "field": "category",
           "value": "Omakase"
         }
-      ]
+      ],
+      "priceSEK": "$$$$"
     },
     {
       "id": 4100001011,
@@ -379681,7 +379696,8 @@
           "field": "category",
           "value": "Fine Dining"
         }
-      ]
+      ],
+      "priceSEK": "$$$$"
     },
     {
       "id": 4100001012,
@@ -379768,7 +379784,8 @@
           "field": "category",
           "value": "Italian"
         }
-      ]
+      ],
+      "priceSEK": "$$$"
     },
     {
       "id": 4100001013,
@@ -379855,7 +379872,8 @@
           "field": "category",
           "value": "Swedish classics"
         }
-      ]
+      ],
+      "priceSEK": "$$$"
     },
     {
       "id": 4100001014,
@@ -379942,7 +379960,8 @@
           "field": "category",
           "value": "Swedish classics"
         }
-      ]
+      ],
+      "priceSEK": "$$$"
     },
     {
       "id": 4100001015,
@@ -380029,7 +380048,8 @@
           "field": "category",
           "value": "Sourdough"
         }
-      ]
+      ],
+      "priceSEK": "$$"
     }
   ],
   "totalPlaces": 3139
