@@ -5,7 +5,9 @@ import {
   getSeasonalHeroImage,
   getSeasonalTheme,
   getStockholmSeason,
+  inferPhotoOrientation,
   isEditorialFeaturePhotoUrl,
+  selectHeroFeaturePhotos,
   selectSeasonalVenues,
 } from "../lib/seasonal-editorial.ts";
 
@@ -53,4 +55,21 @@ test("App filters both map and list to seasonal places when Explore CTA is click
   assert.match(appSource, /const \[seasonalFilterActive, setSeasonalFilterActive\] = useState\(false\);/);
   assert.match(appSource, /\.filter\(\(place\) => !seasonalFilterActive \|\| seasonalPlaceIds\.has\(place\.id\)\)/);
   assert.match(appSource, /setSeasonalFilterActive\(true\);/);
+});
+
+test("selectHeroFeaturePhotos stacks two landscape photos when no portrait image exists", () => {
+  const landscapeUrls = [
+    "https://static.thatsup.website/123/4745/responsive-images/FUJI6328___media_library_original_6240_4160.jpg",
+    "https://static.thatsup.website/123/4747/responsive-images/FUJI6352___media_library_original_6240_4160.jpg",
+  ];
+  assert.equal(inferPhotoOrientation(landscapeUrls[0]), "landscape");
+  const stacked = selectHeroFeaturePhotos(landscapeUrls);
+  assert.equal(stacked.mode, "landscape-stack");
+  assert.equal(stacked.photos.length, 2);
+
+  const portraitUrl = "https://operakallaren.se/wp-content/uploads/2025/04/ok_250326_17968-1152x1536.jpg";
+  assert.equal(inferPhotoOrientation(portraitUrl), "portrait");
+  const portraitPick = selectHeroFeaturePhotos([landscapeUrls[0], portraitUrl]);
+  assert.equal(portraitPick.mode, "portrait");
+  assert.deepEqual(portraitPick.photos, [portraitUrl]);
 });

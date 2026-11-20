@@ -170,6 +170,7 @@ import {
   getSeasonalTheme,
   getStockholmSeason,
   isEditorialFeaturePhotoUrl,
+  selectHeroFeaturePhotos,
   selectSeasonalVenues,
 } from "../lib/seasonal-editorial.ts";
 
@@ -1135,7 +1136,7 @@ function AppContent({
     () => new Set(seasonalPlaces.map((place) => place.id)),
     [seasonalPlaces],
   );
-  const [seasonalPhotos, setSeasonalPhotos] = useState<Record<number, string>>({});
+  const [seasonalPhotos, setSeasonalPhotos] = useState<Record<number, string[]>>({});
 
   useEffect(() => {
     const featured = seasonalPlaces.slice(0, 3);
@@ -1145,17 +1146,20 @@ function AppContent({
       featured.map(async (place) => {
         try {
           const photos = await fetchPlacePhotos(place);
-          const valid = photos.find((p) => isEditorialFeaturePhotoUrl(p.url));
-          return [place.id, valid?.url ?? ""] as const;
+          const validUrls = photos
+            .map((p) => p.url)
+            .filter((url): url is string => isEditorialFeaturePhotoUrl(url))
+            .slice(0, 3);
+          return [place.id, validUrls] as const;
         } catch {
-          return [place.id, ""] as const;
+          return [place.id, [] as string[]] as const;
         }
       }),
     ).then((entries) => {
       if (cancelled) return;
-      const next: Record<number, string> = {};
-      for (const [id, url] of entries) {
-        if (url) next[id] = url;
+      const next: Record<number, string[]> = {};
+      for (const [id, urls] of entries) {
+        if (urls.length > 0) next[id] = urls;
       }
       if (Object.keys(next).length > 0) {
         setSeasonalPhotos((prev) => ({ ...prev, ...next }));
@@ -2818,13 +2822,14 @@ function AppContent({
         <div className="editorial-feature-showcase">
           <div className="editorial-feature-grid">
             {seasonalPlaces.slice(0, 3).map((place, index) => {
-              const photoUrl = seasonalPhotos[place.id];
+              const photoUrls = seasonalPhotos[place.id] ?? [];
+              const primarySelection = index === 0 ? selectHeroFeaturePhotos(photoUrls) : { mode: "single" as const, photos: photoUrls.slice(0, 1) };
               const cardVerifiedSources = getPlaceVerifiedSources(place);
               return (
                 <button
                   key={place.id}
                   type="button"
-                  className={`editorial-feature-card editorial-feature-card-${index + 1}`}
+                  className={`editorial-feature-card editorial-feature-card-${index + 1}${primarySelection.mode === "landscape-stack" ? " is-stacked" : ""}`}
                   onClick={() => {
                     handleSelectPlace(place.id);
                     setMobileTab("map");
@@ -2837,8 +2842,13 @@ function AppContent({
                       <VerifiedSourceBadgeList sources={cardVerifiedSources} lang={lang} maxVisible={2} variant="pill" />
                     </div>
                   ) : null}
-                  {photoUrl ? (
-                    <img src={photoUrl} alt={place.name} referrerPolicy="no-referrer" />
+                  {primarySelection.mode === "landscape-stack" ? (
+                    <div className="editorial-feature-card-stack">
+                      <img src={primarySelection.photos[0]} alt={place.name} referrerPolicy="no-referrer" />
+                      <img src={primarySelection.photos[1]} alt={`${place.name} — 2`} referrerPolicy="no-referrer" />
+                    </div>
+                  ) : primarySelection.photos[0] ? (
+                    <img src={primarySelection.photos[0]} alt={place.name} referrerPolicy="no-referrer" />
                   ) : (
                     <div className="editorial-feature-card-placeholder" aria-hidden="true">
                       <span>{place.name}</span>

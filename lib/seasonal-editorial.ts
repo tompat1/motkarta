@@ -253,11 +253,40 @@ export function selectSeasonalVenues(
   return matched;
 }
 
-const NON_PHOTO_URL_PATTERN = /(?:logo|logga|favicon|icon|sprite|close\.png|\/n\.png|\.svg(?:$|\?))/i;
+const NON_PHOTO_URL_PATTERN = /(?:logo|logga|logotyp|favicon|icon|sprite|close\.png|\/n\.png|tripadvisor|\.svg(?:$|\?))/i;
 
 export function isEditorialFeaturePhotoUrl(url: string | null | undefined): boolean {
   if (!url) return false;
   const trimmed = url.trim();
   if (!trimmed || !/^https?:\/\//i.test(trimmed)) return false;
   return !NON_PHOTO_URL_PATTERN.test(trimmed);
+}
+
+/**
+ * Infers orientation from common dimension suffixes in photo URLs
+ * (e.g. `6240_4160`, `1152x1536`, `3840_5760`). Returns "portrait", "landscape", or "unknown".
+ */
+export function inferPhotoOrientation(url: string | null | undefined): "portrait" | "landscape" | "unknown" {
+  if (!url) return "unknown";
+  const match = url.match(/(?:_|-)(\d{3,4})[x_](\d{3,4})(?:\.|[/?&#]|$)/i);
+  if (!match) return "unknown";
+  const width = Number(match[1]);
+  const height = Number(match[2]);
+  if (!width || !height) return "unknown";
+  return height > width * 1.05 ? "portrait" : "landscape";
+}
+
+/**
+ * Picks either a single portrait photo or two landscape photos for the tall #1 editorial feature card.
+ */
+export function selectHeroFeaturePhotos(urls: readonly string[]): {
+  mode: "portrait" | "landscape-stack" | "single";
+  photos: string[];
+} {
+  const valid = urls.filter((url) => isEditorialFeaturePhotoUrl(url));
+  if (valid.length === 0) return { mode: "single", photos: [] };
+  const portrait = valid.find((url) => inferPhotoOrientation(url) === "portrait");
+  if (portrait) return { mode: "portrait", photos: [portrait] };
+  if (valid.length >= 2) return { mode: "landscape-stack", photos: valid.slice(0, 2) };
+  return { mode: "single", photos: [valid[0]] };
 }
