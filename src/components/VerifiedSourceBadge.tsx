@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Star,
   ForkKnife,
@@ -173,6 +173,8 @@ export function VerifiedSourceBadgeList({
   maxVisible = 2,
   variant = "pill",
 }: VerifiedSourceBadgeListProps) {
+  const [expanded, setExpanded] = useState(false);
+
   if (!sources || sources.length === 0) return null;
 
   if (variant === "detail") {
@@ -185,12 +187,13 @@ export function VerifiedSourceBadgeList({
     );
   }
 
-  const visibleSources = sources.slice(0, maxVisible);
+  const hasMore = sources.length > maxVisible;
+  const visibleSources = expanded ? sources : sources.slice(0, maxVisible);
   const remainingCount = sources.length - maxVisible;
 
   return (
     <div
-      className="verified-source-badges-row"
+      className={`verified-source-badges-row${expanded ? " is-expanded" : ""}`}
       style={{
         display: "flex",
         flexWrap: "wrap",
@@ -201,24 +204,41 @@ export function VerifiedSourceBadgeList({
       {visibleSources.map((s) => (
         <VerifiedSourceBadge key={s.id} source={s} lang={lang} variant="pill" />
       ))}
-      {remainingCount > 0 ? (
-        <span
+      {hasMore ? (
+        <button
+          type="button"
           className="verified-source-more-badge"
+          aria-expanded={expanded}
+          onClick={(event) => {
+            event.stopPropagation();
+            setExpanded((prev) => !prev);
+          }}
           style={{
             display: "inline-flex",
             alignItems: "center",
-            background: "rgba(255, 255, 255, 0.85)",
-            color: "#1e293b",
-            border: "1px solid rgba(0, 0, 0, 0.12)",
-            padding: "2px 6px",
+            background: expanded ? "#111111" : "rgba(255, 255, 255, 0.92)",
+            color: expanded ? "#faf9f5" : "#1e293b",
+            border: expanded ? "1px solid #111111" : "1px solid rgba(0, 0, 0, 0.16)",
+            padding: "2px 7px",
             borderRadius: "999px",
             fontSize: "10px",
             fontWeight: 700,
+            lineHeight: "1.2",
+            cursor: "pointer",
+            flexShrink: 0,
           }}
-          title={lang === "sv" ? `Ytterligare ${remainingCount} oberoende källor` : `${remainingCount} more independent sources`}
+          title={
+            expanded
+              ? lang === "sv"
+                ? "Visa färre källor"
+                : "Show fewer sources"
+              : lang === "sv"
+                ? `Visa alla ${sources.length} källor (+${remainingCount} till)`
+                : `Show all ${sources.length} sources (+${remainingCount} more)`
+          }
         >
-          +{remainingCount}
-        </span>
+          {expanded ? (lang === "sv" ? "Visa färre" : "Less") : `+${remainingCount}`}
+        </button>
       ) : null}
     </div>
   );

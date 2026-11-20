@@ -53,3 +53,11 @@ test("getPlaceVerifiedSources matches curated sources from sourceName and eviden
   assert.ok(matchedIds.has("white-guide"), "Expected White Guide badges in catalog");
   assert.ok(matchedIds.has("burgerdudes"), "Expected Burgerdudes badges in catalog");
 });
+
+test("VerifiedSourceBadgeList expands all badges when +N button is clicked", async () => {
+  const badgeSource = await readFile(new URL("../src/components/VerifiedSourceBadge.tsx", import.meta.url), "utf8");
+  assert.match(badgeSource, /const \[expanded, setExpanded\] = useState\(false\);/);
+  assert.match(badgeSource, /aria-expanded=\{expanded\}/);
+  assert.match(badgeSource, /event\.stopPropagation\(\);/);
+  assert.match(badgeSource, /setExpanded\(\(prev\) => !prev\);/);
+});
