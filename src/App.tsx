@@ -294,6 +294,7 @@ function AppContent({
   const [isPlaceDetailOpen, setIsPlaceDetailOpen] = useState(false);
   const [mapCardFeedbackType, setMapCardFeedbackType] = useState<"up" | "down" | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [seasonalFilterActive, setSeasonalFilterActive] = useState(false);
   const [activeDesktopNav, setActiveDesktopNav] = useState<"discover" | "map" | "saved" | "sources">("discover");
 
   useEffect(() => {
@@ -322,7 +323,7 @@ function AppContent({
 
   const currentDesktopNav = kind === "Saved" ? "saved" : activeDesktopNav;
   const activeFilterCount = Number(kind !== "All places") +
-    Number(cuisine !== allCuisines) + selectedTags.length;
+    Number(cuisine !== allCuisines) + selectedTags.length + Number(seasonalFilterActive);
 
   useEffect(() => {
     setIsMapCardMinimized(false);
@@ -646,6 +647,7 @@ function AppContent({
   const selectKindFilter = useCallback(
     (newKind: EstablishmentFilter) => {
       clearConciergeState();
+      setSeasonalFilterActive(false);
       setKind(newKind);
     },
     [clearConciergeState],
@@ -654,6 +656,7 @@ function AppContent({
   const selectCuisineFilter = useCallback(
     (newCuisine: CuisineFilter) => {
       clearConciergeState();
+      setSeasonalFilterActive(false);
       setCuisine(newCuisine);
     },
     [clearConciergeState],
@@ -661,13 +664,16 @@ function AppContent({
 
   const handleResetMobileFilters = useCallback(() => {
     clearConciergeState();
+    setSeasonalFilterActive(false);
     setSelectedTags([]);
     setKind("All places");
     setCuisine(allCuisines);
+    setQuery("");
   }, [clearConciergeState]);
 
   const toggleFeatureFilter = useCallback((feature: "Dog friendly" | "Wi-Fi" | "Hidden gems" | "Wine bar" | "Cocktail bar" | "Pub & beer") => {
     clearConciergeState();
+    setSeasonalFilterActive(false);
     setSelectedTags((previous) => previous.includes(feature)
       ? previous.filter((tag) => tag !== feature)
       : [...previous, feature]);
@@ -1115,6 +1121,48 @@ function AppContent({
     return resolved;
   }, [conciergeCards, conciergeResponse, preferences, scoredPlaces]);
 
+  const currentSeason = useMemo(() => getStockholmSeason(), []);
+  const seasonalHeroImage = getSeasonalHeroImage(currentSeason);
+  const seasonalTheme = useMemo(() => getSeasonalTheme(), []);
+  const seasonalPlaces = useMemo(
+    () => selectSeasonalVenues(places, seasonalTheme, 20),
+    [places, seasonalTheme],
+  );
+  const seasonalPlaceIds = useMemo(
+    () => new Set(seasonalPlaces.map((place) => place.id)),
+    [seasonalPlaces],
+  );
+  const [seasonalPhotos, setSeasonalPhotos] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    const featured = seasonalPlaces.slice(0, 3);
+    if (!featured.length) return;
+    let cancelled = false;
+    void Promise.all(
+      featured.map(async (place) => {
+        try {
+          const photos = await fetchPlacePhotos(place);
+          const valid = photos.find((p) => isEditorialFeaturePhotoUrl(p.url));
+          return [place.id, valid?.url ?? ""] as const;
+        } catch {
+          return [place.id, ""] as const;
+        }
+      }),
+    ).then((entries) => {
+      if (cancelled) return;
+      const next: Record<number, string> = {};
+      for (const [id, url] of entries) {
+        if (url) next[id] = url;
+      }
+      if (Object.keys(next).length > 0) {
+        setSeasonalPhotos((prev) => ({ ...prev, ...next }));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [seasonalPlaces]);
+
   const ranked = useMemo(() => {
     if (conciergeMainListIds.length > 0) {
       const byId = new Map(scoredPlaces.map((place) => [place.id, place]));
@@ -1134,6 +1182,7 @@ function AppContent({
       return conciergePlaces;
     }
     const baseFilteredPlaces = scoredPlaces
+      .filter((place) => !seasonalFilterActive || seasonalPlaceIds.has(place.id))
       .filter((place) => matchesEstablishmentFilter(place, kind, savedPlaceIds))
       .filter((place) => cuisine === allCuisines || cuisineParts(place).includes(cuisine))
       .filter((place) => {
@@ -1299,6 +1348,8 @@ function AppContent({
       randomSeed,
       savedPlaceIds,
       scoredPlaces,
+      seasonalFilterActive,
+      seasonalPlaceIds,
       sortMode,
       userLocation,
     ],
@@ -1350,44 +1401,6 @@ function AppContent({
         : kind === "Café" || kind === "Specialty coffee"
           ? 39957690
           : DESKTOP_HERO_STORIES[0].id;
-
-  const currentSeason = useMemo(() => getStockholmSeason(), []);
-  const seasonalHeroImage = getSeasonalHeroImage(currentSeason);
-  const seasonalTheme = useMemo(() => getSeasonalTheme(), []);
-  const seasonalPlaces = useMemo(
-    () => selectSeasonalVenues(places, seasonalTheme, 12),
-    [places, seasonalTheme],
-  );
-  const [seasonalPhotos, setSeasonalPhotos] = useState<Record<number, string>>({});
-
-  useEffect(() => {
-    const featured = seasonalPlaces.slice(0, 3);
-    if (!featured.length) return;
-    let cancelled = false;
-    void Promise.all(
-      featured.map(async (place) => {
-        try {
-          const photos = await fetchPlacePhotos(place);
-          const valid = photos.find((p) => isEditorialFeaturePhotoUrl(p.url));
-          return [place.id, valid?.url ?? ""] as const;
-        } catch {
-          return [place.id, ""] as const;
-        }
-      }),
-    ).then((entries) => {
-      if (cancelled) return;
-      const next: Record<number, string> = {};
-      for (const [id, url] of entries) {
-        if (url) next[id] = url;
-      }
-      if (Object.keys(next).length > 0) {
-        setSeasonalPhotos((prev) => ({ ...prev, ...next }));
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [seasonalPlaces]);
 
   const recommendationQueryContext = useMemo<QueryContext>(
     () => ({
@@ -2775,11 +2788,19 @@ function AppContent({
           <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
             <a
               href="#map"
-              onClick={() => {
+              onClick={(event) => {
+                event.preventDefault();
+                clearConciergeState();
+                setKind("All places");
+                setCuisine(allCuisines);
+                setSelectedTags([]);
+                setQuery("");
+                setSeasonalFilterActive(true);
                 if (seasonalPlaces[0]) {
                   handleSelectPlace(seasonalPlaces[0].id);
                 }
                 setMobileTab("map");
+                document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               {seasonalTheme.ctaLabel[lang]}
@@ -3061,16 +3082,29 @@ function AppContent({
               <strong>{lang === "sv" ? "Smakindex" : "Taste index"}</strong>
               <small>{lang === "sv" ? "Urvalet uppdateras direkt" : "Selection updates instantly"}</small>
             </div>
-            {(query.trim() || kind !== "All places" || cuisine !== allCuisines || selectedTags.length > 0) ? (
-              <button
-                type="button"
-                className="countermap-reset-button"
-                onClick={handleResetMobileFilters}
-                title={lang === "sv" ? "Återställ alla filter och sökning" : "Reset all filters"}
-              >
-                <X size={14} weight="bold" aria-hidden="true" />
-                {lang === "sv" ? "Rensa allt" : "Reset all"}
-              </button>
+            {(query.trim() || kind !== "All places" || cuisine !== allCuisines || selectedTags.length > 0 || seasonalFilterActive) ? (
+              <div className="countermap-filter-active-actions">
+                {seasonalFilterActive ? (
+                  <button
+                    type="button"
+                    className="seasonal-active-filter-pill"
+                    onClick={() => setSeasonalFilterActive(false)}
+                    title={lang === "sv" ? `Visa alla platser igen` : `Show all places again`}
+                  >
+                    <span>{seasonalTheme.themeLabel[lang]} ({seasonalPlaces.length})</span>
+                    <X size={13} weight="bold" aria-hidden="true" />
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  className="countermap-reset-button"
+                  onClick={handleResetMobileFilters}
+                  title={lang === "sv" ? "Återställ alla filter och sökning" : "Reset all filters"}
+                >
+                  <X size={14} weight="bold" aria-hidden="true" />
+                  {lang === "sv" ? "Rensa allt" : "Reset all"}
+                </button>
+              </div>
             ) : (
               <span className="countermap-filter-status">{lang === "sv" ? "OFILTRERAT" : "UNFILTERED"}</span>
             )}

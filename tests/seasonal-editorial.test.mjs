@@ -47,3 +47,10 @@ test("isEditorialFeaturePhotoUrl filters out logos and SVGs while keeping real p
   assert.equal(isEditorialFeaturePhotoUrl("https://burgerboys.se/wp-content/uploads/2025/09/Foodbonus_org-1.svg"), false);
   assert.equal(isEditorialFeaturePhotoUrl(""), false);
 });
+
+test("App filters both map and list to seasonal places when Explore CTA is clicked", async () => {
+  const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+  assert.match(appSource, /const \[seasonalFilterActive, setSeasonalFilterActive\] = useState\(false\);/);
+  assert.match(appSource, /\.filter\(\(place\) => !seasonalFilterActive \|\| seasonalPlaceIds\.has\(place\.id\)\)/);
+  assert.match(appSource, /setSeasonalFilterActive\(true\);/);
+});

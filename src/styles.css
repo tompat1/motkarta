@@ -18252,6 +18252,37 @@ footer {
   .editorial-feature-more-chip small { color: #5e5b56; font: 600 9px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
   .editorial-feature-more-chip:hover small { color: #d8d4cb; }
 
+.countermap-filter-active-actions {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.seasonal-active-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 11px;
+  border: 1px solid #111111;
+  border-radius: 999px;
+  background: #111111;
+  color: #f4f0e7;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.seasonal-active-filter-pill:hover {
+  background: #f4483a;
+  border-color: #f4483a;
+  color: #ffffff;
+}
+
   .countermap-hero { display: none; }
   .countermap-controls { align-items: start; background: #fff; border-bottom: 1px solid #ddd; display: grid; gap: 12px; grid-template-columns: minmax(420px,34%) auto minmax(0,1fr); padding: 18px 2.5vw; position: sticky; scroll-margin-top: 74px; top: 74px; z-index: 900; }
   .countermap-controls-head, .countermap-panel-heading, .countermap-search-label, .countermap-starter-row, .unified-superpower-row, .countermap-filter-head, .cuisine-chips, .feature-chips { display: none !important; }
