@@ -501,5 +501,17 @@ test("Curated sources and awards queries prioritize recognized fine dining & awa
   assert.ok(dnRes.cards.length >= 3);
 });
 
+test("Fish and seafood queries (SV & EN) return seafood restaurants beyond literal name matches", () => {
+  for (const query of ["äta fisk", "I want to eat fish", "bra fiskrestaurang"]) {
+    const res = retrieveAndSynthesize(query, livePlaces, { language: query.startsWith("I ") ? "en" : "sv" });
+    assert.equal(res.status, "ok", `Expected ok status for "${query}"`);
+    assert.ok(res.cards.length >= 3, `Expected at least 3 cards for "${query}"`);
+    assert.ok(
+      res.cards.some((c) => c.name === "Sturehof" || c.name === "Wasahof"),
+      `Expected seafood classics without literal "fish/fisk" in name (Sturehof/Wasahof) for "${query}", got: ${res.cards.map((c) => c.name).join(", ")}`,
+    );
+  }
+});
+
 
 

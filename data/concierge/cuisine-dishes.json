@@ -74,7 +74,7 @@
     "ramen": ["ramen", "tonkotsu", "shoyu ramen", "miso ramen"],
     "burger": ["burger", "hamburger", "cheeseburger"],
     "tapas": ["tapas", "patatas bravas", "jamón ibérico"],
-    "seafood": ["oysters", "lobster", "grilled fish", "ceviche"],
+    "seafood": ["oysters", "lobster", "grilled fish", "ceviche", "fish", "fisk", "skaldjur", "herring", "strömming", "ostron"],
     "steak": ["steak", "dry-aged beef", "entrecôte"],
     "bakery": ["sourdough", "cardamom bun", "kanelbulle", "croissant"],
     "coffee": ["espresso", "filter coffee", "cortado", "flat white"],
