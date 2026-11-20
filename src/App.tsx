@@ -163,6 +163,13 @@ import { fetchPlacesPayload, type DataSource } from "../lib/place-payload";
 import { CatalogDebugChip } from "./components/CatalogDebugChip";
 import { filterPublishedPlaces } from "../lib/place-visibility";
 import { openingHoursFact, priceFact, visibleTagLabels, wifiFact } from "./app/place-card-facts";
+import {
+  getSeasonalHeroImage,
+  getSeasonalTheme,
+  getStockholmSeason,
+  isEditorialFeaturePhotoUrl,
+  selectSeasonalVenues,
+} from "../lib/seasonal-editorial.ts";
 
 const DESKTOP_HERO_STORIES = [
   {
@@ -1343,6 +1350,44 @@ function AppContent({
         : kind === "Café" || kind === "Specialty coffee"
           ? 39957690
           : DESKTOP_HERO_STORIES[0].id;
+
+  const currentSeason = useMemo(() => getStockholmSeason(), []);
+  const seasonalHeroImage = getSeasonalHeroImage(currentSeason);
+  const seasonalTheme = useMemo(() => getSeasonalTheme(), []);
+  const seasonalPlaces = useMemo(
+    () => selectSeasonalVenues(places, seasonalTheme, 12),
+    [places, seasonalTheme],
+  );
+  const [seasonalPhotos, setSeasonalPhotos] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    const featured = seasonalPlaces.slice(0, 3);
+    if (!featured.length) return;
+    let cancelled = false;
+    void Promise.all(
+      featured.map(async (place) => {
+        try {
+          const photos = await fetchPlacePhotos(place);
+          const valid = photos.find((p) => isEditorialFeaturePhotoUrl(p.url));
+          return [place.id, valid?.url ?? ""] as const;
+        } catch {
+          return [place.id, ""] as const;
+        }
+      }),
+    ).then((entries) => {
+      if (cancelled) return;
+      const next: Record<number, string> = {};
+      for (const [id, url] of entries) {
+        if (url) next[id] = url;
+      }
+      if (Object.keys(next).length > 0) {
+        setSeasonalPhotos((prev) => ({ ...prev, ...next }));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [seasonalPlaces]);
 
   const recommendationQueryContext = useMemo<QueryContext>(
     () => ({
@@ -2562,7 +2607,12 @@ function AppContent({
         </div>
       </header>
 
-      <section className="editorial-desktop-home" aria-labelledby="editorial-home-title">
+      <section
+        className="editorial-desktop-home"
+        aria-labelledby="editorial-home-title"
+        data-season={currentSeason}
+        style={{ "--editorial-hero-image": `url('${seasonalHeroImage}')` } as React.CSSProperties}
+      >
         <div className="editorial-hero-media" aria-hidden="true" />
         <div className="editorial-hero-copy">
           <p className="editorial-kicker">
@@ -2699,51 +2749,102 @@ function AppContent({
         </div>
       </section>
 
-      <section className="editorial-desktop-feature" aria-label={lang === "sv" ? "Utvalda omvägar" : "Selected detours"}>
+      <section className="editorial-desktop-feature" aria-label={t.featureHeading}>
         <div className="editorial-feature-copy">
           <p className="editorial-kicker">
             <span aria-hidden="true" />
-            {t.featureKicker}
+            {seasonalTheme.kicker[lang]}
             <CmsEditFlag cmsKey="featureKicker" label="Utvalda Omvägar: Kicker" />
           </p>
           <h2>
             {t.featureHeading}
-            <CmsEditFlag cmsKey="featureHeading" label="Utvalda Omvägar: Rubrik" />
+            <CmsEditFlag cmsKey="featureHeading" label="Stockholms Bästa: Rubrik" />
           </h2>
+          <div className="editorial-feature-theme" data-theme={seasonalTheme.id}>
+            <span className="editorial-feature-theme-badge">{seasonalTheme.themeLabel[lang]}</span>
+            {seasonalPlaces.length > 0 ? (
+              <span className="editorial-feature-theme-count">
+                {seasonalPlaces.length} {lang === "sv" ? "ställen i katalogen" : "live venues"}
+              </span>
+            ) : null}
+          </div>
           <p>
-            {t.featureDesc}
+            {seasonalTheme.description[lang]}
             <CmsEditFlag cmsKey="featureDesc" label="Utvalda Omvägar: Beskrivning" />
           </p>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
             <a
               href="#map"
               onClick={() => {
+                if (seasonalPlaces[0]) {
+                  handleSelectPlace(seasonalPlaces[0].id);
+                }
                 setMobileTab("map");
               }}
             >
-              {t.featureLink}
+              {seasonalTheme.ctaLabel[lang]}
               <ArrowRight size={16} weight="bold" />
             </a>
             <CmsEditFlag cmsKey="featureLink" label="Utvalda Omvägar: Länk" />
           </div>
         </div>
-        <div className="editorial-feature-grid">
-          {DESKTOP_HERO_STORIES.slice(0, 3).map((story, index) => (
-            <button
-              key={story.id}
-              type="button"
-              className={`editorial-feature-card editorial-feature-card-${index + 1}`}
-              onClick={() => {
-                handleSelectPlace(story.id);
-                setMobileTab("map");
-                setIsPlaceDetailOpen(true);
-                document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
-              }}
+        <div className="editorial-feature-showcase">
+          <div className="editorial-feature-grid">
+            {seasonalPlaces.slice(0, 3).map((place, index) => {
+              const photoUrl = seasonalPhotos[place.id];
+              return (
+                <button
+                  key={place.id}
+                  type="button"
+                  className={`editorial-feature-card editorial-feature-card-${index + 1}`}
+                  onClick={() => {
+                    handleSelectPlace(place.id);
+                    setMobileTab("map");
+                    setIsPlaceDetailOpen(true);
+                    document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  {photoUrl ? (
+                    <img src={photoUrl} alt={place.name} referrerPolicy="no-referrer" />
+                  ) : (
+                    <div className="editorial-feature-card-placeholder" aria-hidden="true">
+                      <span>{place.name}</span>
+                    </div>
+                  )}
+                  <span>
+                    <strong>{place.name}</strong>
+                    <small>{place.area}</small>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          {seasonalPlaces.length > 3 ? (
+            <div
+              className="editorial-feature-more-list"
+              aria-label={lang === "sv" ? `Fler ${seasonalTheme.themeLabel.sv}` : `More ${seasonalTheme.themeLabel.en}`}
             >
-              <img src={story.imageUrl} alt="" referrerPolicy="no-referrer" />
-              <span><strong>{story.name}</strong><small>{story.area}</small></span>
-            </button>
-          ))}
+              <span className="editorial-feature-more-label">
+                {lang === "sv" ? "Fler utvalda:" : "Also featured:"}
+              </span>
+              {seasonalPlaces.slice(3).map((place) => (
+                <button
+                  key={place.id}
+                  type="button"
+                  className="editorial-feature-more-chip"
+                  onClick={() => {
+                    handleSelectPlace(place.id);
+                    setMobileTab("map");
+                    setIsPlaceDetailOpen(true);
+                    document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  <span>{place.name}</span>
+                  <small>{place.area}</small>
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
       </section>
 

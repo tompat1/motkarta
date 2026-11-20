@@ -59,7 +59,7 @@ export const CMS_CATALOG: CmsKeyMetadata[] = [
 
   // Utvalda Omvägar (Feature-sektion)
   { key: "featureKicker", label: "Utvalda Omvägar: Kicker", section: "Utvalda Omvägar" },
-  { key: "featureHeading", label: "Utvalda Omvägar: Rubrik (Ta en annan väg.)", section: "Utvalda Omvägar" },
+  { key: "featureHeading", label: "Stockholms Bästa: Rubrik", section: "Utvalda Omvägar" },
   { key: "featureDesc", label: "Utvalda Omvägar: Beskrivning", section: "Utvalda Omvägar", multiline: true },
   { key: "featureLink", label: "Utvalda Omvägar: Länk (Visa på karta)", section: "Utvalda Omvägar" },
 
