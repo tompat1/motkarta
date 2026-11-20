@@ -69,6 +69,8 @@ const SEASONAL_THEMES: Record<SeasonalThemeId, SeasonalThemeConfig> = {
       "Sturehof",
       "Restaurang Hasselbacken",
       "Ulla Winbladh",
+      "Stallmästaregården",
+      "Ulriksdals Wärdshus",
       "Kvarnen",
       "Riche",
       "Hantverket",
