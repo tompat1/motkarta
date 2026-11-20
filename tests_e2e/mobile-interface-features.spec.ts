@@ -64,8 +64,8 @@ test.describe("Mobile Interface Features & Design Verification", () => {
     await expect(heroSearch).toBeVisible();
     await expect(heroSearch.locator(".editorial-hero-concierge-btn")).toBeVisible();
 
-    // Verify category shortcut buttons
-    await expect(discoverView.locator(".editorial-category-row button")).toHaveCount(4);
+    // Verify category shortcut buttons (Restaurant, Bakery, Café, Specialty coffee, Wine bar, Cocktail bar, Pub & beer)
+    await expect(discoverView.locator(".editorial-category-row button")).toHaveCount(7);
 
     // Verify terrace hero media and note
     await expect(discoverView.locator(".editorial-hero-media")).toBeVisible();

@@ -2696,6 +2696,7 @@ function AppContent({
                 type="button"
                 onClick={() => {
                   selectKindFilter(item);
+                  setSelectedTags((prev) => prev.filter((tag) => !["Wine bar", "Cocktail bar", "Pub & beer"].includes(tag)));
                   setMobileTab("map");
                   document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
                 }}
@@ -2705,6 +2706,27 @@ function AppContent({
                 {item === "Café" ? <Coffee size={20} weight="bold" /> : null}
                 {item === "Specialty coffee" ? <SpecialtyCoffeeIcon size={20} weight="bold" /> : null}
                 {kindFilterLabel(item, lang)}
+              </button>
+            ))}
+            {(
+              [
+                { key: "Wine bar", labelSv: "Vinbar", labelEn: "Wine bar", icon: <Wine size={20} weight="bold" /> },
+                { key: "Cocktail bar", labelSv: "Cocktailbar", labelEn: "Cocktail bar", icon: <Martini size={20} weight="bold" /> },
+                { key: "Pub & beer", labelSv: "Pub & öl", labelEn: "Pub & beer", icon: <BeerStein size={20} weight="bold" /> },
+              ] as const
+            ).map((drink) => (
+              <button
+                key={drink.key}
+                type="button"
+                onClick={() => {
+                  selectKindFilter("All places");
+                  setSelectedTags([drink.key]);
+                  setMobileTab("map");
+                  document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+                }}
+              >
+                {drink.icon}
+                {lang === "sv" ? drink.labelSv : drink.labelEn}
               </button>
             ))}
           </div>
