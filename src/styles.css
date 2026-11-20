@@ -18568,7 +18568,7 @@ footer {
   .place-main strong { font: 800 20px var(--font-display); letter-spacing: 0; order: -1; text-transform: none; }
   .place-main small { color: #777; font: 12px var(--font-body); letter-spacing: 0; margin: 5px 0 8px; text-transform: none; }
   .place-main > span { color: #4f4b45; font: 14px/1.35 Georgia,serif; }
-  .place-result-verified-badges { margin: 2px 0 10px; }
+  .place-result-verified-badges { margin: 2px 0 2px; }
   .place-result-verified-badges .verified-source-badges-row { flex-wrap: nowrap; gap: 5px; max-width: 100%; overflow: hidden; }
   .place-result-verified-badges .verified-source-badges-row.is-expanded { flex-wrap: wrap; overflow: visible; }
   .place-result-verified-badges .verified-source-more-badge:hover { background: #111111 !important; border-color: #111111 !important; color: #faf9f5 !important; }

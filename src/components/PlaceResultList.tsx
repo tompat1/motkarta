@@ -110,7 +110,6 @@ export function PlaceResultList({
                       <VerifiedSourceBadgeList sources={verifiedSources} lang={lang} maxVisible={2} variant="pill" />
                     </div>
                   ) : null}
-                  <span>{place.tags.slice(0, 2).join(" · ")}</span>
                 </span>
                 <span className="total">
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
