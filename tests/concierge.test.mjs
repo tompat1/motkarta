@@ -513,5 +513,33 @@ test("Fish and seafood queries (SV & EN) return seafood restaurants beyond liter
   }
 });
 
+test("Meat, vegetarian, vegan, husman/Swedish, Greek, Spanish, Italian, Lebanese, and Ethiopian queries return rich results", () => {
+  const cases = [
+    { query: "Jag vill äta kött", lang: "sv" },
+    { query: "I want to eat meat", lang: "en" },
+    { query: "äta vegetariskt", lang: "sv" },
+    { query: "vegansk restaurang", lang: "sv" },
+    { query: "äta grekiskt", lang: "sv" },
+    { query: "äta husman", lang: "sv" },
+    { query: "äta svenskt", lang: "sv" },
+    { query: "äta spanskt", lang: "sv" },
+    { query: "äta italienskt", lang: "sv" },
+    { query: "äta libanesiskt", lang: "sv" },
+    { query: "äta etiopiskt", lang: "sv" },
+  ];
+  for (const { query, lang } of cases) {
+    const res = retrieveAndSynthesize(query, livePlaces, { language: lang });
+    assert.equal(res.status, "ok", `Expected ok status for "${query}"`);
+    assert.ok(res.cards.length >= 3, `Expected at least 3 cards for "${query}", got ${res.cards.length}`);
+  }
+  const husmanRes = retrieveAndSynthesize("äta husman", livePlaces, { language: "sv" });
+  const svensktRes = retrieveAndSynthesize("äta svenskt", livePlaces, { language: "sv" });
+  assert.deepEqual(
+    husmanRes.cards.map((c) => c.name),
+    svensktRes.cards.map((c) => c.name),
+    "äta husman and äta svenskt should map to the same Swedish/husman cuisine ranking",
+  );
+});
+
 
 

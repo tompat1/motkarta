@@ -8140,7 +8140,9 @@
         "Anders Husa",
         "World's 50 Best Discovery",
         "Curated",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Vegan",
+        "Vegetarian"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -25456,7 +25458,9 @@
         "Curated",
         "Anders Husa",
         "World's 50 Best Discovery",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Vegetarian",
+        "Vegan"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -26029,7 +26033,9 @@
         "Restaurant",
         "Website",
         "Wi-Fi",
-        "Free Wi-Fi"
+        "Free Wi-Fi",
+        "Vegetarian",
+        "Vegan"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -46715,7 +46721,9 @@
         "Chinese",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Vegan",
+        "Vegetarian"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -252317,7 +252325,9 @@
         "Anders Husa",
         "World's 50 Best Discovery",
         "Curated",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Vegan",
+        "Vegetarian"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -262203,7 +262213,9 @@
         "Anders Husa",
         "World's 50 Best Discovery",
         "Curated",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Vegan",
+        "Vegetarian"
       ],
       "is_hidden_gem": true,
       "is_structural_anomaly": false,
@@ -378518,7 +378530,8 @@
         "Guide Michelin",
         "White Guide",
         "Anders Husa",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Vegetarian"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,

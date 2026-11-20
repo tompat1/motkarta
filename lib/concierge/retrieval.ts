@@ -198,7 +198,7 @@ export function satisfiesConstraints(candidate: RankedCandidate, intent: Intent,
     if (norm === 'bakery' && isBakeryVenue(place)) return true;
     if ((norm === 'cafe' || norm === 'fika') && isCafeVenue(place)) return true;
     const terms = tokenAlternatives(norm);
-    if (norm === 'seafood') {
+    if (['seafood', 'steak', 'vegetarian', 'vegan', 'greek', 'swedish', 'lebanese', 'turkish', 'persian', 'ethiopian'].includes(norm)) {
       return terms.some((term) => includesPhrase(`${attributes} ${place.name}`, term));
     }
     return terms.some((term) => includesPhrase(attributes, term));
@@ -335,13 +335,14 @@ export function lexicalCandidates(query: string, places: ConciergePlace[], conte
       if (aBar !== bBar) return Number(bBar) - Number(aBar);
     }
 
+    const DRINK_CUISINES = new Set(['bar', 'pub', 'wine bar', 'vinbar', 'cocktail']);
     const aPrimary = intent.cuisineKinds.some((c) => {
       const target = `${a.place.cuisine ?? ''} ${(a.place.tags ?? []).join(' ')}`;
-      return includesPhrase(target, c) || (normalize(c) === 'seafood' && tokenAlternatives(c).some((term) => includesPhrase(target, term)));
+      return includesPhrase(target, c) || (!DRINK_CUISINES.has(normalize(c)) && tokenAlternatives(c).some((term) => includesPhrase(target, term)));
     });
     const bPrimary = intent.cuisineKinds.some((c) => {
       const target = `${b.place.cuisine ?? ''} ${(b.place.tags ?? []).join(' ')}`;
-      return includesPhrase(target, c) || (normalize(c) === 'seafood' && tokenAlternatives(c).some((term) => includesPhrase(target, term)));
+      return includesPhrase(target, c) || (!DRINK_CUISINES.has(normalize(c)) && tokenAlternatives(c).some((term) => includesPhrase(target, term)));
     });
     if (bPrimary !== aPrimary) return Number(bPrimary) - Number(aPrimary);
 
