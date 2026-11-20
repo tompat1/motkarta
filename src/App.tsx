@@ -2839,7 +2839,7 @@ function AppContent({
                 >
                   {cardVerifiedSources.length > 0 ? (
                     <div className="editorial-feature-card-badges">
-                      <VerifiedSourceBadgeList sources={cardVerifiedSources} lang={lang} maxVisible={2} variant="pill" />
+                      <VerifiedSourceBadgeList sources={cardVerifiedSources} lang={lang} maxVisible={2} variant="pill" interactive={false} />
                     </div>
                   ) : null}
                   {primarySelection.mode === "landscape-stack" ? (

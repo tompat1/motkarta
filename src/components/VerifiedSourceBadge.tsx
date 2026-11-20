@@ -165,6 +165,7 @@ interface VerifiedSourceBadgeListProps {
   lang?: Language;
   maxVisible?: number;
   variant?: "pill" | "card" | "detail";
+  interactive?: boolean;
 }
 
 export function VerifiedSourceBadgeList({
@@ -172,6 +173,7 @@ export function VerifiedSourceBadgeList({
   lang = "sv",
   maxVisible = 2,
   variant = "pill",
+  interactive = true,
 }: VerifiedSourceBadgeListProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -205,40 +207,61 @@ export function VerifiedSourceBadgeList({
         <VerifiedSourceBadge key={s.id} source={s} lang={lang} variant="pill" />
       ))}
       {hasMore ? (
-        <button
-          type="button"
-          className="verified-source-more-badge"
-          aria-expanded={expanded}
-          onClick={(event) => {
-            event.stopPropagation();
-            setExpanded((prev) => !prev);
-          }}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            background: expanded ? "#111111" : "rgba(255, 255, 255, 0.92)",
-            color: expanded ? "#faf9f5" : "#1e293b",
-            border: expanded ? "1px solid #111111" : "1px solid rgba(0, 0, 0, 0.16)",
-            padding: "2px 7px",
-            borderRadius: "999px",
-            fontSize: "10px",
-            fontWeight: 700,
-            lineHeight: "1.2",
-            cursor: "pointer",
-            flexShrink: 0,
-          }}
-          title={
-            expanded
-              ? lang === "sv"
-                ? "Visa färre källor"
-                : "Show fewer sources"
-              : lang === "sv"
-                ? `Visa alla ${sources.length} källor (+${remainingCount} till)`
-                : `Show all ${sources.length} sources (+${remainingCount} more)`
-          }
-        >
-          {expanded ? (lang === "sv" ? "Visa färre" : "Less") : `+${remainingCount}`}
-        </button>
+        interactive ? (
+          <button
+            type="button"
+            className="verified-source-more-badge"
+            aria-expanded={expanded}
+            onClick={(event) => {
+              event.stopPropagation();
+              setExpanded((prev) => !prev);
+            }}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              background: expanded ? "#111111" : "rgba(255, 255, 255, 0.92)",
+              color: expanded ? "#faf9f5" : "#1e293b",
+              border: expanded ? "1px solid #111111" : "1px solid rgba(0, 0, 0, 0.16)",
+              padding: "2px 7px",
+              borderRadius: "999px",
+              fontSize: "10px",
+              fontWeight: 700,
+              lineHeight: "1.2",
+              cursor: "pointer",
+              flexShrink: 0,
+            }}
+            title={
+              expanded
+                ? lang === "sv"
+                  ? "Visa färre källor"
+                  : "Show fewer sources"
+                : lang === "sv"
+                  ? `Visa alla ${sources.length} källor (+${remainingCount} till)`
+                  : `Show all ${sources.length} sources (+${remainingCount} more)`
+            }
+          >
+            {expanded ? (lang === "sv" ? "Visa färre" : "Less") : `+${remainingCount}`}
+          </button>
+        ) : (
+          <span
+            className="verified-source-more-badge"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              background: "rgba(255, 255, 255, 0.92)",
+              color: "#1e293b",
+              border: "1px solid rgba(0, 0, 0, 0.16)",
+              padding: "2px 7px",
+              borderRadius: "999px",
+              fontSize: "10px",
+              fontWeight: 700,
+              lineHeight: "1.2",
+              flexShrink: 0,
+            }}
+          >
+            +{remainingCount}
+          </span>
+        )
       ) : null}
     </div>
   );
