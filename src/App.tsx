@@ -300,6 +300,7 @@ function AppContent({
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [seasonalFilterActive, setSeasonalFilterActive] = useState(false);
   const [selectedSourceFilter, setSelectedSourceFilter] = useState<VerifiedSourceInfo | null>(null);
+  const [listScope, setListScope] = useState<"map" | "all">("map");
   const [activeDesktopNav, setActiveDesktopNav] = useState<"discover" | "map" | "saved" | "sources">("discover");
 
   useEffect(() => {
@@ -655,6 +656,9 @@ function AppContent({
       setSeasonalFilterActive(false);
       setSelectedSourceFilter(null);
       setKind(newKind);
+      if (newKind === "Saved") {
+        setListScope("all");
+      }
     },
     [clearConciergeState],
   );
@@ -707,6 +711,7 @@ function AppContent({
     setSelectedTags([]);
     setQuery("");
     setSelectedSourceFilter(source);
+    setListScope("all");
   }, [clearConciergeState]);
 
   const [mobileTab, setMobileTab] = useState<MobileTab>(() => {
@@ -1405,12 +1410,12 @@ function AppContent({
       return conciergePlaces;
     }
 
-    if (mobileViewMode === "list") {
+    if (mobileViewMode === "list" || listScope === "all") {
       return ranked;
     }
 
     return filterRankedPlacesByBounds(ranked, mapViewportBounds, selected);
-  }, [conciergeMainListIds.length, conciergePlaces, mapViewportBounds, mobileViewMode, ranked, selected]);
+  }, [conciergeMainListIds.length, conciergePlaces, listScope, mapViewportBounds, mobileViewMode, ranked, selected]);
 
   const handleMapViewportChange = useCallback((payload: { count: number; bounds: MapBounds }) => {
     setMapViewportCount(payload.count);
@@ -2844,6 +2849,7 @@ function AppContent({
                 setSelectedTags([]);
                 setQuery("");
                 setSeasonalFilterActive(true);
+                setListScope("all");
                 if (seasonalPlaces[0]) {
                   handleSelectPlace(seasonalPlaces[0].id);
                 }
@@ -3900,6 +3906,11 @@ function AppContent({
                 <h2>
                   {isInitialPlacesLoading ? (
                     <span>{placesLoadingCopy.title}</span>
+                  ) : listScope === "all" ? (
+                    <>
+                      <span>{formatPlaceCount(matchingCount)}</span>{" "}
+                      <span>{lang === "sv" ? "i hela listan" : "in full list"}</span>
+                    </>
                   ) : (
                     <>
                       <span>{formatPlaceCount(mapDisplayCount)}</span> <span>{t.placesOnMap}</span>
@@ -3911,13 +3922,34 @@ function AppContent({
                     <CircleNotch size={13} className="animate-spin" aria-hidden="true" />
                     <span>{placesLoadingCopy.short}</span>
                   </small>
-                ) : matchingCount !== mapDisplayCount ? (
-                  <small>{formatPlaceCount(matchingCount)} {t.placesMatching}</small>
-                ) : null}
-                {!isInitialPlacesLoading && listDisplayCount !== mapDisplayCount ? (
-                  <small>{formatPlaceCount(listDisplayCount)} {t.placesInList}</small>
                 ) : null}
               </div>
+              {!isInitialPlacesLoading ? (
+                <div
+                  className="results-scope-toggle"
+                  role="group"
+                  aria-label={lang === "sv" ? "Listomfattning" : "List scope"}
+                >
+                  <button
+                    type="button"
+                    className={listScope === "map" ? "is-active" : ""}
+                    aria-pressed={listScope === "map"}
+                    onClick={() => setListScope("map")}
+                  >
+                    <span>{lang === "sv" ? "På kartan" : "In map view"}</span>
+                    <b>{formatPlaceCount(mapDisplayCount)}</b>
+                  </button>
+                  <button
+                    type="button"
+                    className={listScope === "all" ? "is-active" : ""}
+                    aria-pressed={listScope === "all"}
+                    onClick={() => setListScope("all")}
+                  >
+                    <span>{lang === "sv" ? "Alla träffar" : "All matches"}</span>
+                    <b>{formatPlaceCount(matchingCount)}</b>
+                  </button>
+                </div>
+              ) : null}
             </div>
             <div className="rank-controls">
               <label className="rank-control">
