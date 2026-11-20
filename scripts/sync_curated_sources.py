@@ -11,9 +11,14 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 import zlib
 from pathlib import Path
 from typing import Any
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from motkarta.stockholm_boundary import is_stockholm_municipality_place
 from motkarta.catalog_exclusions import is_excluded_catalog_name
@@ -21,7 +26,6 @@ from motkarta.dog_friendly import is_tasstipset_source
 from scripts.fetch_tasstipset_dog_places import enrich_tasstipset_places
 
 
-ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_FILE = ROOT / "public" / "data" / "places.json"
 DEFAULT_CURATED_FILE = ROOT / "data" / "curated_open_places.json"
 

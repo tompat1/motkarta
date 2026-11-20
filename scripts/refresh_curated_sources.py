@@ -52,7 +52,7 @@ CURATED_SOURCE_SPECS: tuple[CuratedSourceSpec, ...] = (
     CuratedSourceSpec(
         id="stockholm-stad",
         name="Stockholms Stad Livsmedelskontroll",
-        url="https://miljo.stockholm.se",
+        url="https://start.stockholm/",
         cadence="monthly",
         mode="live-api",
     ),
@@ -122,14 +122,14 @@ CURATED_SOURCE_SPECS: tuple[CuratedSourceSpec, ...] = (
     CuratedSourceSpec(
         id="svd-krogguiden",
         name="Svenska Dagbladet (SvD Krogguiden)",
-        url="https://www.svd.se/av/krog",
+        url="https://www.svd.se/mat-och-dryck",
         cadence="monthly",
         mode="editorial-check",
     ),
     CuratedSourceSpec(
         id="allt-om-mat",
         name="Allt om Mat (Krogrecensioner & Bästa Krogarna)",
-        url="https://alltommat.expressen.se/restaurang/",
+        url="https://alltommat.expressen.se/",
         cadence="monthly",
         mode="editorial-check",
     ),
@@ -143,7 +143,7 @@ CURATED_SOURCE_SPECS: tuple[CuratedSourceSpec, ...] = (
     CuratedSourceSpec(
         id="stora-restaurangpriset",
         name="Stora Restaurangpriset / Svenska Gastronomipriset",
-        url="https://restaurangpriset.se",
+        url="https://svenskagastronomipriset.se/",
         cadence="monthly",
         mode="editorial-check",
     ),
