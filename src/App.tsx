@@ -234,6 +234,7 @@ function AppContent({
   useEffect(() => () => clearTimeout(placeAddedToastTimer.current), []);
 
   const [mobileViewMode, setMobileViewMode] = useState<"map" | "list">("map");
+  const pendingScrollToMapOnUnlockRef = useRef(false);
   const [isMobileBottomSheetHidden, setIsMobileBottomSheetHidden] = useState(false);
   const [isContributeFabOpen, setIsContributeFabOpen] = useState(false);
   const sheetTouchStartY = useRef<number | null>(null);
@@ -285,13 +286,27 @@ function AppContent({
       body.style.left = previousBodyStyles.left;
       body.style.right = previousBodyStyles.right;
       body.style.width = previousBodyStyles.width;
-      window.scrollTo({ top: scrollY, behavior: "auto" });
+      if (pendingScrollToMapOnUnlockRef.current) {
+        pendingScrollToMapOnUnlockRef.current = false;
+        window.scrollTo({ top: 0, behavior: "auto" });
+        window.requestAnimationFrame(() => {
+          window.dispatchEvent(new Event("resize"));
+        });
+      } else {
+        window.scrollTo({ top: scrollY, behavior: "auto" });
+      }
     };
   }, [mobileViewMode]);
 
   const toggleMobileView = () => {
     setIsMobileBottomSheetHidden(false);
-    setMobileViewMode((view) => view === "map" ? "list" : "map");
+    if (mobileViewMode === "list") {
+      pendingScrollToMapOnUnlockRef.current = true;
+      setMobileTab("map");
+      setMobileViewMode("map");
+    } else {
+      setMobileViewMode("list");
+    }
   };
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [mobileRankSheet, setMobileRankSheet] = useState<RankSheetType>(null);
@@ -3416,6 +3431,8 @@ function AppContent({
                 } else if (deltaY < -45 && mobileViewMode === "list") {
                   const listEl = document.querySelector(".mobile-bottom-sheet-body");
                   if (!listEl || listEl.scrollTop <= 5) {
+                    pendingScrollToMapOnUnlockRef.current = true;
+                    setMobileTab("map");
                     setMobileViewMode("map");
                   }
                 }
