@@ -1444,12 +1444,12 @@ function AppContent({
       return conciergePlaces;
     }
 
-    if (mobileViewMode === "list" || listScope === "all") {
+    if (listScope === "all") {
       return ranked;
     }
 
     return filterRankedPlacesByBounds(ranked, mapViewportBounds, selected);
-  }, [conciergeMainListIds.length, conciergePlaces, listScope, mapViewportBounds, mobileViewMode, ranked, selected]);
+  }, [conciergeMainListIds.length, conciergePlaces, listScope, mapViewportBounds, ranked, selected]);
 
   const handleMapViewportChange = useCallback((payload: { count: number; bounds: MapBounds }) => {
     setMapViewportCount(payload.count);
@@ -3389,13 +3389,20 @@ function AppContent({
                   {isInitialPlacesLoading ? (
                     <span>{placesLoadingCopy.title}</span>
                   ) : mobileViewMode === "list" ? (
-                    <>
-                      <span>{formatPlaceCount(listDisplayCount)}</span>{" "}
-                      <span>{t.placesInList}</span>
-                    </>
+                    listScope === "all" ? (
+                      <>
+                        <span>{formatPlaceCount(matchingCount)}</span>{" "}
+                        <span>{lang === "sv" ? "i hela listan" : "in full list"}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{formatPlaceCount(listDisplayCount)}</span>{" "}
+                        <span>{t.placesInList}</span>
+                      </>
+                    )
                   ) : (
                     <>
-                      <span>{formatPlaceCount(hasSearchQuery || conciergePlaces.length > 0 || conciergeResponse ? matchingCount : mapDisplayCount)}</span>{" "}
+                      <span>{formatPlaceCount(hasSearchQuery || conciergePlaces.length > 0 || conciergeResponse || listScope === "all" ? matchingCount : mapDisplayCount)}</span>{" "}
                       <span>{lang === "sv" ? "ställen (Visa lista)" : "places (Show list)"}</span>
                     </>
                   )}
@@ -3450,6 +3457,33 @@ function AppContent({
                   </span>
                 </button>
               </p>
+            ) : null}
+
+            {mobileViewMode === "list" && !isInitialPlacesLoading ? (
+              <div
+                className="results-scope-toggle mobile-results-scope-toggle"
+                role="group"
+                aria-label={lang === "sv" ? "Listomfattning" : "List scope"}
+              >
+                <button
+                  type="button"
+                  className={listScope === "map" ? "is-active" : ""}
+                  aria-pressed={listScope === "map"}
+                  onClick={() => setListScope("map")}
+                >
+                  <span>{lang === "sv" ? "På kartan" : "In map view"}</span>
+                  <b>{formatPlaceCount(mapDisplayCount)}</b>
+                </button>
+                <button
+                  type="button"
+                  className={listScope === "all" ? "is-active" : ""}
+                  aria-pressed={listScope === "all"}
+                  onClick={() => setListScope("all")}
+                >
+                  <span>{lang === "sv" ? "Alla träffar" : "All matches"}</span>
+                  <b>{formatPlaceCount(matchingCount)}</b>
+                </button>
+              </div>
             ) : null}
 
             {mobileViewMode === "list" ? (

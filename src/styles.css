@@ -15321,6 +15321,50 @@ footer {
   text-decoration: underline;
 }
 
+/* Mobile List Scope Toggle (In map view / All matches) */
+.mobile-results-scope-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 8px 0 10px;
+  border: 1px solid #111111;
+  background: #fffdf8;
+}
+
+.mobile-results-scope-toggle button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-right: 1px solid #d8d4cb;
+  border-radius: 0;
+  background: transparent;
+  color: #5e5b56;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.mobile-results-scope-toggle button:last-child {
+  border-right: 0;
+}
+
+.mobile-results-scope-toggle button.is-active {
+  background: #111111;
+  color: #faf9f5;
+}
+
+.mobile-results-scope-toggle button b {
+  font-weight: 800;
+  opacity: 0.9;
+}
+
 /* Mobile List View & Rich Photo Cards */
 .mobile-place-card-list {
   padding: 14px 14px 90px;
