@@ -16,11 +16,13 @@ Verification completed with zero failures:
 - Context-label unit coverage includes Julbord, Latest added, Restaurant,
   Bakery, and cuisine precedence.
 - The focused mobile E2E check passed in Chromium, Mobile Chrome, and Mobile
-  Safari and verifies the rendered 16px / 800 typography.
+  Safari and verifies the rendered 16px / 800 typography, the hyphenated title,
+  and that the seasonal CTA opens no venue panel.
 - Impeccable typography scan: no findings.
 - Full `npm run test:gate`: typecheck passed; lint passed with 0 errors and 105
   existing warnings; JavaScript 515/515 passed; Python 185/185 passed;
-  Playwright 132 passed and 6 skipped across all configured browser projects.
+  Playwright 131 passed, 4 Mobile Safari checks passed on automatic retry, and
+  6 were skipped across all configured browser projects.
 - `git diff --check`: passed.
 
 # Frontend Note Sanitization & Diagnostic Suppression — 2026-11-15
