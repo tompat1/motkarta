@@ -380082,9 +380082,11 @@
         "Waterfront",
         "Djurgården",
         "Visit Stockholm",
-        "Website"
+        "Website",
+        "Hidden Gem",
+        "Curated"
       ],
-      "is_hidden_gem": false,
+      "is_hidden_gem": true,
       "is_structural_anomaly": false,
       "discoveryReasons": [
         "it appears independent",
