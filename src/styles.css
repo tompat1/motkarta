@@ -20155,6 +20155,16 @@ body.is-drawer-open .site-utilities > * {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   }
 
+  .mobile-type-filters .quick-filter-pill.is-editorial-cat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.96);
+    color: #111111;
+    border: 1.5px solid rgba(17, 17, 17, 0.14);
+    font-weight: 700;
+  }
+
   .mobile-type-filters .quick-filter-pill.is-active {
     background: #2563eb;
     border-color: #ffffff;

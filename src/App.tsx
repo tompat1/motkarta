@@ -3145,19 +3145,74 @@ function AppContent({
             <div className="mobile-controls-bar">
               <div className="mobile-controls-scroll" role="toolbar" aria-label={lang === "sv" ? "Filter och snabbval" : "Filters and quick selections"}>
                 <div className="mobile-type-filters" role="group" aria-label={t.typeFilterLabel}>
+                  {(["All places", "Latest"] as const)
+                    .filter((item) => visibleEstablishmentTypes.includes(item))
+                    .map((item) => {
+                      const hasDrinkTag = selectedTags.some((tag) => ["Wine bar", "Cocktail bar", "Pub & beer"].includes(tag));
+                      const isActive = item === "All places" ? kind === item && !hasDrinkTag : kind === item;
+                      return (
+                        <button
+                          key={item}
+                          type="button"
+                          className={`quick-filter-pill ${isActive ? "is-active" : ""}`}
+                          aria-pressed={isActive}
+                          onClick={() => {
+                            selectKindFilter(item);
+                            setSelectedTags((prev) => prev.filter((tag) => !["Wine bar", "Cocktail bar", "Pub & beer"].includes(tag)));
+                          }}
+                        >
+                          {kindFilterLabel(item, lang)}
+                        </button>
+                      );
+                    })}
                   {visibleEstablishmentTypes
-                    .filter((item) => item !== "Saved")
+                    .filter((item) => ["Restaurant", "Bakery", "Café", "Specialty coffee"].includes(item))
                     .map((item) => (
                       <button
                         key={item}
                         type="button"
-                        className={`quick-filter-pill ${kind === item ? "is-active" : ""}`}
+                        className={`quick-filter-pill is-editorial-cat ${kind === item ? "is-active" : ""}`}
                         aria-pressed={kind === item}
-                        onClick={() => selectKindFilter(item)}
+                        onClick={() => {
+                          selectKindFilter(item);
+                          setSelectedTags((prev) => prev.filter((tag) => !["Wine bar", "Cocktail bar", "Pub & beer"].includes(tag)));
+                        }}
                       >
-                        {kindFilterLabel(item, lang)}
+                        {item === "Restaurant" ? <ForkKnife size={15} weight="bold" aria-hidden="true" /> : null}
+                        {item === "Bakery" ? <Bread size={15} weight="bold" aria-hidden="true" /> : null}
+                        {item === "Café" ? <Coffee size={15} weight="bold" aria-hidden="true" /> : null}
+                        {item === "Specialty coffee" ? <SpecialtyCoffeeIcon size={15} weight="bold" aria-hidden="true" /> : null}
+                        <span>{kindFilterLabel(item, lang)}</span>
                       </button>
                     ))}
+                  {(
+                    [
+                      { key: "Wine bar", labelSv: "Vinbar", labelEn: "Wine bar", icon: <Wine size={15} weight="bold" aria-hidden="true" /> },
+                      { key: "Cocktail bar", labelSv: "Cocktailbar", labelEn: "Cocktail bar", icon: <Martini size={15} weight="bold" aria-hidden="true" /> },
+                      { key: "Pub & beer", labelSv: "Pub & öl", labelEn: "Pub & beer", icon: <BeerStein size={15} weight="bold" aria-hidden="true" /> },
+                    ] as const
+                  ).map((drink) => {
+                    const isDrinkActive = selectedTags.includes(drink.key);
+                    return (
+                      <button
+                        key={drink.key}
+                        type="button"
+                        className={`quick-filter-pill is-editorial-cat ${isDrinkActive ? "is-active" : ""}`}
+                        aria-pressed={isDrinkActive}
+                        onClick={() => {
+                          if (isDrinkActive) {
+                            setSelectedTags((prev) => prev.filter((tag) => tag !== drink.key));
+                          } else {
+                            selectKindFilter("All places");
+                            setSelectedTags([drink.key]);
+                          }
+                        }}
+                      >
+                        {drink.icon}
+                        <span>{lang === "sv" ? drink.labelSv : drink.labelEn}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
