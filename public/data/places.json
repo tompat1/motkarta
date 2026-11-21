@@ -380063,7 +380063,104 @@
         }
       ],
       "priceSEK": "$$"
+    },
+    {
+      "id": 4100001016,
+      "name": "Fabrique Slipen",
+      "kind": "Bakery",
+      "cuisine": "bakery",
+      "area": "Djurgården",
+      "address": "Beckholmsvägen 26, 115 21 Stockholm",
+      "note": "Stenugnsbageri och café vid vattnet på Djurgården (Beckholmsvägen 26) med surdegsbröd, kardemummabullar och kaffe.",
+      "tags": [
+        "Bakery",
+        "Bageri",
+        "Café",
+        "Sourdough",
+        "Cardamom bun",
+        "Fika",
+        "Waterfront",
+        "Djurgården",
+        "Visit Stockholm",
+        "Website"
+      ],
+      "is_hidden_gem": false,
+      "is_structural_anomaly": false,
+      "discoveryReasons": [
+        "it appears independent",
+        "verified by White Guide, Anders Husa & Kaitlin Orr Guide, Visit Stockholm",
+        "opening hours are listed"
+      ],
+      "discoverySignals": {
+        "independent_business": true,
+        "underrepresented_cuisine": true,
+        "low_local_visibility": false,
+        "verified_open": true,
+        "complete_profile": true,
+        "recently_updated": true
+      },
+      "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
+      "sourceUrl": "https://www.fabrique.se/",
+      "lastUpdated": "2026-11-20T12:55:58.141Z",
+      "evidenceLabel": "Visit Stockholm · Fabrique Slipen",
+      "ratingAverage": 0,
+      "reliableRatingCount": 0,
+      "reviewCount": 0,
+      "categoryMeanRating": 0,
+      "categoryPopularityRaw": 0,
+      "localPopularityPercentile": 0,
+      "priceLevel": 0,
+      "mainstreamExposure": 16,
+      "ageDays": 900,
+      "daysSinceFreshEvidence": 15,
+      "lifecycleState": "verified",
+      "evidence": {
+        "specialistGuide": 0.85,
+        "independentEditorial": 0.8,
+        "verifiedUserRating": 0.4,
+        "repeatVisits": 12,
+        "recentReviews": 14,
+        "credibleReviewers": 10,
+        "inspectionStatus": 80,
+        "verifiedAttributes": 56.67,
+        "dataFreshness": 80,
+        "confidence": "High"
+      },
+      "engagement": {
+        "searchImpressions": 0,
+        "profileViews": 0,
+        "mapMarkerClicks": 0,
+        "saves": 0,
+        "directionRequests": 0,
+        "confirmedVisits": 0,
+        "repeatVisits": 0,
+        "recommendations": 0,
+        "recentSaves": 0
+      },
+      "latitude": 59.322258,
+      "longitude": 18.10191,
+      "x": 50,
+      "y": 50,
+      "idNamespace": "public",
+      "openingHours": "Mo-Fr 07:30-18:00; Sa-Su 07:30-19:00",
+      "website": "https://www.fabrique.se/",
+      "sourceFacts": [
+        {
+          "field": "address",
+          "value": "Beckholmsvägen 26, 115 21 Stockholm",
+          "source": "fabrique.se",
+          "verifiedAt": "2026-11-21"
+        },
+        {
+          "field": "openingHours",
+          "value": "Mo-Fr 07:30-18:00; Sa-Su 07:30-19:00",
+          "source": "fabrique.se",
+          "verifiedAt": "2026-11-21"
+        }
+      ],
+      "priceSEK": "$$",
+      "osmIdentity": "curated/fabrique-slipen-djurgarden"
     }
   ],
-  "totalPlaces": 3139
+  "totalPlaces": 3140
 }
