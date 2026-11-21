@@ -548,3 +548,26 @@ are unchanged; this corrects catalog admission and source-evidence inputs.
 Operational contracts, rollback and source policy are documented in
 `docs/ml/operations-runbook.md`, `docs/ml/data-contracts.md`,
 `docs/ml/architecture.md` and `directives/ml_recommendation_system.md`.
+
+# RAG quality and capacity gate
+
+Added an enforceable offline release gate for the Concierge RAG instead of
+leaving the 128-query benchmark as a report-only tool. The test executes the real
+JavaScript lexical retriever twice, checks deterministic unique rankings, and
+fails on regressions in Recall@50, NDCG@5, unsupported-query abstention,
+exact-name success, catalog coverage, exposure concentration, independent-only
+exposure, regression splits, language slices, and specialty-coffee retrieval.
+
+A separate saturated-catalog case supplies 80 eligible matches and verifies that
+the evaluator fills—but never exceeds—its 50-candidate budget. The gate is local
+and zero-network. It deliberately makes no claim about live BGE-M3/Gemma quality,
+provider latency, cost, satisfaction, or production readiness; those still need
+authorized captures and independent review.
+
+Verification: the focused gate passed 2/2 tests. Final `npm run test:gate`
+passed TypeScript, lint, 515 JavaScript tests, 187 Python tests, and 134
+Playwright tests across desktop Chromium, Mobile Chrome, and Mobile Safari, with
+6 expected skips. One unrelated Mobile Safari map-toggle check passed on retry
+and remains reported by Playwright as flaky. `git diff --check` passed.
+
+---

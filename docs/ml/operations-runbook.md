@@ -426,10 +426,24 @@ Future work should add:
 ## Concierge RAG operations (activated in production)
 
 The [Concierge runbook](concierge-rag.md#local-operations-and-activation) documents
-production configuration, canonical corpus export, dry-run indexing, explicit apply budgets,
-metadata-index prerequisites, verified manifests, timeouts and rollback.
-Production `wrangler.toml` operates in `hybrid` retrieval with `constrained` Gemma 4 synthesis
-over the verified `motkarta-concierge-preview-v1` index.
+production configuration, canonical corpus export, dry-run indexing, explicit
+apply budgets, metadata-index prerequisites, verified manifests, timeouts and
+rollback. Production `wrangler.toml` operates in `hybrid` retrieval with
+`constrained` Gemma 4 synthesis over the verified
+`motkarta-concierge-preview-v1` index.
+
+The deterministic RAG quality and capacity gate is part of the Python suite and
+can be isolated with:
+
+```bash
+.venv/bin/python -m pytest -q tests_python/test_concierge_quality_gate.py
+```
+
+The gate must pass before a release, followed by the mandatory full
+`npm run test:gate`. A local pass does not authorize hybrid or synthesis
+promotion: attach authorized provider captures and independent review for live
+model quality, latency, and cost.
+
 Ordinary tests use mocks and need no provider credentials. Never run indexing
 `--apply` as part of routine validation. If rollback is required, follow the rollback sequence
 in [`concierge-rag.md`](concierge-rag.md): set `CONCIERGE_SYNTHESIS_MODE="template"` first,

@@ -1,4 +1,5 @@
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
+import { RAG_QUALITY_SNAPSHOT } from "../../../lib/admin-rag-quality.ts";
 
 type EventContext<Env> = {
   request: Request;
@@ -79,6 +80,7 @@ export async function onRequestGet(context: EventContext<Env>) {
     {
       source: "d1",
       timestamp: new Date().toISOString(),
+      ragEvaluation: RAG_QUALITY_SNAPSHOT,
       models: [
         {
           id: "discovery-hgbr-spatial-oof-v1",

@@ -61,6 +61,13 @@ test("admin ml status endpoint returns model specifications, telemetry, and code
 
   assert.equal(response.status, 200);
   assert.equal(payload.source, "d1");
+  assert.equal(payload.ragEvaluation.schemaVersion, "rag-quality-dashboard-v1");
+  assert.equal(payload.ragEvaluation.gateStatus, "passed_with_retry");
+  assert.equal(payload.ragEvaluation.passedTestCount, 841);
+  assert.equal(payload.ragEvaluation.comparison.find((metric) => metric.id === "contextRecall").current, 0.9523809523809523);
+  assert.equal(payload.ragEvaluation.comparison.find((metric) => metric.id === "faithfulness").current, null);
+  assert.equal(payload.ragEvaluation.capacity.returnedCandidates, 50);
+  assert.equal(payload.ragEvaluation.capacity.duplicateCandidates, 0);
   assert.equal(payload.models.length, 3);
   assert.equal(payload.models[0].id, "discovery-hgbr-spatial-oof-v1");
   assert.equal(payload.models[1].id, "isolation-forest-spatial-v1");

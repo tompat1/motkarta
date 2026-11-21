@@ -294,6 +294,25 @@ type/chain/metadata slices. Satisfaction remains null. See the
 provider mocks do not establish real-world quality. The original holdout was used
 in safety debugging and must be replaced before any production promotion decision.
 
+### Continuous deterministic RAG quality gate
+
+`tests_python/test_concierge_quality_gate.py` runs the source-labeled 128-query
+fixture through the real JavaScript lexical retriever on every Python test run.
+It fails CI if aggregate Recall@50 or NDCG@5 falls below 0.90, unsupported-query
+abstention or exact-name success falls below 100%, catalog coverage falls below
+0.70, exposure Gini exceeds 0.45, or any non-independent venue receives top-five
+exposure. Development and regression-holdout Recall@50/NDCG@5 must each remain at
+least 0.90; English, Swedish, Polish, and specialty-coffee slices have explicit
+floors appropriate to their current sample sizes.
+
+The same gate reruns retrieval to require identical rankings, rejects duplicate
+candidates, and saturates an 80-venue synthetic catalog to prove that the offline
+retriever uses its full 50-candidate evaluation budget without exceeding it.
+These are regression floors, not claims of optimality or satisfaction. The test
+does not use provider mocks as quality evidence: hybrid BGE-M3 accuracy, Gemma
+synthesis quality, provider latency, and cost still require authorized captures
+and independent review before promotion.
+
 ## Hybrid search and Reciprocal Rank Fusion (2026-09-10)
 
 `lib/concierge/hybrid_search.ts` implements Reciprocal Rank Fusion:

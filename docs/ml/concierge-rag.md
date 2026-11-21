@@ -318,9 +318,11 @@ Motkarta assesses and maintains its Concierge RAG service against the industry-s
 
 1. **Golden Datasets & Unit Testing**:
    - Versioned benchmark fixture: `tests/fixtures/concierge/queries.json` (128 queries across intent families: dish, atmosphere, specialty coffee, location, cuisine, edge cases).
-   - Continuous CI/CD test gates run 454 unit tests (`npm test`) and 120 Playwright E2E tests (`npm run test:e2e`) verifying vector hydration, document hash synchronization, rate gates, and synthesis validation.
+   - Continuous CI/CD gates run JavaScript, Python, and Playwright suites verifying vector hydration, document hash synchronization, rate gates, synthesis validation, and end-to-end fallback behavior.
 2. **Offline Evaluation Framework (`execution/evaluate_concierge.py`)**:
    - Evaluates `recallAt50`, `ndcgAt5`, `unsupportedAbstention`, `exactNameSuccess`, `catalogCoverage`, and `exposureGini` across demographic/district slices (`language`, `cuisine`, `geography`, `venueType`, `chainStatus`) without making paid API calls during testing.
+   - `tests_python/test_concierge_quality_gate.py` turns the deterministic lexical benchmark into a CI release gate. It freezes aggregate and critical-slice quality floors, requires deterministic unique rankings, and proves the 50-candidate evaluation ceiling under a saturated 80-venue catalog.
+   - This gate covers the locally measurable retrieval and safety contract only. It must not be presented as evidence for live embedding quality, constrained-model quality, provider latency/cost, human satisfaction, or production promotion.
 3. **Closed-Domain Guardrails**:
    - Hard geographic bounding box (`STOCKHOLM_MUNICIPALITY_BBOX` and `POLICY.excludedLocalities`).
    - Commercial chain blocklist (`POLICY.excludedChains` including Starbucks, Espresso House, Wayne's Coffee) prevents chain leakage.

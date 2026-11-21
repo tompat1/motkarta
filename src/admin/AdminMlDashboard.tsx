@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import type { Language } from "../app/shared";
+import { RAG_QUALITY_SNAPSHOT, type RagQualitySnapshot } from "../../lib/admin-rag-quality";
+import { AdminRagQualityDashboard } from "./AdminRagQualityDashboard";
 import { formatEuropeanResetTime } from "../../lib/admin-d1";
 import {
   type RagEvaluationRating,
@@ -105,6 +107,7 @@ export type MlStatusResponse = {
     positionDistribution?: Record<string, number>;
   };
   codeSnippets?: CodeSnippet[];
+  ragEvaluation?: RagQualitySnapshot;
   error?: string;
 };
 
@@ -112,6 +115,7 @@ export type MlStatusResponse = {
 const DEFAULT_ML_DATA: MlStatusResponse = {
   source: "default",
   timestamp: new Date().toISOString(),
+  ragEvaluation: RAG_QUALITY_SNAPSHOT,
   models: [
     {
       id: "discovery-hgbr-spatial-oof-v1",
@@ -134,17 +138,16 @@ const DEFAULT_ML_DATA: MlStatusResponse = {
     {
       id: "concierge-rag-hybrid-v1",
       name: "Concierge Factual RAG & Semantic Hybrid Search",
-      type: "Dense Vector (all-MiniLM / BGE) + Sparse BM25 + Superpowers",
-      validation: "Strict Factual Verification Gate & Zero-Hallucination Invariant",
-      status: "PROD_ACTIVE",
+      type: "BGE-M3 Dense Vector + Lexical Retrieval + RRF",
+      validation: "Source-Labeled Regression Gate & Constrained Synthesis Safety Tests",
+      status: "REGRESSION_GATE_PASS",
       description:
         "Extracts structured factual metadata (hours, priceSEK, address, verified tags) from open and municipal sources. Chunks documents into factual units and maps queries via cosine similarity with hard brand-chain exclusions and spatial Stockholm bounding box.",
       metrics: {
-        hitRateAt3: "94.1%",
-        mrr: 0.882,
-        factualityScore: "100%",
-        hallucinationRate: "0.0%",
-        avgLatencyMs: 18,
+        recallAt50: "95.2%",
+        ndcgAt5: "95.2%",
+        unsupportedAbstention: "100%",
+        providerLatency: "Not measured",
         corpusVersion: "concierge-facts-v1",
       },
     },
@@ -474,7 +477,7 @@ export function AdminMlDashboard({
   // Always initialize with DEFAULT_ML_DATA so the tab renders immediately without blank screens
   const [data, setData] = useState<MlStatusResponse>(DEFAULT_ML_DATA);
   const [loading, setLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState<"models" | "eda" | "eval" | "code" | "cloudflare">("models");
+  const [activeSection, setActiveSection] = useState<"models" | "rag" | "eda" | "eval" | "code" | "cloudflare">("models");
   const [activeChartTab, setActiveChartTab] = useState("eda_feature_relationships");
   const [activeCodeTab, setActiveCodeTab] = useState("eda_residual");
   const [previewChartUrl, setPreviewChartUrl] = useState<string | null>(null);
@@ -614,6 +617,7 @@ export function AdminMlDashboard({
             gapsAndImprovements: res.gapsAndImprovements ?? prev.gapsAndImprovements,
             telemetry: res.telemetry ?? prev.telemetry,
             codeSnippets: res.codeSnippets ?? prev.codeSnippets,
+            ragEvaluation: res.ragEvaluation ?? prev.ragEvaluation,
           }));
         }
       }
@@ -703,11 +707,20 @@ export function AdminMlDashboard({
 
         <button
           type="button"
+          className={`admin-ml-nav-tab ${activeSection === "rag" ? "active" : ""}`}
+          onClick={() => setActiveSection("rag")}
+        >
+          <ShieldCheck size={16} weight={activeSection === "rag" ? "fill" : "regular"} />
+          <span>2. RAG</span>
+        </button>
+
+        <button
+          type="button"
           className={`admin-ml-nav-tab ${activeSection === "eda" ? "active" : ""}`}
           onClick={() => setActiveSection("eda")}
         >
           <Graph size={16} weight={activeSection === "eda" ? "fill" : "regular"} />
-          <span>{lang === "sv" ? "2. EDA & Regressioner" : "2. EDA & Regressions"}</span>
+          <span>{lang === "sv" ? "3. EDA & Regressioner" : "3. EDA & Regressions"}</span>
         </button>
 
         <button
@@ -716,7 +729,7 @@ export function AdminMlDashboard({
           onClick={() => setActiveSection("eval")}
         >
           <Sliders size={16} weight={activeSection === "eval" ? "fill" : "regular"} />
-          <span>{lang === "sv" ? "3. Manuell Utvärdering" : "3. Manual Evaluation"}</span>
+          <span>{lang === "sv" ? "4. Manuell Utvärdering" : "4. Manual Evaluation"}</span>
         </button>
 
         <button
@@ -725,7 +738,7 @@ export function AdminMlDashboard({
           onClick={() => setActiveSection("code")}
         >
           <TerminalWindow size={16} weight={activeSection === "code" ? "fill" : "regular"} />
-          <span>{lang === "sv" ? "4. Python Kodresa" : "4. Python Codebase"}</span>
+          <span>{lang === "sv" ? "5. Python Kodresa" : "5. Python Codebase"}</span>
         </button>
 
         <button
@@ -734,7 +747,7 @@ export function AdminMlDashboard({
           onClick={() => setActiveSection("cloudflare")}
         >
           <Lightning size={16} weight="fill" />
-          <span>5. Cloudflare AI Workers & Agents</span>
+          <span>6. Cloudflare AI Workers & Agents</span>
         </button>
       </div>
 
@@ -835,6 +848,10 @@ export function AdminMlDashboard({
             </div>
           ) : null}
         </div>
+      ) : null}
+
+      {activeSection === "rag" ? (
+        <AdminRagQualityDashboard evaluation={data.ragEvaluation ?? RAG_QUALITY_SNAPSHOT} lang={lang} />
       ) : null}
 
       {/* ========================================================================= */}
@@ -1083,7 +1100,7 @@ export function AdminMlDashboard({
               </div>
               <div className="admin-rag-meta-stats">
                 <span className="admin-rag-stat-badge">
-                  ⚡ {ragResult.latencyMs}ms (Workers AI Edge)
+                  <Clock size={12} aria-hidden="true" /> {ragResult.latencyMs}ms ({lang === "sv" ? "lokal simulering" : "local simulation"})
                 </span>
                 <span className="admin-rag-stat-badge">
                   🔤 {ragResult.tokenCount} tokens
@@ -1610,8 +1627,8 @@ export function AdminMlDashboard({
             <h4>{lang === "sv" ? "Hur Vi Gör Vår ML-Resa Ännu Bättre med Cloudflare AI" : "Accelerating Motkarta with Cloudflare Native Edge AI"}</h4>
             <p>
               {lang === "sv"
-                ? "Genom att använda Cloudflares egna AI Workers och Vectorize kan Motkarta köra vektorinbäddningar, semantisk sökning och RAG direkt på edge-nätverket med <15ms svarstid utan kostsamma externa API:er eller tunga Python-servrar."
-                : "By adopting Cloudflare Workers AI and Vectorize, Motkarta runs vector embeddings, semantic search, and RAG directly on the edge with <15ms latency."}
+                ? "Cloudflare Workers AI och Vectorize kör vektorinbäddningar, semantisk sökning och RAG på edge-nätverket. Faktisk slutpunkt-till-slutpunkt-latens visas först efter en auktoriserad providerfångst."
+                : "Cloudflare Workers AI and Vectorize run embeddings, semantic search, and RAG at the edge. Actual end-to-end latency is shown only after an authorized provider capture."}
             </p>
           </div>
 
