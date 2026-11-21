@@ -1,7 +1,12 @@
 import { syncReviewLabelCheckpoint } from "../../../lib/admin-label-exports.ts";
 import { extractWebsiteImageFromHtml } from "../../../lib/website-image-scrape.ts";
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
-import { isD1QuotaError } from "../../../lib/admin-d1.ts";
+import { isD1OverloadError, isD1QuotaError } from "../../../lib/admin-d1.ts";
+import {
+  findDuplicatesInMemory,
+  serializeDuplicateMatches,
+  type PublishedEstablishmentLookup,
+} from "../../../lib/admin-duplicates.ts";
 import type { PlaceInput, PlaceLifecycleState } from "../../../lib/scoring.ts";
 import { cuisinesFromTagList, parseCuisineInput } from "../../../lib/cuisine-tags.ts";
 import {
@@ -159,6 +164,9 @@ export async function onRequestGet(context: EventContext<Env>) {
       includeDuplicates,
       includeNominations,
     });
+    if (includeDuplicates && rows.length > 0) {
+      await enrichCandidatesWithDuplicates(db, rows);
+    }
 
     return Response.json(
       { source: "d1", state: stateParam, query: queryParam, candidates: rows.map(candidateFromRow) },
@@ -166,15 +174,20 @@ export async function onRequestGet(context: EventContext<Env>) {
     );
   } catch (error) {
     const isQuota = isD1QuotaError(error);
+    const isOverloaded = isD1OverloadError(error);
     console.error("GET /api/admin/candidates failed:", error);
     return Response.json(
       {
         source: "d1",
         candidates: [],
         quotaExceeded: isQuota,
+        overloaded: isOverloaded,
         error: error instanceof Error ? error.message : "Could not load review queue.",
       },
-      { headers: jsonHeaders, status: isQuota ? 429 : 500 },
+      {
+        headers: isOverloaded ? { ...jsonHeaders, "retry-after": "3" } : jsonHeaders,
+        status: isQuota ? 429 : isOverloaded ? 503 : 500,
+      },
     );
   }
 }
@@ -659,8 +672,8 @@ async function tableExists(db: D1Database, table: string) {
 }
 
 function buildCandidateSelect(options: CandidateQueryOptions) {
-  const duplicateCountSql = options.includeDuplicates ? duplicateCountSubquery() : "0";
-  const duplicateMatchesSql = options.includeDuplicates ? duplicateMatchesSubquery() : "''";
+  const duplicateCountSql = options.includeDuplicates ? "NULL" : "0";
+  const duplicateMatchesSql = options.includeDuplicates ? "NULL" : "''";
   const nominationSql = options.includeNominations ? nominationCountSubquery() : "0";
   return `
     SELECT
@@ -1367,68 +1380,42 @@ function candidateFromRow(row: CandidateRow) {
   };
 }
 
+async function enrichCandidatesWithDuplicates(db: D1Database, rows: CandidateRow[]) {
+  const needsLookup = rows.filter(
+    (row) => row.possibleDuplicateCount === null || row.possibleDuplicateCount === undefined,
+  );
+  if (needsLookup.length === 0) return;
+
+  const publishedRes = await db
+    .prepare(
+      `SELECT id, name, type, district, address, latitude, longitude, lifecycle_state
+       FROM establishments
+       WHERE lifecycle_state IN ('baseline', 'verified', 'featured')`,
+    )
+    .all<PublishedEstablishmentLookup>()
+    .catch(() => ({ results: [] as PublishedEstablishmentLookup[] }));
+  const published = publishedRes.results ?? [];
+  if (published.length === 0) {
+    for (const row of needsLookup) {
+      row.possibleDuplicateCount = 0;
+      row.possibleDuplicates = "";
+    }
+    return;
+  }
+
+  const dupMap = findDuplicatesInMemory(needsLookup, published);
+  for (const row of needsLookup) {
+    const matches = dupMap.get(row.id) ?? [];
+    row.possibleDuplicateCount = matches.length;
+    row.possibleDuplicates = serializeDuplicateMatches(matches);
+  }
+}
+
 function nominationCountSubquery() {
   return `(SELECT COUNT(*)
       FROM recommendation_events re
       WHERE re.establishment_id = e.id
         AND re.recommendation_mode = 'hidden_gems')`;
-}
-
-function duplicateCountSubquery() {
-  return `(SELECT COUNT(*)
-      FROM establishments m
-      WHERE ${duplicatePredicate("m", "e")})`;
-}
-
-function duplicateMatchesSubquery() {
-  return `(SELECT GROUP_CONCAT(
-        m.id || '|' ||
-        REPLACE(COALESCE(m.name, ''), '|', ' ') || '|' ||
-        REPLACE(COALESCE(m.type, ''), '|', ' ') || '|' ||
-        REPLACE(COALESCE(m.district, ''), '|', ' ') || '|' ||
-        COALESCE(m.lifecycle_state, '') || '|' ||
-        ${duplicateReasonExpression("m", "e")},
-        ';;'
-      )
-      FROM establishments m
-      WHERE ${duplicatePredicate("m", "e")})`;
-}
-
-function duplicatePredicate(matchAlias: string, candidateAlias: string) {
-  const nameMatch = `${normalizedSql(`${matchAlias}.name`)} = ${normalizedSql(`${candidateAlias}.name`)}
-    AND LOWER(COALESCE(${matchAlias}.district, '')) = LOWER(COALESCE(${candidateAlias}.district, ''))`;
-  const addressMatch = `COALESCE(${candidateAlias}.address, '') != ''
-    AND COALESCE(${matchAlias}.address, '') != ''
-    AND ${normalizedSql(`${matchAlias}.address`)} = ${normalizedSql(`${candidateAlias}.address`)}`;
-  const nearbyNameMatch = `${candidateAlias}.latitude IS NOT NULL
-    AND ${candidateAlias}.longitude IS NOT NULL
-    AND ${matchAlias}.latitude IS NOT NULL
-    AND ${matchAlias}.longitude IS NOT NULL
-    AND ABS(${candidateAlias}.latitude - ${matchAlias}.latitude) <= 0.0008
-    AND ABS(${candidateAlias}.longitude - ${matchAlias}.longitude) <= 0.0012
-    AND (
-      INSTR(${normalizedSql(`${matchAlias}.name`)}, ${normalizedSql(`${candidateAlias}.name`)}) > 0
-      OR INSTR(${normalizedSql(`${candidateAlias}.name`)}, ${normalizedSql(`${matchAlias}.name`)}) > 0
-    )`;
-
-  return `${matchAlias}.id != ${candidateAlias}.id
-    AND ${matchAlias}.lifecycle_state IN ('baseline', 'verified', 'featured')
-    AND (${nameMatch} OR ${addressMatch} OR ${nearbyNameMatch})`;
-}
-
-function duplicateReasonExpression(matchAlias: string, candidateAlias: string) {
-  return `CASE
-      WHEN ${normalizedSql(`${matchAlias}.name`)} = ${normalizedSql(`${candidateAlias}.name`)}
-        AND LOWER(COALESCE(${matchAlias}.district, '')) = LOWER(COALESCE(${candidateAlias}.district, '')) THEN 'name_area'
-      WHEN COALESCE(${candidateAlias}.address, '') != ''
-        AND COALESCE(${matchAlias}.address, '') != ''
-        AND ${normalizedSql(`${matchAlias}.address`)} = ${normalizedSql(`${candidateAlias}.address`)} THEN 'address'
-      ELSE 'nearby_name'
-    END`;
-}
-
-function normalizedSql(column: string) {
-  return `LOWER(REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(${column}, ''), ' ', ''), '-', ''), '.', ''), '''', ''))`;
 }
 
 function evidenceGateProfile(

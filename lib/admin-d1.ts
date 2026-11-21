@@ -8,6 +8,48 @@ export function isD1QuotaError(error: unknown): boolean {
   );
 }
 
+export function isD1OverloadError(error: unknown): boolean {
+  if (!error) return false;
+  const msg = error instanceof Error ? error.message : String(error);
+  return (
+    /d1 db is overloaded/i.test(msg) ||
+    /too many resources consumed/i.test(msg) ||
+    /10 second window/i.test(msg) ||
+    /sqlite_busy/i.test(msg) ||
+    /database is locked/i.test(msg)
+  );
+}
+
+export async function fetchWithD1Retry(
+  input: RequestInfo | URL,
+  init?: RequestInit,
+  options: { maxRetries?: number; retryDelayMs?: number } = {},
+): Promise<Response> {
+  const maxRetries = options.maxRetries ?? 1;
+  const retryDelayMs = options.retryDelayMs ?? 2200;
+  let lastResponse: Response | null = null;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+    const response = await fetch(input, init);
+    lastResponse = response;
+    if (response.status !== 503 || attempt === maxRetries) {
+      return response;
+    }
+    const clone = response.clone();
+    const body = (await clone.json().catch(() => ({}))) as { overloaded?: boolean; error?: string };
+    if (!body.overloaded && !isD1OverloadError(body.error)) {
+      return response;
+    }
+    const retryAfterSec = Number(response.headers.get("retry-after"));
+    const waitMs = Number.isFinite(retryAfterSec) && retryAfterSec > 0
+      ? Math.min(5000, retryAfterSec * 1000)
+      : retryDelayMs + attempt * 800;
+    await new Promise((resolve) => setTimeout(resolve, waitMs));
+  }
+
+  return lastResponse as Response;
+}
+
 export function getNextMidnightUtc(): number {
   const now = new Date();
   return Date.UTC(

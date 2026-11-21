@@ -1,4 +1,9 @@
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
+import { isD1OverloadError, isD1QuotaError } from "../../../lib/admin-d1.ts";
+import {
+  findDuplicatesInMemory,
+  type PublishedEstablishmentLookup,
+} from "../../../lib/admin-duplicates.ts";
 import {
   sqlEstablishmentCuisineTagsSelect,
   sqlEstablishmentMissingCuisine,
@@ -24,10 +29,16 @@ type Env = {
 
 type CandidateDashboardRow = {
   id: number;
+  name?: string | null;
+  district?: string | null;
+  address?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   website: string | null;
   candidateSourceType: string | null;
   validationLabel: string | null;
   candidateReviewStatus: string | null;
+  duplicateResolution?: string | null;
   evidenceSourceTypes: string | null;
   latestEvidenceAt: string | null;
   possibleDuplicateCount: number | null;
@@ -71,40 +82,49 @@ const jsonHeaders = {
   "cache-control": "no-cache",
 };
 
+const DASHBOARD_CACHE_TTL_MS = 30_000;
+let dashboardCache: { db: D1Database; expiresAt: number; payload: Record<string, unknown> } | null = null;
+
 export async function onRequestGet(context: EventContext<Env>) {
-  const auth = await requireAdmin(context.request, context.env);
-  if (auth) return auth;
+  try {
+    const auth = await requireAdmin(context.request, context.env);
+    if (auth) return auth;
 
-  const db = context.env.DB as D1Database | undefined;
-  if (!db) {
-    return Response.json(
-      { source: "unavailable", error: "No production D1 dataset is bound." },
-      { headers: jsonHeaders, status: 503 },
-    );
-  }
+    const db = context.env.DB as D1Database | undefined;
+    if (!db) {
+      return Response.json(
+        { source: "unavailable", error: "No production D1 dataset is bound." },
+        { headers: jsonHeaders, status: 503 },
+      );
+    }
 
-  const [candidateRows, reviewSummary, lastExportResult, missingCuisineCount] = await Promise.all([
-    loadCandidateRows(db),
-    loadReviewSummary(db),
-    loadLastExport(db),
-    loadMissingCuisineCount(db),
-  ]);
-  const lastExportedAt = lastExportResult.row?.lastExportedAt ?? null;
-  const unexportedReviewCount = await loadUnexportedReviewCount(db, lastExportedAt);
-  const counts = candidateCounts(candidateRows, reviewSummary, unexportedReviewCount, missingCuisineCount);
-  const actions = {
-    harvestNeeded: counts.needsEvidenceCount > 0,
-    reviewNeeded:
-      counts.missingCuisineCount > 0 ||
-      counts.newCandidateCount > 0 ||
-      counts.hiddenGemReadyCount > 0 ||
-      counts.possibleDuplicateCount > 0,
-    exportNeeded: counts.unexportedReviewCount > 0,
-  };
-  const nextStep = nextDashboardStep(actions);
+    const url = new URL(context.request.url);
+    const bypassCache = url.searchParams.get("fresh") === "1";
+    const now = Date.now();
+    if (!bypassCache && dashboardCache && dashboardCache.db === db && dashboardCache.expiresAt > now) {
+      return Response.json(dashboardCache.payload, { headers: jsonHeaders });
+    }
 
-  return Response.json(
-    {
+    // Run sequentially to avoid hammering D1's single-threaded 10-second resource window.
+    const candidateRows = await loadCandidateRows(db);
+    const reviewSummary = await loadReviewSummary(db);
+    const lastExportResult = await loadLastExport(db);
+    const missingCuisineCount = await loadMissingCuisineCount(db);
+    const lastExportedAt = lastExportResult.row?.lastExportedAt ?? null;
+    const unexportedReviewCount = await loadUnexportedReviewCount(db, lastExportedAt);
+    const counts = candidateCounts(candidateRows, reviewSummary, unexportedReviewCount, missingCuisineCount);
+    const actions = {
+      harvestNeeded: counts.needsEvidenceCount > 0,
+      reviewNeeded:
+        counts.missingCuisineCount > 0 ||
+        counts.newCandidateCount > 0 ||
+        counts.hiddenGemReadyCount > 0 ||
+        counts.possibleDuplicateCount > 0,
+      exportNeeded: counts.unexportedReviewCount > 0,
+    };
+    const nextStep = nextDashboardStep(actions);
+
+    const payload = {
       source: "d1",
       generatedAt: new Date().toISOString(),
       nextStep,
@@ -114,14 +134,53 @@ export async function onRequestGet(context: EventContext<Env>) {
       lastExportedAt,
       lastExport: lastExportResult.row,
       exportLogAvailable: lastExportResult.available,
-    },
-    { headers: jsonHeaders },
-  );
+    };
+    dashboardCache = { db, expiresAt: now + DASHBOARD_CACHE_TTL_MS, payload };
+
+    return Response.json(payload, { headers: jsonHeaders });
+  } catch (error) {
+    const isQuota = isD1QuotaError(error);
+    const isOverloaded = isD1OverloadError(error);
+    console.error("GET /api/admin/review-dashboard failed:", error);
+    return Response.json(
+      {
+        source: "d1",
+        quotaExceeded: isQuota,
+        overloaded: isOverloaded,
+        error: error instanceof Error ? error.message : "Could not load review dashboard.",
+      },
+      {
+        headers: isOverloaded ? { ...jsonHeaders, "retry-after": "3" } : jsonHeaders,
+        status: isQuota ? 429 : isOverloaded ? 503 : 500,
+      },
+    );
+  }
 }
 
 async function loadCandidateRows(db: D1Database) {
   const { results } = await db.prepare(candidateDashboardQuery()).all<CandidateDashboardRow>();
-  return results ?? [];
+  const rows = results ?? [];
+  const unresolvedRows = rows.filter(
+    (row) => !row.duplicateResolution && (row.possibleDuplicateCount === null || row.possibleDuplicateCount === undefined),
+  );
+  if (unresolvedRows.length > 0) {
+    const publishedRes = await db
+      .prepare(
+        `SELECT id, name, type, district, address, latitude, longitude, lifecycle_state
+         FROM establishments
+         WHERE lifecycle_state IN ('baseline', 'verified', 'featured')`,
+      )
+      .all<PublishedEstablishmentLookup>()
+      .catch(() => ({ results: [] as PublishedEstablishmentLookup[] }));
+    const published = publishedRes.results ?? [];
+    if (published.length > 0) {
+      const dupMap = findDuplicatesInMemory(unresolvedRows, published);
+      for (const row of unresolvedRows) {
+        row.possibleDuplicateCount = (dupMap.get(row.id) ?? []).length > 0 ? 1 : 0;
+      }
+    }
+  }
+  return rows;
 }
 
 async function loadReviewSummary(db: D1Database) {
@@ -242,17 +301,19 @@ function candidateDashboardQuery() {
   return `
     SELECT
       e.id,
+      e.name,
+      e.district,
+      e.address,
+      e.latitude,
+      e.longitude,
       e.website,
       e.candidate_source_type AS candidateSourceType,
       e.validation_label AS validationLabel,
       e.candidate_review_status AS candidateReviewStatus,
+      e.duplicate_resolution AS duplicateResolution,
       GROUP_CONCAT(DISTINCT ev.source_type) AS evidenceSourceTypes,
       MAX(ev.captured_at) AS latestEvidenceAt,
-      CASE
-        WHEN COALESCE(e.duplicate_resolution, '') = ''
-          AND EXISTS (SELECT 1 FROM establishments m WHERE ${duplicatePredicate("m", "e")})
-        THEN 1 ELSE 0
-      END AS possibleDuplicateCount,
+      NULL AS possibleDuplicateCount,
       ${sqlEstablishmentCuisineTagsSelect("e", "cuisineTags")}
     FROM establishments e
     LEFT JOIN evidence_sources ev ON ev.establishment_id = e.id
@@ -260,32 +321,6 @@ function candidateDashboardQuery() {
       AND COALESCE(e.duplicate_resolution, '') != 'merged'
     GROUP BY e.id
   `;
-}
-
-function duplicatePredicate(matchAlias: string, candidateAlias: string) {
-  const nameMatch = `${normalizedSql(`${matchAlias}.name`)} = ${normalizedSql(`${candidateAlias}.name`)}
-    AND LOWER(COALESCE(${matchAlias}.district, '')) = LOWER(COALESCE(${candidateAlias}.district, ''))`;
-  const addressMatch = `COALESCE(${candidateAlias}.address, '') != ''
-    AND COALESCE(${matchAlias}.address, '') != ''
-    AND ${normalizedSql(`${matchAlias}.address`)} = ${normalizedSql(`${candidateAlias}.address`)}`;
-  const nearbyNameMatch = `${candidateAlias}.latitude IS NOT NULL
-    AND ${candidateAlias}.longitude IS NOT NULL
-    AND ${matchAlias}.latitude IS NOT NULL
-    AND ${matchAlias}.longitude IS NOT NULL
-    AND ABS(${candidateAlias}.latitude - ${matchAlias}.latitude) <= 0.0008
-    AND ABS(${candidateAlias}.longitude - ${matchAlias}.longitude) <= 0.0012
-    AND (
-      INSTR(${normalizedSql(`${matchAlias}.name`)}, ${normalizedSql(`${candidateAlias}.name`)}) > 0
-      OR INSTR(${normalizedSql(`${candidateAlias}.name`)}, ${normalizedSql(`${matchAlias}.name`)}) > 0
-    )`;
-
-  return `${matchAlias}.id != ${candidateAlias}.id
-    AND ${matchAlias}.lifecycle_state IN ('baseline', 'verified', 'featured')
-    AND (${nameMatch} OR ${addressMatch} OR ${nearbyNameMatch})`;
-}
-
-function normalizedSql(column: string) {
-  return `LOWER(REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(${column}, ''), ' ', ''), '-', ''), '.', ''), '''', ''))`;
 }
 
 function evidenceGateProfile(

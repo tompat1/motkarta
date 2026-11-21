@@ -4,6 +4,7 @@ import { isBroadStockholmArea, STOCKHOLM_REGIONS as STOCKHOLM_REGION_NAMES } fro
 import type { Language } from "../app/shared";
 import { formatUpdatedDate } from "../app/shared";
 import { canonicalCuisineOptions } from "../../lib/cuisine-tags";
+import { fetchWithD1Retry } from "../../lib/admin-d1";
 import { AdminCoveragePanel } from "./AdminCoveragePanel";
 import { AdminMlDashboard } from "./AdminMlDashboard";
 import { AdminGuidePanel } from "./AdminGuidePanel";
@@ -326,7 +327,7 @@ export function AdminReviewPanel({
         const q = (queryOverride !== undefined ? queryOverride : searchQuery).trim();
         const includeDuplicates = stateFilter !== "all" ? "&includeDuplicates=1" : "";
         const url = `/api/admin/candidates?state=${stateFilter}&limit=200${includeDuplicates}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
-        const response = await fetch(url, {
+        const response = await fetchWithD1Retry(url, {
           headers: adminHeaders(token),
         });
         const payload = (await response.json().catch(() => ({}))) as {
@@ -469,7 +470,7 @@ export function AdminReviewPanel({
 
       setLoadingDashboard(true);
       try {
-        const response = await fetch("/api/admin/review-dashboard", {
+        const response = await fetchWithD1Retry("/api/admin/review-dashboard", {
           headers: adminHeaders(token),
         });
         const payload = (await response.json().catch(() => ({}))) as AdminReviewDashboard & { quotaExceeded?: boolean };
@@ -611,7 +612,6 @@ export function AdminReviewPanel({
               ? "Samtliga tabeller (establishments, evidence_sources, admin_review_events, recommendation_events) är aktiva."
               : "All tables (establishments, evidence_sources, admin_review_events, recommendation_events) are verified.",
           });
-          await Promise.all([loadDashboard(token), loadCandidates(token)]);
         }
         return payload;
       } catch (schemaError) {
@@ -694,11 +694,19 @@ export function AdminReviewPanel({
   }, [adminSession?.admin, d1QuotaExceeded]);
 
   useEffect(() => {
-    if (hasAdminAuth && schemaStatus?.ready && !d1QuotaExceeded) {
-      void loadCandidates();
-      void loadDistrictNames();
-    }
-  }, [hasAdminAuth, schemaStatus?.ready, d1QuotaExceeded, loadCandidates, loadDistrictNames]);
+    if (!hasAdminAuth || !schemaStatus?.ready || d1QuotaExceeded) return;
+    let cancelled = false;
+    void (async () => {
+      await loadCandidates();
+      if (cancelled) return;
+      await loadDashboard();
+      if (cancelled) return;
+      await loadDistrictNames();
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [hasAdminAuth, schemaStatus?.ready, d1QuotaExceeded, loadCandidates, loadDashboard, loadDistrictNames]);
 
   const handleUnlock = (event: React.FormEvent) => {
     event.preventDefault();
