@@ -647,6 +647,33 @@ export function kindFilterLabel(kind: EstablishmentFilter | string, lang: Langua
   return kind;
 }
 
+export function listContextLabel({
+  lang,
+  kind,
+  cuisine,
+  seasonalLabel,
+  sourceLabel,
+  selectedTags = [],
+  hasQuery = false,
+}: {
+  lang: Language;
+  kind: EstablishmentFilter;
+  cuisine: CuisineFilter;
+  seasonalLabel?: string;
+  sourceLabel?: string;
+  selectedTags?: readonly string[];
+  hasQuery?: boolean;
+}): string {
+  if (seasonalLabel) return seasonalLabel;
+  if (sourceLabel) return sourceLabel;
+  if (cuisine !== allCuisines) return cuisineLabel(cuisine, lang);
+  if (selectedTags.length === 1) return selectedTags[0];
+  if (selectedTags.length > 1) return lang === "sv" ? "Filtrerade ställen" : "Filtered places";
+  if (kind !== "All places") return kindFilterLabel(kind, lang);
+  if (hasQuery) return lang === "sv" ? "Sökresultat" : "Search results";
+  return kindFilterLabel(kind, lang);
+}
+
 export function preferencesFromQuery(query: string, kind: EstablishmentFilter): UserPreferences {
   const normalized = query.toLowerCase();
   const tags = [

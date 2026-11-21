@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { kindFilterLabel } from "../src/app/shared.ts";
+import { allCuisines, kindFilterLabel, listContextLabel } from "../src/app/shared.ts";
 import { extractStructuredFilters } from "../lib/concierge/filters.ts";
 import {
   getPlaceDrinkCategory,
@@ -13,6 +13,22 @@ const livePlaces = rawPlacesData.places ?? rawPlacesData;
 test("Latest added uses clean label without hardcoded emoji", () => {
   assert.equal(kindFilterLabel("Latest", "sv"), "Senast tillagda");
   assert.equal(kindFilterLabel("Latest", "en"), "Latest added");
+});
+
+test("result list header describes the active list context", () => {
+  const base = { lang: "en", cuisine: allCuisines, selectedTags: [], hasQuery: false };
+
+  assert.equal(listContextLabel({ ...base, kind: "Latest" }), "Latest added");
+  assert.equal(listContextLabel({ ...base, kind: "Restaurant" }), "Restaurant");
+  assert.equal(listContextLabel({ ...base, kind: "Bakery" }), "Bakery");
+  assert.equal(
+    listContextLabel({ ...base, kind: "All places", seasonalLabel: "Julbord" }),
+    "Julbord",
+  );
+  assert.equal(
+    listContextLabel({ ...base, kind: "Restaurant", cuisine: "italian" }),
+    "Italian",
+  );
 });
 
 test("Latest added button renders Lightning icon instead of AI Sparkle icon", async () => {

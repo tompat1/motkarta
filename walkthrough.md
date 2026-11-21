@@ -1,3 +1,28 @@
+# Context-aware result-list header — 2026-11-21
+
+Updated the result header so the count is followed by the active list context
+instead of the generic “in full list” copy. A hyphen separates the count and
+title. Seasonal selections now show their editorial title (for example,
+`19 - Julbord`); type, cuisine, source, search, and
+feature-filtered lists use their corresponding localized label. The expanded
+mobile header is now 16px while retaining its existing 800 font weight.
+
+The seasonal editorial CTA now opens the complete filtered list on mobile and
+clears any active place selection. It no longer preselects Pelikan or opens a
+map card, mobile preview, or place-detail panel.
+
+Verification completed with zero failures:
+
+- Context-label unit coverage includes Julbord, Latest added, Restaurant,
+  Bakery, and cuisine precedence.
+- The focused mobile E2E check passed in Chromium, Mobile Chrome, and Mobile
+  Safari and verifies the rendered 16px / 800 typography.
+- Impeccable typography scan: no findings.
+- Full `npm run test:gate`: typecheck passed; lint passed with 0 errors and 105
+  existing warnings; JavaScript 515/515 passed; Python 185/185 passed;
+  Playwright 132 passed and 6 skipped across all configured browser projects.
+- `git diff --check`: passed.
+
 # Frontend Note Sanitization & Diagnostic Suppression — 2026-11-15
 
 Suppressed raw internal data-pipeline, ETL, and backend sync messages from the public consumer UI:

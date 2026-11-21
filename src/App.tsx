@@ -40,6 +40,7 @@ import {
   formatUpdatedDate,
   hasCoordinates,
   kindFilterLabel,
+  listContextLabel,
   logConciergeQuery,
   modeLabel,
   modeScore,
@@ -1208,6 +1209,15 @@ function AppContent({
   const currentSeason = useMemo(() => getStockholmSeason(), []);
   const seasonalHeroImage = getSeasonalHeroImage(currentSeason);
   const seasonalTheme = useMemo(() => getSeasonalTheme(), []);
+  const activeListTitle = listContextLabel({
+    lang,
+    kind,
+    cuisine,
+    seasonalLabel: seasonalFilterActive ? seasonalTheme.themeLabel[lang] : undefined,
+    sourceLabel: selectedSourceFilter?.shortLabel,
+    selectedTags,
+    hasQuery: Boolean(query.trim()),
+  });
   const seasonalPlaces = useMemo(
     () => selectSeasonalVenues(places, seasonalTheme, 20),
     [places, seasonalTheme],
@@ -2899,11 +2909,17 @@ function AppContent({
                 setQuery("");
                 setSeasonalFilterActive(true);
                 setListScope("all");
-                if (seasonalPlaces[0]) {
-                  handleSelectPlace(seasonalPlaces[0].id);
-                }
+                setSelected(null);
+                setIsPlaceDetailOpen(false);
+                setIsMapCardClosed(false);
                 setMobileTab("map");
-                document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+                const isMobile = window.matchMedia("(max-width: 768px)").matches;
+                setMobileViewMode(isMobile ? "list" : "map");
+                if (!isMobile) {
+                  window.requestAnimationFrame(() => {
+                    document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+                  });
+                }
               }}
             >
               {seasonalTheme.ctaLabel[lang]}
@@ -3461,17 +3477,10 @@ function AppContent({
                   {isInitialPlacesLoading ? (
                     <span>{placesLoadingCopy.title}</span>
                   ) : mobileViewMode === "list" ? (
-                    listScope === "all" ? (
-                      <>
-                        <span>{formatPlaceCount(matchingCount)}</span>{" "}
-                        <span>{lang === "sv" ? "i hela listan" : "in full list"}</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>{formatPlaceCount(listDisplayCount)}</span>{" "}
-                        <span>{t.placesInList}</span>
-                      </>
-                    )
+                    <>
+                      <span>{formatPlaceCount(listScope === "all" ? matchingCount : listDisplayCount)}</span>{" "}
+                      <span>- {activeListTitle}</span>
+                    </>
                   ) : (
                     <>
                       <span>{formatPlaceCount(hasSearchQuery || conciergePlaces.length > 0 || conciergeResponse || listScope === "all" ? matchingCount : mapDisplayCount)}</span>{" "}
@@ -4049,7 +4058,7 @@ function AppContent({
                   ) : listScope === "all" ? (
                     <>
                       <span>{formatPlaceCount(matchingCount)}</span>{" "}
-                      <span>{lang === "sv" ? "i hela listan" : "in full list"}</span>
+                      <span>- {activeListTitle}</span>
                     </>
                   ) : (
                     <>

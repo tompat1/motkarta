@@ -22,8 +22,15 @@ test.describe("Mobile Rank Controls & Counter", () => {
     await expect(counterTitle).toContainText(/ställen|places|i listan/i);
 
     // 3. Expand bottom sheet to access VISA / SORTERA pills
+    const bakeryFilter = page.locator(".mobile-type-filters .quick-filter-pill", { hasText: /Bageri|Bakery/i });
+    await bakeryFilter.click();
+
     const peekBtn = page.locator(".floating-view-toggle-btn");
     await peekBtn.click();
+
+    await expect(counterTitle).toContainText(/Bageri|Bakery/i);
+    await expect(counterTitle).toHaveCSS("font-size", "16px");
+    await expect(counterTitle).toHaveCSS("font-weight", "800");
 
     const visaPill = page.locator(".mobile-ddl-pill", { hasText: "VISA" });
     await expect(visaPill).toBeVisible();
@@ -47,5 +54,20 @@ test.describe("Mobile Rank Controls & Counter", () => {
 
     const formulaTitle = page.locator(".mobile-rank-sheet-title");
     await expect(formulaTitle).toContainText(/HUR RANKAS STÄLLEN|HOW RANKING WORKS/);
+  });
+
+  test("seasonal CTA opens the Julbord list without selecting a place", async ({ page }) => {
+    await page.goto("/");
+
+    await page.locator('.mobile-toolbar-tab[data-tab="discover"]').click();
+    const seasonalCta = page.getByRole("link", { name: /Visa julbord på kartan|Explore Julbord on map/i });
+    await expect(seasonalCta).toBeVisible();
+    await seasonalCta.click();
+
+    await expect(page.locator(".mobile-bottom-sheet")).toHaveClass(/is-expanded/);
+    await expect(page.locator(".mobile-results-count")).toContainText(/\d+\s*-\s*Julbord/);
+    await expect(page.locator("article.map-card")).toHaveCount(0);
+    await expect(page.locator(".mobile-place-slide-up")).toHaveCount(0);
+    await expect(page.locator(".place-detail-sheet-overlay")).toHaveCount(0);
   });
 });
