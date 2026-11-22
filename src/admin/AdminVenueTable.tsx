@@ -193,12 +193,78 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
           </caption>
           <thead>
             <tr>
-              <SortableHeading label={lang === "sv" ? "Plats" : "Venue"} column="name" activeKey={sortKey} direction={sortDirection} onSort={updateSort} />
-              <SortableHeading label="Status" column="status" activeKey={sortKey} direction={sortDirection} onSort={updateSort} />
-              <SortableHeading label={lang === "sv" ? "Evidensstyrka" : "Confidence"} column="confidence" activeKey={sortKey} direction={sortDirection} onSort={updateSort} />
-              <SortableHeading label={lang === "sv" ? "Proveniens" : "Provenance"} column="source" activeKey={sortKey} direction={sortDirection} onSort={updateSort} />
-              <SortableHeading label={lang === "sv" ? "Aktualitet" : "Freshness"} column="freshness" activeKey={sortKey} direction={sortDirection} onSort={updateSort} />
-              <SortableHeading label={lang === "sv" ? "Konflikter" : "Conflicts"} column="conflicts" activeKey={sortKey} direction={sortDirection} onSort={updateSort} />
+              <SortableHeading
+                label={lang === "sv" ? "Plats" : "Venue"}
+                tooltip={
+                  lang === "sv"
+                    ? "Ställets namn, kategori, stadsdel och interna ID. Klicka för att sortera."
+                    : "Venue name, category, district, and internal ID. Click to sort."
+                }
+                column="name"
+                activeKey={sortKey}
+                direction={sortDirection}
+                onSort={updateSort}
+              />
+              <SortableHeading
+                label="Status"
+                tooltip={
+                  lang === "sv"
+                    ? "Livscykelstatus (Kandidat, Baseline, Verifierad, Utvald) och eventuell granskningsetikett."
+                    : "Lifecycle state (Candidate, Baseline, Verified, Featured) and any review label."
+                }
+                column="status"
+                activeKey={sortKey}
+                direction={sortDirection}
+                onSort={updateSort}
+              />
+              <SortableHeading
+                label={lang === "sv" ? "Evidensstyrka" : "Confidence"}
+                tooltip={
+                  lang === "sv"
+                    ? "Antal oberoende källor och aktuell existenssignal. Hög (3+), Medel (2+), Låg (<2)."
+                    : "Independent evidence sources and current existence signal. High (3+), Medium (2+), Low (<2)."
+                }
+                column="confidence"
+                activeKey={sortKey}
+                direction={sortDirection}
+                onSort={updateSort}
+              />
+              <SortableHeading
+                label={lang === "sv" ? "Proveniens" : "Provenance"}
+                tooltip={
+                  lang === "sv"
+                    ? "Ursprungskälla (OSM, livsmedelskontroll, kuraterad guide) och totalt antal inkomna signaler."
+                    : "Originating data source (OSM, inspection, curated guide) and total signal count."
+                }
+                column="source"
+                activeKey={sortKey}
+                direction={sortDirection}
+                onSort={updateSort}
+              />
+              <SortableHeading
+                label={lang === "sv" ? "Aktualitet" : "Freshness"}
+                tooltip={
+                  lang === "sv"
+                    ? "Antal dagar sedan senaste verifierade signalen eller uppdateringen av posten."
+                    : "Days since the most recent verified evidence signal or record update."
+                }
+                column="freshness"
+                activeKey={sortKey}
+                direction={sortDirection}
+                onSort={updateSort}
+              />
+              <SortableHeading
+                label={lang === "sv" ? "Konflikter" : "Conflicts"}
+                tooltip={
+                  lang === "sv"
+                    ? "Antal möjliga dubbletter (namn, adress eller närhet). Öppna granskning för att slå ihop eller behålla."
+                    : "Possible duplicate matches (name, address, or proximity). Open review to merge or keep separate."
+                }
+                column="conflicts"
+                activeKey={sortKey}
+                direction={sortDirection}
+                onSort={updateSort}
+              />
               <th scope="col" className="admin-table-action-heading">{lang === "sv" ? "Åtgärd" : "Action"}</th>
             </tr>
           </thead>
@@ -321,26 +387,32 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
 
 function SortableHeading({
   label,
+  tooltip,
   column,
   activeKey,
   direction,
   onSort,
 }: {
   label: string;
+  tooltip: string;
   column: SortKey;
   activeKey: SortKey;
   direction: SortDirection;
   onSort: (column: SortKey) => void;
 }) {
   const active = column === activeKey;
+  const tooltipId = `admin-col-tooltip-${column}`;
   return (
-    <th scope="col" aria-sort={active ? direction : "none"}>
-      <button type="button" className={active ? "is-active" : ""} onClick={() => onSort(column)}>
+    <th scope="col" aria-sort={active ? direction : "none"} className="admin-th-with-tooltip">
+      <button type="button" className={active ? "is-active" : ""} aria-describedby={tooltipId} onClick={() => onSort(column)}>
         {label}
         {active
           ? direction === "ascending" ? <ArrowUp size={12} weight="bold" /> : <ArrowDown size={12} weight="bold" />
           : <ArrowsDownUp size={12} />}
       </button>
+      <span id={tooltipId} role="tooltip" className="admin-th-tooltip">
+        {tooltip}
+      </span>
     </th>
   );
 }

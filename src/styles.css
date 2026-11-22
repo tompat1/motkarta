@@ -21515,6 +21515,72 @@ body.is-drawer-open .site-utilities > * {
   white-space: nowrap;
 }
 
+.admin-venue-table thead th.admin-th-with-tooltip:hover,
+.admin-venue-table thead th.admin-th-with-tooltip:focus-within {
+  z-index: 25;
+}
+
+.admin-th-tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  width: max-content;
+  max-width: 260px;
+  padding: 8px 11px;
+  background: #111111;
+  color: #f4f0e7;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: none;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 120ms ease, transform 120ms ease, visibility 120ms ease;
+  z-index: 30;
+}
+
+.admin-th-tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: #111111;
+  border-top: 0;
+}
+
+.admin-venue-table thead th:first-child .admin-th-tooltip {
+  left: 8px;
+  transform: translateY(-2px);
+}
+
+.admin-venue-table thead th:first-child .admin-th-tooltip::before {
+  left: 20px;
+  transform: none;
+}
+
+.admin-venue-table thead th.admin-th-with-tooltip:hover .admin-th-tooltip,
+.admin-venue-table thead th.admin-th-with-tooltip:focus-within .admin-th-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.admin-venue-table thead th:first-child.admin-th-with-tooltip:hover .admin-th-tooltip,
+.admin-venue-table thead th:first-child.admin-th-with-tooltip:focus-within .admin-th-tooltip {
+  transform: translateY(0);
+}
+
 .admin-venue-table thead th button {
   display: inline-flex;
   align-items: center;
