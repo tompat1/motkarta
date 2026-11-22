@@ -19,6 +19,8 @@ export type AdminVenueTableRow = {
   area: string;
   address: string | null;
   website: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   lifecycleState: string;
   validationLabel?: string | null;
   candidateSourceType: string | null;
@@ -49,6 +51,7 @@ type AdminVenueTableProps<T extends AdminVenueTableRow> = {
   onSelectCandidate: (candidate: T) => void;
   onOpenReview: (candidate: T) => void;
   onEditCandidate: (candidate: T) => void;
+  onConfirmCandidate?: (candidate: T) => void;
   onToggleRemoved?: (candidate: T) => void;
 };
 
@@ -60,6 +63,7 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
   onSelectCandidate,
   onOpenReview,
   onEditCandidate,
+  onConfirmCandidate,
   onToggleRemoved,
 }: AdminVenueTableProps<T>) {
   const [sortKey, setSortKey] = useState<SortKey>("conflicts");
@@ -295,6 +299,11 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
                     <span className={`admin-table-status state-${candidate.lifecycleState}`}>
                       {lifecycleLabel(candidate.lifecycleState, lang)}
                     </span>
+                    {!isRemoved && (candidate.lifecycleState === "candidate" || candidate.latitude == null || candidate.longitude == null) ? (
+                      <small className="admin-table-cell-note admin-not-on-map-note">
+                        {lang === "sv" ? "Ej på kartan" : "Not on map"}
+                      </small>
+                    ) : null}
                     {candidate.validationLabel ? <small className="admin-table-cell-note">{validationLabelText(candidate.validationLabel, lang)}</small> : null}
                   </td>
                   <td>
@@ -340,6 +349,16 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
                   </td>
                   <td>
                     <div className="admin-table-row-actions">
+                      {!isRemoved && candidate.lifecycleState === "candidate" && onConfirmCandidate ? (
+                        <button
+                          type="button"
+                          className="admin-table-confirm-btn"
+                          onClick={() => onConfirmCandidate(candidate)}
+                          disabled={busyId === candidate.id}
+                        >
+                          {lang === "sv" ? "Bekräfta" : "Confirm"}
+                        </button>
+                      ) : null}
                       <button type="button" className="admin-table-review-btn" onClick={() => onOpenReview(candidate)} disabled={busyId === candidate.id}>
                         {lang === "sv" ? "Granska" : "Review"}
                       </button>

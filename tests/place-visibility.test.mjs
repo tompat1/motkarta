@@ -60,6 +60,25 @@ test("publication identity handles namespaces, branches, aliases and legacy impo
   assert.equal(samePlaceIdentity(belgo, { id: belgo.id, idNamespace: "d1", name: "Different venue" }), false);
   const canonical = { ...belgo, id: 1 };
   assert.deepEqual(filterPublishedPlaces([canonical, { ...belgo, id: 2, duplicateResolution: "merged" }]), [canonical]);
+  assert.deepEqual(filterPublishedPlaces([canonical, { ...belgo, id: 3, lifecycleState: "candidate" }]), [canonical]);
+});
+
+test("pending_confirmation queue surfaces unconfirmed candidates and places missing coordinates with user submissions first", async (t) => {
+  const { env, sqlite } = await database(t);
+  sqlite.prepare(`INSERT INTO establishments
+    (id, name, type, district, description, latitude, longitude, lifecycle_state, candidate_source_type, created_at, updated_at)
+    VALUES
+    (101, 'New User Tip', 'Café', 'Södermalm', '', NULL, NULL, 'candidate', 'user_submission', '2026-11-20', '2026-11-20'),
+    (102, 'Imported Candidate', 'Restaurant', 'Vasastan', '', 59.34, 18.05, 'candidate', 'osm_baseline', '2026-11-21', '2026-11-21'),
+    (103, 'Missing Coords Baseline', 'Bakery', 'Östermalm', '', NULL, NULL, 'baseline', 'osm_baseline', '2026-11-19', '2026-11-19'),
+    (104, 'Closed Candidate', 'Restaurant', 'Solna', '', NULL, NULL, 'candidate', 'user_submission', '2026-11-22', '2026-11-22')`)
+    .run();
+  sqlite.prepare(`UPDATE establishments SET validation_label = 'closed_wrong_category' WHERE id = 104`).run();
+
+  const res = await candidates({ request: request("/api/admin/candidates?state=pending_confirmation"), env });
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.deepEqual(body.candidates.map((p) => p.name), ["New User Tip", "Imported Candidate", "Missing Coords Baseline"]);
 });
 
 test("authenticated removal and restoration propagate through SQLite, static catalog, places API and concierge", async (t) => {

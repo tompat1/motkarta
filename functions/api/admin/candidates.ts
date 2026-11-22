@@ -43,7 +43,7 @@ type Env = {
 } & AdminAuthEnv;
 
 type ValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
-type CandidateStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all" | "removed";
+type CandidateStateFilter = PlaceLifecycleState | "pending_confirmation" | "unresolved_region" | "needs_input" | "ml_dashboard" | "all" | "removed";
 type AdminAction =
   | "promote"
   | "merge_duplicate"
@@ -94,7 +94,7 @@ type EstablishmentLookupRow = {
 };
 
 const lifecycleStates: PlaceLifecycleState[] = ["baseline", "candidate", "verified", "featured"];
-const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "unresolved_region", "needs_input", "ml_dashboard", "all", "removed"];
+const stateFilters: CandidateStateFilter[] = [...lifecycleStates, "pending_confirmation", "unresolved_region", "needs_input", "ml_dashboard", "all", "removed"];
 const adminActions: AdminAction[] = [
   "promote",
   "merge_duplicate",
@@ -762,6 +762,27 @@ async function loadCandidates(
       return results ?? [];
     }
 
+    if (state === "pending_confirmation") {
+      const pendingOrder = `
+        GROUP BY e.id
+        ORDER BY CASE WHEN e.candidate_source_type = 'user_submission' THEN 0 ELSE 1 END ASC,
+                 COALESCE(e.created_at, e.updated_at, '') DESC,
+                 e.id DESC
+        LIMIT ?
+      `;
+      const pendingWhere = `
+        WHERE (${searchClause})
+          AND COALESCE(e.validation_label, '') != 'closed_wrong_category'
+          AND COALESCE(e.duplicate_resolution, '') != 'merged'
+          AND (e.lifecycle_state = 'candidate' OR e.latitude IS NULL OR e.longitude IS NULL)
+      `;
+      const { results } = await db
+        .prepare(`${select} ${pendingWhere} ${pendingOrder}`)
+        .bind(qPattern, qPattern, qPattern, qPattern, trimmedQuery, limit)
+        .all<CandidateRow>();
+      return results ?? [];
+    }
+
     if (state === "unresolved_region") {
       const broadWhere = `
         WHERE (${searchClause}) AND (
@@ -803,6 +824,23 @@ async function loadCandidates(
 
   if (state === "all") {
     const { results } = await db.prepare(`${select}${order}`).bind(limit).all<CandidateRow>();
+    return results ?? [];
+  }
+
+  if (state === "pending_confirmation") {
+    const pendingOrder = `
+      GROUP BY e.id
+      ORDER BY CASE WHEN e.candidate_source_type = 'user_submission' THEN 0 ELSE 1 END ASC,
+               COALESCE(e.created_at, e.updated_at, '') DESC,
+               e.id DESC
+      LIMIT ?
+    `;
+    const pendingWhere = `
+      WHERE COALESCE(e.validation_label, '') != 'closed_wrong_category'
+        AND COALESCE(e.duplicate_resolution, '') != 'merged'
+        AND (e.lifecycle_state = 'candidate' OR e.latitude IS NULL OR e.longitude IS NULL)
+    `;
+    const { results } = await db.prepare(`${select}${pendingWhere} ${pendingOrder}`).bind(limit).all<CandidateRow>();
     return results ?? [];
   }
 

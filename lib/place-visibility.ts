@@ -21,7 +21,9 @@ export function isClosedPlace(place: PublicationPlace): boolean {
 }
 
 export function isUnpublishedPlace(place: PublicationPlace): boolean {
-  return isClosedPlace(place) || place.duplicateResolution === "merged";
+  return isClosedPlace(place)
+    || place.duplicateResolution === "merged"
+    || place.lifecycleState === "candidate";
 }
 
 export function samePlaceIdentity(place: PlaceIdentity, other: PlaceIdentity): boolean {

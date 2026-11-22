@@ -43,7 +43,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 
-type AdminStateFilter = PlaceLifecycleState | "unresolved_region" | "needs_input" | "ml_dashboard" | "all" | "removed";
+type AdminStateFilter = PlaceLifecycleState | "pending_confirmation" | "unresolved_region" | "needs_input" | "ml_dashboard" | "all" | "removed";
 type ConcourseRailTab = "desk" | "queue" | "duplicates" | "coverage" | "sources" | "ml" | "runbooks";
 type AdminValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
 type DashboardQueueFocus = "all" | "new" | "hidden_gem_ready" | "missing_cuisine" | "needs_evidence" | "duplicates";
@@ -177,7 +177,7 @@ export {
   localizeD1QuotaMessage,
 };
 
-const adminStateFilters: AdminStateFilter[] = ["all", "removed", "candidate", "baseline", "verified", "featured", "unresolved_region", "needs_input"];
+const adminStateFilters: AdminStateFilter[] = ["pending_confirmation", "all", "removed", "candidate", "baseline", "verified", "featured", "unresolved_region", "needs_input"];
 
 export function AdminReviewPanel({
   lang = "sv",
@@ -2338,6 +2338,18 @@ export function AdminReviewPanel({
                       setPlaceEditorDraft(candidateToPlaceDraft(candidate));
                       setPlaceEditorOpen(true);
                     }}
+                    onConfirmCandidate={(candidate) => {
+                      const hasCoords = typeof candidate.latitude === "number" && typeof candidate.longitude === "number";
+                      const confirmMessage = hasCoords
+                        ? lang === "sv"
+                          ? `Bekräfta och publicera ${candidate.name} på kartan som Verifierad?`
+                          : `Confirm and publish ${candidate.name} to the map as Verified?`
+                        : lang === "sv"
+                          ? `${candidate.name} saknar koordinater ännu. Vill du ändå bekräfta status som Verifierad? (Lägg till koordinater via Redigera för att visa på kartan.)`
+                          : `${candidate.name} is still missing coordinates. Confirm status as Verified anyway? (Add coordinates via Edit to show on the map.)`;
+                      if (!window.confirm(confirmMessage)) return;
+                      void promoteCandidate(candidate, "verified", null);
+                    }}
                     onToggleRemoved={(candidate) =>
                       void promoteCandidate(
                         candidate,
@@ -3126,6 +3138,7 @@ function lifecycleStateLabel(state: AdminStateFilter | string, lang: Language) {
     candidate: { sv: "Kandidat", en: "Candidate" },
     verified: { sv: "Verifierad", en: "Verified" },
     featured: { sv: "Utvald", en: "Featured" },
+    pending_confirmation: { sv: "Att bekräfta", en: "Pending approval" },
     unresolved_region: { sv: "Saknar region", en: "Needs Region" },
     needs_input: { sv: "Saknar uppgifter", en: "Needs Info" },
     ml_dashboard: { sv: "🤖 ML & Modeller", en: "🤖 ML & Models" },
@@ -3176,6 +3189,10 @@ function duplicateResolutionLabel(resolution: "merged" | "keep_separate", lang: 
 
 function stateFilterHelpText(filter: AdminStateFilter, lang: Language): string {
   switch (filter) {
+    case "pending_confirmation":
+      return lang === "sv"
+        ? "Att bekräfta: Nya platser (användartips, kandidater eller platser utan koordinater) som ännu inte syns på kartan och kräver manuell bekräftelse innan publicering."
+        : "Pending approval: New places (user submissions, candidates, or places missing coordinates) not yet shown on the map that require manual confirmation before publishing.";
     case "candidate":
       return lang === "sv"
         ? "Kandidater: Nya förslag från OSM, livsmedelskontroll och guider. Prioritera rader med '✨ X användartips' och kontrollera att platsen har minst 2 oberoende källor för dolda pärlor."
