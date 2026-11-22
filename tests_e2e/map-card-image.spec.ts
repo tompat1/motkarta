@@ -54,4 +54,62 @@ test.describe("Map Place Card Image Placeholder & Clean Note", () => {
       });
     }
   });
+
+  test("clicking cuisine in place detail filters the list on desktop and mobile", async ({ page }, testInfo) => {
+    await page.goto("/");
+    const isMobile = testInfo.project.name.startsWith("mobile");
+
+    if (!isMobile) {
+      const searchInput = page.locator('#desktop-discovery-search, input[aria-label*="Sök"]').first();
+      await expect(searchInput).toBeVisible({ timeout: 15000 });
+      await searchInput.fill("Belgobaren");
+
+      const firstPlace = page.locator(".place", { hasText: "Belgobaren" }).first();
+      await expect(firstPlace).toBeVisible({ timeout: 10000 });
+      await firstPlace.click();
+
+      const mapCard = page.locator("article.map-card");
+      await expect(mapCard).toBeVisible({ timeout: 10000 });
+
+      const cuisineBtn = mapCard.locator(".cuisine-line-btn").first();
+      await expect(cuisineBtn).toBeVisible();
+      await cuisineBtn.click();
+
+      // Search input is cleared and cuisine filter is active on the list
+      await expect(searchInput).toHaveValue("");
+      await expect(cuisineBtn).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator(".place", { hasText: "Belgobaren" }).first()).toBeVisible();
+    } else {
+      // Search Belgobaren, switch to mobile list view, open PlaceDetailSheet, tap cuisine
+      const searchInput = page.locator('#desktop-discovery-search, input[aria-label*="Sök"]').first();
+      await searchInput.scrollIntoViewIfNeeded();
+      await expect(searchInput).toBeVisible({ timeout: 15000 });
+      await searchInput.fill("Belgobaren");
+
+      const viewToggleBtn = page.locator(".floating-view-toggle-btn");
+      await expect(viewToggleBtn).toBeVisible({ timeout: 10000 });
+      await viewToggleBtn.click();
+
+      const mobileCard = page.locator(".mobile-photo-card", { hasText: "Belgobaren" }).first();
+      await expect(mobileCard).toBeVisible({ timeout: 10000 });
+      const cardTitle = mobileCard.locator("h2").first();
+      if (await cardTitle.isVisible()) {
+        await cardTitle.click();
+      } else {
+        await mobileCard.click();
+      }
+
+      const detailSheet = page.locator(".place-detail-sheet");
+      await expect(detailSheet).toBeVisible({ timeout: 10000 });
+
+      const cuisineBtn = detailSheet.locator(".place-detail-cuisine-btn").first();
+      await expect(cuisineBtn).toBeVisible();
+      await cuisineBtn.click();
+
+      // Detail sheet closes and filtered mobile list is shown
+      await expect(detailSheet).toBeHidden();
+      await expect(page.locator(".mobile-place-card-list")).toBeVisible();
+      await expect(page.locator(".mobile-photo-card", { hasText: "Belgobaren" }).first()).toBeVisible();
+    }
+  });
 });

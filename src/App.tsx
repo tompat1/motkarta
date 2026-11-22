@@ -730,6 +730,32 @@ function AppContent({
     setListScope("all");
   }, [clearConciergeState]);
 
+  const handleFilterByCuisineFromDetail = useCallback(
+    (targetCuisine: string) => {
+      const normalized = targetCuisine.trim().toLowerCase();
+      if (!normalized) return;
+      clearConciergeState();
+      setSeasonalFilterActive(false);
+      setSelectedSourceFilter(null);
+      setKind("All places");
+      setSelectedTags([]);
+      setQuery("");
+      setCuisine(normalized);
+      setListScope("all");
+      setIsPlaceDetailOpen(false);
+      if (typeof window !== "undefined") {
+        if (window.innerWidth <= 1024) {
+          setMobileTab("map");
+          setMobileViewMode("list");
+        } else {
+          const listContainer = document.querySelector<HTMLElement>(".results");
+          listContainer?.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+    },
+    [clearConciergeState],
+  );
+
   const [mobileTab, setMobileTab] = useState<MobileTab>(() => {
     if (typeof window !== "undefined") {
       if (window.location.hash === "#upptack" || window.location.hash === "#discover") {
@@ -1028,12 +1054,23 @@ function AppContent({
     [places, preferences],
   );
   const cuisineOptions = useMemo(() => cuisineOptionsFromPlaces(places), [places]);
+  const allAvailableCuisines = useMemo(() => {
+    const set = new Set<string>();
+    places.forEach((place) => {
+      cuisineParts(place).forEach((item) => set.add(item));
+    });
+    return set;
+  }, [places]);
+  const visibleCuisineOptions = useMemo(
+    () => (cuisine !== allCuisines && !cuisineOptions.includes(cuisine) ? [cuisine, ...cuisineOptions] : cuisineOptions),
+    [cuisine, cuisineOptions],
+  );
 
   useEffect(() => {
-    if (cuisine !== allCuisines && !cuisineOptions.includes(cuisine)) {
+    if (cuisine !== allCuisines && !allAvailableCuisines.has(cuisine)) {
       setCuisine(allCuisines);
     }
-  }, [cuisine, cuisineOptions]);
+  }, [cuisine, allAvailableCuisines]);
 
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [locationToast, setLocationToast] = useState<string | null>(null);
@@ -3347,7 +3384,7 @@ function AppContent({
         <div className="chips cuisine-chips" aria-label="Filter kök">
           <span className="filter-label">{t.cuisineFilterLabel}</span>
           <div className="chip-row">
-            {[allCuisines, ...cuisineOptions].map((item) => (
+            {[allCuisines, ...visibleCuisineOptions].map((item) => (
               <button
                 key={item}
                 aria-pressed={cuisine === item}
@@ -3810,7 +3847,26 @@ function AppContent({
             {!isMapCardMinimized && (
               <div className="map-card-body">
                 {cuisineParts(active).length ? (
-                  <p className="cuisine-line">{cuisineParts(active).map((c) => cuisineLabel(c, lang)).join(" · ")}</p>
+                  <div className="cuisine-line" role="group" aria-label={t.cuisineFilterLabel}>
+                    {cuisineParts(active).map((c, index) => {
+                      const label = cuisineLabel(c, lang);
+                      const isActiveCuisine = cuisine === c;
+                      return (
+                        <Fragment key={c}>
+                          {index > 0 ? <span className="cuisine-line-sep" aria-hidden="true">·</span> : null}
+                          <button
+                            type="button"
+                            className={`cuisine-line-btn ${isActiveCuisine ? "is-active" : ""}`}
+                            aria-pressed={isActiveCuisine}
+                            onClick={() => handleFilterByCuisineFromDetail(c)}
+                            title={lang === "sv" ? `Filtrera listan på ${label}` : `Filter list by ${label}`}
+                          >
+                            {label}
+                          </button>
+                        </Fragment>
+                      );
+                    })}
+                  </div>
                 ) : null}
                 <div
                   className={`map-card-photo-container ${!activeCardPhoto ? "map-card-photo-container-dummy" : ""}`}
@@ -4411,7 +4467,7 @@ function AppContent({
         establishmentTypes={visibleEstablishmentTypes}
         onSelectKind={selectKindFilter}
         cuisine={cuisine}
-        cuisineOptions={cuisineOptions}
+        cuisineOptions={visibleCuisineOptions}
         onSelectCuisine={selectCuisineFilter}
         selectedTags={selectedTags}
         onToggleFeature={toggleFeatureFilter}
@@ -4445,6 +4501,8 @@ function AppContent({
           onToggleSave={handleToggleSavePlace}
           onRatePlace={handleRatePlace}
           onViewOnMap={handleViewPlaceOnMap}
+          activeCuisine={cuisine}
+          onFilterByCuisine={handleFilterByCuisineFromDetail}
           onGetDirections={(place) =>
             recordRecommendationEvents([
               { establishmentId: place.id, eventType: "direction_request", queryContext: { surface: "place_detail" } },

@@ -2517,6 +2517,10 @@ button.search-clear-btn:hover {
 }
 
 .cuisine-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
   color: var(--color-water);
   font-family: var(--font-mono);
   font-size: 12px;
@@ -2524,6 +2528,48 @@ button.search-clear-btn:hover {
   letter-spacing: 0.08em;
   margin: 0 0 12px;
   text-transform: uppercase;
+}
+
+.cuisine-line-sep {
+  color: var(--color-water);
+  opacity: 0.6;
+}
+
+.cuisine-line-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--color-water);
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  padding: 2px 6px;
+  margin-left: -6px;
+  text-transform: uppercase;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.cuisine-line-btn + .cuisine-line-sep + .cuisine-line-btn,
+.cuisine-line-sep + .cuisine-line-btn {
+  margin-left: 0;
+}
+
+.cuisine-line-btn:hover {
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.25);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cuisine-line-btn:focus-visible {
+  outline: 2px solid var(--color-water);
+  outline-offset: 2px;
+}
+
+.cuisine-line-btn.is-active {
+  background: rgba(37, 99, 235, 0.12);
+  border-color: rgba(37, 99, 235, 0.35);
 }
 
 .map-card .note {
@@ -15607,6 +15653,39 @@ footer {
   text-transform: uppercase;
   color: #555555;
   margin: 0;
+  line-height: 1.5;
+}
+
+.place-detail-cuisine-btn {
+  appearance: none;
+  background: rgba(37, 99, 235, 0.07);
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  border-radius: 6px;
+  color: var(--color-water, #2563eb);
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  padding: 2px 7px;
+  text-transform: uppercase;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+
+.place-detail-cuisine-btn:hover,
+.place-detail-cuisine-btn:active {
+  background: rgba(37, 99, 235, 0.14);
+  border-color: rgba(37, 99, 235, 0.4);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.place-detail-cuisine-btn:focus-visible {
+  outline: 2px solid var(--color-water, #2563eb);
+  outline-offset: 2px;
+}
+
+.place-detail-cuisine-btn.is-active {
+  background: rgba(37, 99, 235, 0.16);
+  border-color: rgba(37, 99, 235, 0.45);
 }
 
 .place-detail-divider {

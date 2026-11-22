@@ -27,7 +27,7 @@ import { getPlaceVerifiedSources } from "../app/verified-sources";
 import { VerifiedSourceBadgeList } from "./VerifiedSourceBadge";
 import { heroImageStyle } from "../../lib/photo-hero-frame";
 import { fetchPlacePhotos, type PlacePhoto } from "../../lib/lazy-media";
-import { formatDistance, distanceFromPoint, isInternalDiagnosticNote } from "../app/shared";
+import { cuisineLabel, cuisineParts, formatDistance, distanceFromPoint, isInternalDiagnosticNote } from "../app/shared";
 import { LazyPlaceMediaDrawer } from "./LazyPlaceMediaDrawer";
 import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 import { MotkartaScoreWidget } from "./MotkartaScoreWidget";
@@ -48,6 +48,8 @@ interface PlaceDetailSheetProps {
   onRatePlace: (id: number, rating: number) => void;
   onViewOnMap: (place: ScoredPlace) => void;
   onGetDirections?: (place: ScoredPlace) => void;
+  activeCuisine?: string;
+  onFilterByCuisine?: (cuisine: string) => void;
 }
 
 export function PlaceDetailSheet({
@@ -63,6 +65,8 @@ export function PlaceDetailSheet({
   onRatePlace,
   onViewOnMap,
   onGetDirections,
+  activeCuisine,
+  onFilterByCuisine,
 }: PlaceDetailSheetProps) {
   const [photos, setPhotos] = useState<PlacePhoto[]>([]);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
@@ -125,8 +129,11 @@ export function PlaceDetailSheet({
   if (!isOpen || !place) return null;
 
   // Subtitle tags: AREA • CUISINE / KIND • INDEPENDENT
+  const cuisines = cuisineParts(place);
+  const areaLabel = (place.area || "Stockholm").toUpperCase();
+  const independentLabel = lang === "sv" ? "OBEROENDE" : "INDEPENDENT";
   const primaryTag = place.cuisine ? place.cuisine.toUpperCase() : place.kind.toUpperCase();
-  const subtitle = `${(place.area || "Stockholm").toUpperCase()} • ${primaryTag} • ${lang === "sv" ? "OBEROENDE" : "INDEPENDENT"}`;
+  const subtitle = `${areaLabel} • ${primaryTag} • ${independentLabel}`;
 
   const distanceMeters =
     userLocation && place.latitude && place.longitude
@@ -213,7 +220,32 @@ export function PlaceDetailSheet({
           {/* Main Title & Subtitle */}
           <div className="place-detail-identity">
             <h1 className="place-detail-title">{place.name}</h1>
-            <p className="place-detail-subtitle">{subtitle}</p>
+            {cuisines.length > 0 && onFilterByCuisine ? (
+              <p className="place-detail-subtitle">
+                <span>{areaLabel} • </span>
+                {cuisines.map((c, index) => {
+                  const label = cuisineLabel(c, lang);
+                  const isActiveCuisine = activeCuisine === c;
+                  return (
+                    <React.Fragment key={c}>
+                      {index > 0 ? <span aria-hidden="true"> · </span> : null}
+                      <button
+                        type="button"
+                        className={`place-detail-cuisine-btn ${isActiveCuisine ? "is-active" : ""}`}
+                        aria-pressed={isActiveCuisine}
+                        onClick={() => onFilterByCuisine(c)}
+                        title={lang === "sv" ? `Filtrera listan på ${label}` : `Filter list by ${label}`}
+                      >
+                        {label}
+                      </button>
+                    </React.Fragment>
+                  );
+                })}
+                <span> • {independentLabel}</span>
+              </p>
+            ) : (
+              <p className="place-detail-subtitle">{subtitle}</p>
+            )}
 
             {/* Verified Proven Sources Badges */}
             {(() => {
