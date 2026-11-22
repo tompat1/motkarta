@@ -56,8 +56,10 @@ class Cloudflare:
 
     def request(self, path: str, body=None, method='POST', raw: bytes | None = None):
         data = raw if raw is not None else json.dumps(body).encode() if body is not None else None
-        headers = {'Authorization': f'Bearer {self.token}', 'Content-Type': 'application/x-ndjson' if raw is not None else 'application/json'}
-        # Bound retries; never print credentials or provider bodies.
+        headers = {'Authorization': f'Bearer {self.token}'}
+        if data is not None:
+            headers['Content-Type'] = 'application/x-ndjson' if raw is not None else 'application/json'
+        # Bound retries; never print credentials or raw provider payloads.
         for attempt in range(3):
             try:
                 with urllib.request.urlopen(urllib.request.Request(self.base + path, data=data, headers=headers, method=method), timeout=20) as response:
@@ -67,7 +69,15 @@ class Cloudflare:
                 return payload.get('result', payload)
             except urllib.error.HTTPError as error:
                 if error.code not in {429, 502, 503, 504} or attempt == 2:
-                    raise RuntimeError(f'Cloudflare HTTP {error.code}') from None
+                    detail = ''
+                    try:
+                        err_body = json.loads(error.read().decode('utf-8', errors='ignore'))
+                        errs = err_body.get('errors') or []
+                        if errs and isinstance(errs, list) and isinstance(errs[0], dict):
+                            detail = f": [{errs[0].get('code')}] {errs[0].get('message')}"
+                    except Exception:
+                        pass
+                    raise RuntimeError(f'Cloudflare HTTP {error.code}{detail}') from None
                 time.sleep(2 ** attempt)
         raise RuntimeError('Cloudflare retries exhausted')
 
