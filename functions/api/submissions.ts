@@ -107,6 +107,12 @@ export async function onRequestPost(context: EventContext<Env>) {
     .run()
     .catch(() => {});
 
+  await db
+    .prepare("INSERT INTO establishment_tags (establishment_id, tag) VALUES (?, ?)")
+    .bind(newId, "User approved")
+    .run()
+    .catch(() => {});
+
   if (cuisine) {
     await db
       .prepare("INSERT INTO establishment_tags (establishment_id, tag) VALUES (?, ?)")

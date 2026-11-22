@@ -54,6 +54,17 @@ test("getPlaceVerifiedSources matches curated sources from sourceName and eviden
   assert.ok(matchedIds.has("burgerdudes"), "Expected Burgerdudes badges in catalog");
 });
 
+test("getPlaceVerifiedSources awards User Approved badge to user-submitted places", () => {
+  const fromSourceType = getPlaceVerifiedSources({ candidateSourceType: "user_submission" });
+  assert.ok(fromSourceType.some((s) => s.id === "user-approved" && s.label === "User Approved"));
+
+  const fromTag = getPlaceVerifiedSources({ tags: ["User approved", "swedish"] });
+  assert.ok(fromTag.some((s) => s.id === "user-approved"));
+
+  const fromRegularPlace = getPlaceVerifiedSources({ tags: ["swedish"] });
+  assert.ok(!fromRegularPlace.some((s) => s.id === "user-approved"));
+});
+
 test("VerifiedSourceBadgeList expands all badges when +N button is clicked", async () => {
   const badgeSource = await readFile(new URL("../src/components/VerifiedSourceBadge.tsx", import.meta.url), "utf8");
   assert.match(badgeSource, /const \[expanded, setExpanded\] = useState\(false\);/);

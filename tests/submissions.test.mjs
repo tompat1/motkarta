@@ -31,7 +31,7 @@ test("public place submission creates an admin candidate", async () => {
   assert.equal(db.establishment.sourceType, "user_submission");
   assert.equal(db.establishment.validationLabel, "not_enough_evidence");
   assert.equal(db.establishment.reviewStatus, "needs_review");
-  assert.deepEqual(db.tags, ["coffee shop"]);
+  assert.deepEqual(db.tags, ["User approved", "coffee shop"]);
 });
 
 test("duplicate public place submission does not create another candidate", async () => {

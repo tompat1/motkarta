@@ -296,7 +296,7 @@ export function ConciergeSuperpowerModal({
       address: address.trim() || `${area}, Stockholm`,
       website: formattedWebsite,
       note: note.trim() || `Oberoende ${kind.toLowerCase()} i ${area}.`,
-      tags: [...tags.split(",").map((t) => t.trim()).filter(Boolean), "Community submission", "Pending verification"],
+      tags: [...tags.split(",").map((t) => t.trim()).filter(Boolean), "User approved", "Community submission", "Pending verification"],
       evidenceLabel: "Pending community submission · not independently verified",
       lifecycleState: "candidate",
       ratingAverage: rating || 4.1,

@@ -20,6 +20,7 @@ export function getPlaceVerifiedSources(
     evidenceLabel?: string;
     evidence?: unknown;
     kind?: string;
+    candidateSourceType?: string | null;
     specialty?: { specialtyVerified?: boolean };
   } | null | undefined,
 ): VerifiedSourceInfo[] {
@@ -282,6 +283,26 @@ export function getPlaceVerifiedSources(
       color: "#0f766e",
       bgColor: "#f0fdfa",
       borderColor: "#99f6e4",
+    });
+  }
+
+  // 15. User Approved (Community-submitted place)
+  if (
+    place.candidateSourceType === "user_submission" ||
+    hasAny("user approved", "user_submission", "community submission", "användargodkänd")
+  ) {
+    sources.push({
+      id: "user-approved",
+      name: "User Approved",
+      label: "User Approved",
+      shortLabel: "User Approved",
+      iconType: "sparkle",
+      descriptionSv: "Tillagd av en Motkarta-användare och godkänd för Stockholms oberoende matkarta",
+      descriptionEn: "Added by a Motkarta user and approved for Stockholm's independent food map",
+      url: "https://motkarta.rynell.org",
+      color: "#166534",
+      bgColor: "#dcfce7",
+      borderColor: "#86efac",
     });
   }
 
