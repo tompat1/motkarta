@@ -1,55 +1,113 @@
 {
   "schemaVersion": "rag-provider-capture-v1",
-  "capturedAt": "2026-11-22T10:29:38.318Z",
+  "capturedAt": "2026-11-22T11:10:18.991Z",
   "measuredDate": "2026-11-22",
   "origin": "https://motkarta.rynell.org",
   "queryCount": 12,
-  "successfulQueries": 6,
+  "successfulQueries": 12,
   "hybridQueries": 0,
   "hybridActivationRate": 0,
   "metrics": {
-    "providerLatencyMedianMs": 4040,
-    "providerLatencyP95Ms": 5449,
-    "faithfulness": 0.6667,
-    "answerRelevance": 0.6667
+    "providerLatencyMedianMs": 2501,
+    "providerLatencyP95Ms": 10587,
+    "faithfulness": 0.75,
+    "answerRelevance": 0.75
   },
   "checks": [
     {
       "query": "bästa pizzeriorna i stan",
       "language": "sv",
-      "httpStatus": 503,
-      "elapsedMs": 4128,
-      "error": "{\"query\":\"bästa pizzeriorna i stan\",\"intro\":\"Motkartas katalog är inte tillgänglig just nu. Försök igen senare.\",\"answer\":\"Motkartas katalog är inte tillgänglig just nu. Försök igen senare.\",\"cards\":[],\"recommendedPlaces\":[],\"source\":\"unavailable\",\"totalSearchSpace\":0,\"status\":\"unavailable\",\"structu",
-      "faithfulness": 0,
-      "answerRelevance": 0
+      "httpStatus": 200,
+      "elapsedMs": 10587,
+      "status": "ok",
+      "source": "d1",
+      "retrievalMode": "lexical",
+      "synthesisMode": "template",
+      "modelVersion": "concierge-lexical-v3",
+      "cardCount": 5,
+      "topNames": [
+        "450 Gradi",
+        "800 Grader",
+        "Rockin Grill"
+      ],
+      "fallbackReasons": [
+        "semantic_unavailable",
+        "synthesis_rejected_or_unavailable"
+      ],
+      "timingsMs": {
+        "lexical": 0,
+        "total": 10000
+      },
+      "faithfulness": 1,
+      "faithfulnessReason": "all_cards_cited",
+      "answerRelevance": 1,
+      "relevanceReason": "intent_matched"
     },
     {
       "query": "god pasta nära Södermalm",
       "language": "sv",
-      "httpStatus": 503,
-      "elapsedMs": 2710,
-      "error": "{\"query\":\"god pasta nära Södermalm\",\"intro\":\"Motkartas katalog är inte tillgänglig just nu. Försök igen senare.\",\"answer\":\"Motkartas katalog är inte tillgänglig just nu. Försök igen senare.\",\"cards\":[],\"recommendedPlaces\":[],\"source\":\"unavailable\",\"totalSearchSpace\":0,\"status\":\"unavailable\",\"structu",
-      "faithfulness": 0,
-      "answerRelevance": 0
+      "httpStatus": 200,
+      "elapsedMs": 2501,
+      "status": "ok",
+      "source": "d1",
+      "retrievalMode": "lexical",
+      "synthesisMode": "template",
+      "modelVersion": "concierge-lexical-v3",
+      "cardCount": 59,
+      "topNames": [
+        "Casa Piadina",
+        "800 grader",
+        "Bambino"
+      ],
+      "fallbackReasons": [
+        "no_current_semantic_matches"
+      ],
+      "timingsMs": {
+        "lexical": 0,
+        "total": 1693
+      },
+      "faithfulness": 1,
+      "faithfulnessReason": "all_cards_cited",
+      "answerRelevance": 1,
+      "relevanceReason": "intent_matched"
     },
     {
       "query": "äta fisk",
       "language": "sv",
-      "httpStatus": 503,
-      "elapsedMs": 2864,
-      "error": "{\"query\":\"äta fisk\",\"intro\":\"Motkartas katalog är inte tillgänglig just nu. Försök igen senare.\",\"answer\":\"Motkartas katalog är inte tillgänglig just nu. Försök igen senare.\",\"cards\":[],\"recommendedPlaces\":[],\"source\":\"unavailable\",\"totalSearchSpace\":0,\"status\":\"unavailable\",\"structuredFilters\":{\"cu",
-      "faithfulness": 0,
-      "answerRelevance": 0
+      "httpStatus": 200,
+      "elapsedMs": 8618,
+      "status": "ok",
+      "source": "d1",
+      "retrievalMode": "lexical",
+      "synthesisMode": "constrained",
+      "modelVersion": "concierge-lexical-v3",
+      "cardCount": 5,
+      "topNames": [
+        "Kajsas Fisk",
+        "Strömmingsvagnen",
+        "Wasahof"
+      ],
+      "fallbackReasons": [
+        "semantic_unavailable"
+      ],
+      "timingsMs": {
+        "lexical": 0,
+        "total": 8487
+      },
+      "faithfulness": 1,
+      "faithfulnessReason": "all_cards_cited",
+      "answerRelevance": 1,
+      "relevanceReason": "intent_matched"
     },
     {
       "query": "Jag vill äta kött",
       "language": "sv",
       "httpStatus": 200,
-      "elapsedMs": 5449,
+      "elapsedMs": 6942,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
-      "synthesisMode": "template",
+      "synthesisMode": "constrained",
       "modelVersion": "concierge-lexical-v3",
       "cardCount": 5,
       "topNames": [
@@ -58,11 +116,11 @@
         "Texas Longhorn"
       ],
       "fallbackReasons": [
-        "semantic_unavailable"
+        "no_current_semantic_matches"
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 2697
+        "total": 6807
       },
       "faithfulness": 1,
       "faithfulnessReason": "all_cards_cited",
@@ -72,21 +130,40 @@
     {
       "query": "äta husman",
       "language": "sv",
-      "httpStatus": 503,
-      "elapsedMs": 2480,
-      "error": "{\"query\":\"äta husman\",\"intro\":\"Motkartas katalog är inte tillgänglig just nu. Försök igen senare.\",\"answer\":\"Motkartas katalog är inte tillgänglig just nu. Försök igen senare.\",\"cards\":[],\"recommendedPlaces\":[],\"source\":\"unavailable\",\"totalSearchSpace\":0,\"status\":\"unavailable\",\"structuredFilters\":{\"",
-      "faithfulness": 0,
-      "answerRelevance": 0
+      "httpStatus": 200,
+      "elapsedMs": 7447,
+      "status": "ok",
+      "source": "d1",
+      "retrievalMode": "lexical",
+      "synthesisMode": "constrained",
+      "modelVersion": "concierge-lexical-v3",
+      "cardCount": 5,
+      "topNames": [
+        "Pelikan",
+        "Bord",
+        "Coco & Carmen"
+      ],
+      "fallbackReasons": [
+        "no_current_semantic_matches"
+      ],
+      "timingsMs": {
+        "lexical": 0,
+        "total": 7289
+      },
+      "faithfulness": 1,
+      "faithfulnessReason": "all_cards_cited",
+      "answerRelevance": 1,
+      "relevanceReason": "intent_matched"
     },
     {
       "query": "äta vegetariskt",
       "language": "sv",
       "httpStatus": 200,
-      "elapsedMs": 5408,
+      "elapsedMs": 6241,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
-      "synthesisMode": "template",
+      "synthesisMode": "constrained",
       "modelVersion": "concierge-lexical-v3",
       "cardCount": 5,
       "topNames": [
@@ -95,11 +172,11 @@
         "Hermans"
       ],
       "fallbackReasons": [
-        "semantic_unavailable"
+        "no_current_semantic_matches"
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 2983
+        "total": 5945
       },
       "faithfulness": 1,
       "faithfulnessReason": "all_cards_cited",
@@ -110,7 +187,7 @@
       "query": "Drop Coffee Roasters",
       "language": "en",
       "httpStatus": 200,
-      "elapsedMs": 2581,
+      "elapsedMs": 140,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -125,7 +202,7 @@
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 1314
+        "total": 0
       },
       "faithfulness": 1,
       "faithfulnessReason": "all_cards_cited",
@@ -136,7 +213,7 @@
       "query": "cozy place to unwind",
       "language": "en",
       "httpStatus": 200,
-      "elapsedMs": 4028,
+      "elapsedMs": 934,
       "status": "clarification",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -149,7 +226,7 @@
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 3277
+        "total": 131
       },
       "faithfulness": 0,
       "faithfulnessReason": "no_cards_returned",
@@ -159,17 +236,36 @@
     {
       "query": "specialty coffee Södermalm",
       "language": "en",
-      "httpStatus": 503,
-      "elapsedMs": 2776,
-      "error": "{\"query\":\"specialty coffee Södermalm\",\"intro\":\"The live Motkarta dataset is unavailable. Please try again later.\",\"answer\":\"The live Motkarta dataset is unavailable. Please try again later.\",\"cards\":[],\"recommendedPlaces\":[],\"source\":\"unavailable\",\"totalSearchSpace\":0,\"status\":\"unavailable\",\"structu",
-      "faithfulness": 0,
-      "answerRelevance": 0
+      "httpStatus": 200,
+      "elapsedMs": 2605,
+      "status": "ok",
+      "source": "d1",
+      "retrievalMode": "lexical",
+      "synthesisMode": "template",
+      "modelVersion": "concierge-lexical-v3",
+      "cardCount": 6,
+      "topNames": [
+        "Drop Coffee Roasters",
+        "Pascal Café & Bakery",
+        "Johan & Nyström"
+      ],
+      "fallbackReasons": [
+        "no_current_semantic_matches"
+      ],
+      "timingsMs": {
+        "lexical": 0,
+        "total": 1479
+      },
+      "faithfulness": 1,
+      "faithfulnessReason": "all_cards_cited",
+      "answerRelevance": 1,
+      "relevanceReason": "intent_matched"
     },
     {
       "query": "bra surdegsbageri i Stockholm",
       "language": "sv",
       "httpStatus": 200,
-      "elapsedMs": 4040,
+      "elapsedMs": 1127,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -186,7 +282,7 @@
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 1670
+        "total": 0
       },
       "faithfulness": 1,
       "faithfulnessReason": "all_cards_cited",
@@ -196,17 +292,32 @@
     {
       "query": "mysig vinbar på Södermalm",
       "language": "sv",
-      "httpStatus": 503,
-      "elapsedMs": 3255,
-      "error": "{\"query\":\"mysig vinbar på Södermalm\",\"intro\":\"Motkartas katalog är inte tillgänglig just nu. Försök igen senare.\",\"answer\":\"Motkartas katalog är inte tillgänglig just nu. Försök igen senare.\",\"cards\":[],\"recommendedPlaces\":[],\"source\":\"unavailable\",\"totalSearchSpace\":0,\"status\":\"unavailable\",\"struct",
+      "httpStatus": 200,
+      "elapsedMs": 1923,
+      "status": "clarification",
+      "source": "d1",
+      "retrievalMode": "lexical",
+      "synthesisMode": "template",
+      "modelVersion": "concierge-lexical-v3",
+      "cardCount": 0,
+      "topNames": [],
+      "fallbackReasons": [
+        "ai_rate_gate_closed"
+      ],
+      "timingsMs": {
+        "lexical": 0,
+        "total": 436
+      },
       "faithfulness": 0,
-      "answerRelevance": 0
+      "faithfulnessReason": "no_cards_returned",
+      "answerRelevance": 0,
+      "relevanceReason": "empty_results"
     },
     {
       "query": "best sushi in Tokyo",
       "language": "en",
       "httpStatus": 200,
-      "elapsedMs": 4876,
+      "elapsedMs": 1281,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -223,7 +334,7 @@
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 1567
+        "total": 0
       },
       "faithfulness": 0,
       "faithfulnessReason": "returned_cards_on_out_of_scope",
