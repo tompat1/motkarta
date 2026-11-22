@@ -55,7 +55,8 @@
     "preview:concierge-ai:prepare:hybrid": "node execution/prepare_concierge_ai_preview.mjs --hybrid",
     "preview:concierge-ai:smoke": "node execution/smoke_concierge_ai_preview.mjs",
     "preview:concierge-ai:smoke:hybrid": "node execution/smoke_concierge_ai_preview.mjs --hybrid",
-    "rag:capture": "node execution/capture_rag_provider_metrics.mjs"
+    "rag:capture": "node execution/capture_rag_provider_metrics.mjs",
+    "rag:index": ".venv/bin/python execution/index_concierge.py --index motkarta-concierge-preview-v1 --previous .tmp/concierge-trial/index-manifest.json --output .tmp/concierge-trial/index-manifest.json --apply --max-input-tokens 400000"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -84,7 +85,7 @@
     "typescript": "5.9.3",
     "typescript-eslint": "^8.70.0",
     "vite": "8.0.13",
-    "wrangler": "4.92.0"
+    "wrangler": "^4.166.0"
   },
   "type": "module",
   "displayName": "Stockholm Independent Food Map"

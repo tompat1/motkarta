@@ -1,15 +1,15 @@
 {
   "schemaVersion": "rag-provider-capture-v1",
-  "capturedAt": "2026-11-22T11:10:18.991Z",
+  "capturedAt": "2026-11-22T13:37:45.984Z",
   "measuredDate": "2026-11-22",
   "origin": "https://motkarta.rynell.org",
   "queryCount": 12,
   "successfulQueries": 12,
-  "hybridQueries": 0,
-  "hybridActivationRate": 0,
+  "hybridQueries": 1,
+  "hybridActivationRate": 0.0909,
   "metrics": {
-    "providerLatencyMedianMs": 2501,
-    "providerLatencyP95Ms": 10587,
+    "providerLatencyMedianMs": 2352,
+    "providerLatencyP95Ms": 10418,
     "faithfulness": 0.75,
     "answerRelevance": 0.75
   },
@@ -18,7 +18,7 @@
       "query": "bästa pizzeriorna i stan",
       "language": "sv",
       "httpStatus": 200,
-      "elapsedMs": 10587,
+      "elapsedMs": 10418,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -31,7 +31,7 @@
         "Rockin Grill"
       ],
       "fallbackReasons": [
-        "semantic_unavailable",
+        "no_current_semantic_matches",
         "synthesis_rejected_or_unavailable"
       ],
       "timingsMs": {
@@ -47,7 +47,7 @@
       "query": "god pasta nära Södermalm",
       "language": "sv",
       "httpStatus": 200,
-      "elapsedMs": 2501,
+      "elapsedMs": 2614,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -64,7 +64,7 @@
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 1693
+        "total": 2139
       },
       "faithfulness": 1,
       "faithfulnessReason": "all_cards_cited",
@@ -75,7 +75,7 @@
       "query": "äta fisk",
       "language": "sv",
       "httpStatus": 200,
-      "elapsedMs": 8618,
+      "elapsedMs": 7367,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -92,7 +92,7 @@
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 8487
+        "total": 7248
       },
       "faithfulness": 1,
       "faithfulnessReason": "all_cards_cited",
@@ -103,7 +103,7 @@
       "query": "Jag vill äta kött",
       "language": "sv",
       "httpStatus": 200,
-      "elapsedMs": 6942,
+      "elapsedMs": 8878,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -120,7 +120,7 @@
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 6807
+        "total": 8656
       },
       "faithfulness": 1,
       "faithfulnessReason": "all_cards_cited",
@@ -131,24 +131,22 @@
       "query": "äta husman",
       "language": "sv",
       "httpStatus": 200,
-      "elapsedMs": 7447,
+      "elapsedMs": 6023,
       "status": "ok",
       "source": "d1",
-      "retrievalMode": "lexical",
+      "retrievalMode": "hybrid",
       "synthesisMode": "constrained",
-      "modelVersion": "concierge-lexical-v3",
+      "modelVersion": "concierge-hybrid-v3",
       "cardCount": 5,
       "topNames": [
         "Pelikan",
-        "Bord",
-        "Coco & Carmen"
+        "Husman",
+        "Bord"
       ],
-      "fallbackReasons": [
-        "no_current_semantic_matches"
-      ],
+      "fallbackReasons": [],
       "timingsMs": {
         "lexical": 0,
-        "total": 7289
+        "total": 5902
       },
       "faithfulness": 1,
       "faithfulnessReason": "all_cards_cited",
@@ -159,11 +157,11 @@
       "query": "äta vegetariskt",
       "language": "sv",
       "httpStatus": 200,
-      "elapsedMs": 6241,
+      "elapsedMs": 9237,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
-      "synthesisMode": "constrained",
+      "synthesisMode": "template",
       "modelVersion": "concierge-lexical-v3",
       "cardCount": 5,
       "topNames": [
@@ -172,11 +170,12 @@
         "Hermans"
       ],
       "fallbackReasons": [
-        "no_current_semantic_matches"
+        "no_current_semantic_matches",
+        "synthesis_rejected_or_unavailable"
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 5945
+        "total": 9060
       },
       "faithfulness": 1,
       "faithfulnessReason": "all_cards_cited",
@@ -187,7 +186,7 @@
       "query": "Drop Coffee Roasters",
       "language": "en",
       "httpStatus": 200,
-      "elapsedMs": 140,
+      "elapsedMs": 128,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -213,7 +212,7 @@
       "query": "cozy place to unwind",
       "language": "en",
       "httpStatus": 200,
-      "elapsedMs": 934,
+      "elapsedMs": 2092,
       "status": "clarification",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -226,7 +225,7 @@
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 131
+        "total": 1800
       },
       "faithfulness": 0,
       "faithfulnessReason": "no_cards_returned",
@@ -237,7 +236,7 @@
       "query": "specialty coffee Södermalm",
       "language": "en",
       "httpStatus": 200,
-      "elapsedMs": 2605,
+      "elapsedMs": 2352,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -250,11 +249,11 @@
         "Johan & Nyström"
       ],
       "fallbackReasons": [
-        "no_current_semantic_matches"
+        "ai_rate_gate_closed"
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 1479
+        "total": 0
       },
       "faithfulness": 1,
       "faithfulnessReason": "all_cards_cited",
@@ -265,7 +264,7 @@
       "query": "bra surdegsbageri i Stockholm",
       "language": "sv",
       "httpStatus": 200,
-      "elapsedMs": 1127,
+      "elapsedMs": 1137,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -293,7 +292,7 @@
       "query": "mysig vinbar på Södermalm",
       "language": "sv",
       "httpStatus": 200,
-      "elapsedMs": 1923,
+      "elapsedMs": 2119,
       "status": "clarification",
       "source": "d1",
       "retrievalMode": "lexical",
@@ -306,7 +305,7 @@
       ],
       "timingsMs": {
         "lexical": 0,
-        "total": 436
+        "total": 1800
       },
       "faithfulness": 0,
       "faithfulnessReason": "no_cards_returned",
@@ -317,7 +316,7 @@
       "query": "best sushi in Tokyo",
       "language": "en",
       "httpStatus": 200,
-      "elapsedMs": 1281,
+      "elapsedMs": 1350,
       "status": "ok",
       "source": "d1",
       "retrievalMode": "lexical",

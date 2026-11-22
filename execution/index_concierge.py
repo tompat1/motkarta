@@ -19,6 +19,20 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def load_dotenv_into_environ(env_path: Path = ROOT / '.env') -> None:
+    if not env_path.exists():
+        return
+    for raw_line in env_path.read_text(encoding='utf-8').splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith('#') or '=' not in line:
+            continue
+        key, value = line.split('=', 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ and value:
+            os.environ[key] = value
+
+
 def write_json(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + '.tmp')
@@ -167,6 +181,7 @@ def main():
     previous = json.loads(args.previous.read_text()) if args.previous else None
     plan = build_plan(corpus, previous, args.index)
     if args.apply:
+        load_dotenv_into_environ()
         if args.max_input_tokens <= 0 or plan['estimatedInputTokens'] > args.max_input_tokens:
             raise ValueError('Estimated tokens exceed explicit budget; review dry-run first')
         client = Cloudflare(os.environ['CLOUDFLARE_ACCOUNT_ID'], os.environ['CLOUDFLARE_API_TOKEN'], args.index)
