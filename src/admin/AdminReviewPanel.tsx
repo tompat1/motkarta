@@ -779,7 +779,7 @@ export function AdminReviewPanel({
     if (validationLabel === "closed_wrong_category" && !window.confirm(lang === "sv"
       ? `Ta bort ${candidate.name} från publik karta, listor och concierge som stängd/fel kategori? Posten sparas under Borttagna och kan återställas.`
       : `Remove ${candidate.name} from the public map, lists and concierge as closed/wrong category? The record is kept under Removed and can be restored.`)) return;
-    if (validationLabel === null && !window.confirm(lang === "sv"
+    if (validationLabel === null && candidate.validationLabel === "closed_wrong_category" && !window.confirm(lang === "sv"
       ? `Återställ ${candidate.name} till Baseline? Bekräfta att stället är öppet och hör hemma i katalogen. En separat stängningsmarkering i källdatan måste också rättas.`
       : `Restore ${candidate.name} to Baseline? Confirm it is open and belongs in the catalog. Any separate closure in the source dataset must also be corrected.`)) return;
 
@@ -1497,6 +1497,87 @@ export function AdminReviewPanel({
     } finally {
       setExportingLabels(false);
     }
+  };
+
+  const [bulkConfirmBusy, setBulkConfirmBusy] = useState(false);
+
+  const batchConfirmOrDismissCandidates = async (
+    selectedRows: AdminCandidate[],
+    mode: "confirm" | "dismiss",
+  ) => {
+    if (!hasAdminAuth || selectedRows.length === 0 || bulkConfirmBusy) return;
+    const isConfirm = mode === "confirm";
+    const promptMsg = isConfirm
+      ? lang === "sv"
+        ? `Bekräfta och publicera ${selectedRows.length} valda platser på kartan som Verifierad?`
+        : `Confirm and publish ${selectedRows.length} selected places to the map as Verified?`
+      : lang === "sv"
+        ? `Avvisa ${selectedRows.length} valda platser som stängda/fel kategori? De flyttas till Borttagna och kan återställas.`
+        : `Dismiss ${selectedRows.length} selected places as closed/wrong category? They will move to Removed and can be restored.`;
+    if (!window.confirm(promptMsg)) return;
+
+    setBulkConfirmBusy(true);
+    setError(null);
+    const succeededIds = new Set<number>();
+    let failedCount = 0;
+
+    for (const row of selectedRows) {
+      try {
+        const response = await fetch("/api/admin/candidates", {
+          method: "POST",
+          headers: adminHeaders(undefined, { "content-type": "application/json" }),
+          body: JSON.stringify({
+            id: row.id,
+            state: isConfirm ? "verified" : "candidate",
+            validationLabel: isConfirm ? null : "closed_wrong_category",
+            validationNotes: isConfirm
+              ? (row.validationNotes || "Manually confirmed in batch review.")
+              : (row.validationNotes || "Dismissed in batch review as closed/wrong category."),
+          }),
+        });
+        if (response.ok) {
+          succeededIds.add(row.id);
+        } else {
+          failedCount += 1;
+        }
+      } catch {
+        failedCount += 1;
+      }
+    }
+
+    if (succeededIds.size > 0) {
+      setCandidates((current) =>
+        current.flatMap((row) => {
+          if (!succeededIds.has(row.id)) return [row];
+          if (stateFilter === "all") {
+            return [{
+              ...row,
+              lifecycleState: isConfirm ? "verified" : "candidate",
+              validationLabel: isConfirm ? null : "closed_wrong_category",
+            }];
+          }
+          return [];
+        }),
+      );
+      setStatus(
+        isConfirm
+          ? lang === "sv"
+            ? `Bekräftade och publicerade ${succeededIds.size} av ${selectedRows.length} platser.`
+            : `Confirmed and published ${succeededIds.size} of ${selectedRows.length} places.`
+          : lang === "sv"
+            ? `Avvisade ${succeededIds.size} av ${selectedRows.length} platser.`
+            : `Dismissed ${succeededIds.size} of ${selectedRows.length} places.`,
+      );
+      void loadDashboard();
+    }
+    if (failedCount > 0) {
+      setError(
+        lang === "sv"
+          ? `${failedCount} platser kunde inte uppdateras. Försök igen.`
+          : `${failedCount} places could not be updated. Please retry.`,
+      );
+    }
+    setBulkConfirmBusy(false);
   };
 
   const resolvePlacesWithoutRegion = async () => {
@@ -2370,6 +2451,9 @@ export function AdminReviewPanel({
                       if (!window.confirm(confirmMessage)) return;
                       void promoteCandidate(candidate, "verified", null);
                     }}
+                    bulkBusy={bulkConfirmBusy}
+                    onBulkConfirmCandidates={(rows) => void batchConfirmOrDismissCandidates(rows, "confirm")}
+                    onBulkDismissCandidates={(rows) => void batchConfirmOrDismissCandidates(rows, "dismiss")}
                     onToggleRemoved={(candidate) =>
                       void promoteCandidate(
                         candidate,

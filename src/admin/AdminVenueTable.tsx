@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Language } from "../app/shared";
 import {
   ArrowsDownUp,
@@ -52,6 +52,9 @@ type AdminVenueTableProps<T extends AdminVenueTableRow> = {
   onOpenReview: (candidate: T) => void;
   onEditCandidate: (candidate: T) => void;
   onConfirmCandidate?: (candidate: T) => void;
+  onBulkConfirmCandidates?: (candidates: T[]) => void;
+  onBulkDismissCandidates?: (candidates: T[]) => void;
+  bulkBusy?: boolean;
   onToggleRemoved?: (candidate: T) => void;
 };
 
@@ -64,6 +67,9 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
   onOpenReview,
   onEditCandidate,
   onConfirmCandidate,
+  onBulkConfirmCandidates,
+  onBulkDismissCandidates,
+  bulkBusy = false,
   onToggleRemoved,
 }: AdminVenueTableProps<T>) {
   const [sortKey, setSortKey] = useState<SortKey>("conflicts");
@@ -72,6 +78,9 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
   const [confidenceFilter, setConfidenceFilter] = useState<ConfidenceFilter>("all");
   const [freshnessFilter, setFreshnessFilter] = useState<FreshnessFilter>("all");
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("all");
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const lastClickedIndexRef = useRef<number | null>(null);
+  const selectAllCheckboxRef = useRef<HTMLInputElement | null>(null);
 
   const sourceOptions = useMemo(
     () => Array.from(new Set(candidates.map((candidate) => candidate.candidateSourceType).filter(Boolean) as string[])).sort(),
@@ -122,6 +131,69 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
     setFreshnessFilter("all");
     setIssueFilter("all");
   };
+
+  const visibleIdSet = useMemo(() => new Set(visibleCandidates.map((c) => c.id)), [visibleCandidates]);
+  const selectedVisibleCandidates = useMemo(
+    () => visibleCandidates.filter((c) => selectedIds.has(c.id)),
+    [visibleCandidates, selectedIds],
+  );
+  const selectedConfirmableCandidates = useMemo(
+    () => selectedVisibleCandidates.filter((c) => c.validationLabel !== "closed_wrong_category" && c.lifecycleState === "candidate"),
+    [selectedVisibleCandidates],
+  );
+  const allVisibleSelected = visibleCandidates.length > 0 && selectedVisibleCandidates.length === visibleCandidates.length;
+  const someVisibleSelected = selectedVisibleCandidates.length > 0 && !allVisibleSelected;
+
+  useEffect(() => {
+    setSelectedIds((prev) => {
+      let changed = false;
+      const next = new Set<number>();
+      prev.forEach((id) => {
+        if (visibleIdSet.has(id)) next.add(id);
+        else changed = true;
+      });
+      return changed ? next : prev;
+    });
+  }, [visibleIdSet]);
+
+  useEffect(() => {
+    if (selectAllCheckboxRef.current) {
+      selectAllCheckboxRef.current.indeterminate = someVisibleSelected;
+    }
+  }, [someVisibleSelected]);
+
+  const toggleSelectAllVisible = () => {
+    if (allVisibleSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(visibleCandidates.map((c) => c.id)));
+    }
+  };
+
+  const toggleRowSelection = (id: number, index: number, shiftKey: boolean) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (shiftKey && lastClickedIndexRef.current !== null) {
+        const start = Math.min(lastClickedIndexRef.current, index);
+        const end = Math.max(lastClickedIndexRef.current, index);
+        const shouldSelect = !prev.has(id);
+        for (let i = start; i <= end; i += 1) {
+          const row = visibleCandidates[i];
+          if (!row) continue;
+          if (shouldSelect) next.add(row.id);
+          else next.delete(row.id);
+        }
+      } else if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+    lastClickedIndexRef.current = index;
+  };
+
+  const showSelectionColumn = Boolean(onBulkConfirmCandidates || onBulkDismissCandidates);
 
   return (
     <section className="admin-venue-table-section" id="admin-venue-table" aria-labelledby="admin-venue-table-title">
@@ -185,6 +257,52 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
         </button>
       </div>
 
+      {showSelectionColumn && selectedVisibleCandidates.length > 0 ? (
+        <div className="admin-table-bulk-bar" role="region" aria-label={lang === "sv" ? "Massåtgärder" : "Bulk actions"}>
+          <span className="admin-table-bulk-count">
+            {lang === "sv"
+              ? `${selectedVisibleCandidates.length} valda`
+              : `${selectedVisibleCandidates.length} selected`}
+          </span>
+          <div className="admin-table-bulk-actions">
+            {onBulkConfirmCandidates && selectedConfirmableCandidates.length > 0 ? (
+              <button
+                type="button"
+                className="admin-table-confirm-btn"
+                disabled={bulkBusy}
+                onClick={() => onBulkConfirmCandidates(selectedConfirmableCandidates)}
+              >
+                {bulkBusy
+                  ? (lang === "sv" ? "Bekräftar…" : "Confirming…")
+                  : lang === "sv"
+                    ? `Bekräfta valda (${selectedConfirmableCandidates.length})`
+                    : `Confirm selected (${selectedConfirmableCandidates.length})`}
+              </button>
+            ) : null}
+            {onBulkDismissCandidates ? (
+              <button
+                type="button"
+                className="admin-table-remove-btn"
+                disabled={bulkBusy}
+                onClick={() => onBulkDismissCandidates(selectedVisibleCandidates)}
+              >
+                {lang === "sv"
+                  ? `Avvisa valda (${selectedVisibleCandidates.length})`
+                  : `Dismiss selected (${selectedVisibleCandidates.length})`}
+              </button>
+            ) : null}
+            <button
+              type="button"
+              className="admin-filter-reset"
+              disabled={bulkBusy}
+              onClick={() => setSelectedIds(new Set())}
+            >
+              {lang === "sv" ? "Rensa val" : "Clear selection"}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       <div
         className="admin-venue-table-scroll"
         role="region"
@@ -197,6 +315,18 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
           </caption>
           <thead>
             <tr>
+              {showSelectionColumn ? (
+                <th scope="col" className="admin-table-select-col">
+                  <input
+                    ref={selectAllCheckboxRef}
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    onChange={toggleSelectAllVisible}
+                    aria-label={lang === "sv" ? "Markera alla synliga platser" : "Select all visible places"}
+                    title={lang === "sv" ? "Markera / avmarkera alla synliga" : "Select / deselect all visible"}
+                  />
+                </th>
+              ) : null}
               <SortableHeading
                 label={lang === "sv" ? "Plats" : "Venue"}
                 tooltip={
@@ -273,14 +403,27 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
             </tr>
           </thead>
           <tbody>
-            {visibleCandidates.map((candidate) => {
+            {visibleCandidates.map((candidate, rowIndex) => {
               const confidence = venueConfidence(candidate);
               const freshness = venueFreshness(candidate, lang);
               const selected = candidate.id === selectedCandidateId;
+              const isChecked = selectedIds.has(candidate.id);
               const isRemoved = candidate.validationLabel === "closed_wrong_category";
+              const isNotOnMapYet = !isRemoved && (candidate.lifecycleState === "candidate" || candidate.latitude == null || candidate.longitude == null);
               const isAlert = rowTone(candidate) === "risk";
               return (
-                <tr key={candidate.id} className={`admin-venue-table-row${selected ? " is-selected" : ""}${isAlert ? " is-alert" : ""}`} aria-busy={busyId === candidate.id}>
+                <tr key={candidate.id} className={`admin-venue-table-row${selected || isChecked ? " is-selected" : ""}${isAlert ? " is-alert" : ""}`} aria-busy={busyId === candidate.id || bulkBusy}>
+                  {showSelectionColumn ? (
+                    <td className="admin-table-select-col">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        disabled={bulkBusy}
+                        onChange={(e) => toggleRowSelection(candidate.id, rowIndex, (e.nativeEvent as MouseEvent).shiftKey)}
+                        aria-label={lang === "sv" ? `Välj ${candidate.name}` : `Select ${candidate.name}`}
+                      />
+                    </td>
+                  ) : null}
                   <td className="admin-venue-identity-cell">
                     <button
                       type="button"
@@ -375,9 +518,16 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
                       {onToggleRemoved ? (
                         <button
                           type="button"
-                          className={`admin-table-remove-btn ${isRemoved ? "is-restore" : ""}`}
+                          className={`admin-table-remove-btn ${isRemoved ? "is-restore" : ""} ${isNotOnMapYet ? "is-not-on-map" : ""}`}
                           onClick={() => onToggleRemoved(candidate)}
-                          disabled={busyId === candidate.id}
+                          disabled={busyId === candidate.id || bulkBusy || isNotOnMapYet}
+                          title={
+                            isNotOnMapYet
+                              ? lang === "sv"
+                                ? "Inte på kartan ännu — bekräfta först för att publicera på kartan"
+                                : "Not on map yet — confirm first to publish on the map"
+                              : undefined
+                          }
                         >
                           {isRemoved
                             ? (lang === "sv" ? "Återställ" : "Restore")
