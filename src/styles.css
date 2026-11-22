@@ -22383,6 +22383,11 @@ button.admin-concourse-pulse-cell:hover:not(.is-next):not(:disabled) {
   gap: 6px;
 }
 
+.admin-tab-tooltip-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
 .admin-concourse-tabs button {
   min-height: 36px;
   padding: 0 12px;
@@ -22395,6 +22400,81 @@ button.admin-concourse-pulse-cell:hover:not(.is-next):not(:disabled) {
   font-weight: 700;
   text-transform: uppercase;
   cursor: pointer;
+}
+
+.admin-tab-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  width: max-content;
+  max-width: 280px;
+  padding: 8px 11px;
+  background: #111111;
+  color: #f4f0e7;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: none;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 120ms ease, transform 120ms ease, visibility 120ms ease;
+  z-index: 650;
+}
+
+.admin-tab-tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: #111111;
+  border-top: 0;
+}
+
+.admin-tab-tooltip-wrap:first-child .admin-tab-tooltip {
+  left: 0;
+  transform: translateY(-2px);
+}
+
+.admin-tab-tooltip-wrap:first-child .admin-tab-tooltip::before {
+  left: 20px;
+  transform: none;
+}
+
+.admin-tab-tooltip-wrap:last-child .admin-tab-tooltip {
+  left: auto;
+  right: 0;
+  transform: translateY(-2px);
+}
+
+.admin-tab-tooltip-wrap:last-child .admin-tab-tooltip::before {
+  left: auto;
+  right: 20px;
+  transform: none;
+}
+
+.admin-tab-tooltip-wrap:hover .admin-tab-tooltip,
+.admin-tab-tooltip-wrap:focus-within .admin-tab-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.admin-tab-tooltip-wrap:first-child:hover .admin-tab-tooltip,
+.admin-tab-tooltip-wrap:first-child:focus-within .admin-tab-tooltip,
+.admin-tab-tooltip-wrap:last-child:hover .admin-tab-tooltip,
+.admin-tab-tooltip-wrap:last-child:focus-within .admin-tab-tooltip {
+  transform: translateY(0);
 }
 
 .admin-concourse-tabs button:hover {

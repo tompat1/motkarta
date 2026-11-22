@@ -2225,20 +2225,29 @@ export function AdminReviewPanel({
 
               <div className="admin-concourse-filterbar" aria-label={lang === "sv" ? "Filter för granskningskö" : "Review queue filters"}>
                 <div className="admin-state-tabs admin-concourse-tabs">
-                  {adminStateFilters.map((state) => (
-                    <button
-                      key={state}
-                      type="button"
-                      className={stateFilter === state ? "active" : ""}
-                      aria-pressed={stateFilter === state}
-                      onClick={() => {
-                        setQueueFocus("all");
-                        setStateFilter(state);
-                      }}
-                    >
-                      {lifecycleStateLabel(state, lang)}
-                    </button>
-                  ))}
+                  {adminStateFilters.map((state) => {
+                    const helpText = stateFilterHelpText(state, lang);
+                    const tooltipId = `admin-state-tooltip-${state}`;
+                    return (
+                      <span key={state} className="admin-tab-tooltip-wrap">
+                        <button
+                          type="button"
+                          className={stateFilter === state ? "active" : ""}
+                          aria-pressed={stateFilter === state}
+                          aria-describedby={tooltipId}
+                          onClick={() => {
+                            setQueueFocus("all");
+                            setStateFilter(state);
+                          }}
+                        >
+                          {lifecycleStateLabel(state, lang)}
+                        </button>
+                        <span id={tooltipId} role="tooltip" className="admin-tab-tooltip">
+                          {helpText}
+                        </span>
+                      </span>
+                    );
+                  })}
                 </div>
                 <div className="admin-concourse-util-actions">
                   <button
@@ -3183,6 +3192,10 @@ function stateFilterHelpText(filter: AdminStateFilter, lang: Language): string {
       return lang === "sv"
         ? "ML-Dashboard: Live-telemetri för rekommendationshändelser, positionsbias (IPS gamma), modellversioner och representativa rättvisegrinder."
         : "ML Dashboard: Live recommendation telemetry, position bias (IPS gamma), model versions, and representation gates.";
+    case "baseline":
+      return lang === "sv"
+        ? "Baseline: Importerade, aktiva platser i grundkatalogen som ännu inte manuellt verifierats eller lyfts som utvalda."
+        : "Baseline: Imported active places in the base catalog that have not yet been manually verified or featured.";
     case "verified":
       return lang === "sv"
         ? "Verifierade: Granskade och godkända verksamheter som är aktiva och publicerade i Motkartas öppna katalog."
