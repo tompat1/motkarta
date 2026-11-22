@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { PlaceInput, PlaceLifecycleState } from "../../lib/scoring";
+import type { VenueStatusCheckResult } from "../../lib/venue-status-check";
 import { isBroadStockholmArea, STOCKHOLM_REGIONS as STOCKHOLM_REGION_NAMES } from "../../lib/stockholm-regions";
 import type { Language } from "../app/shared";
 import { formatUpdatedDate } from "../app/shared";
@@ -1500,6 +1501,78 @@ export function AdminReviewPanel({
   };
 
   const [bulkConfirmBusy, setBulkConfirmBusy] = useState(false);
+  const [venueStatusChecks, setVenueStatusChecks] = useState<Record<number, VenueStatusCheckResult>>({});
+  const [checkingStatusIds, setCheckingStatusIds] = useState<Set<number>>(new Set());
+
+  const checkVenuesOperationalStatus = async (rows: AdminCandidate[]) => {
+    if (!hasAdminAuth || rows.length === 0) return;
+    const ids = rows.map((r) => r.id);
+    setCheckingStatusIds((prev) => new Set([...prev, ...ids]));
+    setError(null);
+
+    const nextResults: Record<number, VenueStatusCheckResult> = {};
+    let failedBatches = 0;
+
+    for (let start = 0; start < rows.length; start += 10) {
+      const batch = rows.slice(start, start + 10);
+      try {
+        const response = await fetch("/api/admin/check-status", {
+          method: "POST",
+          headers: adminHeaders(undefined, { "content-type": "application/json" }),
+          body: JSON.stringify({
+            venues: batch.map((row) => ({
+              id: row.id,
+              name: row.name,
+              area: row.area,
+              website: row.website,
+              latitude: row.latitude,
+              longitude: row.longitude,
+            })),
+          }),
+        });
+        const payload = (await response.json().catch(() => ({}))) as {
+          results?: VenueStatusCheckResult[];
+          error?: string;
+        };
+        if (!response.ok) {
+          failedBatches += 1;
+        } else {
+          for (const res of payload.results ?? []) {
+            nextResults[res.id] = res;
+          }
+        }
+      } catch {
+        failedBatches += 1;
+      }
+    }
+
+    setVenueStatusChecks((prev) => ({ ...prev, ...nextResults }));
+    setCheckingStatusIds((prev) => {
+      const next = new Set(prev);
+      ids.forEach((id) => next.delete(id));
+      return next;
+    });
+
+    const checkedList = Object.values(nextResults);
+    if (checkedList.length > 0) {
+      const closedCount = checkedList.filter((r) => r.status === "permanently_closed").length;
+      const tempCount = checkedList.filter((r) => r.status === "temporarily_closed").length;
+      const downCount = checkedList.filter((r) => r.status === "website_down").length;
+      const openCount = checkedList.filter((r) => r.status === "open").length;
+      setStatus(
+        lang === "sv"
+          ? `Status kontrollerad för ${checkedList.length} ställen: ${openCount} öppna, ${closedCount} permanent stängda, ${tempCount} tillfälligt stängda, ${downCount} hemsida nere.`
+          : `Status checked for ${checkedList.length} places: ${openCount} open, ${closedCount} permanently closed, ${tempCount} temporarily closed, ${downCount} website down.`,
+      );
+    }
+    if (failedBatches > 0) {
+      setError(
+        lang === "sv"
+          ? "Vissa statuskontroller kunde inte slutföras. Försök igen."
+          : "Some status checks could not complete. Please retry.",
+      );
+    }
+  };
 
   const batchConfirmOrDismissCandidates = async (
     selectedRows: AdminCandidate[],
@@ -2464,6 +2537,9 @@ export function AdminReviewPanel({
                     bulkBusy={bulkConfirmBusy}
                     onBulkConfirmCandidates={(rows) => void batchConfirmOrDismissCandidates(rows, "confirm")}
                     onBulkDismissCandidates={(rows) => void batchConfirmOrDismissCandidates(rows, "dismiss")}
+                    statusChecks={venueStatusChecks}
+                    checkingStatusIds={checkingStatusIds}
+                    onCheckStatus={(rows) => void checkVenuesOperationalStatus(rows)}
                     onToggleRemoved={(candidate) =>
                       void promoteCandidate(
                         candidate,

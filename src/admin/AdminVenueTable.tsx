@@ -4,12 +4,15 @@ import {
   ArrowsDownUp,
   ArrowUp,
   ArrowDown,
+  CircleNotch,
   Funnel,
   PencilSimple,
+  Pulse,
   Scales,
   ShieldCheck,
   WarningCircle,
 } from "@phosphor-icons/react";
+import type { VenueStatusCheckResult } from "../../lib/venue-status-check";
 
 export type AdminVenueTableRow = {
   id: number;
@@ -55,6 +58,9 @@ type AdminVenueTableProps<T extends AdminVenueTableRow> = {
   onBulkConfirmCandidates?: (candidates: T[]) => void;
   onBulkDismissCandidates?: (candidates: T[]) => void;
   bulkBusy?: boolean;
+  statusChecks?: Record<number, VenueStatusCheckResult>;
+  checkingStatusIds?: Set<number>;
+  onCheckStatus?: (candidates: T[]) => void;
   onToggleRemoved?: (candidate: T) => void;
 };
 
@@ -70,6 +76,9 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
   onBulkConfirmCandidates,
   onBulkDismissCandidates,
   bulkBusy = false,
+  statusChecks,
+  checkingStatusIds,
+  onCheckStatus,
   onToggleRemoved,
 }: AdminVenueTableProps<T>) {
   const [sortKey, setSortKey] = useState<SortKey>("conflicts");
@@ -279,6 +288,19 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
                     : `Confirm selected (${selectedConfirmableCandidates.length})`}
               </button>
             ) : null}
+            {onCheckStatus ? (
+              <button
+                type="button"
+                className="admin-table-check-btn"
+                disabled={bulkBusy || selectedVisibleCandidates.some((c) => checkingStatusIds?.has(c.id))}
+                onClick={() => onCheckStatus(selectedVisibleCandidates)}
+              >
+                <Pulse size={14} weight="bold" />
+                {lang === "sv"
+                  ? `Kolla öppet/stängt (${selectedVisibleCandidates.length})`
+                  : `Check open/closed (${selectedVisibleCandidates.length})`}
+              </button>
+            ) : null}
             {onBulkDismissCandidates ? (
               <button
                 type="button"
@@ -447,6 +469,14 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
                         {lang === "sv" ? "Ej på kartan" : "Not on map"}
                       </small>
                     ) : null}
+                    {statusChecks?.[candidate.id] ? (
+                      <span
+                        className={`admin-live-status-badge is-${statusChecks[candidate.id].status}`}
+                        title={statusChecks[candidate.id].summary}
+                      >
+                        {operationalStatusLabel(statusChecks[candidate.id].status, lang)}
+                      </span>
+                    ) : null}
                     {candidate.validationLabel ? <small className="admin-table-cell-note">{validationLabelText(candidate.validationLabel, lang)}</small> : null}
                   </td>
                   <td>
@@ -505,6 +535,22 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
                       <button type="button" className="admin-table-review-btn" onClick={() => onOpenReview(candidate)} disabled={busyId === candidate.id}>
                         {lang === "sv" ? "Granska" : "Review"}
                       </button>
+                      {onCheckStatus ? (
+                        <button
+                          type="button"
+                          className="admin-table-icon-btn"
+                          onClick={() => onCheckStatus([candidate])}
+                          disabled={busyId === candidate.id || bulkBusy || checkingStatusIds?.has(candidate.id)}
+                          aria-label={lang === "sv" ? `Kolla om ${candidate.name} är öppet eller stängt` : `Check if ${candidate.name} is open or closed`}
+                          title={lang === "sv" ? "Kolla öppet/stängt (hemsida + OSM + Google)" : "Check open/closed (website + OSM + Google)"}
+                        >
+                          {checkingStatusIds?.has(candidate.id) ? (
+                            <CircleNotch size={15} weight="bold" className="animate-spin" />
+                          ) : (
+                            <Pulse size={15} weight="bold" />
+                          )}
+                        </button>
+                      ) : null}
                       <button
                         type="button"
                         className="admin-table-icon-btn"
@@ -622,6 +668,17 @@ function confidenceLabel(level: "high" | "medium" | "low", lang: Language) {
   if (level === "high") return lang === "sv" ? "Hög" : "High";
   if (level === "medium") return lang === "sv" ? "Medel" : "Medium";
   return lang === "sv" ? "Låg" : "Low";
+}
+
+function operationalStatusLabel(status: VenueStatusCheckResult["status"], lang: Language): string {
+  const labels: Record<VenueStatusCheckResult["status"], [string, string]> = {
+    open: ["Öppet", "Open"],
+    temporarily_closed: ["Tillf. stängt", "Temp. closed"],
+    permanently_closed: ["Permanent stängt", "Permanently closed"],
+    website_down: ["Hemsida nere", "Website down"],
+    unknown: ["Okänd status", "Unknown"],
+  };
+  return labels[status][lang === "sv" ? 0 : 1];
 }
 
 function lifecycleLabel(state: string, lang: Language) {
