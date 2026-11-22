@@ -57,6 +57,7 @@ type AdminVenueTableProps<T extends AdminVenueTableRow> = {
   onConfirmCandidate?: (candidate: T) => void;
   onBulkConfirmCandidates?: (candidates: T[]) => void;
   onBulkDismissCandidates?: (candidates: T[]) => void;
+  onBulkMergeCandidates?: (primary: T, duplicates: T[]) => void;
   bulkBusy?: boolean;
   statusChecks?: Record<number, VenueStatusCheckResult>;
   checkingStatusIds?: Set<number>;
@@ -75,6 +76,7 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
   onConfirmCandidate,
   onBulkConfirmCandidates,
   onBulkDismissCandidates,
+  onBulkMergeCandidates,
   bulkBusy = false,
   statusChecks,
   checkingStatusIds,
@@ -88,6 +90,8 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
   const [freshnessFilter, setFreshnessFilter] = useState<FreshnessFilter>("all");
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("all");
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [isMergeOpen, setIsMergeOpen] = useState(false);
+  const [mergePrimaryId, setMergePrimaryId] = useState<number | null>(null);
   const lastClickedIndexRef = useRef<number | null>(null);
   const selectAllCheckboxRef = useRef<HTMLInputElement | null>(null);
 
@@ -202,7 +206,35 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
     lastClickedIndexRef.current = index;
   };
 
-  const showSelectionColumn = Boolean(onBulkConfirmCandidates || onBulkDismissCandidates);
+  const showSelectionColumn = Boolean(onBulkConfirmCandidates || onBulkDismissCandidates || onBulkMergeCandidates);
+
+  const eligibleMergePrimaries = useMemo(
+    () => selectedVisibleCandidates.filter((c) => c.lifecycleState !== "candidate"),
+    [selectedVisibleCandidates],
+  );
+
+  const pickBestPrimaryId = (rows: T[]): number | null => {
+    const pool = rows.filter((c) => c.lifecycleState !== "candidate");
+    if (pool.length === 0) return null;
+    const rank: Record<string, number> = { featured: 3, verified: 2, baseline: 1 };
+    const sorted = [...pool].sort((a, b) => {
+      const stateDiff = (rank[b.lifecycleState] ?? 0) - (rank[a.lifecycleState] ?? 0);
+      if (stateDiff !== 0) return stateDiff;
+      const evDiff = b.evidenceGate.independentEvidenceCount - a.evidenceGate.independentEvidenceCount;
+      if (evDiff !== 0) return evDiff;
+      return a.id - b.id;
+    });
+    return sorted[0]?.id ?? null;
+  };
+
+  useEffect(() => {
+    if (selectedVisibleCandidates.length < 2) {
+      setIsMergeOpen(false);
+      setMergePrimaryId(null);
+    } else if (isMergeOpen && (!mergePrimaryId || !eligibleMergePrimaries.some((c) => c.id === mergePrimaryId))) {
+      setMergePrimaryId(pickBestPrimaryId(selectedVisibleCandidates));
+    }
+  }, [selectedVisibleCandidates, isMergeOpen, mergePrimaryId, eligibleMergePrimaries]);
 
   return (
     <section className="admin-venue-table-section" id="admin-venue-table" aria-labelledby="admin-venue-table-title">
@@ -288,6 +320,31 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
                     : `Confirm selected (${selectedConfirmableCandidates.length})`}
               </button>
             ) : null}
+            {onBulkMergeCandidates && selectedVisibleCandidates.length >= 2 ? (
+              <button
+                type="button"
+                className="admin-table-merge-btn"
+                disabled={bulkBusy || eligibleMergePrimaries.length === 0}
+                title={
+                  eligibleMergePrimaries.length === 0
+                    ? lang === "sv"
+                      ? "Minst en vald plats måste vara Baseline, Verifierad eller Utvald för att vara huvudpost"
+                      : "At least one selected place must be Baseline, Verified, or Featured to serve as the primary record"
+                    : lang === "sv"
+                      ? "Slå ihop valda dubbletter till en huvudpost"
+                      : "Merge selected duplicates into one primary venue"
+                }
+                onClick={() => {
+                  setMergePrimaryId(pickBestPrimaryId(selectedVisibleCandidates));
+                  setIsMergeOpen((prev) => !prev);
+                }}
+              >
+                <Scales size={14} weight="bold" />
+                {lang === "sv"
+                  ? `Slå ihop (${selectedVisibleCandidates.length})`
+                  : `Merge duplicates (${selectedVisibleCandidates.length})`}
+              </button>
+            ) : null}
             {onCheckStatus ? (
               <button
                 type="button"
@@ -317,11 +374,60 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
               type="button"
               className="admin-filter-reset"
               disabled={bulkBusy}
-              onClick={() => setSelectedIds(new Set())}
+              onClick={() => {
+                setIsMergeOpen(false);
+                setSelectedIds(new Set());
+              }}
             >
               {lang === "sv" ? "Rensa val" : "Clear selection"}
             </button>
           </div>
+          {isMergeOpen && onBulkMergeCandidates && selectedVisibleCandidates.length >= 2 && eligibleMergePrimaries.length > 0 ? (
+            <div className="admin-table-merge-panel">
+              <label className="admin-table-merge-picker">
+                <span>{lang === "sv" ? "Behåll som huvudpost:" : "Keep as primary:"}</span>
+                <select
+                  value={mergePrimaryId ?? ""}
+                  onChange={(e) => setMergePrimaryId(Number(e.target.value))}
+                  disabled={bulkBusy}
+                >
+                  {eligibleMergePrimaries.map((row) => (
+                    <option key={row.id} value={row.id}>
+                      {row.name} · {row.area} · #{row.id} ({lifecycleLabel(row.lifecycleState, lang)} · {row.evidenceGate.independentEvidenceCount} {lang === "sv" ? "oberoende" : "independent"})
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div className="admin-table-merge-actions">
+                <button
+                  type="button"
+                  className="admin-table-confirm-btn"
+                  disabled={bulkBusy || !mergePrimaryId}
+                  onClick={() => {
+                    const primary = eligibleMergePrimaries.find((r) => r.id === mergePrimaryId);
+                    if (!primary) return;
+                    const duplicates = selectedVisibleCandidates.filter((r) => r.id !== primary.id);
+                    setIsMergeOpen(false);
+                    onBulkMergeCandidates(primary, duplicates);
+                  }}
+                >
+                  {bulkBusy
+                    ? (lang === "sv" ? "Slår ihop…" : "Merging…")
+                    : lang === "sv"
+                      ? `Bekräfta sammanslagning (${selectedVisibleCandidates.length} → 1)`
+                      : `Confirm merge (${selectedVisibleCandidates.length} → 1)`}
+                </button>
+                <button
+                  type="button"
+                  className="admin-filter-reset"
+                  disabled={bulkBusy}
+                  onClick={() => setIsMergeOpen(false)}
+                >
+                  {lang === "sv" ? "Avbryt" : "Cancel"}
+                </button>
+              </div>
+            </div>
+          ) : null}
         </div>
       ) : null}
 

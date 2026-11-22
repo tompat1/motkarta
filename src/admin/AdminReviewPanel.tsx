@@ -1653,6 +1653,58 @@ export function AdminReviewPanel({
     setBulkConfirmBusy(false);
   };
 
+  const batchMergeCandidates = async (
+    primary: AdminCandidate,
+    duplicates: AdminCandidate[],
+  ) => {
+    if (!hasAdminAuth || duplicates.length === 0 || bulkConfirmBusy) return;
+    setBulkConfirmBusy(true);
+    setError(null);
+    const mergedIds = new Set<number>();
+    let failedCount = 0;
+
+    for (const dup of duplicates) {
+      if (dup.id === primary.id) continue;
+      try {
+        const response = await fetch("/api/admin/candidates", {
+          method: "POST",
+          headers: adminHeaders(undefined, { "content-type": "application/json" }),
+          body: JSON.stringify({
+            action: "merge_duplicate",
+            id: dup.id,
+            targetId: primary.id,
+            validationNotes: `Merged selected duplicate #${dup.id} into #${primary.id} (${primary.name}).`,
+          }),
+        });
+        if (response.ok) {
+          mergedIds.add(dup.id);
+        } else {
+          failedCount += 1;
+        }
+      } catch {
+        failedCount += 1;
+      }
+    }
+
+    if (mergedIds.size > 0) {
+      setCandidates((current) => current.filter((row) => !mergedIds.has(row.id)));
+      setStatus(
+        lang === "sv"
+          ? `Slog ihop ${mergedIds.size} dubblett(er) in i ${primary.name} (#${primary.id}). Bevis och taggar kopierades.`
+          : `Merged ${mergedIds.size} duplicate(s) into ${primary.name} (#${primary.id}). Evidence and tags were preserved.`,
+      );
+      void loadDashboard();
+    }
+    if (failedCount > 0) {
+      setError(
+        lang === "sv"
+          ? `${failedCount} sammanslagning(ar) misslyckades. Kontrollera att huvudposten inte har status Kandidat.`
+          : `${failedCount} merge(s) failed. Make sure the primary venue is Baseline, Verified, or Featured.`,
+      );
+    }
+    setBulkConfirmBusy(false);
+  };
+
   const resolvePlacesWithoutRegion = async () => {
     const token = adminToken.trim();
     if (!hasAdminAuth) return;
@@ -2537,6 +2589,7 @@ export function AdminReviewPanel({
                     bulkBusy={bulkConfirmBusy}
                     onBulkConfirmCandidates={(rows) => void batchConfirmOrDismissCandidates(rows, "confirm")}
                     onBulkDismissCandidates={(rows) => void batchConfirmOrDismissCandidates(rows, "dismiss")}
+                    onBulkMergeCandidates={(primary, duplicates) => void batchMergeCandidates(primary, duplicates)}
                     statusChecks={venueStatusChecks}
                     checkingStatusIds={checkingStatusIds}
                     onCheckStatus={(rows) => void checkVenuesOperationalStatus(rows)}

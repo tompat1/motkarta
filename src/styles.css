@@ -21954,6 +21954,76 @@ body.is-drawer-open .site-utilities > * {
   color: #8f8a80;
 }
 
+.admin-table-merge-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 11px;
+  border: 1px solid #92400e;
+  border-radius: 0;
+  background: #fef3c7;
+  color: #92400e;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-table-merge-btn:hover:not(:disabled) {
+  background: #fde68a;
+}
+
+.admin-table-merge-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-table-merge-panel {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(22, 101, 52, 0.25);
+}
+
+.admin-table-merge-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #111111;
+  text-transform: uppercase;
+}
+
+.admin-table-merge-picker select {
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 1px solid #111111;
+  background: #ffffff;
+  color: #111111;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.admin-table-merge-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .admin-table-check-btn {
   display: inline-flex;
   align-items: center;
