@@ -34,12 +34,54 @@ const LNG_TOLERANCE = 0.0012;
 const LAT_CELL = 0.001;
 const LNG_CELL = 0.0015;
 
+const GENERIC_ADDRESS_TOKENS = new Set([
+  "stockholm",
+  "centralstockholm",
+  "northstockholm",
+  "southstockholm",
+  "eaststockholm",
+  "weststockholm",
+  "stockholmslan",
+  "stockholmcounty",
+  "stockholmskommun",
+  "sweden",
+  "sverige",
+  "unspecified",
+  "sodermalm",
+  "norrmalm",
+  "ostermalm",
+  "vasastan",
+  "kungsholmen",
+  "gamlastan",
+  "djurgarden",
+  "solna",
+  "sundbyberg",
+  "nacka",
+  "bromma",
+  "soderort",
+  "vasterort",
+  "norrort",
+]);
+
 export function normalizeDuplicateKey(value: string | null | undefined): string {
   return String(value ?? "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/[ \-.'']/g, "");
+    .replace(/[ \-.'',]/g, "");
+}
+
+export function isSpecificStreetAddress(address: string | null | undefined): boolean {
+  const raw = String(address ?? "").trim();
+  if (!raw) return false;
+  // Require at least one street/building digit OR a non-generic multi-part street name.
+  const parts = raw
+    .split(",")
+    .map((part) => normalizeDuplicateKey(part))
+    .filter(Boolean);
+  if (parts.length === 0) return false;
+  if (parts.every((part) => GENERIC_ADDRESS_TOKENS.has(part))) return false;
+  return /\d/.test(raw);
 }
 
 function geoCellKey(lat: number, lng: number): string {
@@ -69,7 +111,7 @@ export function findDuplicatesInMemory(
       if (list) list.push(pub);
       else byNameDistrict.set(key, [pub]);
     }
-    const normAddr = normalizeDuplicateKey(pub.address);
+    const normAddr = isSpecificStreetAddress(pub.address) ? normalizeDuplicateKey(pub.address) : "";
     if (normAddr) {
       const list = byAddress.get(normAddr);
       if (list) list.push(pub);
@@ -93,7 +135,7 @@ export function findDuplicatesInMemory(
 
     const normCandName = normalizeDuplicateKey(cand.name);
     const normCandDistrict = String(cand.district ?? cand.area ?? "").toLowerCase();
-    const normCandAddr = normalizeDuplicateKey(cand.address);
+    const normCandAddr = isSpecificStreetAddress(cand.address) ? normalizeDuplicateKey(cand.address) : "";
     const matchedById = new Map<number, DuplicateMatchResult>();
 
     const recordMatch = (pub: PublishedEstablishmentLookup, reason: DuplicateMatchResult["reason"]) => {

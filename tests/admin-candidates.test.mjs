@@ -5,8 +5,25 @@ import {
   onRequestGet as getAdminCandidates,
   onRequestPost as postAdminCandidate,
 } from "../functions/api/admin/candidates.ts";
+import { findDuplicatesInMemory, isSpecificStreetAddress } from "../lib/admin-duplicates.ts";
 
 const adminToken = "review-secret";
+
+test("duplicate matcher ignores generic city/district placeholder addresses", () => {
+  assert.equal(isSpecificStreetAddress("Central Stockholm, Stockholm"), false);
+  assert.equal(isSpecificStreetAddress("Södermalm, Stockholm"), false);
+  assert.equal(isSpecificStreetAddress("Stockholm"), false);
+  assert.equal(isSpecificStreetAddress("Götgatan 36"), true);
+
+  const matches = findDuplicatesInMemory(
+    [{ id: 1, name: "Bistro Süd", district: "Södermalm", address: "Central Stockholm, Stockholm" }],
+    [
+      { id: 2, name: "Unrelated Cafe", district: "Södermalm", address: "Central Stockholm, Stockholm", latitude: null, longitude: null },
+      { id: 3, name: "Another Bakery", district: "Norrmalm", address: "Central Stockholm, Stockholm", latitude: null, longitude: null },
+    ],
+  );
+  assert.deepEqual(matches.get(1), []);
+});
 
 test("admin candidates endpoint is closed when no admin token is configured", async () => {
   const response = await getAdminCandidates({

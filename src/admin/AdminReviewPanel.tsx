@@ -436,7 +436,10 @@ export function AdminReviewPanel({
       } else if (queueFocus === "needs_evidence") {
         rows = rows.filter((candidate) => candidate.evidenceGate.sourceGaps.length > 0);
       } else if (queueFocus === "duplicates") {
-        rows = rows.filter((candidate) => candidate.possibleDuplicateCount > 0);
+        rows = rows.filter(
+          (candidate) =>
+            candidate.possibleDuplicateCount > 0 && candidate.validationLabel !== "closed_wrong_category",
+        );
       }
     }
 
@@ -1641,8 +1644,9 @@ export function AdminReviewPanel({
             aria-current={railTab === "desk" ? "page" : undefined}
             onClick={() => {
               setRailTab("desk");
+              setStateFilter("all");
               setQueueFocus("all");
-              if (stateFilter === "ml_dashboard") setStateFilter("candidate");
+              setViewMode("table");
             }}
           >
             <span>{lang === "sv" ? "Platsdesk" : "Venue desk"}</span>
@@ -1654,7 +1658,7 @@ export function AdminReviewPanel({
             aria-current={railTab === "queue" ? "page" : undefined}
             onClick={() => {
               setRailTab("queue");
-              setStateFilter("candidate");
+              setStateFilter("pending_confirmation");
               setQueueFocus("all");
               setViewMode("table");
             }}
@@ -1671,7 +1675,7 @@ export function AdminReviewPanel({
               setRailTab("duplicates");
               setStateFilter("candidate");
               setQueueFocus("duplicates");
-              setViewMode("table");
+              setViewMode("list");
             }}
           >
             <span>{lang === "sv" ? "Dubbletter" : "Duplicates"}</span>
@@ -1818,9 +1822,17 @@ export function AdminReviewPanel({
                         ? lang === "sv"
                           ? "HANDBOK & PIPELINE-SYNK"
                           : "RUNBOOKS & SYNC"
-                        : lang === "sv"
-                          ? "PLATSREGISTER · DATA DESK"
-                          : "VENUE DATA DESK"}
+                        : railTab === "queue"
+                          ? lang === "sv"
+                            ? "GRANSKNINGSKÖ · ATT BEKRÄFTA"
+                            : "REVIEW QUEUE · PENDING APPROVAL"
+                          : railTab === "duplicates"
+                            ? lang === "sv"
+                              ? "DUBBLETTER & KONFLIKTER"
+                              : "DUPLICATE RESOLUTION"
+                            : lang === "sv"
+                              ? "PLATSREGISTER · DATA DESK"
+                              : "VENUE DATA DESK"}
               </h1>
               <p>
                 {railTab === "coverage"
@@ -1839,9 +1851,17 @@ export function AdminReviewPanel({
                         ? lang === "sv"
                           ? "Standardrutiner (SOP), runtime-kontroll och synkronisering av granskningsetiketter."
                           : "Operating runbooks, D1 runtime checks, and human-label pipeline sync."
-                        : lang === "sv"
-                          ? "Granska proveniens, aktualitet och konflikter i den öppna katalogen."
-                          : "Review provenance, freshness and conflicts across the public catalog."}
+                        : railTab === "queue"
+                          ? lang === "sv"
+                            ? "Nya platser som ännu inte syns på kartan och kräver manuell bekräftelse innan publicering."
+                            : "New places not yet shown on the map awaiting manual confirmation before publishing."
+                          : railTab === "duplicates"
+                            ? lang === "sv"
+                              ? "Jämför misstänkta dubbletter sida vid sida och slå ihop eller behåll som separata ställen."
+                              : "Compare suspected duplicate candidates side-by-side and merge or keep separate."
+                            : lang === "sv"
+                              ? "Sök och hantera alla publicerade och väntande platser i den öppna katalogen."
+                              : "Browse and manage all published and candidate venues across the public catalog."}
               </p>
             </div>
             <button
