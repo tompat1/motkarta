@@ -2,7 +2,7 @@
 
 import { firstAvailablePhoto } from "../lib/photo-loading";
 
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { OnboardingModal } from "./components/OnboardingModal";
 import { AdminReviewPanel, isAdminRoutePath, readStoredAdminToken, type AdminSessionStatus } from "./admin/AdminReviewPanel";
 import { ConciergeAnswerView } from "./components/ConciergeAnswerView";
@@ -1824,54 +1824,129 @@ function AppContent({
   });
 
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isHeroSearchFocused, setIsHeroSearchFocused] = useState(false);
   const [autocompleteIndex, setAutocompleteIndex] = useState<number>(-1);
+  const [isTypingSearch, setIsTypingSearch] = useState(false);
+  const typingSearchTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const deferredQuery = useDeferredValue(query);
+  const isSearchLoading = asking || query !== deferredQuery || isTypingSearch;
+
+  useEffect(() => () => clearTimeout(typingSearchTimerRef.current), []);
+
+  const triggerSearchTypingIndicator = useCallback((nextValue: string) => {
+    clearTimeout(typingSearchTimerRef.current);
+    if (!nextValue.trim()) {
+      setIsTypingSearch(false);
+      return;
+    }
+    setIsTypingSearch(true);
+    typingSearchTimerRef.current = setTimeout(() => {
+      setIsTypingSearch(false);
+    }, 180);
+  }, []);
 
   const matchingSuggestions = useMemo(() => {
-    const inputClean = concierge.trim().toLowerCase();
+    const inputClean = deferredQuery.trim().toLowerCase();
     const allCandidates = Array.from(new Set([...conciergeHistory, ...getPopularConciergePrompts(lang)]));
     if (!inputClean) {
       return allCandidates.slice(0, 5);
     }
     return allCandidates
       .filter((prompt) => prompt.toLowerCase().includes(inputClean))
-      .slice(0, 5);
-  }, [concierge, conciergeHistory, lang]);
+      .slice(0, 4);
+  }, [deferredQuery, conciergeHistory, lang]);
+
+  const catalogCuisineEntries = useMemo(() => {
+    const counts = new Map<string, number>();
+    places.forEach((p) => {
+      cuisineParts(p).forEach((c) => {
+        counts.set(c, (counts.get(c) ?? 0) + 1);
+      });
+    });
+
+    const curatedByValue = new Map<string, { label: string; badge: string }>();
+    SEARCH_CUISINE_SUGGESTIONS.forEach((entry) => {
+      curatedByValue.set(entry.value.trim().toLowerCase(), { label: entry.label, badge: entry.badge });
+    });
+
+    return [...counts.entries()]
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([value, count]) => {
+        const svLabel = cuisineLabel(value, "sv");
+        const enLabel = cuisineLabel(value, "en");
+        const curated = curatedByValue.get(value);
+        const displayLabel = lang === "sv" ? svLabel : enLabel;
+        const searchTerms = [
+          value,
+          svLabel.toLowerCase(),
+          enLabel.toLowerCase(),
+          curated?.label.toLowerCase() ?? "",
+        ].filter(Boolean);
+        return {
+          value,
+          count,
+          displayLabel,
+          searchTerms,
+        };
+      });
+  }, [places, lang]);
 
   const searchAutocompleteSuggestions = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = deferredQuery.trim().toLowerCase();
 
     const matchedRegions = STOCKHOLM_REGION_OPTIONS.filter(
-      (r) => r.label.toLowerCase().includes(q) || r.aliases.some((a) => a.includes(q))
-    ).map((r) => ({
-      id: `region-${r.value}`,
-      label: r.label,
-      value: r.value,
-      badge: "Stadsdel",
-      icon: "📍",
-      placeId: undefined as number | undefined,
-    }));
+      (r) => !q || r.label.toLowerCase().includes(q) || r.aliases.some((a) => a.includes(q))
+    )
+      .slice(0, q ? 3 : 4)
+      .map((r) => ({
+        id: `region-${r.value}`,
+        label: r.label,
+        value: r.value,
+        badge: lang === "sv" ? "Stadsdel" : "Area",
+        kind: "region" as const,
+        placeId: undefined as number | undefined,
+        cuisineValue: undefined as string | undefined,
+      }));
 
-    const matchedCuisines = SEARCH_CUISINE_SUGGESTIONS.filter(
-      (c) => c.label.toLowerCase().includes(q) || c.value.toLowerCase().includes(q)
-    ).map((c) => ({
-      id: `cuisine-${c.value}`,
-      label: c.label,
-      value: c.value,
-      badge: c.badge,
-      icon: "🍴",
-      placeId: undefined as number | undefined,
-    }));
+    const matchedCuisines = catalogCuisineEntries
+      .map((c) => {
+        let score = 0;
+        if (!q) {
+          score = 10;
+        } else if (c.searchTerms.some((term) => term === q)) {
+          score = 100;
+        } else if (c.searchTerms.some((term) => term.startsWith(q))) {
+          score = 85;
+        } else if (c.searchTerms.some((term) => term.includes(q))) {
+          score = 55;
+        }
+        return { ...c, score };
+      })
+      .filter((c) => c.score > 0)
+      .sort((a, b) => b.score - a.score || b.count - a.count)
+      .slice(0, 4)
+      .map((c) => ({
+        id: `cuisine-${c.value}`,
+        label: `${c.displayLabel} (${c.count})`,
+        value: c.displayLabel,
+        badge: lang === "sv" ? "Kök" : "Cuisine",
+        kind: "cuisine" as const,
+        placeId: undefined as number | undefined,
+        cuisineValue: c.value,
+        score: c.score,
+      }));
 
     if (!q) {
-      const defaultPlaces = places.slice(0, 5).map((p) => ({
+      const defaultPlaces = places.slice(0, 4).map((p) => ({
         id: `place-${p.id}`,
         label: `${p.name} (${p.area})`,
         value: p.name,
-        badge: p.kind,
-        icon: p.kind === "Bakery" ? "🥐" : p.kind === "Café" ? "☕" : "🏢",
+        badge: kindFilterLabel(p.kind, lang),
+        kind: "place" as const,
         placeId: p.id,
+        cuisineValue: undefined as string | undefined,
       }));
-      return [...matchedRegions.slice(0, 4), ...matchedCuisines.slice(0, 4), ...defaultPlaces];
+      return [...matchedCuisines, ...matchedRegions, ...defaultPlaces];
     }
 
     const qClean = q.replace(/[,\s]+/g, " ").trim();
@@ -1883,15 +1958,17 @@ function AppContent({
         const areaLower = p.area.toLowerCase();
         const addressLower = (p.address || "").toLowerCase();
         const kindLower = p.kind.toLowerCase();
+        const cuisineLower = (p.cuisine || "").toLowerCase();
         const tagsStr = (p.tags || []).join(" ").toLowerCase();
-        const fullPlaceText = `${nameLower} ${areaLower} ${addressLower} ${kindLower} ${tagsStr}`;
+        const fullPlaceText = `${nameLower} ${areaLower} ${addressLower} ${kindLower} ${cuisineLower} ${tagsStr}`;
 
         let score = 0;
         if (nameLower === q || nameLower === qClean) score = 100;
-        else if (nameLower.startsWith(q) || nameLower.startsWith(qClean)) score = 80;
+        else if (nameLower.startsWith(q) || nameLower.startsWith(qClean)) score = 85;
         else if (qTokens.length > 1 && qTokens.every((token) => fullPlaceText.includes(token))) score = 75;
         else if (nameLower.includes(` ${qClean}`)) score = 65;
         else if (nameLower.includes(qClean)) score = 50;
+        else if (cuisineLower.includes(qClean)) score = 35;
         else if (areaLower.includes(qClean)) score = 30;
         else if (kindLower.includes(qClean) || tagsStr.includes(qClean)) score = 15;
 
@@ -1899,20 +1976,35 @@ function AppContent({
       })
       .filter((item) => item.score > 0)
       .sort((a, b) => b.score - a.score || a.place.name.localeCompare(b.place.name))
+      .slice(0, 6)
       .map(({ place: p }) => ({
         id: `place-${p.id}`,
         label: `${p.name} (${p.area})`,
         value: p.name,
-        badge: p.kind,
-        icon: p.kind === "Bakery" ? "🥐" : p.kind === "Café" ? "☕" : "🏢",
+        badge: kindFilterLabel(p.kind, lang),
+        kind: "place" as const,
         placeId: p.id,
+        cuisineValue: undefined as string | undefined,
       }));
 
-    return [...matchedPlaces, ...matchedRegions, ...matchedCuisines];
-  }, [places, query]);
+    const hasPrefixCuisineMatch = matchedCuisines.some((c) => c.score >= 85);
+    if (hasPrefixCuisineMatch) {
+      return [...matchedCuisines, ...matchedPlaces, ...matchedRegions];
+    }
+    return [...matchedPlaces, ...matchedCuisines, ...matchedRegions];
+  }, [places, deferredQuery, catalogCuisineEntries, lang]);
 
   const flatAutocompleteItems = useMemo(() => {
-    const list: Array<{ id: string; label: string; value: string; badge: string; icon?: string; placeId?: number; isPrompt?: boolean }> = [];
+    const list: Array<{
+      id: string;
+      label: string;
+      value: string;
+      badge: string;
+      kind?: "place" | "cuisine" | "region" | "prompt";
+      placeId?: number;
+      cuisineValue?: string;
+      isPrompt?: boolean;
+    }> = [];
     for (const item of searchAutocompleteSuggestions) {
       list.push(item);
     }
@@ -1922,31 +2014,64 @@ function AppContent({
         label: prompt,
         value: prompt,
         badge: lang === "sv" ? "Fråga" : "Ask",
+        kind: "prompt",
         isPrompt: true,
       });
     }
     return list;
   }, [searchAutocompleteSuggestions, matchingSuggestions, lang]);
 
-  const handleSelectAutocompleteItem = (item: { value: string; placeId?: number; isPrompt?: boolean }) => {
+  const handleSelectAutocompleteItem = (item: {
+    value: string;
+    placeId?: number;
+    cuisineValue?: string;
+    isPrompt?: boolean;
+  }) => {
+    clearTimeout(typingSearchTimerRef.current);
+    setIsTypingSearch(false);
+    setIsSearchFocused(false);
+    setIsHeroSearchFocused(false);
+    setAutocompleteIndex(-1);
+
+    if (item.cuisineValue) {
+      handleFilterByCuisineFromDetail(item.cuisineValue);
+      if (typeof window !== "undefined" && window.innerWidth > 1024) {
+        document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
     if (kind === "Saved") {
       setKind("All places");
     }
     setQuery(item.value);
     setConcierge(item.value);
-    setIsSearchFocused(false);
-    setAutocompleteIndex(-1);
 
     if (item.placeId) {
       setSelected(item.placeId);
-      document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+      setIsMapCardClosed(false);
+      if (typeof window !== "undefined" && window.innerWidth <= 1024) {
+        setMobileTab("map");
+        setMobileViewMode("map");
+      } else {
+        document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+      }
     } else if (item.isPrompt) {
       void askWithQuery(item.value);
+    } else {
+      setListScope("all");
+      if (typeof window !== "undefined" && window.innerWidth <= 1024) {
+        setMobileTab("map");
+        setMobileViewMode("list");
+      } else {
+        document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!isSearchFocused || flatAutocompleteItems.length === 0) {
+    const isDropdownOpen = isSearchFocused || isHeroSearchFocused;
+    if (!isDropdownOpen || flatAutocompleteItems.length === 0) {
       if (event.key === "Enter") {
         event.preventDefault();
         void askFromSearch();
@@ -1965,6 +2090,8 @@ function AppContent({
       if (autocompleteIndex >= 0 && autocompleteIndex < flatAutocompleteItems.length) {
         handleSelectAutocompleteItem(flatAutocompleteItems[autocompleteIndex]);
       } else {
+        setIsSearchFocused(false);
+        setIsHeroSearchFocused(false);
         void askFromSearch();
       }
     } else if (event.key === "Tab") {
@@ -1976,6 +2103,7 @@ function AppContent({
       }
     } else if (event.key === "Escape") {
       setIsSearchFocused(false);
+      setIsHeroSearchFocused(false);
       setAutocompleteIndex(-1);
     }
   };
@@ -2373,10 +2501,22 @@ function AppContent({
           {lang === "sv" ? "Plats, kök, stadsdel eller fråga" : "Place, cuisine, neighborhood or question"}
         </label>
         <div className="unified-search-input-wrapper">
-          <MagnifyingGlass size={18} weight="bold" style={{ color: "var(--color-ink)", flexShrink: 0 }} />
+          {isSearchLoading ? (
+            <CircleNotch
+              size={18}
+              weight="bold"
+              className="animate-spin search-loading-spinner"
+              aria-hidden="true"
+            />
+          ) : (
+            <MagnifyingGlass size={18} weight="bold" style={{ color: "var(--color-ink)", flexShrink: 0 }} aria-hidden="true" />
+          )}
           <input
             id="desktop-discovery-search"
             ref={searchInputRef}
+            role="combobox"
+            aria-expanded={isSearchFocused && (searchAutocompleteSuggestions.length > 0 || matchingSuggestions.length > 0)}
+            aria-autocomplete="list"
             aria-label={lang === "sv" ? "Sök ställe, kök, område eller fråga" : "Search place, cuisine, region or ask"}
             value={query}
             onChange={(event) => {
@@ -2387,6 +2527,7 @@ function AppContent({
               setQuery(val);
               setConcierge(val);
               setAutocompleteIndex(-1);
+              triggerSearchTypingIndicator(val);
               if (userLocation && DISTANCE_INTENT_REGEX.test(val)) setSortMode('Distance');
             }}
             onKeyDown={handleSearchKeyDown}
@@ -2394,11 +2535,19 @@ function AppContent({
             onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
             placeholder={lang === "sv" ? "Sök ställe, kök, stadsdel eller ställ en fråga till concierge..." : "Search place, cuisine, region or ask concierge..."}
           />
+          {asking ? (
+            <span className="search-loading-pill" role="status" aria-live="polite">
+              <CircleNotch size={12} weight="bold" className="animate-spin" aria-hidden="true" />
+              <span>{lang === "sv" ? "Söker…" : "Searching…"}</span>
+            </span>
+          ) : null}
           {query.trim() ? (
             <button
               type="button"
               className="search-clear-btn"
               onClick={() => {
+                clearTimeout(typingSearchTimerRef.current);
+                setIsTypingSearch(false);
                 clearConciergeState();
                 setAutocompleteIndex(-1);
               }}
@@ -2439,19 +2588,19 @@ function AppContent({
         </div>
 
         {isSearchFocused && (searchAutocompleteSuggestions.length > 0 || matchingSuggestions.length > 0) ? (
-          <div className="search-autocomplete-box">
+          <div className="search-autocomplete-box" role="listbox">
             {searchAutocompleteSuggestions.length > 0 ? (
               <>
                 <div className="autocomplete-category-header">
-                  <Compass size={12} weight="bold" />
+                  {isSearchLoading ? <CircleNotch size={12} weight="bold" className="animate-spin" aria-hidden="true" /> : <Compass size={12} weight="bold" aria-hidden="true" />}
                   <span>
                     {query.trim()
                       ? lang === "sv"
-                        ? `MATCHANDE STÄLLEN & STADSDELAR (${searchAutocompleteSuggestions.length})`
-                        : `MATCHING PLACES & REGIONS (${searchAutocompleteSuggestions.length})`
+                        ? `MATCHANDE STÄLLEN, KÖK & STADSDELAR (${searchAutocompleteSuggestions.length})`
+                        : `MATCHING PLACES, CUISINES & AREAS (${searchAutocompleteSuggestions.length})`
                       : lang === "sv"
-                      ? "STADSDELAR, STÄLLEN & KÖK"
-                      : "REGIONS, PLACES & CUISINES"}
+                      ? "KÖK, STADSDELAR & STÄLLEN"
+                      : "CUISINES, AREAS & PLACES"}
                   </span>
                 </div>
                 {searchAutocompleteSuggestions.map((item) => {
@@ -2461,6 +2610,8 @@ function AppContent({
                     <button
                       key={item.id}
                       type="button"
+                      role="option"
+                      aria-selected={isActive}
                       className={`autocomplete-item ${isActive ? "active" : ""}`}
                       onMouseDown={(e) => {
                         e.preventDefault();
@@ -2469,10 +2620,18 @@ function AppContent({
                       onMouseEnter={() => setAutocompleteIndex(itemIdx)}
                     >
                       <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                        {item.placeId ? <MapTrifold size={14} weight="bold" aria-hidden="true" /> : <Compass size={14} weight="bold" aria-hidden="true" />}
+                        {item.kind === "cuisine" ? (
+                          <ForkKnife size={14} weight="bold" aria-hidden="true" style={{ color: "var(--color-water)" }} />
+                        ) : item.placeId ? (
+                          <MapTrifold size={14} weight="bold" aria-hidden="true" />
+                        ) : (
+                          <Compass size={14} weight="bold" aria-hidden="true" />
+                        )}
                         <span style={{ fontWeight: 600 }}>{item.label}</span>
                       </span>
-                      <span className="autocomplete-type-badge">{item.badge}</span>
+                      <span className={`autocomplete-type-badge ${item.kind === "cuisine" ? "is-cuisine" : ""}`}>
+                        {item.badge}
+                      </span>
                     </button>
                   );
                 })}
@@ -2500,6 +2659,8 @@ function AppContent({
                     <button
                       key={promptId}
                       type="button"
+                      role="option"
+                      aria-selected={isActive}
                       className={`autocomplete-item ${isActive ? "active" : ""}`}
                       onMouseDown={(e) => {
                         e.preventDefault();
@@ -2797,53 +2958,175 @@ function AppContent({
             {t.heroDeck}
             <CmsEditFlag cmsKey="heroDeck" label="Redaktionell Hero: Ingress / Deck" />
           </p>
-          <form
-            className="editorial-hero-search"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void askFromSearch();
-            }}
-          >
-            <MagnifyingGlass size={22} weight="regular" aria-hidden="true" />
-            <input
-              aria-label={lang === "sv" ? "Fråga concierge om mat och platser" : "Ask concierge about food and places"}
-              value={query}
-              onChange={(event) => {
-                const val = event.target.value;
-                setQuery(val);
-                setConcierge(val);
+          <div className="editorial-hero-search-wrap">
+            <form
+              className="editorial-hero-search"
+              onSubmit={(event) => {
+                event.preventDefault();
+                setIsHeroSearchFocused(false);
+                void askFromSearch();
               }}
-              placeholder={t.heroSearchPlaceholder}
-            />
-            {query.trim() ? (
-              <button
-                type="button"
-                className="editorial-hero-search-clear"
-                onClick={() => {
-                  setQuery("");
-                  clearConciergeState();
-                }}
-                aria-label={lang === "sv" ? "Rensa sökning" : "Clear search"}
-                title={lang === "sv" ? "Rensa" : "Clear"}
-              >
-                <X size={16} weight="bold" />
-              </button>
-            ) : null}
-            <button
-              type="submit"
-              className="editorial-hero-concierge-btn"
-              disabled={asking || !query.trim()}
-              title={lang === "sv" ? "Ställ fråga till AI-Concierge" : "Ask AI Concierge"}
             >
-              {asking ? (
-                <CircleNotch size={15} className="animate-spin" />
+              {isSearchLoading ? (
+                <CircleNotch size={22} weight="bold" className="animate-spin search-loading-spinner" aria-hidden="true" />
               ) : (
-                <Sparkle size={15} weight="bold" />
+                <MagnifyingGlass size={22} weight="regular" aria-hidden="true" />
               )}
-              <span>{t.heroSearchBtn}</span>
-            </button>
-            <CmsEditFlag cmsKey="heroSearchBtn" label="Hero Sök: Concierge-knapp" />
-          </form>
+              <input
+                role="combobox"
+                aria-expanded={isHeroSearchFocused && (searchAutocompleteSuggestions.length > 0 || matchingSuggestions.length > 0)}
+                aria-autocomplete="list"
+                aria-label={lang === "sv" ? "Fråga concierge om mat och platser" : "Ask concierge about food and places"}
+                value={query}
+                onChange={(event) => {
+                  const val = event.target.value;
+                  setQuery(val);
+                  setConcierge(val);
+                  setAutocompleteIndex(-1);
+                  triggerSearchTypingIndicator(val);
+                }}
+                onKeyDown={handleSearchKeyDown}
+                onFocus={() => setIsHeroSearchFocused(true)}
+                onBlur={() => setTimeout(() => setIsHeroSearchFocused(false), 250)}
+                placeholder={t.heroSearchPlaceholder}
+              />
+              {asking ? (
+                <span className="search-loading-pill" role="status" aria-live="polite">
+                  <CircleNotch size={12} weight="bold" className="animate-spin" aria-hidden="true" />
+                  <span>{lang === "sv" ? "Söker…" : "Searching…"}</span>
+                </span>
+              ) : null}
+              {query.trim() ? (
+                <button
+                  type="button"
+                  className="editorial-hero-search-clear"
+                  onClick={() => {
+                    clearTimeout(typingSearchTimerRef.current);
+                    setIsTypingSearch(false);
+                    setQuery("");
+                    clearConciergeState();
+                    setAutocompleteIndex(-1);
+                  }}
+                  aria-label={lang === "sv" ? "Rensa sökning" : "Clear search"}
+                  title={lang === "sv" ? "Rensa" : "Clear"}
+                >
+                  <X size={16} weight="bold" />
+                </button>
+              ) : null}
+              <button
+                type="submit"
+                className="editorial-hero-concierge-btn"
+                disabled={asking || !query.trim()}
+                title={lang === "sv" ? "Ställ fråga till AI-Concierge" : "Ask AI Concierge"}
+              >
+                {asking ? (
+                  <CircleNotch size={15} className="animate-spin" />
+                ) : (
+                  <Sparkle size={15} weight="bold" />
+                )}
+                <span>{t.heroSearchBtn}</span>
+              </button>
+              <CmsEditFlag cmsKey="heroSearchBtn" label="Hero Sök: Concierge-knapp" />
+            </form>
+            {isHeroSearchFocused && (searchAutocompleteSuggestions.length > 0 || matchingSuggestions.length > 0) ? (
+              <div className="search-autocomplete-box editorial-hero-autocomplete" role="listbox">
+                {searchAutocompleteSuggestions.length > 0 ? (
+                  <>
+                    <div className="autocomplete-category-header">
+                      {isSearchLoading ? <CircleNotch size={12} weight="bold" className="animate-spin" aria-hidden="true" /> : <Compass size={12} weight="bold" aria-hidden="true" />}
+                      <span>
+                        {query.trim()
+                          ? lang === "sv"
+                            ? `MATCHANDE STÄLLEN, KÖK & STADSDELAR (${searchAutocompleteSuggestions.length})`
+                            : `MATCHING PLACES, CUISINES & AREAS (${searchAutocompleteSuggestions.length})`
+                          : lang === "sv"
+                          ? "KÖK, STADSDELAR & STÄLLEN"
+                          : "CUISINES, AREAS & PLACES"}
+                      </span>
+                    </div>
+                    {searchAutocompleteSuggestions.map((item) => {
+                      const itemIdx = flatAutocompleteItems.findIndex((f) => f.id === item.id);
+                      const isActive = itemIdx === autocompleteIndex;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          role="option"
+                          aria-selected={isActive}
+                          className={`autocomplete-item ${isActive ? "active" : ""}`}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleSelectAutocompleteItem(item);
+                          }}
+                          onMouseEnter={() => setAutocompleteIndex(itemIdx)}
+                        >
+                          <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            {item.kind === "cuisine" ? (
+                              <ForkKnife size={14} weight="bold" aria-hidden="true" style={{ color: "var(--color-water)" }} />
+                            ) : item.placeId ? (
+                              <MapTrifold size={14} weight="bold" aria-hidden="true" />
+                            ) : (
+                              <Compass size={14} weight="bold" aria-hidden="true" />
+                            )}
+                            <span style={{ fontWeight: 600 }}>{item.label}</span>
+                          </span>
+                          <span className={`autocomplete-type-badge ${item.kind === "cuisine" ? "is-cuisine" : ""}`}>
+                            {item.badge}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </>
+                ) : null}
+
+                {matchingSuggestions.length > 0 ? (
+                  <>
+                    <div
+                      className="autocomplete-category-header"
+                      style={{
+                        marginTop: searchAutocompleteSuggestions.length > 0 ? "8px" : "0",
+                        borderTop: searchAutocompleteSuggestions.length > 0 ? "1px solid var(--color-mist)" : "none",
+                        paddingTop: "8px",
+                      }}
+                    >
+                      <Sparkle size={12} weight="bold" />
+                      <span>{lang === "sv" ? "FRÅGA AI-CONCIERGE" : "ASK AI CONCIERGE"}</span>
+                    </div>
+                    {matchingSuggestions.map((prompt) => {
+                      const promptId = `prompt-${prompt}`;
+                      const itemIdx = flatAutocompleteItems.findIndex((f) => f.id === promptId);
+                      const isActive = itemIdx === autocompleteIndex;
+                      return (
+                        <button
+                          key={promptId}
+                          type="button"
+                          role="option"
+                          aria-selected={isActive}
+                          className={`autocomplete-item ${isActive ? "active" : ""}`}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleSelectAutocompleteItem({ value: prompt, isPrompt: true });
+                          }}
+                          onMouseEnter={() => setAutocompleteIndex(itemIdx)}
+                        >
+                          <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            <Sparkle size={13} style={{ color: "var(--color-water)" }} />
+                            <span>{prompt}</span>
+                          </span>
+                          <span
+                            className="autocomplete-type-badge"
+                            style={{ background: "rgba(37, 99, 235, 0.1)", color: "var(--color-water)" }}
+                          >
+                            {lang === "sv" ? "Fråga" : "Ask"}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
           <div className="editorial-category-row" aria-label={t.typeFilterLabel}>
             {visibleEstablishmentTypes.filter((item) => ["Restaurant", "Bakery", "Café", "Specialty coffee"].includes(item)).map((item) => (
               <button

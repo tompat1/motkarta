@@ -13065,6 +13065,47 @@ footer {
   background: rgba(0, 0, 0, 0.06);
   border-radius: 2px;
   color: var(--color-stone);
+  flex-shrink: 0;
+}
+
+.autocomplete-type-badge.is-cuisine {
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--color-water);
+}
+
+.search-loading-spinner {
+  color: var(--color-water, #2563eb);
+  flex-shrink: 0;
+}
+
+.search-loading-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--color-water, #2563eb);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.editorial-hero-search-wrap {
+  position: relative;
+  max-width: 640px;
+  width: 100%;
+  z-index: 40;
+}
+
+.editorial-hero-search-wrap:focus-within {
+  z-index: 1200;
+}
+
+.editorial-hero-autocomplete {
+  margin-top: 2px;
 }
 
 /* -------------------------------------------------------------------------- */

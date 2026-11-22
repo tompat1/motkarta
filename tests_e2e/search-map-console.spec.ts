@@ -75,4 +75,49 @@ test.describe("Search input & Map clustering console error prevention", () => {
     expect(leafletErrors).toEqual([]);
     expect(pageErrors).toEqual([]);
   });
+
+  test("autocomplete suggests places and cuisines for partial input and shows loading spinner", async ({ page }) => {
+    await page.goto("/");
+
+    const searchInput = page.locator('#desktop-discovery-search, input[aria-label*="Sök"]').first();
+    await searchInput.scrollIntoViewIfNeeded();
+    await expect(searchInput).toBeVisible({ timeout: 15000 });
+
+    // 1. Partial place name: "belgobar" -> suggests Belgobaren
+    await searchInput.click();
+    await searchInput.fill("belgobar");
+    const autocompleteBox = page.locator(".search-autocomplete-box").first();
+    await expect(autocompleteBox).toBeVisible({ timeout: 5000 });
+    await expect(autocompleteBox.locator(".autocomplete-item", { hasText: /Belgobaren/i }).first()).toBeVisible();
+
+    // 2. Partial cuisine name: "italian" -> suggests Italian / Italienskt cuisine and filters on click
+    await searchInput.fill("italian");
+    const cuisineSuggestion = autocompleteBox.locator(".autocomplete-item", { hasText: /Italienskt|Italian/i }).first();
+    await expect(cuisineSuggestion).toBeVisible({ timeout: 5000 });
+    await cuisineSuggestion.click();
+
+    // Dropdown closes and query clears because cuisine filter took over
+    await expect(autocompleteBox).toBeHidden();
+    await expect(searchInput).toHaveValue("");
+
+    // 3. Slow Concierge request shows loading spinner & status pill
+    await page.route("**/api/concierge", async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          status: "ok",
+          answer: "Test concierge answer",
+          recommendedPlaces: [],
+          followUpQuestions: [],
+        }),
+      });
+    });
+
+    await searchInput.fill("bästa pastan i stan");
+    await searchInput.press("Enter");
+    await expect(page.locator(".search-loading-spinner:visible").first()).toBeVisible({ timeout: 3000 });
+    await expect(page.locator(".search-loading-pill:visible").first()).toBeVisible({ timeout: 3000 });
+  });
 });
