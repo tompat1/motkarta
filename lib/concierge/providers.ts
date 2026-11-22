@@ -19,11 +19,11 @@ export function validateEmbedding(output: unknown): number[] {
 }
 export async function semanticCandidates(query: string, places: ConciergePlace[], context: QueryContext, ai: AiBinding, index: VectorBinding, threshold: number, deadline: number): Promise<RankedCandidate[]> {
   const intent = parseIntent(query, context);
-  const embedding = validateEmbedding(await withinDeadline(ai.run(EMBEDDING_MODEL, { text: [query] }), Math.min(1200, deadline - Date.now())));
+  const embedding = validateEmbedding(await withinDeadline(ai.run(EMBEDDING_MODEL, { text: [query] }), Math.min(3000, deadline - Date.now())));
   const filter: Record<string, unknown> = { corpusVersion: VERSIONS.corpus, eligible: true };
   if (intent.area) filter.area = intent.area;
   // Full current constraints are always checked below, independently of indexed metadata.
-  const result = await withinDeadline(index.query(embedding, { topK: 50, returnMetadata: 'all', returnValues: false, filter }), Math.min(800, deadline - Date.now()));
+  const result = await withinDeadline(index.query(embedding, { topK: 50, returnMetadata: 'all', returnValues: false, filter }), Math.min(1500, deadline - Date.now()));
   return hydrateSemanticMatches(query, places, context, result, threshold);
 }
 

@@ -29,6 +29,15 @@ export type Env = {
 export const DEFAULT_CONCIERGE_DEADLINE_MS = 4500;
 export const MAX_CONCIERGE_DEADLINE_MS = 12000;
 
+const CONCIERGE_CATALOG_CACHE_TTL_MS = 60_000;
+let conciergeCatalogCache: {
+  db: Env['DB'];
+  expiresAt: number;
+  places: ConciergePlace[];
+  blocked: PlaceIdentity[];
+  sourceNamespace: string;
+} | null = null;
+
 /** Production stays at 4.5s unless a preview/explicit env raises the wall budget. */
 export function processingDeadlineMs(env: Env = {}): number {
   const raw = Number(env.CONCIERGE_DEADLINE_MS);
@@ -237,54 +246,76 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
   let publicationAvailable = true;
   let sourceNamespace = 'd1';
   if (parseAction(query)) return Response.json(buildResponse(query, [], 0, context, 'action'), { headers });
-  try {
-    if (env.DB) places = await withinDeadline(loadPlacesFromD1(env.DB), budget >= 8000 ? 2000 : 1200);
-    blocked = places.filter(isClosedPlace);
-  } catch { publicationAvailable = false; }
-  if (env.ASSETS && requestUrl) {
+  const now = Date.now();
+  const useCachedCatalog = Boolean(
+    env.DB &&
+    conciergeCatalogCache &&
+    conciergeCatalogCache.db === env.DB &&
+    conciergeCatalogCache.expiresAt > now,
+  );
+  if (useCachedCatalog && conciergeCatalogCache) {
+    places = conciergeCatalogCache.places;
+    blocked = conciergeCatalogCache.blocked;
+    sourceNamespace = conciergeCatalogCache.sourceNamespace;
+  } else {
     try {
-      const assetRes = await env.ASSETS.fetch(new URL('/data/places.json', requestUrl).toString());
-      if (assetRes.ok) {
-        const json = await assetRes.json() as ConciergePlace[] | { places?: ConciergePlace[] };
-        const assetPlaces = Array.isArray(json) ? json : json.places;
-        if (Array.isArray(assetPlaces) && assetPlaces.length > 0) {
-          blocked.push(...assetPlaces.filter(isClosedPlace));
-          if (!places.length) {
-            places = assetPlaces;
-            sourceNamespace = 'published_dataset';
-          } else {
-            const byId = new Map(places.map((p) => [p.id, p]));
-            const byOsm = new Map<string, ConciergePlace>();
-            const byNameArea = new Map<string, ConciergePlace>();
-            for (const p of places) {
-              if (p.osmIdentity) byOsm.set(p.osmIdentity, p);
-              const na = `${normalize(p.name)}::${normalize(p.area || '')}`;
-              if (na) byNameArea.set(na, p);
-            }
-            for (const ap of assetPlaces) {
-              const nameArea = `${normalize(ap.name)}::${normalize(ap.area || '')}`;
-              const existing =
-                byId.get(ap.id) ??
-                (ap.osmIdentity ? byOsm.get(ap.osmIdentity) : undefined) ??
-                (nameArea ? byNameArea.get(nameArea) : undefined);
-              if (existing) {
-                enrichD1PlaceFromStatic(existing, ap as Record<string, any>);
-                continue;
+      if (env.DB) places = await withinDeadline(loadPlacesFromD1(env.DB), budget >= 8000 ? 2500 : 1200);
+      blocked = places.filter(isClosedPlace);
+    } catch { publicationAvailable = false; }
+    if (env.ASSETS && requestUrl) {
+      try {
+        const assetRes = await env.ASSETS.fetch(new URL('/data/places.json', requestUrl).toString());
+        if (assetRes.ok) {
+          const json = await assetRes.json() as ConciergePlace[] | { places?: ConciergePlace[] };
+          const assetPlaces = Array.isArray(json) ? json : json.places;
+          if (Array.isArray(assetPlaces) && assetPlaces.length > 0) {
+            blocked.push(...assetPlaces.filter(isClosedPlace));
+            if (!places.length) {
+              places = assetPlaces;
+              sourceNamespace = 'published_dataset';
+            } else {
+              const byId = new Map(places.map((p) => [p.id, p]));
+              const byOsm = new Map<string, ConciergePlace>();
+              const byNameArea = new Map<string, ConciergePlace>();
+              for (const p of places) {
+                if (p.osmIdentity) byOsm.set(p.osmIdentity, p);
+                const na = `${normalize(p.name)}::${normalize(p.area || '')}`;
+                if (na) byNameArea.set(na, p);
               }
+              for (const ap of assetPlaces) {
+                const nameArea = `${normalize(ap.name)}::${normalize(ap.area || '')}`;
+                const existing =
+                  byId.get(ap.id) ??
+                  (ap.osmIdentity ? byOsm.get(ap.osmIdentity) : undefined) ??
+                  (nameArea ? byNameArea.get(nameArea) : undefined);
+                if (existing) {
+                  enrichD1PlaceFromStatic(existing, ap as Record<string, any>);
+                  continue;
+                }
 
-              places.push(ap);
-              byId.set(ap.id, ap);
-              if (ap.osmIdentity) byOsm.set(ap.osmIdentity, ap);
-              if (nameArea) byNameArea.set(nameArea, ap);
+                places.push(ap);
+                byId.set(ap.id, ap);
+                if (ap.osmIdentity) byOsm.set(ap.osmIdentity, ap);
+                if (nameArea) byNameArea.set(nameArea, ap);
+              }
             }
           }
         }
+      } catch {
+        // bounded unavailable response below
       }
-    } catch {
-      // bounded unavailable response below
+    }
+    places = publicationAvailable ? filterPublishedPlaces(places, blocked) : [];
+    if (env.DB && publicationAvailable && places.length > 0) {
+      conciergeCatalogCache = {
+        db: env.DB,
+        expiresAt: now + CONCIERGE_CATALOG_CACHE_TTL_MS,
+        places,
+        blocked,
+        sourceNamespace,
+      };
     }
   }
-  places = publicationAvailable ? filterPublishedPlaces(places, blocked) : [];
   if (!places.length) {
     const result = buildResponse(query, [], 0, context, 'unavailable');
     result.status = 'unavailable';

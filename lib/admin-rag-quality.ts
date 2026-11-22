@@ -171,6 +171,67 @@ export const RAG_QUALITY_SNAPSHOT: RagQualitySnapshot = {
   sourceCommands: [
     ".venv/bin/python execution/evaluate_concierge.py --split all",
     ".venv/bin/python -m pytest -q tests_python/test_concierge_quality_gate.py",
+    "npm run rag:capture",
     "npm run test:gate",
   ],
 };
+
+export type LiveRagProviderCapture = {
+  schemaVersion?: string;
+  capturedAt?: string;
+  measuredDate?: string;
+  origin?: string;
+  queryCount?: number;
+  successfulQueries?: number;
+  hybridQueries?: number;
+  hybridActivationRate?: number;
+  metrics?: {
+    providerLatencyMedianMs?: number | null;
+    providerLatencyP95Ms?: number | null;
+    faithfulness?: number | null;
+    answerRelevance?: number | null;
+  };
+};
+
+export function applyLiveProviderCapture(
+  base: RagQualitySnapshot,
+  capture: LiveRagProviderCapture | null | undefined,
+): RagQualitySnapshot {
+  if (!capture?.metrics || !capture.successfulQueries) return base;
+  const dateLabel = capture.measuredDate || capture.capturedAt?.slice(0, 10) || base.measuredAt;
+  const sampleLabel = `${capture.successfulQueries}/${capture.queryCount ?? capture.successfulQueries}`;
+  const hybridPct = Math.round((capture.hybridActivationRate ?? 0) * 100);
+  const p95 = capture.metrics.providerLatencyP95Ms;
+
+  return {
+    ...base,
+    measuredAt: dateLabel,
+    comparison: base.comparison.map((metric) => {
+      if (metric.id === "providerLatency" && typeof capture.metrics?.providerLatencyMedianMs === "number") {
+        return {
+          ...metric,
+          current: capture.metrics.providerLatencyMedianMs,
+          evidence: `Live ${capture.origin ?? "production"} capture (${dateLabel}, n=${sampleLabel}): median ${capture.metrics.providerLatencyMedianMs} ms${p95 ? `, p95 ${p95} ms` : ""}, hybrid ${hybridPct}%.`,
+          evidenceSv: `Livefångst ${capture.origin ?? "produktion"} (${dateLabel}, n=${sampleLabel}): median ${capture.metrics.providerLatencyMedianMs} ms${p95 ? `, p95 ${p95} ms` : ""}, hybrid ${hybridPct}%.`,
+        };
+      }
+      if (metric.id === "faithfulness" && typeof capture.metrics?.faithfulness === "number") {
+        return {
+          ...metric,
+          current: capture.metrics.faithfulness,
+          evidence: `Live citation-grounding check (${dateLabel}, n=${sampleLabel}) against ${capture.origin ?? "production"} /api/concierge.`,
+          evidenceSv: `Livekontroll av citeringsstöd (${dateLabel}, n=${sampleLabel}) mot ${capture.origin ?? "produktion"} /api/concierge.`,
+        };
+      }
+      if (metric.id === "answerRelevance" && typeof capture.metrics?.answerRelevance === "number") {
+        return {
+          ...metric,
+          current: capture.metrics.answerRelevance,
+          evidence: `Live intent-satisfaction check (${dateLabel}, n=${sampleLabel}) across Swedish & English queries.`,
+          evidenceSv: `Livekontroll av avsiktsmatchning (${dateLabel}, n=${sampleLabel}) på svenska och engelska frågor.`,
+        };
+      }
+      return metric;
+    }),
+  };
+}

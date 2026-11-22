@@ -25,7 +25,7 @@ service = "motkarta-concierge-ai-gate"
 
 [vars]
 CONCIERGE_RETRIEVAL_MODE = "hybrid"
-CONCIERGE_SYNTHESIS_MODE = "template"
+CONCIERGE_SYNTHESIS_MODE = "constrained"
 CONCIERGE_MIN_SIMILARITY = "0.5"
 CONCIERGE_DEADLINE_MS = "10000"
 MOTKARTA_PUBLIC_SITE_URL = "https://motkarta.rynell.org"

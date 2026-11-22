@@ -83,3 +83,42 @@ test("admin ml status endpoint returns model specifications, telemetry, and code
   assert.match(payload.codeSnippets[2].code, /SentenceTransformer/);
   assert.match(payload.codeSnippets[3].code, /evaluate_position_bias/);
 });
+
+test("admin ml status overlays live RAG provider capture metrics from ASSETS when present", async () => {
+  const capturePayload = {
+    schemaVersion: "rag-provider-capture-v1",
+    measuredDate: "2026-11-22",
+    origin: "https://motkarta.rynell.org",
+    queryCount: 12,
+    successfulQueries: 10,
+    hybridActivationRate: 0.9,
+    metrics: {
+      providerLatencyMedianMs: 1420,
+      providerLatencyP95Ms: 2150,
+      faithfulness: 0.95,
+      answerRelevance: 0.92,
+    },
+  };
+  const fakeAssets = {
+    async fetch(url) {
+      if (String(url).includes("/data/rag_provider_capture.json")) {
+        return new Response(JSON.stringify(capturePayload), { status: 200 });
+      }
+      return new Response("not found", { status: 404 });
+    },
+  };
+
+  const response = await getMlStatus({
+    request: new Request("https://motkarta.test/api/admin/ml-status", {
+      headers: { "x-motkarta-admin-token": adminToken },
+    }),
+    env: { ASSETS: fakeAssets, MOTKARTA_ADMIN_TOKEN: adminToken },
+  });
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(payload.ragEvaluation.measuredAt, "2026-11-22");
+  assert.equal(payload.ragEvaluation.comparison.find((m) => m.id === "providerLatency").current, 1420);
+  assert.equal(payload.ragEvaluation.comparison.find((m) => m.id === "faithfulness").current, 0.95);
+  assert.equal(payload.ragEvaluation.comparison.find((m) => m.id === "answerRelevance").current, 0.92);
+});

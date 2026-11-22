@@ -1,5 +1,9 @@
 import { requireAdmin, type AdminAuthEnv } from "../../../lib/admin-auth.ts";
-import { RAG_QUALITY_SNAPSHOT } from "../../../lib/admin-rag-quality.ts";
+import {
+  applyLiveProviderCapture,
+  RAG_QUALITY_SNAPSHOT,
+  type LiveRagProviderCapture,
+} from "../../../lib/admin-rag-quality.ts";
 
 type EventContext<Env> = {
   request: Request;
@@ -14,6 +18,9 @@ type Env = {
       };
       all<T = Record<string, unknown>>(): Promise<{ results?: T[] }>;
     };
+  };
+  ASSETS?: {
+    fetch(request: Request | string): Promise<Response>;
   };
 } & AdminAuthEnv;
 
@@ -76,11 +83,24 @@ export async function onRequestGet(context: EventContext<Env>) {
     }
   }
 
+  let ragEvaluation = RAG_QUALITY_SNAPSHOT;
+  if (context.env.ASSETS && context.request?.url) {
+    try {
+      const capRes = await context.env.ASSETS.fetch(
+        new URL("/data/rag_provider_capture.json", context.request.url).toString(),
+      );
+      if (capRes.ok) {
+        const capture = (await capRes.json().catch(() => null)) as LiveRagProviderCapture | null;
+        ragEvaluation = applyLiveProviderCapture(RAG_QUALITY_SNAPSHOT, capture);
+      }
+    } catch {}
+  }
+
   return Response.json(
     {
       source: "d1",
       timestamp: new Date().toISOString(),
-      ragEvaluation: RAG_QUALITY_SNAPSHOT,
+      ragEvaluation,
       models: [
         {
           id: "discovery-hgbr-spatial-oof-v1",
