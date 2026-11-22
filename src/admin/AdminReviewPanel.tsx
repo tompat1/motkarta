@@ -198,7 +198,7 @@ export function AdminReviewPanel({
 }) {
   const [tokenInput, setTokenInput] = useState(readStoredAdminToken);
   const [adminToken, setAdminToken] = useState(readStoredAdminToken);
-  const [railTab, setRailTab] = useState<ConcourseRailTab>("desk");
+  const [railTab, setRailTab] = useState<ConcourseRailTab>("queue");
   const [stateFilter, setStateFilter] = useState<AdminStateFilter>("candidate");
   const [queueFocus, setQueueFocus] = useState<DashboardQueueFocus>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -2339,6 +2339,9 @@ export function AdminReviewPanel({
                           onClick={() => {
                             setQueueFocus("all");
                             setStateFilter(state);
+                            setRailTab(
+                              state === "pending_confirmation" || state === "candidate" ? "queue" : "desk",
+                            );
                           }}
                         >
                           {lifecycleStateLabel(state, lang)}
@@ -2384,7 +2387,14 @@ export function AdminReviewPanel({
               {stateFilter === "candidate" && queueFocus !== "all" ? (
                 <div className="admin-queue-focus-banner" role="status">
                   <span>{queueFocusHelpText(queueFocus, lang)}</span>
-                  <button type="button" className="admin-queue-focus-clear" onClick={() => setQueueFocus("all")}>
+                  <button
+                    type="button"
+                    className="admin-queue-focus-clear"
+                    onClick={() => {
+                      setQueueFocus("all");
+                      setRailTab("queue");
+                    }}
+                  >
                     {lang === "sv" ? "Visa alla kandidater" : "Show all candidates"}
                   </button>
                 </div>
