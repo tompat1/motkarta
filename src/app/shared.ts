@@ -123,6 +123,8 @@ export function cuisineLabel(value: string, lang: Language = "sv"): string {
       kebab: "Kebab",
       regional: "Svenskt",
       swedish: "Svenskt",
+      husman: "Husman",
+      husmanskost: "Husman",
       grill: "Grill & BBQ",
       pasta: "Pasta",
       sandwich: "Smörgåsar & Mackor",
@@ -147,6 +149,8 @@ export function cuisineLabel(value: string, lang: Language = "sv"): string {
     const enMap: Record<string, string> = {
       regional: "Swedish",
       swedish: "Swedish",
+      husman: "Traditional Swedish",
+      husmanskost: "Traditional Swedish",
       belgian: "Belgian",
       belgiskt: "Belgian",
       "eastern european": "Eastern European",

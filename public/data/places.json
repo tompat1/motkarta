@@ -4192,7 +4192,7 @@
       "id": 1947185822,
       "name": "Kvarnen",
       "kind": "Restaurant",
-      "cuisine": "local",
+      "cuisine": "local;husman",
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: local.",
       "tags": [
@@ -4883,7 +4883,7 @@
       "id": 3726833667,
       "name": "Ulla Winbladh",
       "kind": "Restaurant",
-      "cuisine": "fine dining",
+      "cuisine": "fine dining;husman",
       "area": "Djurgården",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: fine dining.",
       "tags": [
@@ -22820,7 +22820,7 @@
       "id": 466794494,
       "name": "Den Gyldene Freden",
       "kind": "Restaurant",
-      "cuisine": "swedish",
+      "cuisine": "swedish;husman",
       "area": "Gamla Stan",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: swedish.",
       "tags": [
@@ -26143,7 +26143,7 @@
       "id": 3600990285,
       "name": "Tennstopet",
       "kind": "Restaurant",
-      "cuisine": "regional",
+      "cuisine": "regional;husman",
       "area": "Kungsholmen",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: regional.",
       "tags": [
@@ -33965,7 +33965,7 @@
       "id": 3609079889,
       "name": "Knut",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "husman",
       "area": "Norrmalm",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
@@ -47260,7 +47260,7 @@
       "id": 2677952863,
       "name": "Knut",
       "kind": "Restaurant",
-      "cuisine": "swedish",
+      "cuisine": "swedish;husman",
       "area": "Kungsholmen",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: swedish.",
       "tags": [
@@ -49086,7 +49086,7 @@
       "id": 747489572,
       "name": "Prinsen",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "husman",
       "area": "Östermalm",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
@@ -50200,7 +50200,7 @@
       "id": 1433380825,
       "name": "Bakfickan",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "husman",
       "area": "Norrmalm",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
@@ -56071,7 +56071,7 @@
       "id": 4269533101,
       "name": "Tranan",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "husman",
       "area": "Kungsholmen",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
@@ -57175,7 +57175,7 @@
       "id": 1453564510,
       "name": "Pelikan",
       "kind": "Restaurant",
-      "cuisine": "local",
+      "cuisine": "local;husman",
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: local.",
       "tags": [
@@ -63576,7 +63576,7 @@
       "id": 3582143764,
       "name": "Sturehof",
       "kind": "Restaurant",
-      "cuisine": "fish",
+      "cuisine": "fish;husman",
       "area": "Östermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: fish.",
       "tags": [
@@ -85905,7 +85905,7 @@
       "id": 3345472371,
       "name": "Slingerbulten",
       "kind": "Restaurant",
-      "cuisine": "regional;european;swedish",
+      "cuisine": "regional;european;swedish;husman",
       "area": "Gamla Stan",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: regional;european;swedish.",
       "tags": [
@@ -107656,7 +107656,7 @@
       "id": 1040425535,
       "name": "Blå Dörren",
       "kind": "Restaurant",
-      "cuisine": "regional",
+      "cuisine": "regional;husman",
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: regional.",
       "tags": [
@@ -218570,7 +218570,7 @@
       "id": 3692514787,
       "name": "Meatballs for the People",
       "kind": "Restaurant",
-      "cuisine": "local;regional",
+      "cuisine": "local;regional;husman",
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: local;regional.",
       "tags": [
@@ -269289,7 +269289,7 @@
       "id": 2955313935,
       "name": "Husman",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "husman",
       "area": "Västerort",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
@@ -355058,7 +355058,7 @@
       "id": 998677125,
       "name": "Larsboda Husman",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "husman",
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Address: Frykdalsbacken 12.",
       "tags": [

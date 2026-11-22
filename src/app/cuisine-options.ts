@@ -1,6 +1,7 @@
 import type { PlaceInput } from "../../lib/scoring";
 
 const FEATURED_CUISINES = [
+  "husman",
   "spanish",
   "french",
   "mexican",
@@ -38,6 +39,7 @@ export function cuisineParts(place: Pick<PlaceInput, "cuisine" | "tags"> & { nam
       const trimmed = item.trim().toLowerCase();
       if (trimmed === "regional") return "swedish";
       if (trimmed === "belgiskt") return "belgian";
+      if (trimmed === "husmanskost" || trimmed === "traditional swedish") return "husman";
       return trimmed;
     })
     .filter((item) => item && !NON_CUISINE_OPTION_VALUES.has(item));
@@ -62,6 +64,14 @@ export function cuisineParts(place: Pick<PlaceInput, "cuisine" | "tags"> & { nam
 
   if (isMexican && !parts.includes("mexican")) {
     parts.push("mexican");
+  }
+
+  const isHusman =
+    nameLower.includes("husman") ||
+    tagsLower.some((t) => t.includes("husman") || t === "traditional swedish");
+
+  if (isHusman && !parts.includes("husman")) {
+    parts.push("husman");
   }
 
   return parts;
@@ -92,6 +102,7 @@ export function cuisineOptionsFromPlaces(places: PlaceInput[]) {
 
 export function resolveCuisineFilter(cuisines: string[], availableOptions: string[]) {
   const aliases: Record<string, string[]> = {
+    husman: ["husman", "husmanskost", "traditional swedish", "swedish comfort food"],
     belgian: ["belgian", "belgisk", "belgiskt", "belgiska"],
     chinese: ["chinese", "kinesisk", "kinesiska", "kinesiskt"],
     french: ["french", "fransk", "franskt"],
