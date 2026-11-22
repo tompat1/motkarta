@@ -15,6 +15,8 @@ import {
   syncEstablishmentCuisineTags,
 } from "../../../lib/establishment-cuisine.ts";
 import { resolveStockholmRegion } from "../../../lib/stockholm-regions.ts";
+import { normalize } from "../../../lib/concierge/facts.ts";
+import { getPlaceVerifiedSources } from "../../../src/app/verified-sources.ts";
 
 type D1RunResult = {
   success?: boolean;
@@ -40,6 +42,7 @@ type EventContext<Env> = {
 
 type Env = {
   DB?: unknown;
+  ASSETS?: { fetch(input: Request | string, init?: RequestInit): Promise<Response> };
 } & AdminAuthEnv;
 
 type ValidationLabel = NonNullable<PlaceInput["validationLabel"]>;
@@ -160,10 +163,16 @@ export async function onRequestGet(context: EventContext<Env>) {
     const limit = clampLimit(url.searchParams.get("limit"));
     const includeDuplicates = url.searchParams.get("includeDuplicates") === "1";
     const includeNominations = await tableExists(db, "recommendation_events");
-    const rows = await loadCandidates(db, stateParam, limit, queryParam, {
-      includeDuplicates,
-      includeNominations,
-    });
+    const rows =
+      stateParam === "featured"
+        ? await loadFeaturedCandidates(db, limit, queryParam, {
+            includeDuplicates,
+            includeNominations,
+          }, context.env.ASSETS, context.request.url)
+        : await loadCandidates(db, stateParam, limit, queryParam, {
+            includeDuplicates,
+            includeNominations,
+          });
     if (includeDuplicates && rows.length > 0) {
       await enrichCandidatesWithDuplicates(db, rows);
     }
@@ -871,6 +880,128 @@ async function loadCandidates(
     .bind(state, limit)
     .all<CandidateRow>();
   return results ?? [];
+}
+
+async function loadAssetBadgeCounts(
+  assets: Env["ASSETS"],
+  requestUrl: string,
+): Promise<{ byId: Map<number, number>; byNameArea: Map<string, number>; byName: Map<string, number> }> {
+  const byId = new Map<number, number>();
+  const byNameArea = new Map<string, number>();
+  const byName = new Map<string, number>();
+  if (!assets) return { byId, byNameArea, byName };
+  try {
+    const res = await assets.fetch(new URL("/data/places.json", requestUrl).toString());
+    if (!res.ok) return { byId, byNameArea, byName };
+    const json = (await res.json()) as { places?: Array<Record<string, unknown>> } | Array<Record<string, unknown>>;
+    const places = Array.isArray(json) ? json : json.places ?? [];
+    for (const place of places) {
+      const badgeCount = getPlaceVerifiedSources(place as Parameters<typeof getPlaceVerifiedSources>[0]).length;
+      if (badgeCount < 2) continue;
+      if (typeof place.id === "number") byId.set(place.id, badgeCount);
+      const normName = normalize(String(place.name ?? ""));
+      const normArea = normalize(String(place.area ?? ""));
+      if (normName && normArea) byNameArea.set(`${normName}::${normArea}`, badgeCount);
+      if (normName) byName.set(normName, Math.max(byName.get(normName) ?? 0, badgeCount));
+    }
+  } catch {
+    // ignore asset read errors and fall back to D1 evidence/tags
+  }
+  return { byId, byNameArea, byName };
+}
+
+async function loadFeaturedCandidates(
+  db: D1Database,
+  limit: number,
+  query = "",
+  options: CandidateQueryOptions = { includeDuplicates: false, includeNominations: false },
+  assets?: Env["ASSETS"],
+  requestUrl = "https://motkarta.local/api/admin/candidates",
+): Promise<CandidateRow[]> {
+  const select = buildCandidateSelect(options);
+  const trimmedQuery = query.trim();
+  const baseWhere = `
+    COALESCE(e.validation_label, '') != 'closed_wrong_category'
+    AND COALESCE(e.duplicate_resolution, '') != 'merged'
+  `;
+
+  let rows: CandidateRow[];
+  if (trimmedQuery) {
+    const qPattern = `%${trimmedQuery}%`;
+    const searchClause = `(
+      e.name LIKE ?
+      OR e.address LIKE ?
+      OR e.district LIKE ?
+      OR e.description LIKE ?
+      OR CAST(e.id AS TEXT) = ?
+    )`;
+    const { results } = await db
+      .prepare(`${select} WHERE ${baseWhere} AND ${searchClause} GROUP BY e.id`)
+      .bind(qPattern, qPattern, qPattern, qPattern, trimmedQuery)
+      .all<CandidateRow>();
+    rows = results ?? [];
+  } else {
+    const { results } = await db
+      .prepare(`${select} WHERE ${baseWhere} GROUP BY e.id`)
+      .all<CandidateRow>();
+    rows = results ?? [];
+  }
+
+  if (!rows.length) return [];
+
+  // Load D1 tags & evidence names in two lightweight queries so D1 badges also count.
+  const [tagRes, evRes, assetBadges] = await Promise.all([
+    db.prepare("SELECT establishment_id AS id, tag FROM establishment_tags").all<{ id: number; tag: string }>().catch(() => ({ results: [] })),
+    db.prepare("SELECT establishment_id AS id, source_type AS sourceType, source_name AS sourceName FROM evidence_sources").all<{ id: number; sourceType: string | null; sourceName: string | null }>().catch(() => ({ results: [] })),
+    loadAssetBadgeCounts(assets, requestUrl),
+  ]);
+
+  const tagsById = new Map<number, string[]>();
+  for (const t of tagRes.results ?? []) {
+    if (!t.tag) continue;
+    const list = tagsById.get(t.id);
+    if (list) list.push(t.tag);
+    else tagsById.set(t.id, [t.tag]);
+  }
+
+  const evidenceById = new Map<number, Array<{ sourceType?: string; source?: string }>>();
+  for (const ev of evRes.results ?? []) {
+    const list = evidenceById.get(ev.id);
+    const item = { sourceType: ev.sourceType ?? undefined, source: ev.sourceName ?? undefined };
+    if (list) list.push(item);
+    else evidenceById.set(ev.id, [item]);
+  }
+
+  const scored: Array<{ row: CandidateRow; badgeCount: number }> = [];
+  for (const row of rows) {
+    const d1BadgeCount = getPlaceVerifiedSources({
+      tags: tagsById.get(row.id) ?? [],
+      evidence: evidenceById.get(row.id) ?? [],
+      kind: row.kind,
+    }).length;
+    const normName = normalize(row.name ?? "");
+    const normArea = normalize(row.area ?? "");
+    const assetBadgeCount =
+      assetBadges.byId.get(row.id) ??
+      (normName && normArea ? assetBadges.byNameArea.get(`${normName}::${normArea}`) : undefined) ??
+      (normName ? assetBadges.byName.get(normName) : undefined) ??
+      0;
+    const badgeCount = Math.max(d1BadgeCount, assetBadgeCount);
+
+    if (row.lifecycleState === "featured" || badgeCount >= 2) {
+      scored.push({ row, badgeCount });
+    }
+  }
+
+  scored.sort((a, b) => {
+    const aManual = a.row.lifecycleState === "featured" ? 1 : 0;
+    const bManual = b.row.lifecycleState === "featured" ? 1 : 0;
+    if (aManual !== bManual) return bManual - aManual;
+    if (a.badgeCount !== b.badgeCount) return b.badgeCount - a.badgeCount;
+    return (a.row.name ?? "").localeCompare(b.row.name ?? "", "sv");
+  });
+
+  return scored.slice(0, limit).map((item) => item.row);
 }
 
 async function loadEvidenceProfile(db: D1Database, id: number) {

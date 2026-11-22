@@ -3333,8 +3333,8 @@ function stateFilterHelpText(filter: AdminStateFilter, lang: Language): string {
         : "Verified: Reviewed and approved venues published in Motkarta's active catalog.";
     case "featured":
       return lang === "sv"
-        ? "Featured: Särskilt utvalda ställen med högsta synlighet i filter, startsidans kartsnabbval och concierge."
-        : "Featured: Curated standout venues with highest visibility in filters, hero shortcuts, and concierge.";
+        ? "Utvalda: Manuellt utvalda ställen samt alla aktiva platser med minst 2 verifierade källmärken (t.ex. Michelin, White Guide, Burgerdudes, Visit Stockholm)."
+        : "Featured: Manually featured venues plus any active place with at least 2 verified source badges (e.g. Michelin, White Guide, Burgerdudes, Visit Stockholm).";
     case "removed":
       return lang === "sv"
         ? "Borttagna: Stängda eller felkategoriserade ställen. Återställ till Baseline efter kontroll. Separata stängningsmarkeringar i källdatan måste också rättas."

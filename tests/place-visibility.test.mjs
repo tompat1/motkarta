@@ -81,6 +81,26 @@ test("pending_confirmation queue surfaces unconfirmed candidates and places miss
   assert.deepEqual(body.candidates.map((p) => p.name), ["New User Tip", "Imported Candidate", "Missing Coords Baseline"]);
 });
 
+test("featured queue automatically includes venues with 2+ verified source badges", async (t) => {
+  const { env, sqlite } = await database(t);
+  sqlite.prepare(`INSERT INTO establishments
+    (id, name, type, district, description, latitude, longitude, lifecycle_state, created_at, updated_at)
+    VALUES
+    (201, 'Two Badge Bistro', 'Restaurant', 'Södermalm', '', 59.31, 18.07, 'baseline', '2026-11-20', '2026-11-20'),
+    (202, 'One Badge Cafe', 'Café', 'Vasastan', '', 59.34, 18.05, 'baseline', '2026-11-20', '2026-11-20'),
+    (203, 'Manual Featured Spot', 'Restaurant', 'Östermalm', '', 59.33, 18.08, 'featured', '2026-11-20', '2026-11-20')`)
+    .run();
+  sqlite.prepare(`INSERT INTO establishment_tags (establishment_id, tag) VALUES
+    (201, 'White Guide'),
+    (201, 'Visit Stockholm'),
+    (202, 'White Guide')`).run();
+
+  const res = await candidates({ request: request("/api/admin/candidates?state=featured"), env });
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.deepEqual(body.candidates.map((p) => p.name), ["Manual Featured Spot", "Two Badge Bistro"]);
+});
+
 test("authenticated removal and restoration propagate through SQLite, static catalog, places API and concierge", async (t) => {
   const { env, sqlite } = await database(t);
   const serveEnv = { ...env, ASSETS: { fetch: async () => Response.json({ places: [arirang, belgo] }) } };
