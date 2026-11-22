@@ -4360,6 +4360,15 @@ button.concierge-clear-btn:hover {
   color: var(--color-stone);
 }
 
+.admin-search-input::-webkit-search-decoration,
+.admin-search-input::-webkit-search-cancel-button,
+.admin-search-input::-webkit-search-results-button,
+.admin-search-input::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
 .admin-search-clear {
   background: transparent;
   border: 0;
