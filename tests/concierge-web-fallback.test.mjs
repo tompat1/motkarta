@@ -40,10 +40,45 @@ test("buildResponse includes webSearch fallback when zero candidates match", () 
   const response = buildResponse("okänd restaurang i skogen", [], 100, { language: "sv" });
 
   assert.equal(response.status, "clarification");
+  assert.equal(response.abstentionReason, "no_verified_match");
   assert.equal(response.cards.length, 0);
   assert.ok(response.webSearch);
   assert.equal(response.webSearch.query, "okänd restaurang i skogen");
   assert.equal(response.webSearch.links.length, 3);
+});
+
+test("buildResponse distinguishes ambiguity, missing context, unsupported requests, and thin evidence", () => {
+  const ambiguous = buildResponse("something", [], 100, { language: "en" });
+  assert.equal(ambiguous.abstentionReason, "ambiguous_query");
+  assert.match(ambiguous.intro, /Add one detail/);
+  assert.equal(ambiguous.webSearch, undefined);
+
+  const missingLocation = buildResponse("pierogi near me", [], 100, { language: "en" });
+  assert.equal(missingLocation.abstentionReason, "missing_location");
+  assert.match(missingLocation.intro, /Choose an area or share your location/);
+  assert.equal(missingLocation.webSearch, undefined);
+
+  const liveHours = buildResponse("cafés open now", [], 100, { language: "en" });
+  assert.equal(liveHours.abstentionReason, "unsupported_live_hours");
+  assert.match(liveHours.intro, /can’t verify which places are open right now/);
+  assert.equal(liveHours.webSearch, undefined);
+
+  const thinEvidence = buildResponse("cozy pierogi under 150 SEK", [], 100, { language: "en" });
+  assert.equal(thinEvidence.abstentionReason, "insufficient_evidence");
+  assert.match(thinEvidence.intro, /couldn’t verify a catalog place/);
+  assert.ok(thinEvidence.webSearch);
+});
+
+test("buildResponse explains policy abstentions without launching web search", () => {
+  const outside = buildResponse("ramen in Solna", [], 100, { language: "en" });
+  assert.equal(outside.abstentionReason, "outside_stockholm");
+  assert.match(outside.intro, /covers Stockholm municipality/);
+  assert.equal(outside.webSearch, undefined);
+
+  const chain = buildResponse("Starbucks", [], 100, { language: "en" });
+  assert.equal(chain.abstentionReason, "excluded_chain");
+  assert.match(chain.intro, /independent places/);
+  assert.equal(chain.webSearch, undefined);
 });
 
 test("buildResponse omits webSearch fallback when candidates exist", () => {

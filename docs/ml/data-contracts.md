@@ -346,6 +346,16 @@ Raw client venue corpora are rejected. No database/event migration is introduced
 RAG scope uses the shared locality policy and conservatively declines coordinate-
 only records; the importer’s broader fallback is not sufficient RAG scope evidence.
 
+The response carries an additive `abstentionReason` when `status` is
+`clarification` or `unavailable`. Controlled reasons distinguish an ambiguous
+query, no verified catalog match, insufficient field evidence, missing location,
+unsupported live-hours checks, requests outside Stockholm, excluded chains, the
+end of paginated results and catalog unavailability. Clients must use the reason
+to present a specific recovery step. They must not convert retrieval similarity
+or an LLM self-assessment into a user-facing confidence percentage. The response
+schema remains `concierge-response-v1`; the optional reason is backward-compatible
+and does not change retrieval, ranking or synthesis semantics.
+
 ## Catalog Source-Fact Enrichment Contract (2026-09-07)
 
 `execution/enrich_catalog.py` and `execution/apply_enrichment.py` govern catalog fact enrichment:

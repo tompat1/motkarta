@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { parseConciergeAnswer } from "../../lib/concierge-parser";
-import type { ConciergeResponse } from "../../lib/concierge/contracts";
+import type { ConciergeAbstentionReason, ConciergeResponse } from "../../lib/concierge/contracts";
 import { safeUrl } from "../../lib/concierge/facts";
 import { resolveConciergeMapPlace } from "../../lib/concierge/map-identity";
 import type { PlaceInput } from "../../lib/scoring";
@@ -11,6 +11,28 @@ import { PlaceFeedbackModal } from "./PlaceFeedbackModal";
 import { formatChatTimestamp, formatChatTimestampTooltip } from "../../lib/concierge/format";
 import { conciergeModeLabel, buildFollowUpChips } from "../app/concierge-client";
 export { formatChatTimestamp, formatChatTimestampTooltip };
+
+function clarificationCopy(reason: ConciergeAbstentionReason | undefined, lang: Language) {
+  const sv = lang === "sv";
+  switch (reason) {
+    case "missing_location":
+      return { title: sv ? "Välj ett område" : "Choose an area", placeholder: sv ? "T.ex. Södermalm" : "E.g. Södermalm" };
+    case "unsupported_live_hours":
+      return { title: sv ? "Aktuella öppettider saknas" : "Live hours unavailable", placeholder: sv ? "T.ex. kaféer i Vasastan" : "E.g. cafés in Vasastan" };
+    case "outside_stockholm":
+      return { title: sv ? "Bara Stockholm" : "Stockholm only", placeholder: sv ? "T.ex. pizza i Stockholm" : "E.g. pizza in Stockholm" };
+    case "excluded_chain":
+      return { title: sv ? "Oberoende ställen" : "Independent places", placeholder: sv ? "T.ex. oberoende kafé i Stockholm" : "E.g. independent café in Stockholm" };
+    case "insufficient_evidence":
+      return { title: sv ? "Inte tillräckligt verifierat underlag" : "Not enough verified information", placeholder: sv ? "T.ex. kaféer i hela Stockholm" : "E.g. cafés across Stockholm" };
+    case "no_verified_match":
+      return { title: sv ? "Prova en annan sökning" : "Try another search", placeholder: sv ? "T.ex. ramen i hela Stockholm" : "E.g. ramen across Stockholm" };
+    case "no_more_results":
+      return { title: sv ? "Slut på träffar" : "End of results", placeholder: sv ? "T.ex. kaféer i ett annat område" : "E.g. cafés in another area" };
+    default:
+      return { title: sv ? "Lägg till en detalj" : "Add one detail", placeholder: sv ? "T.ex. pierogi på Södermalm" : "E.g. pierogi in Södermalm" };
+  }
+}
 
 export function ConciergeAnswerView({
   answer,
@@ -43,6 +65,8 @@ export function ConciergeAnswerView({
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [feedbackType, setFeedbackType] = useState<"up" | "down">("up");
+  const clarification = clarificationCopy(response?.abstentionReason, lang);
+  const hasExternalWebResults = Boolean(response?.webSearch?.externalResults?.length);
 
   const followUpChips = useMemo(() => {
     return buildFollowUpChips(response?.query ?? "", response, messages, lang);
@@ -144,7 +168,7 @@ export function ConciergeAnswerView({
       ) : null}
       {parsed.clarification ? (
         <div className="concierge-clarification-box">
-          <p className="concierge-clarification-title"><Sliders size={16} /> {lang === 'sv' ? 'Förtydliga sökningen' : 'Refine your search'}</p>
+          <p className="concierge-clarification-title"><Sliders size={16} /> {clarification.title}</p>
           <p className="concierge-clarification-question">{parsed.clarification.question}</p>
           <form onSubmit={(event) => {
             event.preventDefault();
@@ -153,7 +177,7 @@ export function ConciergeAnswerView({
           }} className="concierge-clarification-form">
             <input name="refinedQuery" type="text" maxLength={1000}
               aria-label={lang === 'sv' ? 'Ny sökning' : 'New search'}
-              placeholder={lang === 'sv' ? 'T.ex. pierogi på Södermalm' : 'E.g. pierogi in Södermalm'}
+              placeholder={clarification.placeholder}
               className="concierge-clarification-input" />
             <button type="submit" className="concierge-btn primary">{lang === 'sv' ? 'Sök igen' : 'Search again'}</button>
           </form>
@@ -168,7 +192,7 @@ export function ConciergeAnswerView({
         </p>
       ) : null}
 
-      {parsed.cards.length === 0 && (response?.query || answer) ? (
+      {parsed.cards.length === 0 && response?.webSearch ? (
         <div className="concierge-inline-web-enrichment">
           <div className="concierge-inline-web-banner">
             <div className="concierge-inline-web-banner-header">
@@ -181,9 +205,13 @@ export function ConciergeAnswerView({
               </span>
             </div>
             <p className="concierge-inline-web-desc">
-              {lang === "sv"
-                ? "Inga verifierade ställen matchade i den lokala katalogen. Här är relevanta oberoende webbträffar från öppna nätet:"
-                : "No verified places matched in the local catalog. Here are relevant independent web results from the open web:"}
+              {hasExternalWebResults
+                ? (lang === "sv"
+                    ? "Inga verifierade ställen matchade i katalogen. Här är oberoende webbträffar som inte är verifierade av Motkarta:"
+                    : "No verified places matched in the catalog. These independent web results have not been verified by Motkarta:")
+                : (lang === "sv"
+                    ? "Inga verifierade ställen matchade i katalogen, och webbsökningen gav ingen oberoende träff som vi kan visa."
+                    : "No verified places matched in the catalog, and the web search found no independent result we can show.")}
             </p>
           </div>
 
@@ -243,8 +271,8 @@ export function ConciergeAnswerView({
             <div className="concierge-inline-web-empty">
               <p>
                 {lang === "sv"
-                  ? "Inga oberoende ställen hittades på webben utan kommersiella signaler. Känner du till ett ställe i Stockholm som passar?"
-                  : "No independent places found on the web without commercial signals. Do you know a Stockholm place that fits?"}
+                  ? "Känner du till ett ställe i Stockholm som passar? Tipsa oss så granskar vi det."
+                  : "Know a Stockholm place that fits? Suggest it for review."}
               </p>
               <button
                 type="button"
@@ -412,7 +440,9 @@ export function ConciergeAnswerView({
       <div className="concierge-answer-footer">
         <div className="concierge-feedback-bar">
           <span className="concierge-feedback-label">
-            {lang === "sv" ? "Var svaret hjälpsamt?" : "Was this recommendation helpful?"}
+            {response?.status === "clarification"
+              ? (lang === "sv" ? "Var vägledningen hjälpsam?" : "Was this guidance helpful?")
+              : (lang === "sv" ? "Var svaret hjälpsamt?" : "Was this recommendation helpful?")}
           </span>
 
           <div className="concierge-feedback-actions">
@@ -466,7 +496,7 @@ export function ConciergeAnswerView({
           onClose={() => setIsFeedbackModalOpen(false)}
         />
 
-        {onRefineQuery ? (
+        {onRefineQuery && response?.status !== "clarification" ? (
           <div className="concierge-follow-up-box">
             <div className="concierge-follow-up-title">
               {lang === "sv" ? "Följdfråga" : "Follow-up"}

@@ -456,8 +456,9 @@ test("RAG retrieveAndSynthesize handles Swedish definite concept queries like Ö
 test("RAG retrieveAndSynthesize guides user with helpful follow-up question when RAG is not sure", () => {
   const result = retrieveAndSynthesize("hittaintehär12345", livePlaces, { language: "sv" });
   assert.equal(result.status, "clarification");
+  assert.equal(result.abstentionReason, "no_verified_match");
   assert.equal(result.recommendedPlaces.length, 0);
-  assert.ok(result.intro.includes("Jag är inte helt säker på vad du söker"));
+  assert.ok(result.intro.includes("Jag förstod sökningen men hittade ingen verifierad träff"));
 });
 
 test("RAG full-text search indexes editorial notes and complex descriptive queries across catalog", () => {

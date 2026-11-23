@@ -319,6 +319,7 @@ export async function processConciergeQuery(query: string, env: Env = {}, contex
   if (!places.length) {
     const result = buildResponse(query, [], 0, context, 'unavailable');
     result.status = 'unavailable';
+    result.abstentionReason = 'catalog_unavailable';
     result.intro = context.language === 'sv' ? 'Motkartas katalog är inte tillgänglig just nu. Försök igen senare.' : 'The live Motkarta dataset is unavailable. Please try again later.';
     result.answer = result.intro;
     return Response.json(result, { headers, status: 503 });

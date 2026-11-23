@@ -61,10 +61,21 @@ export type WebSearchFallback = {
   links: WebSearchLink[];
   externalResults?: ExternalWebResult[];
 };
+export type ConciergeAbstentionReason =
+  | 'ambiguous_query'
+  | 'no_verified_match'
+  | 'insufficient_evidence'
+  | 'missing_location'
+  | 'unsupported_live_hours'
+  | 'outside_stockholm'
+  | 'excluded_chain'
+  | 'no_more_results'
+  | 'catalog_unavailable';
 export type ConciergeResponse = {
   query: string; answer: string; intro: string; cards: ConciergeCard[];
   recommendedPlaces: Array<Pick<ScoredPlace, 'id' | 'name' | 'kind' | 'area' | 'scores' | 'hiddenGem' | 'discoveryReasons'>>;
   source: string; totalSearchSpace: number; status: 'ok' | 'partial' | 'clarification' | 'unavailable';
+  abstentionReason?: ConciergeAbstentionReason;
   action?: 'add_place' | 'add_review' | 'add_photo' | 'rate_place';
   webSearch?: WebSearchFallback;
   structuredFilters: import('./filters.ts').StructuredFilters;

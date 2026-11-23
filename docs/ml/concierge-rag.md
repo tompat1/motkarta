@@ -131,6 +131,14 @@ model/prompt versions, actual retrieval/synthesis modes and minimized diagnostic
 Legacy `answer`, `recommendedPlaces`, `source`, `totalSearchSpace` and
 `structuredFilters` remain. `partial` is reserved by the schema; v1 uses
 `ok`, `clarification` or `unavailable` and never labels a partial match as exact.
+Clarification and unavailable responses also carry a controlled
+`abstentionReason`. The client distinguishes an ambiguous query from an understood
+query with no verified match, insufficient evidence for requested details,
+missing location, unsupported live-hours checks, scope/policy exclusions, no more
+results and catalog failure. Each state names the limitation and a concrete
+recovery. Only no-match and insufficient-evidence states may start the filtered
+external-search fallback; missing context and unsupported requests do not.
+No user-facing phrase claims a calibrated answer-confidence percentage.
 The legacy filter extractor remains a compatibility field; `parseIntent` is the
 constraint authority and preserves negation that the legacy summary cannot express.
 

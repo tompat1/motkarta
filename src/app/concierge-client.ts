@@ -21,6 +21,66 @@ export function buildFollowUpChips(
 
   const chips: FollowUpChip[] = [];
 
+  if (response?.abstentionReason === "ambiguous_query") {
+    return lang === "sv"
+      ? [
+          { label: "Pizza", query: "Pizza i Stockholm" },
+          { label: "Mysigt fik", query: "Mysigt fik i Stockholm" },
+          { label: "Pierogi på Söder", query: "Pierogi på Södermalm" },
+        ]
+      : [
+          { label: "Pizza", query: "Pizza in Stockholm" },
+          { label: "Cozy café", query: "Cozy café in Stockholm" },
+          { label: "Pierogi in Södermalm", query: "Pierogi in Södermalm" },
+        ];
+  }
+  if (response?.abstentionReason === "missing_location") {
+    return lang === "sv"
+      ? [
+          { label: "På Södermalm", query: "På Södermalm" },
+          { label: "I Vasastan", query: "I Vasastan" },
+          { label: "I hela Stockholm", query: "I hela Stockholm" },
+        ]
+      : [
+          { label: "In Södermalm", query: "In Södermalm" },
+          { label: "In Vasastan", query: "In Vasastan" },
+          { label: "Across Stockholm", query: "Across all of Stockholm" },
+        ];
+  }
+  if (response?.abstentionReason === "unsupported_live_hours") {
+    return lang === "sv"
+      ? [
+          { label: "Kaféer i Vasastan", query: "Kaféer i Vasastan" },
+          { label: "Krogar på Söder", query: "Krogar på Södermalm" },
+        ]
+      : [
+          { label: "Cafés in Vasastan", query: "Cafés in Vasastan" },
+          { label: "Restaurants in Södermalm", query: "Restaurants in Södermalm" },
+        ];
+  }
+  if (response?.abstentionReason === "outside_stockholm") {
+    return lang === "sv"
+      ? [
+          { label: "Pizza i Stockholm", query: "Pizza i Stockholm" },
+          { label: "Kaféer i Stockholm", query: "Kaféer i Stockholm" },
+        ]
+      : [
+          { label: "Pizza in Stockholm", query: "Pizza in Stockholm" },
+          { label: "Cafés in Stockholm", query: "Cafés in Stockholm" },
+        ];
+  }
+  if (response?.abstentionReason === "excluded_chain") {
+    return lang === "sv"
+      ? [
+          { label: "Oberoende kaféer", query: "Oberoende kaféer i Stockholm" },
+          { label: "Oberoende restauranger", query: "Oberoende restauranger i Stockholm" },
+        ]
+      : [
+          { label: "Independent cafés", query: "Independent cafés in Stockholm" },
+          { label: "Independent restaurants", query: "Independent restaurants in Stockholm" },
+        ];
+  }
+
   // 1. Pagination or scope broadening
   if (hasCards) {
     chips.push({

@@ -83,3 +83,16 @@ test("buildFollowUpChips dynamically adapts alternative district and context", (
   assert.equal(unknownChips.some((c) => c.label.includes("Tipsa om")), true);
   assert.equal(unknownChips.some((c) => c.query.includes("Lägg till ställe 450 grader")), true);
 });
+
+test("buildFollowUpChips never suggests excluded or out-of-scope places", () => {
+  const chainResponse = retrieveAndSynthesize("Starbucks", places, { language: "en" });
+  const chainChips = buildFollowUpChips("Starbucks", chainResponse, [], "en");
+  assert.equal(chainResponse.abstentionReason, "excluded_chain");
+  assert.equal(chainChips.some((chip) => /Starbucks|Suggest/.test(chip.label + chip.query)), false);
+  assert.equal(chainChips.some((chip) => chip.label === "Independent cafés"), true);
+
+  const outsideResponse = retrieveAndSynthesize("ramen in Solna", places, { language: "en" });
+  const outsideChips = buildFollowUpChips("ramen in Solna", outsideResponse, [], "en");
+  assert.equal(outsideResponse.abstentionReason, "outside_stockholm");
+  assert.equal(outsideChips.every((chip) => chip.query.includes("Stockholm")), true);
+});

@@ -40,7 +40,9 @@ test('dish evidence differs from cuisine, location is a hard constraint, negativ
   assert.deepEqual(response('ramen utan sushi').cards.map((p) => p.id), [7]);
 });
 test('nearby uses actual coordinates and radius; no location is a clarification', () => {
-  assert.equal(response('pierogi near me').status, 'clarification');
+  const missingLocation = response('pierogi near me');
+  assert.equal(missingLocation.status, 'clarification');
+  assert.equal(missingLocation.abstentionReason, 'missing_location');
   const close = retrieveAndSynthesize('pierogi near me', places, { location: { latitude: 59.315, longitude: 18.06 }, radiusKm: 1 });
   assert.deepEqual(close.cards.map((p) => p.id), [1]);
   assert.equal(close.cards[0].distanceKm, 0);
