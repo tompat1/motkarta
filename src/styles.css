@@ -21982,6 +21982,50 @@ body.is-drawer-open .site-utilities > * {
   cursor: not-allowed;
 }
 
+.admin-table-commercial-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 11px;
+  border: 1px solid #991b1b;
+  border-radius: 0;
+  background: #fee2e2;
+  color: #991b1b;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-table-commercial-btn:hover:not(:disabled) {
+  background: #fecaca;
+}
+
+.admin-table-commercial-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-commercial-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 2px 6px;
+  border: 1px solid #991b1b;
+  background: #fee2e2;
+  color: #991b1b;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .admin-table-merge-panel {
   flex-basis: 100%;
   display: flex;

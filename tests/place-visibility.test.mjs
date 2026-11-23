@@ -155,6 +155,49 @@ test("authenticated removal and restoration propagate through SQLite, static cat
   assert.equal((await review({ request: request("/api/admin/candidates", { ...closure, id: 999 }), env })).status, 404);
 });
 
+test("mark_commercial permanently flags chain_status='chain', hides from map/list/concierge/queues, and can be restored", async (t) => {
+  const { env, sqlite } = await database(t);
+  const serveEnv = { ...env, ASSETS: { fetch: async () => Response.json({ places: [arirang, belgo] }) } };
+
+  // Flag venue #42 as commercial
+  const flagRes = await review({
+    request: request("/api/admin/candidates", { action: "mark_commercial", id: 42 }),
+    env,
+  });
+  assert.equal(flagRes.status, 200);
+  const flagBody = await flagRes.json();
+  assert.equal(flagBody.chainStatus, "chain");
+  assert.equal(flagBody.validationLabel, "closed_wrong_category");
+
+  // Blocked in /api/place-visibility, /api/places, sanitizeAndAugmentPlaces, and concierge
+  const { blocked } = await (await getVisibility({ env })).json();
+  assert.equal(blocked.length, 1);
+  assert.equal(blocked[0].id, 42);
+  assert.deepEqual(sanitizeAndAugmentPlaces([{ ...belgo, chainStatus: "chain" }]), []);
+  const publicPlaces = await (await getPlaces({ request: request("/api/places"), env: serveEnv })).json();
+  assert.deepEqual(publicPlaces.places, []);
+  const concierge = await processConciergeQuery(belgo.name, serveEnv, {}, false, "https://motkarta.test");
+  assert.deepEqual((await concierge.json()).cards, []);
+
+  // Excluded from pending_confirmation & duplicatesOnly, visible in removed with chainStatus='chain'
+  const pending = await (await candidates({ request: request("/api/admin/candidates?state=pending_confirmation"), env })).json();
+  assert.deepEqual(pending.candidates, []);
+  const removed = await (await candidates({ request: request("/api/admin/candidates?state=removed"), env })).json();
+  assert.equal(removed.candidates.length, 1);
+  assert.equal(removed.candidates[0].id, 42);
+  assert.equal(removed.candidates[0].chainStatus, "chain");
+
+  // Restoring clears chain_status and brings venue back to /api/places
+  const restoreRes = await review({
+    request: request("/api/admin/candidates", { id: 42, state: "baseline", validationLabel: null, validationNotes: "Independent after all" }),
+    env,
+  });
+  assert.equal(restoreRes.status, 200);
+  assert.equal(sqlite.prepare("SELECT chain_status FROM establishments WHERE id = 42").get().chain_status, "unknown");
+  const restoredPlaces = await (await getPlaces({ request: request("/api/places"), env: serveEnv })).json();
+  assert.deepEqual(restoredPlaces.places.map((p) => p.name), [belgo.name]);
+});
+
 test("publication read failures do not resurrect static venues", async () => {
   const env = { DB: { prepare() { return { async all() { throw new Error("D1 unavailable"); } }; } }, ASSETS: { fetch: async () => Response.json({ places: [belgo] }) } };
   assert.equal((await getVisibility({ env })).status, 503);

@@ -67,6 +67,7 @@ export type AdminCandidate = {
   priceSEK?: string | null;
   priceLevel?: number | null;
   note: string;
+  chainStatus?: "independent" | "chain" | "unknown" | null;
   lifecycleState: PlaceLifecycleState;
   validationLabel: AdminValidationLabel | null;
   validationNotes: string | null;
@@ -1655,6 +1656,83 @@ export function AdminReviewPanel({
     setBulkConfirmBusy(false);
   };
 
+  const batchMarkCommercial = async (selectedRows: AdminCandidate[]) => {
+    if (!hasAdminAuth || selectedRows.length === 0 || bulkConfirmBusy) return;
+    const isSingle = selectedRows.length === 1;
+    const promptMsg = isSingle
+      ? lang === "sv"
+        ? `Markera ${selectedRows[0].name} som kommersiell? Platsen tas bort från Motkartas lista och karta och flaggas permanent som kommersiell (kan återställas under Borttagna).`
+        : `Mark ${selectedRows[0].name} as commercial? It will be removed from Motkarta's list and map and permanently flagged as commercial (can be restored under Removed).`
+      : lang === "sv"
+        ? `Markera ${selectedRows.length} valda platser som kommersiella? De tas bort från Motkartas lista och karta och flaggas permanent som kommersiella (kan återställas under Borttagna).`
+        : `Mark ${selectedRows.length} selected places as commercial? They will be removed from Motkarta's list and map and permanently flagged as commercial (can be restored under Removed).`;
+    if (!window.confirm(promptMsg)) return;
+
+    setBulkConfirmBusy(true);
+    setError(null);
+    const succeededIds = new Set<number>();
+    let failedCount = 0;
+
+    for (const row of selectedRows) {
+      try {
+        const response = await fetch("/api/admin/candidates", {
+          method: "POST",
+          headers: adminHeaders(undefined, { "content-type": "application/json" }),
+          body: JSON.stringify({
+            action: "mark_commercial",
+            id: row.id,
+            validationNotes:
+              row.validationNotes ||
+              "Kommersiell kedja / ej oberoende (Flagged commercial by admin)",
+          }),
+        });
+        if (response.ok) {
+          succeededIds.add(row.id);
+        } else {
+          failedCount += 1;
+        }
+      } catch {
+        failedCount += 1;
+      }
+    }
+
+    if (succeededIds.size > 0) {
+      setCandidates((current) =>
+        current.flatMap((row) => {
+          if (!succeededIds.has(row.id)) return [row];
+          if (stateFilter === "all" || stateFilter === "removed") {
+            return [{
+              ...row,
+              chainStatus: "chain",
+              lifecycleState: "candidate",
+              validationLabel: "closed_wrong_category",
+            }];
+          }
+          return [];
+        }),
+      );
+      const summary =
+        lang === "sv"
+          ? `Markerade ${succeededIds.size} av ${selectedRows.length} platser som kommersiella och tog bort dem från Motkarta.`
+          : `Flagged ${succeededIds.size} of ${selectedRows.length} place(s) as commercial and removed them from Motkarta.`;
+      setStatus(summary);
+      addToast({
+        type: "success",
+        title: lang === "sv" ? "Markerad som kommersiell" : "Flagged as commercial",
+        message: summary,
+      });
+      void loadDashboard();
+    }
+    if (failedCount > 0) {
+      setError(
+        lang === "sv"
+          ? `${failedCount} platser kunde inte markeras som kommersiella. Försök igen.`
+          : `${failedCount} place(s) could not be flagged as commercial. Please retry.`,
+      );
+    }
+    setBulkConfirmBusy(false);
+  };
+
   const batchMergeCandidates = async (
     primary: AdminCandidate,
     duplicates: AdminCandidate[],
@@ -2589,19 +2667,23 @@ export function AdminReviewPanel({
                       void promoteCandidate(candidate, "verified", null);
                     }}
                     bulkBusy={bulkConfirmBusy}
+                    onMarkCommercial={(candidate) => void batchMarkCommercial([candidate])}
                     onBulkConfirmCandidates={(rows) => void batchConfirmOrDismissCandidates(rows, "confirm")}
                     onBulkDismissCandidates={(rows) => void batchConfirmOrDismissCandidates(rows, "dismiss")}
+                    onBulkMarkCommercial={(rows) => void batchMarkCommercial(rows)}
                     onBulkMergeCandidates={(primary, duplicates) => void batchMergeCandidates(primary, duplicates)}
                     statusChecks={venueStatusChecks}
                     checkingStatusIds={checkingStatusIds}
                     onCheckStatus={(rows) => void checkVenuesOperationalStatus(rows)}
-                    onToggleRemoved={(candidate) =>
+                    onToggleRemoved={(candidate) => {
+                      const isCurrentlyRemoved =
+                        candidate.validationLabel === "closed_wrong_category" || candidate.chainStatus === "chain";
                       void promoteCandidate(
                         candidate,
-                        candidate.validationLabel === "closed_wrong_category" ? "baseline" : "candidate",
-                        candidate.validationLabel === "closed_wrong_category" ? null : "closed_wrong_category",
-                      )
-                    }
+                        isCurrentlyRemoved ? "baseline" : "candidate",
+                        isCurrentlyRemoved ? null : "closed_wrong_category",
+                      );
+                    }}
                   />
                   <div className="admin-concourse-table-foot">
                     <span>

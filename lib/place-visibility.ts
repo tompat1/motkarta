@@ -13,6 +13,7 @@ type PublicationPlace = PlaceIdentity & {
   lifecycleState?: string;
   validationLabel?: string | null;
   duplicateResolution?: string | null;
+  chainStatus?: string | null;
 };
 
 export function isClosedPlace(place: PublicationPlace): boolean {
@@ -20,8 +21,13 @@ export function isClosedPlace(place: PublicationPlace): boolean {
     || place.validationLabel === "closed_wrong_category";
 }
 
+export function isCommercialPlace(place: PublicationPlace): boolean {
+  return place.chainStatus === "chain";
+}
+
 export function isUnpublishedPlace(place: PublicationPlace): boolean {
   return isClosedPlace(place)
+    || isCommercialPlace(place)
     || place.duplicateResolution === "merged"
     || place.lifecycleState === "candidate";
 }
@@ -44,12 +50,12 @@ export function samePlaceIdentity(place: PlaceIdentity, other: PlaceIdentity): b
 }
 
 export function filterPublishedPlaces<T extends PublicationPlace>(places: T[], blocked: PlaceIdentity[] = []): T[] {
-  const exclusions = [...blocked, ...places.filter(isClosedPlace)];
+  const exclusions = [...blocked, ...places.filter((place) => isClosedPlace(place) || isCommercialPlace(place))];
   return places.filter((place) => !isUnpublishedPlace(place)
     && !exclusions.some((other) => samePlaceIdentity(place, other)));
 }
 
-type VisibilityRow = PlaceIdentity & { osmType?: string; osmId?: string; validationLabel?: string };
+type VisibilityRow = PlaceIdentity & { osmType?: string; osmId?: string; validationLabel?: string; chainStatus?: string };
 export type VisibilityDatabase = {
   prepare(query: string): { all<T>(): Promise<{ results?: T[] }> };
 };
@@ -57,12 +63,13 @@ export type VisibilityDatabase = {
 export async function loadUnpublishedPlaces(db: VisibilityDatabase): Promise<PlaceIdentity[]> {
   const { results = [] } = await db.prepare(`
     SELECT id, name, osm_type AS osmType, osm_id AS osmId, latitude, longitude,
-      validation_label AS validationLabel
+      validation_label AS validationLabel, chain_status AS chainStatus
     FROM establishments
     WHERE validation_label = 'closed_wrong_category'
+       OR chain_status = 'chain'
   `).all<VisibilityRow>();
-  return results.filter((row) => row.validationLabel === "closed_wrong_category")
-    .map(({ osmType, osmId, validationLabel: _label, ...row }) => ({
+  return results.filter((row) => row.validationLabel === "closed_wrong_category" || row.chainStatus === "chain")
+    .map(({ osmType, osmId, validationLabel: _label, chainStatus: _chain, ...row }) => ({
       ...row,
       idNamespace: "d1",
       ...(osmType && osmId ? { osmIdentity: `${osmType}:${osmId}` } : {}),

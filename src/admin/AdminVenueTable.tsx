@@ -7,6 +7,7 @@ import {
   CircleNotch,
   Funnel,
   PencilSimple,
+  Prohibit,
   Pulse,
   Scales,
   ShieldCheck,
@@ -24,6 +25,7 @@ export type AdminVenueTableRow = {
   website: string | null;
   latitude?: number | null;
   longitude?: number | null;
+  chainStatus?: "independent" | "chain" | "unknown" | null;
   lifecycleState: string;
   validationLabel?: string | null;
   candidateSourceType: string | null;
@@ -55,8 +57,10 @@ type AdminVenueTableProps<T extends AdminVenueTableRow> = {
   onOpenReview: (candidate: T) => void;
   onEditCandidate: (candidate: T) => void;
   onConfirmCandidate?: (candidate: T) => void;
+  onMarkCommercial?: (candidate: T) => void;
   onBulkConfirmCandidates?: (candidates: T[]) => void;
   onBulkDismissCandidates?: (candidates: T[]) => void;
+  onBulkMarkCommercial?: (candidates: T[]) => void;
   onBulkMergeCandidates?: (primary: T, duplicates: T[]) => void;
   bulkBusy?: boolean;
   statusChecks?: Record<number, VenueStatusCheckResult>;
@@ -74,8 +78,10 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
   onOpenReview,
   onEditCandidate,
   onConfirmCandidate,
+  onMarkCommercial,
   onBulkConfirmCandidates,
   onBulkDismissCandidates,
+  onBulkMarkCommercial,
   onBulkMergeCandidates,
   bulkBusy = false,
   statusChecks,
@@ -151,7 +157,11 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
     [visibleCandidates, selectedIds],
   );
   const selectedConfirmableCandidates = useMemo(
-    () => selectedVisibleCandidates.filter((c) => c.validationLabel !== "closed_wrong_category" && c.lifecycleState === "candidate"),
+    () => selectedVisibleCandidates.filter((c) => c.validationLabel !== "closed_wrong_category" && c.chainStatus !== "chain" && c.lifecycleState === "candidate"),
+    [selectedVisibleCandidates],
+  );
+  const selectedCommercialEligibleCandidates = useMemo(
+    () => selectedVisibleCandidates.filter((c) => c.chainStatus !== "chain"),
     [selectedVisibleCandidates],
   );
   const allVisibleSelected = visibleCandidates.length > 0 && selectedVisibleCandidates.length === visibleCandidates.length;
@@ -206,7 +216,7 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
     lastClickedIndexRef.current = index;
   };
 
-  const showSelectionColumn = Boolean(onBulkConfirmCandidates || onBulkDismissCandidates || onBulkMergeCandidates);
+  const showSelectionColumn = Boolean(onBulkConfirmCandidates || onBulkDismissCandidates || onBulkMarkCommercial || onBulkMergeCandidates);
 
   const eligibleMergePrimaries = useMemo(
     () => selectedVisibleCandidates.filter((c) => c.lifecycleState !== "candidate"),
@@ -356,6 +366,24 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
                 {lang === "sv"
                   ? `Kolla öppet/stängt (${selectedVisibleCandidates.length})`
                   : `Check open/closed (${selectedVisibleCandidates.length})`}
+              </button>
+            ) : null}
+            {onBulkMarkCommercial && selectedCommercialEligibleCandidates.length > 0 ? (
+              <button
+                type="button"
+                className="admin-table-commercial-btn"
+                disabled={bulkBusy}
+                title={
+                  lang === "sv"
+                    ? "Ta bort från Motkarta-listan/kartan och flagga permanent som kommersiell"
+                    : "Remove from Motkarta list/map and permanently flag as commercial"
+                }
+                onClick={() => onBulkMarkCommercial(selectedCommercialEligibleCandidates)}
+              >
+                <Prohibit size={14} weight="bold" />
+                {lang === "sv"
+                  ? `Markera som kommersiell (${selectedCommercialEligibleCandidates.length})`
+                  : `Mark commercial (${selectedCommercialEligibleCandidates.length})`}
               </button>
             ) : null}
             {onBulkDismissCandidates ? (
@@ -536,7 +564,8 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
               const freshness = venueFreshness(candidate, lang);
               const selected = candidate.id === selectedCandidateId;
               const isChecked = selectedIds.has(candidate.id);
-              const isRemoved = candidate.validationLabel === "closed_wrong_category";
+              const isCommercial = candidate.chainStatus === "chain";
+              const isRemoved = candidate.validationLabel === "closed_wrong_category" || isCommercial;
               const isNotOnMapYet = !isRemoved && (candidate.lifecycleState === "candidate" || candidate.latitude == null || candidate.longitude == null);
               const isAlert = rowTone(candidate) === "risk";
               return (
@@ -581,6 +610,12 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
                         title={statusChecks[candidate.id].summary}
                       >
                         {operationalStatusLabel(statusChecks[candidate.id].status, lang)}
+                      </span>
+                    ) : null}
+                    {isCommercial ? (
+                      <span className="admin-commercial-badge">
+                        <Prohibit size={11} weight="bold" />
+                        {lang === "sv" ? "Kommersiell" : "Commercial"}
                       </span>
                     ) : null}
                     {candidate.validationLabel ? <small className="admin-table-cell-note">{validationLabelText(candidate.validationLabel, lang)}</small> : null}
@@ -667,6 +702,18 @@ export function AdminVenueTable<T extends AdminVenueTableRow>({
                       >
                         <PencilSimple size={15} weight="bold" />
                       </button>
+                      {onMarkCommercial && !isCommercial ? (
+                        <button
+                          type="button"
+                          className="admin-table-icon-btn"
+                          onClick={() => onMarkCommercial(candidate)}
+                          disabled={busyId === candidate.id || bulkBusy}
+                          aria-label={lang === "sv" ? `Markera ${candidate.name} som kommersiell` : `Mark ${candidate.name} as commercial`}
+                          title={lang === "sv" ? "Markera som kommersiell (ta bort & blockera från Motkarta)" : "Mark as commercial (remove & block from Motkarta)"}
+                        >
+                          <Prohibit size={15} weight="bold" />
+                        </button>
+                      ) : null}
                       {onToggleRemoved ? (
                         <button
                           type="button"

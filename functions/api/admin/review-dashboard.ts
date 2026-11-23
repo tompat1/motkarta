@@ -172,6 +172,7 @@ async function loadCandidateRows(db: D1Database) {
          FROM establishments
          WHERE lifecycle_state IN ('baseline', 'verified', 'featured')
            AND COALESCE(validation_label, '') != 'closed_wrong_category'
+           AND COALESCE(chain_status, '') != 'chain'
            AND COALESCE(duplicate_resolution, '') = ''`,
       )
       .all<PublishedEstablishmentLookup>()
@@ -331,6 +332,7 @@ function candidateDashboardQuery() {
     FROM establishments e
     LEFT JOIN evidence_sources ev ON ev.establishment_id = e.id
     WHERE e.lifecycle_state = 'candidate'
+      AND COALESCE(e.chain_status, '') != 'chain'
       AND COALESCE(e.duplicate_resolution, '') != 'merged'
     GROUP BY e.id
   `;

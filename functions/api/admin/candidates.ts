@@ -57,7 +57,8 @@ type AdminAction =
   | "create_place"
   | "update_place"
   | "delete_place"
-  | "mark_closed";
+  | "mark_closed"
+  | "mark_commercial";
 
 type CandidateRow = {
   id: number;
@@ -71,6 +72,7 @@ type CandidateRow = {
   latitude: number | null;
   longitude: number | null;
   note: string;
+  chainStatus?: string | null;
   lifecycleState: PlaceLifecycleState;
   validationLabel: ValidationLabel | null;
   validationNotes: string | null;
@@ -109,6 +111,7 @@ const adminActions: AdminAction[] = [
   "update_place",
   "delete_place",
   "mark_closed",
+  "mark_commercial",
 ];
 const validationLabels: ValidationLabel[] = [
   "known_mainstream",
@@ -277,6 +280,10 @@ export async function onRequestPost(context: EventContext<Env>) {
     return markClosed(db, id, validationNotes);
   }
 
+  if (action === "mark_commercial") {
+    return markCommercial(db, id, validationNotes);
+  }
+
   if (action === "merge_duplicate") {
     return mergeDuplicate(db, id, payload, validationNotes);
   }
@@ -344,11 +351,20 @@ export async function onRequestPost(context: EventContext<Env>) {
   }
 
   const updatedAt = new Date().toISOString();
+  const clearChainFlag =
+    validationLabel !== "closed_wrong_category" &&
+    (lifecycleState === "baseline" || lifecycleState === "verified" || lifecycleState === "featured");
   const updateResult = await db
     .prepare(
-      `UPDATE establishments
-       SET lifecycle_state = ?, validation_label = ?, validation_notes = ?, updated_at = ?
-       WHERE id = ?`,
+      clearChainFlag
+        ? `UPDATE establishments
+           SET lifecycle_state = ?, validation_label = ?, validation_notes = ?,
+               chain_status = CASE WHEN chain_status = 'chain' THEN 'unknown' ELSE chain_status END,
+               updated_at = ?
+           WHERE id = ?`
+        : `UPDATE establishments
+           SET lifecycle_state = ?, validation_label = ?, validation_notes = ?, updated_at = ?
+           WHERE id = ?`,
     )
     .bind(lifecycleState, validationLabel, validationNotes, updatedAt, id)
     .run();
@@ -683,6 +699,50 @@ async function markClosed(db: D1Database, id: number, validationNotes: string | 
   );
 }
 
+async function markCommercial(db: D1Database, id: number, validationNotes: string | null) {
+  const updatedAt = new Date().toISOString();
+  const note = validationNotes || "Kommersiell kedja / ej oberoende (Flagged commercial by admin)";
+  const updateResult = await db
+    .prepare(
+      `UPDATE establishments
+       SET chain_status = 'chain',
+           lifecycle_state = 'candidate',
+           validation_label = 'closed_wrong_category',
+           validation_notes = ?,
+           updated_at = ?
+       WHERE id = ?`
+    )
+    .bind(note, updatedAt, id)
+    .run();
+
+  if (updateResult.meta?.changes === 0) {
+    return Response.json({ error: "Establishment not found." }, { headers: jsonHeaders, status: 404 });
+  }
+
+  await recordReviewEvent(db, {
+    establishmentId: id,
+    lifecycleState: "candidate",
+    validationLabel: "closed_wrong_category",
+    validationNotes: note,
+    reviewedAt: updatedAt,
+    action: "mark_commercial",
+  });
+
+  return Response.json(
+    {
+      success: true,
+      action: "mark_commercial",
+      id,
+      chainStatus: "chain",
+      lifecycleState: "candidate",
+      validationLabel: "closed_wrong_category",
+      validationNotes: note,
+      reviewedAt: updatedAt,
+    },
+    { headers: jsonHeaders }
+  );
+}
+
 type CandidateQueryOptions = {
   includeDuplicates: boolean;
   includeNominations: boolean;
@@ -713,6 +773,7 @@ function buildCandidateSelect(options: CandidateQueryOptions) {
       e.latitude,
       e.longitude,
       e.description AS note,
+      e.chain_status AS chainStatus,
       e.lifecycle_state AS lifecycleState,
       e.validation_label AS validationLabel,
       e.validation_notes AS validationNotes,
@@ -763,7 +824,7 @@ async function loadCandidates(
 
   if (state === "removed") {
     const { results } = await db.prepare(`${select}
-      WHERE e.validation_label = 'closed_wrong_category'
+      WHERE (e.validation_label = 'closed_wrong_category' OR e.chain_status = 'chain')
         AND (e.name LIKE ? OR e.address LIKE ? OR e.district LIKE ? OR CAST(e.id AS TEXT) = ?)
       ${order}`).bind(`%${trimmedQuery}%`, `%${trimmedQuery}%`, `%${trimmedQuery}%`, trimmedQuery, limit).all<CandidateRow>();
     return results ?? [];
@@ -798,6 +859,7 @@ async function loadCandidates(
       const pendingWhere = `
         WHERE (${searchClause})
           AND COALESCE(e.validation_label, '') != 'closed_wrong_category'
+          AND COALESCE(e.chain_status, '') != 'chain'
           AND COALESCE(e.duplicate_resolution, '') != 'merged'
           AND (e.lifecycle_state = 'candidate' OR e.latitude IS NULL OR e.longitude IS NULL)
       `;
@@ -862,6 +924,7 @@ async function loadCandidates(
     `;
     const pendingWhere = `
       WHERE COALESCE(e.validation_label, '') != 'closed_wrong_category'
+        AND COALESCE(e.chain_status, '') != 'chain'
         AND COALESCE(e.duplicate_resolution, '') != 'merged'
         AND (e.lifecycle_state = 'candidate' OR e.latitude IS NULL OR e.longitude IS NULL)
     `;
@@ -908,6 +971,7 @@ async function loadDuplicateCandidates(
   const trimmedQuery = query.trim();
   const activeWhere = `
     COALESCE(e.validation_label, '') != 'closed_wrong_category'
+    AND COALESCE(e.chain_status, '') != 'chain'
     AND COALESCE(e.duplicate_resolution, '') = ''
     ${state === "candidate" ? "AND e.lifecycle_state = 'candidate'" : ""}
   `;
@@ -974,6 +1038,7 @@ async function loadFeaturedCandidates(
   const trimmedQuery = query.trim();
   const baseWhere = `
     COALESCE(e.validation_label, '') != 'closed_wrong_category'
+    AND COALESCE(e.chain_status, '') != 'chain'
     AND COALESCE(e.duplicate_resolution, '') != 'merged'
   `;
 
@@ -1580,6 +1645,7 @@ function candidateFromRow(row: CandidateRow) {
     latitude: typeof row.latitude === "number" ? row.latitude : null,
     longitude: typeof row.longitude === "number" ? row.longitude : null,
     note: row.note,
+    chainStatus: row.chainStatus === "chain" ? "chain" : row.chainStatus === "independent" ? "independent" : "unknown",
     lifecycleState: row.lifecycleState,
     validationLabel: row.validationLabel ?? null,
     validationNotes: row.validationNotes ?? null,
@@ -1611,7 +1677,9 @@ async function enrichCandidatesWithDuplicates(db: D1Database, rows: CandidateRow
     .prepare(
       `SELECT id, name, type, district, address, latitude, longitude, lifecycle_state
        FROM establishments
-       WHERE lifecycle_state IN ('baseline', 'verified', 'featured')`,
+       WHERE lifecycle_state IN ('baseline', 'verified', 'featured')
+         AND COALESCE(validation_label, '') != 'closed_wrong_category'
+         AND COALESCE(chain_status, '') != 'chain'`,
     )
     .all<PublishedEstablishmentLookup>()
     .catch(() => ({ results: [] as PublishedEstablishmentLookup[] }));
