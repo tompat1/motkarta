@@ -426,7 +426,12 @@ export function AdminReviewPanel({
   const filteredCandidates = React.useMemo(() => {
     let rows = candidates;
 
-    if (stateFilter === "candidate" && queueFocus !== "all") {
+    if (queueFocus === "duplicates") {
+      rows = rows.filter(
+        (candidate) =>
+          candidate.possibleDuplicateCount > 0 && candidate.validationLabel !== "closed_wrong_category",
+      );
+    } else if (stateFilter === "candidate" && queueFocus !== "all") {
       if (queueFocus === "new") {
         rows = rows.filter(
           (candidate) =>
@@ -438,11 +443,6 @@ export function AdminReviewPanel({
         rows = rows.filter((candidate) => candidate.evidenceGate.sourceGaps.includes("needs_cuisine_label"));
       } else if (queueFocus === "needs_evidence") {
         rows = rows.filter((candidate) => candidate.evidenceGate.sourceGaps.length > 0);
-      } else if (queueFocus === "duplicates") {
-        rows = rows.filter(
-          (candidate) =>
-            candidate.possibleDuplicateCount > 0 && candidate.validationLabel !== "closed_wrong_category",
-        );
       }
     }
 
@@ -1881,7 +1881,7 @@ export function AdminReviewPanel({
             aria-current={railTab === "duplicates" ? "page" : undefined}
             onClick={() => {
               setRailTab("duplicates");
-              setStateFilter("candidate");
+              setStateFilter("all");
               setQueueFocus("duplicates");
               setViewMode("list");
             }}
@@ -2511,7 +2511,7 @@ export function AdminReviewPanel({
                 </div>
               </div>
 
-              {stateFilter === "candidate" && queueFocus !== "all" ? (
+              {(queueFocus === "duplicates" || (stateFilter === "candidate" && queueFocus !== "all")) ? (
                 <div className="admin-queue-focus-banner" role="status">
                   <span>{queueFocusHelpText(queueFocus, lang)}</span>
                   <button

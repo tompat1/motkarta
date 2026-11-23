@@ -5,7 +5,7 @@ import {
   onRequestGet as getAdminCandidates,
   onRequestPost as postAdminCandidate,
 } from "../functions/api/admin/candidates.ts";
-import { findDuplicatesInMemory, isSpecificStreetAddress } from "../lib/admin-duplicates.ts";
+import { findDuplicatesInMemory, isMeaningfulNearbyNameMatch, isSpecificStreetAddress } from "../lib/admin-duplicates.ts";
 
 const adminToken = "review-secret";
 
@@ -23,6 +23,27 @@ test("duplicate matcher ignores generic city/district placeholder addresses", ()
     ],
   );
   assert.deepEqual(matches.get(1), []);
+});
+
+test("duplicate matcher ignores short generic names in nearby_name matching but detects baseline-vs-baseline duplicates", () => {
+  assert.equal(isMeaningfulNearbyNameMatch("bar", "barcentral"), false);
+  assert.equal(isMeaningfulNearbyNameMatch("bistro", "bistrosud"), false);
+  assert.equal(isMeaningfulNearbyNameMatch("pascal", "pascalbakery"), true);
+
+  const nearbyFalsePositive = findDuplicatesInMemory(
+    [{ id: 1, name: "Bar", district: "Södermalm", latitude: 59.315, longitude: 18.07 }],
+    [{ id: 2, name: "Bar Central", district: "Södermalm", address: null, latitude: 59.3151, longitude: 18.0701 }],
+  );
+  assert.deepEqual(nearbyFalsePositive.get(1), []);
+
+  const baselinePair = findDuplicatesInMemory(
+    [{ id: 55, name: "Mahalo", district: "Kungsholmen", latitude: 59.33, longitude: 18.04 }],
+    [
+      { id: 55, name: "Mahalo", district: "Kungsholmen", address: null, latitude: 59.33, longitude: 18.04, lifecycle_state: "baseline" },
+      { id: 633162647, name: "Mahalo", district: "Kungsholmen", address: null, latitude: 59.33, longitude: 18.04, lifecycle_state: "baseline" },
+    ],
+  );
+  assert.deepEqual(baselinePair.get(55)?.map((m) => m.id), [633162647]);
 });
 
 test("admin candidates endpoint is closed when no admin token is configured", async () => {

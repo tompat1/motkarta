@@ -63,6 +63,37 @@ const GENERIC_ADDRESS_TOKENS = new Set([
   "norrort",
 ]);
 
+const GENERIC_SHORT_NAMES = new Set([
+  "bar",
+  "pub",
+  "cafe",
+  "kafe",
+  "bistro",
+  "grill",
+  "pizza",
+  "sushi",
+  "deli",
+  "bageri",
+  "bakery",
+  "krog",
+  "restaurang",
+  "restaurant",
+  "thai",
+  "mat",
+  "vinbar",
+]);
+
+export function isMeaningfulNearbyNameMatch(a: string, b: string): boolean {
+  if (!a || !b) return false;
+  if (a === b) return true;
+  const shorter = a.length <= b.length ? a : b;
+  const longer = a.length <= b.length ? b : a;
+  if (shorter.length < 4 || GENERIC_SHORT_NAMES.has(shorter)) {
+    return false;
+  }
+  return longer.includes(shorter);
+}
+
 export function normalizeDuplicateKey(value: string | null | undefined): string {
   return String(value ?? "")
     .normalize("NFD")
@@ -181,7 +212,7 @@ export function findDuplicatesInMemory(
               Math.abs(cand.longitude - pub.longitude) <= LNG_TOLERANCE
             ) {
               const pubName = normNameByPubId.get(pub.id) ?? "";
-              if (pubName && (pubName.includes(normCandName) || normCandName.includes(pubName))) {
+              if (isMeaningfulNearbyNameMatch(pubName, normCandName)) {
                 recordMatch(pub, "nearby_name");
               }
             }

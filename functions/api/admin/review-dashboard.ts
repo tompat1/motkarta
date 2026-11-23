@@ -106,13 +106,13 @@ export async function onRequestGet(context: EventContext<Env>) {
     }
 
     // Run sequentially to avoid hammering D1's single-threaded 10-second resource window.
-    const candidateRows = await loadCandidateRows(db);
+    const { rows: candidateRows, publishedDuplicateCount } = await loadCandidateRows(db);
     const reviewSummary = await loadReviewSummary(db);
     const lastExportResult = await loadLastExport(db);
     const missingCuisineCount = await loadMissingCuisineCount(db);
     const lastExportedAt = lastExportResult.row?.lastExportedAt ?? null;
     const unexportedReviewCount = await loadUnexportedReviewCount(db, lastExportedAt);
-    const counts = candidateCounts(candidateRows, reviewSummary, unexportedReviewCount, missingCuisineCount);
+    const counts = candidateCounts(candidateRows, reviewSummary, unexportedReviewCount, missingCuisineCount, publishedDuplicateCount);
     const actions = {
       harvestNeeded: counts.needsEvidenceCount > 0,
       reviewNeeded:
@@ -163,12 +163,15 @@ async function loadCandidateRows(db: D1Database) {
   const unresolvedRows = rows.filter(
     (row) => !row.duplicateResolution && (row.possibleDuplicateCount === null || row.possibleDuplicateCount === undefined),
   );
+  let publishedDuplicateCount = 0;
   if (unresolvedRows.length > 0) {
     const publishedRes = await db
       .prepare(
         `SELECT id, name, type, district, address, latitude, longitude, lifecycle_state
          FROM establishments
-         WHERE lifecycle_state IN ('baseline', 'verified', 'featured')`,
+         WHERE lifecycle_state IN ('baseline', 'verified', 'featured')
+           AND COALESCE(validation_label, '') != 'closed_wrong_category'
+           AND COALESCE(duplicate_resolution, '') = ''`,
       )
       .all<PublishedEstablishmentLookup>()
       .catch(() => ({ results: [] as PublishedEstablishmentLookup[] }));
@@ -178,9 +181,17 @@ async function loadCandidateRows(db: D1Database) {
       for (const row of unresolvedRows) {
         row.possibleDuplicateCount = (dupMap.get(row.id) ?? []).length > 0 ? 1 : 0;
       }
+      // Also count baseline/published-vs-published duplicate pairs (count secondary side once: id > match.id).
+      const pubDupMap = findDuplicatesInMemory(published, published);
+      for (const pub of published) {
+        const matches = pubDupMap.get(pub.id) ?? [];
+        if (matches.some((m) => pub.id > m.id)) {
+          publishedDuplicateCount += 1;
+        }
+      }
     }
   }
-  return rows;
+  return { rows, publishedDuplicateCount };
 }
 
 async function loadReviewSummary(db: D1Database) {
@@ -245,6 +256,7 @@ function candidateCounts(
   reviewSummary: ReviewSummaryRow,
   unexportedReviewCount: number,
   missingCuisineCount: number,
+  publishedDuplicateCount = 0,
 ) {
   let newCandidateCount = 0;
   let hiddenGemReadyCount = 0;
@@ -278,7 +290,7 @@ function candidateCounts(
     needsEvidenceCount,
     missingCuisineCount,
     missingCuisineCandidateCount,
-    possibleDuplicateCount,
+    possibleDuplicateCount: possibleDuplicateCount + publishedDuplicateCount,
     reviewEventCount: Number(reviewSummary.reviewEventCount ?? 0),
     unexportedReviewCount,
   };
