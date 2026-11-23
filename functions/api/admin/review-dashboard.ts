@@ -4,6 +4,7 @@ import {
   findDuplicatesInMemory,
   type PublishedEstablishmentLookup,
 } from "../../../lib/admin-duplicates.ts";
+import { isExcludedCatalogPlace } from "../../../lib/catalog-exclusions.ts";
 import {
   sqlEstablishmentCuisineTagsSelect,
   sqlEstablishmentMissingCuisine,
@@ -159,7 +160,7 @@ export async function onRequestGet(context: EventContext<Env>) {
 
 async function loadCandidateRows(db: D1Database) {
   const { results } = await db.prepare(candidateDashboardQuery()).all<CandidateDashboardRow>();
-  const rows = results ?? [];
+  const rows = (results ?? []).filter((row) => !isExcludedCatalogPlace({ id: row.id, name: row.name }));
   const unresolvedRows = rows.filter(
     (row) => !row.duplicateResolution && (row.possibleDuplicateCount === null || row.possibleDuplicateCount === undefined),
   );
@@ -175,7 +176,7 @@ async function loadCandidateRows(db: D1Database) {
       )
       .all<PublishedEstablishmentLookup>()
       .catch(() => ({ results: [] as PublishedEstablishmentLookup[] }));
-    const published = publishedRes.results ?? [];
+    const published = (publishedRes.results ?? []).filter((row) => !isExcludedCatalogPlace({ id: row.id, name: row.name }));
     if (published.length > 0) {
       const dupMap = findDuplicatesInMemory(unresolvedRows, published);
       for (const row of unresolvedRows) {

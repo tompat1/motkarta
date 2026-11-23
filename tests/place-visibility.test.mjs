@@ -109,11 +109,13 @@ test("duplicatesOnly=1 scans all active candidates before applying limit and exc
     VALUES
     (301, 'AAA Non Duplicate', 'Café', 'Södermalm', '', 59.31, 18.07, 'candidate', '2026-11-22', '2026-11-22'),
     (302, ?, 'Restaurant', 'Kungsholmen', '', ?, ?, 'candidate', '2026-11-20', '2026-11-20'),
-    (303, ?, 'Restaurant', 'Kungsholmen', '', ?, ?, 'candidate', '2026-11-21', '2026-11-21')`)
+    (303, ?, 'Restaurant', 'Kungsholmen', '', ?, ?, 'candidate', '2026-11-21', '2026-11-21'),
+    (304, 'Burger King', 'Restaurant', 'Norrmalm', '', 59.33, 18.06, 'candidate', '2026-11-22', '2026-11-22'),
+    (305, 'Burger King', 'Restaurant', 'Norrmalm', '', 59.33, 18.06, 'baseline', '2026-11-20', '2026-11-20')`)
     .run(belgo.name, belgo.latitude, belgo.longitude, belgo.name, belgo.latitude, belgo.longitude);
   sqlite.prepare(`UPDATE establishments SET validation_label = 'closed_wrong_category' WHERE id = 303`).run();
 
-  const res = await candidates({ request: request("/api/admin/candidates?state=candidate&duplicatesOnly=1&limit=1"), env });
+  const res = await candidates({ request: request("/api/admin/candidates?state=candidate&duplicatesOnly=1&limit=10"), env });
   assert.equal(res.status, 200);
   const body = await res.json();
   assert.deepEqual(body.candidates.map((p) => p.id), [302]);

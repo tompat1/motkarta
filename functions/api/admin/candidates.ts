@@ -16,6 +16,7 @@ import {
 } from "../../../lib/establishment-cuisine.ts";
 import { resolveStockholmRegion } from "../../../lib/stockholm-regions.ts";
 import { normalize } from "../../../lib/concierge/facts.ts";
+import { isExcludedCatalogPlace } from "../../../lib/catalog-exclusions.ts";
 import { getPlaceVerifiedSources } from "../../../src/app/verified-sources.ts";
 
 type D1RunResult = {
@@ -179,6 +180,9 @@ export async function onRequestGet(context: EventContext<Env>) {
               includeDuplicates,
               includeNominations,
             });
+    if (stateParam === "pending_confirmation" || stateParam === "featured" || duplicatesOnly) {
+      rows = rows.filter((row) => !isExcludedCatalogPlace({ id: row.id, name: row.name }));
+    }
     if (includeDuplicates && rows.length > 0) {
       await enrichCandidatesWithDuplicates(db, rows);
     }
@@ -1611,7 +1615,9 @@ async function enrichCandidatesWithDuplicates(db: D1Database, rows: CandidateRow
     )
     .all<PublishedEstablishmentLookup>()
     .catch(() => ({ results: [] as PublishedEstablishmentLookup[] }));
-  const published = publishedRes.results ?? [];
+  const published = (publishedRes.results ?? []).filter(
+    (row) => !isExcludedCatalogPlace({ id: row.id, name: row.name }),
+  );
   if (published.length === 0) {
     for (const row of needsLookup) {
       row.possibleDuplicateCount = 0;

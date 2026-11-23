@@ -16,7 +16,7 @@ export function isExcludedCatalogName(name: unknown): boolean {
   if (/^stf\s+stockholm(?:\s|\/).*\bvandrarhem\b/i.test(trimmed)) return true;
 
   // Major fast food and multinational / national commercial chains
-  if (/\b(?:mcdonald[\s'’‘`´-]*s?|max\s+(?:burgers?|hamburgare|restaurang(?:er)?)|burger\s*king|pizza\s*hut|subway|kfc|kentucky\s+fried\s+chicken|taco\s*bell|domino[\s'’‘`´-]*s(?:\s+pizza)?|vapiano|pinchos|dunkin(?:\s*donuts?)?|espresso\s*house|starbucks|wayne[\s'’‘`´-]*s\s+coffee|joe\s*(?:&|and)\s*(?:the\s*)?juice|nespresso|kahls(?:\s+(?:the|te|kaffe)[\w\s&]*)?|b[öo]nor\s*(?:&|och)\s*blad|pressbyr[aå]n|7\s*[-–]?\s*eleven)\b/i.test(trimmed)) return true;
+  if (/\b(?:mcdonald[\s'’‘`´-]*s?|max\s+(?:burgers?|hamburgare|restaurang(?:er)?)|burger\s*king|sibylla|pizza\s*hut|subway|kfc|kentucky\s+fried\s+chicken|taco\s*bell|domino[\s'’‘`´-]*s(?:\s+pizza)?|vapiano|pinchos|dunkin(?:\s*donuts?)?|espresso\s*house|starbucks|wayne[\s'’‘`´-]*s\s+coffee|joe\s*(?:&|and)\s*(?:the\s*)?juice|nespresso|kahls(?:\s+(?:the|te|kaffe)[\w\s&]*)?|b[öo]nor\s*(?:&|och)\s*blad|pressbyr[aå]n|7\s*[-–]?\s*eleven)\b/i.test(trimmed)) return true;
   if (/^max$/i.test(trimmed)) return true;
 
   // If passed an entire file content (multi-line or extremely long string), don't treat embedded URLs/addresses as place names
