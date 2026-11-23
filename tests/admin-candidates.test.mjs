@@ -44,6 +44,20 @@ test("duplicate matcher ignores short generic names in nearby_name matching but 
     ],
   );
   assert.deepEqual(baselinePair.get(55)?.map((m) => m.id), [633162647]);
+
+  // Multi-branch venues far apart (or on distinct street addresses) are separate branches, not duplicates
+  const multiBranch = findDuplicatesInMemory(
+    [
+      { id: 701, name: "Bröd & Salt", district: "Kungsholmen", address: "Fleminggatan 10", latitude: 59.333, longitude: 18.042 },
+      { id: 702, name: "Bröd & Salt", district: "Kungsholmen", address: null, latitude: null, longitude: null },
+    ],
+    [
+      { id: 710, name: "Bröd & Salt", district: "Kungsholmen", address: "Hantverkargatan 45", latitude: 59.329, longitude: 18.032, lifecycle_state: "baseline" },
+      { id: 711, name: "Bröd & Salt", district: "Kungsholmen", address: "Fleminggatan 10", latitude: 59.3331, longitude: 18.0421, lifecycle_state: "baseline" },
+    ],
+  );
+  assert.deepEqual(multiBranch.get(701)?.map((m) => m.id), [711]);
+  assert.deepEqual(multiBranch.get(702)?.map((m) => m.id), [710, 711]);
 });
 
 test("admin candidates endpoint is closed when no admin token is configured", async () => {

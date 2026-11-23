@@ -1959,9 +1959,9 @@ export function AdminReviewPanel({
             aria-current={railTab === "duplicates" ? "page" : undefined}
             onClick={() => {
               setRailTab("duplicates");
-              setStateFilter("all");
+              setStateFilter("candidate");
               setQueueFocus("duplicates");
-              setViewMode("list");
+              setViewMode("table");
             }}
           >
             <span>{lang === "sv" ? "Dubbletter" : "Duplicates"}</span>

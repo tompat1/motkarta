@@ -31,6 +31,8 @@ export type DuplicateMatchResult = {
 
 const LAT_TOLERANCE = 0.0008;
 const LNG_TOLERANCE = 0.0012;
+const NAME_AREA_LAT_TOLERANCE = 0.0016; // ~178m at Stockholm latitude
+const NAME_AREA_LNG_TOLERANCE = 0.0028; // ~158m at Stockholm latitude
 const LAT_CELL = 0.001;
 const LNG_CELL = 0.0015;
 
@@ -185,6 +187,23 @@ export function findDuplicatesInMemory(
     if (normCandName) {
       const exactNameHits = byNameDistrict.get(`${normCandName}|${normCandDistrict}`) ?? [];
       for (const pub of exactNameHits) {
+        // Multi-branch venues (e.g. Bröd & Salt, Fabrique) share the same name and district:
+        // if both have coordinates > ~180m apart, they are separate branches, not duplicates.
+        if (
+          typeof cand.latitude === "number" &&
+          typeof cand.longitude === "number" &&
+          typeof pub.latitude === "number" &&
+          typeof pub.longitude === "number" &&
+          (Math.abs(cand.latitude - pub.latitude) > NAME_AREA_LAT_TOLERANCE ||
+            Math.abs(cand.longitude - pub.longitude) > NAME_AREA_LNG_TOLERANCE)
+        ) {
+          continue;
+        }
+        // If both have distinct specific street addresses, they are separate branches.
+        const normPubAddr = isSpecificStreetAddress(pub.address) ? normalizeDuplicateKey(pub.address) : "";
+        if (normCandAddr && normPubAddr && normCandAddr !== normPubAddr) {
+          continue;
+        }
         recordMatch(pub, "name_area");
       }
     }
