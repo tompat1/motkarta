@@ -669,7 +669,7 @@ function fakeAdminD1(rows, options = {}) {
             return { results: shapeCandidateRows(filtered.slice(0, limit), query) };
           }
 
-          if (query.includes("WHERE e.district IS NULL")) {
+          if (query.includes("e.district IS NULL") && !query.includes("e.website IS NULL")) {
             const filtered = db.rows.filter((row) => !row.area || ["stockholm", "central stockholm", "north stockholm", "south stockholm", "east stockholm", "west stockholm", "stockholms lan", "stockholm county", "stockholms kommun", "sweden", "sverige", "unspecified"].includes(row.area.toLowerCase()));
             const limit = Number(this.values.at(-1) ?? 100);
             return { results: shapeCandidateRows(filtered.slice(0, limit), query) };

@@ -179,9 +179,13 @@ test("mark_commercial permanently flags chain_status='chain', hides from map/lis
   const concierge = await processConciergeQuery(belgo.name, serveEnv, {}, false, "https://motkarta.test");
   assert.deepEqual((await concierge.json()).cards, []);
 
-  // Excluded from pending_confirmation & duplicatesOnly, visible in removed with chainStatus='chain'
+  // Excluded from candidate, pending_confirmation, needs_input, & duplicatesOnly; visible in removed with chainStatus='chain'
+  const candidateQueue = await (await candidates({ request: request("/api/admin/candidates?state=candidate"), env })).json();
+  assert.deepEqual(candidateQueue.candidates, []);
   const pending = await (await candidates({ request: request("/api/admin/candidates?state=pending_confirmation"), env })).json();
   assert.deepEqual(pending.candidates, []);
+  const needsInput = await (await candidates({ request: request("/api/admin/candidates?state=needs_input"), env })).json();
+  assert.deepEqual(needsInput.candidates, []);
   const removed = await (await candidates({ request: request("/api/admin/candidates?state=removed"), env })).json();
   assert.equal(removed.candidates.length, 1);
   assert.equal(removed.candidates[0].id, 42);

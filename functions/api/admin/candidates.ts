@@ -183,7 +183,12 @@ export async function onRequestGet(context: EventContext<Env>) {
               includeDuplicates,
               includeNominations,
             });
-    if (stateParam === "pending_confirmation" || stateParam === "featured" || duplicatesOnly) {
+    if (
+      stateParam === "candidate" ||
+      stateParam === "pending_confirmation" ||
+      stateParam === "featured" ||
+      duplicatesOnly
+    ) {
       rows = rows.filter((row) => !isExcludedCatalogPlace({ id: row.id, name: row.name }));
     }
     if (includeDuplicates && rows.length > 0) {
@@ -872,7 +877,11 @@ async function loadCandidates(
 
     if (state === "unresolved_region") {
       const broadWhere = `
-        WHERE (${searchClause}) AND (
+        WHERE (${searchClause})
+          AND COALESCE(e.validation_label, '') != 'closed_wrong_category'
+          AND COALESCE(e.chain_status, '') != 'chain'
+          AND COALESCE(e.duplicate_resolution, '') != 'merged'
+          AND (
           e.district IS NULL
           OR e.district = ''
           OR LOWER(e.district) IN ('stockholm', 'central stockholm', 'north stockholm', 'south stockholm', 'east stockholm', 'west stockholm', 'stockholms lan', 'stockholm county', 'stockholms kommun', 'sweden', 'sverige', 'unspecified')
@@ -887,7 +896,11 @@ async function loadCandidates(
 
     if (state === "needs_input") {
       const needsWhere = `
-        WHERE (${searchClause}) AND (
+        WHERE (${searchClause})
+          AND COALESCE(e.validation_label, '') != 'closed_wrong_category'
+          AND COALESCE(e.chain_status, '') != 'chain'
+          AND COALESCE(e.duplicate_resolution, '') != 'merged'
+          AND (
           ${sqlEstablishmentMissingCuisine("e")}
           OR e.website IS NULL OR e.website = ''
           OR e.address IS NULL OR e.address = ''
@@ -902,8 +915,12 @@ async function loadCandidates(
       return results ?? [];
     }
 
+    const activeRemovalFilter =
+      state === "candidate"
+        ? "AND COALESCE(e.validation_label, '') != 'closed_wrong_category' AND COALESCE(e.chain_status, '') != 'chain' AND COALESCE(e.duplicate_resolution, '') != 'merged'"
+        : "";
     const { results } = await db
-      .prepare(`${select} WHERE e.lifecycle_state = ? AND ${searchClause} ${order}`)
+      .prepare(`${select} WHERE e.lifecycle_state = ? ${activeRemovalFilter} AND ${searchClause} ${order}`)
       .bind(state, qPattern, qPattern, qPattern, qPattern, trimmedQuery, limit)
       .all<CandidateRow>();
     return results ?? [];
@@ -934,9 +951,14 @@ async function loadCandidates(
 
   if (state === "unresolved_region") {
     const broadWhere = `
-      WHERE e.district IS NULL
-         OR e.district = ''
-         OR LOWER(e.district) IN ('stockholm', 'central stockholm', 'north stockholm', 'south stockholm', 'east stockholm', 'west stockholm', 'stockholms lan', 'stockholm county', 'stockholms kommun', 'sweden', 'sverige', 'unspecified')
+      WHERE COALESCE(e.validation_label, '') != 'closed_wrong_category'
+        AND COALESCE(e.chain_status, '') != 'chain'
+        AND COALESCE(e.duplicate_resolution, '') != 'merged'
+        AND (
+          e.district IS NULL
+          OR e.district = ''
+          OR LOWER(e.district) IN ('stockholm', 'central stockholm', 'north stockholm', 'south stockholm', 'east stockholm', 'west stockholm', 'stockholms lan', 'stockholm county', 'stockholms kommun', 'sweden', 'sverige', 'unspecified')
+        )
     `;
     const { results } = await db.prepare(`${select}${broadWhere} ${order}`).bind(limit).all<CandidateRow>();
     return results ?? [];
@@ -944,18 +966,27 @@ async function loadCandidates(
 
   if (state === "needs_input") {
     const needsWhere = `
-      WHERE ${sqlEstablishmentMissingCuisine("e")}
-         OR e.website IS NULL OR e.website = ''
-         OR e.address IS NULL OR e.address = ''
-         OR e.district IS NULL OR e.district = ''
-         OR LOWER(e.district) IN ('stockholm', 'central stockholm', 'north stockholm', 'south stockholm', 'east stockholm', 'west stockholm', 'stockholms lan', 'stockholm county', 'stockholms kommun', 'sweden', 'sverige', 'unspecified')
+      WHERE COALESCE(e.validation_label, '') != 'closed_wrong_category'
+        AND COALESCE(e.chain_status, '') != 'chain'
+        AND COALESCE(e.duplicate_resolution, '') != 'merged'
+        AND (
+          ${sqlEstablishmentMissingCuisine("e")}
+          OR e.website IS NULL OR e.website = ''
+          OR e.address IS NULL OR e.address = ''
+          OR e.district IS NULL OR e.district = ''
+          OR LOWER(e.district) IN ('stockholm', 'central stockholm', 'north stockholm', 'south stockholm', 'east stockholm', 'west stockholm', 'stockholms lan', 'stockholm county', 'stockholms kommun', 'sweden', 'sverige', 'unspecified')
+        )
     `;
     const { results } = await db.prepare(`${select}${needsWhere} ${order}`).bind(limit).all<CandidateRow>();
     return results ?? [];
   }
 
+  const activeRemovalFilter =
+    state === "candidate"
+      ? "AND COALESCE(e.validation_label, '') != 'closed_wrong_category' AND COALESCE(e.chain_status, '') != 'chain' AND COALESCE(e.duplicate_resolution, '') != 'merged'"
+      : "";
   const { results } = await db
-    .prepare(`${select}WHERE e.lifecycle_state = ? ${order}`)
+    .prepare(`${select}WHERE e.lifecycle_state = ? ${activeRemovalFilter} ${order}`)
     .bind(state, limit)
     .all<CandidateRow>();
   return results ?? [];
