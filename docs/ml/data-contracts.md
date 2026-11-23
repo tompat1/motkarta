@@ -378,3 +378,16 @@ joined into quality evidence or hidden-gem eligibility counts. Display price
 symbols do not populate static scoring `priceLevel`. Scorer and model versions
 are unchanged. Rebuild any downstream fact index from the repaired catalog before
 activation; old document hashes are not evidence that removed defaults are true.
+
+## Thatsup Curated Source Policy (2026-11-23)
+
+**Thatsup Stockholm** (`id: "thatsup"`, `https://thatsup.se/stockholm/`) is an admitted curated source used to **discover places and verify fit**, while requiring **separate independent evidence for quality**.
+
+- **Why included**: Named editorial team, dated neighbourhood and cuisine guides, frequent coverage of new openings, and signed staff picks explaining why writers return to venues (e.g. [Thatsup staff favourites](https://thatsup.se/stockholm/article/thatsup-redaktionens-favoritkrogar-i-stockholm-som-alltid-levererar)).
+- **Commercial independence caveat**: Thatsup sells Premium packages to local businesses and markets strategic placements in its guides (`https://thatsup.se/about/annonsera`). Because individual paid placements cannot be reliably verified across all guides, a guide mention alone is too ambiguous to count as an independent endorsement.
+
+| Motkarta Signal | How Thatsup Is Used |
+| :--- | :--- |
+| **Relevans / Färskhet** | Use guides to spot candidates and gather leads on cuisine, atmosphere, and openings. Verify operational details directly with the venue. |
+| **Kvalitet / Evidence confidence** | Give a signed, specific editorial account limited weight. Require corroboration from a separate independent source or a Motkarta field visit before assigning high confidence. Exclude known paid/Premium placements from quality scoring. |
+| **Popularitet / Upptäckt** | Give guide order and repeat appearances **zero weight**. Count multiple Thatsup mentions as a single publisher, and let places with little media coverage qualify on their own evidence. |

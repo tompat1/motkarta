@@ -9,13 +9,13 @@ from typing import Any
 from scripts.refresh_curated_sources import CURATED_SOURCE_SPECS, refresh_curated_sources
 
 
-def test_refresh_curated_sources_offline_covers_all_16_sources(tmp_path: Path) -> None:
+def test_refresh_curated_sources_offline_covers_all_17_sources(tmp_path: Path) -> None:
     output = tmp_path / "curated_sources_status.json"
     report = refresh_curated_sources(output_file=output, offline=True, quiet=True)
 
     assert output.exists()
-    assert report["totalSources"] == 16
-    assert len(report["sources"]) == 16
+    assert report["totalSources"] == 17
+    assert len(report["sources"]) == 17
     assert report["schedule"] == "0 4 1 * *"
     assert report["cadence"] == "monthly"
     assert report["offline"] is True
@@ -59,7 +59,7 @@ def test_refresh_curated_sources_detects_changes_and_handles_http_errors(tmp_pat
         probe_fn=fake_probe_initial,
         quiet=True,
     )
-    assert first["reachableSources"] == 15
+    assert first["reachableSources"] == 16
     assert first["changedSources"] == 0
 
     def fake_probe_updated(url: str, timeout: int = 12) -> dict[str, Any]:

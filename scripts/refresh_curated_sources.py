@@ -154,6 +154,13 @@ CURATED_SOURCE_SPECS: tuple[CuratedSourceSpec, ...] = (
         cadence="monthly",
         mode="editorial-check",
     ),
+    CuratedSourceSpec(
+        id="thatsup",
+        name="Thatsup Stockholm (Redaktionella guider & krogtips)",
+        url="https://thatsup.se/stockholm/",
+        cadence="monthly",
+        mode="editorial-check",
+    ),
 )
 
 # Map verify_curated_sources.py report IDs -> canonical UI/D1 curated_sources IDs
@@ -176,6 +183,7 @@ VERIFY_ID_MAP: dict[str, str] = {
     "vagabond": "vagabond",
     "stora-restaurangpriset": "stora-restaurangpriset",
     "sveriges-basta": "sveriges-basta",
+    "thatsup": "thatsup",
 }
 
 

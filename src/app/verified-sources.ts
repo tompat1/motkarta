@@ -306,5 +306,22 @@ export function getPlaceVerifiedSources(
     });
   }
 
+  // 16. Thatsup Stockholm (Discovery & editorial staff-pick lead; requires separate quality corroboration)
+  if (hasAny("thatsup")) {
+    sources.push({
+      id: "thatsup",
+      name: "Thatsup",
+      label: "Thatsup",
+      shortLabel: "Thatsup",
+      iconType: "compass",
+      descriptionSv: "Upptäcktskälla och redaktionellt tips i Thatsup Stockholm (kräver separat oberoende belägg för högt kvalitetsförtroende; betalda placeringar exkluderas)",
+      descriptionEn: "Discovery lead and editorial pick in Thatsup Stockholm (requires separate independent corroboration for high quality confidence; paid placements excluded)",
+      url: "https://thatsup.se/stockholm/",
+      color: "#9a3412",
+      bgColor: "#ffedd5",
+      borderColor: "#fdba74",
+    });
+  }
+
   return sources;
 }

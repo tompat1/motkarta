@@ -12,6 +12,7 @@ test("getPlaceVerifiedSources detects all curated and reference sources across t
       { source: "Allt om Mat" },
       { source: "Vagabond Resemagasin" },
       { source: "Stora Restaurangpriset" },
+      { source: "Thatsup Stockholm" },
     ],
     kind: "Specialty coffee",
   };
@@ -31,6 +32,7 @@ test("getPlaceVerifiedSources detects all curated and reference sources across t
     "vagabond",
     "spotted-by-locals",
     "visit-stockholm",
+    "thatsup",
   ]) {
     assert.ok(ids.includes(expected), `Missing curated source badge: ${expected}`);
   }

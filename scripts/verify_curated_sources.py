@@ -44,6 +44,7 @@ ALLT_OM_MAT_GT_FILE = ROOT / "data" / "allt_om_mat_ground_truth.json"
 VAGABOND_GT_FILE = ROOT / "data" / "vagabond_ground_truth.json"
 STORA_REST_GT_FILE = ROOT / "data" / "stora_restaurangpriset_ground_truth.json"
 SVERIGES_BASTA_GT_FILE = ROOT / "data" / "sveriges_basta_ground_truth.json"
+THATSUP_GT_FILE = ROOT / "data" / "thatsup_ground_truth.json"
 TASSTIPSET_GT_FILE = ROOT / "data" / "tasstipset_stockholm_ground_truth.csv"
 TASSTIPSET_SCRAPED_FILE = ROOT / "outputs" / "tasstipset_dog_places_stockholm.json"
 
@@ -341,6 +342,7 @@ def verify_all_curated_sources(
         ("vagabond", "Vagabond Resemagasin (Stockholmsguiden)", "Travel & Dining Guide", "Redaktionell reseguide (vagabond.se)", VAGABOND_GT_FILE),
         ("stora-restaurangpriset", "Stora Restaurangpriset / Svenska Gastronomipriset", "Industry Awards", "Branschens gastronomipris (restaurangpriset.se)", STORA_REST_GT_FILE),
         ("sveriges-basta", "Sveriges Bästa (sverigesbasta.com)", "Curated Ranking", "Oberoende krogportal (sverigesbasta.com)", SVERIGES_BASTA_GT_FILE),
+        ("thatsup", "Thatsup Stockholm (Redaktionella guider & krogtips)", "Travel & Dining Guide", "Redaktionell stadsguide med kommersiell annonsmodell — upptäcktskälla (thatsup.se)", THATSUP_GT_FILE),
     ]
 
     for s_id, s_name, s_type, s_license, s_file in extra_sources_config:

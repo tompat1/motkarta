@@ -360,7 +360,7 @@ export const translations = {
     featureLink: "Visa på karta",
     selectionReadoutPlaces: "ställen i urvalet",
     attributionTitle: "KÄLLTILLSKRIVNING & UPPHOVSRÄTT",
-    attributionBody: "Kurerade källor används som källhänvisad plats- och evidensdata, inte som importerade betyg. Guidedata och utmärkelser kan komma från Guide Michelin Nordic, White Guide Nordic, DN (Krogkommissionen), SvD (Krogguiden), Allt om Mat, Vagabond, Stora Restaurangpriset, Sveriges Bästa (sverigesbasta.com), Burgerdudes, Anders Husa & Kaitlin Orr Guide, Specialty Coffee Sweden Registry och Visit Stockholm. Tillsynsdata från Stockholms stad (CC0). Kartdata från OpenStreetMap (ODbL).",
+    attributionBody: "Kurerade källor används som källhänvisad plats- och evidensdata, inte som importerade betyg. Guidedata och utmärkelser kan komma från Guide Michelin Nordic, White Guide Nordic, DN (Krogkommissionen), SvD (Krogguiden), Allt om Mat, Vagabond, Stora Restaurangpriset, Sveriges Bästa (sverigesbasta.com), Burgerdudes, Anders Husa & Kaitlin Orr Guide, Specialty Coffee Sweden Registry, Visit Stockholm och Thatsup (som upptäcktskälla med krav på separat kvalitetsbelägg). Tillsynsdata från Stockholms stad (CC0). Kartdata från OpenStreetMap (ODbL).",
   },
   en: {
     brandDescriptor: "Stockholm's independent food map",
@@ -557,7 +557,7 @@ export const translations = {
     featureLink: "View on map",
     selectionReadoutPlaces: "places in selection",
     attributionTitle: "SOURCE ATTRIBUTION & COPYRIGHT",
-    attributionBody: "Curated sources are used as attributed place and evidence data, not imported ratings. Guide data and awards may come from Guide Michelin Nordic, White Guide Nordic, DN (Krogkommissionen), SvD (Krogguiden), Allt om Mat, Vagabond, Stora Restaurangpriset, Sveriges Bästa (sverigesbasta.com), Burgerdudes, Anders Husa & Kaitlin Orr Guide, Specialty Coffee Sweden Registry, and Visit Stockholm. Inspection data from Stockholm City (CC0). Map data from OpenStreetMap (ODbL).",
+    attributionBody: "Curated sources are used as attributed place and evidence data, not imported ratings. Guide data and awards may come from Guide Michelin Nordic, White Guide Nordic, DN (Krogkommissionen), SvD (Krogguiden), Allt om Mat, Vagabond, Stora Restaurangpriset, Sveriges Bästa (sverigesbasta.com), Burgerdudes, Anders Husa & Kaitlin Orr Guide, Specialty Coffee Sweden Registry, Visit Stockholm, and Thatsup (used as a discovery lead requiring separate quality corroboration). Inspection data from Stockholm City (CC0). Map data from OpenStreetMap (ODbL).",
   },
 };
 
@@ -809,6 +809,12 @@ export const curatedSourceEnglishCopy: Record<string, Partial<Pick<CuratedSource
     description:
       "Official visitor and restaurant guide from the City of Stockholm, covering local food culture, restaurants, and cafes.",
     license: "Official city portal (City of Stockholm)",
+  },
+  thatsup: {
+    name: "Thatsup Stockholm (Editorial Guides & Staff Picks)",
+    description:
+      "Named editorial team, dated neighbourhood and cuisine guides, new openings, and signed staff picks. Used for discovery and relevance leads (zero weight on guide order or repeat mentions; paid Premium placements excluded and high confidence requires separate independent corroboration).",
+    license: "Editorial city guide with commercial ad model — discovery lead (thatsup.se)",
   },
 };
 

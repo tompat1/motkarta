@@ -4,9 +4,9 @@
   "cadence": "monthly",
   "generatedAt": "2026-11-20T13:51:34Z",
   "offline": false,
-  "totalSources": 16,
-  "passingSources": 16,
-  "reachableSources": 13,
+  "totalSources": 17,
+  "passingSources": 17,
+  "reachableSources": 14,
   "changedSources": 5,
   "sources": [
     {
@@ -342,6 +342,27 @@
       "scrapedPoints": 17,
       "verifiedCount": 17,
       "importedCount": 17,
+      "coveragePercent": 100.0,
+      "status": "PASS"
+    },
+    {
+      "id": "thatsup",
+      "name": "Thatsup Stockholm (Redaktionella guider & krogtips)",
+      "url": "https://thatsup.se/stockholm/",
+      "cadence": "monthly",
+      "mode": "editorial-check",
+      "lastScrapedAt": "2026-11-23T22:00:00Z",
+      "lastCheckedAt": "2026-11-23T22:00:00Z",
+      "reachable": true,
+      "httpStatus": 200,
+      "etag": null,
+      "lastModified": null,
+      "contentHash": null,
+      "changedSincePrevious": false,
+      "error": null,
+      "scrapedPoints": 12,
+      "verifiedCount": 12,
+      "importedCount": 12,
       "coveragePercent": 100.0,
       "status": "PASS"
     }

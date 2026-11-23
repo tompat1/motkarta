@@ -209,6 +209,20 @@ export const DEFAULT_CURATED_SOURCES: CuratedSource[] = [
     coveragePercent: 100.0,
     lastScrapedAt: "2026-11-18T12:00:00Z",
   },
+  {
+    id: "thatsup",
+    name: "Thatsup Stockholm (Redaktionella guider & krogtips)",
+    url: "https://thatsup.se/stockholm/",
+    type: "Travel & Dining Guide",
+    description:
+      "Namngiven redaktion, daterade stadsdels- och köksguider, nyöppningar och signerade redaktionsfavoriter. Används som upptäckts- och relevanskälla (noll vikt på guideordning/upprepning; betalda Premium-placeringar exkluderas och högt förtroende kräver separat oberoende belägg).",
+    license: "Redaktionell stadsguide med kommersiell annonsmodell — upptäcktskälla (thatsup.se)",
+    verifiedCount: 12,
+    scrapedPoints: 12,
+    importedCount: 12,
+    coveragePercent: 100.0,
+    lastScrapedAt: "2026-11-23T22:00:00Z",
+  },
 ];
 
 export const DEFAULT_CONCIERGE_PROMPTS = [
@@ -265,7 +279,7 @@ export async function loadSourcesFromD1(db?: D1Db): Promise<CuratedSource[]> {
     }>();
 
     if (res.results && res.results.length > 0) {
-      return res.results.map((r) => ({
+      const dbSources: CuratedSource[] = res.results.map((r) => ({
         id: r.id,
         name: r.name,
         url: r.url,
@@ -275,6 +289,13 @@ export async function loadSourcesFromD1(db?: D1Db): Promise<CuratedSource[]> {
         verifiedCount: r.verified_count,
         addedByUser: Boolean(r.added_by_user),
       }));
+      const seenIds = new Set(dbSources.map((s) => s.id));
+      for (const fallback of DEFAULT_CURATED_SOURCES) {
+        if (!seenIds.has(fallback.id)) {
+          dbSources.push(fallback);
+        }
+      }
+      return dbSources;
     }
   } catch (err) {
     console.warn("Could not fetch curated_sources from D1, using defaults", err);

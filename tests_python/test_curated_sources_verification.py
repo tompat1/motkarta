@@ -4,8 +4,8 @@ from scripts.verify_curated_sources import verify_all_curated_sources
 def test_verify_all_curated_sources():
     summary = verify_all_curated_sources(quiet=True)
     assert summary["status"] == "PASS"
-    assert summary["total_sources"] == 16
-    assert summary["sources_passed"] == 16
+    assert summary["total_sources"] == 17
+    assert summary["sources_passed"] == 17
 
     sources_by_id = {s["id"]: s for s in summary["sources"]}
 
@@ -92,3 +92,8 @@ def test_verify_all_curated_sources():
     assert "sveriges-basta" in sources_by_id
     assert sources_by_id["sveriges-basta"]["coverage_pct"] >= 85.0
     assert sources_by_id["sveriges-basta"]["status"] == "PASS"
+
+    # 17. Thatsup Stockholm (discovery lead; separate corroboration required for quality)
+    assert "thatsup" in sources_by_id
+    assert sources_by_id["thatsup"]["coverage_pct"] >= 85.0
+    assert sources_by_id["thatsup"]["status"] == "PASS"
