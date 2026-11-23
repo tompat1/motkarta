@@ -266,7 +266,7 @@ function candidateCounts(
     if (evidenceGate.sourceGaps.length > 0) {
       needsEvidenceCount += 1;
     }
-    if (Number(row.possibleDuplicateCount ?? 0) > 0) {
+    if (Number(row.possibleDuplicateCount ?? 0) > 0 && row.validationLabel !== "closed_wrong_category") {
       possibleDuplicateCount += 1;
     }
   }

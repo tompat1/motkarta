@@ -326,8 +326,10 @@ export function AdminReviewPanel({
       setError(null);
       try {
         const q = (queryOverride !== undefined ? queryOverride : searchQuery).trim();
-        const includeDuplicates = stateFilter !== "all" ? "&includeDuplicates=1" : "";
-        const url = `/api/admin/candidates?state=${stateFilter}&limit=200${includeDuplicates}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
+        const isDuplicatesFocus = queueFocus === "duplicates";
+        const includeDuplicates = isDuplicatesFocus || stateFilter !== "all" ? "&includeDuplicates=1" : "";
+        const duplicatesOnlyParam = isDuplicatesFocus ? "&duplicatesOnly=1" : "";
+        const url = `/api/admin/candidates?state=${stateFilter}&limit=200${includeDuplicates}${duplicatesOnlyParam}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
         const response = await fetchWithD1Retry(url, {
           headers: adminHeaders(token),
         });
@@ -375,7 +377,7 @@ export function AdminReviewPanel({
         setLoading(false);
       }
     },
-    [addToast, adminHeaders, adminSession?.admin, adminToken, d1QuotaExceeded, lang, markD1QuotaExceeded, searchQuery, stateFilter],
+    [addToast, adminHeaders, adminSession?.admin, adminToken, d1QuotaExceeded, lang, markD1QuotaExceeded, queueFocus, searchQuery, stateFilter],
   );
 
   const loadDistrictNames = useCallback(async () => {

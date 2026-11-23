@@ -101,6 +101,25 @@ test("featured queue automatically includes venues with 2+ verified source badge
   assert.deepEqual(body.candidates.map((p) => p.name), ["Manual Featured Spot", "Two Badge Bistro"]);
 });
 
+test("duplicatesOnly=1 scans all active candidates before applying limit and excludes closed rows", async (t) => {
+  const { env, sqlite } = await database(t);
+  // belgo (id=42) is already in Kungsholmen as baseline.
+  sqlite.prepare(`INSERT INTO establishments
+    (id, name, type, district, description, latitude, longitude, lifecycle_state, created_at, updated_at)
+    VALUES
+    (301, 'AAA Non Duplicate', 'Café', 'Södermalm', '', 59.31, 18.07, 'candidate', '2026-11-22', '2026-11-22'),
+    (302, ?, 'Restaurant', 'Kungsholmen', '', ?, ?, 'candidate', '2026-11-20', '2026-11-20'),
+    (303, ?, 'Restaurant', 'Kungsholmen', '', ?, ?, 'candidate', '2026-11-21', '2026-11-21')`)
+    .run(belgo.name, belgo.latitude, belgo.longitude, belgo.name, belgo.latitude, belgo.longitude);
+  sqlite.prepare(`UPDATE establishments SET validation_label = 'closed_wrong_category' WHERE id = 303`).run();
+
+  const res = await candidates({ request: request("/api/admin/candidates?state=candidate&duplicatesOnly=1&limit=1"), env });
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.deepEqual(body.candidates.map((p) => p.id), [302]);
+  assert.equal(body.candidates[0].possibleDuplicateCount, 1);
+});
+
 test("authenticated removal and restoration propagate through SQLite, static catalog, places API and concierge", async (t) => {
   const { env, sqlite } = await database(t);
   const serveEnv = { ...env, ASSETS: { fetch: async () => Response.json({ places: [arirang, belgo] }) } };

@@ -161,20 +161,32 @@ export async function onRequestGet(context: EventContext<Env>) {
     }
 
     const limit = clampLimit(url.searchParams.get("limit"));
-    const includeDuplicates = url.searchParams.get("includeDuplicates") === "1";
+    const duplicatesOnly = url.searchParams.get("duplicatesOnly") === "1";
+    const includeDuplicates = duplicatesOnly || url.searchParams.get("includeDuplicates") === "1";
     const includeNominations = await tableExists(db, "recommendation_events");
-    const rows =
+    let rows =
       stateParam === "featured"
         ? await loadFeaturedCandidates(db, limit, queryParam, {
             includeDuplicates,
             includeNominations,
           }, context.env.ASSETS, context.request.url)
-        : await loadCandidates(db, stateParam, limit, queryParam, {
-            includeDuplicates,
-            includeNominations,
-          });
+        : duplicatesOnly
+          ? await loadDuplicateCandidates(db, stateParam, queryParam, {
+              includeDuplicates: true,
+              includeNominations,
+            })
+          : await loadCandidates(db, stateParam, limit, queryParam, {
+              includeDuplicates,
+              includeNominations,
+            });
     if (includeDuplicates && rows.length > 0) {
       await enrichCandidatesWithDuplicates(db, rows);
+    }
+    if (duplicatesOnly) {
+      rows = rows
+        .filter((row) => Number(row.possibleDuplicateCount ?? 0) > 0)
+        .sort((a, b) => Number(b.possibleDuplicateCount ?? 0) - Number(a.possibleDuplicateCount ?? 0) || (a.name ?? "").localeCompare(b.name ?? "", "sv"))
+        .slice(0, limit);
     }
 
     return Response.json(
@@ -878,6 +890,42 @@ async function loadCandidates(
   const { results } = await db
     .prepare(`${select}WHERE e.lifecycle_state = ? ${order}`)
     .bind(state, limit)
+    .all<CandidateRow>();
+  return results ?? [];
+}
+
+async function loadDuplicateCandidates(
+  db: D1Database,
+  state: CandidateStateFilter,
+  query = "",
+  options: CandidateQueryOptions = { includeDuplicates: true, includeNominations: false },
+): Promise<CandidateRow[]> {
+  const select = buildCandidateSelect(options);
+  const trimmedQuery = query.trim();
+  const activeWhere = `
+    COALESCE(e.validation_label, '') != 'closed_wrong_category'
+    AND COALESCE(e.duplicate_resolution, '') = ''
+    ${state === "candidate" ? "AND e.lifecycle_state = 'candidate'" : ""}
+  `;
+
+  if (trimmedQuery) {
+    const qPattern = `%${trimmedQuery}%`;
+    const searchClause = `(
+      e.name LIKE ?
+      OR e.address LIKE ?
+      OR e.district LIKE ?
+      OR e.description LIKE ?
+      OR CAST(e.id AS TEXT) = ?
+    )`;
+    const { results } = await db
+      .prepare(`${select} WHERE ${activeWhere} AND ${searchClause} GROUP BY e.id`)
+      .bind(qPattern, qPattern, qPattern, qPattern, trimmedQuery)
+      .all<CandidateRow>();
+    return results ?? [];
+  }
+
+  const { results } = await db
+    .prepare(`${select} WHERE ${activeWhere} GROUP BY e.id`)
     .all<CandidateRow>();
   return results ?? [];
 }
