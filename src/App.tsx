@@ -18,7 +18,7 @@ import { SiteUtilities } from "./components/SiteUtilities";
 import { parseSyncDirectPlaces } from "./app/sync-utils";
 import { LazyPlaceMediaDrawer } from "./components/LazyPlaceMediaDrawer";
 import { VerificationBar } from "./components/VerificationBar";
-import { CmsProvider, useCms, CmsEditFlag, CmsFooterControls } from "./app/cms";
+import { CmsProvider, useCms, CmsEditFlag, CmsImageEditFlag, CmsFooterControls } from "./app/cms";
 import { matchesEstablishmentFilter, findDuplicatePlace } from "./app/place-filtering";
 import { sanitizeAndAugmentPlaces } from "./app/place-sanitization";
 import { requestPosition, locationFailureMessage } from "./app/geolocation";
@@ -353,7 +353,7 @@ function AppContent({
 
   const [superpowerMode, setSuperpowerMode] = useState<SuperpowerMode | null>(null);
   const [superpowerInitialPlaceName, setSuperpowerInitialPlaceName] = useState<string | undefined>(undefined);
-  const { t } = useCms();
+  const { t, images: cmsImages } = useCms();
   const isAdminRoute = isAdminRoutePath();
 
   const [userRatings, setUserRatings] = useState<Record<number, number>>(() => {
@@ -2934,9 +2934,15 @@ function AppContent({
         className="editorial-desktop-home"
         aria-labelledby="editorial-home-title"
         data-season={currentSeason}
-        style={{ "--editorial-hero-image": `url('${seasonalHeroImage}')` } as React.CSSProperties}
+        style={{ "--editorial-hero-image": `url('${cmsImages.heroImage || seasonalHeroImage}')` } as React.CSSProperties}
       >
         <div className="editorial-hero-media" aria-hidden="true" />
+        <CmsImageEditFlag
+          imageKey="heroImage"
+          label={lang === "sv" ? "Redaktionell Hero-bild" : "Editorial Hero Image"}
+          defaultSrc={seasonalHeroImage}
+          className="cms-hero-image-flag"
+        />
         <div className="editorial-hero-copy">
           <p className="editorial-kicker">
             <span aria-hidden="true" />

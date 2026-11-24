@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ShoppingBag, Check, Sparkle, ArrowRight, ShieldCheck, ShoppingCart, Plus, Minus, Trash, X, ArrowCounterClockwise } from "@phosphor-icons/react";
-import { useCms, CmsEditFlag, readStoredMerchItems, writeStoredMerchItems, resetStoredMerchItems } from "../app/cms";
+import { useCms, CmsEditFlag, readStoredMerchItems, writeStoredMerchItems, resetStoredMerchItems, persistCmsPayloadToServer } from "../app/cms";
 
 export type Language = "sv" | "en";
 
@@ -282,6 +282,7 @@ export function MerchPanel({
     const nextItems = items.filter((item) => item.id !== itemId);
     setItems(nextItems);
     writeStoredMerchItems(nextItems);
+    void persistCmsPayloadToServer({ merchItems: nextItems });
     setActiveToast(
       isSv ? `🗑️ Produkten "${name}" har tagits bort!` : `🗑️ Product "${name}" was removed!`
     );
@@ -291,6 +292,7 @@ export function MerchPanel({
     const nextItems = [newItem, ...items];
     setItems(nextItems);
     writeStoredMerchItems(nextItems);
+    void persistCmsPayloadToServer({ merchItems: nextItems });
     setIsAddModalOpen(false);
     setActiveToast(
       isSv
@@ -308,6 +310,7 @@ export function MerchPanel({
     if (!confirmed) return;
 
     resetStoredMerchItems();
+    void persistCmsPayloadToServer({ merchItems: null });
     setItems(MERCH_ITEMS);
     setActiveToast(
       isSv ? "↺ Standardprodukter har återställts!" : "↺ Default products restored!"

@@ -1,6 +1,7 @@
 export type Language = "sv" | "en";
 
 export const CMS_STORAGE_KEY = "motkarta_cms_overrides";
+export const CMS_IMAGES_STORAGE_KEY = "motkarta_cms_images";
 export const CMS_AUTH_KEY = "motkarta_cms_auth";
 export const CMS_EDIT_MODE_KEY = "motkarta_cms_edit_mode";
 export const CMS_MERCH_STORAGE_KEY = "motkarta_cms_merch_items";
@@ -24,6 +25,7 @@ export type MerchItem = {
 };
 
 export type CmsCopyMap = Record<string, string>;
+export type CmsImageMap = Record<string, string>;
 export type CmsOverrides = {
   sv: CmsCopyMap;
   en: CmsCopyMap;
@@ -215,6 +217,59 @@ export function writeStoredCmsOverrides(overrides: CmsOverrides): void {
       window.dispatchEvent(new CustomEvent("motkarta-cms-update", { detail: overrides }));
     }
   } catch {}
+}
+
+export function readStoredCmsImages(): CmsImageMap {
+  if (typeof window === "undefined") {
+    return {};
+  }
+  try {
+    const raw = localStorage.getItem(CMS_IMAGES_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as CmsImageMap) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function writeStoredCmsImages(images: CmsImageMap): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(CMS_IMAGES_STORAGE_KEY, JSON.stringify(images));
+    if (typeof window.dispatchEvent === "function") {
+      window.dispatchEvent(new CustomEvent("motkarta-cms-images-update", { detail: images }));
+    }
+  } catch {}
+}
+
+export async function persistCmsPayloadToServer(payload: {
+  overrides?: CmsOverrides;
+  images?: CmsImageMap;
+  merchItems?: MerchItem[] | null;
+}): Promise<{ ok: boolean; persistedToD1: boolean; error?: string }> {
+  if (typeof window === "undefined" || typeof fetch !== "function") {
+    return { ok: false, persistedToD1: false };
+  }
+  try {
+    const token = sessionStorage.getItem("motkarta_admin_token")?.trim() || "";
+    const headers: Record<string, string> = { "content-type": "application/json" };
+    if (token) headers["x-motkarta-admin-token"] = token;
+    const res = await fetch("/api/cms", {
+      method: "POST",
+      headers,
+      credentials: "same-origin",
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const errBody = (await res.json().catch(() => ({}))) as { error?: string };
+      return { ok: false, persistedToD1: false, error: errBody.error || `HTTP ${res.status}` };
+    }
+    const body = (await res.json().catch(() => ({}))) as { source?: string };
+    return { ok: true, persistedToD1: body.source === "d1" };
+  } catch (err) {
+    return { ok: false, persistedToD1: false, error: err instanceof Error ? err.message : String(err) };
+  }
 }
 
 export function readStoredCmsEditMode(): boolean {

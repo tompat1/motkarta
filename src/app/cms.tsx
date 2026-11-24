@@ -5,38 +5,48 @@ import type { Language } from "./shared";
 import { translations } from "./shared";
 import {
   CMS_STORAGE_KEY,
+  CMS_IMAGES_STORAGE_KEY,
   CMS_AUTH_KEY,
   CMS_EDIT_MODE_KEY,
   CMS_MERCH_STORAGE_KEY,
   type MerchItem,
   type CmsCopyMap,
+  type CmsImageMap,
   type CmsOverrides,
   type CmsKeyMetadata,
   CMS_CATALOG,
   readStoredCmsOverrides,
   writeStoredCmsOverrides,
+  readStoredCmsImages,
+  writeStoredCmsImages,
   readStoredCmsEditMode,
   readStoredMerchItems,
   writeStoredMerchItems,
   resetStoredMerchItems,
+  persistCmsPayloadToServer,
 } from "./cms-store";
 
 export {
   CMS_STORAGE_KEY,
+  CMS_IMAGES_STORAGE_KEY,
   CMS_AUTH_KEY,
   CMS_EDIT_MODE_KEY,
   CMS_MERCH_STORAGE_KEY,
   type MerchItem,
   type CmsCopyMap,
+  type CmsImageMap,
   type CmsOverrides,
   type CmsKeyMetadata,
   CMS_CATALOG,
   readStoredCmsOverrides,
   writeStoredCmsOverrides,
+  readStoredCmsImages,
+  writeStoredCmsImages,
   readStoredCmsEditMode,
   readStoredMerchItems,
   writeStoredMerchItems,
   resetStoredMerchItems,
+  persistCmsPayloadToServer,
 };
 
 export function getBaseCopy(lang: Language, key: string): string {
@@ -54,6 +64,7 @@ import {
   Eye,
   EyeSlash,
   Flag,
+  Image as ImageIcon,
   LockKey,
   PencilSimple,
   SignOut,
@@ -66,6 +77,7 @@ export interface CmsContextType {
   t: typeof translations.sv & Record<string, string>;
   lang: Language;
   overrides: CmsOverrides;
+  images: CmsImageMap;
   isCmsAdmin: boolean;
   isCmsEditMode: boolean;
   loginCms: (passcode: string) => Promise<boolean>;
@@ -74,7 +86,11 @@ export interface CmsContextType {
   setIsCmsEditMode: (active: boolean) => void;
   openEditor: (key: string, label?: string) => void;
   closeEditor: () => void;
+  openImageEditor: (key: string, label: string, defaultSrc: string) => void;
+  closeImageEditor: () => void;
   saveCopy: (key: string, sv: string, en: string) => void;
+  saveImage: (key: string, url: string) => void;
+  resetImageKey: (key: string) => void;
   resetCopyKey: (key: string) => void;
   resetAllCopy: () => void;
   exportCmsJson: () => string;
@@ -105,6 +121,7 @@ export function CmsProvider({
   lang: Language;
 }) {
   const [overrides, setOverrides] = useState<CmsOverrides>(readStoredCmsOverrides);
+  const [images, setImages] = useState<CmsImageMap>(readStoredCmsImages);
   const [isCmsAdmin, setIsCmsAdmin] = useState(false);
   const [isCmsEditMode, setIsCmsEditModeState] = useState(false);
   const authMode = useRef<AdminAuthMode | undefined>(undefined);
@@ -122,6 +139,7 @@ export function CmsProvider({
   }, []);
 
   const [editingItem, setEditingItem] = useState<{ key: string; label: string } | null>(null);
+  const [editingImage, setEditingImage] = useState<{ key: string; label: string; defaultSrc: string } | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(() => {
     if (typeof window === "undefined") return false;
     const url = new URL(window.location.href);
@@ -184,9 +202,50 @@ export function CmsProvider({
   }, [isCmsRoute]);
 
   useEffect(() => {
+    let active = true;
+    const hydrateFromServer = async () => {
+      try {
+        const res = await fetch("/api/cms", { credentials: "same-origin" });
+        if (!res.ok || !active) return;
+        const payload = (await res.json()) as {
+          source?: string;
+          overrides?: CmsOverrides;
+          images?: CmsImageMap;
+          merchItems?: MerchItem[] | null;
+        };
+        if (!active || payload.source !== "d1") return;
+        if (payload.overrides && (payload.overrides.sv || payload.overrides.en)) {
+          const nextOverrides: CmsOverrides = {
+            sv: payload.overrides.sv ?? {},
+            en: payload.overrides.en ?? {},
+          };
+          setOverrides(nextOverrides);
+          writeStoredCmsOverrides(nextOverrides);
+        }
+        if (payload.images && typeof payload.images === "object") {
+          setImages(payload.images);
+          writeStoredCmsImages(payload.images);
+        }
+        if (Array.isArray(payload.merchItems) && payload.merchItems.length > 0) {
+          writeStoredMerchItems(payload.merchItems);
+        }
+      } catch {
+        // Offline / local dev without D1 — keep localStorage cache
+      }
+    };
+    void hydrateFromServer();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
       if (e.key === CMS_STORAGE_KEY) {
         setOverrides(readStoredCmsOverrides());
+      }
+      if (e.key === CMS_IMAGES_STORAGE_KEY) {
+        setImages(readStoredCmsImages());
       }
       if (e.key === CMS_EDIT_MODE_KEY) {
         setIsCmsEditModeState(isCmsAdmin && readStoredCmsEditMode());
@@ -198,11 +257,19 @@ export function CmsProvider({
         setOverrides(customEvent.detail);
       }
     };
+    const handleImagesCustom = (e: Event) => {
+      const customEvent = e as CustomEvent<CmsImageMap>;
+      if (customEvent.detail) {
+        setImages(customEvent.detail);
+      }
+    };
     window.addEventListener("storage", handleStorage);
     window.addEventListener("motkarta-cms-update", handleCustom);
+    window.addEventListener("motkarta-cms-images-update", handleImagesCustom);
     return () => {
       window.removeEventListener("storage", handleStorage);
       window.removeEventListener("motkarta-cms-update", handleCustom);
+      window.removeEventListener("motkarta-cms-images-update", handleImagesCustom);
     };
   }, [isCmsAdmin]);
 
@@ -265,30 +332,82 @@ export function CmsProvider({
     setEditingItem(null);
   }, []);
 
+  const openImageEditor = useCallback((key: string, label: string, defaultSrc: string) => {
+    setEditingImage({ key, label, defaultSrc });
+  }, []);
+
+  const closeImageEditor = useCallback(() => {
+    setEditingImage(null);
+  }, []);
+
   const saveCopy = useCallback((key: string, svVal: string, enVal: string) => {
+    let nextSnapshot: CmsOverrides = { sv: {}, en: {} };
     setOverrides((prev) => {
       const next: CmsOverrides = {
         sv: { ...prev.sv, [key]: svVal },
         en: { ...prev.en, [key]: enVal },
       };
+      nextSnapshot = next;
       writeStoredCmsOverrides(next);
       return next;
     });
     setEditingItem(null);
     setActiveToast(`Ändring sparad för "${key}" på både SV och EN! ⭐`);
-  }, []);
+    void persistCmsPayloadToServer({ overrides: nextSnapshot }).then((res) => {
+      if (res.persistedToD1) {
+        setActiveToast(lang === "sv" ? `"${key}" sparad i D1 för alla besökare.` : `"${key}" saved to D1 for all visitors.`);
+      }
+    });
+  }, [lang]);
+
+  const saveImage = useCallback((key: string, url: string) => {
+    const trimmed = url.trim();
+    let nextSnapshot: CmsImageMap = {};
+    setImages((prev) => {
+      const next = { ...prev };
+      if (trimmed) next[key] = trimmed;
+      else delete next[key];
+      nextSnapshot = next;
+      writeStoredCmsImages(next);
+      return next;
+    });
+    setEditingImage(null);
+    setActiveToast(lang === "sv" ? `Bild uppdaterad för "${key}".` : `Image updated for "${key}".`);
+    void persistCmsPayloadToServer({ images: nextSnapshot }).then((res) => {
+      if (res.persistedToD1) {
+        setActiveToast(lang === "sv" ? `Bild "${key}" sparad i D1 för alla besökare.` : `Image "${key}" saved to D1 for all visitors.`);
+      }
+    });
+  }, [lang]);
+
+  const resetImageKey = useCallback((key: string) => {
+    let nextSnapshot: CmsImageMap = {};
+    setImages((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      nextSnapshot = next;
+      writeStoredCmsImages(next);
+      return next;
+    });
+    setEditingImage(null);
+    setActiveToast(lang === "sv" ? `Bild "${key}" återställd till original.` : `Image "${key}" reset to default.`);
+    void persistCmsPayloadToServer({ images: nextSnapshot });
+  }, [lang]);
 
   const resetCopyKey = useCallback((key: string) => {
+    let nextSnapshot: CmsOverrides = { sv: {}, en: {} };
     setOverrides((prev) => {
       const newSv = { ...prev.sv };
       const newEn = { ...prev.en };
       delete newSv[key];
       delete newEn[key];
       const next = { sv: newSv, en: newEn };
+      nextSnapshot = next;
       writeStoredCmsOverrides(next);
       return next;
     });
     setActiveToast(`"${key}" återställd till standardtext.`);
+    void persistCmsPayloadToServer({ overrides: nextSnapshot });
   }, []);
 
   const resetAllCopy = useCallback(() => {
@@ -296,23 +415,33 @@ export function CmsProvider({
     setOverrides(empty);
     writeStoredCmsOverrides(empty);
     setActiveToast("Alla CMS-texter återställda till original.");
+    void persistCmsPayloadToServer({ overrides: empty });
   }, []);
 
   const exportCmsJson = useCallback((): string => {
-    return JSON.stringify(overrides, null, 2);
-  }, [overrides]);
+    return JSON.stringify({ ...overrides, images }, null, 2);
+  }, [overrides, images]);
 
   const importCmsJson = useCallback((jsonStr: string): boolean => {
     try {
       const parsed = JSON.parse(jsonStr);
-      if (parsed && (parsed.sv || parsed.en)) {
+      if (parsed && (parsed.sv || parsed.en || parsed.images)) {
         const next: CmsOverrides = {
-          sv: typeof parsed.sv === "object" ? parsed.sv : {},
-          en: typeof parsed.en === "object" ? parsed.en : {},
+          sv: typeof parsed.sv === "object" && parsed.sv ? parsed.sv : {},
+          en: typeof parsed.en === "object" && parsed.en ? parsed.en : {},
         };
         setOverrides(next);
         writeStoredCmsOverrides(next);
+        const nextImages: CmsImageMap | undefined =
+          parsed.images && typeof parsed.images === "object" && !Array.isArray(parsed.images)
+            ? (parsed.images as CmsImageMap)
+            : undefined;
+        if (nextImages) {
+          setImages(nextImages);
+          writeStoredCmsImages(nextImages);
+        }
         setActiveToast("CMS-texter importerade framgångsrikt! ⭐");
+        void persistCmsPayloadToServer({ overrides: next, ...(nextImages ? { images: nextImages } : {}) });
         return true;
       }
       return false;
@@ -332,6 +461,7 @@ export function CmsProvider({
     t,
     lang,
     overrides,
+    images,
     isCmsAdmin,
     isCmsEditMode,
     loginCms,
@@ -340,7 +470,11 @@ export function CmsProvider({
     setIsCmsEditMode,
     openEditor,
     closeEditor,
+    openImageEditor,
+    closeImageEditor,
     saveCopy,
+    saveImage,
+    resetImageKey,
     resetCopyKey,
     resetAllCopy,
     exportCmsJson,
@@ -367,6 +501,20 @@ export function CmsProvider({
           onSave={saveCopy}
           onResetKey={resetCopyKey}
           currentLang={lang}
+        />
+      )}
+
+      {/* Editing on-page image modal */}
+      {editingImage && (
+        <CmsImageEditorModal
+          imageKey={editingImage.key}
+          label={editingImage.label}
+          defaultSrc={editingImage.defaultSrc}
+          currentSrc={images[editingImage.key]}
+          onClose={closeImageEditor}
+          onSave={saveImage}
+          onReset={resetImageKey}
+          lang={lang}
         />
       )}
 
@@ -678,8 +826,8 @@ function CmsLoginModal({
         <form onSubmit={handleSubmit} className="cms-login-form">
           <p className="cms-login-desc">
             {isSv
-              ? "Logga in med ditt godkända Cloudflare Access-konto. Textändringar sparas i den här webbläsaren och kan exporteras."
-              : "Sign in with your approved Cloudflare Access account. Copy edits are saved in this browser and can be exported."}
+              ? "Logga in med ditt godkända Cloudflare Access-konto. Text- och bildändringar sparas permanent i D1 för alla besökare."
+              : "Sign in with your approved Cloudflare Access account. Copy and image edits are saved persistently to D1 for all visitors."}
           </p>
 
           <div className="cms-form-group">
@@ -1042,6 +1190,210 @@ export function CmsFooterControls() {
         >
           <SignOut size={13} weight="bold" />
         </button>
+      </div>
+    </div>
+  );
+}
+
+export function CmsImageEditFlag({
+  imageKey,
+  label,
+  defaultSrc,
+  className = "",
+}: {
+  imageKey: string;
+  label: string;
+  defaultSrc: string;
+  className?: string;
+}) {
+  const { isCmsAdmin, isCmsEditMode, openImageEditor, lang } = useCms();
+  if (!isCmsAdmin || !isCmsEditMode) return null;
+  const isSv = lang === "sv";
+  return (
+    <button
+      type="button"
+      className={`cms-edit-flag cms-image-edit-flag ${className}`.trim()}
+      data-testid={`cms-image-flag-${imageKey}`}
+      title={isSv ? `Byt bild: ${label}` : `Edit image: ${label}`}
+      aria-label={isSv ? `Byt bild: ${label}` : `Edit image: ${label}`}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openImageEditor(imageKey, label, defaultSrc);
+      }}
+    >
+      <ImageIcon size={13} weight="bold" />
+      <span>{isSv ? "Byt bild" : "Edit image"}</span>
+    </button>
+  );
+}
+
+function compressImageFileToDataUrl(file: File, maxWidth = 1400): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Could not read file"));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("Invalid image file"));
+      img.onload = () => {
+        const scale = img.width > maxWidth ? maxWidth / img.width : 1;
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(String(reader.result));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, w, h);
+        const webp = canvas.toDataURL("image/webp", 0.82);
+        if (webp.startsWith("data:image/webp")) {
+          resolve(webp);
+        } else {
+          resolve(canvas.toDataURL("image/jpeg", 0.84));
+        }
+      };
+      img.src = String(reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function CmsImageEditorModal({
+  imageKey,
+  label,
+  defaultSrc,
+  currentSrc,
+  onClose,
+  onSave,
+  onReset,
+  lang,
+}: {
+  imageKey: string;
+  label: string;
+  defaultSrc: string;
+  currentSrc?: string;
+  onClose: () => void;
+  onSave: (key: string, url: string) => void;
+  onReset: (key: string) => void;
+  lang: Language;
+}) {
+  const isSv = lang === "sv";
+  const [urlValue, setUrlValue] = useState(currentSrc || "");
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const previewSrc = urlValue.trim() || defaultSrc;
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError(null);
+    setUploading(true);
+    try {
+      const dataUrl = await compressImageFileToDataUrl(file);
+      if (dataUrl.length > 1_400_000) {
+        setUploadError(isSv ? "Bilden är för stor efter komprimering. Välj en mindre bild eller ange en URL." : "Image is too large after compression. Choose a smaller file or provide a URL.");
+      } else {
+        setUrlValue(dataUrl);
+      }
+    } catch {
+      setUploadError(isSv ? "Kunde inte läsa bildfilen." : "Could not read image file.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="cms-modal-overlay" onClick={onClose}>
+      <div
+        className="cms-modal-card"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cms-image-editor-title"
+      >
+        <div className="cms-modal-header">
+          <div className="cms-modal-title-group">
+            <span className="cms-modal-badge">
+              <ImageIcon size={13} weight="bold" /> CMS BILD
+            </span>
+            <h3 id="cms-image-editor-title">{label}</h3>
+            <code className="cms-key-tag">{imageKey}</code>
+          </div>
+          <button type="button" className="icon-btn cms-close-btn" onClick={onClose} aria-label={isSv ? "Stäng" : "Close"}>
+            <X size={18} weight="bold" />
+          </button>
+        </div>
+
+        <div className="cms-modal-body">
+          <div className="cms-image-editor-preview">
+            <img src={previewSrc} alt={label} />
+          </div>
+
+          <div className="cms-form-group">
+            <label htmlFor="cms-image-url-input">
+              {isSv ? "Bild-URL (https://... eller /sökväg)" : "Image URL (https://... or /path)"}
+            </label>
+            <input
+              id="cms-image-url-input"
+              type="text"
+              className="cms-input"
+              value={urlValue}
+              onChange={(e) => {
+                setUrlValue(e.target.value);
+                setUploadError(null);
+              }}
+              placeholder={defaultSrc}
+              data-testid="cms-image-url-input"
+            />
+          </div>
+
+          <div className="cms-form-group">
+            <label htmlFor="cms-image-file-input">
+              {isSv ? "Eller ladda upp från enhet (komprimeras & sparas i D1):" : "Or upload from device (compressed & saved to D1):"}
+            </label>
+            <input
+              id="cms-image-file-input"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              onChange={(e) => void handleFileChange(e)}
+              disabled={uploading}
+              data-testid="cms-image-file-input"
+            />
+            {uploadError ? <span className="cms-error-msg" role="alert">{uploadError}</span> : null}
+          </div>
+        </div>
+
+        <div className="cms-modal-footer">
+          <button
+            type="button"
+            className="cms-reset-btn"
+            onClick={() => onReset(imageKey)}
+            disabled={!currentSrc}
+            data-testid="cms-image-reset-btn"
+          >
+            <ArrowCounterClockwise size={14} weight="bold" />
+            {isSv ? "Återställ original" : "Reset default"}
+          </button>
+          <div className="cms-modal-footer-right">
+            <button type="button" className="cms-cancel-btn" onClick={onClose}>
+              {isSv ? "Avbryt" : "Cancel"}
+            </button>
+            <button
+              type="button"
+              className="cms-save-btn"
+              disabled={uploading}
+              onClick={() => onSave(imageKey, urlValue)}
+              data-testid="cms-image-save-btn"
+            >
+              <Check size={14} weight="bold" />
+              {isSv ? "Spara bild" : "Save image"}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
