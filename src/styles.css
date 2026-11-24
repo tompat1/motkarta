@@ -7144,26 +7144,32 @@ button.concierge-clear-btn:hover {
 }
 
 .admin-ml-card-header {
-  align-items: center;
+  align-items: flex-start;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .admin-ml-status-pill {
   background: rgba(16, 185, 129, 0.12);
   border: 1px solid #10b981;
   color: #047857;
+  flex-shrink: 0;
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
-  padding: 2px 8px;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .admin-ml-model-type {
   color: var(--color-stone);
   font-family: var(--font-mono);
   font-size: 11px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .admin-ml-card h4 {
