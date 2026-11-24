@@ -3279,9 +3279,11 @@ function AppContent({
                   className={`editorial-feature-card editorial-feature-card-${index + 1}${primarySelection.mode === "landscape-stack" ? " is-stacked" : ""}`}
                   onClick={() => {
                     handleSelectPlace(place.id);
+                    setIsMapCardClosed(false);
+                    setIsPlaceDetailOpen(false);
                     setMobileTab("map");
-                    setIsPlaceDetailOpen(true);
-                    document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+                    setMobileViewMode("map");
+                    window.requestAnimationFrame(() => scrollToMapWorkspace());
                   }}
                 >
                   {cardVerifiedSources.length > 0 ? (
@@ -3324,9 +3326,11 @@ function AppContent({
                   className="editorial-feature-more-chip"
                   onClick={() => {
                     handleSelectPlace(place.id);
+                    setIsMapCardClosed(false);
+                    setIsPlaceDetailOpen(false);
                     setMobileTab("map");
-                    setIsPlaceDetailOpen(true);
-                    document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+                    setMobileViewMode("map");
+                    window.requestAnimationFrame(() => scrollToMapWorkspace());
                   }}
                 >
                   <span>{place.name}</span>
@@ -4252,14 +4256,33 @@ function AppContent({
                     );
                   })}
                 </div>
-                <button
-                  type="button"
-                  className="map-card-add-photo-btn"
-                  onClick={() => setIsUserPhotoUploadOpen(true)}
-                >
-                  <Camera size={15} weight="bold" />
-                  {lang === "sv" ? "Lägg till bild" : "Add a photo"}
-                </button>
+                <div className="map-card-action-row">
+                  <button
+                    type="button"
+                    className="map-card-add-photo-btn"
+                    onClick={() => setIsUserPhotoUploadOpen(true)}
+                  >
+                    <Camera size={15} weight="bold" />
+                    {lang === "sv" ? "Lägg till bild" : "Add a photo"}
+                  </button>
+                  <button
+                    type="button"
+                    className={`map-card-view-on-map-btn ${selected === active.id && !isMapCardClosed ? "is-already-on-map" : ""}`}
+                    disabled={selected === active.id && !isMapCardClosed}
+                    title={
+                      selected === active.id && !isMapCardClosed
+                        ? lang === "sv"
+                          ? "Redan vald i kartvyn"
+                          : "Already selected in map view"
+                        : lang === "sv"
+                          ? "Visa stället på kartan"
+                          : "View place on map"
+                    }
+                    onClick={() => handleViewPlaceOnMap(active)}
+                  >
+                    {lang === "sv" ? "Visa på kartan" : "View on map"}
+                  </button>
+                </div>
                 <MotkartaScoreWidget
                   scores={active.scores}
                   overallScore={modeScore(active, mode)}
@@ -4802,6 +4825,7 @@ function AppContent({
           onToggleSave={handleToggleSavePlace}
           onRatePlace={handleRatePlace}
           onViewOnMap={handleViewPlaceOnMap}
+          isAlreadyOnMap={Boolean(active && selected === active.id && mobileTab === "map" && mobileViewMode === "map")}
           activeCuisine={cuisine}
           onFilterByCuisine={handleFilterByCuisineFromDetail}
           onGetDirections={(place) =>

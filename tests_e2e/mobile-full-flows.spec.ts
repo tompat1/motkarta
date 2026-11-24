@@ -287,14 +287,19 @@ test.describe("Mobile Full User Flows", () => {
     await expect(slideUp).toBeVisible({ timeout: 10000 });
     await slideUp.locator(".mobile-slide-up-content").click();
 
-    // Click VIEW ON MAP / VISA PÅ KARTAN
+    // Since Bun Meat Bun is already selected in map view, VIEW ON MAP is greyed out/disabled
+    // while GET DIRECTIONS remains selectable on mobile.
     const detailSheet = page.locator(".place-detail-sheet");
     await expect(detailSheet).toBeVisible({ timeout: 10000 });
     const viewOnMapBtn = page.locator(".place-detail-primary-cta");
     await expect(viewOnMapBtn).toBeVisible({ timeout: 10000 });
-    await viewOnMapBtn.click();
+    await expect(viewOnMapBtn).toBeDisabled();
+    const directionsLink = page.locator(".place-detail-directions-cta");
+    await expect(directionsLink).toBeVisible({ timeout: 10000 });
+    await expect(directionsLink).toHaveAttribute("href", /google\.com\/maps|maps\.apple\.com/i);
 
-    // Detail sheet closes and active marker in Farsta Strand is focused
+    // Close detail sheet -> active marker in Farsta Strand remains focused in map view
+    await page.locator(".place-detail-back-btn").click();
     await expect(detailSheet).not.toBeVisible({ timeout: 10000 });
     const activeMarker = page.locator(".motkarta-map-marker.active");
     await expect(activeMarker).toBeVisible({ timeout: 10000 });

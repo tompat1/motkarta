@@ -47,6 +47,7 @@ interface PlaceDetailSheetProps {
   onToggleSave: (id: number) => void;
   onRatePlace: (id: number, rating: number) => void;
   onViewOnMap: (place: ScoredPlace) => void;
+  isAlreadyOnMap?: boolean;
   onGetDirections?: (place: ScoredPlace) => void;
   activeCuisine?: string;
   onFilterByCuisine?: (cuisine: string) => void;
@@ -64,6 +65,7 @@ export function PlaceDetailSheet({
   onToggleSave,
   onRatePlace,
   onViewOnMap,
+  isAlreadyOnMap = false,
   onGetDirections,
   activeCuisine,
   onFilterByCuisine,
@@ -547,7 +549,15 @@ export function PlaceDetailSheet({
           <div className="place-detail-footer-actions">
             <button
               type="button"
-              className="place-detail-primary-cta"
+              className={`place-detail-primary-cta ${isAlreadyOnMap ? "is-already-on-map" : ""}`}
+              disabled={isAlreadyOnMap}
+              title={
+                isAlreadyOnMap
+                  ? lang === "sv"
+                    ? "Redan vald i kartvyn"
+                    : "Already selected in map view"
+                  : undefined
+              }
               onClick={() => onViewOnMap(place)}
             >
               <span>{lang === "sv" ? "VISA PÅ KARTAN" : "VIEW ON MAP"}</span>
