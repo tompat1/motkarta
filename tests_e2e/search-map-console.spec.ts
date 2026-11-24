@@ -91,6 +91,11 @@ test.describe("Search input & Map clustering console error prevention", () => {
     await expect(autocompleteBox.locator(".autocomplete-item", { hasText: /Belgobaren/i }).first()).toBeVisible();
 
     // 2. Partial cuisine name: "italian" -> suggests Italian / Italienskt cuisine and filters on click
+    // Even if scrolled far down (e.g. Merch section), selecting from the quick dropdown scrolls back to the map workspace.
+    if (await page.locator("#merch").count() > 0 && (page.viewportSize()?.width ?? 0) > 1024) {
+      await page.locator("#merch").scrollIntoViewIfNeeded();
+      await searchInput.click();
+    }
     await searchInput.fill("italian");
     const cuisineSuggestion = autocompleteBox.locator(".autocomplete-item", { hasText: /Italienskt|Italian/i }).first();
     await expect(cuisineSuggestion).toBeVisible({ timeout: 5000 });
@@ -99,6 +104,15 @@ test.describe("Search input & Map clustering console error prevention", () => {
     // Dropdown closes and query clears because cuisine filter took over
     await expect(autocompleteBox).toBeHidden();
     await expect(searchInput).toHaveValue("");
+    if ((page.viewportSize()?.width ?? 0) > 1024) {
+      await expect.poll(async () => {
+        return page.evaluate(() => {
+          const el = document.getElementById("place-workspace");
+          if (!el) return 9999;
+          return Math.abs(el.getBoundingClientRect().top);
+        });
+      }, { timeout: 5000 }).toBeLessThan(320);
+    }
 
     // 3. Slow Concierge request shows loading spinner & status pill
     await page.route("**/api/concierge", async (route) => {

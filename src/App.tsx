@@ -2032,11 +2032,20 @@ function AppContent({
     setIsSearchFocused(false);
     setIsHeroSearchFocused(false);
     setAutocompleteIndex(-1);
+    searchInputRef.current?.blur();
+    if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement && document.activeElement.tagName === "INPUT") {
+      document.activeElement.blur();
+    }
+
+    const scrollToMap = () => {
+      if (typeof window === "undefined") return;
+      window.requestAnimationFrame(() => scrollToMapWorkspace());
+    };
 
     if (item.cuisineValue) {
       handleFilterByCuisineFromDetail(item.cuisineValue);
       if (typeof window !== "undefined" && window.innerWidth > 1024) {
-        document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+        scrollToMap();
       }
       return;
     }
@@ -2054,17 +2063,20 @@ function AppContent({
         setMobileTab("map");
         setMobileViewMode("map");
       } else {
-        document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+        scrollToMap();
       }
     } else if (item.isPrompt) {
       void askWithQuery(item.value);
+      if (typeof window !== "undefined" && window.innerWidth > 1024) {
+        scrollToMap();
+      }
     } else {
       setListScope("all");
       if (typeof window !== "undefined" && window.innerWidth <= 1024) {
         setMobileTab("map");
         setMobileViewMode("list");
       } else {
-        document.getElementById("map")?.scrollIntoView({ behavior: "smooth" });
+        scrollToMap();
       }
     }
   };
