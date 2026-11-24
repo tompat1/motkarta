@@ -161,12 +161,19 @@ export function FoodMap({
       const marker = L.marker([place.latitude, place.longitude], {
         icon: placeIcon(place, isActive),
         title: place.name,
-      }).on("click", () => {
-        if (isMobileMapViewport()) {
-          map.closePopup();
-        }
-        onSelectRef.current(place.id);
-      });
+      })
+        .on("click", () => {
+          if (isMobileMapViewport()) {
+            map.closePopup();
+          }
+          onSelectRef.current(place.id);
+        })
+        .on("dblclick", (event) => {
+          L.DomEvent.stopPropagation(event);
+          onSelectRef.current(place.id);
+          const nextZoom = Math.min(18, Math.max(map.getZoom() + 2, 16));
+          map.flyTo([place.latitude, place.longitude], nextZoom, { duration: 0.45 });
+        });
 
       if (isActive) {
         marker.setZIndexOffset(1000);
@@ -247,6 +254,7 @@ export function FoodMap({
       maxZoom: 19,
       zoomControl: false,
       scrollWheelZoom: true,
+      doubleClickZoom: true,
     });
 
     const clusterGroup = L.markerClusterGroup({
