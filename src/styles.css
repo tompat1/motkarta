@@ -18860,9 +18860,11 @@ footer {
   .editorial-desktop-nav-note { color: #8a8780; display: flex; flex-direction: column; font: 13px/1.35 var(--font-body); margin: 0; text-align: left; }
   .editorial-desktop-nav-note strong { font-weight: 500; }
 
-  .editorial-desktop-home { display: grid; grid-template-columns: minmax(500px,46%) 1fr; min-height: 610px; overflow: hidden; position: relative; }
-  .editorial-hero-media { background: var(--editorial-hero-image, url('/motkarta-stockholm-editorial-hero.png')) center / cover no-repeat; grid-column: 1/-1; grid-row: 1; min-height: 610px; }
+  .editorial-desktop-home { display: grid; grid-template-columns: minmax(500px,46%) 1fr; min-height: 610px; overflow: visible; position: relative; z-index: 20; }
+  .editorial-desktop-home:focus-within { z-index: 1200; }
+  .editorial-hero-media { background: var(--editorial-hero-image, url('/motkarta-stockholm-editorial-hero.png')) center / cover no-repeat; grid-column: 1/-1; grid-row: 1; min-height: 610px; overflow: hidden; }
   .editorial-hero-copy { align-self: stretch; background: linear-gradient(90deg,rgba(250,249,245,.99) 0%,rgba(250,249,245,.98) 70%,rgba(250,249,245,.62) 90%,transparent 100%); display: flex; flex-direction: column; grid-column: 1; grid-row: 1; justify-content: center; padding: 54px 4vw; position: relative; z-index: 2; }
+  .editorial-hero-copy:focus-within { z-index: 1200; }
   .editorial-kicker { align-items: center; color: #34312d; display: flex; font: 650 11px var(--font-mono); gap: 12px; letter-spacing: .12em; margin: 0 0 22px; text-transform: uppercase; }
   .editorial-kicker > span { background: var(--editorial-red); height: 9px; width: 9px; }
   .editorial-hero-copy h1, .editorial-feature-copy h2 { font-family: Georgia,'Times New Roman',serif; font-size: clamp(58px,5.2vw,88px); font-weight: 500; letter-spacing: 0; line-height: .94; margin: 0; text-transform: none; }
