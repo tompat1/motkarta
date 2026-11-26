@@ -323,5 +323,22 @@ export function getPlaceVerifiedSources(
     });
   }
 
+  // 17. Stockholm City Break (New Stockholm restaurant openings)
+  if (hasAny("stockholm city break", "stockholmcitybreak")) {
+    sources.push({
+      id: "stockholm-city-break",
+      name: "Stockholm City Break",
+      label: "Stockholm City Break",
+      shortLabel: "City Break · Nytt",
+      iconType: "sparkle",
+      descriptionSv: "Nyöppnad Stockholmskrog bevakad av Stockholm City Break (upptäckts- och färskhetskälla för nya ställen)",
+      descriptionEn: "Newly opened Stockholm venue covered by Stockholm City Break (discovery & freshness lead for new openings)",
+      url: "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+      color: "#0f766e",
+      bgColor: "#ccfbf1",
+      borderColor: "#99f6e4",
+    });
+  }
+
   return sources;
 }

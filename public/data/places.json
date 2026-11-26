@@ -195313,7 +195313,10 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Restaurant",
-        "Website"
+        "Website",
+        "Stockholm City Break",
+        "New opening",
+        "Nyöppnat"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -195368,7 +195371,7 @@
       "longitude": 18.0694375,
       "x": 63.89,
       "y": 48.85,
-      "address": "Central Stockholm, Stockholm",
+      "address": "Birger Jarlsgatan 32A, Östermalm",
       "osmIdentity": "node:2496655891",
       "idNamespace": "public",
       "website": "https://www.lechenegra.com/",
@@ -195402,9 +195405,20 @@
           "id": "1366697086:website:address",
           "field": "address",
           "value": "Engelbrektsgatan 32A, Stockholm"
+        },
+        {
+          "placeId": 1366697086,
+          "source": "Stockholm City Break",
+          "url": "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T22:30:00Z",
+          "id": "1366697086:stockholmcitybreak:opening",
+          "field": "category",
+          "value": "Stockholm City Break — New Opening 2026"
         }
       ],
-      "priceSEK": "$$$"
+      "priceSEK": "$$$",
+      "openingHours": "Mo-Th 11:30-23:00; Fr 11:30-01:00; Sa 17:00-01:00"
     },
     {
       "id": 1417309794,
@@ -365317,7 +365331,10 @@
         "Opening hours",
         "Restaurant",
         "Website",
-        "Western"
+        "Western",
+        "Stockholm City Break",
+        "New opening",
+        "Nyöppnat"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -365400,8 +365417,19 @@
           "id": "2631381536:osm:website",
           "field": "tags",
           "value": "Website: http://restaurangslussporten.se"
+        },
+        {
+          "placeId": 2631381536,
+          "source": "Stockholm City Break",
+          "url": "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T22:30:00Z",
+          "id": "2631381536:stockholmcitybreak:opening",
+          "field": "category",
+          "value": "Stockholm City Break — New Opening 2026"
         }
-      ]
+      ],
+      "priceSEK": "190-300 kr"
     },
     {
       "id": 4034295215,
@@ -383567,7 +383595,429 @@
       ],
       "sourceFacts": [],
       "priceSEK": "$$"
+    },
+    {
+      "id": 3830178114,
+      "idNamespace": "public",
+      "name": "Emberlin",
+      "kind": "Restaurant",
+      "cuisine": "grill;scandinavian",
+      "area": "Norrmalm",
+      "address": "Stureplan 8, Norrmalm",
+      "latitude": 59.33647,
+      "longitude": 18.0728,
+      "x": 59.33647,
+      "y": 18.0728,
+      "note": "Frantzén Groups öppna eld-grill på Stureplan 8 (öppnade 22 oktober 2026) med ostron, crudo, hängmörat kött, hummer och hel fisk över öppen eld.",
+      "tags": [
+        "New opening",
+        "Nyöppnat",
+        "Grill",
+        "Scandinavian",
+        "Cocktail bar",
+        "Norrmalm",
+        "Stockholm City Break"
+      ],
+      "evidenceLabel": "New Stockholm opening covered by Stockholm City Break",
+      "evidence": {
+        "specialistGuide": 0.3,
+        "independentEditorial": 0.3,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.3
+      },
+      "engagement": {
+        "views": 140,
+        "saves": 16,
+        "shares": 5,
+        "searches": 40
+      },
+      "discoveryReasons": [
+        "Nyöppnad Stockholmskrog 2026 (upptäckts- och färskhetskälla via Stockholm City Break)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3830178114,
+          "source": "Stockholm City Break",
+          "url": "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T22:30:00Z",
+          "id": "3830178114:stockholmcitybreak:opening",
+          "field": "category",
+          "value": "Stockholm City Break — New Opening 2026"
+        }
+      ],
+      "openingHours": "Mo-Tu 11:30-00:00; We-Sa 11:30-02:00; Su 12:00-00:00"
+    },
+    {
+      "id": 3829547787,
+      "idNamespace": "public",
+      "name": "Bibon",
+      "kind": "Restaurant",
+      "cuisine": "french;bistro",
+      "area": "Norrmalm",
+      "address": "Biblioteksgatan 6, Norrmalm",
+      "latitude": 59.33409,
+      "longitude": 18.07296,
+      "x": 59.33409,
+      "y": 18.07296,
+      "note": "Fransk-New York-bistro på Biblioteksgatan 6 nära Stureplan, känd för Toast Bibon, råbiff samt torsdags- och söndagsmenyer.",
+      "tags": [
+        "New opening",
+        "Nyöppnat",
+        "French",
+        "Bistro",
+        "Norrmalm",
+        "Stockholm City Break"
+      ],
+      "evidenceLabel": "New Stockholm opening covered by Stockholm City Break",
+      "evidence": {
+        "specialistGuide": 0.3,
+        "independentEditorial": 0.3,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.3
+      },
+      "engagement": {
+        "views": 140,
+        "saves": 16,
+        "shares": 5,
+        "searches": 40
+      },
+      "discoveryReasons": [
+        "Nyöppnad Stockholmskrog 2026 (upptäckts- och färskhetskälla via Stockholm City Break)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829547787,
+          "source": "Stockholm City Break",
+          "url": "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T22:30:00Z",
+          "id": "3829547787:stockholmcitybreak:opening",
+          "field": "category",
+          "value": "Stockholm City Break — New Opening 2026"
+        }
+      ],
+      "openingHours": "Mo-Th 11:30-23:00; Fr-Sa 11:30-01:00; Su 13:00-22:00",
+      "priceSEK": "395 kr"
+    },
+    {
+      "id": 3829588439,
+      "idNamespace": "public",
+      "name": "G.A.T.",
+      "kind": "Restaurant",
+      "cuisine": "french;american;bistro;cocktails",
+      "area": "Norrmalm",
+      "address": "Gustav Adolfs Torg 16, Norrmalm",
+      "latitude": 59.32998,
+      "longitude": 18.06951,
+      "x": 59.32998,
+      "y": 18.06951,
+      "note": "Fransk-amerikansk bistro och cocktailbar i Davidsonska huset vid Gustav Adolfs Torg (öppnade januari 2026).",
+      "tags": [
+        "New opening",
+        "Nyöppnat",
+        "French",
+        "Bistro",
+        "Cocktail bar",
+        "Norrmalm",
+        "Stockholm City Break"
+      ],
+      "evidenceLabel": "New Stockholm opening covered by Stockholm City Break",
+      "evidence": {
+        "specialistGuide": 0.3,
+        "independentEditorial": 0.3,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.3
+      },
+      "engagement": {
+        "views": 140,
+        "saves": 16,
+        "shares": 5,
+        "searches": 40
+      },
+      "discoveryReasons": [
+        "Nyöppnad Stockholmskrog 2026 (upptäckts- och färskhetskälla via Stockholm City Break)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829588439,
+          "source": "Stockholm City Break",
+          "url": "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T22:30:00Z",
+          "id": "3829588439:stockholmcitybreak:opening",
+          "field": "category",
+          "value": "Stockholm City Break — New Opening 2026"
+        }
+      ],
+      "openingHours": "Mo-Fr 11:30-14:30, 17:00-23:00; Sa 12:00-15:30, 17:00-23:00; Su 17:00-23:00",
+      "priceSEK": "275-425 kr"
+    },
+    {
+      "id": 3829571000,
+      "idNamespace": "public",
+      "name": "Mr. Bronck",
+      "kind": "Restaurant",
+      "cuisine": "scandinavian;seafood;grill",
+      "area": "Norrmalm",
+      "address": "Vasagatan 2, Norrmalm",
+      "latitude": 59.32906,
+      "longitude": 18.06102,
+      "x": 59.32906,
+      "y": 18.06102,
+      "note": "Skandinavisk raw bar, skaldjur och grillklassiker på Vasagatan 2 signerad Pontus Wellén, med bar intill på Sally's.",
+      "tags": [
+        "New opening",
+        "Nyöppnat",
+        "Scandinavian",
+        "Seafood",
+        "Grill",
+        "Norrmalm",
+        "Stockholm City Break"
+      ],
+      "evidenceLabel": "New Stockholm opening covered by Stockholm City Break",
+      "evidence": {
+        "specialistGuide": 0.3,
+        "independentEditorial": 0.3,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.3
+      },
+      "engagement": {
+        "views": 140,
+        "saves": 16,
+        "shares": 5,
+        "searches": 40
+      },
+      "discoveryReasons": [
+        "Nyöppnad Stockholmskrog 2026 (upptäckts- och färskhetskälla via Stockholm City Break)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829571000,
+          "source": "Stockholm City Break",
+          "url": "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T22:30:00Z",
+          "id": "3829571000:stockholmcitybreak:opening",
+          "field": "category",
+          "value": "Stockholm City Break — New Opening 2026"
+        }
+      ],
+      "openingHours": "Mo-Fr 11:30-14:30, 17:00-00:00; Sa 17:00-01:00; Su 17:00-00:00"
+    },
+    {
+      "id": 3830150793,
+      "idNamespace": "public",
+      "name": "Villa Valentina",
+      "kind": "Restaurant",
+      "cuisine": "spanish;tapas",
+      "area": "Södermalm",
+      "address": "Slussbrogatan 10, Södermalm",
+      "latitude": 59.32033,
+      "longitude": 18.07259,
+      "x": 59.32033,
+      "y": 18.07259,
+      "note": "Glaspaviljong på Mälarterrassen vid Slussen (öppnade maj 2026) med andalusiska och medelhavsinspirerade smårätter och baskisk cheesecake.",
+      "tags": [
+        "New opening",
+        "Nyöppnat",
+        "Spanish",
+        "Tapas",
+        "Södermalm",
+        "Stockholm City Break"
+      ],
+      "evidenceLabel": "New Stockholm opening covered by Stockholm City Break",
+      "evidence": {
+        "specialistGuide": 0.3,
+        "independentEditorial": 0.3,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.3
+      },
+      "engagement": {
+        "views": 140,
+        "saves": 16,
+        "shares": 5,
+        "searches": 40
+      },
+      "discoveryReasons": [
+        "Nyöppnad Stockholmskrog 2026 (upptäckts- och färskhetskälla via Stockholm City Break)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3830150793,
+          "source": "Stockholm City Break",
+          "url": "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T22:30:00Z",
+          "id": "3830150793:stockholmcitybreak:opening",
+          "field": "category",
+          "value": "Stockholm City Break — New Opening 2026"
+        }
+      ],
+      "openingHours": "Mo-Th 11:30-23:00; Fr-Sa 11:30-01:00; Su 11:30-23:00"
+    },
+    {
+      "id": 3829728059,
+      "idNamespace": "public",
+      "name": "NENI Stockholm",
+      "kind": "Restaurant",
+      "cuisine": "middle eastern",
+      "area": "Kungsholmen",
+      "address": "Drottningholmsvägen 22, Kungsholmen",
+      "latitude": 59.3323,
+      "longitude": 18.02981,
+      "x": 59.3323,
+      "y": 18.02981,
+      "note": "Takrestaurang på åttonde våningen ovanför Fridhemsplan med modernt östra Medelhavet och levantinska smårätter att dela.",
+      "tags": [
+        "New opening",
+        "Nyöppnat",
+        "Middle Eastern",
+        "Rooftop",
+        "Kungsholmen",
+        "Stockholm City Break"
+      ],
+      "evidenceLabel": "New Stockholm opening covered by Stockholm City Break",
+      "evidence": {
+        "specialistGuide": 0.3,
+        "independentEditorial": 0.3,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.3
+      },
+      "engagement": {
+        "views": 140,
+        "saves": 16,
+        "shares": 5,
+        "searches": 40
+      },
+      "discoveryReasons": [
+        "Nyöppnad Stockholmskrog 2026 (upptäckts- och färskhetskälla via Stockholm City Break)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829728059,
+          "source": "Stockholm City Break",
+          "url": "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T22:30:00Z",
+          "id": "3829728059:stockholmcitybreak:opening",
+          "field": "category",
+          "value": "Stockholm City Break — New Opening 2026"
+        }
+      ],
+      "openingHours": "Mo-Fr 11:30-14:30, 17:00-23:00; Sa 17:00-23:00"
+    },
+    {
+      "id": 3830244103,
+      "idNamespace": "public",
+      "name": "Söderhallarna",
+      "kind": "Restaurant",
+      "cuisine": "regional",
+      "area": "Södermalm",
+      "address": "Medborgarplatsen 3, Södermalm",
+      "latitude": 59.31448,
+      "longitude": 18.0712,
+      "x": 59.31448,
+      "y": 18.0712,
+      "note": "Nyöppnad saluhall vid Medborgarplatsen (oktober 2026) med Kajsas Fisk, Köttkompaniet, Affinage, SIN Ramen och Zazha.",
+      "tags": [
+        "New opening",
+        "Nyöppnat",
+        "Food hall",
+        "Saluhall",
+        "Södermalm",
+        "Stockholm City Break"
+      ],
+      "evidenceLabel": "New Stockholm opening covered by Stockholm City Break",
+      "evidence": {
+        "specialistGuide": 0.3,
+        "independentEditorial": 0.3,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.3
+      },
+      "engagement": {
+        "views": 140,
+        "saves": 16,
+        "shares": 5,
+        "searches": 40
+      },
+      "discoveryReasons": [
+        "Nyöppnad Stockholmskrog 2026 (upptäckts- och färskhetskälla via Stockholm City Break)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3830244103,
+          "source": "Stockholm City Break",
+          "url": "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T22:30:00Z",
+          "id": "3830244103:stockholmcitybreak:opening",
+          "field": "category",
+          "value": "Stockholm City Break — New Opening 2026"
+        }
+      ],
+      "openingHours": "Mo-Th 10:00-22:00; Fr-Sa 10:00-00:00; Su 10:00-22:00"
+    },
+    {
+      "id": 3830111128,
+      "idNamespace": "public",
+      "name": "Verandan på Skansen",
+      "kind": "Restaurant",
+      "cuisine": "swedish",
+      "area": "Djurgården",
+      "address": "Djurgårdsslätten 49-51, Djurgården",
+      "latitude": 59.32662,
+      "longitude": 18.10528,
+      "x": 59.32662,
+      "y": 18.10528,
+      "note": "Öppnade september 2026 inne på Skansen vid Sollidenscenen med helgbrunch på svenskt vilt, fisk och råvaror från svenska producenter.",
+      "tags": [
+        "New opening",
+        "Nyöppnat",
+        "Swedish",
+        "Brunch",
+        "Djurgården",
+        "Stockholm City Break"
+      ],
+      "evidenceLabel": "New Stockholm opening covered by Stockholm City Break",
+      "evidence": {
+        "specialistGuide": 0.3,
+        "independentEditorial": 0.3,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.3
+      },
+      "engagement": {
+        "views": 140,
+        "saves": 16,
+        "shares": 5,
+        "searches": 40
+      },
+      "discoveryReasons": [
+        "Nyöppnad Stockholmskrog 2026 (upptäckts- och färskhetskälla via Stockholm City Break)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3830111128,
+          "source": "Stockholm City Break",
+          "url": "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T22:30:00Z",
+          "id": "3830111128:stockholmcitybreak:opening",
+          "field": "category",
+          "value": "Stockholm City Break — New Opening 2026"
+        }
+      ],
+      "openingHours": "Sa-Su 10:30-17:00",
+      "priceSEK": "435 kr"
     }
   ],
-  "totalPlaces": 3186
+  "totalPlaces": 3194
 }

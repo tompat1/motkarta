@@ -16,6 +16,7 @@ from motkarta.catalog_exclusions import is_excluded_catalog_name  # noqa: E402
 
 PLACES_FILE = ROOT / "public" / "data" / "places.json"
 THATSUP_GT_FILE = ROOT / "data" / "thatsup_ground_truth.json"
+STOCKHOLM_CITY_BREAK_GT_FILE = ROOT / "data" / "stockholm_city_break_ground_truth.json"
 
 THATSUP_NAME_ALIASES = {
     "akkurat": ["restaurantakkurat"],
@@ -210,6 +211,114 @@ def enrich_thatsup_places(places: list[dict]) -> tuple[int, int]:
                     "url": source_url,
                     "verification": "listed",
                     "capturedAt": "2026-11-26T18:16:00Z",
+                    "id": fact_id,
+                    "field": "category",
+                    "value": category_label,
+                })
+            matched_count += 1
+
+    return matched_count, added_count
+
+
+def stable_city_break_id(name_key: str) -> int:
+    digest = int(hashlib.sha256(f"stockholm-city-break:{name_key}".encode()).hexdigest()[:6], 16)
+    return 3829400000 + (digest % 900000)
+
+
+def enrich_stockholm_city_break_places(places: list[dict]) -> tuple[int, int]:
+    """Enrich existing venues and insert newly opened Stockholm venues from Stockholm City Break."""
+    if not STOCKHOLM_CITY_BREAK_GT_FILE.exists():
+        return 0, 0
+
+    with open(STOCKHOLM_CITY_BREAK_GT_FILE, encoding="utf-8") as f:
+        gt_items = json.load(f)
+
+    matched_count = 0
+    added_count = 0
+
+    for gt in gt_items:
+        name = str(gt.get("name") or "").strip()
+        if not name or is_excluded_catalog_name(name):
+            continue
+
+        gn = norm_ascii(name)
+        matched_places = [p for p in places if norm_ascii(p.get("name")) == gn]
+        gt_tags = [t for t in (gt.get("tags") or []) if isinstance(t, str) and t.strip()]
+        source_url = gt.get("url") or "https://www.stockholmcitybreak.com/"
+        category_label = gt.get("category") or "Stockholm City Break — New Opening 2026"
+
+        if not matched_places and gt.get("latitude") is not None and gt.get("longitude") is not None:
+            lat = float(gt["latitude"])
+            lng = float(gt["longitude"])
+            area = str(gt.get("area") or "Stockholm").strip()
+            address = str(gt.get("address") or f"{area}, Stockholm").strip()
+            new_tags: list[str] = []
+            for t in [*gt_tags, area, "Stockholm City Break"]:
+                if t and t not in new_tags:
+                    new_tags.append(t)
+
+            pid = stable_city_break_id(gn)
+            while any(p.get("id") == pid for p in places):
+                pid += 1
+
+            new_place: dict = {
+                "id": pid,
+                "idNamespace": "public",
+                "name": name,
+                "kind": "Restaurant",
+                "cuisine": str(gt.get("cuisine") or ""),
+                "area": area,
+                "address": address,
+                "latitude": lat,
+                "longitude": lng,
+                "x": lat,
+                "y": lng,
+                "note": gt.get("note") or "Nyöppnad restaurang i Stockholm (bevakad av Stockholm City Break).",
+                "tags": new_tags,
+                "evidenceLabel": "New Stockholm opening covered by Stockholm City Break",
+                "evidence": {
+                    "specialistGuide": 0.3,
+                    "independentEditorial": 0.3,
+                    "verifiedUserRating": 0.0,
+                    "repeatVisits": 0.15,
+                    "recentReviews": 0.3,
+                },
+                "engagement": {"views": 140, "saves": 16, "shares": 5, "searches": 40},
+                "discoveryReasons": [
+                    "Nyöppnad Stockholmskrog 2026 (upptäckts- och färskhetskälla via Stockholm City Break)"
+                ],
+                "sourceFacts": [],
+            }
+            if gt.get("openingHours"):
+                new_place["openingHours"] = gt["openingHours"]
+            if gt.get("priceSEK"):
+                new_place["priceSEK"] = gt["priceSEK"]
+            places.append(new_place)
+            matched_places = [new_place]
+            added_count += 1
+
+        for p in matched_places:
+            tags = p.setdefault("tags", [])
+            for t in ["Stockholm City Break", "New opening", "Nyöppnat"]:
+                if t not in tags:
+                    tags.append(t)
+            if not p.get("openingHours") and gt.get("openingHours"):
+                p["openingHours"] = gt["openingHours"]
+            if not p.get("priceSEK") and gt.get("priceSEK"):
+                p["priceSEK"] = gt["priceSEK"]
+            if gt.get("address") and str(p.get("address") or "").lower().startswith("central stockholm"):
+                p["address"] = gt["address"]
+
+            s_facts = p.setdefault("sourceFacts", [])
+            pid = p["id"]
+            fact_id = f"{pid}:stockholmcitybreak:opening"
+            if not any(f.get("id") == fact_id for f in s_facts):
+                s_facts.append({
+                    "placeId": pid,
+                    "source": "Stockholm City Break",
+                    "url": source_url,
+                    "verification": "listed",
+                    "capturedAt": "2026-11-26T22:30:00Z",
                     "id": fact_id,
                     "field": "category",
                     "value": category_label,
@@ -584,6 +693,11 @@ def main() -> None:
     thatsup_enriched, thatsup_added = enrich_thatsup_places(places)
     enriched_counts["Thatsup Stockholm"] = thatsup_enriched
     enriched_counts["Thatsup Stockholm (added)"] = thatsup_added
+
+    # 5. Enrich & insert Stockholm City Break new openings (neutral discovery/freshness policy)
+    scb_enriched, scb_added = enrich_stockholm_city_break_places(places)
+    enriched_counts["Stockholm City Break"] = scb_enriched
+    enriched_counts["Stockholm City Break (added)"] = scb_added
 
     if isinstance(data, dict):
         data["totalPlaces"] = len(places)

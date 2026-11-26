@@ -4,8 +4,8 @@ from scripts.verify_curated_sources import verify_all_curated_sources
 def test_verify_all_curated_sources():
     summary = verify_all_curated_sources(quiet=True)
     assert summary["status"] == "PASS"
-    assert summary["total_sources"] == 17
-    assert summary["sources_passed"] == 17
+    assert summary["total_sources"] == 18
+    assert summary["sources_passed"] == 18
 
     sources_by_id = {s["id"]: s for s in summary["sources"]}
 

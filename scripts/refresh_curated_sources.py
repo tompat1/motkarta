@@ -161,6 +161,13 @@ CURATED_SOURCE_SPECS: tuple[CuratedSourceSpec, ...] = (
         cadence="monthly",
         mode="editorial-check",
     ),
+    CuratedSourceSpec(
+        id="stockholm-city-break",
+        name="Stockholm City Break (New Openings in Stockholm)",
+        url="https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+        cadence="monthly",
+        mode="public-web",
+    ),
 )
 
 # Map verify_curated_sources.py report IDs -> canonical UI/D1 curated_sources IDs

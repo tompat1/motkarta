@@ -223,6 +223,20 @@ export const DEFAULT_CURATED_SOURCES: CuratedSource[] = [
     coveragePercent: 97.8,
     lastScrapedAt: "2026-11-26T18:35:00Z",
   },
+  {
+    id: "stockholm-city-break",
+    name: "Stockholm City Break (New Openings in Stockholm)",
+    url: "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+    type: "Travel & Dining Guide",
+    description:
+      "Redaktionell bevakning av nyöppnade restauranger, krogar och saluhallar i Stockholm med adresser, öppettider och prisuppgifter. Används som upptäckts- och färskhetskälla för nyöppningar.",
+    license: "Redaktionell stadsguide för nyöppningar (stockholmcitybreak.com)",
+    verifiedCount: 10,
+    scrapedPoints: 10,
+    importedCount: 10,
+    coveragePercent: 100.0,
+    lastScrapedAt: "2026-11-26T22:30:00Z",
+  },
 ];
 
 export const DEFAULT_CONCIERGE_PROMPTS = [

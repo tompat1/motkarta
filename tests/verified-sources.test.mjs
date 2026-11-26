@@ -13,6 +13,7 @@ test("getPlaceVerifiedSources detects all curated and reference sources across t
       { source: "Vagabond Resemagasin" },
       { source: "Stora Restaurangpriset" },
       { source: "Thatsup Stockholm" },
+      { source: "Stockholm City Break" },
     ],
     kind: "Specialty coffee",
   };
@@ -33,6 +34,7 @@ test("getPlaceVerifiedSources detects all curated and reference sources across t
     "spotted-by-locals",
     "visit-stockholm",
     "thatsup",
+    "stockholm-city-break",
   ]) {
     assert.ok(ids.includes(expected), `Missing curated source badge: ${expected}`);
   }
@@ -55,6 +57,7 @@ test("getPlaceVerifiedSources matches curated sources from sourceName and eviden
   assert.ok(matchedIds.has("white-guide"), "Expected White Guide badges in catalog");
   assert.ok(matchedIds.has("burgerdudes"), "Expected Burgerdudes badges in catalog");
   assert.ok(matchedIds.has("thatsup"), "Expected Thatsup badges in catalog");
+  assert.ok(matchedIds.has("stockholm-city-break"), "Expected Stockholm City Break badges in catalog");
 
   const thatsupPubs = catalog.places.filter(
     (p) =>

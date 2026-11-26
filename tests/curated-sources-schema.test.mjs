@@ -4,8 +4,8 @@ import fs from "node:fs";
 import { DEFAULT_CURATED_SOURCES } from "../lib/db-sources-prompts.ts";
 import { getPlaceVerifiedSources } from "../src/app/verified-sources.ts";
 
-test("DEFAULT_CURATED_SOURCES contains all 17 audited curated sources", () => {
-  assert.equal(DEFAULT_CURATED_SOURCES.length, 17);
+test("DEFAULT_CURATED_SOURCES contains all 18 audited curated sources", () => {
+  assert.equal(DEFAULT_CURATED_SOURCES.length, 18);
 
   const sourceIds = DEFAULT_CURATED_SOURCES.map((s) => s.id);
   assert.ok(sourceIds.includes("husa-guide"));
@@ -25,6 +25,7 @@ test("DEFAULT_CURATED_SOURCES contains all 17 audited curated sources", () => {
   assert.ok(sourceIds.includes("stora-restaurangpriset"));
   assert.ok(sourceIds.includes("sveriges-basta"));
   assert.ok(sourceIds.includes("thatsup"));
+  assert.ok(sourceIds.includes("stockholm-city-break"));
 
   for (const src of DEFAULT_CURATED_SOURCES) {
     assert.ok(src.id, "Source must have id");

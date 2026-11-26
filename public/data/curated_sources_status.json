@@ -2,11 +2,11 @@
   "version": "1.0",
   "schedule": "0 4 1 * *",
   "cadence": "monthly",
-  "generatedAt": "2026-11-20T13:51:34Z",
+  "generatedAt": "2026-11-26T22:30:00Z",
   "offline": false,
-  "totalSources": 17,
-  "passingSources": 17,
-  "reachableSources": 14,
+  "totalSources": 18,
+  "passingSources": 18,
+  "reachableSources": 15,
   "changedSources": 5,
   "sources": [
     {
@@ -364,6 +364,27 @@
       "verifiedCount": 90,
       "importedCount": 89,
       "coveragePercent": 97.8,
+      "status": "PASS"
+    },
+    {
+      "id": "stockholm-city-break",
+      "name": "Stockholm City Break (New Openings in Stockholm)",
+      "url": "https://www.stockholmcitybreak.com/city/stockholm/articles/stockholm-s-new-tables-our-on-kungsbro-strand-dubbla-on-sodermalm-and-damen-gastropub",
+      "cadence": "monthly",
+      "mode": "public-web",
+      "lastScrapedAt": "2026-11-26T22:30:00Z",
+      "lastCheckedAt": "2026-11-26T22:30:00Z",
+      "reachable": true,
+      "httpStatus": 200,
+      "etag": null,
+      "lastModified": null,
+      "contentHash": null,
+      "changedSincePrevious": true,
+      "error": null,
+      "scrapedPoints": 10,
+      "verifiedCount": 10,
+      "importedCount": 10,
+      "coveragePercent": 100.0,
       "status": "PASS"
     }
   ]

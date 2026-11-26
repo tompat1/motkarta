@@ -69,6 +69,7 @@ const allowedSourceNames = new Set([
   'european coffee trip',
   'thatsup',
   'thatsup stockholm',
+  'stockholm city break',
 ]);
 const forbiddenText = /Google Places|google_metadata|rating-only|review-only|demo fixture/i;
 const forbiddenFields = [
