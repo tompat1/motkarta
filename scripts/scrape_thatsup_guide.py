@@ -54,6 +54,8 @@ AREA_NORMALIZATION: dict[str, str] = {
     "frihamnen": "Östermalm",
     "gärdet": "Östermalm",
     "hökarängen": "Söderort",
+    "johanneshov": "Söderort",
+    "slakthusområdet": "Söderort",
     "årsta": "Söderort",
     "hägersten-liljeholmen": "Söderort",
     "liljeholmen": "Söderort",
@@ -67,6 +69,46 @@ AREA_NORMALIZATION: dict[str, str] = {
     "odenplan": "Vasastan",
     "st eriksplan": "Vasastan",
     "sankt eriksplan": "Vasastan",
+}
+
+
+CUISINE_KEYWORD_MAP: dict[str, str] = {
+    "italiensk": "italian",
+    "fransk": "french",
+    "spansk": "spanish",
+    "tapas": "tapas",
+    "japansk": "japanese",
+    "sushi": "sushi",
+    "ramen": "ramen",
+    "kinesisk": "chinese",
+    "koreansk": "korean",
+    "vietnamesisk": "vietnamese",
+    "thailändsk": "thai",
+    "indisk": "indian",
+    "mexikansk": "mexican",
+    "tacos": "mexican",
+    "grekisk": "greek",
+    "mellanöstern": "middle eastern",
+    "libanesisk": "lebanese",
+    "svensk": "swedish",
+    "husmanskost": "husman",
+    "nordisk": "scandinavian",
+    "skandinavisk": "scandinavian",
+    "bistro": "bistro",
+    "pizza": "pizza",
+    "burgare": "burger",
+    "hamburgare": "burger",
+    "fisk": "seafood",
+    "skaldjur": "seafood",
+    "grill": "grill",
+    "bbq": "grill",
+    "amerikansk": "american",
+    "asiatisk": "asian",
+    "tysk": "german",
+    "belgisk": "belgian",
+    "polsk": "polish",
+    "brittisk": "pub",
+    "pubmat": "pub",
 }
 
 
@@ -258,6 +300,13 @@ def parse_place_page_html(raw_html: str) -> dict[str, Any]:
                         for t in ("Pub", "Beer", "Craft Beer", "Ölbar"):
                             if t not in inferred_tags:
                                 inferred_tags.append(t)
+                if "vilken typ av mat" in q_name or "mat serveras" in q_name:
+                    inferred_cuisines: list[str] = list(details.get("inferredCuisines") or [])
+                    for kw, canonical in CUISINE_KEYWORD_MAP.items():
+                        if kw in ans_text and canonical not in inferred_cuisines:
+                            inferred_cuisines.append(canonical)
+                    if inferred_cuisines:
+                        details["inferredCuisines"] = inferred_cuisines
             if inferred_tags:
                 details["inferredTags"] = inferred_tags
 
@@ -298,6 +347,7 @@ def merge_ground_truth(
                 "thatsupPlaceUrl",
                 "website",
                 "address",
+                "cuisine",
                 "latitude",
                 "longitude",
                 "priceRange",
@@ -364,6 +414,8 @@ def main() -> int:
                             if t not in cur_tags:
                                 cur_tags.append(t)
                         entry["tags"] = cur_tags
+                    elif k == "inferredCuisines" and isinstance(v, list):
+                        entry["cuisine"] = ";".join(v)
                     elif k != "streetAddress" and v not in (None, ""):
                         entry[k] = v
                 print(

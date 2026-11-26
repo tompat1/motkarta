@@ -217,11 +217,11 @@ export const DEFAULT_CURATED_SOURCES: CuratedSource[] = [
     description:
       "Namngiven redaktion, daterade stadsdels- och köksguider, nyöppningar och signerade redaktionsfavoriter. Används som upptäckts- och relevanskälla (noll vikt på guideordning/upprepning; betalda Premium-placeringar exkluderas och högt förtroende kräver separat oberoende belägg).",
     license: "Redaktionell stadsguide med kommersiell annonsmodell — upptäcktskälla (thatsup.se)",
-    verifiedCount: 90,
-    scrapedPoints: 89,
-    importedCount: 89,
-    coveragePercent: 97.8,
-    lastScrapedAt: "2026-11-26T18:35:00Z",
+    verifiedCount: 185,
+    scrapedPoints: 180,
+    importedCount: 180,
+    coveragePercent: 98.9,
+    lastScrapedAt: "2026-11-26T22:54:00Z",
   },
   {
     id: "stockholm-city-break",

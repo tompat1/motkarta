@@ -151,22 +151,25 @@
   {
     "name": "Einar",
     "area": "Vasastan",
-    "category": "Thatsup Ölbar & Pub",
-    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
     "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/einar-ol-matbar",
     "isFeaturedPartner": true,
     "tags": [
       "Pub",
       "Beer",
       "Craft Beer",
-      "Ölbar"
+      "Ölbar",
+      "New opening",
+      "Nyöppnat"
     ],
     "website": "https://www.xn--einarlochmatbar-dtb.se/",
-    "editorialExcerpt": "Denna nostalgiska kvartersbar hämtar inspiration från såväl Centraleuropas pubar som 50- och 60-talets svenska ölcaféer, och syr ihop det hela till en varm och hemtrevlig helhet. Einars ölutbud spänner brett och rymmer både traditionella och experimentella...",
+    "editorialExcerpt": "Nu har Rivettas tidigare lokal på Roslagsgatan fått centraleuropeiska ölpubsvibbar, med en meny full av langos, schnitzel, korv och kall öl. Det är Rivettas ägare, Sacha Smedervac och Michael Silfverberg, som har öppnat kvarterskrogen Einar och fyllt lokale...",
     "address": "Roslagsgatan 4, Vasastan",
     "latitude": 59.3447,
     "longitude": 18.0617,
-    "priceRange": "$$"
+    "priceRange": "$$",
+    "cuisine": "swedish;husman"
   },
   {
     "name": "Tritonia",
@@ -721,22 +724,25 @@
   {
     "name": "Hörnans Belgobar",
     "area": "Vasastan",
-    "category": "Thatsup Ölbar & Pub",
-    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
     "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/hornans-belgobar",
     "isFeaturedPartner": false,
     "tags": [
       "Pub",
       "Beer",
       "Craft Beer",
-      "Ölbar"
+      "Ölbar",
+      "New opening",
+      "Nyöppnat"
     ],
     "website": "https://www.belgobaren.se/hornan",
-    "editorialExcerpt": "Hörnans Belgobar är inget för den med beslutsångest, för här finns nämligen omkring 300 belgiska ölsorter att välja bland. Dessutom uppdateras öllistan jämt och ständigt med allt från älskade klassiker till brygder från småskaliga producenter och årgångsöl,...",
+    "editorialExcerpt": "Belgobaren får en ny restaurang som blir en förlängning med samma belgiska tema. Här kommer man bland annat att servera signaturrätten moules frites ackompanjerat av över 300 belgiska ölsorter.",
     "address": "Rådmansgatan 69, Vasastan",
     "latitude": 59.3391,
     "longitude": 18.0542,
-    "priceRange": "$$"
+    "priceRange": "$$",
+    "cuisine": "seafood;belgian"
   },
   {
     "name": "Soldaten Švejk",
@@ -894,16 +900,18 @@
   {
     "name": "Rex Bar",
     "area": "Kungsholmen",
-    "category": "Thatsup Bar",
-    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
     "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/rex-bar",
     "isFeaturedPartner": true,
     "tags": [
       "Bar",
       "Cocktail bar",
-      "Cocktails"
+      "Cocktails",
+      "New opening",
+      "Nyöppnat"
     ],
-    "website": "https://rex-bar.se",
+    "website": "https://neni-restaurant.se/",
     "editorialExcerpt": "Åtta våningar över Fridhemsplan tronar Rex Bar, en skybar med utsikt över Kungsholmens takåsar. Här är det framför allt cocktails som står i fokus, komponerade av de prisbelönta bartendrarna Vasilis Kyritsis och Nikos Bakoulis från baren Line i Aten. Cockta...",
     "address": "Drottningholmsvägen 22, Kungsholmen",
     "latitude": 59.3324,
@@ -1554,6 +1562,1724 @@
     "address": "Kommendörsgatan 7, Östermalm",
     "latitude": 59.3392,
     "longitude": 18.0773,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Jessie's Bar",
+    "area": "Östermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/jessies-bar",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://jessiesbar.se",
+    "editorialExcerpt": "Bara ett stenkast från Stureplan har Jessie's Bar slagit upp dörrarna. De beskriver sig som en skandinavisk bar med internationell pubmat i nordisk tappning – som Swedish Meatball Slider , Skagentaco och paj med älgkött – tillsammans med fatöl, cocktails oc...",
+    "address": "Brahegatan 3, Östermalm",
+    "latitude": 59.3372,
+    "longitude": 18.0754,
+    "cuisine": "pub"
+  },
+  {
+    "name": "Restaurang Dubbla",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/restaurang-dubbla",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://dubbla.se/hem",
+    "editorialExcerpt": "Mästerkock-duon som sedan tidigare driver mackhaket Dubbla Deli i Hötorgshallen dubblar upp och öppnar krog på Södermalm. Precis som på delin finns maffiga mackor att tillgå, men man utökar också menyn med annan italiensk-amerikansk mat. Dessutom finns lång...",
+    "address": "Bondegatan 1, Södermalm",
+    "latitude": 59.3126,
+    "longitude": 18.0754,
+    "priceRange": "$$-$$$",
+    "cuisine": "italian;american"
+  },
+  {
+    "name": "Bar Börlin",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/bar-borlin",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://apelbergkrogar.com/",
+    "editorialExcerpt": "Bar Börlin har slagit upp dörrarna på Drottninggatan 17 mitt i city, och här är det just baren som står i centrum. Namnet är en hyllning till Jean Börlin, en av Sveriges stora dansare och koreografer, som tillsammans med Rolf de Maré tog den svenska balette...",
+    "address": "Drottninggatan 17, Norrmalm",
+    "latitude": 59.3298,
+    "longitude": 18.0654
+  },
+  {
+    "name": "Kafé Søder",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/kafe-soder",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://kafesoder.com/",
+    "editorialExcerpt": "20-Gruppen öppnar Kafé Søder i nyrenoverade Söderhallarna . Det klassiskt inspirerade ölcaféet beskrivs som en kärleksaffär mellan Sverige och Danmark, med inspiration från Stockholms gamla ölcaféer och Köpenhamns levande ölkultur. På menyn möts svenska kla...",
+    "address": "Söderhallarna, Södermalm",
+    "latitude": 59.3145,
+    "longitude": 18.0708,
+    "priceRange": "$$$",
+    "cuisine": "swedish;husman;scandinavian"
+  },
+  {
+    "name": "Zazha",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/zazha",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://zazha.se/",
+    "editorialExcerpt": "Zazha öppnar i Söderhallarna med en avslappnad asiatisk bistro och bar, där Asian comfort food står i centrum. På menyn väntar generösa, ramen- och pokéinspirerade skålar med asiatiska smaker, tillsammans med öl och vin. Restaurangen håller öppet från lunch...",
+    "address": "Söderhallarna, Södermalm",
+    "latitude": 59.3145,
+    "longitude": 18.0708,
+    "cuisine": "asian"
+  },
+  {
+    "name": "Bouillon Cocotte",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/bouillon-cocotte",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.bouilloncocotte.se/",
+    "editorialExcerpt": "Bouillon Cocotte öppnar i Söderhallarna med sitt populära lågpriskoncept inspirerat av Paris klassiska bouillon-restauranger. Här serveras okomplicerade franska rätter som moules frites, råbiff och crème brûlée i livlig bistromiljö, med ambitionen att hålla...",
+    "address": "Söderhallarna, Södermalm",
+    "latitude": 59.3145,
+    "longitude": 18.0708,
+    "cuisine": "french"
+  },
+  {
+    "name": "Emberlin",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/emberlin",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.emberlinstockholm.com/",
+    "editorialExcerpt": "Emberlin är Björn Frantzéns tredje restaurang i Stockholm, och den ligger på Stureplan 8. Här har Frantzéngruppen skapat en modern grillrestaurang där matlagningen sker över öppen eld. På à la carte-menyn hittas allt från kött och fisk till skaldjur och grö...",
+    "address": "Stureplan 8, Norrmalm",
+    "latitude": 59.3366,
+    "longitude": 18.0728,
+    "cuisine": "seafood"
+  },
+  {
+    "name": "Södertornet",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/sodertornet",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.sodertornet.se/",
+    "editorialExcerpt": "Tre killar har lämnat Blecktorns­­källaren och istället öppnat Södertornet på Folkungagatan. Här satsar de på svenska krogklassiker som köttbullar, fläskfilé Oscar och toast Skagen (men också planka och burgare), varm service och avslappnad stämning. Krogen...",
+    "address": "Folkungagatan 102, Södermalm",
+    "latitude": 59.3153,
+    "longitude": 18.0828,
+    "priceRange": "$$",
+    "cuisine": "swedish;husman;scandinavian"
+  },
+  {
+    "name": "Maran",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/maran-bar",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "editorialExcerpt": "Sugen på ett glas vin efter jobbet? Då kan det vara läge att svänga förbi Maran Bar, som har slagit upp dörrarna på Ringvägen alldeles intill Skanstulls tunnelbana. Här serveras vin och öl tillsammans med smårätter att dela på, där svenska smaker får sällsk...",
+    "address": "Ringvägen 129, Södermalm",
+    "latitude": 59.3082,
+    "longitude": 18.0783
+  },
+  {
+    "name": "Cucina Povera",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/cucina-povera-hornstull",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.cucinapovera.se/",
+    "editorialExcerpt": "Cucina Povera har nu öppnat även i Hornstull. Precis som på restaurangen på Odengatan ligger fokus på italienska smaker och rustika rätter med inspiration hämtad från det enkla italienska köket. Den nya restaurangen ligger på Långholmsgatan 36.",
+    "address": "Långholmsgatan 36, Södermalm",
+    "latitude": 59.3155,
+    "longitude": 18.0335,
+    "priceRange": "$$",
+    "cuisine": "italian;pizza"
+  },
+  {
+    "name": "Gibson's",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/gibsons",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.gibsonspizza.se/",
+    "editorialExcerpt": "Älskar du stora, tunna och krispiga pizzor som i New York, då ska du styra stegen mot Malmskillnadsgatan 21 mitt i city. I Proseccobarens gamla lokal har nämligen Gibson's slagit upp dörrarna i jakten på “Stockholms bästa paj”. Det nya konceptet hämtar insp...",
+    "address": "Malmskillnadsgatan 21, Norrmalm",
+    "latitude": 59.3336,
+    "longitude": 18.066,
+    "cuisine": "pizza"
+  },
+  {
+    "name": "B/A Grill",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/ba-grill",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://bagrill.se/",
+    "editorialExcerpt": "Filip Fastén, stjärnkocken och medgrundaren av Agrikultur, öppnar den nya krogen B/A Grill på Jakobs Torg. Utöver det grillade spås även deras pressade potatis bli ett omtyckt inslag på menyn.",
+    "address": "Jakobs Torg 3, Norrmalm",
+    "latitude": 59.3304,
+    "longitude": 18.0699,
+    "cuisine": "seafood;grill"
+  },
+  {
+    "name": "The Bristol",
+    "area": "Vasastan",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/the-bristol",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://thebristol.se/",
+    "editorialExcerpt": "Den 1 oktober öppnade folket från Bistro Mirabelle ett lite mer anglofilt syskon tvärs över gatan, närmare bestämt en typ av gastropub som ska servera allt från ostron till sausage rolls och pie & mash. Det blir även en hel del hantverksöl, cider, vin och v...",
+    "address": "Tulegatan 37, Vasastan",
+    "latitude": 59.3456,
+    "longitude": 18.0588,
+    "cuisine": "pub"
+  },
+  {
+    "name": "Rendez-vous",
+    "area": "Vasastan",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/rendez-vous",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.rendezvous-sthml.eu/",
+    "editorialExcerpt": "Bakom Rendez-vous i norra änden av Birger Jarlsgatan står tre vänner som vill ta den äkta franska känslan till Stockholm. Här satsar de på en säsongsanpassad meny och franska viner med förhoppningen att skapa en kvarterskrog dit man kan gå för att äta en en...",
+    "address": "Birger Jarlsgatan 112, Vasastan",
+    "latitude": 59.3479,
+    "longitude": 18.0607,
+    "cuisine": "french"
+  },
+  {
+    "name": "Maison d'Alsace",
+    "area": "Kungsholmen",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/maison-dalsace",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://maisondalsace.se/",
+    "editorialExcerpt": "Maison d'Alsace på Scheelegatan är en fransk krog som helt ägnar sig åt mat och vin från Alsace. Bakom restaurangen står syskonen Alex och Cécilia som växte upp i byn Roppentzwiller i Alsace och nu vill dela regionens mat- och vintradition med stockholmarna...",
+    "address": "Scheelegatan 3, Kungsholmen",
+    "latitude": 59.3295,
+    "longitude": 18.0432,
+    "priceRange": "$$$",
+    "cuisine": "french"
+  },
+  {
+    "name": "Bata",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/restaurang-bata",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://batasthlm.se/",
+    "editorialExcerpt": "I september öppnade dörrarna till Bata där Frankrike ska möta Spanien i smaker, kultur och tempo. Lokalen på Hornsgatan 65 är planerad i två plan med matsal på gatuplan och en generös bar med stora, sköna soffor och ett par bord en trappa ner. Ambitionen är...",
+    "address": "Hornsgatan 65, Södermalm",
+    "latitude": 59.3176,
+    "longitude": 18.0537,
+    "priceRange": "$$$",
+    "cuisine": "french;spanish"
+  },
+  {
+    "name": "Awee",
+    "area": "Kungsholmen",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/awee",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://awee.se/",
+    "editorialExcerpt": "Awee på Kungsholmen är en bar och restaurang med dart och shuffleboard i snygg och lite coolt industriell miljö, perfekt för en rolig AW med vänner. De serverar både lunch och middag med mestadels europeiska smaker och middagstid är det mycket fokus på snac...",
+    "address": "Igeldammsgatan 3, Kungsholmen",
+    "latitude": 59.3357,
+    "longitude": 18.0254
+  },
+  {
+    "name": "Toriya",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/toriya-yakitori-teishoku",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.soyokaze.se/toriya",
+    "editorialExcerpt": "Efter åtta år som Soyokafe har restaurangen bytt koncept och heter nu Toriya, med yakitori som serveras från den heta konrogrillen och japanska avsmakningsmenyer, teishoku till middag. Lunchmenyn är något enklare med donburi, risskålar toppade med allt möjl...",
+    "address": "Sergels Torg 18, Norrmalm",
+    "latitude": 59.3342,
+    "longitude": 18.0637,
+    "cuisine": "japanese;asian"
+  },
+  {
+    "name": "Thongwiset",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/thongwiset-folkungagatan",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.thongwiset.com/",
+    "editorialExcerpt": "Nu blir det ännu mer genuin thaimat när populära Thongwiset öppnar filial på Folkungagatan. Den familjedrivna restaurangen har funnits på Södermalm sedan 2015 och har blivit en favorit bland många som älskar det thailändska köket. Den nya filialen blir ett...",
+    "address": "Folkungagatan 112, Södermalm",
+    "latitude": 59.3154,
+    "longitude": 18.0847,
+    "priceRange": "$-$$",
+    "cuisine": "thai;asian"
+  },
+  {
+    "name": "Bar Zissou",
+    "area": "Gamla Stan",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/bar-zissou",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://bistrozissou.se/",
+    "editorialExcerpt": "Bistro Zissou har fått ett syskon i det gamla preppköket intill, vid namn Bar Zissou. Här är tanken att man ska kunna droppa in spontant för en lunch, middag eller ett glas vin. Inspirationen kommer från Siciliens caféer och barer där alla är lika välkomna.",
+    "address": "Lilla Nygatan 21, Gamla Stan",
+    "latitude": 59.3234,
+    "longitude": 18.0696
+  },
+  {
+    "name": "Non Grata",
+    "area": "Östermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/non-grata",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://nongratasthlm.com/",
+    "editorialExcerpt": "Samma gäng som driver fine dining-krogen Persona har öppnat nytt på Storgatan 35B, i Oxenstiernans gamla lokaler. Utöver matsalen med plats för cirka 50 personer finns här även ett chambre séparée i kombination med en cocktailbar, chef's table i köket med p...",
+    "address": "Storgatan 35b, Östermalm",
+    "latitude": 59.3348,
+    "longitude": 18.0889
+  },
+  {
+    "name": "Röris Matbar",
+    "area": "Vasastan",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/roris-matbar",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "editorialExcerpt": "Röris Matbar hämtar sitt namn från adressen på Rörstrandsgatan i Vasastan. Här serverar de middag, brunch och drinkar i trivsam atmosfär både inne i restaurangen och på uteserveringen på den myllrande gågatan när vädret tillåter. Inriktningen på maten är eu...",
+    "address": "Rörstrandsgatan 16, Vasastan",
+    "latitude": 59.3403,
+    "longitude": 18.0332
+  },
+  {
+    "name": "Damen",
+    "area": "Kungsholmen",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/damen",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://www.damen.se/",
+    "editorialExcerpt": "Krögarduon Anton Lindeborg och Joel Eriksson, som tillsammans med Miranda Lundberg står bakom bland annat Häktet, Forma och Napolyon, öppnar nu Damen på Drottningholmsvägen vid Fridhemsplan. Det blir en brittisk gastropub dit man kan gå både för en öl, dart...",
+    "address": "Drottningholmsvägen 18, Kungsholmen",
+    "latitude": 59.3323,
+    "longitude": 18.0303,
+    "cuisine": "pub"
+  },
+  {
+    "name": "Bistro Balto",
+    "area": "Söderort",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/bistro-balto",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://bistrobalto.se/",
+    "editorialExcerpt": "Bistro Balto är en kvartersbistro i Midsommarkransen där paret Karin Larsson och Jonatan Stridsberg lagar mat med smaker från Sverige, Frankrike och Medelhavet. Bistron är döpt efter deras hund Balto, som tyvärr lämnade jordelivet 2025 men nu får leva vidar...",
+    "address": "Tegelbruksvägen 2, Söderort",
+    "latitude": 59.3022,
+    "longitude": 18.0146
+  },
+  {
+    "name": "Dio",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/dio",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://diosodermalm.se/",
+    "editorialExcerpt": "Restaurang, bar och pub med inriktning på det italienska köket. Så beskriver Hammarbykaptenen Nahir Besara det som han tillsammans med några barndomsvänner ska öppna vid Medborgarplatsen på Södermalm. Ambitionen är att skapa ett slags vardagsrum dit man kan...",
+    "address": "Folkungagatan 42, Södermalm",
+    "latitude": 59.314,
+    "longitude": 18.0723,
+    "cuisine": "italian"
+  },
+  {
+    "name": "The Pickled Herring",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/the-pickled-herring",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "editorialExcerpt": "Ett av tillskotten i Mälarterrassen vid Slussen är The Pickled Herring som drivs av Årets Kock 2023-vinnaren Desirée Jaks och hennes make John Wenström. Matmässigt tar man avstamp i den brittiska pubkulturen men ger rätterna en mer modern look, och utöver m...",
+    "address": "Franska Bukten, Södermalm",
+    "latitude": 59.3208,
+    "longitude": 18.0729,
+    "cuisine": "pub"
+  },
+  {
+    "name": "Boef",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/boef-stockholm",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "editorialExcerpt": "Omar och Lukas känns igen från Sveriges Mästerkock och från Restaurang Parken, och nu öppnar de även köttkrogen Boef på Södermalm med ambitionen att bli huvudstadens nya köttdestination. Menyn på Boef ska kretsa kring råvarorna, elden, temperaturen och prec...",
+    "address": "Västgötagatan 18, Södermalm",
+    "latitude": 59.3122,
+    "longitude": 18.0714
+  },
+  {
+    "name": "Naomi",
+    "area": "Kungsholmen",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/naomi",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "editorialExcerpt": "Naomi är Sveriges första renodlade itameshi-restaurang, det vill säga en restaurang som kombinerar italienska smaker med japanska tekniker. Tanken är att erbjuda en ambitiös upplevelse med högkvalitativa råvaror och rätter som friterad wagyu-lasagne med mis...",
+    "address": "Drottningholmsvägen 14, Kungsholmen",
+    "latitude": 59.3324,
+    "longitude": 18.0306,
+    "cuisine": "italian;asian"
+  },
+  {
+    "name": "Clandestin",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/clandestin",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "editorialExcerpt": "Fem år tog det för gänget bakom vinbaren Savant att hitta rätt lokal till sin nya restaurang, men till sist har de landat på Krukmakargatan strax intill Mariatorget. Här öppnar Clandestin som blir en något lugnare plats än systerbaren, med ett ännu större f...",
+    "address": "Krukmakargatan 3, Södermalm",
+    "latitude": 59.3176,
+    "longitude": 18.0596,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Chingu",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/chingu-bbq-sojubar-slussen",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "editorialExcerpt": "Det koreanska BBQ-konceptet Chingu, som sedan tidigare finns inne i city , etablerar sig i en 680 kvadratmeter stor lokal i Mälarterrassen. Här blir det smaker från Seoul som tillagas över glödande grillar i borden, ett upplägg som passar särskilt bra för s...",
+    "address": "Mälarterrassen Restauranger, Södermalm",
+    "latitude": 59.3205,
+    "longitude": 18.0725,
+    "cuisine": "korean;grill;asian"
+  },
+  {
+    "name": "Sticks'n'Sushi",
+    "area": "Östermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/sticksnsushi",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.sticksnsushi.com/se/sv/",
+    "editorialExcerpt": "Den dansk-japanska restauranggruppen Sticks'n'Sushi öppnar sin första svenska filial på Grev Turegatan, där japansk matkultur möter skandinavisk design och gästfrihet. På menyn varvas sushi och sashimi med nygrillade kushiyaki-spett och “temaki setto”, vilk...",
+    "address": "Grev Turegatan 6, Östermalm",
+    "latitude": 59.3351,
+    "longitude": 18.075,
+    "cuisine": "japanese;sushi;asian"
+  },
+  {
+    "name": "Mannto Stockholm",
+    "area": "Kungsholmen",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/mannto-stockholm",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "editorialExcerpt": "Den afghanska restaurangen Mannto finns sedan tidigare i Gottsunda centrum i Uppsala. Nu öppnar de en restaurang i Stockholm, där det bland annat ska serveras mantu, afghanska dumplings. Adress och öppningsdatum är ännu okända.",
+    "address": "Hantverkargatan 76, Kungsholmen",
+    "latitude": 59.331,
+    "longitude": 18.0321
+  },
+  {
+    "name": "Alpis",
+    "area": "Gamla Stan",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/alpis",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "editorialExcerpt": "Här är det leberkäse som är grejen, en slags österrikisk köttfärslimpa som äts med olika toppingar i ett bröd. Lite som en centraleuropeisk hamburgare, med andra ord. Stället är litet och enkelt med bara några få sittplatser, så takeaway kan vara att rekomm...",
+    "address": "Skeppsbron 6, Gamla Stan",
+    "latitude": 59.326,
+    "longitude": 18.0749,
+    "priceRange": "$"
+  },
+  {
+    "name": "Neni Stockholm",
+    "area": "Kungsholmen",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/neni-stockholm",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://neni-restaurant.se/",
+    "address": "Drottningholmsvägen 22, Kungsholmen",
+    "latitude": 59.3324,
+    "longitude": 18.03,
+    "priceRange": "$$$",
+    "cuisine": "middle eastern;seafood"
+  },
+  {
+    "name": "Calle P Deli & Bar",
+    "area": "Djurgården",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/calle-p-deli-bar",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://callep.nu/",
+    "editorialExcerpt": "Calle P har ynglat av sig och öppnar på Skansen på Sveriges nationaldag. Med milsvid utsikt över Stockholm, från terrassen vid Solliden, ska Calle P servera sina uppskattade favoriter från Berzelii Park, som Rueben Sandwich, Salmon Club, Shrimp House Salad...",
+    "address": "Skansen, Djurgården",
+    "latitude": 59.3263,
+    "longitude": 18.1059
+  },
+  {
+    "name": "Surfers",
+    "area": "Djurgården",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/food-truck/surfers-skansen",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://surfersstockholm.se/",
+    "editorialExcerpt": "Den kinesiska restaurangen Surfers, som finns på Östermalm och i Visby, öppnar sin första ris- och nudeltruck. Sedan starten 2006 har Surfers varit kända för sin kinesiska mat och sichuanska kokkonst, vilket de nu tar med sig ut till Skansen. På menyn finns...",
+    "address": "Skansen, Djurgården",
+    "latitude": 59.3263,
+    "longitude": 18.1059,
+    "cuisine": "chinese;asian"
+  },
+  {
+    "name": "Hasselssons",
+    "area": "Djurgården",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/food-truck/hasselssons-foodtruck-skansen",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.hasselsson.com/",
+    "editorialExcerpt": "Hasselssons är kända för sina uppskattade restauranger i Göteborg och Stockholm, mycket på grund av sin enkla meny som är inspirerad av havet. Den 6 juni öppnar de en foodtruck på Skansen, som en del av det nya matkonceptet på Solliden. Här kommer det bland...",
+    "address": "Skansen, Djurgården",
+    "latitude": 59.3263,
+    "longitude": 18.1059,
+    "cuisine": "seafood"
+  },
+  {
+    "name": "Brasserie Astrid",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/brasserie-astrid",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://brasserieastrid.se",
+    "editorialExcerpt": "I maj 2026 får Mälarterrassen i Slussen ett tillskott i form av ett modernt svenskt brasserie med internationella influenser. På Brasserie Astrid får klassiska bistrorätter en uppdaterad kostym, medan dryckesutbudet består av en välfylld vinlista och cockta...",
+    "address": "Mälartrappan 5, Södermalm",
+    "latitude": 59.3209,
+    "longitude": 18.073,
+    "priceRange": "$$$",
+    "cuisine": "seafood"
+  },
+  {
+    "name": "Villa Valentina",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/villa-valentina",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.villavalentina.se/",
+    "editorialExcerpt": "Urban Italian Group, som sedan tidigare driver Basta och Florentine , blickar ut i Sydeuropa och hämtar inspiration från Spanien när de lanserar Villa Valentina. Matmässigt står sharingrätter med genuina spanska smaker i fokus, och belägen i Mälarterrassen...",
+    "address": "Slussbrogatan 10, Södermalm",
+    "latitude": 59.3205,
+    "longitude": 18.0719,
+    "priceRange": "$$$",
+    "cuisine": "spanish"
+  },
+  {
+    "name": "T.A.T Matcafé",
+    "area": "Söderort",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/t-a-t-matcafe",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "editorialExcerpt": "Midsommarkransen får ett nytt matcafé när T.A.T slår upp dörrarna till sommaren. Här ska man servera fika, sallader och turkisk husmanskost i stil med manti, pide och meze. Det nya matcaféet öppnar på Tellusborgsvägen bara ett litet stenkast från mysiga Sva...",
+    "address": "Tellusborgsvägen 84, Söderort",
+    "latitude": 59.2995,
+    "longitude": 18.0035
+  },
+  {
+    "name": "Los Tacos",
+    "area": "Vasastan",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/los-tacos-sveavagen",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.lostacos.se/",
+    "editorialExcerpt": "Nu öppnar den första Los Tacos-restaurangen i Stockholm. Det amerikansk-mexikanska konceptet bjuder på tacos, burritos, quesadillas och bowls med fokus på sharing. I den färgglada lokalen på Sveavägen kommer man att kunna äta, dricka drinkar och socialisera...",
+    "address": "Sveavägen 88, Vasastan",
+    "latitude": 59.3411,
+    "longitude": 18.0586,
+    "priceRange": "$",
+    "cuisine": "mexican"
+  },
+  {
+    "name": "Liv",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/restaurang-liv",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://restaurangliv.se/",
+    "editorialExcerpt": "Succéduon Tommy Myllymäki och Pi Le gör sin första satsning på Södermalm när de öppnar restaurangen Liv i Mälarterrassen. Här har de skapat en inbjudande och levande mötesplats från grunden där mat och dryck står i fokus, utan att vara fine dining. Gästerna...",
+    "address": "Södermalmstorg 1, Södermalm",
+    "latitude": 59.3211,
+    "longitude": 18.072,
+    "priceRange": "$$$",
+    "cuisine": "scandinavian"
+  },
+  {
+    "name": "Mackverket Marievik",
+    "area": "Söderort",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/mackverket-marievik",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.mackverket.se/",
+    "editorialExcerpt": "I Kakelhuset i Marievik, ett stenkast från Liljeholmen med vattnet som närmsta granne, ligger Mackverket. Enheten är kedjans första fristående restaurang, efter öppningar i olika food courts runt om i Stockholm. Här ska det erbjudas en bredare meny med mat...",
+    "address": "Marievik, Söderort",
+    "latitude": 59.3085,
+    "longitude": 18.0299
+  },
+  {
+    "name": "Tegelbackens kiosk",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/tegelbackens-kiosk",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "editorialExcerpt": "Krögaren Markus Aujalay som driver Tegelbacken öppnar nu Tegelbackens kiosk i samma område. Den retroinspirerade kiosken är en del av utvecklingen av Tegelbacken, som har gjorts om från tråkig trafikplats till ett grönskande torg. Kiosken är öppen varje dag...",
+    "address": "Rödbodgatan 2, Norrmalm",
+    "latitude": 59.3287,
+    "longitude": 18.0639
+  },
+  {
+    "name": "The French Kiss",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/the-french-kiss",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://thefrenchkiss.se/",
+    "editorialExcerpt": "Lagom till sommaren slår The French Kiss upp portarna i Italienskans gamla lokaler, på Brasserie Hötorgets övervåning. Förvänta dig en fransk restaurang med bar och takterrass, som givetvis bjuder på utsikt över Konserthuset och Hötorget.",
+    "address": "Sergelgatan 22, Norrmalm",
+    "latitude": 59.3348,
+    "longitude": 18.0638,
+    "cuisine": "french"
+  },
+  {
+    "name": "Le Kebab Solna",
+    "area": "Norrort",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/le-kebab-solna",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://lekebab.se/",
+    "editorialExcerpt": "Med 130 kvadratmeter och 40 sittplatser hoppas Le Kebab att kunna bli en destination för alla kebabälskare som befinner sig i Solna Centrum. I restaurangen, som dessutom har en egen ingång och därmed mer generösa öppettider än själva centrumet, kan man välj...",
+    "address": "Solna centrum, Norrort",
+    "latitude": 59.3587,
+    "longitude": 17.9988,
+    "priceRange": "$"
+  },
+  {
+    "name": "Leche Negra",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/leche-negra",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.lechenegra.com/",
+    "editorialExcerpt": "Leche Negra är gänget bakom Black Milk Gastro Bars nya satsning, som sträcker sig över tre våningsplan inne i T-House vid Humlegården. Här serveras en meny med smaker hämtade från hela världen, med lite extra fokus på Europa, som tillagas med franska teknik...",
+    "address": "Engelbrektsplan 1, Norrmalm",
+    "latitude": 59.3381,
+    "longitude": 18.0695,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Taco Club",
+    "area": "Östermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/taco-club",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.tacoclub.se/",
+    "editorialExcerpt": "På Östermalm, närmare bestämt på Valhallavägen med Karlaplan som närmaste tunnelbana, hittar du Taco Club. Precis som namnet avslöjar är de specialiserade på just tacos, så hit går man när en lunch eller middag med latinamerikanska förtecken lockar, eller h...",
+    "address": "Valhallavägen 153, Östermalm",
+    "latitude": 59.3411,
+    "longitude": 18.0917,
+    "priceRange": "$",
+    "cuisine": "mexican;american"
+  },
+  {
+    "name": "Ateljéns Pizza Slakthusområdet",
+    "area": "Söderort",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/ateljens-pizza-slakthusomradet",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "editorialExcerpt": "Ateljéns Pizza har redan uppskattade restauranger i bland annat Gamla Enskede , och utökar nu med en filial i Slakthusområdet, precis intill systerrestaurangen Matateljén . Även här blir det ambitiösa pizzor, vin och öl i avslappnad miljö.",
+    "address": "Hus 26, Johanneshov",
+    "latitude": 59.292,
+    "longitude": 18.0777,
+    "priceRange": "$$",
+    "cuisine": "pizza"
+  },
+  {
+    "name": "FOMO",
+    "area": "Söderort",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/food-truck/fomo-foodtruck",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://fomofoodtruck.se/",
+    "editorialExcerpt": "I Slakthusområdet smashar Fomo Foodtruck burgare med smaker som hämtar inspiration från bland annat Asien och Sydamerika. Målet är att göra så bra burgare att gästerna ska få fomo när de inte är här. Menyn är kort men genomtänkt och kretsar kring veckans bu...",
+    "address": "Hallvägen 7B, Johanneshov",
+    "latitude": 59.2922,
+    "longitude": 18.077,
+    "priceRange": "$",
+    "cuisine": "burger"
+  },
+  {
+    "name": "Salon Terminal",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/salon-terminal",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://salonterminal.se/",
+    "editorialExcerpt": "På markplan i Thon Hotel Vasa , som huserar i en 1800-talsbyggnad mitt emot Stockholm Centralstation, hittas Salon Terminal. Här sker en nytolkning av det klassiska brasseriet, och under ledning av Jonas Höglander skapar köket moderna och lekfulla varianter...",
+    "address": "Vasagatan 20, Norrmalm",
+    "latitude": 59.3306,
+    "longitude": 18.0596,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Landbyska Verket",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/landbyska-verket",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.landbyska.se/",
+    "editorialExcerpt": "Landbyska Verket har för ambition att bli Stureplans nya vardagsrum, dit man kan komma för långa kvällar i inbjudande atmosfär. Menyn styrs av säsongen och listar snacks, mellanrätter, ett par större rätter samt desserter med influenser från Medelhavet. På...",
+    "address": "Birger Jarlsgatan 22, Norrmalm",
+    "latitude": 59.3368,
+    "longitude": 18.0719,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Luna Sthlm",
+    "area": "Söderort",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/luna-sthlm",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "editorialExcerpt": "Midsommarkransens populära kvarterskrog Gaia Matbar utökas i april 2026 med en bakficka. I hörnlokalen, som ligger vägg i vägg med restaurangen, öppnar baren Luna. Här ska det finnas utrymme för allt från vinhäng till quiz, temakvällar, vernissage och annat...",
+    "address": "Aprilgatan 2, Söderort",
+    "latitude": 59.3005,
+    "longitude": 17.9994
+  },
+  {
+    "name": "Adam Albin",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/adam-albin-regeringsgatan",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://adamalbin.se/",
+    "editorialExcerpt": "Adam Albin är kockarna Adam Dahlberg och Albin Wessmans nya restaurang, som strax efter öppningen fick överta den Michelinstjärna som tidigare tilldelats duons hyllade och numera nedstängda restaurang Adam/Albin. På Regeringsgatan 2 har de öppnat sitt mest...",
+    "address": "Regeringsgatan 2, Norrmalm",
+    "latitude": 59.3299,
+    "longitude": 18.0691,
+    "priceRange": "$$$$",
+    "cuisine": "french;scandinavian"
+  },
+  {
+    "name": "Omaka Ölbar",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/omaka-olbar",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://restaurangponti.se/omaka-olbar",
+    "editorialExcerpt": "Det kommer att flöda färsk hantverksöl på Södermalm när Omaka Ölbar tar över baren på Restaurang Ponti vid Nytorget. Även om det är just öl som står i centrum så kommer även magen att kunna mättas med olika pizzor och snacks. Baren på Södermalm är Omakas fö...",
+    "address": "Nytorget 13e, Södermalm",
+    "latitude": 59.3114,
+    "longitude": 18.0854,
+    "cuisine": "pizza"
+  },
+  {
+    "name": "Haggans",
+    "area": "Vasastan",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/haggans",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.haggans.se/",
+    "editorialExcerpt": "Riktigt krispiga pizzor och andra rätter från Sydeuropa är melodin på Haggans som slagit upp portarna i Vasastan. Här kan man både äta och bara ses över ett glas i avslappnad kvarterskrogmiljö. Baren är fokuserad på cava och öl, men kan man också få sig en...",
+    "address": "Hagagatan 18, Vasastan",
+    "latitude": 59.3454,
+    "longitude": 18.0518
+  },
+  {
+    "name": "Bibon",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/bibon",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://bibon.se/",
+    "editorialExcerpt": "Bibon i Bibliotekstan är en europeisk bistro med tydliga influenser från New Yorks pulserande restaurangscen. På Biblioteksgatan 6, i Pas d'Arts gamla lokaler, möts det bekanta och det överraskande i en levande miljö där atmosfären och upplevelsen står i fo...",
+    "address": "Biblioteksgatan 6, Norrmalm",
+    "latitude": 59.3342,
+    "longitude": 18.0732
+  },
+  {
+    "name": "Le Kebab",
+    "area": "Kungsholmen",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/le-kebab-vastermalmsgallerian",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://lekebab.se/",
+    "editorialExcerpt": "Den omtyckta kebabkedjan Le Kebab har öppnat sin sjunde restaurang i Stockholm. Den nya restaurangen inhyser 122 kvadratmeter i Västermalmsgallerian och erbjuder allt från klassiska kebabrätter till fräscha växtbaserade alternativ.",
+    "address": "Västermalmsgallerian, Kungsholmen",
+    "latitude": 59.3346,
+    "longitude": 18.0323,
+    "priceRange": "$"
+  },
+  {
+    "name": "Trattoria Sperandio",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/trattoria-sperandio",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "editorialExcerpt": "Vinbaren Cave Nizza stänger och istället flyttar Trattoria Sperandio in i lokalen. Enligt ett inlägg på Instagram ska det bli en ny kvartersitalienare med inspiration från de tidlösa restaurangerna i Rom och Toscana.",
+    "address": "Borgmästargatan 7, Södermalm",
+    "latitude": 59.3147,
+    "longitude": 18.0867,
+    "priceRange": "$$",
+    "cuisine": "italian"
+  },
+  {
+    "name": "Mister York Kungshallen",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/mister-york-kungshallen",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.misteryork.se/",
+    "editorialExcerpt": "Hamburgerkedjan Mister York får tillökning när en sjätte filial öppnar i Stockholmsområdet, närmare bestämt i Kungshallen . Restaurangen kommer ha en egen ingång in i Kungshallen och plats för omkring 80 sittande gäster inomhus och utomhus.",
+    "address": "Holländargatan 2, Norrmalm",
+    "latitude": 59.3354,
+    "longitude": 18.0618,
+    "priceRange": "$",
+    "cuisine": "burger"
+  },
+  {
+    "name": "Mr. Bronck",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/mr-bronck",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "website": "https://mrbronck.com/",
+    "editorialExcerpt": "Mr Bronck är en del av Sheraton Stockholm Hotel s stora förnyelse. Brasseriet kombinerar klassiska amerikanska smaker med svenska råvaror, i en miljö inspirerad av det pulserande New York. Namnet är en hyllning till Jonas Bronck, en svensk man som på 1600-t...",
+    "address": "Vasagatan 2, Norrmalm",
+    "latitude": 59.3291,
+    "longitude": 18.0618,
+    "priceRange": "$$$",
+    "cuisine": "pizza;american"
+  },
+  {
+    "name": "Levi Bistro",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/levi-bistro",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.levibistro.se/",
+    "editorialExcerpt": "Nils Kjellberg och Felix Reich från Bar Abrovinsch står bakom Levi Bistro, tillsammans med Jonathan Falk Ferreira från vinimportören Boa Pressão. Restaurangen ligger på Hornsgatan 68.",
+    "address": "Hornsgatan 68, Södermalm",
+    "latitude": 59.3185,
+    "longitude": 18.0588,
+    "priceRange": "$$$",
+    "cuisine": "french;bistro"
+  },
+  {
+    "name": "Göta Bistro",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/gota-bistro",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://gotabistro.com/sv",
+    "editorialExcerpt": "Göta Bistro är en bar och restaurang som vill vara en plats för sköna kvällar och bra samtal i en avslappnad atmosfär. Kort sagt Södermalm i sitt esse, som de själva uttrycker det. Dryckeslistan fokuserar på cocktails, vin och öl och menyn rymmer allt från...",
+    "address": "Götgatan 58, Södermalm",
+    "latitude": 59.3139,
+    "longitude": 18.0733,
+    "priceRange": "$$",
+    "cuisine": "bistro;pizza"
+  },
+  {
+    "name": "Ramons Tapas Bar",
+    "area": "Vasastan",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/ramons-tapas-bar",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://ramonstapasbar.se/",
+    "editorialExcerpt": "Ramons Tapas Bar finns sedan tidigare i Nyköping och Vimmerby, och har nu etablerat sig på Döbelnsgatan i Vasastan. Här erbjuds traditionella spanska tapasrätter med en modern twist, allt i en stämningsfull lokal med gott om plats för både stora och små säl...",
+    "address": "Döbelnsgatan 45, Vasastan",
+    "latitude": 59.3416,
+    "longitude": 18.0604,
+    "priceRange": "$$-$$$",
+    "cuisine": "spanish;tapas"
+  },
+  {
+    "name": "Francois Vinbar",
+    "area": "Östermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/francois-vinbar",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "website": "https://francoisvinbar.se/",
+    "editorialExcerpt": "Superfranska Francois har slagit upp portarna på Östermalm, där de häller upp vin och lagar rustika rätter från hela Frankrike, men med extra fokus på Provence. Tanken är att maten ska bära på berättelser från ägarens barndom och kännas som en liten resa ti...",
+    "address": "Linnégatan 42, Östermalm",
+    "latitude": 59.3366,
+    "longitude": 18.0827,
+    "priceRange": "$$",
+    "cuisine": "french"
+  },
+  {
+    "name": "Slussporten",
+    "area": "Gamla Stan",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/slussporten",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "website": "https://restaurangslussporten.se/",
+    "editorialExcerpt": "Under Guldbron vid Slussen öppnar Nobis-koncernen sin största restaurangsatsning på flera år. Köksmästare blir Jacob Davidsson, som tidigare bland annat har jobbat på Adam/Albin och Aira och de senaste fyra åren har varit köksmästare på Omaka. Ambitionen är...",
+    "address": "Slussplan 10, Gamla Stan",
+    "latitude": 59.3214,
+    "longitude": 18.0738,
+    "priceRange": "$$$",
+    "cuisine": "scandinavian"
+  },
+  {
+    "name": "Lido",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/bar-lido",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://barlido.se/",
+    "editorialExcerpt": "Bar Lido är Bio Skandias nya filmbar där det serveras mellanrätter med sydeuropeiska influenser. Även dryckeslistan hämtar inspiration från samma geografiska plats, där fokus ligger på viner från småskaliga, hantverksmässiga producenter. Lido är en mötespla...",
+    "address": "Drottninggatan 82, Norrmalm",
+    "latitude": 59.3356,
+    "longitude": 18.06
+  },
+  {
+    "name": "Elsa",
+    "area": "Östermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/restaurang-elsa",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://elsarestaurang.se/",
+    "editorialExcerpt": "Brasseriet Elsa huserar inne i coworking- och eventlokalen Helio GT30 på Grev Turegatan. Här håller man öppet för lunch i form av svenska smaker som mixas med influenser från Europa och Asien. På kvällen kan lokalen abonneras av privata sällskap.",
+    "address": "Grev Turegatan 30, Östermalm",
+    "latitude": 59.337,
+    "longitude": 18.0772,
+    "cuisine": "swedish"
+  },
+  {
+    "name": "G.A.T.",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/g-a-t",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.gatstockholm.com/",
+    "editorialExcerpt": "Folket bakom Tjoget öppnar den nya restaurangen och cocktailbaren G.A.T. i det anrika Davidsonska huset vid Gustav Adolfs torg. Här ska de hämta inspiration från bistrovågen i New York under 80- och 90-talen och servera amerikanska tolkningar av fransk kokk...",
+    "address": "Gustav Adolfs torg 16, Norrmalm",
+    "latitude": 59.33,
+    "longitude": 18.0694,
+    "cuisine": "french;american"
+  },
+  {
+    "name": "Gusto d'Italia La Barca",
+    "area": "Kungsholmen",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/gusto-ditalia-la-barca",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://gustoitalia.se/",
+    "editorialExcerpt": "På Kungsholms Strand ligger denna italienska restaurang, som drivs av Paolo Roberto. Här bjuds man på en resa genom Italiens smaker och traditioner.",
+    "address": "Kungsholms strand 128, Kungsholmen",
+    "latitude": 59.3371,
+    "longitude": 18.0337,
+    "priceRange": "$$$",
+    "cuisine": "italian;pizza"
+  },
+  {
+    "name": "Monello",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/bistro-monello",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.bistromonello.se/",
+    "editorialExcerpt": "På Bistro Monello möts franska och italienska influenser på en meny med både mindre och större rätter, vin och cocktails. Även lokalen går i klassiskt bistrostuk med vita dukar, väggpaneler, smäcker belysning och generös takhöjd.",
+    "address": "Kocksgatan 3, Södermalm",
+    "latitude": 59.3137,
+    "longitude": 18.0745,
+    "priceRange": "$$$",
+    "cuisine": "italian;french;bistro"
+  },
+  {
+    "name": "Jäst Vinbar",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/jast-vinbar",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "editorialExcerpt": "I Hornstull hittas denna vinbar som är pastarestaurang på dagen, då under namnet Pastalogik, och vinbar på kvällen. Fokus ligger på handplockade naturviner från mindre producenter och passande snacks, allt serverat i charmigt rustik miljö.",
+    "address": "Hornsgatan 180, Södermalm",
+    "latitude": 59.3152,
+    "longitude": 18.0324,
+    "cuisine": "italian"
+  },
+  {
+    "name": "Baroma",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/baroma",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.baroma.se",
+    "editorialExcerpt": "Baroma är Oliver Ingrossos nya restaurang i Moodkvarteret, som han driver tillsammans med Tim Karlsson. Duon driver sedan tidigare restaurangen Olli som ligger i samma fastighet, och vägg i vägg öppnar även Ollis Deli samtidigt. På Baroma ska det serveras r...",
+    "address": "Jakobsbergsgatan 21, Norrmalm",
+    "latitude": 59.3346,
+    "longitude": 18.0675,
+    "cuisine": "italian;pizza"
+  },
+  {
+    "name": "Gigis",
+    "area": "Vasastan",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/gigis",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.gigis.se/",
+    "editorialExcerpt": "Menyn på Gigis beskrivs som en hyllning till Stockholms mångfacetterade matkultur – från finkrogarna till de små gatuköken vid tunnelbananans ändstationer. I en intim lokal på Odengatan serveras sushi, sashimi och smårätter med unika smaksättningar, samt dr...",
+    "address": "Odengatan 25, Vasastan",
+    "latitude": 59.3455,
+    "longitude": 18.0622,
+    "priceRange": "$$$",
+    "cuisine": "japanese;sushi;asian"
+  },
+  {
+    "name": "Non Solo Bar",
+    "area": "Gamla Stan",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/cafe/non-solo-bar-slussplan",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "http://nonsolobar.se/",
+    "editorialExcerpt": "Alldeles intill Vattentorget i Slussen har Non Solo Bar utökat med en enhet. Här gäller samma härliga koncept som på övriga restauranger: generösa öppettider och en italiensk meny som rymmer favoriter som pinsa, pasta och sallad – bland mycket annat.",
+    "address": "Slussplan 5, Gamla Stan",
+    "latitude": 59.3221,
+    "longitude": 18.0732,
+    "priceRange": "$$",
+    "cuisine": "italian;pizza"
+  },
+  {
+    "name": "Studio Canteen",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/studio-canteen",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.studiomarion.se/canteen",
+    "editorialExcerpt": "Den hyllade matprofilen Marion Ringborg öppnar åter igen restaurang, ett par år efter att populära Garba, som hon drev ihop med Linn Söderström, stängde. På matcaféet Studio Canteen kommer man kunna äta hjärtliga lunchrätter, fika och lördagsbrunch.",
+    "address": "Sveavägen 9, Norrmalm",
+    "latitude": 59.3338,
+    "longitude": 18.0642,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Tosto",
+    "area": "Östermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/tosto",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://tosto.nu/",
+    "editorialExcerpt": "Tosto är en italiensk restaurang, men ingen traditionell sådan. Här omtolkar krögaren Max Duhs italienska rätter med nya smaker och oväntade kombinationer, men fortfarande med en grund i traditionella matlagningstekniker. I baren förädlas råvaror från köket...",
+    "address": "Sturegatan 6, Östermalm",
+    "latitude": 59.3368,
+    "longitude": 18.0737,
+    "cuisine": "italian"
+  },
+  {
+    "name": "La Civetta",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/la-civetta",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.lacivetta.se/",
+    "editorialExcerpt": "Stjärnkocken Isabella Morrone öppnar en egen restaurang på Folkungagatan. Restaurangen kommer framförallt vara öppen för private dining, då den endast rymmer 16 platser. Italienska rätter tillagade på skandinaviska råvaror är att vänta och det hela förhöjs...",
+    "address": "Folkungatan 95, Södermalm",
+    "latitude": 59.3156,
+    "longitude": 18.0829,
+    "cuisine": "italian"
+  },
+  {
+    "name": "Trattoria Giorgio's",
+    "area": "Östermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/trattoria-giorgios",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.giorgios.se/",
+    "editorialExcerpt": "Urban Italian Group har tagit över Klang Markets gamla lokaler i Fältöversten och presenterar ett nytt koncept, Trattoria Giorgio's. Precis som på sina syskonrestauranger, Basta och Florentine , är det just den italienska mattraditionen som står i fokus. Nä...",
+    "address": "Erik Dahlbergsallén 18, Östermalm",
+    "latitude": 59.34,
+    "longitude": 18.0902,
+    "priceRange": "$$",
+    "cuisine": "italian;pizza"
+  },
+  {
+    "name": "Kura",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/kura-stockholm",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.kurastockholm.com/",
+    "editorialExcerpt": "På nyöppnade Kura i Moodgallerian varvas experimentella cocktails med rätter i japanskt izakaya-stuk. Här serveras ambitiös sushi och moderna kreationer som ska locka fram både nyfikenhet och aptit. Kura har öppet för AW, middag och “afterhours”.",
+    "address": "Jakobsbergsgatan 15, Norrmalm",
+    "latitude": 59.3346,
+    "longitude": 18.0696,
+    "priceRange": "$$$",
+    "cuisine": "japanese;sushi;asian"
+  },
+  {
+    "name": "Dansken",
+    "area": "Söderort",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/dansken-slaktis",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.danskenrestauranger.se/",
+    "editorialExcerpt": "Nybroe Smørrebrød har fått ett syskon i Slakthusområdet, som fyller lokalen där Afrika Sthlm tidigare huserade. På menyn hittas dansk och skandinavisk husmanskost, bland annat i form av smörrebröd. Då och då arrangeras livespelningar.",
+    "address": "Hallgränd 43, Johanneshov",
+    "latitude": 59.2922,
+    "longitude": 18.0777,
+    "priceRange": "$-$$",
+    "cuisine": "scandinavian;seafood"
+  },
+  {
+    "name": "Tête",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/tete",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.restaurangtete.se/",
+    "editorialExcerpt": "Libanesisk fusion – det står i centrum när nya Tête öppnar dörrarna mitt i city. Här välkomnar man till AW, middagar och sena kvällar i en levande miljö. Stora sällskap kan även boka restaurangens två chambre séparéer.",
+    "address": "Regeringsgatan 111, Norrmalm",
+    "latitude": 59.3404,
+    "longitude": 18.0651,
+    "priceRange": "$$$",
+    "cuisine": "lebanese"
+  },
+  {
+    "name": "Gamestreet 1",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/aktivitet/gamestreet-1",
+    "isFeaturedPartner": true,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.gamestreet.se/",
+    "editorialExcerpt": "Gamestreet 1, eller GS1 som många kallar det, nöjer sig inte med att vara en restaurang eller bar, utan satsar på att skapa en social mötesplats där nöje, mat och dryck står i fokus. Här kan man alltså både stilla hungern och ägna sig åt roligheter som VR,...",
+    "address": "Magnus Ladulåsgatan 1, Södermalm",
+    "latitude": 59.3118,
+    "longitude": 18.0586,
+    "priceRange": "$"
+  },
+  {
+    "name": "Strand Stockholm",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/restaurang-strand-stockholm",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "website": "https://strandstockholm.se/",
+    "editorialExcerpt": "På den anrika adressen Nybrokajen 9, inne i Strand Hotel , öppnar restaurangen och baren Strand Stockholm. Med Tim Waage, som bland annat har erfarenhet från Portal och Den Gyldene Freden , i spetsen levererar köket internationella rätter lagade på svenska...",
+    "address": "Nybrokajen 9, Norrmalm",
+    "latitude": 59.3309,
+    "longitude": 18.0769
+  },
+  {
+    "name": "Vigårda",
+    "area": "Söderort",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/vigarda-sickla-kopkvarter",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "editorialExcerpt": "Vigårda återuppstår i Stockholm, denna gång i Sickla Köpkvarter och med en nyskapad variant av Vigårdas gamla koncept. Här ska äkta matlagning stå i fokus och det kommer att användas högkvalitativa och ekologiska råvaror från lokala producenter i köket. Men...",
+    "address": "Sickla Köpkvarter, Söderort",
+    "latitude": 59.3058,
+    "longitude": 18.1231,
+    "cuisine": "burger;seafood"
+  },
+  {
+    "name": "Ateljéns Pizza Solna",
+    "area": "Norrort",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/ateljens-pizza-haga-norra",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "http://ateljenspizza.se/",
+    "editorialExcerpt": "Ateljéns Pizza i Gamla Enskede får en systerkrog i tegelhuset intill Frösundaleden i Solna. I en unik lokal med generös takhöjd och stor uteservering ska det serveras pizza och annat gott till både lunch och middag. Ambitionen är att erbjuda en social och a...",
+    "address": "Mathildatorget 9, Norrort",
+    "latitude": 59.3645,
+    "longitude": 18.0177,
+    "priceRange": "$$",
+    "cuisine": "italian;pizza"
+  },
+  {
+    "name": "Restauranto",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/restauranto",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://www.restauranto.se/",
+    "editorialExcerpt": "På den ganska anonyma gatan Bjälbogatan döljer sig Restauranto, en hjärtlig familjeägd krog där man lagar mat efter humör och vilka råvaror som är bäst just nu – ofta med europeiska smaker, men långt ifrån alltid. Hit kommer du för att bli väl omhändertagen...",
+    "address": "Bjälbogatan 12, Södermalm",
+    "latitude": 59.3118,
+    "longitude": 18.0641,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Sperling & Co",
+    "area": "Östermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/sperling-co",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://sperlingco.se/",
+    "editorialExcerpt": "Vad händer när Michael Andersson, årets kock 2024, krokar arm med Stureplansgruppen? Då blir det kötthantverk på två våningar på Sturegatan 6, med europeisk grilltradition och såväl klassiska som moderna inslag på menyn. Dryckesmässigt satsar man på vin frå...",
+    "address": "Sturegatan 6, Östermalm",
+    "latitude": 59.3368,
+    "longitude": 18.0737
+  },
+  {
+    "name": "Lilla Ljunggren",
+    "area": "Norrmalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/lilla-ljunggren",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://lillaljunggren.se/",
+    "editorialExcerpt": "Krögaren Mikael Ljunggren startade och drev Ljunggren på Södermalm får många år sedan. Nu slår han upp portarna för matbaren Lilla Ljunggren på Tegnérgatan, med inriktning på asian fusion.",
+    "address": "Tegnérgatan 11, Norrmalm",
+    "latitude": 59.3403,
+    "longitude": 18.0633,
+    "cuisine": "french;swedish;scandinavian"
+  },
+  {
+    "name": "Snotty's Bar Klow",
+    "area": "Södermalm",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/snottys-bar-klow",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat",
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://barklow.se/",
+    "editorialExcerpt": "Det har gått några år sedan Snotty bommade igen på Skånegatan. Nu är de tillbaka och öppnar upp på Ringvägen under namnet Bar Klow. Här ska de bjuda på Tintin-inspirerad matlagning, bra öl, indie, pop och rock.",
+    "address": "Ringvägen 145, Södermalm",
+    "latitude": 59.309,
+    "longitude": 18.082,
+    "cuisine": "pub"
+  },
+  {
+    "name": "Teuf",
+    "area": "Gamla Stan",
+    "category": "Thatsup Nya Restauranger",
+    "url": "https://thatsup.se/stockholm/guide/nya-restauranger-i-stockholm",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/teuf",
+    "isFeaturedPartner": false,
+    "tags": [
+      "New opening",
+      "Nyöppnat"
+    ],
+    "website": "https://teuf.se/",
+    "editorialExcerpt": "Sovel har stängt och förvandlas nu istället till Teuf. Här utlovas bra kött till ett bra pris – självklart med kött, sås och pommes på menyn. Den nya restaurangen har även sällskap av en vinbar.",
+    "address": "Mälartorget 15, Gamla Stan",
+    "latitude": 59.3232,
+    "longitude": 18.0688,
     "priceRange": "$$$"
   }
 ]

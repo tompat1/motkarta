@@ -360,10 +360,10 @@
       "contentHash": null,
       "changedSincePrevious": true,
       "error": null,
-      "scrapedPoints": 89,
-      "verifiedCount": 90,
-      "importedCount": 89,
-      "coveragePercent": 97.8,
+      "scrapedPoints": 180,
+      "verifiedCount": 185,
+      "importedCount": 180,
+      "coveragePercent": 98.9,
       "status": "PASS"
     },
     {

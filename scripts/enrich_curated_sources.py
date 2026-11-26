@@ -3,6 +3,7 @@
 
 import hashlib
 import json
+import math
 import re
 import sys
 import unicodedata
@@ -13,10 +14,12 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from motkarta.catalog_exclusions import is_excluded_catalog_name  # noqa: E402
+from motkarta.stockholm_boundary import is_stockholm_municipality_place  # noqa: E402
 
 PLACES_FILE = ROOT / "public" / "data" / "places.json"
 THATSUP_GT_FILE = ROOT / "data" / "thatsup_ground_truth.json"
 STOCKHOLM_CITY_BREAK_GT_FILE = ROOT / "data" / "stockholm_city_break_ground_truth.json"
+VISIT_STOCKHOLM_API_FILE = ROOT / "data" / "visit_stockholm_api_places.json"
 
 THATSUP_NAME_ALIASES = {
     "akkurat": ["restaurantakkurat"],
@@ -109,12 +112,14 @@ def enrich_thatsup_places(places: list[dict]) -> tuple[int, int]:
             while any(p.get("id") == pid for p in places):
                 pid += 1
 
-            cuisines_new: list[str] = []
-            if is_pub_lead:
+            cuisines_new: list[str] = [
+                c.strip() for c in str(gt.get("cuisine") or "").split(";") if c.strip()
+            ]
+            if is_pub_lead and "pub" not in cuisines_new:
                 cuisines_new.append("pub")
-            if is_cocktail_lead:
+            if is_cocktail_lead and "cocktails" not in cuisines_new:
                 cuisines_new.append("cocktails")
-            elif is_wine_lead:
+            elif is_wine_lead and "wine" not in cuisines_new:
                 cuisines_new.append("wine")
 
             default_note = (
@@ -214,6 +219,201 @@ def enrich_thatsup_places(places: list[dict]) -> tuple[int, int]:
                     "id": fact_id,
                     "field": "category",
                     "value": category_label,
+                })
+            matched_count += 1
+
+    return matched_count, added_count
+
+
+OUTSIDE_STOCKHOLM_MUNICIPALITIES = (
+    "saltsjöbaden",
+    "nacka",
+    "lidingö",
+    "täby",
+    "vaxholm",
+    "djursholm",
+    "sigtuna",
+    "södertälje",
+    "huddinge",
+    "värmdö",
+    "ekerö",
+    "danderyd",
+    "tyresö",
+    "haninge",
+    "botkyrka",
+    "järfälla",
+    "sollentuna",
+    "solna",
+    "sundbyberg",
+    "upplands",
+    "gustavsberg",
+    "mariefred",
+    "sandhamn",
+    "utö",
+    "möja",
+)
+
+
+def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    r = 6371000.0
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dp = math.radians(lat2 - lat1)
+    dl = math.radians(lon2 - lon1)
+    a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+    return 2 * r * math.asin(math.sqrt(a))
+
+
+def _infer_area_from_postal_or_geo(address: str, lat: float, lng: float, fallback: str) -> str:
+    if fallback and fallback != "Stockholm":
+        return fallback
+    addr_lower = address.lower()
+    if "djurgård" in addr_lower or "skansen" in addr_lower:
+        return "Djurgården"
+    if "gamla stan" in addr_lower or any(
+        st in addr_lower for st in ("västerlånggatan", "österlånggatan", "stora nygatan", "lilla nygatan", "skeppsbron", "järntorget", "stortorget")
+    ):
+        return "Gamla Stan"
+    m_zip = re.search(r"\b(1\d{2})\s?\d{2}\b", address)
+    if m_zip:
+        prefix = m_zip.group(1)
+        if prefix in {"116", "117", "118"}:
+            return "Södermalm"
+        if prefix == "112":
+            return "Kungsholmen"
+        if prefix == "113":
+            return "Vasastan"
+        if prefix in {"114", "115"}:
+            return "Östermalm"
+        if prefix == "111":
+            return "Gamla Stan" if lat < 59.3275 and 18.063 <= lng <= 18.078 else "Norrmalm"
+        if prefix.startswith("12"):
+            return "Söderort"
+        if prefix.startswith("16"):
+            return "Västerort"
+    return "Stockholm"
+
+
+def stable_visit_stockholm_api_id(name_key: str) -> int:
+    digest = int(hashlib.sha256(f"visit-stockholm-api:{name_key}".encode()).hexdigest()[:6], 16)
+    return 3829500000 + (digest % 900000)
+
+
+def enrich_visit_stockholm_api_places(places: list[dict]) -> tuple[int, int]:
+    """Enrich existing venues and insert new geolocated Stockholm venues from Visit Stockholm Open API (CC BY 4.0)."""
+    if not VISIT_STOCKHOLM_API_FILE.exists():
+        return 0, 0
+
+    payload = json.loads(VISIT_STOCKHOLM_API_FILE.read_text(encoding="utf-8"))
+    api_items = payload.get("places") or []
+
+    matched_count = 0
+    added_count = 0
+
+    for item in api_items:
+        name = str(item.get("name") or "").strip()
+        if not name or is_excluded_catalog_name(name):
+            continue
+        if item.get("latitude") is None or item.get("longitude") is None:
+            continue
+
+        lat = float(item["latitude"])
+        lng = float(item["longitude"])
+        address = str(item.get("address") or "").strip()
+        if any(muni in address.lower() or muni in name.lower() for muni in OUTSIDE_STOCKHOLM_MUNICIPALITIES):
+            continue
+        if not is_stockholm_municipality_place(lat, lng, area=item.get("area", ""), address=address, name=name):
+            continue
+
+        gn = norm_ascii(name)
+        g_tokens = {t for t in re.findall(r"[a-z0-9]{4,}", name.lower()) if t not in {"stockholm", "restaurang", "restaurant", "bistro", "cafe", "kafe", "bar", "pub"}}
+
+        matched_places = []
+        for p in places:
+            pn = norm_ascii(p.get("name"))
+            if pn == gn:
+                matched_places.append(p)
+                continue
+            p_lat, p_lng = p.get("latitude"), p.get("longitude")
+            if p_lat is not None and p_lng is not None and g_tokens:
+                if _haversine_m(lat, lng, float(p_lat), float(p_lng)) <= 85.0:
+                    p_tokens = set(re.findall(r"[a-z0-9]{4,}", str(p.get("name") or "").lower()))
+                    if g_tokens & p_tokens:
+                        matched_places.append(p)
+
+        area = _infer_area_from_postal_or_geo(address, lat, lng, str(item.get("area") or "Stockholm"))
+        source_url = str(item.get("url") or "https://api.visitstockholm.com/")
+
+        if not matched_places:
+            pid = stable_visit_stockholm_api_id(gn)
+            while any(p.get("id") == pid for p in places):
+                pid += 1
+
+            kind = str(item.get("kind") or "Restaurant")
+            label_lower = str(item.get("label") or "").lower()
+            new_tags = ["Visit Stockholm", "Curated"]
+            if area and area != "Stockholm":
+                new_tags.append(area)
+            if "bakery" in label_lower or kind == "Bakery":
+                new_tags.append("Bakery")
+            elif "café" in label_lower or "cafe" in label_lower or kind == "Café":
+                new_tags.append("Café")
+            if "pub" in label_lower or "beer" in label_lower:
+                for t in ("Pub", "Beer"):
+                    if t not in new_tags:
+                        new_tags.append(t)
+
+            new_place: dict = {
+                "id": pid,
+                "idNamespace": "public",
+                "name": name,
+                "kind": kind,
+                "cuisine": "pub" if ("pub" in label_lower or "beer" in label_lower) else "",
+                "area": area,
+                "address": address or f"{area}, Stockholm",
+                "latitude": lat,
+                "longitude": lng,
+                "x": lat,
+                "y": lng,
+                "note": item.get("note") or f"{name} — featured in Visit Stockholm Open API (CC BY 4.0).",
+                "tags": new_tags,
+                "evidenceLabel": "Featured in Visit Stockholm Open API (CC BY 4.0)",
+                "evidence": {
+                    "specialistGuide": 0.45,
+                    "independentEditorial": 0.4,
+                    "verifiedUserRating": 0.0,
+                    "repeatVisits": 0.2,
+                    "recentReviews": 0.25,
+                },
+                "engagement": {"views": 130, "saves": 14, "shares": 4, "searches": 35},
+                "discoveryReasons": ["Utvald i Visit Stockholms öppna API (CC BY 4.0)"],
+                "sourceFacts": [],
+            }
+            if item.get("website"):
+                new_place["website"] = item["website"]
+            places.append(new_place)
+            matched_places = [new_place]
+            added_count += 1
+
+        for p in matched_places:
+            tags = p.setdefault("tags", [])
+            for t in ("Visit Stockholm", "Curated"):
+                if t not in tags:
+                    tags.append(t)
+            if not p.get("website") and item.get("website"):
+                p["website"] = item["website"]
+            s_facts = p.setdefault("sourceFacts", [])
+            pid = p["id"]
+            fact_id = f"{pid}:visitstockholmapi:listing"
+            if not any(f.get("id") == fact_id for f in s_facts):
+                s_facts.append({
+                    "placeId": pid,
+                    "source": "Visit Stockholm",
+                    "url": source_url,
+                    "verification": "listed",
+                    "capturedAt": "2026-11-26T22:54:00Z",
+                    "id": fact_id,
+                    "field": "category",
+                    "value": str(item.get("label") or "Visit Stockholm Open API (CC BY 4.0)"),
                 })
             matched_count += 1
 
@@ -698,6 +898,11 @@ def main() -> None:
     scb_enriched, scb_added = enrich_stockholm_city_break_places(places)
     enriched_counts["Stockholm City Break"] = scb_enriched
     enriched_counts["Stockholm City Break (added)"] = scb_added
+
+    # 6. Enrich & insert Visit Stockholm Open API (CC BY 4.0) food & drink venues
+    vs_api_enriched, vs_api_added = enrich_visit_stockholm_api_places(places)
+    enriched_counts["Visit Stockholm Open API"] = vs_api_enriched
+    enriched_counts["Visit Stockholm Open API (added)"] = vs_api_added
 
     if isinstance(data, dict):
         data["totalPlaces"] = len(places)
