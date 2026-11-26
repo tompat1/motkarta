@@ -196,6 +196,10 @@ def enrich_thatsup_places(places: list[dict]) -> tuple[int, int]:
             if not p.get("website") and gt.get("website"):
                 p["website"] = gt["website"]
 
+            price_range = str(gt.get("priceRange") or "").strip()
+            if not p.get("priceSEK") and price_range in {"$", "$$", "$$$", "$$$$"}:
+                p["priceSEK"] = price_range
+
             s_facts = p.setdefault("sourceFacts", [])
             pid = p["id"]
             fact_id = f"{pid}:thatsup:discovery"
@@ -378,6 +382,7 @@ NEW_CURATED_PUB_PLACES = [
         "x": 59.32001,
         "y": 18.06478,
         "website": "https://www.bishopsarms.com/vara-pubar/stockholm/bellmansgatan/",
+        "priceSEK": "$$",
         "note": "Brittisk gastropub vid Mariatorget och Bellmansgatan på Södermalm med brett sortiment av hantverksöl, fatöl och single malt whisky.",
         "tags": ["Pub", "Beer", "Craft Beer", "Ölbar", "Gastropub", "Whisky", "Södermalm"],
         "evidenceLabel": "Stockholms gastropub med brett öl- och whiskysortiment",
@@ -399,6 +404,7 @@ NEW_CURATED_PUB_PLACES = [
         "x": 59.34686,
         "y": 18.03986,
         "website": "https://www.bishopsarms.com/vara-pubar/stockholm/palace/",
+        "priceSEK": "$$",
         "note": "Brittisk gastropub vid Sankt Eriksplan i Vasastan med hantverksöl på fat och flaska, klassisk pubmat och whisky.",
         "tags": ["Pub", "Beer", "Craft Beer", "Ölbar", "Gastropub", "Whisky", "Vasastan"],
         "evidenceLabel": "Stockholms gastropub med brett öl- och whiskysortiment",
@@ -420,6 +426,7 @@ NEW_CURATED_PUB_PLACES = [
         "x": 59.33210,
         "y": 18.05763,
         "website": "https://www.bishopsarms.com/vara-pubar/stockholm/vasagatan/",
+        "priceSEK": "$$",
         "note": "Klassisk brittisk gastropub på Vasagatan nära Centralstationen med ett brett urval av fatöl, hantverksöl och whisky.",
         "tags": ["Pub", "Beer", "Craft Beer", "Ölbar", "Gastropub", "Whisky", "Norrmalm"],
         "evidenceLabel": "Stockholms gastropub med brett öl- och whiskysortiment",
@@ -441,6 +448,7 @@ NEW_CURATED_PUB_PLACES = [
         "x": 59.32314,
         "y": 18.06910,
         "website": "https://www.bishopsarms.com/vara-pubar/stockholm/gamla-stan/",
+        "priceSEK": "$$",
         "note": "Brittisk gastropub i historiska lokaler på Tyska Brinken i Gamla Stan med stort sortiment av hantverksöl och whisky.",
         "tags": ["Pub", "Beer", "Craft Beer", "Ölbar", "Gastropub", "Whisky", "Gamla Stan"],
         "evidenceLabel": "Stockholms gastropub med brett öl- och whiskysortiment",
@@ -462,6 +470,7 @@ NEW_CURATED_PUB_PLACES = [
         "x": 59.36109,
         "y": 17.96872,
         "website": "https://www.bishopsarms.com/vara-pubar/stockholm/sundbyberg/",
+        "priceSEK": "$$",
         "note": "Brittisk gastropub på Landsvägen i centrala Sundbyberg med brett urval av hantverksöl, fatöl, whisky och pubmat.",
         "tags": ["Pub", "Beer", "Craft Beer", "Ölbar", "Gastropub", "Whisky", "Västerort", "Sundbyberg"],
         "evidenceLabel": "Stockholms gastropub med brett öl- och whiskysortiment",
@@ -483,6 +492,7 @@ NEW_CURATED_PUB_PLACES = [
         "x": 59.34449,
         "y": 18.05821,
         "website": "https://www.bishopsarms.com/vara-pubar/stockholm/odengatan/",
+        "priceSEK": "$$",
         "note": "Brittisk gastropub på Odengatan i Vasastan med hantverksöl på fat och flaska, single malt whisky och pubmat.",
         "tags": ["Pub", "Beer", "Craft Beer", "Ölbar", "Gastropub", "Whisky", "Vasastan"],
         "evidenceLabel": "Stockholms gastropub med brett öl- och whiskysortiment",
@@ -510,12 +520,15 @@ def main() -> None:
                 if t not in p.setdefault("tags", []):
                     p["tags"].append(t)
 
-    # 2. Add missing Burgerdudes & curated pub venues
-    existing_names = {norm(p.get("name")) for p in places}
+    # 2. Add missing Burgerdudes & curated pub venues (and sync priceSEK if missing)
+    existing_by_norm = {norm(p.get("name")): p for p in places}
     for np in [*NEW_BURGERDUDES_PLACES, *NEW_CURATED_PUB_PLACES]:
-        if norm(np["name"]) not in existing_names:
+        key = norm(np["name"])
+        if key not in existing_by_norm:
             places.append(np)
-            existing_names.add(norm(np["name"]))
+            existing_by_norm[key] = np
+        elif not existing_by_norm[key].get("priceSEK") and np.get("priceSEK"):
+            existing_by_norm[key]["priceSEK"] = np["priceSEK"]
 
     # 3. Enrich with all GT sources
     enriched_counts = {}

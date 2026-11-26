@@ -131,6 +131,9 @@ test("Pub & beer filter matches curated beer and pub venues in Stockholm", () =>
   assert.ok(names.some((n) => n.includes("the bishops arms gamla stan")));
   assert.ok(names.some((n) => n.includes("the bishops arms sundbyberg")));
   assert.ok(names.some((n) => n.includes("the bishops arms odengatan")));
+  const bishops = pubVenues.filter((p) => p.name.toLowerCase().includes("bishops arms"));
+  assert.equal(bishops.length, 6);
+  assert.ok(bishops.every((p) => p.priceSEK === "$$"), "All Bishops Arms should have $$ price tier from Thatsup");
 });
 
 test("Concierge filters ground vinbar and cocktailbar queries", () => {
