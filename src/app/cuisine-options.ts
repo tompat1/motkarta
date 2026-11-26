@@ -2,6 +2,7 @@ import type { PlaceInput } from "../../lib/scoring";
 
 const FEATURED_CUISINES = [
   "husman",
+  "pub",
   "spanish",
   "french",
   "mexican",
@@ -40,6 +41,18 @@ export function cuisineParts(place: Pick<PlaceInput, "cuisine" | "tags"> & { nam
       if (trimmed === "regional") return "swedish";
       if (trimmed === "belgiskt") return "belgian";
       if (trimmed === "husmanskost" || trimmed === "traditional swedish") return "husman";
+      if (
+        trimmed === "beer" ||
+        trimmed === "beer bar" ||
+        trimmed === "craft beer" ||
+        trimmed === "gastropub" ||
+        trimmed === "ölbar" ||
+        trimmed === "öl" ||
+        trimmed === "brewery" ||
+        trimmed === "bryggeri"
+      ) {
+        return "pub";
+      }
       return trimmed;
     })
     .filter((item) => item && !NON_CUISINE_OPTION_VALUES.has(item));
@@ -74,6 +87,26 @@ export function cuisineParts(place: Pick<PlaceInput, "cuisine" | "tags"> & { nam
     parts.push("husman");
   }
 
+  const isPubOrBeer =
+    tagsLower.some(
+      (t) =>
+        t === "pub" ||
+        t === "beer" ||
+        t === "beer bar" ||
+        t === "craft beer" ||
+        t === "gastropub" ||
+        t === "ölbar" ||
+        t === "ölkafé" ||
+        t === "ölcafé" ||
+        t === "ölhall" ||
+        t === "brewery" ||
+        t === "bryggeri",
+    );
+
+  if (isPubOrBeer && !parts.includes("pub")) {
+    parts.push("pub");
+  }
+
   return parts;
 }
 
@@ -103,6 +136,7 @@ export function cuisineOptionsFromPlaces(places: PlaceInput[]) {
 export function resolveCuisineFilter(cuisines: string[], availableOptions: string[]) {
   const aliases: Record<string, string[]> = {
     husman: ["husman", "husmanskost", "traditional swedish", "swedish comfort food"],
+    pub: ["pub", "pubar", "beer", "beer bar", "craft beer", "gastropub", "öl", "ölbar", "ölbarer", "brewery", "bryggeri"],
     belgian: ["belgian", "belgisk", "belgiskt", "belgiska"],
     chinese: ["chinese", "kinesisk", "kinesiska", "kinesiskt"],
     french: ["french", "fransk", "franskt"],

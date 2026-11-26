@@ -1,16 +1,172 @@
 #!/usr/bin/env python3
 """Enrich public/data/places.json with verified tags, source facts, and evidence from all curated sources."""
 
+import hashlib
 import json
 import re
+import sys
+import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from motkarta.catalog_exclusions import is_excluded_catalog_name  # noqa: E402
+
 PLACES_FILE = ROOT / "public" / "data" / "places.json"
+THATSUP_GT_FILE = ROOT / "data" / "thatsup_ground_truth.json"
+
+THATSUP_NAME_ALIASES = {
+    "akkurat": ["restaurantakkurat"],
+    "pressklubben": ["internationellapressklubben"],
+    "theoldbrewerhornstull": ["theoldbrewer"],
+    "theoldbrewervasastan": ["theoldbrewer"],
+}
 
 
 def norm(s: str) -> str:
     return re.sub(r"[^a-z0-9åäö]+", "", str(s or "").lower())
+
+
+def norm_ascii(s: str) -> str:
+    text = unicodedata.normalize("NFKD", str(s or "").lower())
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    return re.sub(r"[^a-z0-9]+", "", text)
+
+
+def stable_thatsup_id(name_key: str) -> int:
+    digest = int(hashlib.sha256(f"thatsup:{name_key}".encode()).hexdigest()[:6], 16)
+    return 3829200000 + (digest % 900000)
+
+
+def enrich_thatsup_places(places: list[dict]) -> tuple[int, int]:
+    """Enrich existing venues and insert verified geolocated Thatsup discovery leads.
+
+    Strictly preserves Motkarta's Thatsup independence policy:
+    - Never inflates evidence.specialistGuide or evidence.independentEditorial.
+    - Excludes commercial chains.
+    - Marks all Thatsup citations as verification='listed' discovery leads.
+    """
+    if not THATSUP_GT_FILE.exists():
+        return 0, 0
+
+    with open(THATSUP_GT_FILE, encoding="utf-8") as f:
+        gt_items = json.load(f)
+
+    matched_count = 0
+    added_count = 0
+
+    for gt in gt_items:
+        name = str(gt.get("name") or "").strip()
+        if not name or is_excluded_catalog_name(name):
+            continue
+
+        gn = norm_ascii(name)
+        alias_targets = set(THATSUP_NAME_ALIASES.get(gn, []))
+        gt_area = str(gt.get("area") or "").strip()
+
+        matched_places = []
+        for p in places:
+            pn = norm_ascii(p.get("name"))
+            if pn == gn:
+                matched_places.append(p)
+            elif pn in alias_targets:
+                # For multi-branch venues like The Old Brewer, require matching area
+                if gn.startswith("theoldbrewer") and gt_area and p.get("area") and p.get("area") != gt_area:
+                    continue
+                matched_places.append(p)
+
+        gt_tags = [t for t in (gt.get("tags") or []) if isinstance(t, str) and t.strip()]
+        is_pub_lead = any(t.lower() in {"pub", "beer", "craft beer", "ölbar"} for t in gt_tags)
+        source_url = gt.get("url") or "https://thatsup.se/stockholm/"
+        category_label = gt.get("category") or "Thatsup Stockholm (Discovery Lead)"
+
+        if not matched_places and gt.get("latitude") is not None and gt.get("longitude") is not None:
+            lat = float(gt["latitude"])
+            lng = float(gt["longitude"])
+            area = gt_area or "Stockholm"
+            address = str(gt.get("address") or f"{area}, Stockholm")
+            price_range = str(gt.get("priceRange") or "")
+            price_level = min(4, max(1, price_range.count("$"))) if "$" in price_range else 2
+            new_tags: list[str] = []
+            for t in [*gt_tags, area, "Thatsup"]:
+                if t and t not in new_tags:
+                    new_tags.append(t)
+
+            pid = stable_thatsup_id(gn)
+            while any(p.get("id") == pid for p in places):
+                pid += 1
+
+            new_place: dict = {
+                "id": pid,
+                "idNamespace": "public",
+                "name": name,
+                "kind": "Restaurant",
+                "cuisine": "pub" if is_pub_lead else "",
+                "area": area,
+                "address": address,
+                "latitude": lat,
+                "longitude": lng,
+                "x": lat,
+                "y": lng,
+                "priceLevel": price_level,
+                "note": gt.get("editorialExcerpt") or "Ölbar & pub i Stockholm (upptäcktskälla via Thatsup Stockholm).",
+                "tags": new_tags,
+                "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+                "evidence": {
+                    "specialistGuide": 0.25,
+                    "independentEditorial": 0.2,
+                    "verifiedUserRating": 0.0,
+                    "repeatVisits": 0.15,
+                    "recentReviews": 0.2,
+                },
+                "engagement": {"views": 120, "saves": 12, "shares": 4, "searches": 35},
+                "discoveryReasons": [
+                    "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+                    if is_pub_lead
+                    else "Listad som upptäcktskälla i Thatsup Stockholm"
+                ],
+                "sourceFacts": [],
+            }
+            if gt.get("website"):
+                new_place["website"] = gt["website"]
+            places.append(new_place)
+            matched_places = [new_place]
+            added_count += 1
+
+        for p in matched_places:
+            tags = p.setdefault("tags", [])
+            for t in ["Thatsup", *gt_tags]:
+                if t not in tags:
+                    tags.append(t)
+
+            if is_pub_lead:
+                existing_cuisines = [c.strip() for c in str(p.get("cuisine") or "").split(";") if c.strip()]
+                if not any(c.lower() == "pub" for c in existing_cuisines):
+                    existing_cuisines.append("pub")
+                    p["cuisine"] = ";".join(existing_cuisines)
+
+            if not p.get("website") and gt.get("website"):
+                p["website"] = gt["website"]
+
+            s_facts = p.setdefault("sourceFacts", [])
+            pid = p["id"]
+            fact_id = f"{pid}:thatsup:discovery"
+            if not any(f.get("id") == fact_id for f in s_facts):
+                s_facts.append({
+                    "placeId": pid,
+                    "source": "Thatsup Stockholm",
+                    "url": source_url,
+                    "verification": "listed",
+                    "capturedAt": "2026-11-26T18:16:00Z",
+                    "id": fact_id,
+                    "field": "category",
+                    "value": category_label,
+                })
+            matched_count += 1
+
+    return matched_count, added_count
 
 
 GT_SOURCES = [
@@ -234,6 +390,11 @@ def main() -> None:
                     })
                 count += 1
         enriched_counts[source_name] = count
+
+    # 4. Enrich & insert Thatsup Stockholm discovery leads (neutral evidence policy)
+    thatsup_enriched, thatsup_added = enrich_thatsup_places(places)
+    enriched_counts["Thatsup Stockholm"] = thatsup_enriched
+    enriched_counts["Thatsup Stockholm (added)"] = thatsup_added
 
     if isinstance(data, dict):
         data["totalPlaces"] = len(places)

@@ -109,13 +109,18 @@ test("Pub & beer filter matches curated beer and pub venues in Stockholm", () =>
     );
   });
 
-  assert.ok(pubVenues.length >= 10, `Expected at least 10 pubs, found ${pubVenues.length}`);
+  assert.ok(pubVenues.length >= 35, `Expected at least 35 pubs/beer bars, found ${pubVenues.length}`);
   const names = pubVenues.map((p) => p.name.toLowerCase());
   assert.ok(names.some((n) => n.includes("svejk")));
   assert.ok(names.some((n) => n.includes("akkurat")));
   assert.ok(names.some((n) => n.includes("stigberget")));
   assert.ok(names.some((n) => n.includes("tudor arms")));
   assert.ok(names.some((n) => n.includes("oliver twist")));
+  assert.ok(names.some((n) => n.includes("the churchill arms")));
+  assert.ok(names.some((n) => n.includes("tritonia")));
+  assert.ok(names.some((n) => n.includes("katarina ölkafé")));
+  assert.ok(names.some((n) => n.includes("omaka")));
+  assert.ok(names.some((n) => n.includes("stockholm brewing")));
 });
 
 test("Concierge filters ground vinbar and cocktailbar queries", () => {

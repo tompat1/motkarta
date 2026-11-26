@@ -1,14 +1,747 @@
 [
-  {"name": "Barbro", "area": "Södermalm", "category": "Thatsup Redaktionsfavorit (Discovery Lead)", "url": "https://thatsup.se/stockholm/article/thatsup-redaktionens-favoritkrogar-i-stockholm-som-alltid-levererar"},
-  {"name": "Pelikan", "area": "Södermalm", "category": "Thatsup Husmanskost (Discovery Lead)", "url": "https://thatsup.se/stockholm/"},
-  {"name": "Babette", "area": "Vasastan", "category": "Thatsup Kvarterskrog (Discovery Lead)", "url": "https://thatsup.se/stockholm/"},
-  {"name": "Rolfs kök", "area": "Norrmalm", "category": "Thatsup Klassiker (Discovery Lead)", "url": "https://thatsup.se/stockholm/"},
-  {"name": "Hantverket", "area": "Östermalm", "category": "Thatsup Restaurang (Discovery Lead)", "url": "https://thatsup.se/stockholm/"},
-  {"name": "Portal", "area": "Vasastan", "category": "Thatsup Restaurang (Discovery Lead)", "url": "https://thatsup.se/stockholm/"},
-  {"name": "Tranan", "area": "Vasastan", "category": "Thatsup Klassiker (Discovery Lead)", "url": "https://thatsup.se/stockholm/"},
-  {"name": "Lilla Ego", "area": "Vasastan", "category": "Thatsup Restaurang (Discovery Lead)", "url": "https://thatsup.se/stockholm/"},
-  {"name": "Café Pascal", "area": "Vasastan", "category": "Thatsup Kafé (Discovery Lead)", "url": "https://thatsup.se/stockholm/"},
-  {"name": "Drop Coffee", "area": "Södermalm", "category": "Thatsup Specialkaffe (Discovery Lead)", "url": "https://thatsup.se/stockholm/"},
-  {"name": "Lillebrors Bageri", "area": "Vasastan", "category": "Thatsup Bageri (Discovery Lead)", "url": "https://thatsup.se/stockholm/"},
-  {"name": "Bistro Süd", "area": "Södermalm", "category": "Thatsup Bistro (Discovery Lead)", "url": "https://thatsup.se/stockholm/"}
+  {
+    "name": "Barbro",
+    "area": "Södermalm",
+    "category": "Thatsup Redaktionsfavorit (Discovery Lead)",
+    "url": "https://thatsup.se/stockholm/article/thatsup-redaktionens-favoritkrogar-i-stockholm-som-alltid-levererar"
+  },
+  {
+    "name": "Pelikan",
+    "area": "Södermalm",
+    "category": "Thatsup Husmanskost (Discovery Lead)",
+    "url": "https://thatsup.se/stockholm/"
+  },
+  {
+    "name": "Babette",
+    "area": "Vasastan",
+    "category": "Thatsup Kvarterskrog (Discovery Lead)",
+    "url": "https://thatsup.se/stockholm/"
+  },
+  {
+    "name": "Rolfs kök",
+    "area": "Norrmalm",
+    "category": "Thatsup Klassiker (Discovery Lead)",
+    "url": "https://thatsup.se/stockholm/"
+  },
+  {
+    "name": "Hantverket",
+    "area": "Östermalm",
+    "category": "Thatsup Restaurang (Discovery Lead)",
+    "url": "https://thatsup.se/stockholm/"
+  },
+  {
+    "name": "Portal",
+    "area": "Vasastan",
+    "category": "Thatsup Restaurang (Discovery Lead)",
+    "url": "https://thatsup.se/stockholm/"
+  },
+  {
+    "name": "Tranan",
+    "area": "Vasastan",
+    "category": "Thatsup Klassiker (Discovery Lead)",
+    "url": "https://thatsup.se/stockholm/"
+  },
+  {
+    "name": "Lilla Ego",
+    "area": "Vasastan",
+    "category": "Thatsup Restaurang (Discovery Lead)",
+    "url": "https://thatsup.se/stockholm/"
+  },
+  {
+    "name": "Café Pascal",
+    "area": "Vasastan",
+    "category": "Thatsup Kafé (Discovery Lead)",
+    "url": "https://thatsup.se/stockholm/"
+  },
+  {
+    "name": "Drop Coffee",
+    "area": "Södermalm",
+    "category": "Thatsup Specialkaffe (Discovery Lead)",
+    "url": "https://thatsup.se/stockholm/"
+  },
+  {
+    "name": "Lillebrors Bageri",
+    "area": "Vasastan",
+    "category": "Thatsup Bageri (Discovery Lead)",
+    "url": "https://thatsup.se/stockholm/"
+  },
+  {
+    "name": "Bistro Süd",
+    "area": "Södermalm",
+    "category": "Thatsup Bistro (Discovery Lead)",
+    "url": "https://thatsup.se/stockholm/"
+  },
+  {
+    "name": "The Churchill Arms",
+    "area": "Vasastan",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/the-churchill-arms",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://churchillarms.se/",
+    "editorialExcerpt": "På den brittiska puben The Churchill Arms i Vasastan kan du sjunka ned bland bokhyllor, läderfåtöljer och bås och insupa atmosfären. I baren väntar många sorters öl på fat, och en mängd andra på flaska. Ofta tar man in mindre kvantiteter öl från spännande b...",
+    "address": "Tulegatan 21, Vasastan",
+    "latitude": 59.3434,
+    "longitude": 18.0609,
+    "priceRange": "$$"
+  },
+  {
+    "name": "The Old Brewer Vasastan",
+    "area": "Vasastan",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/the-old-brewer-vasastan",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://vasastan.theoldbrewer.se",
+    "address": "Luntmakargatan 98, Vasastan",
+    "latitude": 59.3441,
+    "longitude": 18.0572,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "The Old Brewer Hornstull",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/the-old-brewer-hornstull",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://vasastan.theoldbrewer.se",
+    "address": "Långholmsgatan 3, Södermalm",
+    "latitude": 59.3183,
+    "longitude": 18.0327,
+    "priceRange": "$$"
+  },
+  {
+    "name": "The Mad Hatter",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/the-mad-hatter",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "editorialExcerpt": "Denna bar har fått sitt namn från Hattmakaren i Alice i Underlandet, som är en av ägarens favoritböcker. Du hittar baren på Skånegatan på Södermalm, där den amerikanska ägaren har skapat en färgglad, modern och osnobbig ölbar med tolv kranar, ett brett utbu...",
+    "address": "Skånegatan 73, Södermalm",
+    "latitude": 59.3127,
+    "longitude": 18.0816,
+    "priceRange": "$-$$"
+  },
+  {
+    "name": "Einar",
+    "area": "Vasastan",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/einar-ol-matbar",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://www.xn--einarlochmatbar-dtb.se/",
+    "editorialExcerpt": "Denna nostalgiska kvartersbar hämtar inspiration från såväl Centraleuropas pubar som 50- och 60-talets svenska ölcaféer, och syr ihop det hela till en varm och hemtrevlig helhet. Einars ölutbud spänner brett och rymmer både traditionella och experimentella...",
+    "address": "Roslagsgatan 4, Vasastan",
+    "latitude": 59.3447,
+    "longitude": 18.0617,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Tritonia",
+    "area": "Gamla Stan",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/tritonia",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://tritonia.se/",
+    "editorialExcerpt": "På denna \"ölverkstad\" vägg i vägg med syskonet Barrels Burgers & Beer i Gamla Stan ägnar man sig helhjärtat åt varierande hantverksöl på fat och flaska. Här kan du ta del av hundraåriga hantverkstraditioner och testa dig fram bland spännande smaker i riktig...",
+    "address": "Stora Nygatan 20, Gamla Stan",
+    "latitude": 59.3246,
+    "longitude": 18.0685
+  },
+  {
+    "name": "Bierhaus",
+    "area": "Norrmalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/bierhaus",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://bierhaus.se",
+    "editorialExcerpt": "Den som är ute efter tyskt hantverksöl och hemgjorda korvar har kommit helt rätt. Bierhaus förlänger oktoberfesten i klassisk ölhallsmiljö, vilket lockar mängder av biraälskare. I baren erbjuds en mängd tyska ölsorter på fat att prova sig fram genom, bland...",
+    "address": "Tegnérgatan 10, Norrmalm",
+    "latitude": 59.3402,
+    "longitude": 18.0619,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Pickwick",
+    "area": "Norrmalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/pickwick",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.pickwick.nu",
+    "editorialExcerpt": "Ett imponerade utbud av öl på fat och flaska, från både lokala och internationella producenter, finns att utforska på Pickwick som ligger mitt i Stockholm city. Miljön går i klassisk irländsk pub-stil och utöver gyllene dryck kan du förtära svensk husman sa...",
+    "address": "Drottninggatan 6, Norrmalm",
+    "latitude": 59.3291,
+    "longitude": 18.0661,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Omnipollos hatt",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/omnipollos-hatt",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.omnipolloshatt.com",
+    "editorialExcerpt": "På Hökens gata hittas den första baren signerad mikrobryggeriet Omnipollo, där man trollar fram en massa originellt ur hatten – dessutom kombinerat med några av stans mest nytänkande pizzor. Våren 2020 etablerade sig verksamheten även i Sundbyberg, närmare...",
+    "address": "Hökens Gata 3, Södermalm",
+    "latitude": 59.3181,
+    "longitude": 18.0723,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Omnipollos Kyrka",
+    "area": "Västerort",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/omnipollos-kyrka",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.omnipolloshatt.com",
+    "editorialExcerpt": "På Hökens gata hittas den första baren signerad mikrobryggeriet Omnipollo, där man trollar fram en massa originellt ur hatten – dessutom kombinerat med några av stans mest nytänkande pizzor. Våren 2020 etablerade sig verksamheten även i Sundbyberg, närmare...",
+    "address": "Sturegatan 41, Västerort",
+    "latitude": 59.3637,
+    "longitude": 17.9661,
+    "priceRange": "$"
+  },
+  {
+    "name": "Akkurat",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/akkurat-bar-restaurang",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.akkurat.se",
+    "editorialExcerpt": "Detta öl- och whiskymecka på Söder, även känt för sina musslor, lockar med runt ett enormt utbud av öl, varav en del är dyrgripar som lagras i källaren. Filosofin är att jobba med riktigt små bryggerier för att värna om ölfloran, vilket de gjort ända sedan...",
+    "address": "Hornsgatan 18, Södermalm",
+    "latitude": 59.3197,
+    "longitude": 18.0686,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Katarina Ölkafé",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/katarina-olkafe",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "editorialExcerpt": "Katarina Ölkafé är ett populärt ölkafé där du även hittar schyssta tillbehör på menyn. Stilen är influerad av en typiskt \"east coast deli\" och ölutbudet är medvetet: här serveras du dryck från lokala bryggerier.",
+    "address": "Katarina Bangata 27, Södermalm",
+    "latitude": 59.3117,
+    "longitude": 18.0794,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Omaka",
+    "area": "Östermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/omaka",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://omaka.beer/",
+    "editorialExcerpt": "Om du föredrar att skåla i närproducerad hantverksöl så är potentialen stor att du kommer trivas på Omaka. Bryggerikrogen drivs nämligen av Spendrupsättlingen Hedda, och erbjuder utöver öl från det egna bryggeriet även passande mat i modernt brasseristuk. H...",
+    "address": "Uggelviksgatan 2a, Östermalm",
+    "latitude": 59.3435,
+    "longitude": 18.0686,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Stigbergets Fot",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/stigbergets-fot",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://stigbergetsfot.se/",
+    "editorialExcerpt": "Göteborgsbryggeriet etablerade sig 2020 på Södermalm, där de tappar upp olika hantverksöl som du med stor sannolikhet inte stött på tidigare. Till ölen serveras en meny med hyllade burgare och annan internationell streetfood. Enligt en del recensenter serve...",
+    "address": "Götgatan 5, Södermalm",
+    "latitude": 59.3191,
+    "longitude": 18.0709,
+    "priceRange": "$-$$"
+  },
+  {
+    "name": "Mikkeller",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/mikkeller-sodermalm",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://mikkeller.com",
+    "editorialExcerpt": "Det danska fantombryggeriet Mikkeller har filialer världen över, så även i Stockholm. I den svenska ölbaren återskapar man det danska konceptet med ett brett urval av ölsorter på fat samt flasköl från Mikkeller och deras vänner. Förutom öl serverar de också...",
+    "address": "Östgötagatan 33, Södermalm",
+    "latitude": 59.3149,
+    "longitude": 18.0765
+  },
+  {
+    "name": "Tjoget",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/tjoget",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://tjoget.com/",
+    "editorialExcerpt": "Södermalmskrogen Tjoget är lika känd för sin goda mat som sina stimmiga festkvällar och välkurerade barer. Under ett och samma tak ryms nämligen restaurang, cocktailbar, vinbar och ölbar. I ölbaren langas smårätter, snacks, kaffe, hantverksöl och pilsner se...",
+    "address": "Hornsbruksgatan 24, Södermalm",
+    "latitude": 59.3162,
+    "longitude": 18.0349,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Oliver Twist",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/oliver-twist",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.olivertwist.se/",
+    "editorialExcerpt": "Oliver Twist vill ge den klassiska pubatmosfären en lite mer unik touch – ja, Olivers egna twist helt enkelt. Här finns ett ölutbud som heter duga, med över 20 kranar och omkring 200 varianter på flaska och burk att botanisera bland. Kombinera med något rej...",
+    "address": "Repslagargatan 6, Södermalm",
+    "latitude": 59.318,
+    "longitude": 18.0703,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Nya Carnegiebryggeriet",
+    "area": "Söderort",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/nya-carnegiebryggeriet",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://www.nyacarnegiebryggeriet.se",
+    "editorialExcerpt": "Nya Carnegiebryggeriet är ett bryggeri, bar och restaurang vid kajkanten i Hammarby sjöstad. Nya Carnegiebryggeriet, som ligger i den gamla lampfabriken Luma, är ett samarbete mellan Carlsberg Sverige och Brooklyn Brewery och här bryggs öl med inspiration f...",
+    "address": "Ljusslingan 15, Söderort",
+    "latitude": 59.3053,
+    "longitude": 18.0987,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Liebling",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/liebling",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://www.restaurangliebling.com/",
+    "editorialExcerpt": "Alldeles intill Mariatorget hittar du den tyska bistron Liebling som utöver matsal har en tillhörande ölbar. Här kan du välja och vraka bland både traditionella och moderna ölsorter från tyska och svenska bryggerier, och få din öl i allt från en stor ölsejd...",
+    "address": "Timmermansgatan 24, Södermalm",
+    "latitude": 59.3175,
+    "longitude": 18.0601,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Man in the Moon",
+    "area": "Norrmalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/man-in-the-moon",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.maninthemoon.se",
+    "editorialExcerpt": "Att Ratebeer, som länge var världens största ölsajt fram tills nedläggningen 2025, utsåg Man in the Moon till Sveriges bästa ölrestaurang och listat dem högst på en lista över världens bästa ölställen säger en hel del. Gastropuben erbjuder 650 ölsorter vara...",
+    "address": "Tegnérgatan 2C, Norrmalm",
+    "latitude": 59.3413,
+    "longitude": 18.0634,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Pressklubben",
+    "area": "Norrmalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/pressklubben",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.pressklubben.se",
+    "editorialExcerpt": "Med över 750 belgiska ölsorter från 115 bryggerier är detta inte bara ett välkänt ställe bland journalister. Som ölfanatiker hittar du något för varje smak, från syrligt till humle. Eller vad sägs om microöl, eller picoöl? Det är bara att sondera utbudet oc...",
+    "address": "Vasagatan 50, Norrmalm",
+    "latitude": 59.3345,
+    "longitude": 18.0561,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Zum Franziskaner",
+    "area": "Gamla Stan",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/zum-franziskaner",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.zumen.se",
+    "editorialExcerpt": "Den anrika ölhallen Zum Franziskaner på Skeppsbron serverar öl från små och oberoende bryggerier i Sverige och Tyskland. Här flödar både ölen och passionen för drycken; sedan 2017 drivs restaurangen av Stene Isacsson från omtalade Akkurat . Men någon IPA lä...",
+    "address": "Skeppsbron 44, Gamla Stan",
+    "latitude": 59.3224,
+    "longitude": 18.0742,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Molly Malone's",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/molly-malones-sodermalm",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://mollymalone.se/",
+    "editorialExcerpt": "Gemytlig atmosfär, klassisk pubmat och ett brett utbud av öl och irländsk whisky – det hittar du på den irländska puben Molly Malone's. Här finns såklart Guinness i mängder för dig som suktar efter den irländska ölen. Perfekt när du vill umgås och dricka öl...",
+    "address": "Hornsgatan 81, Södermalm",
+    "latitude": 59.3171,
+    "longitude": 18.05,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Stockholm Brewing Co.",
+    "area": "Östermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/aktivitet/stockholm-brewing-co",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://www.stockholmbrewing.com/",
+    "editorialExcerpt": "På Stockholm Brewing Company i Frihamnen ligger fokus på ekologisk hantverksöl. Här har ölet inte rest långa vägar – de erbjuder över tio öl på tapp direkt från bryggeriet. Utöver det erbjuder de ett brett utbud lager, IPA, suröl och öl som har lagrats på f...",
+    "address": "Frihamnsgatan 26A, Östermalm",
+    "latitude": 59.3429,
+    "longitude": 18.1202
+  },
+  {
+    "name": "Kvarnen",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/kvarnen",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://www.kvarnen.com/",
+    "editorialExcerpt": "Kvarnen är en av stans äldsta ölhallar, belägen intill Björns Trädgård vid Medborgarplatsen. Här möter du ölälskare, klubbkids och hungriga matgäster i en salig blandning. Välj mellan den rustika, stora hallen eller den tjeckiska ölhallen lite längre in som...",
+    "address": "Tjärhovsgatan 4, Södermalm",
+    "latitude": 59.3148,
+    "longitude": 18.0742,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Bar Central",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/bar-central",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.barcentral.se/",
+    "editorialExcerpt": "Centraleuropeiska Bar Central serverar utöver rustika barrätter som korv och spätzle även kvalitetsöl och vin med etiketter från Tjeckien, Tyskland och Österrike. Bakom baren står Stockholms allra första utbildade head tapsters, som ser till att ölen hanter...",
+    "address": "Hornsgatan 72, Södermalm",
+    "latitude": 59.3185,
+    "longitude": 18.0581,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Kelly's",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/kelly-s-bar-restaurang",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.kellysbar.nu/",
+    "editorialExcerpt": "På rockbaren Kelly's kliver du in i en klassisk pubmiljö, givetvis influerad av rockmusik. Här kan du njuta av flera olika typer av öl medan du dras med i den festliga stämningen som råder både dag och kväll. Hit kan man komma med såväl familjen som kompisg...",
+    "address": "Folkungagatan 49, Södermalm",
+    "latitude": 59.3142,
+    "longitude": 18.0736,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Ardbeg Embassy",
+    "area": "Gamla Stan",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/ardbeg-embassy",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.ardbegembassy.se",
+    "editorialExcerpt": "Ardbeg Embassy har ett unikt utbud av öl och whisky, med många svenska mikrobrygder på fat och hundratals olika single malts. I modern men typisk pubmiljö kan du ta en drink i baren eller beställa mat från ett svenskt kök som fokuserar på vilt. Här arranger...",
+    "address": "Västerlånggatan 68, Gamla Stan",
+    "latitude": 59.3231,
+    "longitude": 18.0719,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "PangPang Festaurang",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/pangpang-festaurang",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://www.pangpangbrewery.se/",
+    "editorialExcerpt": "PangPang Brewery , som är Stockholms första mikrobryggeri, ligger bakom PangPang Festaurang i Hornstull – en given destination för ölfantasten. Här hittar du ett öl från mikrobryggeriet i Hökarängen som bjuder på både nyskapande, genomtänkta och spännande s...",
+    "address": "Långholmsgatan 34, Södermalm",
+    "latitude": 59.3157,
+    "longitude": 18.0335,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Brother Tuck",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/brother-tuck",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://brothertuck.se/",
+    "editorialExcerpt": "Brother Tuck, Broder Tuck, Tucken – kärt barn har många namn. Här kan du välja bland över 200 sorters öl, kolla in en sportmatch på skärmarna, lyssna till livemusik eller bara umgås i skönt avslappnad miljö. Du hittar baren på Götgatan i Skanstull.",
+    "address": "Götgatan 85, Södermalm",
+    "latitude": 59.3099,
+    "longitude": 18.0758,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Ölhyttan",
+    "area": "Norrmalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/olhyttan-bar-restaurang",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://olhyttan.se/",
+    "editorialExcerpt": "Här gillar man verkligen öl – det hörs ju på namnet. Baren ligger mitt i city, mitt i myllret på Vasagatan, där det serveras svenska smaker på tallriken och allehanda öl och annan dryck i glaset. På ölkranarna hittar du öl från olika delar av världen, såväl...",
+    "address": "Vasagatan 7, Norrmalm",
+    "latitude": 59.332,
+    "longitude": 18.0576,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Mackinlay's Inn",
+    "area": "Kungsholmen",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/mackinlay-s-inn",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://mackinlaysinn.se/",
+    "editorialExcerpt": "På Kungsholmen hittar du Mackinlay's Inn, en klassisk öl- och whiskypub med skotska vibbar. De stoltserar med hela 25 olika ölkranar samt ett stort utbud på flaska och burk som inkluderar allt från storsäljare till öl från hantverks- och mikrobryggerier i S...",
+    "address": "Fleminggatan 85, Kungsholmen",
+    "latitude": 59.3344,
+    "longitude": 18.0319,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Hörnans Belgobar",
+    "area": "Vasastan",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/hornans-belgobar",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://www.belgobaren.se/hornan",
+    "editorialExcerpt": "Hörnans Belgobar är inget för den med beslutsångest, för här finns nämligen omkring 300 belgiska ölsorter att välja bland. Dessutom uppdateras öllistan jämt och ständigt med allt från älskade klassiker till brygder från småskaliga producenter och årgångsöl,...",
+    "address": "Rådmansgatan 69, Vasastan",
+    "latitude": 59.3391,
+    "longitude": 18.0542,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Soldaten Švejk",
+    "area": "Södermalm",
+    "category": "Thatsup Ölbar & Pub",
+    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/soldaten-vejk",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://svejk.se/",
+    "editorialExcerpt": "På Soldaten Svejk serverar man tjeckisk fatöl i den rustika lokalen på Östgötagatan med inspiration från Prag. Här ligger ölen varmt om hjärtat och den kunniga personalen guidar dig gärna rätt i öldjungeln. Till drycken serveras såklart tjeckisk mat.",
+    "address": "Östgötagatan 35, Södermalm",
+    "latitude": 59.3144,
+    "longitude": 18.0763,
+    "priceRange": "$"
+  }
 ]

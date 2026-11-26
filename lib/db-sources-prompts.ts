@@ -217,11 +217,11 @@ export const DEFAULT_CURATED_SOURCES: CuratedSource[] = [
     description:
       "Namngiven redaktion, daterade stadsdels- och köksguider, nyöppningar och signerade redaktionsfavoriter. Används som upptäckts- och relevanskälla (noll vikt på guideordning/upprepning; betalda Premium-placeringar exkluderas och högt förtroende kräver separat oberoende belägg).",
     license: "Redaktionell stadsguide med kommersiell annonsmodell — upptäcktskälla (thatsup.se)",
-    verifiedCount: 12,
-    scrapedPoints: 12,
-    importedCount: 12,
+    verifiedCount: 46,
+    scrapedPoints: 46,
+    importedCount: 46,
     coveragePercent: 100.0,
-    lastScrapedAt: "2026-11-23T22:00:00Z",
+    lastScrapedAt: "2026-11-26T18:16:00Z",
   },
 ];
 

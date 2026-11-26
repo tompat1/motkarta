@@ -78,7 +78,9 @@
         "Pub",
         "Södermalm",
         "Visit Stockholm",
-        "Öl & pub"
+        "Öl & pub",
+        "Thatsup",
+        "Ölbar"
       ],
       "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
       "sourceUrl": "https://www.visitstockholm.se/",
@@ -122,7 +124,19 @@
       "categoryMeanRating": 0,
       "categoryPopularityRaw": 0,
       "localPopularityPercentile": 0,
-      "priceLevel": 0
+      "priceLevel": 0,
+      "sourceFacts": [
+        {
+          "placeId": 3814909255,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3814909255:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ]
     },
     {
       "id": 3129193024,
@@ -267,7 +281,9 @@
         "Visit Stockholm",
         "White Guide Nordic",
         "World's 50 Best Discovery",
-        "Öl & pub"
+        "Öl & pub",
+        "Thatsup",
+        "Ölbar"
       ],
       "sourceName": "White Guide Nordic",
       "sourceUrl": "https://whiteguide.com/",
@@ -278,7 +294,7 @@
       "daysSinceFreshEvidence": 30,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.8,
+        "specialistGuide": 0.95,
         "independentEditorial": 1,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
@@ -332,6 +348,16 @@
           "id": "3838526283:visitstockholm:review",
           "field": "category",
           "value": "Hantverksöl & pizza"
+        },
+        {
+          "placeId": 3838526283,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3838526283:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -353,7 +379,9 @@
         "Södermalm",
         "Taproom",
         "Visit Stockholm",
-        "Öl & pub"
+        "Öl & pub",
+        "Thatsup",
+        "Ölbar"
       ],
       "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
       "sourceUrl": "https://www.visitstockholm.se/",
@@ -364,7 +392,7 @@
       "daysSinceFreshEvidence": 30,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.7,
+        "specialistGuide": 0.95,
         "independentEditorial": 1,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
@@ -418,6 +446,16 @@
           "id": "2049797667:burgerdudes:review",
           "field": "category",
           "value": "Brewpub & Burgers #8"
+        },
+        {
+          "placeId": 2049797667,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2049797667:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -437,7 +475,9 @@
         "Pub",
         "Södermalm",
         "White Guide Nordic",
-        "Öl & pub"
+        "Öl & pub",
+        "Thatsup",
+        "Ölbar"
       ],
       "sourceName": "White Guide Nordic",
       "sourceUrl": "https://whiteguide.com/",
@@ -481,13 +521,25 @@
       "categoryMeanRating": 0,
       "categoryPopularityRaw": 0,
       "localPopularityPercentile": 0,
-      "priceLevel": 0
+      "priceLevel": 0,
+      "sourceFacts": [
+        {
+          "placeId": 3041790500,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3041790500:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ]
     },
     {
       "id": 438276143,
       "name": "Soldaten Svejk",
       "kind": "Restaurant",
-      "cuisine": "czech",
+      "cuisine": "czech;pub",
       "area": "Södermalm",
       "address": "Östgötagatan 34, 116 25 Stockholm",
       "note": "Klassisk tjeckisk öl- och vodkabar på Södermalm med opastöriserad pilsner, schnitzel och ett rikt utbud av centraleuropeisk sprit och vodka.",
@@ -500,7 +552,10 @@
         "Södermalm",
         "Visit Stockholm",
         "Vodka",
-        "Öl & pub"
+        "Öl & pub",
+        "Thatsup",
+        "Craft Beer",
+        "Ölbar"
       ],
       "sourceName": "Visit Stockholm (Officiella Stadsguiden)",
       "sourceUrl": "https://www.visitstockholm.se/",
@@ -544,7 +599,19 @@
       "categoryMeanRating": 0,
       "categoryPopularityRaw": 0,
       "localPopularityPercentile": 0,
-      "priceLevel": 0
+      "priceLevel": 0,
+      "sourceFacts": [
+        {
+          "placeId": 438276143,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "438276143:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ]
     },
     {
       "id": 2827236315,
@@ -852,7 +919,7 @@
       "id": 122314563,
       "name": "Tjoget",
       "kind": "Restaurant",
-      "cuisine": "cocktails",
+      "cuisine": "cocktails;pub",
       "area": "Södermalm",
       "address": "Långholmsgatan 20, 117 33 Stockholm",
       "note": "Internationellt hyllad cocktailbar och bodega vid Hornstull med medelhavskök och innovativa drinkar.",
@@ -865,7 +932,12 @@
         "Curated",
         "Hornstull",
         "Södermalm",
-        "White Guide Nordic"
+        "White Guide Nordic",
+        "Thatsup",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "sourceName": "White Guide Nordic",
       "sourceUrl": "https://whiteguide.com/",
@@ -909,7 +981,19 @@
       "categoryMeanRating": 0,
       "categoryPopularityRaw": 0,
       "localPopularityPercentile": 0,
-      "priceLevel": 0
+      "priceLevel": 0,
+      "sourceFacts": [
+        {
+          "placeId": 122314563,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "122314563:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ]
     },
     {
       "id": 1326715211,
@@ -1118,7 +1202,7 @@
       "daysSinceFreshEvidence": 30,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.8,
+        "specialistGuide": 0.95,
         "independentEditorial": 1,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
@@ -1256,7 +1340,7 @@
       "daysSinceFreshEvidence": 30,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.8,
+        "specialistGuide": 0.95,
         "independentEditorial": 1,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
@@ -1332,7 +1416,7 @@
       "daysSinceFreshEvidence": 30,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.8,
+        "specialistGuide": 0.95,
         "independentEditorial": 1,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
@@ -1538,7 +1622,7 @@
       "daysSinceFreshEvidence": 90,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.6,
+        "specialistGuide": 0.95,
         "independentEditorial": 1,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
@@ -1681,7 +1765,7 @@
       "daysSinceFreshEvidence": 90,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.6,
+        "specialistGuide": 0.95,
         "independentEditorial": 1,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
@@ -1804,7 +1888,7 @@
       "daysSinceFreshEvidence": 90,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0,
+        "specialistGuide": 0.95,
         "independentEditorial": 1,
         "verifiedUserRating": 0,
         "repeatVisits": 0,
@@ -4192,7 +4276,7 @@
       "id": 1947185822,
       "name": "Kvarnen",
       "kind": "Restaurant",
-      "cuisine": "local;husman",
+      "cuisine": "local;husman;pub",
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: local.",
       "tags": [
@@ -4208,7 +4292,12 @@
         "White Guide Nordic",
         "Anders Husa",
         "World's 50 Best Discovery",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -4401,6 +4490,16 @@
           "id": "1947185822:visitstockholm:review",
           "field": "category",
           "value": "Klassisk husmanskost"
+        },
+        {
+          "placeId": 1947185822,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "1947185822:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -18246,8 +18345,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -21670,14 +21769,19 @@
       "id": 2782915581,
       "name": "Internationella Pressklubben",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "pub",
       "area": "Kungsholmen",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -21789,6 +21893,16 @@
           "id": "2782915581:osm:tags:diet_vegetarian",
           "field": "tags",
           "value": "Vegetarian options"
+        },
+        {
+          "placeId": 2782915581,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2782915581:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -23174,7 +23288,7 @@
       "id": 1949956524,
       "name": "Zum Franziskaner",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "pub",
       "area": "Gamla Stan",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
@@ -23195,7 +23309,12 @@
         "White Guide Nordic",
         "Anders Husa",
         "World's 50 Best Discovery",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -23397,6 +23516,16 @@
           "id": "1949956524:visitstockholm:review",
           "field": "category",
           "value": "Historisk krog"
+        },
+        {
+          "placeId": 1949956524,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "1949956524:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -33069,7 +33198,7 @@
       "id": 2675832101,
       "name": "Man in the Moon",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "pub",
       "area": "Vasastan",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
@@ -33079,7 +33208,12 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "Thatsup",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -33181,6 +33315,16 @@
           "url": "https://tasstipset.se",
           "verification": "listed",
           "capturedAt": "2026-09-07T18:54:46Z"
+        },
+        {
+          "placeId": 2675832101,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2675832101:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -43618,7 +43762,7 @@
       "id": 2805307069,
       "name": "Pickwick",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "pub",
       "area": "Norrmalm",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
@@ -43627,7 +43771,12 @@
         "Opening hours",
         "Restaurant",
         "Wi-Fi",
-        "Free Wi-Fi"
+        "Free Wi-Fi",
+        "Thatsup",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -43739,6 +43888,16 @@
           "id": "2805307069:osm:wifi",
           "field": "tags",
           "value": "Free Wi-Fi"
+        },
+        {
+          "placeId": 2805307069,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2805307069:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -45822,7 +45981,8 @@
         "White Guide Nordic",
         "Anders Husa",
         "World's 50 Best Discovery",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -46043,6 +46203,16 @@
           "id": "368899447:visitstockholm:review",
           "field": "category",
           "value": "Nordisk bistro"
+        },
+        {
+          "placeId": 368899447,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "368899447:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Restaurang (Discovery Lead)"
         }
       ],
       "priceSEK": "255 SEK"
@@ -47081,7 +47251,8 @@
         "Sveriges Bästa",
         "White Guide",
         "White Guide Nordic",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -47253,6 +47424,16 @@
           "id": "1905274995:visitstockholm:review",
           "field": "category",
           "value": "Klassisk bistro"
+        },
+        {
+          "placeId": 1905274995,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "1905274995:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Klassiker (Discovery Lead)"
         }
       ]
     },
@@ -56089,7 +56270,8 @@
         "White Guide",
         "White Guide Nordic",
         "Sveriges Bästa",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -56120,8 +56302,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -56281,6 +56463,16 @@
           "id": "4269533101:visitstockholm:review",
           "field": "category",
           "value": "Klassisk husmanskost"
+        },
+        {
+          "placeId": 4269533101,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "4269533101:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Klassiker (Discovery Lead)"
         }
       ]
     },
@@ -56288,7 +56480,7 @@
       "id": 2110617310,
       "name": "Nya Carnegiebryggeriet",
       "kind": "Restaurant",
-      "cuisine": "beer",
+      "cuisine": "beer;pub",
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: beer.",
       "tags": [
@@ -56299,7 +56491,11 @@
         "Restaurant",
         "Website",
         "Spotted by Locals",
-        "Hidden Gem"
+        "Hidden Gem",
+        "Thatsup",
+        "Pub",
+        "Craft Beer",
+        "Ölbar"
       ],
       "is_hidden_gem": true,
       "is_structural_anomaly": false,
@@ -56401,6 +56597,16 @@
           "verification": "listed",
           "url": "https://www.spottedbylocals.com/stockholm/nya-carnegiebryggeriet/",
           "capturedAt": "2026-09-08T16:28:30Z"
+        },
+        {
+          "placeId": 2110617310,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2110617310:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -57195,7 +57401,8 @@
         "White Guide",
         "White Guide Nordic",
         "Visit Stockholm",
-        "Sveriges Bästa"
+        "Sveriges Bästa",
+        "Thatsup"
       ],
       "is_hidden_gem": true,
       "is_structural_anomaly": false,
@@ -57388,6 +57595,16 @@
           "id": "1453564510:sverigesbästa:review",
           "field": "category",
           "value": "Sveriges Bästa Husmanskost"
+        },
+        {
+          "placeId": 1453564510,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "1453564510:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Husmanskost (Discovery Lead)"
         }
       ]
     },
@@ -75434,7 +75651,8 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Closed"
+        "Closed",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -75536,6 +75754,16 @@
           "id": "2309889992:osm:atmosphere:indoor",
           "field": "atmosphere",
           "value": "indoor seating"
+        },
+        {
+          "placeId": 2309889992,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2309889992:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bistro (Discovery Lead)"
         }
       ],
       "lifecycleState": "closed"
@@ -100726,8 +100954,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -156215,7 +156443,8 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -156297,6 +156526,16 @@
           "id": "3418484798:osm:website",
           "field": "tags",
           "value": "Website: https://bar-bro.se/"
+        },
+        {
+          "placeId": 3418484798,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/article/thatsup-redaktionens-favoritkrogar-i-stockholm-som-alltid-levererar",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3418484798:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Redaktionsfavorit (Discovery Lead)"
         }
       ]
     },
@@ -160177,8 +160416,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -168518,14 +168757,19 @@
       "id": 4013387416,
       "name": "Ardbeg Embassy",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "pub",
       "area": "Gamla Stan",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -168627,6 +168871,16 @@
           "id": "4013387416:osm:tags:wheelchair",
           "field": "tags",
           "value": "Wheelchair accessible (limited)"
+        },
+        {
+          "placeId": 4013387416,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "4013387416:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -175669,14 +175923,19 @@
       "id": 1188454626,
       "name": "Tjoget",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "pub",
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -175818,6 +176077,16 @@
           "id": "1188454626:website:dish:cardamom bun",
           "field": "dish",
           "value": "cardamom bun"
+        },
+        {
+          "placeId": 1188454626,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "1188454626:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -206525,7 +206794,7 @@
       "id": 1032866672,
       "name": "Bierhaus",
       "kind": "Restaurant",
-      "cuisine": "german",
+      "cuisine": "german;pub",
       "area": "Vasastan",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: german.",
       "tags": [
@@ -206533,7 +206802,12 @@
         "German",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -206666,6 +206940,16 @@
           "id": "1032866672:osm:dish:currywurst",
           "field": "dish",
           "value": "currywurst"
+        },
+        {
+          "placeId": 1032866672,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "1032866672:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -211358,8 +211642,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -227559,8 +227843,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -230097,8 +230381,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -230545,7 +230829,8 @@
         "White Guide Nordic",
         "Anders Husa",
         "World's 50 Best Discovery",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -230737,6 +231022,16 @@
           "id": "3574609651:visitstockholm:review",
           "field": "category",
           "value": "Vinbar & mat"
+        },
+        {
+          "placeId": 3574609651,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3574609651:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Kvarterskrog (Discovery Lead)"
         }
       ]
     },
@@ -233481,14 +233776,19 @@
       "id": 4081223921,
       "name": "The Old Brewer",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "pub",
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -233570,6 +233870,16 @@
           "id": "4081223921:osm:website",
           "field": "tags",
           "value": "Website: https://hornstull.theoldbrewer.se"
+        },
+        {
+          "placeId": 4081223921,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "4081223921:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -251375,7 +251685,8 @@
         "White Guide Nordic",
         "Anders Husa",
         "World's 50 Best Discovery",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -251537,6 +251848,16 @@
           "id": "3857435611:visitstockholm:review",
           "field": "category",
           "value": "Nordisk modern mat"
+        },
+        {
+          "placeId": 3857435611,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3857435611:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Restaurang (Discovery Lead)"
         }
       ]
     },
@@ -281103,8 +281424,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -281709,7 +282030,8 @@
         "White Guide Nordic",
         "Anders Husa",
         "World's 50 Best Discovery",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -281871,6 +282193,16 @@
           "id": "1157470282:visitstockholm:review",
           "field": "category",
           "value": "Hantverksmat"
+        },
+        {
+          "placeId": 1157470282,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "1157470282:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Restaurang (Discovery Lead)"
         }
       ]
     },
@@ -308329,7 +308661,8 @@
         "Curated",
         "Anders Husa",
         "World's 50 Best Discovery",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -308359,8 +308692,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -308520,6 +308853,16 @@
           "id": "4198672023:visitstockholm:review",
           "field": "category",
           "value": "Hantverksbageri"
+        },
+        {
+          "placeId": 4198672023,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "4198672023:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bageri (Discovery Lead)"
         }
       ]
     },
@@ -322060,7 +322403,7 @@
       "id": 2037958030,
       "name": "Liebling",
       "kind": "Restaurant",
-      "cuisine": "german",
+      "cuisine": "german;pub",
       "area": "Södermalm",
       "note": "Restaurant from OpenStreetMap. Cuisine tag: german.",
       "tags": [
@@ -322075,7 +322418,12 @@
         "White Guide",
         "White Guide Nordic",
         "Curated",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -322238,6 +322586,16 @@
           "id": "2037958030:visitstockholm:review",
           "field": "category",
           "value": "Centraleuropeisk krog"
+        },
+        {
+          "placeId": 2037958030,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2037958030:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ]
     },
@@ -334563,8 +334921,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -373959,8 +374317,8 @@
       "ageDays": 1200,
       "daysSinceFreshEvidence": 15,
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -377982,7 +378340,11 @@
         "Central Stockholm",
         "Spotted by Locals",
         "Hidden Gem",
-        "Curated"
+        "Curated",
+        "Thatsup",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "lifecycleState": "verified",
       "sourceName": "Spotted by Locals Stockholm",
@@ -378019,6 +378381,16 @@
           "id": "116240012:website:openingHours",
           "field": "openingHours",
           "value": "öppettider söndag"
+        },
+        {
+          "placeId": 116240012,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "116240012:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
         }
       ],
       "evidence": {
@@ -378531,7 +378903,10 @@
         "White Guide",
         "Anders Husa",
         "Visit Stockholm",
-        "Vegetarian"
+        "Vegetarian",
+        "White Guide Nordic",
+        "Curated",
+        "World's 50 Best Discovery"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -378564,8 +378939,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -378633,6 +379008,16 @@
           "id": "4100001001:visitstockholm:review",
           "field": "category",
           "value": "Hållbar gastronomi"
+        },
+        {
+          "placeId": 4100001001,
+          "source": "Anders Husa & Kaitlin Orr",
+          "url": "https://andershusa.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001001:andershusakaitlinorr:review",
+          "field": "category",
+          "value": "Sustainable Gastronomy"
         }
       ],
       "priceSEK": "$$$"
@@ -378653,7 +379038,11 @@
         "Guide Michelin",
         "White Guide",
         "Anders Husa",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Michelin",
+        "Curated",
+        "White Guide Nordic",
+        "World's 50 Best Discovery"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -378686,8 +379075,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -378755,6 +379144,46 @@
           "id": "4100001002:visit_stockholm:review",
           "field": "category",
           "value": "Nordic"
+        },
+        {
+          "placeId": 4100001002,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/bar-agrikultur",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001002:guidemichelin:review",
+          "field": "category",
+          "value": "Bib Gourmand"
+        },
+        {
+          "placeId": 4100001002,
+          "source": "White Guide",
+          "url": "https://whiteguide.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001002:whiteguide:review",
+          "field": "category",
+          "value": "Mästarklass"
+        },
+        {
+          "placeId": 4100001002,
+          "source": "Anders Husa & Kaitlin Orr",
+          "url": "https://andershusa.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001002:andershusakaitlinorr:review",
+          "field": "category",
+          "value": "Nordic Small Plates"
+        },
+        {
+          "placeId": 4100001002,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001002:visitstockholm:review",
+          "field": "category",
+          "value": "Smårätter & hantverk"
         }
       ],
       "priceSEK": "$$$"
@@ -378773,7 +379202,10 @@
         "Guide Michelin",
         "White Guide",
         "Anders Husa",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "White Guide Nordic",
+        "Curated",
+        "World's 50 Best Discovery"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -378806,8 +379238,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -378875,6 +379307,36 @@
           "id": "4100001003:visit_stockholm:review",
           "field": "category",
           "value": "Fine Dining"
+        },
+        {
+          "placeId": 4100001003,
+          "source": "White Guide",
+          "url": "https://whiteguide.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001003:whiteguide:review",
+          "field": "category",
+          "value": "Global Mästarklass"
+        },
+        {
+          "placeId": 4100001003,
+          "source": "Anders Husa & Kaitlin Orr",
+          "url": "https://andershusa.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001003:andershusakaitlinorr:review",
+          "field": "category",
+          "value": "Fine Dining"
+        },
+        {
+          "placeId": 4100001003,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001003:visitstockholm:review",
+          "field": "category",
+          "value": "2 Michelin-stjärnor"
         }
       ],
       "priceSEK": "$$$$"
@@ -378893,7 +379355,10 @@
         "Artisan bakery",
         "White Guide",
         "Anders Husa",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "White Guide Nordic",
+        "Curated",
+        "World's 50 Best Discovery"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -378926,8 +379391,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -378985,6 +379450,36 @@
           "id": "4100001004:visit_stockholm:review",
           "field": "category",
           "value": "Sourdough"
+        },
+        {
+          "placeId": 4100001004,
+          "source": "White Guide",
+          "url": "https://whiteguide.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001004:whiteguide:review",
+          "field": "category",
+          "value": "Mästarklass Fika"
+        },
+        {
+          "placeId": 4100001004,
+          "source": "Anders Husa & Kaitlin Orr",
+          "url": "https://andershusa.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001004:andershusakaitlinorr:review",
+          "field": "category",
+          "value": "Artisan Bakery"
+        },
+        {
+          "placeId": 4100001004,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001004:visitstockholm:review",
+          "field": "category",
+          "value": "Hantverksbageri"
         }
       ],
       "priceSEK": "$$"
@@ -379002,7 +379497,10 @@
         "Seasonal",
         "White Guide",
         "Anders Husa",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "White Guide Nordic",
+        "Curated",
+        "World's 50 Best Discovery"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -379035,8 +379533,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -379094,6 +379592,36 @@
           "id": "4100001005:visit_stockholm:review",
           "field": "category",
           "value": "Wood-fired"
+        },
+        {
+          "placeId": 4100001005,
+          "source": "White Guide",
+          "url": "https://whiteguide.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001005:whiteguide:review",
+          "field": "category",
+          "value": "Mycket god klass"
+        },
+        {
+          "placeId": 4100001005,
+          "source": "Anders Husa & Kaitlin Orr",
+          "url": "https://andershusa.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001005:andershusakaitlinorr:review",
+          "field": "category",
+          "value": "Neighborhood Bistro"
+        },
+        {
+          "placeId": 4100001005,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001005:visitstockholm:review",
+          "field": "category",
+          "value": "Kvarterskrog"
         }
       ],
       "priceSEK": "$$$"
@@ -379111,7 +379639,10 @@
         "Brasserie",
         "White Guide",
         "Anders Husa",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "White Guide Nordic",
+        "Curated",
+        "World's 50 Best Discovery"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -379144,8 +379675,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -379203,6 +379734,36 @@
           "id": "4100001006:visit_stockholm:review",
           "field": "category",
           "value": "French bistro"
+        },
+        {
+          "placeId": 4100001006,
+          "source": "White Guide",
+          "url": "https://whiteguide.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001006:whiteguide:review",
+          "field": "category",
+          "value": "Mycket god klass"
+        },
+        {
+          "placeId": 4100001006,
+          "source": "Anders Husa & Kaitlin Orr",
+          "url": "https://andershusa.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001006:andershusakaitlinorr:review",
+          "field": "category",
+          "value": "French Fine Dining"
+        },
+        {
+          "placeId": 4100001006,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001006:visitstockholm:review",
+          "field": "category",
+          "value": "Fransk gastronomi"
         }
       ],
       "priceSEK": "$$$"
@@ -379221,7 +379782,10 @@
         "Nordic",
         "White Guide",
         "Anders Husa",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "White Guide Nordic",
+        "Curated",
+        "World's 50 Best Discovery"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -379254,8 +379818,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -379313,6 +379877,36 @@
           "id": "4100001007:visit_stockholm:review",
           "field": "category",
           "value": "Fine Dining"
+        },
+        {
+          "placeId": 4100001007,
+          "source": "White Guide",
+          "url": "https://whiteguide.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001007:whiteguide:review",
+          "field": "category",
+          "value": "Mycket god klass"
+        },
+        {
+          "placeId": 4100001007,
+          "source": "Anders Husa & Kaitlin Orr",
+          "url": "https://andershusa.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001007:andershusakaitlinorr:review",
+          "field": "category",
+          "value": "Nordic Gastronomy"
+        },
+        {
+          "placeId": 4100001007,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001007:visitstockholm:review",
+          "field": "category",
+          "value": "Klassisk matkonst"
         }
       ],
       "priceSEK": "$$$$"
@@ -379331,7 +379925,10 @@
         "Garden dining",
         "White Guide",
         "Anders Husa",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "White Guide Nordic",
+        "Curated",
+        "World's 50 Best Discovery"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -379364,8 +379961,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -379423,6 +380020,36 @@
           "id": "4100001008:visit_stockholm:review",
           "field": "category",
           "value": "Seasonal"
+        },
+        {
+          "placeId": 4100001008,
+          "source": "White Guide",
+          "url": "https://whiteguide.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001008:whiteguide:review",
+          "field": "category",
+          "value": "Mästarklass"
+        },
+        {
+          "placeId": 4100001008,
+          "source": "Anders Husa & Kaitlin Orr",
+          "url": "https://andershusa.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001008:andershusakaitlinorr:review",
+          "field": "category",
+          "value": "Boutique Dining"
+        },
+        {
+          "placeId": 4100001008,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001008:visitstockholm:review",
+          "field": "category",
+          "value": "Boutique gastronomi"
         }
       ],
       "priceSEK": "$$$$"
@@ -379440,7 +380067,9 @@
         "Fika",
         "Pastry",
         "White Guide",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "White Guide Nordic",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -379473,8 +380102,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -379522,6 +380151,26 @@
           "id": "4100001009:visit_stockholm:review",
           "field": "category",
           "value": "Konditori"
+        },
+        {
+          "placeId": 4100001009,
+          "source": "White Guide",
+          "url": "https://whiteguide.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001009:whiteguide:review",
+          "field": "category",
+          "value": "God klass Fika"
+        },
+        {
+          "placeId": 4100001009,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001009:visitstockholm:review",
+          "field": "category",
+          "value": "Konditoriklassiker"
         }
       ],
       "priceSEK": "$$"
@@ -379539,7 +380188,9 @@
         "Sushi",
         "Fine Dining",
         "Anders Husa",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "World's 50 Best Discovery",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -379572,8 +380223,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -379621,6 +380272,26 @@
           "id": "4100001010:visit_stockholm:review",
           "field": "category",
           "value": "Omakase"
+        },
+        {
+          "placeId": 4100001010,
+          "source": "Anders Husa & Kaitlin Orr",
+          "url": "https://andershusa.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001010:andershusakaitlinorr:review",
+          "field": "category",
+          "value": "Omakase Sushi"
+        },
+        {
+          "placeId": 4100001010,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001010:visitstockholm:review",
+          "field": "category",
+          "value": "Sushi"
         }
       ],
       "priceSEK": "$$$$"
@@ -379636,7 +380307,9 @@
       "tags": [
         "Fine Dining",
         "Tasting menu",
-        "Guide Michelin"
+        "Guide Michelin",
+        "Michelin",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -379669,8 +380342,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -379708,6 +380381,16 @@
           "id": "4100001011:michelin:review",
           "field": "category",
           "value": "Fine Dining"
+        },
+        {
+          "placeId": 4100001011,
+          "source": "Guide Michelin",
+          "url": "https://guide.michelin.com/se/sv/stockholm-region/stockholm/restaurant/persona",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001011:guidemichelin:review",
+          "field": "category",
+          "value": "1 Michelin Star"
         }
       ],
       "priceSEK": "$$$$"
@@ -379724,7 +380407,8 @@
         "Italian",
         "Handmade pasta",
         "Rooftop",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -379757,8 +380441,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -379796,6 +380480,16 @@
           "id": "4100001012:visit_stockholm:review",
           "field": "category",
           "value": "Italian"
+        },
+        {
+          "placeId": 4100001012,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001012:visitstockholm:review",
+          "field": "category",
+          "value": "Italiensk takkrog"
         }
       ],
       "priceSEK": "$$$"
@@ -379812,7 +380506,8 @@
         "Swedish classics",
         "Waterfront view",
         "Julbord",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -379845,8 +380540,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -379884,6 +380579,16 @@
           "id": "4100001013:visit_stockholm:review",
           "field": "category",
           "value": "Swedish classics"
+        },
+        {
+          "placeId": 4100001013,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001013:visitstockholm:review",
+          "field": "category",
+          "value": "Historiskt värdshus"
         }
       ],
       "priceSEK": "$$$"
@@ -379900,7 +380605,8 @@
         "Swedish classics",
         "Waterfront view",
         "Julbord",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Curated"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -379933,8 +380639,8 @@
       "daysSinceFreshEvidence": 15,
       "lifecycleState": "verified",
       "evidence": {
-        "specialistGuide": 0.85,
-        "independentEditorial": 0.8,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.4,
         "repeatVisits": 12,
         "recentReviews": 14,
@@ -379972,6 +380678,16 @@
           "id": "4100001014:visit_stockholm:review",
           "field": "category",
           "value": "Swedish classics"
+        },
+        {
+          "placeId": 4100001014,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "4100001014:visitstockholm:review",
+          "field": "category",
+          "value": "Historiskt värdshus"
         }
       ],
       "priceSEK": "$$$"
@@ -380162,7 +380878,959 @@
       ],
       "priceSEK": "$$",
       "osmIdentity": "curated/fabrique-slipen-djurgarden"
+    },
+    {
+      "id": 3829961535,
+      "idNamespace": "public",
+      "name": "The Churchill Arms",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Vasastan",
+      "address": "Tulegatan 21, Vasastan",
+      "latitude": 59.3434,
+      "longitude": 18.0609,
+      "x": 59.3434,
+      "y": 18.0609,
+      "priceLevel": 2,
+      "note": "På den brittiska puben The Churchill Arms i Vasastan kan du sjunka ned bland bokhyllor, läderfåtöljer och bås och insupa atmosfären. I baren väntar många sorters öl på fat, och en mängd andra på flaska. Ofta tar man in mindre kvantiteter öl från spännande b...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Vasastan",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829961535,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829961535:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "https://churchillarms.se/"
+    },
+    {
+      "id": 3829742633,
+      "idNamespace": "public",
+      "name": "The Old Brewer Vasastan",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Vasastan",
+      "address": "Luntmakargatan 98, Vasastan",
+      "latitude": 59.3441,
+      "longitude": 18.0572,
+      "x": 59.3441,
+      "y": 18.0572,
+      "priceLevel": 3,
+      "note": "Ölbar & pub i Stockholm (upptäcktskälla via Thatsup Stockholm).",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Vasastan",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829742633,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829742633:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "https://vasastan.theoldbrewer.se"
+    },
+    {
+      "id": 3829654565,
+      "idNamespace": "public",
+      "name": "The Mad Hatter",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Södermalm",
+      "address": "Skånegatan 73, Södermalm",
+      "latitude": 59.3127,
+      "longitude": 18.0816,
+      "x": 59.3127,
+      "y": 18.0816,
+      "priceLevel": 3,
+      "note": "Denna bar har fått sitt namn från Hattmakaren i Alice i Underlandet, som är en av ägarens favoritböcker. Du hittar baren på Skånegatan på Södermalm, där den amerikanska ägaren har skapat en färgglad, modern och osnobbig ölbar med tolv kranar, ett brett utbu...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829654565,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829654565:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ]
+    },
+    {
+      "id": 3829987474,
+      "idNamespace": "public",
+      "name": "Einar",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Vasastan",
+      "address": "Roslagsgatan 4, Vasastan",
+      "latitude": 59.3447,
+      "longitude": 18.0617,
+      "x": 59.3447,
+      "y": 18.0617,
+      "priceLevel": 2,
+      "note": "Denna nostalgiska kvartersbar hämtar inspiration från såväl Centraleuropas pubar som 50- och 60-talets svenska ölcaféer, och syr ihop det hela till en varm och hemtrevlig helhet. Einars ölutbud spänner brett och rymmer både traditionella och experimentella...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Vasastan",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829987474,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829987474:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "https://www.xn--einarlochmatbar-dtb.se/"
+    },
+    {
+      "id": 3829700087,
+      "idNamespace": "public",
+      "name": "Tritonia",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Gamla Stan",
+      "address": "Stora Nygatan 20, Gamla Stan",
+      "latitude": 59.3246,
+      "longitude": 18.0685,
+      "x": 59.3246,
+      "y": 18.0685,
+      "priceLevel": 2,
+      "note": "På denna \"ölverkstad\" vägg i vägg med syskonet Barrels Burgers & Beer i Gamla Stan ägnar man sig helhjärtat åt varierande hantverksöl på fat och flaska. Här kan du ta del av hundraåriga hantverkstraditioner och testa dig fram bland spännande smaker i riktig...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Gamla Stan",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829700087,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829700087:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "http://tritonia.se/"
+    },
+    {
+      "id": 3829448502,
+      "idNamespace": "public",
+      "name": "Omnipollos Kyrka",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Västerort",
+      "address": "Sturegatan 41, Västerort",
+      "latitude": 59.3637,
+      "longitude": 17.9661,
+      "x": 59.3637,
+      "y": 17.9661,
+      "priceLevel": 1,
+      "note": "På Hökens gata hittas den första baren signerad mikrobryggeriet Omnipollo, där man trollar fram en massa originellt ur hatten – dessutom kombinerat med några av stans mest nytänkande pizzor. Våren 2020 etablerade sig verksamheten även i Sundbyberg, närmare...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Västerort",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829448502,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829448502:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "http://www.omnipolloshatt.com"
+    },
+    {
+      "id": 3829490257,
+      "idNamespace": "public",
+      "name": "Katarina Ölkafé",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Södermalm",
+      "address": "Katarina Bangata 27, Södermalm",
+      "latitude": 59.3117,
+      "longitude": 18.0794,
+      "x": 59.3117,
+      "y": 18.0794,
+      "priceLevel": 2,
+      "note": "Katarina Ölkafé är ett populärt ölkafé där du även hittar schyssta tillbehör på menyn. Stilen är influerad av en typiskt \"east coast deli\" och ölutbudet är medvetet: här serveras du dryck från lokala bryggerier.",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829490257,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829490257:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ]
+    },
+    {
+      "id": 3829384121,
+      "idNamespace": "public",
+      "name": "Omaka",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Östermalm",
+      "address": "Uggelviksgatan 2a, Östermalm",
+      "latitude": 59.3435,
+      "longitude": 18.0686,
+      "x": 59.3435,
+      "y": 18.0686,
+      "priceLevel": 3,
+      "note": "Om du föredrar att skåla i närproducerad hantverksöl så är potentialen stor att du kommer trivas på Omaka. Bryggerikrogen drivs nämligen av Spendrupsättlingen Hedda, och erbjuder utöver öl från det egna bryggeriet även passande mat i modernt brasseristuk. H...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Östermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829384121,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829384121:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "https://omaka.beer/"
+    },
+    {
+      "id": 3829725872,
+      "idNamespace": "public",
+      "name": "Mikkeller",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Södermalm",
+      "address": "Östgötagatan 33, Södermalm",
+      "latitude": 59.3149,
+      "longitude": 18.0765,
+      "x": 59.3149,
+      "y": 18.0765,
+      "priceLevel": 2,
+      "note": "Det danska fantombryggeriet Mikkeller har filialer världen över, så även i Stockholm. I den svenska ölbaren återskapar man det danska konceptet med ett brett urval av ölsorter på fat samt flasköl från Mikkeller och deras vänner. Förutom öl serverar de också...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829725872,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829725872:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "https://mikkeller.com"
+    },
+    {
+      "id": 3829950001,
+      "idNamespace": "public",
+      "name": "Molly Malone's",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Södermalm",
+      "address": "Hornsgatan 81, Södermalm",
+      "latitude": 59.3171,
+      "longitude": 18.05,
+      "x": 59.3171,
+      "y": 18.05,
+      "priceLevel": 2,
+      "note": "Gemytlig atmosfär, klassisk pubmat och ett brett utbud av öl och irländsk whisky – det hittar du på den irländska puben Molly Malone's. Här finns såklart Guinness i mängder för dig som suktar efter den irländska ölen. Perfekt när du vill umgås och dricka öl...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829950001,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829950001:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "https://mollymalone.se/"
+    },
+    {
+      "id": 3830070926,
+      "idNamespace": "public",
+      "name": "Stockholm Brewing Co.",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Östermalm",
+      "address": "Frihamnsgatan 26A, Östermalm",
+      "latitude": 59.3429,
+      "longitude": 18.1202,
+      "x": 59.3429,
+      "y": 18.1202,
+      "priceLevel": 2,
+      "note": "På Stockholm Brewing Company i Frihamnen ligger fokus på ekologisk hantverksöl. Här har ölet inte rest långa vägar – de erbjuder över tio öl på tapp direkt från bryggeriet. Utöver det erbjuder de ett brett utbud lager, IPA, suröl och öl som har lagrats på f...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Östermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3830070926,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3830070926:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "https://www.stockholmbrewing.com/"
+    },
+    {
+      "id": 3829855115,
+      "idNamespace": "public",
+      "name": "Bar Central",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Södermalm",
+      "address": "Hornsgatan 72, Södermalm",
+      "latitude": 59.3185,
+      "longitude": 18.0581,
+      "x": 59.3185,
+      "y": 18.0581,
+      "priceLevel": 3,
+      "note": "Centraleuropeiska Bar Central serverar utöver rustika barrätter som korv och spätzle även kvalitetsöl och vin med etiketter från Tjeckien, Tyskland och Österrike. Bakom baren står Stockholms allra första utbildade head tapsters, som ser till att ölen hanter...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829855115,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829855115:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "http://www.barcentral.se/"
+    },
+    {
+      "id": 3829972501,
+      "idNamespace": "public",
+      "name": "Kelly's",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Södermalm",
+      "address": "Folkungagatan 49, Södermalm",
+      "latitude": 59.3142,
+      "longitude": 18.0736,
+      "x": 59.3142,
+      "y": 18.0736,
+      "priceLevel": 2,
+      "note": "På rockbaren Kelly's kliver du in i en klassisk pubmiljö, givetvis influerad av rockmusik. Här kan du njuta av flera olika typer av öl medan du dras med i den festliga stämningen som råder både dag och kväll. Hit kan man komma med såväl familjen som kompisg...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829972501,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829972501:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "http://www.kellysbar.nu/"
+    },
+    {
+      "id": 3829769173,
+      "idNamespace": "public",
+      "name": "PangPang Festaurang",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Södermalm",
+      "address": "Långholmsgatan 34, Södermalm",
+      "latitude": 59.3157,
+      "longitude": 18.0335,
+      "x": 59.3157,
+      "y": 18.0335,
+      "priceLevel": 3,
+      "note": "PangPang Brewery , som är Stockholms första mikrobryggeri, ligger bakom PangPang Festaurang i Hornstull – en given destination för ölfantasten. Här hittar du ett öl från mikrobryggeriet i Hökarängen som bjuder på både nyskapande, genomtänkta och spännande s...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829769173,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829769173:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "https://www.pangpangbrewery.se/"
+    },
+    {
+      "id": 3829768653,
+      "idNamespace": "public",
+      "name": "Brother Tuck",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Södermalm",
+      "address": "Götgatan 85, Södermalm",
+      "latitude": 59.3099,
+      "longitude": 18.0758,
+      "x": 59.3099,
+      "y": 18.0758,
+      "priceLevel": 2,
+      "note": "Brother Tuck, Broder Tuck, Tucken – kärt barn har många namn. Här kan du välja bland över 200 sorters öl, kolla in en sportmatch på skärmarna, lyssna till livemusik eller bara umgås i skönt avslappnad miljö. Du hittar baren på Götgatan i Skanstull.",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829768653,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829768653:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "https://brothertuck.se/"
+    },
+    {
+      "id": 3829339832,
+      "idNamespace": "public",
+      "name": "Ölhyttan",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Norrmalm",
+      "address": "Vasagatan 7, Norrmalm",
+      "latitude": 59.332,
+      "longitude": 18.0576,
+      "x": 59.332,
+      "y": 18.0576,
+      "priceLevel": 2,
+      "note": "Här gillar man verkligen öl – det hörs ju på namnet. Baren ligger mitt i city, mitt i myllret på Vasagatan, där det serveras svenska smaker på tallriken och allehanda öl och annan dryck i glaset. På ölkranarna hittar du öl från olika delar av världen, såväl...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Norrmalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829339832,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829339832:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "https://olhyttan.se/"
+    },
+    {
+      "id": 3829992295,
+      "idNamespace": "public",
+      "name": "Mackinlay's Inn",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Kungsholmen",
+      "address": "Fleminggatan 85, Kungsholmen",
+      "latitude": 59.3344,
+      "longitude": 18.0319,
+      "x": 59.3344,
+      "y": 18.0319,
+      "priceLevel": 3,
+      "note": "På Kungsholmen hittar du Mackinlay's Inn, en klassisk öl- och whiskypub med skotska vibbar. De stoltserar med hela 25 olika ölkranar samt ett stort utbud på flaska och burk som inkluderar allt från storsäljare till öl från hantverks- och mikrobryggerier i S...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Kungsholmen",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829992295,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829992295:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "http://mackinlaysinn.se/"
+    },
+    {
+      "id": 3830051966,
+      "idNamespace": "public",
+      "name": "Hörnans Belgobar",
+      "kind": "Restaurant",
+      "cuisine": "pub",
+      "area": "Vasastan",
+      "address": "Rådmansgatan 69, Vasastan",
+      "latitude": 59.3391,
+      "longitude": 18.0542,
+      "x": 59.3391,
+      "y": 18.0542,
+      "priceLevel": 2,
+      "note": "Hörnans Belgobar är inget för den med beslutsångest, för här finns nämligen omkring 300 belgiska ölsorter att välja bland. Dessutom uppdateras öllistan jämt och ständigt med allt från älskade klassiker till brygder från småskaliga producenter och årgångsöl,...",
+      "tags": [
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Vasastan",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3830051966,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3830051966:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Ölbar & Pub"
+        }
+      ],
+      "website": "https://www.belgobaren.se/hornan"
     }
   ],
-  "totalPlaces": 3140
+  "totalPlaces": 3158
 }

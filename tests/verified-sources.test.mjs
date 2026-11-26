@@ -54,6 +54,14 @@ test("getPlaceVerifiedSources matches curated sources from sourceName and eviden
   assert.ok(matchedIds.has("spotted-by-locals"), "Expected Spotted by Locals badges in catalog");
   assert.ok(matchedIds.has("white-guide"), "Expected White Guide badges in catalog");
   assert.ok(matchedIds.has("burgerdudes"), "Expected Burgerdudes badges in catalog");
+  assert.ok(matchedIds.has("thatsup"), "Expected Thatsup badges in catalog");
+
+  const thatsupPubs = catalog.places.filter(
+    (p) =>
+      getPlaceVerifiedSources(p).some((b) => b.id === "thatsup") &&
+      String(p.cuisine ?? "").toLowerCase().split(";").includes("pub"),
+  );
+  assert.ok(thatsupPubs.length >= 30, `Expected >=30 Thatsup-badged pub/beer venues, got ${thatsupPubs.length}`);
 });
 
 test("getPlaceVerifiedSources awards User Approved badge to user-submitted places", () => {
