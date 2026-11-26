@@ -125,6 +125,12 @@ test("Pub & beer filter matches curated beer and pub venues in Stockholm", () =>
   assert.ok(names.some((n) => n.includes("katarina ölkafé")));
   assert.ok(names.some((n) => n.includes("omaka")));
   assert.ok(names.some((n) => n.includes("stockholm brewing")));
+  assert.ok(names.some((n) => n.includes("the bishops arms bellmansgatan")));
+  assert.ok(names.some((n) => n.includes("the bishops arms palace sankt eriksgatan")));
+  assert.ok(names.some((n) => n.includes("the bishops arms vasagatan")));
+  assert.ok(names.some((n) => n.includes("the bishops arms gamla stan")));
+  assert.ok(names.some((n) => n.includes("the bishops arms sundbyberg")));
+  assert.ok(names.some((n) => n.includes("the bishops arms odengatan")));
 });
 
 test("Concierge filters ground vinbar and cocktailbar queries", () => {

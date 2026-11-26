@@ -99,8 +99,6 @@ def enrich_thatsup_places(places: list[dict]) -> tuple[int, int]:
             lng = float(gt["longitude"])
             area = gt_area or "Stockholm"
             address = str(gt.get("address") or f"{area}, Stockholm")
-            price_range = str(gt.get("priceRange") or "")
-            price_level = min(4, max(1, price_range.count("$"))) if "$" in price_range else 2
             new_tags: list[str] = []
             for t in [*gt_tags, area, "Thatsup"]:
                 if t and t not in new_tags:
@@ -145,7 +143,6 @@ def enrich_thatsup_places(places: list[dict]) -> tuple[int, int]:
                 "longitude": lng,
                 "x": lat,
                 "y": lng,
-                "priceLevel": price_level,
                 "note": gt.get("editorialExcerpt") or default_note,
                 "tags": new_tags,
                 "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
@@ -367,6 +364,136 @@ NEW_BURGERDUDES_PLACES = [
 ]
 
 
+NEW_CURATED_PUB_PLACES = [
+    {
+        "id": 3829300001,
+        "idNamespace": "public",
+        "name": "The Bishops Arms Bellmansgatan",
+        "kind": "Restaurant",
+        "cuisine": "pub",
+        "area": "Södermalm",
+        "address": "Bellmansgatan 12, Södermalm",
+        "latitude": 59.32001,
+        "longitude": 18.06478,
+        "x": 59.32001,
+        "y": 18.06478,
+        "website": "https://www.bishopsarms.com/vara-pubar/stockholm/bellmansgatan/",
+        "note": "Brittisk gastropub vid Mariatorget och Bellmansgatan på Södermalm med brett sortiment av hantverksöl, fatöl och single malt whisky.",
+        "tags": ["Pub", "Beer", "Craft Beer", "Ölbar", "Gastropub", "Whisky", "Södermalm"],
+        "evidenceLabel": "Stockholms gastropub med brett öl- och whiskysortiment",
+        "evidence": {"specialistGuide": 0.35, "independentEditorial": 0.3, "verifiedUserRating": 0.0, "repeatVisits": 0.25, "recentReviews": 0.25},
+        "engagement": {"views": 180, "saves": 18, "shares": 6, "searches": 50},
+        "discoveryReasons": ["Brittisk gastropub med stort öl- och whiskysortiment på Södermalm"],
+        "sourceFacts": [],
+    },
+    {
+        "id": 3829300002,
+        "idNamespace": "public",
+        "name": "The Bishops Arms Palace Sankt Eriksgatan",
+        "kind": "Restaurant",
+        "cuisine": "pub",
+        "area": "Vasastan",
+        "address": "Sankt Eriksgatan 115, Vasastan",
+        "latitude": 59.34686,
+        "longitude": 18.03986,
+        "x": 59.34686,
+        "y": 18.03986,
+        "website": "https://www.bishopsarms.com/vara-pubar/stockholm/palace/",
+        "note": "Brittisk gastropub vid Sankt Eriksplan i Vasastan med hantverksöl på fat och flaska, klassisk pubmat och whisky.",
+        "tags": ["Pub", "Beer", "Craft Beer", "Ölbar", "Gastropub", "Whisky", "Vasastan"],
+        "evidenceLabel": "Stockholms gastropub med brett öl- och whiskysortiment",
+        "evidence": {"specialistGuide": 0.35, "independentEditorial": 0.3, "verifiedUserRating": 0.0, "repeatVisits": 0.25, "recentReviews": 0.25},
+        "engagement": {"views": 180, "saves": 18, "shares": 6, "searches": 50},
+        "discoveryReasons": ["Brittisk gastropub med stort öl- och whiskysortiment i Vasastan"],
+        "sourceFacts": [],
+    },
+    {
+        "id": 3829300003,
+        "idNamespace": "public",
+        "name": "The Bishops Arms Vasagatan",
+        "kind": "Restaurant",
+        "cuisine": "pub",
+        "area": "Norrmalm",
+        "address": "Vasagatan 7, Norrmalm",
+        "latitude": 59.33210,
+        "longitude": 18.05763,
+        "x": 59.33210,
+        "y": 18.05763,
+        "website": "https://www.bishopsarms.com/vara-pubar/stockholm/vasagatan/",
+        "note": "Klassisk brittisk gastropub på Vasagatan nära Centralstationen med ett brett urval av fatöl, hantverksöl och whisky.",
+        "tags": ["Pub", "Beer", "Craft Beer", "Ölbar", "Gastropub", "Whisky", "Norrmalm"],
+        "evidenceLabel": "Stockholms gastropub med brett öl- och whiskysortiment",
+        "evidence": {"specialistGuide": 0.35, "independentEditorial": 0.3, "verifiedUserRating": 0.0, "repeatVisits": 0.25, "recentReviews": 0.25},
+        "engagement": {"views": 180, "saves": 18, "shares": 6, "searches": 50},
+        "discoveryReasons": ["Brittisk gastropub med stort öl- och whiskysortiment på Vasagatan"],
+        "sourceFacts": [],
+    },
+    {
+        "id": 3829300004,
+        "idNamespace": "public",
+        "name": "The Bishops Arms Gamla stan",
+        "kind": "Restaurant",
+        "cuisine": "pub",
+        "area": "Gamla Stan",
+        "address": "Tyska Brinken 36, Gamla Stan",
+        "latitude": 59.32314,
+        "longitude": 18.06910,
+        "x": 59.32314,
+        "y": 18.06910,
+        "website": "https://www.bishopsarms.com/vara-pubar/stockholm/gamla-stan/",
+        "note": "Brittisk gastropub i historiska lokaler på Tyska Brinken i Gamla Stan med stort sortiment av hantverksöl och whisky.",
+        "tags": ["Pub", "Beer", "Craft Beer", "Ölbar", "Gastropub", "Whisky", "Gamla Stan"],
+        "evidenceLabel": "Stockholms gastropub med brett öl- och whiskysortiment",
+        "evidence": {"specialistGuide": 0.35, "independentEditorial": 0.3, "verifiedUserRating": 0.0, "repeatVisits": 0.25, "recentReviews": 0.25},
+        "engagement": {"views": 180, "saves": 18, "shares": 6, "searches": 50},
+        "discoveryReasons": ["Brittisk gastropub med stort öl- och whiskysortiment i Gamla Stan"],
+        "sourceFacts": [],
+    },
+    {
+        "id": 3829300005,
+        "idNamespace": "public",
+        "name": "The Bishops Arms Sundbyberg",
+        "kind": "Restaurant",
+        "cuisine": "pub",
+        "area": "Västerort",
+        "address": "Landsvägen 49, Sundbyberg",
+        "latitude": 59.36109,
+        "longitude": 17.96872,
+        "x": 59.36109,
+        "y": 17.96872,
+        "website": "https://www.bishopsarms.com/vara-pubar/stockholm/sundbyberg/",
+        "note": "Brittisk gastropub på Landsvägen i centrala Sundbyberg med brett urval av hantverksöl, fatöl, whisky och pubmat.",
+        "tags": ["Pub", "Beer", "Craft Beer", "Ölbar", "Gastropub", "Whisky", "Västerort", "Sundbyberg"],
+        "evidenceLabel": "Stockholms gastropub med brett öl- och whiskysortiment",
+        "evidence": {"specialistGuide": 0.35, "independentEditorial": 0.3, "verifiedUserRating": 0.0, "repeatVisits": 0.25, "recentReviews": 0.25},
+        "engagement": {"views": 180, "saves": 18, "shares": 6, "searches": 50},
+        "discoveryReasons": ["Brittisk gastropub med stort öl- och whiskysortiment i Sundbyberg"],
+        "sourceFacts": [],
+    },
+    {
+        "id": 3829300006,
+        "idNamespace": "public",
+        "name": "The Bishops Arms Odengatan",
+        "kind": "Restaurant",
+        "cuisine": "pub",
+        "area": "Vasastan",
+        "address": "Odengatan 41, Vasastan",
+        "latitude": 59.34449,
+        "longitude": 18.05821,
+        "x": 59.34449,
+        "y": 18.05821,
+        "website": "https://www.bishopsarms.com/vara-pubar/stockholm/odengatan/",
+        "note": "Brittisk gastropub på Odengatan i Vasastan med hantverksöl på fat och flaska, single malt whisky och pubmat.",
+        "tags": ["Pub", "Beer", "Craft Beer", "Ölbar", "Gastropub", "Whisky", "Vasastan"],
+        "evidenceLabel": "Stockholms gastropub med brett öl- och whiskysortiment",
+        "evidence": {"specialistGuide": 0.35, "independentEditorial": 0.3, "verifiedUserRating": 0.0, "repeatVisits": 0.25, "recentReviews": 0.25},
+        "engagement": {"views": 180, "saves": 18, "shares": 6, "searches": 50},
+        "discoveryReasons": ["Brittisk gastropub med stort öl- och whiskysortiment på Odengatan"],
+        "sourceFacts": [],
+    },
+]
+
+
 def main() -> None:
     with open(PLACES_FILE, encoding="utf-8") as f:
         data = json.load(f)
@@ -383,9 +510,9 @@ def main() -> None:
                 if t not in p.setdefault("tags", []):
                     p["tags"].append(t)
 
-    # 2. Add missing Burgerdudes venues
+    # 2. Add missing Burgerdudes & curated pub venues
     existing_names = {norm(p.get("name")) for p in places}
-    for np in NEW_BURGERDUDES_PLACES:
+    for np in [*NEW_BURGERDUDES_PLACES, *NEW_CURATED_PUB_PLACES]:
         if norm(np["name"]) not in existing_names:
             places.append(np)
             existing_names.add(norm(np["name"]))
