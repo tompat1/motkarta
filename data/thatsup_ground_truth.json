@@ -270,18 +270,21 @@
   {
     "name": "Akkurat",
     "area": "Södermalm",
-    "category": "Thatsup Ölbar & Pub",
-    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
     "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/akkurat-bar-restaurang",
     "isFeaturedPartner": false,
     "tags": [
       "Pub",
       "Beer",
       "Craft Beer",
-      "Ölbar"
+      "Ölbar",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
     ],
     "website": "http://www.akkurat.se",
-    "editorialExcerpt": "Detta öl- och whiskymecka på Söder, även känt för sina musslor, lockar med runt ett enormt utbud av öl, varav en del är dyrgripar som lagras i källaren. Filosofin är att jobba med riktigt små bryggerier för att värna om ölfloran, vilket de gjort ända sedan...",
+    "editorialExcerpt": "Bärnstensfärgade drycker står i centrum på Akkurat, det vill säga öl och whisky – även om de förstås kan ha andra färger också. Det är de väl medvetna om här, med ett utbud som består av hundratals sorter av vardera dryck. Här finns en bardel som inte behöv...",
     "address": "Hornsgatan 18, Södermalm",
     "latitude": 59.3197,
     "longitude": 18.0686,
@@ -368,18 +371,23 @@
   {
     "name": "Tjoget",
     "area": "Södermalm",
-    "category": "Thatsup Ölbar & Pub",
-    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
     "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/tjoget",
     "isFeaturedPartner": true,
     "tags": [
       "Pub",
       "Beer",
       "Craft Beer",
-      "Ölbar"
+      "Ölbar",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails",
+      "Wine bar",
+      "Vinbar"
     ],
     "website": "https://tjoget.com/",
-    "editorialExcerpt": "Södermalmskrogen Tjoget är lika känd för sin goda mat som sina stimmiga festkvällar och välkurerade barer. Under ett och samma tak ryms nämligen restaurang, cocktailbar, vinbar och ölbar. I ölbaren langas smårätter, snacks, kaffe, hantverksöl och pilsner se...",
+    "editorialExcerpt": "Tjoget är utan tvekan en av Hornstulls och Söders mesta mötesplatser med både vinbar, cocktailbar, ölbar och restaurang. Kvällstid är lokalen allt som oftast fylld till brädden med kompisgäng och andra sällskap som uppskattar en välblandad drink lika mycket...",
     "address": "Hornsbruksgatan 24, Södermalm",
     "latitude": 59.3162,
     "longitude": 18.0349,
@@ -408,18 +416,19 @@
   {
     "name": "Nya Carnegiebryggeriet",
     "area": "Söderort",
-    "category": "Thatsup Ölbar & Pub",
-    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
     "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/nya-carnegiebryggeriet",
     "isFeaturedPartner": true,
     "tags": [
       "Pub",
       "Beer",
       "Craft Beer",
-      "Ölbar"
+      "Ölbar",
+      "Bar"
     ],
     "website": "https://www.nyacarnegiebryggeriet.se",
-    "editorialExcerpt": "Nya Carnegiebryggeriet är ett bryggeri, bar och restaurang vid kajkanten i Hammarby sjöstad. Nya Carnegiebryggeriet, som ligger i den gamla lampfabriken Luma, är ett samarbete mellan Carlsberg Sverige och Brooklyn Brewery och här bryggs öl med inspiration f...",
+    "editorialExcerpt": "Vid kajkanten i Hammarby sjöstad kan du ta del av riktigt bra (och nybryggd!) hantverksöl. I bryggeriet bryggs hantverksöl för alla smaker och preferenser, vilket går att ta del av bara några steg därifrån, i bryggeribaren. Där serveras även comfort food so...",
     "address": "Ljusslingan 15, Söderort",
     "latitude": 59.3053,
     "longitude": 18.0987,
@@ -667,18 +676,23 @@
   {
     "name": "Ölhyttan",
     "area": "Norrmalm",
-    "category": "Thatsup Ölbar & Pub",
-    "url": "https://thatsup.se/stockholm/guide/guiden-till-stockholms-basta-olbarer",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
     "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/olhyttan-bar-restaurang",
     "isFeaturedPartner": true,
     "tags": [
       "Pub",
       "Beer",
       "Craft Beer",
-      "Ölbar"
+      "Ölbar",
+      "Bar",
+      "Cocktail bar",
+      "Cocktails",
+      "Wine bar",
+      "Vinbar"
     ],
     "website": "https://olhyttan.se/",
-    "editorialExcerpt": "Här gillar man verkligen öl – det hörs ju på namnet. Baren ligger mitt i city, mitt i myllret på Vasagatan, där det serveras svenska smaker på tallriken och allehanda öl och annan dryck i glaset. På ölkranarna hittar du öl från olika delar av världen, såväl...",
+    "editorialExcerpt": "Ölhyttan mitt i city är ett lättillgängligt alternativ tack vare sitt centrala läge och välkomnande atmosfär. Här samlas kollegor, vänner och bekanta för att umgås kring mat och dryck i avslappnad miljö.",
     "address": "Vasagatan 7, Norrmalm",
     "latitude": 59.332,
     "longitude": 18.0576,
@@ -743,5 +757,803 @@
     "latitude": 59.3144,
     "longitude": 18.0763,
     "priceRange": "$"
+  },
+  {
+    "name": "Hernö Gin Bar",
+    "area": "Södermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/herno-gin-bar-stockholm",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.hernogin.com/herno-gin-bar/",
+    "editorialExcerpt": "Omtalade Hernö Gin Bar breder ut sig över två våningsplan i anrika lokaler vid Slussen. Här serveras cocktails gjorda på olika sorters Hernö Gin, bland annat en prisbelönt gin & tonic, men också smårätter med svenska influenser. På entréplan ligger restaura...",
+    "address": "Hornsgatan 1, Södermalm",
+    "latitude": 59.3197,
+    "longitude": 18.0702,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Lucy's",
+    "area": "Norrmalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/lucy-s-flower-shop",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.lucysstockholm.se/",
+    "editorialExcerpt": "Lucy's Flower Shop hittar du innanför en anonym entré där du passerar en gammal blomsterbutik för att slutligen komma fram. Väl på plats tar grundarna Ola Carlson and Alex Skärlén begreppet välkomponerade cocktails till nya höjder. Det finns även en snacksm...",
+    "address": "Birger Jarlsgatan 20, Norrmalm",
+    "latitude": 59.3366,
+    "longitude": 18.072
+  },
+  {
+    "name": "Cadierbaren",
+    "area": "Norrmalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/cadierbaren",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "http://www.grandhotel.se",
+    "editorialExcerpt": "Cadierbaren är Grand Hotels cocktailbar, uppkallad efter den franske köksmästaren Régis Cadier som grundade hotellet. Här kan du njuta av såväl utsikten över slottet som goda viner, bubblande champagne och ett brett urval av välkomponerade drinkar. Blir du...",
+    "address": "Södra Blaiseholmshamnen 8, Norrmalm",
+    "latitude": 59.3293,
+    "longitude": 18.0756,
+    "priceRange": "$$$$"
+  },
+  {
+    "name": "Röda Huset",
+    "area": "Norrmalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/roda-huset",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://rodahuset.nu/",
+    "editorialExcerpt": "Stureplansgruppen står bakom denna cocktailbar och restaurang, som ligger i just Röda Huset vid Sergels torg. Den består av två delar: på övervåningen är det välskakade cocktails med svenska ingredienser och smårätter som gäller, på undervåningen har de en...",
+    "address": "Malmskillnadsgatan 9, Norrmalm",
+    "latitude": 59.3323,
+    "longitude": 18.0662,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Bar Nombre",
+    "area": "Vasastan",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/bar-nombre",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "website": "https://www.barnombre.se/",
+    "editorialExcerpt": "Bar Nombre öppnade 2011 och är Stockholms svar på en spansk cerveceria (ölhak). Bardelen, som framåt kvällen brukar bli knökfull, är inte minst känd för sitt utbud av cava, brandy och välblandade cocktails. Ett riktigt dragplåster bland stans drinksugna som...",
+    "address": "Odengatan 36, Vasastan",
+    "latitude": 59.345,
+    "longitude": 18.0588,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Brasserie Balzac",
+    "area": "Vasastan",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/brasserie-balzac",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://balzac.se/",
+    "editorialExcerpt": "Här flödar brasserivibbarna från storkrogar i New York och Paris. Restaurangens långa bar erbjuder både vin, öl och schyssta drinkar, och skulle du vara hungrig serveras bland annat snacks och smårätter i baren. Blir du riktigt hungrig och vill äta något st...",
+    "address": "Odengatan 26, Vasastan",
+    "latitude": 59.3456,
+    "longitude": 18.0612,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Folii",
+    "area": "Södermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/folii",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "website": "https://folii.se/",
+    "editorialExcerpt": "Du som är sugen på trevligt vinhäng ska bege dig till Erstagatan och den prisbelönta vinbaren Folii, som drivs av sommelierduon Jonas Sandberg och Beatrice Becher. Sedan baren öppnade 2017 har den blivit en självklarhet på östra Söder och hyllats vitt och b...",
+    "address": "Erstagatan 21, Södermalm",
+    "latitude": 59.314,
+    "longitude": 18.0904
+  },
+  {
+    "name": "Rex Bar",
+    "area": "Kungsholmen",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/rex-bar",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://rex-bar.se",
+    "editorialExcerpt": "Åtta våningar över Fridhemsplan tronar Rex Bar, en skybar med utsikt över Kungsholmens takåsar. Här är det framför allt cocktails som står i fokus, komponerade av de prisbelönta bartendrarna Vasilis Kyritsis och Nikos Bakoulis från baren Line i Aten. Cockta...",
+    "address": "Drottningholmsvägen 22, Kungsholmen",
+    "latitude": 59.3324,
+    "longitude": 18.03
+  },
+  {
+    "name": "KB",
+    "area": "Norrmalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/konstnarsbaren",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar"
+    ],
+    "website": "http://konstnarsbaren.se",
+    "editorialExcerpt": "Vill du roa dig som stans kulturelit gjort i decennier, då ska du bege dig till Konstnärsbaren, eller KB som det ofta heter i folkmun. Här dricker du ställets egna cocktails eller klassiska varianter, sippar på ett glas vin eller tar en öl i en intim, stimm...",
+    "address": "Smålandsgatan 7, Norrmalm",
+    "latitude": 59.3336,
+    "longitude": 18.0744,
+    "priceRange": "$$$$"
+  },
+  {
+    "name": "Stjärtilleriet",
+    "area": "Östermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/stjartilleriet",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://stjartilleriet.se/",
+    "editorialExcerpt": "I Artilleriet s lekfulla cocktailbar är alltid något nytt, kreativt i görningen. Drinkmenyn uppdateras mer ofta än sällan med olika experimentella kombinationer, med eller utan alkohol. Den som vill prova lite av varje kan ge sig på Stjärtilleriets “cocktai...",
+    "address": "Artillerigatan 13, Östermalm",
+    "latitude": 59.334,
+    "longitude": 18.0807
+  },
+  {
+    "name": "Tiki Room",
+    "area": "Vasastan",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/tiki-room",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.tikiroomstockholm.com/",
+    "editorialExcerpt": "Tiki Room på Birkagatan vid Sankt Eriksplan öppnade 2002 och är Stockholms första renodlade tikibar. I källarlokalen blandar bartendrarna i hawaiiskjortor klassiska tikidrinkar på gamla originalrecept, med rom från främst Jamaica och Kuba och gott om färsk...",
+    "address": "Birkagatan 10, Vasastan",
+    "latitude": 59.3395,
+    "longitude": 18.0336
+  },
+  {
+    "name": "Oak Island Gallery",
+    "area": "Vasastan",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/galleri/oak-island-gallery",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar"
+    ],
+    "website": "https://www.oakislandgallery.com",
+    "editorialExcerpt": "Oak Island Gallery på Birkagatan i Birkastan är bar och galleri i samma coola källarlokal, med historiskt musikfotografi på väggarna. I baren finns ett litet urval drinkar, bland annat pink gin och tonic och en rumvariant av old fashioned. Vinlistan rymmer...",
+    "address": "Birkagatan 31, Vasastan",
+    "latitude": 59.3417,
+    "longitude": 18.0356
+  },
+  {
+    "name": "Morfar Ginko",
+    "area": "Södermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/morfar-ginko",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar"
+    ],
+    "website": "http://www.morfarginko.se",
+    "editorialExcerpt": "Omtyckt Söderbar och restaurang med opolerade vintagevibbar och stammistät publik. Eller som de själva beskriver sig; “nöjespalats och champagneria”. Sommartid vill många sitta på uteserveringen på Swedenborgsgatan.",
+    "address": "Swedenborgsgatan 11, Södermalm",
+    "latitude": 59.3158,
+    "longitude": 18.0638,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Bar Brahe",
+    "area": "Gamla Stan",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/bar-brahe",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.barbrahe.com",
+    "editorialExcerpt": "En gång i tiden, i utkanten av Gamla stan, fanns det en dunkel lokal i en gränd vid hamnen dit köpmän kom. Idag är lokalen lika dunkelt mysig, men någon handel med tegelstenar pågår inte. Istället blandas riktigt bra cocktails till tonerna av livejazz i rik...",
+    "address": "Bredgränd 2, Gamla Stan",
+    "latitude": 59.3256,
+    "longitude": 18.0744
+  },
+  {
+    "name": "Vineriet",
+    "area": "Vasastan",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/vineriet",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "website": "https://vinerietsthlm.se/",
+    "editorialExcerpt": "Det här lilla guldkornet hittar du på Roslagsgatan, där personalen häller vin så det står härliga till och serverar rätt efter rätt med europeiska smaker. Sommartid kan du glassa på den bistroinspirerade uteserveringen.",
+    "address": "Roslagsgatan 15, Vasastan",
+    "latitude": 59.3466,
+    "longitude": 18.0594,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "AG",
+    "area": "Kungsholmen",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/restaurang-ag",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "website": "https://restaurangag.se",
+    "editorialExcerpt": "AG är inte minst känt för sina vällagade kötträtter och coola industrimiljö. Den hängvänliga baren har dessutom lockat en stadig publik i Stockholms uteliv genom åren. En stor del av hela upplevelsen (och hipp-faktorn) består så klart i att hitta rätt ingån...",
+    "address": "Kronobergsgatan 37, Kungsholmen",
+    "latitude": 59.3352,
+    "longitude": 18.0348,
+    "priceRange": "$$$-$$$$"
+  },
+  {
+    "name": "Ponti",
+    "area": "Södermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/ponti",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://restaurangponti.se/",
+    "editorialExcerpt": "I baren på Ponti vurmar man lite extra för klassiska cocktails baserade på vermouth, amaro, gin och bitters, som får sig en modern touch med nytänkande smaksättningar. Med andra ord något för både den som gillar traditionella drinkar, och den som vill prova...",
+    "address": "Nytorget 13D, Södermalm",
+    "latitude": 59.3115,
+    "longitude": 18.0853,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Swing by Golfbaren",
+    "area": "Vasastan",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/aktivitet/swing-by-golfbaren",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://golfbaren.se/",
+    "editorialExcerpt": "På Golfbaren kan du kombinera öl, vin eller cocktails med mat och minigolf. Skapa turneringar eller spela för att det är kul, och låt bästa man vinna! I baren hittar du klassiska drinkar från förbudstiden och innovativa signaturcocktails. Förloraren får bju...",
+    "address": "Surbrunnsgatan 46, Vasastan",
+    "latitude": 59.345,
+    "longitude": 18.0551,
+    "priceRange": "$$-$$$"
+  },
+  {
+    "name": "Två Små Svin",
+    "area": "Söderort",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/tva-sma-svin-arsta",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "https://www.tvasmasvinarsta.se",
+    "editorialExcerpt": "På krogen Två Små Svin i Årsta kan du äta olika sorters smörrebröd och dricka tjeckiskt öl eller sprit från Sverige och världen. Även champagne och viner från bland annat Frankrike, USA och Tyskland finns med på dryckesmenyn – flera av dem ekologiska.",
+    "address": "Årstavägen 49, Årsta, Söderort",
+    "latitude": 59.2966,
+    "longitude": 18.0516,
+    "priceRange": "$$-$$$"
+  },
+  {
+    "name": "Hornsgatan Kvarterskrog",
+    "area": "Södermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/hornsgatan-kvarterskrog-barservering",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://hornsgatankvarterskrog.com/",
+    "editorialExcerpt": "I hörnet Ringvägen/Hornsgatan står Hornsgatan Kvarterskrog & Barservering stadigt. I sann kvarterskrogsanda är du lika välkommen hit på en kopp kaffe eller ett glas vin som på en välsmakande lunch eller middag. I lokalen breder en lång bar ut sig med plats...",
+    "address": "Hornsgatan 81, Södermalm",
+    "latitude": 59.3172,
+    "longitude": 18.05,
+    "priceRange": "$$-$$$"
+  },
+  {
+    "name": "Riche",
+    "area": "Norrmalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/riche",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://riche.se/",
+    "address": "Birger Jarlsgatan 4, Norrmalm",
+    "latitude": 59.3334,
+    "longitude": 18.0761,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Sturehof",
+    "area": "Norrmalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/sturehof",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "website": "https://riche.se/",
+    "address": "Stureplan 2, Norrmalm",
+    "latitude": 59.3357,
+    "longitude": 18.0737,
+    "priceRange": "$$$$"
+  },
+  {
+    "name": "Teatergrillen",
+    "area": "Östermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/teatergrillen",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://riche.se/",
+    "address": "Nybrogatan 3, Östermalm",
+    "latitude": 59.3336,
+    "longitude": 18.0763,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Riche Fenix",
+    "area": "Södermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/riche-fenix",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar"
+    ],
+    "website": "https://riche.se/",
+    "address": "Götgatan 40, Södermalm",
+    "latitude": 59.3167,
+    "longitude": 18.0719,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Cliff Barnes",
+    "area": "Vasastan",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/cliff-barnes",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar"
+    ],
+    "website": "http://www.cliff.se",
+    "editorialExcerpt": "Cliff Barnes vid Odenplan har bjudit på festlig stämning sedan 1995. Här kan du äta, dricka drinkar i baren och fortsätta kvällen med dans och allsång. Varje vecka arrangeras även musikquiz för alla musikintresserade sällskap.",
+    "address": "Norrtullsgatan 45, Vasastan",
+    "latitude": 59.3462,
+    "longitude": 18.0475,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Baras Imperium",
+    "area": "Södermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/baras-imperium",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar"
+    ],
+    "website": "http://www.baras.se",
+    "editorialExcerpt": "På Baras-koncernen är tanken att man ska få en trevlig utekväll utan att det behöver kostar skjortan. Här kan man både äta och dricka i gemytlig miljö där folk i alla åldrar samlas för att hänga.",
+    "address": "Medborgarplatsen 25, Södermalm",
+    "latitude": 59.3157,
+    "longitude": 18.0711,
+    "priceRange": "$-$$"
+  },
+  {
+    "name": "Baras Gemenskap",
+    "area": "Södermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/baras-gemenskap",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar"
+    ],
+    "website": "http://www.baras.se",
+    "editorialExcerpt": "På Baras-koncernen är tanken att man ska få en trevlig utekväll utan att det behöver kostar skjortan. Här kan man både äta och dricka i gemytlig miljö där folk i alla åldrar samlas för att hänga.",
+    "address": "Sankt Paulsgatan 2, Södermalm",
+    "latitude": 59.3186,
+    "longitude": 18.0702,
+    "priceRange": "$-$$"
+  },
+  {
+    "name": "Baras Backe",
+    "area": "Södermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/baras-backe",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar"
+    ],
+    "website": "http://www.baras.se",
+    "editorialExcerpt": "På Baras-koncernen är tanken att man ska få en trevlig utekväll utan att det behöver kostar skjortan. Här kan man både äta och dricka i gemytlig miljö där folk i alla åldrar samlas för att hänga.",
+    "address": "Götgatan 33, Södermalm",
+    "latitude": 59.3164,
+    "longitude": 18.0724,
+    "priceRange": "$-$$"
+  },
+  {
+    "name": "Boqueria",
+    "area": "Norrmalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/boqueria",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "website": "https://www.boqueriastockholm.se/",
+    "editorialExcerpt": "Boqueria Torg mitt i Mood-gallerian är som upplagd för AW-häng eller barhäng efter shopping. Stimmigt, urbant och väldigt socialt – här kan du kombinera ett glas vin eller en öl med spanska tapas och lyssna på gästande dj:s efter jobbet. Senare på kvällen h...",
+    "address": "Jakobsbergsgatan 17, Norrmalm",
+    "latitude": 59.3345,
+    "longitude": 18.0684,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "HIGH Bar",
+    "area": "Norrmalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/high-bar-stockholm",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.radissonhotels.com/sv-se/hotell/radisson-blu-stockholm-royal-viking/restaurang-bar/high-bar",
+    "editorialExcerpt": "Från HIGH Bar kan du spana ut över Stockholms takåsar och vatten med en drink i handen, oavsett årstid och väderlek. Baren, som är belägen nio våningar upp i Radisson Blu Royal Viking Hotel , satsar på en innovativ drinklista med spännande smaker, men du ka...",
+    "address": "Vasagatan 1, Norrmalm",
+    "latitude": 59.3314,
+    "longitude": 18.0581
+  },
+  {
+    "name": "Americain",
+    "area": "Norrmalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/americain",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.scandichotels.com/en/hotels/haymarket-by-scandic/americain",
+    "editorialExcerpt": "Inhyst i det gamla PUB-huset på Hötorget hittar du numera hotellet Haymarket by Scandic och cocktailbaren Americain. Här kommer inspirationen från gamla tiders hotellbarer, Karibien och filmen Casablanca. Ta en elegant drink och slå dig ner i en sammetsfåtö...",
+    "address": "Hötorget 13-15, Norrmalm",
+    "latitude": 59.3347,
+    "longitude": 18.0616
+  },
+  {
+    "name": "Brännerian",
+    "area": "Södermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/brannerian",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.brannerian.se/",
+    "editorialExcerpt": "Vägg i vägg med det egna destilleriet Stockholms Bränneri hittas Brännerian – en bar och restaurang som tillverkar, och sedan serverar, sin egen gin i form av friska drinkar. Är man hungrig kan man ta del av en meny med nordiska snacks, smårätter och större...",
+    "address": "Folkungagatan 136, Södermalm",
+    "latitude": 59.3154,
+    "longitude": 18.0891
+  },
+  {
+    "name": "Wirströms Pub Gamla stan",
+    "area": "Gamla Stan",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/wirstroms-pub-gamla-stan",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails",
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.wirstromspub.se/",
+    "editorialExcerpt": "Många anser att Wirströms Pub i Gamla stan är en av Stockholms absolut bästa pubar, då utbudet av öl och whiskey i baren är både stort och brett. Såväl stammisar som turister hittar hit för att dricka något gott, besöka livespelningar och quizkvällar i käll...",
+    "address": "Stora Nygatan 13, Gamla Stan",
+    "latitude": 59.3249,
+    "longitude": 18.0683,
+    "priceRange": "$"
+  },
+  {
+    "name": "Wirströms Pub Kungsgatan",
+    "area": "Norrmalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/wirstroms-pub-kungsgatan",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails",
+      "Pub",
+      "Beer",
+      "Craft Beer",
+      "Ölbar"
+    ],
+    "website": "http://www.wirstromspub.se/",
+    "editorialExcerpt": "Många anser att Wirströms Pub i Gamla stan är en av Stockholms absolut bästa pubar, då utbudet av öl och whiskey i baren är både stort och brett. Såväl stammisar som turister hittar hit för att dricka något gott, besöka livespelningar och quizkvällar i käll...",
+    "address": "Kungsgatan 7, Norrmalm",
+    "latitude": 59.3359,
+    "longitude": 18.0703
+  },
+  {
+    "name": "Astoria",
+    "area": "Östermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/brasserie-astoria",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails",
+      "Wine bar",
+      "Vinbar"
+    ],
+    "website": "https://www.brasserieastoria.se/",
+    "editorialExcerpt": "I den eleganta baren en trappa ner på Astoria serveras välkomponerade och klassiska cocktails, väl valda viner och ölsorter. Baren har massor av drop-in-platser, och hit kan du komma förbi på ett glas efter jobbet eller stanna på en drink efter middagen. Bl...",
+    "address": "Nybrogatan 15, Östermalm",
+    "latitude": 59.3348,
+    "longitude": 18.0774,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Tilt",
+    "area": "Östermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/bar/tilt",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://tiltbar.se/",
+    "editorialExcerpt": "Tilt är som ett andra vardagsrum där du kan avnjuta cocktails och ägna dig åt roliga aktiviteter på ett och samma ställe. Släng dig i någon av sofforna och sippa på en drink, utmana ditt sällskap i ett parti biljard eller shuffelboard, kasta dart eller välj...",
+    "address": "Nybrogatan 16, Östermalm",
+    "latitude": 59.3348,
+    "longitude": 18.0777,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "The Social",
+    "area": "Norrmalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/the-social-sign",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://sign.socialbarbistro.com/",
+    "editorialExcerpt": "Om du gillar uppsluppen atmosfär och goda drinkar ska du bege dig till The Social inne på Clarion Hotel Sign . Härifrån har du dessutom nära till det mesta oavsett om du är på afterwork, barrunda, ska äta middag eller gå vidare på fest efter några glas. Ta...",
+    "address": "Östra Järnvägsgatan 35, Norrmalm",
+    "latitude": 59.3347,
+    "longitude": 18.0531,
+    "priceRange": "$$-$$$"
+  },
+  {
+    "name": "Spritmuseum",
+    "area": "Djurgården",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/spritmuseum-restaurang",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://spritmuseum.se/restaurangen/",
+    "editorialExcerpt": "Spritmuseum är känt för sina utställningar om drycker och de har även en prisbelönt restaurang som serverar svenska hantverksdrycker och svenska maträtter. Inspirationen kommer från museets teman och berättelser.",
+    "address": "Djurgårdsstrand 9, Djurgården",
+    "latitude": 59.3277,
+    "longitude": 18.0917,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Tures",
+    "area": "Östermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/tures",
+    "isFeaturedPartner": false,
+    "tags": [
+      "Bar"
+    ],
+    "website": "http://www.tures.se",
+    "editorialExcerpt": "I passagen in till Sturegallerian från Grev Turegatan ligger Tures, där stämningen skruvas upp ordentligt när dag så sakteligen går över i kväll. I baren hittar man såväl klassiska cocktails som ett stort utbud av signaturdrinkar, men även bubbel, vitt, röt...",
+    "address": "Sturegallerian 10, Östermalm",
+    "latitude": 59.336,
+    "longitude": 18.0755,
+    "priceRange": "$$"
+  },
+  {
+    "name": "Boulebar Rådhuset",
+    "area": "Kungsholmen",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/aktivitet/boulebar-radhuset",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar"
+    ],
+    "website": "https://www.boulebar.se/sthlm-radhuset",
+    "editorialExcerpt": "Kombinera franskt parknöje med något svalkande i glaset. Boulebar är stället för alla som vill utmana varandra i ett parti boule, umgås och ha trevligt. Här är det som upplagt för en lite mer aktiverande AW. Boulebar funkar fint året om, då de har ställen b...",
+    "address": "Hantverkargatan 8, Kungsholmen",
+    "latitude": 59.3287,
+    "longitude": 18.0467,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Boulebar Liljeholmen",
+    "area": "Söderort",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/aktivitet/boulebar-liljeholmen",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar"
+    ],
+    "website": "https://www.boulebar.se/sthlm-radhuset",
+    "editorialExcerpt": "Kombinera franskt parknöje med något svalkande i glaset. Boulebar är stället för alla som vill utmana varandra i ett parti boule, umgås och ha trevligt. Här är det som upplagt för en lite mer aktiverande AW. Boulebar funkar fint året om, då de har ställen b...",
+    "address": "Liljeholmsvägen 14, Söderort",
+    "latitude": 59.3127,
+    "longitude": 18.027,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Boulebar Haga",
+    "area": "Norrort",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/aktivitet/boulebar-haga",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar"
+    ],
+    "website": "https://www.boulebar.se/sthlm-radhuset",
+    "editorialExcerpt": "Kombinera franskt parknöje med något svalkande i glaset. Boulebar är stället för alla som vill utmana varandra i ett parti boule, umgås och ha trevligt. Här är det som upplagt för en lite mer aktiverande AW. Boulebar funkar fint året om, då de har ställen b...",
+    "address": "Annerovägen 4, Solna, Norrort",
+    "latitude": 59.3531,
+    "longitude": 18.0418,
+    "priceRange": "$$$"
+  },
+  {
+    "name": "Kommendören",
+    "area": "Östermalm",
+    "category": "Thatsup Bar",
+    "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+    "thatsupPlaceUrl": "https://thatsup.se/stockholm/restaurang/kommendoren",
+    "isFeaturedPartner": true,
+    "tags": [
+      "Bar",
+      "Cocktail bar",
+      "Cocktails"
+    ],
+    "website": "https://www.kommendoren.se/",
+    "editorialExcerpt": "Kvarterskrogen Kommendören hämtar inspiration från bistrokulturen i New York. Här hittar du en intim bar som är byggd efter amerikanska mått, med närhet till bartendern. En tvättäkta mötesplats med skönt barhäng för riktiga kvartersstammisar.",
+    "address": "Kommendörsgatan 7, Östermalm",
+    "latitude": 59.3392,
+    "longitude": 18.0773,
+    "priceRange": "$$$"
   }
 ]

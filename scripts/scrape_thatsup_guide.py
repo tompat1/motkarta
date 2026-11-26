@@ -54,6 +54,9 @@ AREA_NORMALIZATION: dict[str, str] = {
     "frihamnen": "Östermalm",
     "gärdet": "Östermalm",
     "hökarängen": "Söderort",
+    "årsta": "Söderort",
+    "hägersten-liljeholmen": "Söderort",
+    "liljeholmen": "Söderort",
     "sundbyberg": "Västerort",
     "solna": "Norrort",
     "nacka": "Söderort",
@@ -235,6 +238,29 @@ def parse_place_page_html(raw_html: str) -> dict[str, Any]:
                 if raw_area and str(raw_area).lower() != "stockholm":
                     details["area"] = normalize_stockholm_area(str(raw_area))
 
+        if isinstance(payload, dict) and payload.get("@type") == "FAQPage":
+            inferred_tags: list[str] = list(details.get("inferredTags") or [])
+            for qa in payload.get("mainEntity") or []:
+                if not isinstance(qa, dict):
+                    continue
+                q_name = str(qa.get("name") or "").lower()
+                ans_text = str((qa.get("acceptedAnswer") or {}).get("text") or "").lower()
+                if "vilken typ av bar" in q_name or "bar" in q_name:
+                    if any(w in ans_text for w in ("cocktailbar", "drinkbar", "hotellbar", "takbar", "skybar", "ginbar", "speakeasy", "loungebar")):
+                        for t in ("Bar", "Cocktail bar", "Cocktails"):
+                            if t not in inferred_tags:
+                                inferred_tags.append(t)
+                    if any(w in ans_text for w in ("vinbar", "naturvin", "champagnebar")):
+                        for t in ("Bar", "Wine bar", "Vinbar"):
+                            if t not in inferred_tags:
+                                inferred_tags.append(t)
+                    if any(w in ans_text for w in ("ölbar", "pub", "gastropub", "ölhall", "bryggeri")):
+                        for t in ("Pub", "Beer", "Craft Beer", "Ölbar"):
+                            if t not in inferred_tags:
+                                inferred_tags.append(t)
+            if inferred_tags:
+                details["inferredTags"] = inferred_tags
+
     # Fallback coordinate extraction from embedded map/place JSON
     if "latitude" not in details or "longitude" not in details:
         m_geo = re.search(
@@ -332,7 +358,13 @@ def main() -> int:
                 place_html = fetch_url(place_url, timeout=15)
                 details = parse_place_page_html(place_html)
                 for k, v in details.items():
-                    if k != "streetAddress" and v not in (None, ""):
+                    if k == "inferredTags" and isinstance(v, list):
+                        cur_tags = list(entry.get("tags") or [])
+                        for t in v:
+                            if t not in cur_tags:
+                                cur_tags.append(t)
+                        entry["tags"] = cur_tags
+                    elif k != "streetAddress" and v not in (None, ""):
                         entry[k] = v
                 print(
                     f"  [{idx:2d}/{len(scraped)}] {entry['name']} -> "

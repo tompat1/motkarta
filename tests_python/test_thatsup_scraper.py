@@ -131,19 +131,28 @@ def test_merge_ground_truth_preserves_existing_and_updates_matches():
 
 def test_catalog_contains_enriched_thatsup_beer_bars_with_neutral_policy():
     gt = json.loads(THATSUP_GT_FILE.read_text(encoding="utf-8"))
-    assert len(gt) >= 40
+    assert len(gt) >= 85
     assert not any(is_excluded_catalog_name(item["name"]) for item in gt)
 
     places = json.loads(PLACES_FILE.read_text(encoding="utf-8"))["places"]
+    thatsup_places = [p for p in places if "Thatsup" in (p.get("tags") or [])]
+    assert len(thatsup_places) >= 85
+
     thatsup_pubs = [
         p
-        for p in places
-        if "Thatsup" in (p.get("tags") or [])
-        and "pub" in [c.strip().lower() for c in str(p.get("cuisine") or "").split(";")]
+        for p in thatsup_places
+        if "pub" in [c.strip().lower() for c in str(p.get("cuisine") or "").split(";")]
     ]
     assert len(thatsup_pubs) >= 30
 
-    for place in thatsup_pubs:
+    thatsup_bars = [
+        p
+        for p in thatsup_places
+        if any(t.lower() in {"bar", "cocktail bar", "wine bar"} for t in (p.get("tags") or []))
+    ]
+    assert len(thatsup_bars) >= 25
+
+    for place in thatsup_places:
         assert not is_excluded_catalog_name(place["name"])
         thatsup_facts = [
             f for f in (place.get("sourceFacts") or []) if "thatsup" in str(f.get("source", "")).lower()

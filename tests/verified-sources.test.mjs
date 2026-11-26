@@ -62,6 +62,13 @@ test("getPlaceVerifiedSources matches curated sources from sourceName and eviden
       String(p.cuisine ?? "").toLowerCase().split(";").includes("pub"),
   );
   assert.ok(thatsupPubs.length >= 30, `Expected >=30 Thatsup-badged pub/beer venues, got ${thatsupPubs.length}`);
+
+  const thatsupBars = catalog.places.filter(
+    (p) =>
+      getPlaceVerifiedSources(p).some((b) => b.id === "thatsup") &&
+      (p.tags ?? []).some((t) => ["bar", "cocktail bar", "wine bar"].includes(t.toLowerCase())),
+  );
+  assert.ok(thatsupBars.length >= 25, `Expected >=25 Thatsup-badged bar venues, got ${thatsupBars.length}`);
 });
 
 test("getPlaceVerifiedSources awards User Approved badge to user-submitted places", () => {

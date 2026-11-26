@@ -748,7 +748,9 @@
         "Cocktails",
         "Curated",
         "Norrmalm",
-        "White Guide Nordic"
+        "White Guide Nordic",
+        "Thatsup",
+        "Bar"
       ],
       "sourceName": "White Guide Nordic",
       "sourceUrl": "https://whiteguide.com/",
@@ -792,7 +794,19 @@
       "categoryMeanRating": 0,
       "categoryPopularityRaw": 0,
       "localPopularityPercentile": 0,
-      "priceLevel": 0
+      "priceLevel": 0,
+      "sourceFacts": [
+        {
+          "placeId": 560673256,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "560673256:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ]
     },
     {
       "id": 1158899783,
@@ -869,7 +883,9 @@
         "Curated",
         "Speakeasy",
         "White Guide Nordic",
-        "Östermalm"
+        "Östermalm",
+        "Thatsup",
+        "Bar"
       ],
       "sourceName": "White Guide Nordic",
       "sourceUrl": "https://whiteguide.com/",
@@ -913,7 +929,19 @@
       "categoryMeanRating": 0,
       "categoryPopularityRaw": 0,
       "localPopularityPercentile": 0,
-      "priceLevel": 0
+      "priceLevel": 0,
+      "sourceFacts": [
+        {
+          "placeId": 2495945832,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2495945832:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ]
     },
     {
       "id": 122314563,
@@ -937,7 +965,9 @@
         "Pub",
         "Beer",
         "Craft Beer",
-        "Ölbar"
+        "Ölbar",
+        "Wine bar",
+        "Vinbar"
       ],
       "sourceName": "White Guide Nordic",
       "sourceUrl": "https://whiteguide.com/",
@@ -36099,7 +36129,8 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -36181,6 +36212,16 @@
           "id": "3664428482:osm:website",
           "field": "tags",
           "value": "Website: https://www.cliff.se/"
+        },
+        {
+          "placeId": 3664428482,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3664428482:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -49875,7 +49916,8 @@
         "Opening hours",
         "Restaurant",
         "Spotted by Locals",
-        "Hidden Gem"
+        "Hidden Gem",
+        "Thatsup"
       ],
       "is_hidden_gem": true,
       "is_structural_anomaly": false,
@@ -49987,6 +50029,16 @@
           "verification": "listed",
           "url": "https://www.spottedbylocals.com/stockholm/konstnarsbaren/",
           "capturedAt": "2026-09-08T16:28:30Z"
+        },
+        {
+          "placeId": 2974211859,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2974211859:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -63813,7 +63865,8 @@
         "White Guide Nordic",
         "Anders Husa",
         "World's 50 Best Discovery",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -64026,6 +64079,16 @@
           "id": "3582143764:visitstockholm:review",
           "field": "category",
           "value": "Fisk & Skaldjur"
+        },
+        {
+          "placeId": 3582143764,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3582143764:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -65021,7 +65084,8 @@
         "Svenska Gastronomipriset",
         "Curated",
         "Burgerdudes",
-        "Sveriges Bästa Burgare"
+        "Sveriges Bästa Burgare",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -65132,6 +65196,16 @@
           "id": "2895497484:burgerdudes:review",
           "field": "category",
           "value": "Steakhouse Burger Legend"
+        },
+        {
+          "placeId": 2895497484,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2895497484:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -99628,7 +99702,8 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -99760,6 +99835,16 @@
           "id": "646795526:website:atmosphere:neighborhood",
           "field": "atmosphere",
           "value": "neighborhood"
+        },
+        {
+          "placeId": 646795526,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "646795526:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -125289,7 +125374,8 @@
         "White Guide",
         "White Guide Nordic",
         "Curated",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -125410,6 +125496,16 @@
           "id": "2263095083:visitstockholm:review",
           "field": "category",
           "value": "Klassisk krog"
+        },
+        {
+          "placeId": 2263095083,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2263095083:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -127261,7 +127357,8 @@
         "Curated",
         "Anders Husa",
         "World's 50 Best Discovery",
-        "Visit Stockholm"
+        "Visit Stockholm",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -127472,6 +127569,16 @@
           "id": "1390589572:visitstockholm:review",
           "field": "category",
           "value": "Klassisk krog"
+        },
+        {
+          "placeId": 1390589572,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "1390589572:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -137496,7 +137603,8 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -137588,6 +137696,16 @@
           "url": "https://tasstipset.se",
           "verification": "listed",
           "capturedAt": "2026-09-07T18:54:46Z"
+        },
+        {
+          "placeId": 2101669572,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2101669572:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -145515,7 +145633,8 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -145597,6 +145716,16 @@
           "id": "2978414089:osm:website",
           "field": "tags",
           "value": "Website: https://www.barnombre.se/"
+        },
+        {
+          "placeId": 2978414089,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2978414089:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -153084,7 +153213,8 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -153186,6 +153316,16 @@
           "id": "1286346218:website:address",
           "field": "address",
           "value": "Surbrunnsgatan 46, Vasastan"
+        },
+        {
+          "placeId": 1286346218,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "1286346218:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -158574,7 +158714,8 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -158656,6 +158797,16 @@
           "id": "2805635286:osm:website",
           "field": "tags",
           "value": "Website: https://tures.se/"
+        },
+        {
+          "placeId": 2805635286,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2805635286:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -166291,7 +166442,8 @@
         "Opening hours",
         "Restaurant",
         "Spanish",
-        "Tasstipset"
+        "Tasstipset",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -166464,6 +166616,16 @@
           "id": "430201740:osm:dish:jamon",
           "field": "dish",
           "value": "jamón"
+        },
+        {
+          "placeId": 430201740,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "430201740:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -192265,7 +192427,8 @@
         "Restaurant",
         "Website",
         "Spotted by Locals",
-        "Hidden Gem"
+        "Hidden Gem",
+        "Thatsup"
       ],
       "is_hidden_gem": true,
       "is_structural_anomaly": false,
@@ -192366,6 +192529,16 @@
           "verification": "listed",
           "url": "https://www.spottedbylocals.com/stockholm/spritmuseum/",
           "capturedAt": "2026-09-08T16:28:30Z"
+        },
+        {
+          "placeId": 3648191128,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3648191128:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -208886,7 +209059,7 @@
       "id": 4279813978,
       "name": "Två Små Svin",
       "kind": "Restaurant",
-      "cuisine": "",
+      "cuisine": "pub",
       "area": "Söderort",
       "note": "Restaurant from OpenStreetMap.",
       "tags": [
@@ -208897,7 +209070,12 @@
         "Website",
         "Spotted by Locals",
         "Hidden Gem",
-        "Söderort"
+        "Söderort",
+        "Thatsup",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar"
       ],
       "is_hidden_gem": true,
       "is_structural_anomaly": false,
@@ -209008,6 +209186,16 @@
           "verification": "listed",
           "url": "https://www.spottedbylocals.com/stockholm/tva-sma-svin/",
           "capturedAt": "2026-09-08T16:28:30Z"
+        },
+        {
+          "placeId": 4279813978,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "4279813978:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -232048,7 +232236,8 @@
         "OpenStreetMap",
         "Opening hours",
         "Restaurant",
-        "Tasstipset"
+        "Tasstipset",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -232140,6 +232329,16 @@
           "url": "https://tasstipset.se",
           "verification": "listed",
           "capturedAt": "2026-09-07T18:54:46Z"
+        },
+        {
+          "placeId": 1892130808,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "1892130808:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -283994,7 +284193,8 @@
         "Anders Husa",
         "World's 50 Best Discovery",
         "Visit Stockholm",
-        "Sveriges Bästa"
+        "Sveriges Bästa",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -284176,6 +284376,16 @@
           "id": "1458840516:sverigesbästa:review",
           "field": "category",
           "value": "Sveriges Bästa Brasserie"
+        },
+        {
+          "placeId": 1458840516,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "1458840516:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -291171,7 +291381,8 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -291273,6 +291484,16 @@
           "id": "1306179751:osm:tags:diet_vegetarian",
           "field": "tags",
           "value": "Vegetarian options"
+        },
+        {
+          "placeId": 1306179751,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "1306179751:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -320358,7 +320579,8 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -320460,6 +320682,16 @@
           "id": "473318496:website:atmosphere:wine bar",
           "field": "atmosphere",
           "value": "wine bar"
+        },
+        {
+          "placeId": 473318496,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "473318496:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -345620,7 +345852,8 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -345722,6 +345955,16 @@
           "id": "3348630406:osm:tags:diet_vegetarian",
           "field": "tags",
           "value": "Vegetarian options"
+        },
+        {
+          "placeId": 3348630406,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3348630406:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -356344,7 +356587,8 @@
         "Central Stockholm",
         "OpenStreetMap",
         "Opening hours",
-        "Restaurant"
+        "Restaurant",
+        "Thatsup"
       ],
       "is_hidden_gem": false,
       "is_structural_anomaly": false,
@@ -356436,6 +356680,16 @@
           "id": "2167835524:osm:atmosphere:outdoor",
           "field": "atmosphere",
           "value": "outdoor seating"
+        },
+        {
+          "placeId": 2167835524,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "2167835524:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
         }
       ]
     },
@@ -381110,12 +381364,18 @@
         "Craft Beer",
         "Ölbar",
         "Gamla Stan",
-        "Thatsup"
+        "Thatsup",
+        "White Guide",
+        "White Guide Nordic",
+        "Curated",
+        "Anders Husa",
+        "World's 50 Best Discovery",
+        "Visit Stockholm"
       ],
       "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
       "evidence": {
-        "specialistGuide": 0.25,
-        "independentEditorial": 0.2,
+        "specialistGuide": 0.95,
+        "independentEditorial": 0.95,
         "verifiedUserRating": 0.0,
         "repeatVisits": 0.15,
         "recentReviews": 0.2
@@ -381139,6 +381399,36 @@
           "id": "3829700087:thatsup:discovery",
           "field": "category",
           "value": "Thatsup Ölbar & Pub"
+        },
+        {
+          "placeId": 3829700087,
+          "source": "White Guide",
+          "url": "https://whiteguide.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "3829700087:whiteguide:review",
+          "field": "category",
+          "value": "Mycket god klass"
+        },
+        {
+          "placeId": 3829700087,
+          "source": "Anders Husa & Kaitlin Orr",
+          "url": "https://andershusa.com",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "3829700087:andershusakaitlinorr:review",
+          "field": "category",
+          "value": "Modern Nordic"
+        },
+        {
+          "placeId": 3829700087,
+          "source": "Visit Stockholm",
+          "url": "https://www.visitstockholm.se",
+          "verification": "listed",
+          "capturedAt": "2026-11-18T12:00:00Z",
+          "id": "3829700087:visitstockholm:review",
+          "field": "category",
+          "value": "Modern nordisk mat"
         }
       ],
       "website": "http://tritonia.se/"
@@ -381830,7 +382120,1143 @@
         }
       ],
       "website": "https://www.belgobaren.se/hornan"
+    },
+    {
+      "id": 3829380814,
+      "idNamespace": "public",
+      "name": "Hernö Gin Bar",
+      "kind": "Restaurant",
+      "cuisine": "cocktails",
+      "area": "Södermalm",
+      "address": "Hornsgatan 1, Södermalm",
+      "latitude": 59.3197,
+      "longitude": 18.0702,
+      "x": 59.3197,
+      "y": 18.0702,
+      "priceLevel": 3,
+      "note": "Omtalade Hernö Gin Bar breder ut sig över två våningsplan i anrika lokaler vid Slussen. Här serveras cocktails gjorda på olika sorters Hernö Gin, bland annat en prisbelönt gin & tonic, men också smårätter med svenska influenser. På entréplan ligger restaura...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829380814,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829380814:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://www.hernogin.com/herno-gin-bar/"
+    },
+    {
+      "id": 3829268233,
+      "idNamespace": "public",
+      "name": "Cadierbaren",
+      "kind": "Restaurant",
+      "cuisine": "cocktails",
+      "area": "Norrmalm",
+      "address": "Södra Blaiseholmshamnen 8, Norrmalm",
+      "latitude": 59.3293,
+      "longitude": 18.0756,
+      "x": 59.3293,
+      "y": 18.0756,
+      "priceLevel": 4,
+      "note": "Cadierbaren är Grand Hotels cocktailbar, uppkallad efter den franske köksmästaren Régis Cadier som grundade hotellet. Här kan du njuta av såväl utsikten över slottet som goda viner, bubblande champagne och ett brett urval av välkomponerade drinkar. Blir du...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Norrmalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829268233,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829268233:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "http://www.grandhotel.se"
+    },
+    {
+      "id": 3829963788,
+      "idNamespace": "public",
+      "name": "Rex Bar",
+      "kind": "Restaurant",
+      "cuisine": "cocktails",
+      "area": "Kungsholmen",
+      "address": "Drottningholmsvägen 22, Kungsholmen",
+      "latitude": 59.3324,
+      "longitude": 18.03,
+      "x": 59.3324,
+      "y": 18.03,
+      "priceLevel": 2,
+      "note": "Åtta våningar över Fridhemsplan tronar Rex Bar, en skybar med utsikt över Kungsholmens takåsar. Här är det framför allt cocktails som står i fokus, komponerade av de prisbelönta bartendrarna Vasilis Kyritsis och Nikos Bakoulis från baren Line i Aten. Cockta...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Kungsholmen",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829963788,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829963788:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://rex-bar.se"
+    },
+    {
+      "id": 3829843663,
+      "idNamespace": "public",
+      "name": "Stjärtilleriet",
+      "kind": "Restaurant",
+      "cuisine": "cocktails",
+      "area": "Östermalm",
+      "address": "Artillerigatan 13, Östermalm",
+      "latitude": 59.334,
+      "longitude": 18.0807,
+      "x": 59.334,
+      "y": 18.0807,
+      "priceLevel": 2,
+      "note": "I Artilleriet s lekfulla cocktailbar är alltid något nytt, kreativt i görningen. Drinkmenyn uppdateras mer ofta än sällan med olika experimentella kombinationer, med eller utan alkohol. Den som vill prova lite av varje kan ge sig på Stjärtilleriets “cocktai...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Östermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829843663,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829843663:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://stjartilleriet.se/"
+    },
+    {
+      "id": 3829694892,
+      "idNamespace": "public",
+      "name": "Tiki Room",
+      "kind": "Restaurant",
+      "cuisine": "cocktails",
+      "area": "Vasastan",
+      "address": "Birkagatan 10, Vasastan",
+      "latitude": 59.3395,
+      "longitude": 18.0336,
+      "x": 59.3395,
+      "y": 18.0336,
+      "priceLevel": 2,
+      "note": "Tiki Room på Birkagatan vid Sankt Eriksplan öppnade 2002 och är Stockholms första renodlade tikibar. I källarlokalen blandar bartendrarna i hawaiiskjortor klassiska tikidrinkar på gamla originalrecept, med rom från främst Jamaica och Kuba och gott om färsk...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Vasastan",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829694892,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829694892:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://www.tikiroomstockholm.com/"
+    },
+    {
+      "id": 3829284188,
+      "idNamespace": "public",
+      "name": "Oak Island Gallery",
+      "kind": "Restaurant",
+      "cuisine": "",
+      "area": "Vasastan",
+      "address": "Birkagatan 31, Vasastan",
+      "latitude": 59.3417,
+      "longitude": 18.0356,
+      "x": 59.3417,
+      "y": 18.0356,
+      "priceLevel": 2,
+      "note": "Oak Island Gallery på Birkagatan i Birkastan är bar och galleri i samma coola källarlokal, med historiskt musikfotografi på väggarna. I baren finns ett litet urval drinkar, bland annat pink gin och tonic och en rumvariant av old fashioned. Vinlistan rymmer...",
+      "tags": [
+        "Bar",
+        "Vasastan",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829284188,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829284188:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://www.oakislandgallery.com"
+    },
+    {
+      "id": 3829863885,
+      "idNamespace": "public",
+      "name": "Morfar Ginko",
+      "kind": "Restaurant",
+      "cuisine": "",
+      "area": "Södermalm",
+      "address": "Swedenborgsgatan 11, Södermalm",
+      "latitude": 59.3158,
+      "longitude": 18.0638,
+      "x": 59.3158,
+      "y": 18.0638,
+      "priceLevel": 3,
+      "note": "Omtyckt Söderbar och restaurang med opolerade vintagevibbar och stammistät publik. Eller som de själva beskriver sig; “nöjespalats och champagneria”. Sommartid vill många sitta på uteserveringen på Swedenborgsgatan.",
+      "tags": [
+        "Bar",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829863885,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829863885:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "http://www.morfarginko.se"
+    },
+    {
+      "id": 3830029976,
+      "idNamespace": "public",
+      "name": "Bar Brahe",
+      "kind": "Restaurant",
+      "cuisine": "cocktails",
+      "area": "Gamla Stan",
+      "address": "Bredgränd 2, Gamla Stan",
+      "latitude": 59.3256,
+      "longitude": 18.0744,
+      "x": 59.3256,
+      "y": 18.0744,
+      "priceLevel": 2,
+      "note": "En gång i tiden, i utkanten av Gamla stan, fanns det en dunkel lokal i en gränd vid hamnen dit köpmän kom. Idag är lokalen lika dunkelt mysig, men någon handel med tegelstenar pågår inte. Istället blandas riktigt bra cocktails till tonerna av livejazz i rik...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Gamla Stan",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3830029976,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3830029976:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://www.barbrahe.com"
+    },
+    {
+      "id": 3829444702,
+      "idNamespace": "public",
+      "name": "Vineriet",
+      "kind": "Restaurant",
+      "cuisine": "wine",
+      "area": "Vasastan",
+      "address": "Roslagsgatan 15, Vasastan",
+      "latitude": 59.3466,
+      "longitude": 18.0594,
+      "x": 59.3466,
+      "y": 18.0594,
+      "priceLevel": 3,
+      "note": "Det här lilla guldkornet hittar du på Roslagsgatan, där personalen häller vin så det står härliga till och serverar rätt efter rätt med europeiska smaker. Sommartid kan du glassa på den bistroinspirerade uteserveringen.",
+      "tags": [
+        "Bar",
+        "Wine bar",
+        "Vinbar",
+        "Vasastan",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829444702,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829444702:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://vinerietsthlm.se/"
+    },
+    {
+      "id": 3829635633,
+      "idNamespace": "public",
+      "name": "Riche Fenix",
+      "kind": "Restaurant",
+      "cuisine": "",
+      "area": "Södermalm",
+      "address": "Götgatan 40, Södermalm",
+      "latitude": 59.3167,
+      "longitude": 18.0719,
+      "x": 59.3167,
+      "y": 18.0719,
+      "priceLevel": 3,
+      "note": "Bar i Stockholm (upptäcktskälla via Thatsup Stockholm).",
+      "tags": [
+        "Bar",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829635633,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829635633:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://riche.se/"
+    },
+    {
+      "id": 3829685147,
+      "idNamespace": "public",
+      "name": "Baras Gemenskap",
+      "kind": "Restaurant",
+      "cuisine": "",
+      "area": "Södermalm",
+      "address": "Sankt Paulsgatan 2, Södermalm",
+      "latitude": 59.3186,
+      "longitude": 18.0702,
+      "x": 59.3186,
+      "y": 18.0702,
+      "priceLevel": 3,
+      "note": "På Baras-koncernen är tanken att man ska få en trevlig utekväll utan att det behöver kostar skjortan. Här kan man både äta och dricka i gemytlig miljö där folk i alla åldrar samlas för att hänga.",
+      "tags": [
+        "Bar",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829685147,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829685147:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "http://www.baras.se"
+    },
+    {
+      "id": 3829527287,
+      "idNamespace": "public",
+      "name": "Baras Backe",
+      "kind": "Restaurant",
+      "cuisine": "",
+      "area": "Södermalm",
+      "address": "Götgatan 33, Södermalm",
+      "latitude": 59.3164,
+      "longitude": 18.0724,
+      "x": 59.3164,
+      "y": 18.0724,
+      "priceLevel": 3,
+      "note": "På Baras-koncernen är tanken att man ska få en trevlig utekväll utan att det behöver kostar skjortan. Här kan man både äta och dricka i gemytlig miljö där folk i alla åldrar samlas för att hänga.",
+      "tags": [
+        "Bar",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829527287,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829527287:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "http://www.baras.se"
+    },
+    {
+      "id": 3829723069,
+      "idNamespace": "public",
+      "name": "HIGH Bar",
+      "kind": "Restaurant",
+      "cuisine": "cocktails",
+      "area": "Norrmalm",
+      "address": "Vasagatan 1, Norrmalm",
+      "latitude": 59.3314,
+      "longitude": 18.0581,
+      "x": 59.3314,
+      "y": 18.0581,
+      "priceLevel": 2,
+      "note": "Från HIGH Bar kan du spana ut över Stockholms takåsar och vatten med en drink i handen, oavsett årstid och väderlek. Baren, som är belägen nio våningar upp i Radisson Blu Royal Viking Hotel , satsar på en innovativ drinklista med spännande smaker, men du ka...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Norrmalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829723069,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829723069:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://www.radissonhotels.com/sv-se/hotell/radisson-blu-stockholm-royal-viking/restaurang-bar/high-bar"
+    },
+    {
+      "id": 3829672264,
+      "idNamespace": "public",
+      "name": "Americain",
+      "kind": "Restaurant",
+      "cuisine": "cocktails",
+      "area": "Norrmalm",
+      "address": "Hötorget 13-15, Norrmalm",
+      "latitude": 59.3347,
+      "longitude": 18.0616,
+      "x": 59.3347,
+      "y": 18.0616,
+      "priceLevel": 2,
+      "note": "Inhyst i det gamla PUB-huset på Hötorget hittar du numera hotellet Haymarket by Scandic och cocktailbaren Americain. Här kommer inspirationen från gamla tiders hotellbarer, Karibien och filmen Casablanca. Ta en elegant drink och slå dig ner i en sammetsfåtö...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Norrmalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829672264,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829672264:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://www.scandichotels.com/en/hotels/haymarket-by-scandic/americain"
+    },
+    {
+      "id": 3829945640,
+      "idNamespace": "public",
+      "name": "Brännerian",
+      "kind": "Restaurant",
+      "cuisine": "cocktails",
+      "area": "Södermalm",
+      "address": "Folkungagatan 136, Södermalm",
+      "latitude": 59.3154,
+      "longitude": 18.0891,
+      "x": 59.3154,
+      "y": 18.0891,
+      "priceLevel": 2,
+      "note": "Vägg i vägg med det egna destilleriet Stockholms Bränneri hittas Brännerian – en bar och restaurang som tillverkar, och sedan serverar, sin egen gin i form av friska drinkar. Är man hungrig kan man ta del av en meny med nordiska snacks, smårätter och större...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Södermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829945640,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829945640:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://www.brannerian.se/"
+    },
+    {
+      "id": 3829278836,
+      "idNamespace": "public",
+      "name": "Wirströms Pub Gamla stan",
+      "kind": "Restaurant",
+      "cuisine": "pub;cocktails",
+      "area": "Gamla Stan",
+      "address": "Stora Nygatan 13, Gamla Stan",
+      "latitude": 59.3249,
+      "longitude": 18.0683,
+      "x": 59.3249,
+      "y": 18.0683,
+      "priceLevel": 1,
+      "note": "Många anser att Wirströms Pub i Gamla stan är en av Stockholms absolut bästa pubar, då utbudet av öl och whiskey i baren är både stort och brett. Såväl stammisar som turister hittar hit för att dricka något gott, besöka livespelningar och quizkvällar i käll...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Gamla Stan",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829278836,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829278836:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "http://www.wirstromspub.se/"
+    },
+    {
+      "id": 3829432958,
+      "idNamespace": "public",
+      "name": "Wirströms Pub Kungsgatan",
+      "kind": "Restaurant",
+      "cuisine": "pub;cocktails",
+      "area": "Norrmalm",
+      "address": "Kungsgatan 7, Norrmalm",
+      "latitude": 59.3359,
+      "longitude": 18.0703,
+      "x": 59.3359,
+      "y": 18.0703,
+      "priceLevel": 2,
+      "note": "Många anser att Wirströms Pub i Gamla stan är en av Stockholms absolut bästa pubar, då utbudet av öl och whiskey i baren är både stort och brett. Såväl stammisar som turister hittar hit för att dricka något gott, besöka livespelningar och quizkvällar i käll...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Pub",
+        "Beer",
+        "Craft Beer",
+        "Ölbar",
+        "Norrmalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829432958,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829432958:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "http://www.wirstromspub.se/"
+    },
+    {
+      "id": 3829656791,
+      "idNamespace": "public",
+      "name": "Tilt",
+      "kind": "Restaurant",
+      "cuisine": "cocktails",
+      "area": "Östermalm",
+      "address": "Nybrogatan 16, Östermalm",
+      "latitude": 59.3348,
+      "longitude": 18.0777,
+      "x": 59.3348,
+      "y": 18.0777,
+      "priceLevel": 3,
+      "note": "Tilt är som ett andra vardagsrum där du kan avnjuta cocktails och ägna dig åt roliga aktiviteter på ett och samma ställe. Släng dig i någon av sofforna och sippa på en drink, utmana ditt sällskap i ett parti biljard eller shuffelboard, kasta dart eller välj...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Östermalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829656791,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829656791:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://tiltbar.se/"
+    },
+    {
+      "id": 3829272511,
+      "idNamespace": "public",
+      "name": "The Social",
+      "kind": "Restaurant",
+      "cuisine": "cocktails",
+      "area": "Norrmalm",
+      "address": "Östra Järnvägsgatan 35, Norrmalm",
+      "latitude": 59.3347,
+      "longitude": 18.0531,
+      "x": 59.3347,
+      "y": 18.0531,
+      "priceLevel": 4,
+      "note": "Om du gillar uppsluppen atmosfär och goda drinkar ska du bege dig till The Social inne på Clarion Hotel Sign . Härifrån har du dessutom nära till det mesta oavsett om du är på afterwork, barrunda, ska äta middag eller gå vidare på fest efter några glas. Ta...",
+      "tags": [
+        "Bar",
+        "Cocktail bar",
+        "Cocktails",
+        "Norrmalm",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829272511,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829272511:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://sign.socialbarbistro.com/"
+    },
+    {
+      "id": 3829813686,
+      "idNamespace": "public",
+      "name": "Boulebar Rådhuset",
+      "kind": "Restaurant",
+      "cuisine": "",
+      "area": "Kungsholmen",
+      "address": "Hantverkargatan 8, Kungsholmen",
+      "latitude": 59.3287,
+      "longitude": 18.0467,
+      "x": 59.3287,
+      "y": 18.0467,
+      "priceLevel": 3,
+      "note": "Kombinera franskt parknöje med något svalkande i glaset. Boulebar är stället för alla som vill utmana varandra i ett parti boule, umgås och ha trevligt. Här är det som upplagt för en lite mer aktiverande AW. Boulebar funkar fint året om, då de har ställen b...",
+      "tags": [
+        "Bar",
+        "Kungsholmen",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829813686,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829813686:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://www.boulebar.se/sthlm-radhuset"
+    },
+    {
+      "id": 3829889212,
+      "idNamespace": "public",
+      "name": "Boulebar Liljeholmen",
+      "kind": "Restaurant",
+      "cuisine": "",
+      "area": "Söderort",
+      "address": "Liljeholmsvägen 14, Söderort",
+      "latitude": 59.3127,
+      "longitude": 18.027,
+      "x": 59.3127,
+      "y": 18.027,
+      "priceLevel": 3,
+      "note": "Kombinera franskt parknöje med något svalkande i glaset. Boulebar är stället för alla som vill utmana varandra i ett parti boule, umgås och ha trevligt. Här är det som upplagt för en lite mer aktiverande AW. Boulebar funkar fint året om, då de har ställen b...",
+      "tags": [
+        "Bar",
+        "Söderort",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829889212,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829889212:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://www.boulebar.se/sthlm-radhuset"
+    },
+    {
+      "id": 3829377223,
+      "idNamespace": "public",
+      "name": "Boulebar Haga",
+      "kind": "Restaurant",
+      "cuisine": "",
+      "area": "Norrort",
+      "address": "Annerovägen 4, Solna, Norrort",
+      "latitude": 59.3531,
+      "longitude": 18.0418,
+      "x": 59.3531,
+      "y": 18.0418,
+      "priceLevel": 3,
+      "note": "Kombinera franskt parknöje med något svalkande i glaset. Boulebar är stället för alla som vill utmana varandra i ett parti boule, umgås och ha trevligt. Här är det som upplagt för en lite mer aktiverande AW. Boulebar funkar fint året om, då de har ställen b...",
+      "tags": [
+        "Bar",
+        "Norrort",
+        "Thatsup"
+      ],
+      "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
+      "evidence": {
+        "specialistGuide": 0.25,
+        "independentEditorial": 0.2,
+        "verifiedUserRating": 0.0,
+        "repeatVisits": 0.15,
+        "recentReviews": 0.2
+      },
+      "engagement": {
+        "views": 120,
+        "saves": 12,
+        "shares": 4,
+        "searches": 35
+      },
+      "discoveryReasons": [
+        "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+      ],
+      "sourceFacts": [
+        {
+          "placeId": 3829377223,
+          "source": "Thatsup Stockholm",
+          "url": "https://thatsup.se/stockholm/guide/stockholms-basta-barer",
+          "verification": "listed",
+          "capturedAt": "2026-11-26T18:16:00Z",
+          "id": "3829377223:thatsup:discovery",
+          "field": "category",
+          "value": "Thatsup Bar"
+        }
+      ],
+      "website": "https://www.boulebar.se/sthlm-radhuset"
     }
   ],
-  "totalPlaces": 3158
+  "totalPlaces": 3180
 }

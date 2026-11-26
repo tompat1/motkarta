@@ -86,13 +86,17 @@ test("Cocktail bar filter matches curated cocktail venues in Stockholm", () => {
     );
   });
 
-  assert.ok(cocktailBars.length >= 6, `Expected at least 6 cocktail bars, found ${cocktailBars.length}`);
+  assert.ok(cocktailBars.length >= 20, `Expected at least 20 cocktail bars, found ${cocktailBars.length}`);
   const names = cocktailBars.map((p) => p.name.toLowerCase());
   assert.ok(names.some((n) => n.includes("tjoget")));
   assert.ok(names.some((n) => n.includes("lucy")));
   assert.ok(names.some((n) => n.includes("gemma")));
   assert.ok(names.some((n) => n.includes("röda huset")));
   assert.ok(names.some((n) => n.includes("pharmarium")));
+  assert.ok(names.some((n) => n.includes("hernö gin bar")));
+  assert.ok(names.some((n) => n.includes("cadierbaren")));
+  assert.ok(names.some((n) => n.includes("tiki room")));
+  assert.ok(names.some((n) => n.includes("bar brahe")));
 });
 
 test("Pub & beer filter matches curated beer and pub venues in Stockholm", () => {

@@ -22,6 +22,12 @@ THATSUP_NAME_ALIASES = {
     "pressklubben": ["internationellapressklubben"],
     "theoldbrewerhornstull": ["theoldbrewer"],
     "theoldbrewervasastan": ["theoldbrewer"],
+    "lucys": ["lucysflowershop"],
+    "barnombre": ["nombre"],
+    "brasseriebalzac": ["balzac"],
+    "kb": ["konstnarsbaren"],
+    "ag": ["restaurangag"],
+    "astoria": ["brasserieastoria"],
 }
 
 
@@ -78,11 +84,17 @@ def enrich_thatsup_places(places: list[dict]) -> tuple[int, int]:
                 matched_places.append(p)
 
         gt_tags = [t for t in (gt.get("tags") or []) if isinstance(t, str) and t.strip()]
-        is_pub_lead = any(t.lower() in {"pub", "beer", "craft beer", "ölbar"} for t in gt_tags)
+        gt_tags_lower = {t.lower() for t in gt_tags}
+        is_pub_lead = any(t in {"pub", "beer", "craft beer", "ölbar"} for t in gt_tags_lower)
+        is_cocktail_lead = any(t in {"cocktail bar", "cocktails", "cocktailbar"} for t in gt_tags_lower)
+        is_wine_lead = any(t in {"wine bar", "vinbar"} for t in gt_tags_lower)
+        is_bar_lead = "bar" in gt_tags_lower or is_cocktail_lead or is_wine_lead
         source_url = gt.get("url") or "https://thatsup.se/stockholm/"
         category_label = gt.get("category") or "Thatsup Stockholm (Discovery Lead)"
 
+        is_newly_added = False
         if not matched_places and gt.get("latitude") is not None and gt.get("longitude") is not None:
+            is_newly_added = True
             lat = float(gt["latitude"])
             lng = float(gt["longitude"])
             area = gt_area or "Stockholm"
@@ -98,12 +110,35 @@ def enrich_thatsup_places(places: list[dict]) -> tuple[int, int]:
             while any(p.get("id") == pid for p in places):
                 pid += 1
 
+            cuisines_new: list[str] = []
+            if is_pub_lead:
+                cuisines_new.append("pub")
+            if is_cocktail_lead:
+                cuisines_new.append("cocktails")
+            elif is_wine_lead:
+                cuisines_new.append("wine")
+
+            default_note = (
+                "Ölbar & pub i Stockholm (upptäcktskälla via Thatsup Stockholm)."
+                if is_pub_lead
+                else "Bar i Stockholm (upptäcktskälla via Thatsup Stockholm)."
+            )
+            default_reason = (
+                "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+                if is_pub_lead
+                else (
+                    "Listad i Thatsup Stockholms barguide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
+                    if is_bar_lead
+                    else "Listad som upptäcktskälla i Thatsup Stockholm"
+                )
+            )
+
             new_place: dict = {
                 "id": pid,
                 "idNamespace": "public",
                 "name": name,
                 "kind": "Restaurant",
-                "cuisine": "pub" if is_pub_lead else "",
+                "cuisine": ";".join(cuisines_new),
                 "area": area,
                 "address": address,
                 "latitude": lat,
@@ -111,7 +146,7 @@ def enrich_thatsup_places(places: list[dict]) -> tuple[int, int]:
                 "x": lat,
                 "y": lng,
                 "priceLevel": price_level,
-                "note": gt.get("editorialExcerpt") or "Ölbar & pub i Stockholm (upptäcktskälla via Thatsup Stockholm).",
+                "note": gt.get("editorialExcerpt") or default_note,
                 "tags": new_tags,
                 "evidenceLabel": "Discovery lead via Thatsup Stockholm (requires independent corroboration)",
                 "evidence": {
@@ -122,11 +157,7 @@ def enrich_thatsup_places(places: list[dict]) -> tuple[int, int]:
                     "recentReviews": 0.2,
                 },
                 "engagement": {"views": 120, "saves": 12, "shares": 4, "searches": 35},
-                "discoveryReasons": [
-                    "Listad i Thatsup Stockholms ölbar-guide (upptäcktskälla; separat oberoende belägg krävs för högt förtroende)"
-                    if is_pub_lead
-                    else "Listad som upptäcktskälla i Thatsup Stockholm"
-                ],
+                "discoveryReasons": [default_reason],
                 "sourceFacts": [],
             }
             if gt.get("website"):
@@ -137,7 +168,25 @@ def enrich_thatsup_places(places: list[dict]) -> tuple[int, int]:
 
         for p in matched_places:
             tags = p.setdefault("tags", [])
-            for t in ["Thatsup", *gt_tags]:
+            if "Thatsup" not in tags:
+                tags.append("Thatsup")
+
+            existing_cuisines_lower = {
+                c.strip().lower() for c in str(p.get("cuisine") or "").split(";") if c.strip()
+            }
+            existing_tags_lower = {t.lower() for t in tags}
+            already_bar_or_cocktail = bool(
+                existing_cuisines_lower & {"cocktails", "cocktail", "wine", "bar"}
+                or existing_tags_lower & {"bar", "cocktail bar", "cocktailbar", "cocktails", "wine bar", "vinbar"}
+            )
+
+            for t in gt_tags:
+                if (
+                    not is_newly_added
+                    and not already_bar_or_cocktail
+                    and t.lower() in {"bar", "cocktail bar", "cocktails", "cocktailbar", "wine bar", "vinbar"}
+                ):
+                    continue
                 if t not in tags:
                     tags.append(t)
 

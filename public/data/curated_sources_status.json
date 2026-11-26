@@ -351,8 +351,8 @@
       "url": "https://thatsup.se/stockholm/",
       "cadence": "monthly",
       "mode": "editorial-check",
-      "lastScrapedAt": "2026-11-26T18:16:00Z",
-      "lastCheckedAt": "2026-11-26T18:16:00Z",
+      "lastScrapedAt": "2026-11-26T18:35:00Z",
+      "lastCheckedAt": "2026-11-26T18:35:00Z",
       "reachable": true,
       "httpStatus": 200,
       "etag": null,
@@ -360,10 +360,10 @@
       "contentHash": null,
       "changedSincePrevious": true,
       "error": null,
-      "scrapedPoints": 46,
-      "verifiedCount": 46,
-      "importedCount": 46,
-      "coveragePercent": 100.0,
+      "scrapedPoints": 89,
+      "verifiedCount": 90,
+      "importedCount": 89,
+      "coveragePercent": 97.8,
       "status": "PASS"
     }
   ]
